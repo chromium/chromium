@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">အားလုံးအရံသိမ်းဆည်းပြီးပါပြီ!</translation>
 <translation id="3634507049637220048">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ခု ရွှေ့ပြီးပြီ။</translation>
-<translation id="3645531960514756307">ဖိုင်တွဲကို ပင်ဖြုတ်ရန်</translation>
 <translation id="3685122418104378273">မိုဘိုင်း ဒေတာကို အသုံးပြုချိန်မှာ ပုံသေအားဖြင့် Google ဒရိုက်ဗ် စင့်ကို ပိတ်ထားသည်။</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ကို ပယ်ဖျက်မည်။</translation>
 <translation id="3690128548376345212">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">သင်၏ ဘရောင်ဇာ သုံးမှု ပိုလုံခြုုံလာရေး နည်းလမ်းများကို ကျွန်ုပ်တို့ တချိန်လုံး ရှာကြံနေကြပါသည်။ အရင်တုန်းက၊ ဘယ် ဝက်ဘ်ဆိုက်မဆို သင်၏ ဘရောက်ဇာ ထဲသို့ တိုးချဲ့မှု တစ်ခုခိုကို ထည့်ပေးရန် တိုက်တွန်းခဲ့ပါမည်။ Google Chrome ၏ နောက်ဆုံး ဗားရှင်း ထဲမှာ၊ သင်သည် တိုးချဲ့မှု စာမျက်နှာ ထဲကို ထည့်ပေးခြင်း မှတစ်ဆင့် ထိုတိုးချဲ့မှုများကို ထည့်သွင်းလိုကြောင်း သင်သည် အတိအလင်း ပြောရန် လိုပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 <translation id="912419004897138677">ကိုးဒက်ခ်</translation>
-<translation id="9129931661813833980">ဖိုင်တွဲကို ပင်ထိုးရန်</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' ၏ အဖွဲ့ဝင်များသည် ဤအရာများကို အသုံးပြုခွင့်ရရှိမည်ဖြစ်သည်။</translation>
 <translation id="9131598836763251128">ဖိုင်များကို တစ်ခု သို့မဟုတ် ပိုများပြီး ရွေးရန်</translation>
 <translation id="9133055936679483811">ဇစ်လုပ်ခြင်း မအောင်မြင်ပါ။ <ph name="ERROR_MESSAGE" /></translation>

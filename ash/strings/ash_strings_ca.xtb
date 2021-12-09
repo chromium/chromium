@@ -416,7 +416,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3713734891607377840">Obre'l en acabar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
-<translation id="3744282433224562605">Per desbloquejar el Chromebook, introdueix la contrasenya</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
 <translation id="3779139509281456663">S'està connectant <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> i <ph name="IN_PLACE_APP" /> s'han combinat per crear una carpeta nova.</translation>
-<translation id="5199367439331364630">Per iniciar la sessió al Chromebook, introdueix la contrasenya</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificació més}other{# notificacions més}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
@@ -765,6 +763,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6134259848159370930">Cerca al dispositiu, en aplicacions, a la configuració i al web.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirma la baixada</translation>
 <translation id="6154006699632741460">Perifèric no admès</translation>
 <translation id="6156262341071374681">Amplia a totes les aplicacions</translation>
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>

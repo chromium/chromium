@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">ARC ativado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> pretende aceder a <ph name="VOLUME_NAME" />. Pode modificar ou eliminar os seus ficheiros.</translation>
 <translation id="1552301827267621511">A extensão "<ph name="EXTENSION_NAME" />" alterou a pesquisa para utilizar <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
+<translation id="1552752544932680961">Gerir extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">Não foi possível mover o directório da extensão para o perfil.</translation>
@@ -2790,7 +2791,6 @@ Pretende pará-lo?</translation>
 <translation id="3842552989725514455">Tipo de letra Serif</translation>
 <translation id="3843464315703645664">Na lista de autorizações internamente</translation>
 <translation id="3844888638014364087">Emoji inserido</translation>
-<translation id="384513009320852920">Certifique-se de que o dispositivo Bluetooth está no modo de sincronização e nas proximidades. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Obtenha ferramentas para programar Websites, aplicações para Android e muito mais. A instalação do Linux vai transferir <ph name="DOWNLOAD_SIZE" /> de dados.</translation>
 <translation id="3847319713229060696">Ajudar a melhorar a segurança na Web para todos</translation>
 <translation id="3848547754896969219">Abra numa &amp;janela de navegação anónima</translation>
@@ -4301,7 +4301,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5485102783864353244">Adicionar aplicação</translation>
 <translation id="5485754497697573575">Restaurar todos os separadores</translation>
 <translation id="5486261815000869482">Confirmar palavra-passe</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> está a partilhar o seu ecrã com <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simular Reinício do Navegador</translation>
 <translation id="5487460042548760727">Mudar o nome do perfil para <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Limpar dados</translation>
@@ -4363,6 +4362,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> pretende</translation>
 <translation id="5534304873398226603">Rejeitar foto ou vídeo</translation>
 <translation id="5535941515421698170">Remover também os dados existentes deste dispositivo</translation>
+<translation id="5537725057119320332">Transmitir</translation>
 <translation id="5539221284352502426">A palavra-passe introduzida foi rejeitada pelo servidor. Motivos possíveis: a palavra-passe é demasiado curta; a palavra-passe tem de incluir números ou símbolos; a palavra-passe tem de ser diferente das palavras-passe antigas.</translation>
 <translation id="5541694225089836610">A ação foi desativada pelo administrador.</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4594,6 +4594,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5787146423283493983">Acordo de chaves</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
 <translation id="5788367137662787332">Lamentamos, mas não foi possível montar, pelo menos, uma partição no aparelho <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Sucesso</translation>
 <translation id="5790651917470750848">O encaminhamento de porta já existe.</translation>
 <translation id="5792728279623964091">Toque no botão ligar/desligar</translation>
@@ -4826,10 +4827,8 @@ Certifique-se de que não revela informações confidenciais.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar a Localização ao desativar a definição de Localização principal no dispositivo. Também pode desativar a utilização das redes Wi-Fi, das redes móveis e dos sensores para fins de localização nas definições de localização.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Sair do ecrã inteiro</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> está a partilhar um separador do Chrome com <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Falha ao analisar a configuração.</translation>
 <translation id="6043994281159824495">Terminar sessão agora</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> está a partilhar um separador do Chrome e o áudio com <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botão do TrackPoint principal</translation>
 <translation id="6047632800149092791">A sincronização não está a funcionar. Experimente terminar e iniciar sessão novamente.</translation>
 <translation id="6049797270917061226">Este ficheiro pode permitir que atacantes roubem as suas informações pessoais.</translation>
@@ -7333,7 +7332,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">O início de sessão falhou porque não foi possível validar a sua palavra-passe. Contacte o gestor ou tente novamente.</translation>
 <translation id="8657393004602556571">Pretende rejeitar o feedback?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> está a partilhar o ecrã e o áudio com <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Abrir Link numa Janela de Nave&amp;gação Anónima</translation>
 <translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Este processo está a demorar mais tempo do que o previsto. Pode ignorar ou aguardar que seja concluído.</translation>
@@ -7629,7 +7627,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8941173171815156065">Revogar a autorização "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Step-Up Internacional Netscape</translation>
 <translation id="8944099748578356325">Utilizar a bateria mais rapidamente (atualmente, <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> está a partilhar uma janela com <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Tamanho do ícone</translation>
 <translation id="8946359700442089734">As funcionalidades de depuração não foram totalmente ativadas neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Boa</translation>

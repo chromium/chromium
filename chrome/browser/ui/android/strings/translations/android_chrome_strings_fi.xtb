@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
+<translation id="1832459821645506983">Kyllä</translation>
 <translation id="1843805151597803366">Anna Google Haun käyttää nykyistä sivua, jotta saat parempia käännöksiä</translation>
 <translation id="1856325424225101786">Palautetaanko yksinkertaistettu tila?</translation>
 <translation id="1868024384445905608">Chrome lataa tiedostot nyt nopeammin</translation>
@@ -289,6 +290,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2718846868787000099">Avaamasi sivustot voivat nähdä asetuksesi, jotta ne voivat näyttää sisältöä haluamillasi kielillä</translation>
 <translation id="2723001399770238859">ääni</translation>
 <translation id="2728754400939377704">Lajittele sivuston mukaan</translation>
+<translation id="2732063072010454421">Parempi kokemus puhehaulla</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Napauta sanaa etsiäksesi välittömästi tai nähdäksesi asiaan liittyviä toimia.</translation>
 <translation id="2760989362628427051">Ota tumma teema käyttöön, kun laitteen tumma teema tai virransäästö on käytössä</translation>
@@ -835,6 +837,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="587735546353481577">Jos haluat seurata sivustoa, siirry sille, avaa Chrome-valikko ja valitse Seuraa.</translation>
 <translation id="5880748256563468367">Siirry fiidiin</translation>
 <translation id="5884076754568147479">Jotta tehtävien hoitaminen sujuisi helpommin, Google saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joilla käytät Assistantia, sekä Assistantin kautta lähettämäsi tiedot</translation>
+<translation id="5906513782029855931">Sivustojen URL-osoitteiden avulla Google Assistantia voi auttaa sinua tekemään asioita. Voit poistaa Assistantin käytöstä Chromen asetuksissa.</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5919204609460789179">Aloita synkronointi päivittämällä <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> säästetty</translation>

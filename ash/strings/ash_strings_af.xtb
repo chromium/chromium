@@ -416,7 +416,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
-<translation id="3744282433224562605">Voer wagwoord in om jou Chromebook te ontsluit</translation>
 <translation id="3771549900096082774">Hoëkontrasmodus</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
 Alle gebruikers moet afmeld om voort te gaan.</translation>
@@ -628,7 +627,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is met <ph name="IN_PLACE_APP" /> gekombineer om 'n nuwe vouer te skep.</translation>
-<translation id="5199367439331364630">Voer wagwoord in om by jou Chromebook aan te meld</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ander kennisgewing}other{# ander kennisgewings}}</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
@@ -766,6 +764,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="612734058257491180">Die Google Assistent is nie in 'n gastesessie beskikbaar nie.</translation>
 <translation id="6134259848159370930">Deursoek jou toestel, programme en die web.</translation>
 <translation id="6137566720514957455">Maak verwyderingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Bevestig aflaai</translation>
 <translation id="6154006699632741460">Randtoestel word nie gesteun nie</translation>
 <translation id="6156262341071374681">Brei uit na alle programme</translation>
 <translation id="615957422585914272">Wys opskerm-sleutelbord</translation>

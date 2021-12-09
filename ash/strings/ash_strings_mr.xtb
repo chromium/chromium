@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> आणि<ph name="UNAVAILABLE_APPS_COUNT" /> ही ॲप्स या डिव्हाइसवर उपलब्ध नाहीत.</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
-<translation id="3744282433224562605">तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा</translation>
 <translation id="3771549900096082774">उच्च कॉन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">ॲडमिनिस्ट्रेटरने <ph name="USER_EMAIL" /> साठी एकाहून अधिक साइन-इन बंद केले आहे. सुरू ठेवण्यासाठी सर्व वापरकर्त्यांनी साइन आउट करणे आवश्यक आहे.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> कनेक्ट करत आहे</translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
 <translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
-<translation id="5199367439331364630">तुमच्या Chromebook मध्ये साइन इन करण्यासाठी, पासवर्ड एंटर करा</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{एक इतर सूचना}other{# इतर सूचना}}</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">अतिथी सत्रामध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="6134259848159370930">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> साठी काढून टाकणे डायलॉग उघडा</translation>
+<translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="6154006699632741460">पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="6156262341071374681">सर्व अ‍ॅप्सवर विस्तार करा</translation>
 <translation id="615957422585914272">ऑन-स्‍क्रीन कीबोर्ड दर्शवा</translation>

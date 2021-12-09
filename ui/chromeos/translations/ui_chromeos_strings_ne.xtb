@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">सबै जगेडा गरियो!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
-<translation id="3645531960514756307">फोल्डर अनपिन गर्नुहोस्</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, <ph name="CONNECTION_STATUS" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">हामी लगातार तपाईंको ब्राउजर अझ सुरक्षित बनाउने तरिकाहरू खोजिरहेकाछौं। योभन्दा पहिले, कुनैपनि वेबसाइटले आफ्नो ब्राउजरमा एक्स्टेन्शन थप्न तपाईंलाई प्रेरित गर्न सक्थ्यो। Google Chrome को यो नवीनतम संस्करणमा, तपाईंले तिनीहरूलाई एक्स्टेन्शनहरू भन्ने पृष्ठमा थपेर आफूले ती एक्स्टेन्शनहरू स्थापना गर्न चाहेको कुरा Chrome लाई भन्नैपर्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
 <translation id="912419004897138677">कोडेक</translation>
-<translation id="9129931661813833980">फोल्डर पिन गर्नुहोस्</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' का सदस्यहरूले यी वस्तुहरूको प्रतिलिपिमाथिको पहुँच पाउनुहुनेछ।</translation>
 <translation id="9131598836763251128">एक वा बढी फाइलहरू चयन गर्नुहोस्</translation>
 <translation id="9133055936679483811">जिप गर्ने कार्य असफल भयो। <ph name="ERROR_MESSAGE" /></translation>

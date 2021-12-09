@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Բոլորը ֆայլերը կրկնօրինակվեցին:</translation>
 <translation id="3634507049637220048">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3645233063072417428">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
-<translation id="3645531960514756307">Ապամրացնել պանակը</translation>
 <translation id="3685122418104378273">Շարժական տվյալներն օգտագործելիս Google Drive համաժամացումը ըստ կանխադրման անջատվում է:</translation>
 <translation id="3689865792480713551">Չեղարկել՝ <ph name="ACTIVITY_DESCRIPTION" />։</translation>
 <translation id="3690128548376345212">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Մենք մշտապես փորձում ենք ձեր զննարկումն ավելի ապահով դարձնել: Նախկինում ցանկացած վեբկայք կարող էր առաջարկել ձեզ ընդլայնում ավելացնել ձեր դիտարկիչին: Google Chrome-ի վերջին տարբերակներում Chrome-ը ձեզանից հստակորեն պետք է հրաման ստանա, եթե դուք ցանկանաք տեղադրել որևէ ընդլայնում՝ ավելացնելով դրանք Ընդլայնումների էջի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
 <translation id="912419004897138677">Կոդեկ</translation>
-<translation id="9129931661813833980">Ամրացնել պանակը</translation>
 <translation id="9130775360844693113">«<ph name="DESTINATION_NAME" />»-ի անդամներին այս տարրերը հասանելի կդառնան։</translation>
 <translation id="9131598836763251128">Ընտրեք մեկ կամ ավելի ֆայլեր</translation>
 <translation id="9133055936679483811">Արխիվացումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>

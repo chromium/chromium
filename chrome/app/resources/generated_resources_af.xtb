@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">ARC-geaktiveer</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" /> hê. Dit sal dalk jou lêers wysig of uitvee.</translation>
 <translation id="1552301827267621511">Die "<ph name="EXTENSION_NAME" />"-uitbreiding het soektog verander om <ph name="SEARCH_PROVIDER_DOMAIN" /> te gebruik</translation>
+<translation id="1552752544932680961">Bestuur uitbreiding</translation>
 <translation id="1553538517812678578">onbeperk</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1556537182262721003">Kon nie uitbreidinggids na profiel skuif nie.</translation>
@@ -2794,7 +2795,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3842552989725514455">Serif-lettertipe</translation>
 <translation id="3843464315703645664">Intern toegelaat</translation>
 <translation id="3844888638014364087">Emosiekoon is ingevoeg</translation>
-<translation id="384513009320852920">Maak seker dat jou Bluetooth-toestel in saambindmodus en naby is. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Kry nutsgoed om webwerwe, Android-programme en meer te ontwikkel. <ph name="DOWNLOAD_SIZE" /> se data sal afgelaai word as jy Linux installeer.</translation>
 <translation id="3847319713229060696">Help om sekuriteit op die web vir almal beter te maak</translation>
 <translation id="3848547754896969219">Maak in &amp;Incognito-venster oop</translation>
@@ -4303,7 +4303,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5485102783864353244">Voeg program by</translation>
 <translation id="5485754497697573575">Stel alle oortjies terug</translation>
 <translation id="5486261815000869482">Bevestig wagwoord</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> deel tans jou skerm met <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simuleer blaaierherbegin</translation>
 <translation id="5487460042548760727">Hernoem profiel na <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Vee data uit</translation>
@@ -4365,6 +4364,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil</translation>
 <translation id="5534304873398226603">Gooi foto of video weg</translation>
 <translation id="5535941515421698170">Verwyder ook jou bestaande data van hierdie toestel af</translation>
+<translation id="5537725057119320332">Saai uit</translation>
 <translation id="5539221284352502426">Die wagwoord wat jy ingevoer het, is deur die bediener afgekeur. Die moontlike redes sluit in: Die wagwoord is te kort. Die wagwoord moet syfers of simbole insluit. Die wagwoord moet van vorige wagwoorde verskil.</translation>
 <translation id="5541694225089836610">Jou administrateur het hierdie handeling gedeaktiveer</translation>
 <translation id="5542132724887566711">Profiel</translation>
@@ -4596,6 +4596,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5787146423283493983">Sleutelooreenkoms</translation>
 <translation id="5787420647064736989">Toestelnaam</translation>
 <translation id="5788367137662787332">Jammer, ten minste een deel van die toestel <ph name="DEVICE_LABEL" /> kon nie gekoppel word nie.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
 <translation id="5790651917470750848">Poortaanstuur bestaan reeds</translation>
 <translation id="5792728279623964091">Tik asseblief op jou aan/af-skakelaar</translation>
@@ -4827,10 +4828,8 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Jy kan ligging afskakel deur die hoofligginginstelling op jou toestel af te skakel. Jy kan ook die gebruik van Wi-Fi, selnetwerke en sensors vir ligging in ligginginstellings afskakel.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Verlaat volskerm</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie met <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Kon nie opstelling ontleed nie</translation>
 <translation id="6043994281159824495">Meld nou af</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie en oudio met <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
 <translation id="6047632800149092791">Sinkronisering werk nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6049797270917061226">Hierdie lêer kan dit vir aanvallers moontlik maak om jou persoonlike inligting te steel.</translation>
@@ -7326,7 +7325,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Kon nie aanmeld nie omdat jou wagwoord nie geverifieer kon word nie. Kontak jou administrateur of probeer weer.</translation>
 <translation id="8657393004602556571">Wil jy die terugvoer weggooi?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> deel tans jou skerm en oudio met <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Maak skakel in incognito-venster oop</translation>
 <translation id="8662671328352114214">Sluit by <ph name="TYPE" />-netwerk aan</translation>
 <translation id="8662733268723715832">Dit neem langer as verwag. Jy kan dit oorslaan of wag totdat dit klaar is.</translation>
@@ -7621,7 +7619,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8941173171815156065">Herroep die toestemming "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Netscape Internasionale Opstap</translation>
 <translation id="8944099748578356325">Gebruik die battery vinniger (tans <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> deel tans 'n venster met <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Ikoongrootte</translation>
 <translation id="8946359700442089734">Ontfoutingkenmerke is nie heeltemal op hierdie <ph name="IDS_SHORT_PRODUCT_NAME" />-toestel geaktiveer nie.</translation>
 <translation id="894763922177556086">Goed</translation>

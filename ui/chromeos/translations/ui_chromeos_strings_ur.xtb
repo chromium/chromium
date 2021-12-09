@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">سبھی کا بیک اپ بنا لیا گیا!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> آئٹمز منتقل کیے گئے۔</translation>
-<translation id="3645531960514756307">فولڈر کا پن ہٹائیں</translation>
 <translation id="3685122418104378273">‏موبائل ڈیٹا استعمال کرتے وقت، Google Drive کی مطابقت پذیری بطور ڈیفالٹ غیر فعال کر دی جاتی ہے۔</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> منسوخ کریں۔</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="CONNECTION_STATUS" />، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی کی تفصیلات</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">‏ہم آپ کی براؤزنگ کو محفوظ تر بنانے کے طریقے مستقل تلاش کر رہے ہیں۔ ازیں قبل، کوئی بھی ویب سائٹ آپ کو اپنے براؤزر میں ایک ایکسٹینشن شامل کرنے کا اشارہ دے سکتی تھی۔ Google Chrome کے تازہ ترین ورژن میں، ایکسٹینشنز صفحہ کے ذریعہ ایکسٹینشنز کو شامل کر کے آپ کو واضح طور پر Chrome کو بتا دینا چاہیے کہ آپ انہیں شامل کرنا چاہتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
 <translation id="912419004897138677">کوڈیک</translation>
-<translation id="9129931661813833980">فولڈر کو پن کریں</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' کے اراکین کو ان آئٹمز تک رسائي حاصل ہوگي۔</translation>
 <translation id="9131598836763251128">ایک یا مزید فائلیں منتخب کریں</translation>
 <translation id="9133055936679483811">زپ کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>

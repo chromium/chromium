@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">Vreme izvršavanja aplikacije za Chrome je omogućeno</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> želi da pristupa <ph name="VOLUME_NAME" />. Možda će da menja ili briše datoteke.</translation>
 <translation id="1552301827267621511">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio pretragu tako da koristi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Upravljajte dodatkom</translation>
 <translation id="1553538517812678578">neograničeno</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1556537182262721003">Katalog dodataka nije bilo moguće premestiti u profil.</translation>
@@ -2787,7 +2788,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3842552989725514455">Font Serif</translation>
 <translation id="3843464315703645664">Na internoj listi dozvoljenih</translation>
 <translation id="3844888638014364087">Emodži je umetnut</translation>
-<translation id="384513009320852920">Proverite da li je Bluetooth uređaj u režimu uparivanja i u blizini. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Pronađite alatke za programiranje veb-sajtova, Android aplikacija i drugo. Instaliranje Linux-a će preuzeti podatke (<ph name="DOWNLOAD_SIZE" />).</translation>
 <translation id="3847319713229060696">Poboljšajte bezbednost na vebu za svakoga</translation>
 <translation id="3848547754896969219">Otvori u &amp;prozoru bez arhiviranja</translation>
@@ -4297,7 +4297,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5485102783864353244">Dodaj aplikaciju</translation>
 <translation id="5485754497697573575">Vrati sve kartice</translation>
 <translation id="5486261815000869482">Potvrdite lozinku</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> deli ekran sa <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simuliraj ponovno pokretanje pregledača</translation>
 <translation id="5487460042548760727">Preimenujte profil u <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Obriši podatke</translation>
@@ -4359,6 +4358,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> želi da</translation>
 <translation id="5534304873398226603">Odbaci sliku ili video</translation>
 <translation id="5535941515421698170">Uklanja i postojeće podatke sa ovog uređaja</translation>
+<translation id="5537725057119320332">Prebacuj</translation>
 <translation id="5539221284352502426">Server je odbio lozinku koju ste uneli. Mogući razlozi obuhvataju: Lozinka je prekratka. Lozinka mora da sadrži brojeve ili simbole. Lozinka mora da se razlikuje od prethodnih lozinki.</translation>
 <translation id="5541694225089836610">Administrator je onemogućio radnju</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4590,6 +4590,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5787146423283493983">Slaganje ključa</translation>
 <translation id="5787420647064736989">Naziv uređaja</translation>
 <translation id="5788367137662787332">Žao nam je, najmanje jednu particiju na uređaju <ph name="DEVICE_LABEL" /> nije bilo moguće uključiti.</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Uspešno</translation>
 <translation id="5790651917470750848">Prosleđivanje porta već postoji</translation>
 <translation id="5792728279623964091">Dodirnite dugme za uključivanje</translation>
@@ -4822,10 +4823,8 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Lokaciju možete da isključite ako isključite glavno podešavanje Lokacija na uređaju. U podešavanjima lokacije možete da isključite i korišćenje Wi‑Fi mreža, mobilnih mreža i senzora za lokaciju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Izađi iz celog ekrana</translation>
 <translation id="6042308850641462728">Još</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> deli Chrome karticu sa <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Raščlanjivanje konfiguracije nije uspelo</translation>
 <translation id="6043994281159824495">Odjavi me odmah</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> deli Chrome karticu i zvuk sa <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primarno dugme TrackPoint-a</translation>
 <translation id="6047632800149092791">Sinhronizacija ne radi. Probajte da se odjavite i ponovo prijavite.</translation>
 <translation id="6049797270917061226">Ovaj fajl može da dozvoli napadačima da vam ukradu lične podatke.</translation>
@@ -7328,7 +7327,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijavljivanje nije uspelo jer nismo uspeli da verifikujemo lozinku. Kontaktirajte administratora ili pokušajte ponovo.</translation>
 <translation id="8657393004602556571">Želite da odbacite povratne informacije?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> deli ekran i zvuk sa <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Otvori link u prozoru za pre&amp;gledanje bez arhiviranja</translation>
 <translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
 <translation id="8662733268723715832">Ovo traje duže od očekivanog, pa možete da preskočite ili da sačekate dok ne bude gotovo.</translation>
@@ -7625,7 +7623,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8941173171815156065">Opozovite dozvolu „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">brža potrošnja baterije (trenutno <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> deli prozor sa <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Veličina ikone</translation>
 <translation id="8946359700442089734">Funkcije za otklanjanje grešaka nisu u potpunosti omogućene na ovom <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaju.</translation>
 <translation id="894763922177556086">Dobra</translation>

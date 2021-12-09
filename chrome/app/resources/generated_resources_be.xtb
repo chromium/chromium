@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
 <translation id="1153636665119721804">Праграма палепшанай абароны Google</translation>
 <translation id="1155816283571436363">Ідзе падключэнне да тэлефона</translation>
+<translation id="1158080958325422608">Зрабіць усе літары вялікімі</translation>
 <translation id="1158238185437008462">Паказаць успаміны</translation>
 <translation id="1161575384898972166">Увайдзіце ў <ph name="TOKEN_NAME" />, каб экспартаваць кліенцкі сертыфікат.</translation>
 <translation id="116173250649946226">Адміністратар задаў стандартную тэму, якую нельга змяняць.</translation>
@@ -695,6 +696,7 @@
 <translation id="1700079447639026019">Сайты, якім забаронена выкарыстоўваць файлы cookie</translation>
 <translation id="1703331064825191675">Паролі больш не наробяць клопату</translation>
 <translation id="1703666494654169921">Не дазваляць сайтам выкарыстоўваць даныя або прылады віртуальнай рэальнасці</translation>
+<translation id="1704097193565924901">Зрабіць першыя літары слоў вялікімі</translation>
 <translation id="1704230497453185209">Не дазваляць сайтам прайграваць гук</translation>
 <translation id="1704970325597567340">Праверка бяспекі выконвалася <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Дададзена адміністратарам</translation>
@@ -2779,7 +2781,6 @@
 <translation id="3842552989725514455">Шрыфт з засечкамі</translation>
 <translation id="3843464315703645664">Ва ўнутраным белым спісе</translation>
 <translation id="3844888638014364087">Эмодзі ўстаўлены</translation>
-<translation id="384513009320852920">Упэўніцеся, што прылада з Bluetooth знаходзіцца паблізу і пераведзена ў рэжым спалучэння. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Вы атрымаеце інструменты для распрацоўкі вэб-сайтаў, праграм Android і іншага. Каб усталяваць Linux, трэба будзе спампаваць <ph name="DOWNLOAD_SIZE" /> даных.</translation>
 <translation id="3847319713229060696">Дапамагаць павышаць бяспеку ў інтэрнэце для ўсіх</translation>
 <translation id="3848547754896969219">Адкрыць у &amp;акне ў рэжыме інкогніта</translation>
@@ -3564,6 +3565,7 @@
 <translation id="4681453295291708042">Выключыць функцыю "Абагульванне паблізу"</translation>
 <translation id="4681930562518940301">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
 <translation id="4682551433947286597">Шпалеры паказваюцца на экране ўваходу.</translation>
+<translation id="4683629100208651599">Зрабіць усе літары малымі</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (стандартна)</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4684471265911890182">Праграма "<ph name="APP_NAME" />" спрабуе атрымаць доступ да камеры. Каб дазволіць такі доступ, перавядзіце пераключальнік, які рэгулюе налады прыватнасці камеры, у становішча "выключана".</translation>
@@ -4284,7 +4286,6 @@
 <translation id="5485102783864353244">Дадаць праграму</translation>
 <translation id="5485754497697573575">Аднавіць усе ўкладкі</translation>
 <translation id="5486261815000869482">Пацвердзіце пароль</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> абагульвае ваш экран з укладкай <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Імітаваць перазапуск браўзера</translation>
 <translation id="5487460042548760727">Даць профілю назву "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
@@ -4346,6 +4347,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запытвае наступныя дазволы</translation>
 <translation id="5534304873398226603">Адхіліць фота ці відэа</translation>
 <translation id="5535941515421698170">Таксама выдаліць існуючыя даныя з гэтай прылады</translation>
+<translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5539221284352502426">Уведзены пароль адхілены серверам. У ліку магчымых прычын: Пароль занадта кароткі. Пароль павінен змяшчаць лічбы або сімвалы. Пароль павінен адрознівацца ад папярэдніх пароляў.</translation>
 <translation id="5541694225089836610">Дзеянне адключана адміністратарам</translation>
 <translation id="5542132724887566711">Профіль</translation>
@@ -4576,6 +4578,7 @@
 <translation id="5787146423283493983">Узгадненне ключоў</translation>
 <translation id="5787420647064736989">Назва прылады</translation>
 <translation id="5788367137662787332">Як мінімум адзін раздзел на прыладзе <ph name="DEVICE_LABEL" /> не ўдалося падключыць.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Выканана</translation>
 <translation id="5790651917470750848">Пераадрасацыя порта ўжо зададзена</translation>
 <translation id="5792728279623964091">Націсніце кнопку сілкавання</translation>
@@ -4807,10 +4810,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Каб выключыць гэту службу, выключыце галоўную наладу вызначэння месцазнаходжання на прыладзе. Таксама можна выключыць выкарыстанне Wi-Fi, мабільных сетак і датчыкаў для вызначэння месцазнаходжання ў адпаведных наладах.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Выключыць поўнаэкранны рэжым</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> абагульвае ўкладку Chrome з укладкай <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Не ўдалося прааналізаваць канфігурацыю</translation>
 <translation id="6043994281159824495">Выйсці</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> абагульвае гук і ўкладку Chrome з укладкай <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Асноўная кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Сінхранізацыя не працуе. Паспрабуйце выйсці і ўвайсці зноў.</translation>
 <translation id="6049797270917061226">З дапамогай гэтага файла зламыснікі могуць украсці вашу асабістую інфармацыю.</translation>
@@ -5954,6 +5955,7 @@
 <translation id="7257173066616499747">Сеткі Wi-Fi</translation>
 <translation id="725758059478686223">Сэрвіс друку</translation>
 <translation id="7257666756905341374">Прагляд даных, якія вы капіруеце і ўстаўляеце</translation>
+<translation id="7258192266780953209">Пераўтварэнні</translation>
 <translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
@@ -7304,7 +7306,6 @@
 <translation id="8655295600908251630">Версія</translation>
 <translation id="8655972064210167941">Уваход не выкананы, паколькі не ўдалося спраўдзіць пароль. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
 <translation id="8657393004602556571">Скасаваць адпраўку водгуку?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> абагульвае ваш экран і аўдыя з укладкай <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Адкрыць спасылку ў акне інко&amp;гніта</translation>
 <translation id="8662671328352114214">Падключэнне да сеткі <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Гэта займае больш часу, чым звычайна. Вы можаце прапусціць гэты этап або пачакаць яго завяршэння.</translation>
@@ -7602,7 +7603,6 @@
 <translation id="8941173171815156065">Адклікаць дазвол "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Шыфраванне International Step-Up ад Netscape</translation>
 <translation id="8944099748578356325">Актыўней спажывае зарад акумулятара (зараз – <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> абагульвае акно з укладкай "<ph name="TAB_NAME" />".</translation>
 <translation id="8945274638472141382">Памер значкоў</translation>
 <translation id="8946359700442089734">Не ўсе функцыі адладкі былі ўключаны на гэтай прыладзе <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Добрая</translation>

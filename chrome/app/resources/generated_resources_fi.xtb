@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Laiteparit</translation>
 <translation id="1153636665119721804">Googlen Lisäsuojaus-ohjelma</translation>
 <translation id="1155816283571436363">Yhdistetään puhelimeen</translation>
+<translation id="1158080958325422608">Muuta isoiksi kirjaimiksi</translation>
 <translation id="1158238185437008462">Katso muistoja</translation>
 <translation id="1161575384898972166">Kirjaudu sisään laitteeseen <ph name="TOKEN_NAME" /> ja tuo asiakkaan varmenne.</translation>
 <translation id="116173250649946226">Järjestelmänvalvojasi on valinnut oletusteeman, jota ei voi muuttaa.</translation>
@@ -533,6 +534,7 @@
 <translation id="1549275686094429035">ARC käytössä</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> haluaa käyttää tallennusvälinettä <ph name="VOLUME_NAME" />. Luvan saatuaan sovellus voi muokata tai poistaa tiedostojasi.</translation>
 <translation id="1552301827267621511"><ph name="EXTENSION_NAME" /> muutti hakupalvelua, se on nyt <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Hallinnoi laajennusta</translation>
 <translation id="1553538517812678578">rajoittamaton</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1556537182262721003">Laajennushakemiston siirtäminen profiiliin ei onnistunut.</translation>
@@ -695,6 +697,7 @@
 <translation id="1700079447639026019">Sivustot, jotka eivät koskaan voi käyttää evästeitä</translation>
 <translation id="1703331064825191675">Enää ei tarvitse huolehtia salasanoista</translation>
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
+<translation id="1704097193565924901">Muuta alkukirjain isoksi</translation>
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
 <translation id="1704970325597567340">Turvatarkistus tehtiin <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Järjestelmänvalvojan lisäämä</translation>
@@ -2791,7 +2794,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3842552989725514455">Serif-fontti</translation>
 <translation id="3843464315703645664">Sallittu sisäisesti</translation>
 <translation id="3844888638014364087">Emoji lisätty</translation>
-<translation id="384513009320852920">Varmista, että Bluetooth-laitteesi on parinmuodostustilassa ja lähellä. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Saat verkkosivustojen kehittämistyökaluja, Android-sovelluksia ja paljon muuta. Linuxin asennus lataa <ph name="DOWNLOAD_SIZE" /> dataa.</translation>
 <translation id="3847319713229060696">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="3848547754896969219">Avaa &amp;incognito-ikkunassa</translation>
@@ -3574,6 +3576,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4681453295291708042">Poista lähijakaminen käytöstä</translation>
 <translation id="4681930562518940301">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
 <translation id="4682551433947286597">Taustakuva näytetään kirjautumisruudulla.</translation>
+<translation id="4683629100208651599">Muuta pieniksi kirjaimiksi</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (oletus)</translation>
 <translation id="4684427112815847243">Synkronoi kaikki</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> yrittää käyttää kameraa. Salli kameran käyttö laittamalla sen yksityisyysvalinta pois päältä.</translation>
@@ -4296,7 +4299,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5485102783864353244">Lisää sovellus</translation>
 <translation id="5485754497697573575">Palauta kaikki välilehdet</translation>
 <translation id="5486261815000869482">Vahvista salasana</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> jakaa ruutusi välilehden <ph name="TAB_NAME" /> kanssa.</translation>
 <translation id="5486561344817861625">Simuloi selaimen uudelleenkäynnistys</translation>
 <translation id="5487460042548760727">Nimeä profiili uudelleen: <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Poista tiedot</translation>
@@ -4358,6 +4360,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> pyytää lupaa</translation>
 <translation id="5534304873398226603">Hylkää kuva tai video</translation>
 <translation id="5535941515421698170">Poista myös olemassa olevat tietosi tältä laitteelta</translation>
+<translation id="5537725057119320332">Suoratoista</translation>
 <translation id="5539221284352502426">Palvelin hylkäsi antamasi salasanan. Mahdollisia syitä: Salasana on liian lyhyt. Salasanassa on oltava numeroita tai merkkejä. Salasanan on oltava eri kuin aiemmat salasanat.</translation>
 <translation id="5541694225089836610">Järjestelmänvalvoja on poistanut toiminnon käytöstä</translation>
 <translation id="5542132724887566711">Profiili</translation>
@@ -4588,6 +4591,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5787146423283493983">Avainsopimus</translation>
 <translation id="5787420647064736989">Laitteen nimi</translation>
 <translation id="5788367137662787332">Ainakin yhtä laitteen <ph name="DEVICE_LABEL" /> osiosta ei voitu ottaa käyttöön.</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Onnistui</translation>
 <translation id="5790651917470750848">Porttiohjaus on jo olemassa</translation>
 <translation id="5792728279623964091">Paina virtapainiketta</translation>
@@ -4819,10 +4823,8 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
     <ph name="BEGIN_PARAGRAPH2" />Voit poistaa palvelun käytöstä poistamalla laitteen sijainnin pääasetuksen käytöstä. Sijaintiasetuksissa voit myös estää Wi-Fin, mobiiliverkkojen ja anturien käytön sijainnin määrityksessä.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Poistu koko näytön tilasta</translation>
 <translation id="6042308850641462728">Lisää</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> jakaa Chrome-välilehden välilehdelle <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Määrityksen jäsentäminen epäonnistui</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> jakaa Chrome-välilehden ja ääntä välilehdelle <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Ensisijainen TrackPoint-painike</translation>
 <translation id="6047632800149092791">Synkronointi ei toimi. Kokeile kirjautua ensin ulos ja sitten takaisin sisään.</translation>
 <translation id="6049797270917061226">Tämä tiedosto voi päästää hyökkääjät varastamaan henkilökohtaisia tietojasi.</translation>
@@ -5966,6 +5968,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7257173066616499747">Wi-Fi-verkot</translation>
 <translation id="725758059478686223">Tulostuspalvelu</translation>
 <translation id="7257666756905341374">Lukea kopioimiasi ja liittämiäsi tietoja</translation>
+<translation id="7258192266780953209">Muunnokset</translation>
 <translation id="7258225044283673131">Sovellus ei vastaa. Sulje sovellus valitsemalla Pakota sulkeutumaan.</translation>
 <translation id="7262004276116528033">Tätä kirjautumispalvelua ylläpitää <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Kokeile näitä ratkaisuja:
@@ -7317,7 +7320,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8655972064210167941">Sisäänkirjautuminen epäonnistui, koska salasanasi vahvistaminen epäonnistui. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>
 <translation id="8657393004602556571">Hylätäänkö palaute?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> jakaa näyttösi ja äänesi välilehdelle <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Avaa linkki inco&amp;gnito-ikkunassa</translation>
 <translation id="8662671328352114214">Liity <ph name="TYPE" />-verkkoon</translation>
 <translation id="8662733268723715832">Tässä kestää odotettua kauemmin. Voit ohittaa tämän vaiheen tai odottaa sen valmistumista.</translation>
@@ -7612,7 +7614,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8941173171815156065">Kumoa käyttölupa <ph name="PERMISSION" /></translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Käyttää akkua nopeammin (akkua tällä hetkellä <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> jakaa ikkunan välilehdelle <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Kuvakkeen koko</translation>
 <translation id="8946359700442089734">Virheenkorjausominaisuudet eivät olleet täysin käytössä tällä <ph name="IDS_SHORT_PRODUCT_NAME" />-laitteella.</translation>
 <translation id="894763922177556086">Hyvä</translation>

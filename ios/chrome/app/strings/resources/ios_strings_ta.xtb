@@ -168,6 +168,7 @@
 <translation id="2584132361465095047">கணக்கைச் சேர்...</translation>
 <translation id="2600682495497606169">தளத்தின் குக்கீகளை அழி</translation>
 <translation id="2625189173221582860">கடவுச்சொல் நகலெடுக்கப்பட்டது</translation>
+<translation id="2626236249646841566">இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் உள்நுழைய முயலவும்.</translation>
 <translation id="2647269890314209800">பயன்படுத்தப்படும் குக்கீகள்</translation>
 <translation id="2648803196158606475">படித்தவற்றை நீக்கு</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
@@ -363,6 +364,7 @@
 <translation id="4508750114462689118">உள்நுழைவு விளம்பரத்தை மூடு</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> இல் சேமித்த கடவுச்சொற்களைப் பார்க்கலாம் மற்றும் நிர்வகிக்கலாம்.</translation>
 <translation id="4536418791685807335">மீண்டும் உள்நுழைந்து முயலவும்.</translation>
+<translation id="4540780316273593836">ஏதோ தவறாகிவிட்டது</translation>
 <translation id="457386861538956877">மேலும்...</translation>
 <translation id="4592368184551360546">கீபோர்டு</translation>
 <translation id="461440297010471931">Google மூலம் தேடுகிறது</translation>
@@ -478,6 +480,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">பதிப்பு <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{இப்போது ஒரு Chrome சாளரம் காட்டப்படுகிறது}other{இப்போது {count} Chrome சாளரங்கள் காட்டப்படுகின்றன}}</translation>
+<translation id="5704908597376970822">உள்நுழைய முடியவில்லை.</translation>
 <translation id="5706552126692816153">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="5711039611392265845">தனியுரிமை, பாதுகாப்பு மற்றும் தரவுச் சேகரிப்புடன் தொடர்புடைய மேலும் பல அமைப்புகளுக்கு <ph name="BEGIN_LINK" />ஒத்திசைவும் Google சேவைகளும்<ph name="END_LINK" /> என்பதைப் பார்க்கவும்.</translation>
 <translation id="5724941645893276623">தனிப்பட்ட முறையில் இணையத்தில் உலாவ, புதிய தாவலைச் சேர்த்திடுங்கள்</translation>

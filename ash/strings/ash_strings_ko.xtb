@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">완료되면 열기</translation>
 <translation id="3726171378575546917">이 기기에 <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> 외 앱 <ph name="UNAVAILABLE_APPS_COUNT" />개가 없습니다.</translation>
 <translation id="3742055079367172538">찍은 스크린샷</translation>
-<translation id="3744282433224562605">Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="3771549900096082774">고대비 모드</translation>
 <translation id="3773700760453577392">관리자가 <ph name="USER_EMAIL" />의 멀티 로그인을 허용하지 않습니다. 계속하려면 모든 사용자가 로그아웃해야 합니다.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> 연결 중</translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> 앱과 <ph name="IN_PLACE_APP" /> 앱이 포함된 새 폴더를 만들었습니다.</translation>
-<translation id="5199367439331364630">Chromebook에 로그인하려면 비밀번호를 입력하세요.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{기타 알림 1개}other{기타 알림 #개}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="6134259848159370930">기기, 앱, 설정, 웹에서 검색합니다.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> 삭제 대화상자 열기</translation>
+<translation id="6141988275892716286">다운로드 확인</translation>
 <translation id="6154006699632741460">지원되지 않는 주변기기</translation>
 <translation id="6156262341071374681">펼쳐서 모든 앱 보기</translation>
 <translation id="615957422585914272">터치 키보드 표시</translation>

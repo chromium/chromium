@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">配對裝置</translation>
 <translation id="1153636665119721804">Google 進階保護計畫</translation>
 <translation id="1155816283571436363">正在連線到你的手機</translation>
+<translation id="1158080958325422608">使用大寫字母</translation>
 <translation id="1158238185437008462">查看回憶集錦</translation>
 <translation id="1161575384898972166">登入 <ph name="TOKEN_NAME" /> 即可匯出用戶端憑證。</translation>
 <translation id="116173250649946226">管理員設定的預設主題不可變更。</translation>
@@ -530,6 +531,7 @@
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
@@ -692,6 +694,7 @@
 <translation id="1700079447639026019">一律無法使用 Cookie 的網站</translation>
 <translation id="1703331064825191675">再也不必費心記住你的密碼</translation>
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
+<translation id="1704097193565924901">大小寫設定</translation>
 <translation id="1704230497453185209">禁止網站播放音效</translation>
 <translation id="1704970325597567340">已於 <ph name="DATE" />執行安全檢查</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
@@ -2777,7 +2780,6 @@
 <translation id="3842552989725514455">Serif 字型</translation>
 <translation id="3843464315703645664">已加入內部許可清單</translation>
 <translation id="3844888638014364087">已插入表情符號</translation>
-<translation id="384513009320852920">請確認你的藍牙裝置放在附近，且處於配對模式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">取得網站開發工具、Android 應用程式等等。安裝 Linux 將下載 <ph name="DOWNLOAD_SIZE" /> 的資料。</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="3848547754896969219">在無痕式視窗中開啟(&amp;I)</translation>
@@ -3561,6 +3563,7 @@
 <translation id="4681453295291708042">停用鄰近分享功能</translation>
 <translation id="4681930562518940301">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="4682551433947286597">登入畫面上顯示的桌布。</translation>
+<translation id="4683629100208651599">使用小寫字母</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4684471265911890182">「<ph name="APP_NAME" />」正在嘗試存取攝影機。如要允許存取，請將攝影機的隱私權開關切換為關閉。</translation>
@@ -4283,7 +4286,6 @@
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485754497697573575">還原所有分頁</translation>
 <translation id="5486261815000869482">確認密碼</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> 正與 <ph name="TAB_NAME" /> 共用你的畫面。</translation>
 <translation id="5486561344817861625">模擬瀏覽器重新啟動</translation>
 <translation id="5487460042548760727">將設定檔重新命名為「<ph name="PROFILE_NAME" />」</translation>
 <translation id="5487521232677179737">清除資料</translation>
@@ -4345,6 +4347,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />要求下列權限：</translation>
 <translation id="5534304873398226603">捨棄相片或影片</translation>
 <translation id="5535941515421698170">將你現有的資料從這個裝置上一併移除</translation>
+<translation id="5537725057119320332">投放</translation>
 <translation id="5539221284352502426">輸入的密碼遭到伺服器拒絕。可能的原因包括：密碼長度不足、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">你的管理員停用了這個動作</translation>
 <translation id="5542132724887566711">設定檔</translation>
@@ -4575,6 +4578,7 @@
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5787420647064736989">裝置名稱</translation>
 <translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">轉送連接埠已經存在</translation>
 <translation id="5792728279623964091">請輕觸電源按鈕</translation>
@@ -4806,10 +4810,8 @@
     <ph name="BEGIN_PARAGRAPH2" />關閉裝置的主要「定位」設定即可關閉「定位」服務。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">結束全螢幕</translation>
 <translation id="6042308850641462728">更多</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用 Chrome 分頁。</translation>
 <translation id="604388835206766544">無法剖析設定</translation>
 <translation id="6043994281159824495">立即登出</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用 Chrome 分頁和音訊。</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，再重新登入。</translation>
 <translation id="6049797270917061226">攻擊者可能透過這個檔案竊取你的個人資訊。</translation>
@@ -5953,6 +5955,7 @@
 <translation id="7257173066616499747">Wi-Fi 網路</translation>
 <translation id="725758059478686223">列印服務</translation>
 <translation id="7257666756905341374">讀取你複製和貼上的資料</translation>
+<translation id="7258192266780953209">轉換</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7262004276116528033">這是由 <ph name="SAML_DOMAIN" /> 代管的登入服務。</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />請試試下列疑難排解步驟：
@@ -7305,7 +7308,6 @@
 <translation id="8655295600908251630">頻道</translation>
 <translation id="8655972064210167941">無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="8657393004602556571">你要捨棄這則意見嗎？</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用您的畫面和音訊。</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
 <translation id="8662733268723715832">作業時間過長。你可以選擇略過或繼續等待。</translation>
@@ -7600,7 +7602,6 @@
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">更快耗盡電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用視窗。</translation>
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8946359700442089734">尚未在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上完整啟用偵錯功能。</translation>
 <translation id="894763922177556086">良好</translation>

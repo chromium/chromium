@@ -168,6 +168,7 @@
 <translation id="2584132361465095047">اکاؤنٹ شامل کریں…</translation>
 <translation id="2600682495497606169">سائٹ کوکیز صاف کریں</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
+<translation id="2626236249646841566">اپنا کنکشن چیک کریں اور دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="2647269890314209800">زیر استعمال کوکیز</translation>
 <translation id="2648803196158606475">پڑھے ہوئے کو حذف کریں</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
@@ -363,6 +364,7 @@
 <translation id="4508750114462689118">سائن ان پرومو بند کریں</translation>
 <translation id="4526249700380860531">‏<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> پر محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
+<translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
 <translation id="457386861538956877">مزید…</translation>
 <translation id="4592368184551360546">کی بورڈ</translation>
 <translation id="461440297010471931">‏Google کے ذریعے تلاش کیا جا رہا ہے</translation>
@@ -478,6 +480,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
+<translation id="5704908597376970822">سائن نہیں کیا جا سکتا۔</translation>
 <translation id="5706552126692816153">1 دن پہلے فعال تھا</translation>
 <translation id="5711039611392265845">‏رازداری، سیکیورٹی اور ڈیٹا کو جمع کرنے سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری اور Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5724941645893276623">نجی طور پر ویب براؤز کرنے کیلئے، نیا ٹیب شامل کریں۔</translation>

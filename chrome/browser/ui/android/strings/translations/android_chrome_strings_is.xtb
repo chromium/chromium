@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1810845389119482123">Fyrstu uppsetningu samstillingar ekki lokið</translation>
 <translation id="1829244130665387512">Finna á síðu</translation>
+<translation id="1832459821645506983">Já, ég vil vera með</translation>
 <translation id="1843805151597803366">Til að fá betri þýðingar skaltu leyfa Google leit að nota núverandi síðu</translation>
 <translation id="1856325424225101786">Viltu endurstilla léttútgáfu?</translation>
 <translation id="1868024384445905608">Chrome er nú fljótara að sækja skrár</translation>
@@ -289,6 +290,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2718846868787000099">Vefsvæðin sem þú opnar geta séð kjörstillingarnar þínar til að sýna þér efni á þeim tungumálum sem þú hefur valið.</translation>
 <translation id="2723001399770238859">hljóð</translation>
 <translation id="2728754400939377704">Raða eftir vefsvæði</translation>
+<translation id="2732063072010454421">Láttu röddina þjóna þér betur</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Ýttu á orð til að leita að því eða sjá tengdar aðgerðir</translation>
 <translation id="2760989362628427051">Kveikja á dökku þema þegar kveikt er á dökku þema eða rafhlöðusparnaði í tækinu</translation>
@@ -835,6 +837,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="587735546353481577">Til að fylgja vefsvæði skaltu opna vefsvæðið, opna Chrome valmyndina og smella á „Fylgja“.</translation>
 <translation id="5880748256563468367">Opna straum</translation>
 <translation id="5884076754568147479">Google fær vefslóðir og innihald vefsvæða þar sem þú notar hjálparann, auk upplýsinga sem þú sendir með hjálparanum, til að hjálpa þér að ljúka við verkefni</translation>
+<translation id="5906513782029855931">Þegar Google hjálparinn fær upplýsingar um vefslóðir vefsvæða getur hann aðstoðað þig við að ljúka verkefnum. Þú getur slökkt á Hjálparanum í stillingum Chrome.</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5919204609460789179">Uppfærðu <ph name="PRODUCT_NAME" /> til að hefja samstillingu</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> spöruð</translation>

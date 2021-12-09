@@ -2865,6 +2865,23 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Se esta política for definida como falsa, o navegador não mostrará novamente a página de recepção na primeira execução após um upgrade do SO.</translation>
 <translation id="441686537793821907">Bloquear a instalação de extensões externas</translation>
+<translation id="4420613474328461583">Lista de configurações dos serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, que é acionado quando o download de um arquivo é feito no Chrome.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia um arquivo para análise quando o download é feito em uma página específica e quais tags são incluídas na solicitação de análise desse arquivo. Uma tag correspondente ao padrão "ativar" é incluída na solicitação de análise se o URL da página corresponder a um padrão associado a essa tag. Isso acontecerá apenas se nenhum padrão "desativar" com a mesma tag corresponder ao URL da página. A análise é feita se pelo menos uma tag estiver incluída na solicitação.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
+
+      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o Chrome espera uma resposta do serviço de análise antes de dar ao usuário acesso ao arquivo. Qualquer outro valor inteiro dá acesso imediato ao arquivo para o usuário.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla se o Chrome bloqueia ou permite arquivos protegidos por senha.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o Chrome bloqueia ou permite arquivos grandes demais para serem analisados.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado a fim de determinar para quais tags o conector precisa exigir uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Se o campo não for definido, presume-se que uma justificativa não é necessária.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa o usuário quando um aviso é exibido após uma verificação identificar um arquivo que viola a política. O campo "message" contém o texto que é exibido ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo da ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que é usada quando o idioma do usuário não contiver uma. O campo "tag" especifica para quais tipos de verificação a mensagem é exibida. A lista "custom_messages" pode ter zero ou mais entradas. Cada entrada precisa ter campos "message" e "tag" não vazios.
+
+      Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="4423597592074154136">Especificar manualmente as configurações de proxy</translation>
 <translation id="4424004842303301809">Desativar relatórios de eventos para prevenção de vazamento de dados</translation>
 <translation id="4427173305799125784">O visualizador de PDF não pode fazer anotações em PDFs</translation>
@@ -2986,6 +3003,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Para ver a explicação detalhada, acesse https://www.chromestatus.com/feature/5675755719622656.
       Se esta política estiver ativada, os sites terão permissão para navegar e abrir novas janelas/guias simultaneamente.
       Se esta política estiver desativada ou for deixada sem definição, os sites não terão permissão para navegar e abrir uma nova janela/guia simultaneamente.</translation>
+<translation id="457430673056611745">Política de configuração para o OnPrint do <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="4578265298946081589">Não é reinicializado quando o usuário sai.</translation>
 <translation id="4581507927311097234">O tempo, em milissegundos, sem entrada do usuário até que a tela seja desligada.</translation>
 <translation id="4582338216073557489">Definir a política como "Nenhuma" faz com que o <ph name="PRODUCT_NAME" /> use o tamanho de cache padrão para o armazenamento de arquivos em cache no disco. Os usuários não podem fazer mudanças.
@@ -5994,6 +6012,23 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 
       Se a política for definida como "Desativada" ou não for definida, nenhum pacote será enviado.</translation>
 <translation id="816783746144552109">Configurar a versão mínima permitida do Chrome OS para o dispositivo.</translation>
+<translation id="8169492352330154095">Lista de configurações dos serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é anexado ao Chrome.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia um arquivo para análise quando for anexado a uma página específica e quais tags são incluídas na solicitação de análise desse arquivo. Uma tag correspondente ao padrão "ativar" é incluída na solicitação de análise se o URL da página corresponder a um padrão associado a essa tag. Isso acontece apenas se nenhum padrão "desativar" com a mesma tag corresponder ao URL da página. A análise é feita se pelo menos uma tag for incluída na solicitação.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
+
+      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o Chrome espera uma resposta do serviço de análise antes de dar à página acesso ao arquivo. Qualquer outro valor inteiro dá à página acesso imediato ao arquivo.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla se o Chrome bloqueia ou permite arquivos protegidos por senha.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o Chrome bloqueia ou permite arquivos grandes demais para serem analisados.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado a fim de determinar para quais tags o conector precisa de uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Se o campo não for definido, presume-se que uma justificativa não é necessária.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa o usuário quando um aviso é exibido após uma verificação apresenta um veredito não limpo. O campo "message" contém o texto que é exibido ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo da ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que é usada quando o idioma do usuário não contiver uma. O campo "tag" especifica para quais tipos de verificação a mensagem é exibida. A lista "custom_messages" pode ter zero ou mais entradas. Cada entrada precisa ter campos "message" e "tag" não vazios.
+
+      Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="8171924760436219650">Usar o botão direito do mouse como o principal na tela de login</translation>
 <translation id="8173864651667424191">Usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível</translation>
 <translation id="8176035528522326671">Permitir que o usuário corporativo seja o usuário principal de diversos perfis (comportamento padrão para usuários gerenciados por empresa)</translation>
@@ -6247,6 +6282,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se essa política não for definida, o valor padrão 3 será usado.
 
       Se a política for definida, snapshots antigos serão excluídos conforme necessário para respeitar o limite. Se a política for definida como 0, nenhum snapshot será criado.</translation>
+<translation id="8447347049334673364">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões. A política substitui todas as políticas legadas que possam estar definidas.
+
+      Esta política mapeia um ID de extensão ou um URL de atualização apenas para a própria configuração específica. Uma configuração padrão pode ser definida para o ID especial <ph name="DEFAULT_SCOPE" />, que será aplicada a todas as extensões que não tiverem uma configuração personalizada definida nesta política. Com um URL de atualização, a configuração será aplicada a todas as extensões com o URL de atualização exato indicado no manifesto da extensão (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se a sinalização "override_update_url" for definida como verdadeira, a extensão será instalada e atualizada usando o URL de atualização especificado na política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou no campo "update_url" desta política. A sinalização "override_update_url" será ignorada se o campo "update_url" for um URL da Chrome Web Store.
+
+      Observação: a instalação forçada é limitada a apps e extensões listados na Chrome Web Store para instâncias do <ph name="MS_WIN_NAME" /> que não estão associadas a um domínio do <ph name="MS_AD_NAME" /> e instâncias do <ph name="MAC_OS_NAME" /> não gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="8451988835943702790">Usar a página "Nova guia" como página inicial</translation>
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
 <translation id="8455551509936646199">Dia da semana em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "WEEKLY".</translation>
@@ -6462,6 +6502,21 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Para ver informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="8703488928438047864">Informa o status da placa</translation>
 <translation id="8704831857353097849">Lista de plug-ins desativados</translation>
+<translation id="8704915028294851978">Lista de configurações para os serviços do <ph name="PRODUCT_NAME" /> Enterprise Connectors que serão aplicados ao conector <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />, que é acionado quando uma página ou arquivo é impresso usando o <ph name="PRODUCT_NAME" />.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia dados para análise quando a impressão é acionada em uma página específica e quais tags são incluídas na solicitação de análise. A análise é feita se pelo menos uma tag for incluída na solicitação.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
+
+      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o <ph name="PRODUCT_NAME" /> aguarda uma resposta do serviço de análise antes de exibir a caixa de diálogo da prévia de impressão da página. Qualquer outro valor inteiro significa que o <ph name="PRODUCT_NAME" /> exibe a caixa de diálogo da prévia de impressão imediatamente.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o <ph name="PRODUCT_NAME" /> bloqueia ou permite que arquivos/páginas grandes demais sejam analisados.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado a fim de determinar para quais tags o conector precisa de uma justificativa do usuário para ignorar uma verificação com um aviso que pode ser ignorado. Se o campo não for definido, presume-se que uma justificativa não é necessária.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa o usuário quando um aviso é exibido após uma verificação ter um veredito não limpo. O administrador pode configurar mensagens de até 200 caracteres.
+
+      Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="8705895771006864851">Se esta política for definida como verdadeira, funcionalidades de tradução serão fornecidas quando for adequado para os usuários, mostrando uma barra de ferramentas de tradução integrada no <ph name="PRODUCT_NAME" /> e uma opção de tradução no menu de contexto que aparece ao clicar com o botão direito do mouse. Se esta política for definida como falsa, todos os recursos de tradução integrados serão desativados.
 
       Se você definir a política, os usuários não poderão mudar essa função. Se ela não for definida, os usuários poderão mudar a configuração.</translation>

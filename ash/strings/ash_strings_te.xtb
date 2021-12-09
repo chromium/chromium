@@ -417,7 +417,6 @@
 <translation id="3713734891607377840">పూర్తయినప్పుడు తెరవండి</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, మరో<ph name="UNAVAILABLE_APPS_COUNT" /> యాప్‌లు ఈ పరికరంలో అందుబాటులో లేవు.</translation>
 <translation id="3742055079367172538">స్క్రీన్‌షాట్ తీసినప్పుడు</translation>
-<translation id="3744282433224562605">మీ Chromebookను అన్‌లాక్ చేయడానికి, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3771549900096082774">అధిక కాంట్రాస్ట్ మోడ్</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> కోసం బహుళ సైన్-ఇన్ అనుమతిని నిర్వాహకుడు తిరస్కరించారు.
 కొనసాగడానికి వినియోగదారులందరూ తప్పనిసరిగా సైన్ అవుట్ చేయాలి.</translation>
@@ -629,7 +628,6 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను సృష్టించడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
-<translation id="5199367439331364630">మీ Chromebookకు సైన్ ఇన్ చేయడానికి, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{మరో 1 నోటిఫికేషన్}other{మరో # నోటిఫికేషన్‌లు}}</translation>
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
@@ -767,6 +765,7 @@
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google అసిస్టెంట్ పని చేయదు.</translation>
 <translation id="6134259848159370930">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయి'ని తెరవండి</translation>
+<translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="6154006699632741460">పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="6156262341071374681">అన్ని యాప్‌ల కోసం విస్తరించండి</translation>
 <translation id="615957422585914272">స్క్రీన్‌పై కీబోర్డ్‌ను చూపు</translation>

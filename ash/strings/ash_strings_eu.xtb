@@ -416,7 +416,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> eta beste <ph name="UNAVAILABLE_APPS_COUNT" /> ez daude gailuan.</translation>
 <translation id="3742055079367172538">Pantaila-argazkia hartu da</translation>
-<translation id="3744282433224562605">Chromebook-a desblokeatzeko, idatzi pasahitza</translation>
 <translation id="3771549900096082774">Kontraste handiko modua</translation>
 <translation id="3773700760453577392">Administratzaile batek <ph name="USER_EMAIL" /> erabiltzaileari saio-hasiera anitza desgaitu dio.
 Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
@@ -628,7 +627,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> eta <ph name="IN_PLACE_APP" /> aplikazioak karpeta berri batean taldekatu dira.</translation>
-<translation id="5199367439331364630">Chromebook-ean saioa hasteko, idatzi pasahitza</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Beste jakinarazpen bat}other{Beste # jakinarazpen}}</translation>
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
@@ -766,6 +764,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="612734058257491180">Google-ren Laguntzailea ez dago erabilgarri gonbidatuentzako saioetan.</translation>
 <translation id="6134259848159370930">Bilatu gailuan, aplikazioetan, ezarpenetan eta sarean</translation>
 <translation id="6137566720514957455">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen leihoa kentzeko aukera</translation>
+<translation id="6141988275892716286">Berretsi deskarga</translation>
 <translation id="6154006699632741460">Ez da onartzen gailu periferikoa</translation>
 <translation id="6156262341071374681">Erakutsi aplikazio guztiak</translation>
 <translation id="615957422585914272">Erakutsi pantailako teklatua</translation>

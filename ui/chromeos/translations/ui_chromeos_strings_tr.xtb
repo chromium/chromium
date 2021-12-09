@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Tümü yedeklendi!</translation>
 <translation id="3634507049637220048">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> öğe taşındı.</translation>
-<translation id="3645531960514756307">Klasörün sabitlemesini kaldır</translation>
 <translation id="3685122418104378273">Mobil veriler kullanılırken Google Drive senkronizasyonu varsayılan olarak devre dışıdır.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> işlemi iptal edilecek.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Sürekli olarak, web'e daha güvenli göz atabilmenizi sağlamanın yollarını aramaktayız. Önceden, herhangi bir web sitesi, tarayıcınıza uzantı eklemeniz için istekte bulunabiliyordu. Google Chrome'un son sürümlerinde bu uzantıları yüklemek istediğinizi Chrome'a açıkça söylemelisiniz. Bunu yapmak için uzantıları Uzantılar sayfası üzerinden eklemeniz gerekiyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Klasörü sabitle</translation>
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" hedefinin üyeleri, bu öğelere erişim hakkı kazanacaktır.</translation>
 <translation id="9131598836763251128">Bir veya daha fazla dosya seçin</translation>
 <translation id="9133055936679483811">Sıkıştırma başarısız oldu. <ph name="ERROR_MESSAGE" /></translation>

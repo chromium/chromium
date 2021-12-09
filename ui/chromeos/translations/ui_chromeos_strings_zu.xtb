@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Konke kwenziwe isipele!</translation>
 <translation id="3634507049637220048">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Iphethwe umlawuli wakho, imininingwane</translation>
 <translation id="3645233063072417428">izinto ezihanjisiwe ezingu-<ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Susa ukuphina ifolda</translation>
 <translation id="3685122418104378273">Ukuvumelanisa kwe-Google Drayivu kukhutshaziwe ngokuzenzakalela, uma kusetshenziswa idatha yeselula.</translation>
 <translation id="3689865792480713551">Khansela i-<ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe <ph name="CONNECTION_STATUS" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Sibheka izindlela zokwenza ukuphequlula kwakho kuphephe. Ngaphambilini, noma iyiphi iwebhusayithi ingakukhomba ukuthi ungeze isandiso kusiphequluli sakho. Kuzinguqulo zakamuva ze-Google Chrome, kufanele utshele ngokusobala i-Chrome ukuthi ufuna ukufaka lezi zelulo ngokuzingeza ngekhasi lezandiso. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Vula</translation>
 <translation id="912419004897138677">I-Codec</translation>
-<translation id="9129931661813833980">Phina ifolda</translation>
 <translation id="9130775360844693113">Amalungu e-'<ph name="DESTINATION_NAME" />' azothola ukufinyelela kulezi zinto.</translation>
 <translation id="9131598836763251128">Khetha ifayela elilodwa noma amaningi</translation>
 <translation id="9133055936679483811">Ukuzipha kuhlulekile. <ph name="ERROR_MESSAGE" /></translation>

@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">ARC চালু করা হয়েছে</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> অ্যাক্সেস করতে চায়৷ এটি আপনার ফাইলগুলিকে মডিফাই করতে বা মুছে ফেলতে পারে৷</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
+<translation id="1552752544932680961">এক্সটেনশান পরিচালনা করুন</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1556537182262721003">প্রোফাইলে এক্সটেনশন ডিরেক্টরি সরানো যায়নি৷</translation>
@@ -2794,7 +2795,6 @@
 <translation id="3842552989725514455">Serif হরফ</translation>
 <translation id="3843464315703645664">অভ্যন্তরীণভাবে সাদাতালিকাভুক্ত</translation>
 <translation id="3844888638014364087">ইমোজি যোগ করা হয়েছে</translation>
-<translation id="384513009320852920">আপনার ব্লুটুথ ডিভাইস কাছাকাছি এবং 'যোগ করার মোড'-এ আছে কিনা ভাল করে দেখে নিন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ওয়েবসাইট, Android অ্যাপ সহ অনেক কিছু ডেভেলপ করতে টুলগুলি পান। Linux ইনস্টল করলে <ph name="DOWNLOAD_SIZE" /> ডেটা ডাউনলোড হবে।</translation>
 <translation id="3847319713229060696">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3848547754896969219">ছদ্মবেশী উইন্ডোতে খুলুন</translation>
@@ -4302,7 +4302,6 @@
 <translation id="5485102783864353244">অ্যাপ্লিকেশান যোগ করুন</translation>
 <translation id="5485754497697573575">সকল ট্যাব পুনরুদ্ধার করুন</translation>
 <translation id="5486261815000869482">পাসওয়ার্ড নিশ্চিত করুন</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সঙ্গে আপনার স্ক্রিন ভাগ করছে৷</translation>
 <translation id="5486561344817861625">ব্রাউজার রিস্টার্ট সিমুলেট করুন</translation>
 <translation id="5487460042548760727">প্রোফাইলের নাম পরিবর্তন করে <ph name="PROFILE_NAME" /> রাখুন</translation>
 <translation id="5487521232677179737">ডেটা সাফ করুন</translation>
@@ -4364,6 +4363,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> চায়</translation>
 <translation id="5534304873398226603">ফটো ভিডিও বাতিল করুন</translation>
 <translation id="5535941515421698170">এছাড়াও এই ডিভাইস থেকে আপনার বিদ্যমান ডেটা মুছুন</translation>
+<translation id="5537725057119320332">কাস্ট করুন</translation>
 <translation id="5539221284352502426">আপনার দেওয়া পাসওয়ার্ডটি সার্ভার থেকে প্রত্যাখ্যান করা হয়েছে। সম্ভাব্য কারণ: পাসওয়ার্ডটি অনেক ছোট। পাসওয়ার্ডে অক্ষর বা সিম্বল থাকতে হবে। এই পাসওয়ার্ডটি আগের পাসওয়ার্ডগুলি থেকে অবশ্যই আলাদা হবে।</translation>
 <translation id="5541694225089836610">আপনার অ্যাডমিনিস্ট্রেটর এই সুবিধাটি বন্ধ করে দিয়েছে</translation>
 <translation id="5542132724887566711">প্রোফাইল</translation>
@@ -4595,6 +4595,7 @@
 <translation id="5787146423283493983">কী চুক্তি</translation>
 <translation id="5787420647064736989">ডিভাইসের নাম</translation>
 <translation id="5788367137662787332">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটির কমপক্ষে একটি ভাগ আটকানো যায়নি৷</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">সফল</translation>
 <translation id="5790651917470750848">পোর্ট ফরওয়ার্ড করার সুবিধা আগে থেকেই রয়েছে</translation>
 <translation id="5792728279623964091">পাওয়ার বোতাম ট্যাপ করুন</translation>
@@ -4826,10 +4827,8 @@
     <ph name="BEGIN_PARAGRAPH2" />এই ডিভাইসে মূল লোকেশন সেটিং বন্ধ করে আপনি লোকেশন শনাক্ত করার সুবিধাটি বন্ধ করতে পারেন। এছাড়াও আপনি লোকেশন সেটিংস থেকে লোকেশনের জন্য ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের ব্যবহার বন্ধ করতে পারবেন।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">সম্পূর্ণ স্ক্রিন থেকে বেরিয়ে আসুন</translation>
 <translation id="6042308850641462728">আরও</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সাথে একটি Chrome ট্যাব শেয়ার করছে।</translation>
 <translation id="604388835206766544">কনফিগারেশন পার্স করা যায়নি</translation>
 <translation id="6043994281159824495">এখনই সাইন-আউট করুন</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সাথে একটি Chrome ট্যাব এবং অডিও শেয়ার করছে।</translation>
 <translation id="6045114302329202345">প্রাইমারি TrackPoint বোতাম</translation>
 <translation id="6047632800149092791">সিঙ্ক কাজ করছে না। সাইন-আউট করে আবার ফিরে এসে দেখুন।</translation>
 <translation id="6049797270917061226">এই ফাইলটি আক্রমণকারীকে আপনার ব্যক্তিগত তথ্য চুরি করার সুযোগ দিতে পারে।</translation>
@@ -7325,7 +7324,6 @@
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655972064210167941">আপনার পাসওয়ার্ড যাচাই করতে না পারায় সাইন-ইন করা যায়নি। অনুগ্রহ করে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
 <translation id="8657393004602556571">আপনি কি মতামতটি বাতিল করতে চান?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সঙ্গে আপনার স্ক্রিন এবং অডিও শেয়ার করছে।</translation>
 <translation id="8661290697478713397">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটওয়ার্কে সংযুক্ত হন</translation>
 <translation id="8662733268723715832">এটি করতে স্বাভাবিকের চেয়ে বেশি সময় লাগছে, তাই আপনি এড়িয়ে যেতে বা অপেক্ষা করতে পারেন।</translation>
@@ -7621,7 +7619,6 @@
 <translation id="8941173171815156065">অনুমতি '<ph name="PERMISSION" />' প্রত্যাহার করুন</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ব্যাটারি আরও দ্রুত শেষ হবে (বর্তমানে <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সঙ্গে একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="8945274638472141382">আইকনের সাইজ</translation>
 <translation id="8946359700442089734">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসে ডিবাগিং বৈশিষ্ট্যগুলি সম্পূর্ণরূপে চালু করা নেই৷</translation>
 <translation id="894763922177556086">শক্তিশালী</translation>

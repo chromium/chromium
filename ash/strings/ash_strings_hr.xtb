@@ -416,7 +416,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3713734891607377840">Otvaranje nakon završetka</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i njih još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu instalirane na ovom uređaju.</translation>
 <translation id="3742055079367172538">Izrađena je snimka zaslona</translation>
-<translation id="3744282433224562605">Da biste otključali Chromebook, unesite zaporku</translation>
 <translation id="3771549900096082774">Način visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je onemogućio višestruku prijavu za <ph name="USER_EMAIL" />. Svi se korisnici moraju odjaviti da bi nastavili.</translation>
 <translation id="3779139509281456663">Povezivanje s uređajem <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> povezana je s aplikacijom <ph name="IN_PLACE_APP" /> u novu mapu.</translation>
-<translation id="5199367439331364630">Da biste se prijavili na Chromebook, unesite zaporku</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još jedna obavijest}one{Još # obavijest}few{Još # obavijesti}other{Još # obavijesti}}</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
@@ -765,6 +763,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="612734058257491180">Google asistent nije dostupan u gostujućoj sesiji.</translation>
 <translation id="6134259848159370930">Pretražite uređaj, aplikacije, postavke i web.</translation>
 <translation id="6137566720514957455">Otvorite dijalog za uklanjanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Potvrda preuzimanja</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156262341071374681">Proširivanje na sve aplikacije</translation>
 <translation id="615957422585914272">Prikaži tipkovnicu na zaslonu</translation>

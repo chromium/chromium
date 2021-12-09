@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
-<translation id="3744282433224562605">Щоб розблокувати Chromebook, введіть пароль</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
 <translation id="3779139509281456663">Підключення пристрою <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
 <translation id="5198715732953550718">Щоб створити нову папку, об'єднано додатки <ph name="MOVED_APP_NAME" /> і <ph name="IN_PLACE_APP" />.</translation>
-<translation id="5199367439331364630">Щоб увійти в обліковий запис на Chromebook, введіть пароль</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
 <translation id="6134259848159370930">Шукайте на пристрої, у додатках, налаштуваннях та Інтернеті.</translation>
 <translation id="6137566720514957455">Відкрити вікно видалення облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6154006699632741460">Периферійний пристрій не підтримується</translation>
 <translation id="6156262341071374681">Розгорнути всі додатки</translation>
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>

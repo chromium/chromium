@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C құрылғысы (алдыңғы ұяшық)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дисплейі <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) ажыратымдылығына өзгерді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптауды сұрайды. Аталмыш құрылғыда осы PIN кодын енгізіңіз. <ph name="PINCODE" /></translation>
+<translation id="1014111206066007277">Скринкаст құралдары</translation>
 <translation id="1024261588257374085">Экран скриншотының бір бөлігі таңдалды.</translation>
 <translation id="1032891413405719768">Стилус батареясының заряды аз қалды</translation>
 <translation id="1036073649888683237">Хабарландыруларды басқару үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -36,6 +37,7 @@
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="118532027333893379">Толық экранды түсіру үшін кез келген жерді басыңыз.</translation>
 <translation id="1190609913194133056">Хабарландыру орталығы</translation>
+<translation id="1190678134285018527">Құрылғыны алдыңғы нұсқаға қайтару керек</translation>
 <translation id="1195412055398077112">көрінбейтін бөлік</translation>
 <translation id="119944043368869598">Барлығын өшіру</translation>
 <translation id="1199716647557067911">Switch Access функциясын шынымен өшіргіңіз келе ме?</translation>
@@ -124,6 +126,7 @@
 <translation id="1743570585616704562">Анықталмады</translation>
 <translation id="1746730358044914197">Енгізу әдістерін әкімші конфигурациялайды.</translation>
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
+<translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> терезесі барлық жұмыс үстеліне тағайындалды.</translation>
 <translation id="1750088060796401187">Ең көбі <ph name="MAX_DESK_LIMIT" /> жұмыс үстелін ашуға болады. Жаңасын ашу үшін жұмыс үстелін жойыңыз.</translation>
 <translation id="1761222317188459878">Желі байланысын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
@@ -257,6 +260,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
+<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2803313416453193357">Қалтаны ашу</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
@@ -314,6 +318,7 @@
 <translation id="3153444934357957346">Бірнеше аккаунтқа кіру мүмкіндігінде <ph name="MULTI_PROFILE_USER_LIMIT" /> аккаунтқа ғана рұқсат етілген.</translation>
 <translation id="3154351730702813399">Құрылғы әкімшісі интернетті шолуыңызға қатысты ақпаратты көре алады.</translation>
 <translation id="316086887565479535">Үлгіде қолдау көрсетілмейтін қолданбалар бар</translation>
+<translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> құрылғыңызды алдыңғы нұсқаға қайтарады. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
 <translation id="3181441307743005334">Қайту іске қосуға біраз уақыт қажет болуы мүмкін</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Құрылғыға жалғанған}other{# құрылғыға жалғанған}}</translation>
 <translation id="320207200541803018">Таймерді орнату</translation>
@@ -411,7 +416,6 @@
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> және тағы <ph name="UNAVAILABLE_APPS_COUNT" /> қолданба бұл құрылғыда жоқ.</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
-<translation id="3744282433224562605">Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
 <translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы аккаунттан шығуы керек.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> құрылғысы қосылуда</translation>
@@ -436,6 +440,7 @@
 <translation id="3899995891769452915">Дауыспен енгізу</translation>
 <translation id="3900355044994618856">Сеанс <ph name="SESSION_TIME_REMAINING" /> өткен соң аяқталады</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> желісіне қосылу</translation>
+<translation id="3922427723338465344">{0,plural, =1{Құрылғыны 1 минутта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # минутта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
 <translation id="3943857333388298514">Қою</translation>
@@ -553,6 +558,7 @@
 <translation id="4623167406982293031">Аккаунтты растау</translation>
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтингісі: <ph name="RATING_SCORE" /></translation>
+<translation id="4633185660152240791">{0,plural, =1{Құрылғыны бір күн ішінде алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # күн ішінде алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, қолданба ұсынысы</translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
@@ -593,6 +599,7 @@
 <translation id="4946376291507881335">Суретке түсіру</translation>
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>
 <translation id="4952936045814352993">Дабыл сигналы өшірілсе, телефонды табу функциясы қолжетімді болмайды.</translation>
+<translation id="4960324571663582548"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын алдыңғы нұсқаға қайтаруды талап етеді. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />с <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
 <translation id="4975771730019223894">Қолданбаға танымбелгі қою</translation>
@@ -619,7 +626,6 @@
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5176318573511391780">Экранның бір бөлігін жазу</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> және <ph name="IN_PLACE_APP" /> қолданбалары қосылып, бір қалта жасалды.</translation>
-<translation id="5199367439331364630">Chromebook құрылғысына кіру үшін құпия сөзді енгізіңіз.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Тағы 1 хабарландыру}other{Тағы # хабарландыру}}</translation>
 <translation id="5207949376430453814">Мәтін курсорын бөлектеу</translation>
@@ -697,6 +703,7 @@
 <translation id="5745612484876805746">Күн батқанда, Night Light режимі автоматты түрде іске қосылады</translation>
 <translation id="5750765938512549687">Bluetooth өшірулі</translation>
 <translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>
+<translation id="5763928712329149804">Shelf Party режимі өшірулі.</translation>
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5769373120130404283">Құпиялылық экраны</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
@@ -713,6 +720,7 @@
 <translation id="5867217927013474703">Желі туралы ақпарат жиналуда</translation>
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
+<translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="589817443623831496">Нүктемен сканерлеу</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -755,6 +763,7 @@
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
 <translation id="6134259848159370930">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
+<translation id="6141988275892716286">Жүктеп алуды растау</translation>
 <translation id="6154006699632741460">Перифериялық құрылғыға қолдау жоқ</translation>
 <translation id="6156262341071374681">Барлық қолданбаларды көрсету</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
@@ -774,6 +783,7 @@
 <translation id="6315170314923504164">Микрофон</translation>
 <translation id="6330012934079202188">Терезелер барлық жұмыс үстелінен көрсетіліп тұр. Терезелерді қазіргі жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> басқаратын сеанс.</translation>
+<translation id="6344138931392227467"><ph name="DEVICE_NAME" /> қосылды</translation>
 <translation id="6351032674660237738">ҚОЛДАНБА ҰСЫНЫСТАРЫ</translation>
 <translation id="6376931439017688372">Bluetooth қосулы</translation>
 <translation id="6381109794406942707">Құрылғының құлпын ашу үшін PIN кодын енгізіңіз.</translation>
@@ -790,6 +800,7 @@
 <translation id="6459472438155181876">Экранды <ph name="DISPLAY_NAME" /> дисплейіне кеңейту</translation>
 <translation id="6482559668224714696">Толық экран ұлғайтқышы</translation>
 <translation id="6490471652906364588">USB-C құрылғысы (оң жақ ұяшық)</translation>
+<translation id="6491071886865974820">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды талап етеді.</translation>
 <translation id="649452524636452238">Смарт картаның PIN коды</translation>
 <translation id="6495400115277918834">"Суреттегі сурет" режимі қосылды, ерекшелеу үшін Alt+Shift+V пернелер тіркесімін басыңыз.</translation>
 <translation id="6501401484702599040">Экранды <ph name="RECEIVER_NAME" /> құрылғысына трансляциялау</translation>
@@ -824,6 +835,7 @@
 <translation id="6671661918848783005">Chromebook құлпын ашу мүмкін емес.</translation>
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>
+<translation id="6707693040195709527">Құрылғыны алдыңғы нұсқаға қайтару мерзімі өтіп кетті</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6713285437468012787">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұпталды және қазір барлық пайдаланушылар үшін қолжетімді. Бұл жұптауды параметрлердің көмегімен жоюыңызға болады.</translation>
 <translation id="6723839937902243910">Күш</translation>
@@ -879,6 +891,7 @@
 <translation id="7067196344162293536">Автоматты бұру</translation>
 <translation id="7068360136237591149">Файлдарды ашу</translation>
 <translation id="7076293881109082629">Кіру</translation>
+<translation id="7086931198345821656">Бұл жаңарту үшін <ph name="DEVICE_TYPE" /> құрылғысын зауыттық параметрлерге қайтару қажет. Барлық дерек жойылады. <ph name="SYSTEM_APP_NAME" /> жүйесінің ең соңғы нұсқасы туралы толығырақ ақпарат алыңыз.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
 <translation id="7106330611027933926">Іздеу жолағын көрсету</translation>
@@ -899,6 +912,7 @@
 <translation id="7302889331339392448">Live Caption өшірулі.</translation>
 <translation id="7303365578352795231">Басқа құрылғыдан жауап берілуде.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="731589979057211264">Shelf Party режимі қосулы.</translation>
 <translation id="7319740667687257810">Launcher, жартылай көрініс</translation>
 <translation id="7346909386216857016">Жарайды, түсінікті</translation>
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
@@ -1037,12 +1051,15 @@
 <translation id="8196787716797768628">Қолданбалар арасында жылдам ауысып, Chromebook-ті планшет режимінде қолдану үшін қимылдарды пайдаланыңыз.</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8203795194971602413">Тінтуірдің оң жақ түймесін басу</translation>
+<translation id="8209010265547628927">Бастапқы күйге қайтару</translation>
 <translation id="8219451629189078428">Chromebook құрылғысы осы уақыт бойы қосулы болып, қуат көзіне жалғанулы тұруы керек. Зарядтағыш не адаптер кабельдері Chromebook құрылғысына да, розеткаға да толығымен жалғанғанын тексеріңіз. Chromebook құрылғысын өшірмеңіз.</translation>
 <translation id="8236042855478648955">Үзіліс жасайтын кез келді</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефонның батарея заряды: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, қолданба</translation>
+<translation id="8255234195843591763">Жаңарту үшін бастапқы күйге қайтарыңыз.</translation>
 <translation id="826107067893790409">Enter пернесін басып, <ph name="USER_EMAIL_ADDRESS" /> үшін құрылғының құлпын ашыңыз.</translation>
 <translation id="8261506727792406068">Жою</translation>
+<translation id="8270450402312105425">{0,plural, =1{Құрылғыны бір сағатта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # сағатта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="8281279285293265212">Скринкаст сақталмады.</translation>
 <translation id="8284362522226889623">Алдыңғы жұмыс үстеліне ауысу үшін төрт саусақпен солға қарай сырғытыңыз.</translation>
 <translation id="828708037801473432">Өшірулі</translation>
@@ -1051,6 +1068,7 @@
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
+<translation id="8364673525741149932">Shelf Party режимін қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>
 <translation id="8371991222807690464">Қонақ режимінде перифериялық құрылғының өнімділігі шектеулі болуы мүмкін.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> және телефоныңыз автоматты түрде жалғанады</translation>
@@ -1079,6 +1097,7 @@
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="8553395910833293175">Барлық жұмыс үстеліне әлдеқашан тағайындалған.</translation>
+<translation id="856298576161209842"><ph name="MANAGER" /> сізге <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="8563862697512465947">Хабарландыру параметрлері</translation>
 <translation id="857201607579416096">Мәзір экранның төменгі оң жақ бұрышына жылжытылды.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
@@ -1183,6 +1202,7 @@
 <translation id="9220525904950070496">Аккаунтты жою</translation>
 <translation id="923686485342484400">Шығу үшін Control + Shift + Q тіркесімін екі рет басыңыз.</translation>
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
+<translation id="937214777182567951"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуды талап етеді.</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="951991426597076286">Қабылдамау</translation>

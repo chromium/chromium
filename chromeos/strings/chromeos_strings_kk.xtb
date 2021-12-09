@@ -123,6 +123,7 @@
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="28232023175184696">Интернетке қосыла алмай жатыр. Әрекетті қайталау үшін түртіңіз.</translation>
+<translation id="2859243502336719778">Маңызды жаңарту</translation>
 <translation id="2860473693272905224">Сканерге басқа бет қойыңыз.</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
@@ -157,6 +158,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет сканерленуде. <ph name="PERCENTAGE_VALUE" />% орындалды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> жаңартылуда</translation>
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
@@ -215,6 +217,7 @@
 <translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Перифериялық құрылғыларды жаңарту</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> өшірулі</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
@@ -270,6 +273,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4930320165497208503">Байланысты реттеу немесе жаңарту үшін <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4932733599132424254">Күні</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> микробағдарламасы <ph name="VERSION" /> нұсқасына жаңартылды.</translation>
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
@@ -418,6 +422,7 @@
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Құрылғыңызды дайындаңыз</translation>
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
@@ -431,6 +436,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
+<translation id="7240035910874241640">Барлық перифериялық құрылғы жаңартылған.</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
@@ -471,6 +477,7 @@
 <translation id="7763470514545477072">Домен суффиксі сәйкестігі</translation>
 <translation id="7769672763586021400">Үлгі идентификаторы</translation>
 <translation id="7784116172884276937">DNS серверлері реттелмеген.</translation>
+<translation id="7786540085520432425">Жаңарту кезінде терезені кішірейте аласыз, бірақ құрылғыны ажыратпаңыз. Процесс бірнеше минутқа созылып, ол кезде құрылғы жұмыс істемей қалуы мүмкін.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7819857487979277519">PSK (WPA немесе RSN)</translation>
@@ -530,6 +537,7 @@
 <translation id="8498220429738806196">Трафик есептегіштері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> құрылғысы жаңартылған.</translation>
 <translation id="8521021929829989041">Жеке құрылғы ретінде пайдалану</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Желіге қосылу үшін оператор осы опцияны талап етуі мүмкін. Мәліметтер алу үшін операторыңызға хабарласыңыз.</translation>
@@ -571,6 +579,7 @@
 <translation id="8970109610781093811">Қайта тексеру</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканерлеу}=1{{NUMBER_OF_PAGES} бетті сканерлеу}other{{NUMBER_OF_PAGES} бетті сканерлеу}}</translation>
+<translation id="8994273342647807496">Орнатылуда – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Жиілік</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>

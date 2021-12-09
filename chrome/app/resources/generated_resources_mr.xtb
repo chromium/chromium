@@ -536,6 +536,7 @@
 <translation id="1549275686094429035">ARC सुरू केले</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> ॲक्सेस करू इच्छित आहे. हे तुमच्या फायलीमध्ये फेरफार करू किंवा त्या हटवू शकते.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> वापरण्यासाठी "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने शोधामध्ये बदल केला आहे</translation>
+<translation id="1552752544932680961">विस्तार व्यवस्थापित करा</translation>
 <translation id="1553538517812678578">अमर्यादित</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1556537182262721003">प्रोफाइलमध्ये एक्स्टेंशन डिरेक्टरी हलविणे शक्य नाही.</translation>
@@ -2802,7 +2803,6 @@
 <translation id="3842552989725514455">Serif font</translation>
 <translation id="3843464315703645664">अंतर्गतरीत्या अनुमती दिलेली सूची</translation>
 <translation id="3844888638014364087">इमोजी घातली</translation>
-<translation id="384513009320852920">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">वेबसाइट, Android ॲप्स आणि बरेच काही विकसित करण्यासाठी टूल मिळवा. Linux इंस्टॉल केल्याने <ph name="DOWNLOAD_SIZE" /> डेटा डाउनलोड केला जाईल.</translation>
 <translation id="3847319713229060696">वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा</translation>
 <translation id="3848547754896969219">गुप्त विंडोमध्ये उघडा</translation>
@@ -4312,7 +4312,6 @@
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485754497697573575">सर्व टॅब पुनर्संचयित करा</translation>
 <translation id="5486261815000869482">पासवर्ड कन्फर्म करा</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> तुमची स्क्रीन <ph name="TAB_NAME" /> सह शेअर करत आहे.</translation>
 <translation id="5486561344817861625">ब्राउझर रीस्टार्ट प्रतिकृती करा</translation>
 <translation id="5487460042548760727">प्रोफाइलचे नाव <ph name="PROFILE_NAME" /> वर बदला</translation>
 <translation id="5487521232677179737">डेटा साफ करा</translation>
@@ -4374,6 +4373,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ला हे करायचे आहे</translation>
 <translation id="5534304873398226603">फोटो किंवा व्हिडिओ टाकून द्या</translation>
 <translation id="5535941515421698170">या डिव्हाइस मधून तुमचा विद्यमान डेटा देखील हटवा</translation>
+<translation id="5537725057119320332">कास्ट करा</translation>
 <translation id="5539221284352502426">तुम्ही टाकलेला पासवर्ड सर्व्हरने नाकारला होता. संभाव्य कारणांमध्ये याचा समावेश आहे: पासवर्ड खूप लहान आहे. पासवर्डमध्ये संख्या किंवा आयकन असणे आवश्यक आहे. पासवर्ड आधीच्या पासवर्डपेक्षा वेगळा असणे आवश्यक आहे.</translation>
 <translation id="5541694225089836610">तुमच्या ॲडमिनिस्ट्रेटरने क्रिया बंद केली आहे</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
@@ -4604,6 +4604,7 @@
 <translation id="5787146423283493983">की करार</translation>
 <translation id="5787420647064736989">डिव्हाइसचे नाव</translation>
 <translation id="5788367137662787332">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसवरील कमीत कमी एक विभाग बसविला जाऊ शकत नाही.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">यशस्वी</translation>
 <translation id="5790651917470750848">पोर्ट फॉरवर्ड आधीपासून अस्तित्वात आहे</translation>
 <translation id="5792728279623964091">कृपया तुमच्या पॉवर बटणावर टॅप करा</translation>
@@ -4837,10 +4838,8 @@
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही या डिव्हाइसवरील मुख्य स्थान सेटिंग बंद करून स्थान बंद करू शकता. तुम्ही स्थान सेटिंग्जमध्ये स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेंसरचा वापर देखील बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">क्षेत्रेमधून बाहेर पडा</translation>
 <translation id="6042308850641462728">अधिक</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> Chrome टॅब <ph name="TAB_NAME" /> सह शेअर करीत आहे.</translation>
 <translation id="604388835206766544">कॉंफिगरेशन पार्स करता आले नाही</translation>
 <translation id="6043994281159824495">आता साइन आउट करा</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome टॅब आणि ऑडिओ <ph name="TAB_NAME" /> सह शेअर करीत आहे.</translation>
 <translation id="6045114302329202345">प्राथमिक TrackPoint बटण</translation>
 <translation id="6047632800149092791">सिंक काम करत नाही. साइन आउट केल्यानंतर पुन्हा साइन इन करून पहा.</translation>
 <translation id="6049797270917061226">ही फाइल हल्लेखोरांना तुमची वैयक्तिक माहिती चोरी करण्याची अनुमती देऊ शकेल.</translation>
@@ -7342,7 +7341,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8655972064210167941">साइन-इन अयशस्वी झाले कारण तुमचा पासवर्डची पडताळणी करणे शक्य झाले नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरला संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
 <translation id="8657393004602556571">तुम्हाला फीडबॅक काढून टाकायचा आहे का?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> तुमची स्क्रीन आणि ऑडिओ <ph name="TAB_NAME" /> सह शेअर करीत आहे.</translation>
 <translation id="8661290697478713397">गुप्त विंडोमध्ये लिंक उघडा</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8662733268723715832">हे अपेक्षेपेक्षा जास्त वेळ घेत आहे. तुम्ही वगळू शकता किंवा पूर्ण होईपर्यंत प्रतीक्षा करू शकता.</translation>
@@ -7638,7 +7636,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">अधिक द्रुतपणे बॅटरी वापरा (सध्या <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> विंडो <ph name="TAB_NAME" /> सह शेअर करीत आहे.</translation>
 <translation id="8945274638472141382">आयकन आकार</translation>
 <translation id="8946359700442089734">या <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइसवर डीबगिंग वैशिष्ट्ये पूर्णपणे सक्षम केलेली नव्हती.</translation>
 <translation id="894763922177556086">चांगला</translation>

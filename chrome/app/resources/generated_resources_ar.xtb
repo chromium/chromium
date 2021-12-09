@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">‏تم تفعيل "وقت تشغيل التطبيقات في Chrome"</translation>
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
+<translation id="1552752544932680961">إدارة الإضافة</translation>
 <translation id="1553538517812678578">غير محدودة</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1556537182262721003">تعذر نقل دليل الإضافة إلى الملف الشخصي.</translation>
@@ -2785,7 +2786,6 @@
 <translation id="3842552989725514455">‏خط Serif</translation>
 <translation id="3843464315703645664">القائمة المسموح بها داخليًا</translation>
 <translation id="3844888638014364087">تمّ إدراج رمز تعبيري</translation>
-<translation id="384513009320852920">يُرجى التأكّد من أنّ جهازك الذي يتضمّن بلوتوث في وضع الإقران وأنّه في مكان مجاور. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">‏يمكنك الحصول على أدوات لتطوير المواقع الإلكترونية وتطبيقات Android والمزيد. سيؤدي تثبيت نظام التشغيل Linux إلى تنزيل <ph name="DOWNLOAD_SIZE" /> من البيانات.</translation>
 <translation id="3847319713229060696">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="3848547754896969219">فتح في نافذة &amp;التصفُّح المتخفي</translation>
@@ -4290,7 +4290,6 @@
 <translation id="5485102783864353244">إضافة تطبيق</translation>
 <translation id="5485754497697573575">استعادة جميع علامات التبويب</translation>
 <translation id="5486261815000869482">تأكيد كلمة المرور</translation>
-<translation id="5486275809415469523">يشارك <ph name="APP_NAME" /> شاشتك مع <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">محاكاة إعادة تشغيل المتصفح</translation>
 <translation id="5487460042548760727">إعادة تسمية الملف التعريفي إلى <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">محو البيانات</translation>
@@ -4352,6 +4351,7 @@
 <translation id="5533001281916885985">يريد <ph name="SITE_NAME" /></translation>
 <translation id="5534304873398226603">إلغاء صورة أو فيديو</translation>
 <translation id="5535941515421698170">إزالة البيانات الحالية من هذا الجهاز أيضًا</translation>
+<translation id="5537725057119320332">إرسال</translation>
 <translation id="5539221284352502426">رفض الخادم كلمة المرور التي أدخلتَها. وتتضمن الأسباب المحتملة ما يلي: كلمة المرور قصيرة جدًا. يجب أن تتضمن كلمة المرور أرقامًا أو رموزًا. يجب أن تكون كلمة المرور مختلفة عن كلمات المرور السابقة.</translation>
 <translation id="5541694225089836610">تم إيقاف الإجراء من قِبل المشرف.</translation>
 <translation id="5542132724887566711">الملف التعريفي</translation>
@@ -4582,6 +4582,7 @@
 <translation id="5787146423283493983">توافق المفاتيح</translation>
 <translation id="5787420647064736989">اسم الجهاز</translation>
 <translation id="5788367137662787332">عذرًا، تعذر تركيب جزء واحد على الأقل على الجهاز <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
 <translation id="5790651917470750848">يتوفّر منفذ بهذا الرقم.</translation>
 <translation id="5792728279623964091">يُرجى النقر على زر التشغيل.</translation>
@@ -4813,10 +4814,8 @@
     <ph name="BEGIN_PARAGRAPH2" />يمكنك إيقاف خدمة "الموقع الجغرافي" من خلال إيقاف إعداد "الموقع الجغرافي" الرئيسي على جهازك. وبإمكانك أيضًا إيقاف استخدام شبكات Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للموقع الجغرافي من إعدادات الموقع الجغرافي.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">الخروج من عرض ملء الشاشة</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
-<translation id="6043317578411397101">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome من خلال <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">تعذّر تحليل الضبط</translation>
 <translation id="6043994281159824495">الخروج الآن</translation>
-<translation id="6044805581023976844">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome والصوت من خلال <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">‏زر TrackPoint الأساسي</translation>
 <translation id="6047632800149092791">المزامنة لا تعمل على نحو سليم جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6049797270917061226">قد يتسبب هذا الملف في سرقة المهاجمين لمعلوماتك الشخصية.</translation>
@@ -7314,7 +7313,6 @@
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8655972064210167941">فشل تسجيل الدخول، نظرًا لعدم القدرة على التحقق من كلمة مرورك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
 <translation id="8657393004602556571">هل تريد تجاهل الملاحظات؟</translation>
-<translation id="8658645149275195032">يشارك <ph name="APP_NAME" /> الشاشة والصوت من خلال <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">تستغرق هذه العملية وقتًا أطول من المتوقّع. يمكنك تخطّي هذه العملية أو الانتظار حتى اكتمالها.</translation>
@@ -7613,7 +7611,6 @@
 <translation id="8941173171815156065">إلغاء الإذن "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">‏الترقية الدولية لـ Netscape</translation>
 <translation id="8944099748578356325">استخدام البطارية بسرعة أكبر (حاليًا <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280">يشارك <ph name="APP_NAME" /> نافذة من خلال <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">حجم الرمز</translation>
 <translation id="8946359700442089734">لم يتم تفعيل ميزات التصحيح كليًا على هذا الجهاز <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">جيدة</translation>

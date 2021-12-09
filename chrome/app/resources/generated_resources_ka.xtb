@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">ARC ჩართულია</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />-ს <ph name="VOLUME_NAME" />-ზე წვდომა სურს. მას თქვენი ფაილების შეცვლა ან წაშლა შეუძლია.</translation>
 <translation id="1552301827267621511">გაფართოებამ „<ph name="EXTENSION_NAME" />“ შეცვალა ძიების პროვაიდერი <ph name="SEARCH_PROVIDER_DOMAIN" />-ით</translation>
+<translation id="1552752544932680961">გაფართოების მართვა</translation>
 <translation id="1553538517812678578">შეუზღუდავo</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
@@ -2779,7 +2780,6 @@
 <translation id="3842552989725514455">Serif-შრიფტი</translation>
 <translation id="3843464315703645664">დაშვებულია შიდა გამოყენებისთვის</translation>
 <translation id="3844888638014364087">Emoji ჩასმულია</translation>
-<translation id="384513009320852920">დარწმუნდით, რომ თქვენი Bluetooth-მოწყობილობა დაწყვილების რეჟიმია და ახლოს მდებარეობს. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ჩამოტვირთეთ ხელსაწყოები ვებსაიტების, Android-ის აპების და სხვა კონტენტის დეველოპერებისთვის. Linux-ის ინსტალაციისთვის ჩამოიტვირთება მონაცემთა <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">ხელი შეუწყვეთ ვების უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
 <translation id="3848547754896969219">&amp;ინკოგნიტო ფანჯარაში გახსნა</translation>
@@ -4287,7 +4287,6 @@
 <translation id="5485102783864353244">აპის დამატება</translation>
 <translation id="5485754497697573575">ყველა ჩანართის აღდგენა</translation>
 <translation id="5486261815000869482">დაადასტურეთ პაროლი</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> უზიარებს ეკრანს <ph name="TAB_NAME" />-ს.</translation>
 <translation id="5486561344817861625">ბრაუზერის გადატვირთვის სიმულაცია</translation>
 <translation id="5487460042548760727">პროფილის გადარქმევა „<ph name="PROFILE_NAME" />“-ზე</translation>
 <translation id="5487521232677179737">მონაცემების წაშლა</translation>
@@ -4349,6 +4348,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />-ს სურს:</translation>
 <translation id="5534304873398226603">ფოტოს ან ვიდეოს გაუქმება</translation>
 <translation id="5535941515421698170">ამ მოწყობილობიდან არსებული მონაცემების ამოშლაც</translation>
+<translation id="5537725057119320332">მაუწყებლობა</translation>
 <translation id="5539221284352502426">თქვენ მიერ შეყვანილი პაროლი უარყოფილია სერვერის მიერ. შესაძლო მიზეზებია: პაროლი მეტისმეტად მოკლეა. პაროლი უნდა შეიცავდეს ციფრებს ან სიმბოლოებს. პაროლი უნდა განსხვავდებოდეს წინა პაროლებისგან.</translation>
 <translation id="5541694225089836610">ქმედება გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5542132724887566711">პროფილი</translation>
@@ -4579,6 +4579,7 @@
 <translation id="5787146423283493983">ძირითადი შეთანხმება</translation>
 <translation id="5787420647064736989">მოწყობილობის სახელი</translation>
 <translation id="5788367137662787332">სამწუხაროდ, სულ მცირე, ერთი დანაყოფის მიერთება ვერ მოხერხდა მოწყობილობაში <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">წარმატება</translation>
 <translation id="5790651917470750848">პორტის გადამისამართება უკვე არსებობს</translation>
 <translation id="5792728279623964091">შეეხეთ ელკვების ღილაკს</translation>
@@ -4810,10 +4811,8 @@
     <ph name="BEGIN_PARAGRAPH2" />მდებარეობის გამორთვა შესაძლებელია თქვენს მოწყობილობაზე მდებარეობის მთავარი პარამეტრის გამორთვით. ასევე შეგიძლიათ გამორთოთ Wi-Fi კავშირის, მობილური ქსელებისა და სენსორების გამოყენება მდებარეობის დასადგენად.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="6042308850641462728">სხვა</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> Chrome-ის ჩანართს <ph name="TAB_NAME" />-ს უზიარებს.</translation>
 <translation id="604388835206766544">კონფიგურაციის გარჩევა ვერ მოხერხდა</translation>
 <translation id="6043994281159824495">გამოსვლა</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome-ის ჩანართს და აუდიოს <ph name="TAB_NAME" />-ს უზიარებს.</translation>
 <translation id="6045114302329202345">ძირითადი TrackPoint-ის ღილაკი</translation>
 <translation id="6047632800149092791">სინქრონიზაცია არ მუშაობს. ცადეთ სისტემიდან გასვლა და ხელახლა შესვლა.</translation>
 <translation id="6049797270917061226">ამ ფაილმა, შესაძლოა, საშუალება მისცეს თავდამსხმელებს, მოიპარონ თქვენი პერსონალური ინფორმაცია.</translation>
@@ -7308,7 +7307,6 @@
 <translation id="8655295600908251630">არხი</translation>
 <translation id="8655972064210167941">შესვლა ვერ მოხერხდა, რადგან თქვენი პაროლის დადასტურება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
 <translation id="8657393004602556571">გსურთ გამოხმაურების გაუქმება?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> თქვენს ეკრანსა და აუდიოს <ph name="TAB_NAME" />-ს უზიარებს.</translation>
 <translation id="8661290697478713397">ბმულის გახსნა ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
 <translation id="8662733268723715832">ამ პროცესს მოსალოდნელზე მეტი დრო სჭირდება. სურვილისამებრ, შეგიძლიათ გამოტოვოთ ან დაელოდოთ მის დასრულებას.</translation>
@@ -7603,7 +7601,6 @@
 <translation id="8941173171815156065">ნებართვის „<ph name="PERMISSION" />“ გაუქმება</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ბატარეის უფრო სწრაფად მოხმარება (ამჟამინდელი დონე: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> ფანჯარას <ph name="TAB_NAME" />-ს უზიარებს.</translation>
 <translation id="8945274638472141382">ხატულის ზომა</translation>
 <translation id="8946359700442089734">ხარვეზის აღმოფხვრის ფუნქციები არ იყო მთლიანად ჩართულია ამ <ph name="IDS_SHORT_PRODUCT_NAME" /> მოწყობილობისათვის.</translation>
 <translation id="894763922177556086">კარგი</translation>

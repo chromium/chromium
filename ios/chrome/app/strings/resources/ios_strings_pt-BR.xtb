@@ -168,6 +168,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2584132361465095047">Adicionar conta…</translation>
 <translation id="2600682495497606169">Apagar cookies do site</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
+<translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
 <translation id="2647269890314209800">Cookies em uso</translation>
 <translation id="2648803196158606475">Excluir lidas</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -363,6 +364,7 @@ Siga estas etapas:</translation>
 <translation id="4508750114462689118">Fechar promoção de login</translation>
 <translation id="4526249700380860531">Ver e gerenciar as senhas salvas em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Tente fazer login novamente.</translation>
+<translation id="4540780316273593836">Ocorreu um erro</translation>
 <translation id="457386861538956877">Mais...</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Pesquisando com o Google</translation>
@@ -478,6 +480,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando agora 1 janela do Chrome}one{Mostrando agora {count} janela do Chrome}other{Mostrando agora {count} janelas do Chrome}}</translation>
+<translation id="5704908597376970822">Não é possível fazer login.</translation>
 <translation id="5706552126692816153">Ativado há um dia</translation>
 <translation id="5711039611392265845">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Para navegar na Web com privacidade, adicione uma nova guia</translation>

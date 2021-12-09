@@ -211,6 +211,7 @@
       Si no estableces la política o el valor que genera la sustitución no es un nombre de host válido, no se configurará ningún nombre de host en la solicitud de DHCP.</translation>
 <translation id="1257550411839719984">Establecer el directorio de descarga predeterminado</translation>
 <translation id="1265053460044691532">Permite limitar el tiempo durante el cual un usuario autenticado mediante SAML puede acceder sin conexión.</translation>
+<translation id="1268548671627260798">Lista de URLs que están exentas de la notificación sobre la pantalla completa</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de los dispositivos Chromad a la administración de la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
@@ -382,6 +383,18 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Nota: Esta política también se aplica en las extensiones de componentes, como la extensión de Servicios de Hangout.</translation>
 <translation id="148194404518916594">Permite que los usuarios utilicen Tocar para buscar</translation>
+<translation id="1485570394283692769">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
+
+          Esta política está relacionada con la especificación Acceso a redes privadas. Para obtener más información, consulta https://wicg.github.io/private-network-access/.
+
+          Un extremo de red es más privado que otro en los siguientes casos:
+          1) Si su dirección IP es localhost y la otra no lo es.
+          2) Si su dirección IP es privada y la otra es pública.
+          En el futuro, en función de la evolución de las especificaciones, es posible que se aplique esta política a todas las solicitudes de origen cruzado dirigidas a IP privadas o localhost.
+
+          Si se establece esta política como falsa o no se establece, el comportamiento predeterminado para las solicitudes a extremos de red más privados dependerá de la configuración personal del usuario con respecto a las marcas de función <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> y <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, las cuales se pueden establecer en una prueba de campo o en la línea de comandos.
+
+          Si estableces esta política como verdadera, los sitios web podrán enviar solicitudes a cualquier extremo de red, sujeto a otras verificaciones de origen cruzado.</translation>
 <translation id="1486021504508098388">Enviar información sobre la luz de fondo</translation>
 <translation id="1487916040416013623">Si estableces la política, se especificarán los servidores que deben habilitarse para la autenticación integrada, la cual solo está activa cuando <ph name="PRODUCT_NAME" /> recibe un desafío de autenticación de un proxy o de un servidor que se encuentra en la lista autorizada.
 
@@ -2738,6 +2751,11 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si inhabilitas la política o no la estableces, los usuarios podrán transferir archivos a Drive por conexión móvil.</translation>
 <translation id="4248277954659222481">Permite la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4257545866869267519">Configura una lista de direcciones URL que estén exentas de la notificación sobre la pantalla completa. La notificación se muestra cuando el dispositivo sale del modo de suspensión, aumenta el brillo o se desbloquea la pantalla y una ventana está en modo de pantalla completa. De esta forma, los usuarios sabrán que están en modo de pantalla completa, lo que reduce el riesgo de una suplantación de identidad.
+
+          Esta política permite desactivar la notificación para direcciones URL específicas que se consideran fuentes confiables. Se establece al especificar una lista de patrones de URL que cumplen con el siguiente formato ( https://www.chromium.org/administrators/url-blocklist-filter-format ). P. ej., es posible inhabilitar las notificaciones por completo al especificar el carácter comodín <ph name="WILDCARD_VALUE" /> que coincida con todas las URLs.
+
+          Si estableces esta política como una lista vacía o no la estableces, ninguna URL queda exenta de la notificación sobre la pantalla completa.</translation>
 <translation id="4260027436474745627">Si estableces la política, cada uno de los orígenes designados en una lista de elementos separados por comas se ejecutará en un proceso dedicado. El proceso de cada origen designado solo podrá incluir documentos de ese origen y sus subdominios. Por ejemplo, si especificas https://a1.example.com/, se permitirá https://a2.a1.example.com/ en el mismo proceso, pero no así https://example.com o https://b.example.com.
 
       A partir de <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislarlos mediante un comodín. Por ejemplo, si especificas https://[*.]corp.example.com, se otorgará su propio proceso dedicado a cada origen dentro de https://corp.example.com, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
@@ -2923,6 +2941,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="449784980858429908">Otorgar permiso automáticamente a los sitios para conectarse a puertos en serie</translation>
 <translation id="450080746522343150">Bloquear todas las descargas</translation>
 <translation id="4510923771103268849">El usuario tiene acceso con permisos de administrador a los contenedores de Crostini</translation>
+<translation id="4512407512989846472">No permitir la copia al portapapeles en URLs específicas</translation>
 <translation id="4513691822411041977">No forzar el uso de SafeSearch en la Búsqueda de Google ni en el modo restringido de YouTube</translation>
 <translation id="4515404363392014383">Habilita la Navegación segura para las fuentes de confianza</translation>
 <translation id="4518251772179446575">Preguntar siempre si un sitio quiere rastrear la ubicación física de los usuarios.</translation>
@@ -4258,6 +4277,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       De lo contrario, se ocultarán las direcciones IP locales con nombres de host de mDNS.
       Ten en cuenta que esta política afecta la protección de las IP locales, si los administradores la habilitan.</translation>
 <translation id="614662973812186053">Esta política también controla la recopilación de datos de diagnóstico y uso de Android.</translation>
+<translation id="614665605501218241">Permitir a los sitios de la lista enviar solicitudes a extremos de red más privados de una forma no segura.</translation>
 <translation id="6154509171634387825">Advertencia: 3DES se quitará por completo en la versión 95 de <ph name="PRODUCT_NAME" /> (alrededor de octubre de 2021) y esta política dejará de funcionar.
 
       Si estableces la política como verdadera, se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS. Si la estableces como falsa, se inhabilitarán los conjuntos. Si no la estableces, los conjuntos de algoritmos de cifrado 3DES estarán inhabilitados de forma predeterminada. Esta política podrá usarse para asegurar la compatibilidad de forma temporal con un servidor desactualizado. Esta es una medida provisoria; deberás volver a configurar el servidor.
@@ -4272,6 +4292,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no la estableces, los usuarios podrán activar o desactivar esta función.</translation>
 <translation id="6174065452773547810">Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>
+<translation id="6174187836314350835">Lista de patrones de URL. Las solicitudes iniciadas en sitios web entregados por orígenes coincidentes no están sujetas a verificaciones del Acceso de red privada.
+
+          Si no estableces esta política, se comportará como si se hubiera establecido con una lista vacía.
+
+          En el caso de orígenes no contemplados en los patrones especificados en la política, se utilizará el valor predeterminado global ya sea de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (si se establece) o de la configuración personal del usuario.
+
+          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Esta política controla quién puede iniciar una sesión en <ph name="PRODUCT_OS_NAME" />, pero no impide que los usuarios accedan a otras cuentas de Google en Android. Si quieres impedirlo, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de la política <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">Hash SHA-256 de la plantilla de escritorio.</translation>
 <translation id="6181618732396778048">No permite que ningún sitio solicite acceso de escritura a archivos ni directorios</translation>
@@ -4733,6 +4760,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Nota: Aunque la política acepte varios elementos en <ph name="ENTRIES_FIELD_NAME" />, ignorará todos menos el primero.
       Advertencia: Si estableces esta política, es posible que se retrase la aplicación de las actualizaciones de software.</translation>
 <translation id="6698632841807204978">Habilitar la impresión monocromática</translation>
+<translation id="6699740789657890714">Especificar si se permite que los sitios web envíen solicitudes a extremos de red más privados de una forma no segura</translation>
 <translation id="6699880231565102694">Habilitar autenticación de dos factores para los hosts de acceso remoto.</translation>
 <translation id="6703251016607733593">Si estableces la política, se inhabilitará la aplicación de los requisitos de divulgación del Certificado de transparencia para una lista de hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Los hosts empresariales podrán seguir usando los certificados que no sean de confianza (porque no se divulgaron públicamente de forma correcta). Para inhabilitar la aplicación, el hash debe complir con una de las siguientes condiciones:
 
@@ -5879,6 +5907,14 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
 <translation id="8029607810986641704">Bloquear el dispositivo cuando está inactivo o suspendido</translation>
+<translation id="8032201191311129122">Esta política bloquea la copia de datos al portapapeles en URLs específicas.
+
+      Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios que pueden escribir en el portapapeles. Si la URL coincide con un patrón del campo "enable" y no coincide con ningún patrón del campo "disable", se bloqueará una escritura en el portapapeles. Si la URL no coincide con ningún patrón, no se bloqueará la copia.
+
+      Los patrones de coincidencia de orígenes usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en http://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (expresada en bytes) que activa la revisión de patrones. Esto significa que se permitiría una escritura en el portapapeles de parte de una URL bloqueada si el tamaño de los datos copiados es menor al valor especificado en este campo. Si no estableces el campo, el valor predeterminado es 100 bytes.
+      </translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>

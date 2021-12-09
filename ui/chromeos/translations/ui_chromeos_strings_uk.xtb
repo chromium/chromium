@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Усі файли імпортовано!</translation>
 <translation id="3634507049637220048">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Мережею керує адміністратор. Докладніше</translation>
 <translation id="3645233063072417428">Переміщено елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Відкріпити папку</translation>
 <translation id="3685122418104378273">Коли використовується мобільний Інтернет, синхронізацію Google Диска вимкнено за умовчанням.</translation>
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Ми постійно шукаємо способи зробити перегляд веб-сторінок безпечнішим. Раніше будь-який веб-сайт міг пропонувати вам додати розширення у веб-переглядач. В останніх версіях Google Chrome ви маєте чітко вказати, що хочете встановити ці розширення, додавши їх на сторінці "Розширення". <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Закріпити папку</translation>
 <translation id="9130775360844693113">Учасники, які мають доступ до розташування "<ph name="DESTINATION_NAME" />", отримають доступ до цих елементів.</translation>
 <translation id="9131598836763251128">Виберіть один або декілька файлів</translation>
 <translation id="9133055936679483811">Помилка архівування. <ph name="ERROR_MESSAGE" /></translation>

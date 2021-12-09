@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">તમામનો બેક અપ લેવાયો!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ખસેડી.</translation>
-<translation id="3645531960514756307">ફોલ્ડરને અનપિન કરો</translation>
 <translation id="3685122418104378273">મોબાઇલ ડેટાનો ઉપયોગ કરી રહ્યાં હોય ત્યારે, Google ડ્રાઇવ સિંક ડિફોલ્ટ રૂપે બંધ છે.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ને રદ કરો.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
@@ -925,7 +924,6 @@
 <translation id="9110990317705400362">અમે સતત તમારા બ્રાઉઝિંગને વધુ સલામત બનાવવાની રીતો શોધી રહ્યાં છીએ. પહેલાં, કોઈપણ વેબસાઇટ તમને તમારા બ્રાઉઝરમાં એક્સ્ટેન્શન ઉમેરવા માટે સંકેત આપી શકતી હતી. Google Chromeના નવીનતમ વર્ઝનમાં, તમે એક્સ્ટેન્શન પેજ દ્વારા આ એક્સ્ટેન્શનને ઉમેરીને તમે તેમને ઇન્સ્ટૉલ કરવા માગો છો તે, તમારે Chromeને સ્પષ્ટપણે કહેવું આવશ્યક છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
 <translation id="912419004897138677">કૉડેક</translation>
-<translation id="9129931661813833980">ફોલ્ડર પિન કરો</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'ના સભ્યો આ આઇટમનો ઍક્સેસ મેળવશે.</translation>
 <translation id="9131598836763251128">એક અથવા વધુ ફાઇલ પસંદ કરો</translation>
 <translation id="9133055936679483811">ઝિપ કરવાનું નિષ્ફળ: <ph name="ERROR_MESSAGE" /></translation>

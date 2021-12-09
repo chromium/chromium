@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1153636665119721804">Программа Дополнительной защиты от Google</translation>
 <translation id="1155816283571436363">Подключение к телефону…</translation>
+<translation id="1158080958325422608">Заменить на прописные</translation>
 <translation id="1158238185437008462">Открыть воспоминания</translation>
 <translation id="1161575384898972166">Чтобы экспортировать сертификат клиента, войдите в <ph name="TOKEN_NAME" />.</translation>
 <translation id="116173250649946226">Администратор установил тему по умолчанию, и ее нельзя изменить.</translation>
@@ -532,6 +533,7 @@
 <translation id="1549275686094429035">ARC включен</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> запрашивает доступ к тому "<ph name="VOLUME_NAME" />". Это может привести к изменению или удалению файлов.</translation>
 <translation id="1552301827267621511">Расширение "<ph name="EXTENSION_NAME" />" установило поисковую систему "<ph name="SEARCH_PROVIDER_DOMAIN" />" в качестве основной.</translation>
+<translation id="1552752544932680961">Управление расширениями</translation>
 <translation id="1553538517812678578">неограниченно</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1556537182262721003">Не удалось переместить каталог расширений в профиль.</translation>
@@ -694,6 +696,7 @@
 <translation id="1700079447639026019">Сайты, которые не могут использовать файлы cookie</translation>
 <translation id="1703331064825191675">Можно больше не беспокоиться о паролях</translation>
 <translation id="1703666494654169921">Запретить сайтам использовать устройства и данные виртуальной реальности</translation>
+<translation id="1704097193565924901">Заменить первую букву на прописную</translation>
 <translation id="1704230497453185209">Запретить сайтам воспроизводить звук</translation>
 <translation id="1704970325597567340">Проверка безопасности выполнена <ph name="DATE" />.</translation>
 <translation id="1706586824377653884">Добавлено администратором</translation>
@@ -2778,7 +2781,6 @@
 <translation id="3842552989725514455">Шрифты с засечками</translation>
 <translation id="3843464315703645664">Разрешение дано браузером Chrome</translation>
 <translation id="3844888638014364087">Вставлен символ эмодзи</translation>
-<translation id="384513009320852920">Устройство Bluetooth должно находиться рядом. На нем необходимо выбрать режим подключения. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Разрабатывайте сайты, приложения для Android и другие программы с помощью удобных инструментов. При установке Linux будут скачаны данные объемом <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">Помочь сделать Интернет безопасным для всех</translation>
 <translation id="3848547754896969219">Открыть в режиме &amp;инкогнито</translation>
@@ -3563,6 +3565,7 @@
 <translation id="4681453295291708042">Отключить Обмен с окружением</translation>
 <translation id="4681930562518940301">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="4682551433947286597">Обои устанавливаются на экран входа.</translation>
+<translation id="4683629100208651599">Заменить на строчные</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (по умолчанию)</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4684471265911890182">Приложение "<ph name="APP_NAME" />" пытается получить доступ к камере. Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности камеры.</translation>
@@ -4285,7 +4288,6 @@
 <translation id="5485102783864353244">Установить приложение</translation>
 <translation id="5485754497697573575">Восстановить все вкладки</translation>
 <translation id="5486261815000869482">Подтвердите пароль</translation>
-<translation id="5486275809415469523">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к вашему экрану.</translation>
 <translation id="5486561344817861625">Симулировать перезапуск браузера</translation>
 <translation id="5487460042548760727">Переименовать профиль в "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Удалить данные</translation>
@@ -4347,6 +4349,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запрашивает разрешение на:</translation>
 <translation id="5534304873398226603">Удалить фото или видео</translation>
 <translation id="5535941515421698170">Удалить данные с этого устройства</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Сервер отклонил введенный пароль. Помните, что пароль должен отличаться от предыдущих паролей и содержать необходимое количество цифр и символов.</translation>
 <translation id="5541694225089836610">Действие отключено администратором.</translation>
 <translation id="5542132724887566711">Профиль</translation>
@@ -4577,6 +4580,7 @@
 <translation id="5787146423283493983">Согласование ключей</translation>
 <translation id="5787420647064736989">Название устройства</translation>
 <translation id="5788367137662787332">Не удалось добавить один или несколько разделов устройства <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">:</translation>
 <translation id="5790085346892983794">Выполнено</translation>
 <translation id="5790651917470750848">Такой порт уже существует.</translation>
 <translation id="5792728279623964091">Нажмите кнопку питания.</translation>
@@ -4808,10 +4812,8 @@
     <ph name="BEGIN_PARAGRAPH2" />При желании отключите эту функцию в настройках устройства. Там же вы можете запретить использование датчиков, Wi‑Fi и мобильных сетей для уточнения местоположения.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Обычный режим</translation>
 <translation id="6042308850641462728">Ещё</translation>
-<translation id="6043317578411397101">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к вкладке Chrome.</translation>
 <translation id="604388835206766544">Не удалось выполнить синтаксический анализ конфигурации.</translation>
 <translation id="6043994281159824495">Выйти</translation>
-<translation id="6044805581023976844">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к вкладке Chrome и к аудио.</translation>
 <translation id="6045114302329202345">Основная кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Ошибка синхронизации. Выйдите из системы и войдите снова.</translation>
 <translation id="6049797270917061226">С помощью этого файла злоумышленники могут похитить ваши личные данные.</translation>
@@ -5955,6 +5957,7 @@
 <translation id="7257173066616499747">Сети Wi-Fi</translation>
 <translation id="725758059478686223">Сервис печати</translation>
 <translation id="7257666756905341374">Доступ к копируемым и вставляемым данным</translation>
+<translation id="7258192266780953209">Преобразование</translation>
 <translation id="7258225044283673131">Приложение не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7262004276116528033">Сервис входа размещен в домене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Следуйте приведенным ниже инструкциям.
@@ -7306,7 +7309,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Ошибка входа: не удалось подтвердить пароль. Обратитесь к администратору или повторите попытку.</translation>
 <translation id="8657393004602556571">Не отправлять отзыв?</translation>
-<translation id="8658645149275195032">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к экрану и аудио.</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
 <translation id="8662671328352114214">Новая сеть <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Операция выполняется дольше, чем обычно. Вы можете подождать или пропустить этот этап.</translation>
@@ -7604,7 +7606,6 @@
 <translation id="8941173171815156065">Отозвать разрешение "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Начнет быстрее расходовать заряд батареи (сейчас она заряжена на <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к окну.</translation>
 <translation id="8945274638472141382">Размер значков</translation>
 <translation id="8946359700442089734">На устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /> включены не все функции отладки.</translation>
 <translation id="894763922177556086">высокое</translation>

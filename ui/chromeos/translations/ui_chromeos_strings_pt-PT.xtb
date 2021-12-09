@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Foi feita uma cópia de segurança de todos os ficheiros!</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gerida pelo administrador, detalhes</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> itens movidos.</translation>
-<translation id="3645531960514756307">Soltar pasta</translation>
 <translation id="3685122418104378273">Quando utiliza dados móveis, a sincronização do Google Drive é desativada por predefinição.</translation>
 <translation id="3689865792480713551">Cancele <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Desativada, <ph name="CONNECTION_STATUS" />, Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, Detalhes</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que pretende instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Fixar pasta</translation>
 <translation id="9130775360844693113">Os membros de "<ph name="DESTINATION_NAME" />" irão obter acesso a estes itens.</translation>
 <translation id="9131598836763251128">Selecione um ou mais ficheiros</translation>
 <translation id="9133055936679483811">Falha na criação de zip. <ph name="ERROR_MESSAGE" /></translation>

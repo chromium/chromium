@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">すべてバックアップ済みです。</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
-<translation id="3645531960514756307">フォルダの固定を解除</translation>
 <translation id="3685122418104378273">Google ドライブの同期は既定で無効になっています（モバイルデータを使用する場合）。</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Google では、より安全にウェブを閲覧できる方法を常に追求しています。以前は、どのウェブサイトでも、ブラウザに拡張機能を追加するように指示することができました。Google Chrome の最新バージョンでは、ユーザーのインストールの意思をより明確に確認するため、拡張機能の追加は拡張機能ページで行うこととなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="912419004897138677">コーデック</translation>
-<translation id="9129931661813833980">フォルダを固定</translation>
 <translation id="9130775360844693113">「<ph name="DESTINATION_NAME" />」のメンバーがこれらのアイテムにアクセスできるようになります。</translation>
 <translation id="9131598836763251128">1 つ以上のファイルを選択</translation>
 <translation id="9133055936679483811">圧縮できませんでした。<ph name="ERROR_MESSAGE" /></translation>

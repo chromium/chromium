@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Alle Daten gesichert</translation>
 <translation id="3634507049637220048">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, von Ihrem Administrator verwaltet, Details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> Elemente verschoben.</translation>
-<translation id="3645531960514756307">Ordner loslösen</translation>
 <translation id="3685122418104378273">Die Google Drive-Synchronisierung ist bei der mobilen Datennutzung standardmäßig deaktiviert.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für Sie sicherer zu machen. Früher konnten Sie von jeder beliebigen Website aufgefordert werden, eine Erweiterung zu Ihrem Browser hinzuzufügen. In neueren Versionen von Google Chrome müssen Sie Chrome ausdrücklich mitteilen, dass Sie diese Erweiterungen installieren möchten, indem Sie sie über die Seite "Erweiterungen" hinzufügen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Ordner anpinnen</translation>
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>
 <translation id="9131598836763251128">Eine oder mehrere Dateien auswählen</translation>
 <translation id="9133055936679483811">Fehler beim Zippen. <ph name="ERROR_MESSAGE" /></translation>

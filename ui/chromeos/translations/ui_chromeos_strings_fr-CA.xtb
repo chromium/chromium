@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Tous les fichiers ont été sauvegardés!</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
-<translation id="3645531960514756307">Annuler l'épinglage du dossier</translation>
 <translation id="3685122418104378273">La synchronisation Google Disque est désactivée par défaut, lors de l'utilisation de données mobiles.</translation>
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
@@ -928,7 +927,6 @@
 <translation id="9110990317705400362">Nous recherchons sans cesse à sécuriser voter navigation. Avant, n'importe quel site Web pouvait vous inviter à ajouter une extension à votre navigateur. Avec les dernières versions de Google Chrome, vous devez préciser explicitement à Chrome que vous souhaitez installer ces extensions en les ajoutant depuis la page Extensions. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Épingler le dossier</translation>
 <translation id="9130775360844693113">Les membres de « <ph name="DESTINATION_NAME" /> » pourront accéder à ces éléments.</translation>
 <translation id="9131598836763251128">Sélectionner un ou plusieurs fichiers</translation>
 <translation id="9133055936679483811">La compression au format ZIP a échoué. <ph name="ERROR_MESSAGE" /></translation>

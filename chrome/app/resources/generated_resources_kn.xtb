@@ -538,6 +538,7 @@
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> ಅನ್ನು ಬಳಸಲು, <ph name="EXTENSION_NAME" /> ವಿಸ್ತರಣೆಯು ಹುಡುಕಾಟವನ್ನು ಬದಲಿಸಿದೆ</translation>
+<translation id="1552752544932680961">ವಿಸ್ತರಣೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1553538517812678578">ಸೀಮಿತವಲ್ಲದ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1556537182262721003">ಫ್ರೋಫೈಲ್‌ಗೆ ಎಕ್ಸ್‌ಟೆನ್ಷನ್ ಡೈರೆಕ್ಟರಿಯನ್ನು ಚಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -2796,7 +2797,6 @@
 <translation id="3842552989725514455">Serif ಫಾಂಟ್</translation>
 <translation id="3843464315703645664">ಆಂತರಿಕವಾಗಿ ಅನುಮತಿಸಿದ ಪಟ್ಟಿ</translation>
 <translation id="3844888638014364087">ಎಮೋಜಿಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
-<translation id="384513009320852920">ನಿಮ್ಮ ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಜೋಡಿಸುವಿಕೆ ಮೋಡ್‌ನಲ್ಲಿದೆ ಮತ್ತು ಸಮೀಪದಲ್ಲಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ವೆಬ್‌ಸೈಟ್‌ಗಳು, Android ಆ್ಯಪ್‍ಗಳು, ಮತ್ತು ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಅಭಿವೃದ್ಧಿಪಡಿಸಲು ಪರಿಕರಗಳನ್ನು ಪಡೆಯಿರಿ. Linux ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುವುದರಿಂದ <ph name="DOWNLOAD_SIZE" /> ಗಾತ್ರದ ಡೇಟಾವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="3847319713229060696">ಎಲ್ಲರಿಗಾಗಿ ವೆಬ್‌ನ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯಮಾಡಿ</translation>
 <translation id="3848547754896969219">&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -4308,7 +4308,6 @@
 <translation id="5485102783864353244">ಅಪ್ಲಿಕೇಶನ್‌ ಸೇರಿಸು</translation>
 <translation id="5485754497697573575">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ </translation>
 <translation id="5486261815000869482">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಖಚಿತಪಡಿಸು</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> ನಿಮ್ಮ ಪರದೆಯನ್ನು <ph name="TAB_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="5486561344817861625">ಬ್ರೌಸರ್ ಮರುಪ್ರಾರಂಭಿಸುವಿಕೆ ಸಿಮ್ಯುಲೇಟ್‌ ಮಾಡು</translation>
 <translation id="5487460042548760727">ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="PROFILE_NAME" /> ಗೆ ಮರುಹೆಸರಿಸಿ</translation>
 <translation id="5487521232677179737">ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
@@ -4370,6 +4369,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ಗೆ ಅನುಮತಿ ಬೇಕಿದೆ</translation>
 <translation id="5534304873398226603">ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊವನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="5535941515421698170">ಹಾಗೆಯೇ ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="5539221284352502426">ನೀವು ನಮೂದಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಸರ್ವರ್ ನಿಂದ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ. ಸಂಭವನೀಯ ಕಾರಣಗಳು ಇವುಗಳನ್ನು ಒಳಗೊಂಡಿವೆ: ಪಾಸ್‌ವರ್ಡ್‌ ತುಂಬಾ ಚಿಕ್ಕದಾಗಿದೆ. ಪಾಸ್‌ವರ್ಡ್‌ ಸಂಖ್ಯೆಗಳು ಅಥವಾ ಸಂಕೇತಗಳನ್ನು ಒಳಗೊಂಡಿರಬೇಕು. ಹಿಂದಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಿಂತ ಈ ಪಾಸ್‌ವರ್ಡ್‌ ವಿಭಿನ್ನವಾಗಿರಬೇಕು.</translation>
 <translation id="5541694225089836610">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="5542132724887566711">ಪ್ರೊಫೈಲ್</translation>
@@ -4601,6 +4601,7 @@
 <translation id="5787146423283493983">ಪ್ರಮುಖ ಒಪ್ಪಂದ</translation>
 <translation id="5787420647064736989">ಸಾಧನದ ಹೆಸರು</translation>
 <translation id="5788367137662787332">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" /> ಸಾಧನದಲ್ಲಿನ ಕನಿಷ್ಠ ಒಂದೇ ಒಂದು ಭಾಗವನ್ನೂ ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="5790651917470750848">ಪೋರ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡುವಿಕೆ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="5792728279623964091">ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪವರ್ ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -4833,10 +4834,8 @@
     <ph name="BEGIN_PARAGRAPH2" />ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮುಖ್ಯ ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಬಹುದು. ನೀವು ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಥಳಕ್ಕಾಗಿ ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳ ಬಳಕೆಯನ್ನು ಸಹ ಆಫ್‌ ಮಾಡಬಹುದು.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
-<translation id="6043317578411397101"><ph name="TAB_NAME" /> ಜೊತೆಗೆ <ph name="APP_NAME" /> Chrome ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="604388835206766544">ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ವಿಶ್ಲೇಷಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6043994281159824495">ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
-<translation id="6044805581023976844"><ph name="TAB_NAME" /> ಜೊತೆಗೆ Chrome ಟ್ಯಾಬ್ ಮತ್ತು ಆಡಿಯೋ ಅನ್ನು <ph name="APP_NAME" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="6045114302329202345">ಪ್ರಾಥಮಿಕ TrackPoint ಬಟನ್</translation>
 <translation id="6047632800149092791">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6049797270917061226">ಈ ಫೈಲ್ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಕದಿಯಲು ದಾಳಿಕೋರರಿಗೆ ಅವಕಾಶ ನೀಡಬಹುದು.</translation>
@@ -7337,7 +7336,6 @@
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8655972064210167941">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲದಿರುವುದರಿಂದ ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8657393004602556571">ನೀವು ಪ್ರತಿಕ್ರಿಯೆ ತ್ಯಜಿಸಲು ಬಯಸುವಿರಾ?</translation>
-<translation id="8658645149275195032"><ph name="TAB_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಪರದೆ ಮತ್ತು ಆಡಿಯೋವನ್ನು <ph name="APP_NAME" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="8661290697478713397">ಅಜ್ಞಾ&amp;ತ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="8662733268723715832">ಇದು ನಿರೀಕ್ಷೆಗಿಂತ ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ, ನೀವು ಸ್ಕಿಪ್ ಮಾಡಬಹುದು ಅಥವಾ ಅದು ಮುಗಿಯುವವರೆಗೆ ಕಾಯಬಹುದು.</translation>
@@ -7633,7 +7631,6 @@
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' ಅನುಮತಿಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="894360074127026135">Netscape ಅಂತರರಾಷ್ಟ್ರೀಯ ಸ್ಟೆಪ್-ಅಪ್</translation>
 <translation id="8944099748578356325">ಇನ್ನಷ್ಟು ತ್ವರಿತವಾಗಿ ಬ್ಯಾಟರಿ ಬಳಸಿ (ಪ್ರಸ್ತುತವಾಗಿ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="TAB_NAME" /> ಜೊತೆಗೆ <ph name="APP_NAME" /> ವಿಂಡೋ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="8945274638472141382">ಐಕಾನ್ ಗಾತ್ರ</translation>
 <translation id="8946359700442089734">ದೋಷ ನಿವಾರಣೆಯಾಗುತ್ತಿರುವ ವೈಶಿಷ್ಟ್ಯಗಳು ಈ ಸಾಧನದಲ್ಲಿ <ph name="IDS_SHORT_PRODUCT_NAME" /> ಇನ್ನೂ ಸಂಫೂರ್ಣವಾಗಿ ಸಕ್ರಿಯವಾಗಿಲ್ಲ.</translation>
 <translation id="894763922177556086">ಉತ್ತಮ</translation>

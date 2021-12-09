@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">Accede a este sitio y a Chrome. Puedes activar la sincronización más tarde.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4249068189593983585">Sugerencia de Chrome: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
+<translation id="4267862249323750454">Las contraseñas se guardan en el <ph name="BEGIN_LINK" />Administrador de contraseñas de Google<ph name="END_LINK" /> para que puedas usarlas en cualquier dispositivo.</translation>
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome no puede buscar actualizaciones</translation>
 <translation id="4698415050768537821">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Permitir el acceso a Chrome</translation>
 <translation id="6181930887571472871">Cambia a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
+<translation id="6387994324662817823">Las contraseñas se guardan en el Administrador de contraseñas de Google solo en este dispositivo.</translation>
 <translation id="6427126399757991875">Tu organización está configurando Chrome…</translation>
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
 <translation id="6634107063912726160">Si sales de la cuenta, Chrome no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>

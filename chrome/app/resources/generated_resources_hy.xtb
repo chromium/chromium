@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">ARC-ն միացված է</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> հավելվածը ցանկանում է օգտվել <ph name="VOLUME_NAME" />-ից: Այն կարող է փոփոխել կամ ջնջել ձեր ֆայլերը:</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
+<translation id="1552752544932680961">Կառավարել ընդլայնումը</translation>
 <translation id="1553538517812678578">անսահմանափակ</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1556537182262721003">Չհաջողվեց պրոֆիլ տեղափոխել ընդլայնման գրացուցակը:</translation>
@@ -2789,7 +2790,6 @@
 <translation id="3842552989725514455">Serif տառատեսակ</translation>
 <translation id="3843464315703645664">Թույլատրված է ներքին օգտագործման համար</translation>
 <translation id="3844888638014364087">Զմայլիկը զետեղվեց</translation>
-<translation id="384513009320852920">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Ստացեք գործիքներ, որոնցով կարող եք մշակել կայքեր, Android հավելվածներ և այլն: Linux-ի տեղադրման դեպքում կներբեռնվեն <ph name="DOWNLOAD_SIZE" /> ծավալով տվյալներ:</translation>
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="3848547754896969219">Բացել &amp;ինկոգնիտո պատուհանում</translation>
@@ -4303,7 +4303,6 @@
 <translation id="5485102783864353244">Ավելացնել հավելված</translation>
 <translation id="5485754497697573575">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="5486261815000869482">Հաստատեք գաղտնաբառը</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> հավելվածը համօգտագործում է ձեր էկրանը <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="5486561344817861625">Նմանակել դիտարկիչի վերագործարկումը</translation>
 <translation id="5487460042548760727">Վերանվանել պրոֆիլը <ph name="PROFILE_NAME" />-ի</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
@@ -4365,6 +4364,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />․ անհրաժեշտ է հետևյալ թույլտվությունը՝</translation>
 <translation id="5534304873398226603">Հեռացնել լուսանկարը կամ տեսանյութը</translation>
 <translation id="5535941515421698170">Սարքից հեռացնել ընթացիկ տվյալները</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Ձեր մուտքագրած գաղտնաբառը չի ընդունվում սերվերի կողմից: Հնարավոր պատճառներն են՝ գաղտնաբառը չափազանց կարճ է, գաղտնաբառը պետք է պարունակի թվեր կամ նշաններ, գաղտնաբառը պետք է տարբեր լինի նախորդ գաղտնաբառերից:</translation>
 <translation id="5541694225089836610">Ձեր ադմինիստրատորն անջատել է այս գործողությունը</translation>
 <translation id="5542132724887566711">Պրոֆիլ</translation>
@@ -4595,6 +4595,7 @@
 <translation id="5787146423283493983">Բանալիների համաձայնեցում</translation>
 <translation id="5787420647064736989">Սարքի անվանումը</translation>
 <translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> սարքի առնվազն մեկ մասնաբաժին հնարավոր չէ միացնել:</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5790651917470750848">Միացքի վերահասցեավորում արդեն գոյություն ունի</translation>
 <translation id="5792728279623964091">Հպեք միացնելու/անջատելու կոճակին</translation>
@@ -4827,10 +4828,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Դուք կարող եք անջատել տեղորոշումը՝ սարքում անջատելով տեղորոշման հիմնական կարգավորումը: Ինչպես նաև տեղադրության կարգավորումներում կարող եք անջատել Wi-Fi-ի, բջջային ցանցերի ու տվիչների օգտագործումը տեղորոշման համար։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="6042308850641462728">Ավելին</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="604388835206766544">Չհաջողվեց վերլուծել կազմաձևը</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով և ձայնով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
 <translation id="6047632800149092791">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից և նորից մտեք։</translation>
 <translation id="6049797270917061226">Այս ֆայլի միջոցով հաքերները կարող են հափշտակել ձեր անձնական տեղեկությունները։</translation>
@@ -7331,7 +7330,6 @@
 <translation id="8655295600908251630">Վարկած</translation>
 <translation id="8655972064210167941">Մուտքը չհաջողվեց, քանի որ ձեր գաղտնաբառը չհաջողվեց հաստատել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
 <translation id="8657393004602556571">Չուղարկե՞լ կարծիքը։</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> հավելվածը կիսվում է ձեր էկրանով և ձայնով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="8661290697478713397">Բացել հղումը ինկոգ&amp;նիտո պատուհանով</translation>
 <translation id="8662671328352114214">Նոր <ph name="TYPE" /> ցանց</translation>
 <translation id="8662733268723715832">Գործողությունը սովորականից երկար է տևում։ Դուք կարող եք սպասել կամ բաց թողնել այս քայլը։</translation>
@@ -7627,7 +7625,6 @@
 <translation id="8941173171815156065">Հետ կանչել «<ph name="PERMISSION" />» թույլտվությունը</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Մարտկոցի լիցքավորումն ավելի արագ կսպառվի (այժմ լիցքավորված է <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> հավելվածը կիսվում է պատուհանով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="8945274638472141382">Պատկերակների չափը</translation>
 <translation id="8946359700442089734">Վրիպազերծման գործառույթները լրիվ միացված չեն այս <ph name="IDS_SHORT_PRODUCT_NAME" /> սարքի վրա:</translation>
 <translation id="894763922177556086">Լավ</translation>

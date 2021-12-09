@@ -164,6 +164,7 @@
 <translation id="1153636665119721804">Програма додаткового захисту Google</translation>
 <translation id="1155545602507378023">Ні, лише цей пристрій</translation>
 <translation id="1155816283571436363">Підключення до телефона</translation>
+<translation id="1158080958325422608">Застосувати верхній регістр</translation>
 <translation id="1158238185437008462">Переглянути спогади</translation>
 <translation id="1161575384898972166">Увійдіть у <ph name="TOKEN_NAME" />, щоб експортувати сертифікат клієнта.</translation>
 <translation id="116173250649946226">Адміністратор призначив тему за умовчанням. Її не можна змінювати.</translation>
@@ -538,6 +539,7 @@
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1549788673239553762">Додатку <ph name="APP_NAME" /> потрібен доступ до тому <ph name="VOLUME_NAME" />. Він може змінювати або видаляти ваші файли.</translation>
 <translation id="1552301827267621511">Розширення "<ph name="EXTENSION_NAME" />" змінило пошукову систему на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Керувати розширенням</translation>
 <translation id="1553538517812678578">без обмежень</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
@@ -700,6 +702,7 @@
 <translation id="1700079447639026019">Сайти, які ніколи не можуть використовувати файли cookie</translation>
 <translation id="1703331064825191675">Не хвилюйтеся про свої паролі</translation>
 <translation id="1703666494654169921">Заборонити сайтам використовувати пристрої або дані віртуальної реальності</translation>
+<translation id="1704097193565924901">Почати з великої літери</translation>
 <translation id="1704230497453185209">Заборонити сайтам відтворювати звук</translation>
 <translation id="1704970325597567340">Перевірку безпеки виконано <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Додано адміністратором</translation>
@@ -2804,7 +2807,6 @@
 <translation id="3842552989725514455">Шрифт Serif</translation>
 <translation id="3843464315703645664">Додано в білий список (внутрішньо)</translation>
 <translation id="3844888638014364087">Вставлено смайл</translation>
-<translation id="384513009320852920">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Отримайте інструменти для розробки веб-сайтів, додатків Android тощо. Під час встановлення Linux завантажиться <ph name="DOWNLOAD_SIZE" /> даних.</translation>
 <translation id="3847319713229060696">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="3848547754896969219">Відкрити у &amp;вікні в режимі анонімного перегляду</translation>
@@ -3592,6 +3594,7 @@
 <translation id="4681453295291708042">Вимкнути функцію "Передавання поблизу"</translation>
 <translation id="4681930562518940301">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="4682551433947286597">Фонові малюнки з’являються на екрані входу.</translation>
+<translation id="4683629100208651599">Застосувати нижній регістр</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (за умовчанням)</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
 <translation id="4684471265911890182">Додаток <ph name="APP_NAME" /> намагається отримати доступ до камери. Щоб надати його, вимкніть перемикач конфіденційності камери.</translation>
@@ -4315,7 +4318,6 @@
 <translation id="5485102783864353244">Установити додаток</translation>
 <translation id="5485754497697573575">Відновити всі вкладки</translation>
 <translation id="5486261815000869482">Підтвердьте пароль</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> показує ваш екран із вкладкою "<ph name="TAB_NAME" />".</translation>
 <translation id="5486561344817861625">Імітувати перезапуск веб-переглядача</translation>
 <translation id="5487460042548760727">Перейменувати профіль на "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
@@ -4377,6 +4379,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> хоче</translation>
 <translation id="5534304873398226603">Відхилити фото або відео</translation>
 <translation id="5535941515421698170">Також вилучити всі дані з цього пристрою</translation>
+<translation id="5537725057119320332">Трансляція</translation>
 <translation id="5539221284352502426">Сервер відхилив введений вами пароль. Можливі причини: пароль закороткий; пароль має містити цифри або символи; пароль має відрізнятися від попередніх.</translation>
 <translation id="5541694225089836610">Адміністратор вимкнув цю дію</translation>
 <translation id="5542132724887566711">Профіль</translation>
@@ -4607,6 +4610,7 @@
 <translation id="5787146423283493983">Угода щодо ключів</translation>
 <translation id="5787420647064736989">Назва пристрою</translation>
 <translation id="5788367137662787332">На жаль, підключити принаймні один розділ пристрою <ph name="DEVICE_LABEL" /> неможливо.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Готово</translation>
 <translation id="5790651917470750848">Така переадресація порту вже існує</translation>
 <translation id="5792728279623964091">Натисніть кнопку живлення</translation>
@@ -4839,10 +4843,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Щоб вимкнути її, дезактивуйте основну функцію "Доступ до моїх геоданих". Ви також можете вимкнути визначення місцезнаходження за допомогою Wi-Fi, мобільних мереж і датчиків у меню "Доступ до моїх геоданих".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Вийти з повноекранного режиму</translation>
 <translation id="6042308850641462728">Більше</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> транслює вкладку Chrome на вкладку <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Не вдалося виконати синтаксичний аналіз конфігурації</translation>
 <translation id="6043994281159824495">Вийти зараз</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> транслює вкладку Chrome і аудіо на вкладку <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Основна кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Синхронізація не працює. Вийдіть зі свого облікового запису та ввійдіть у нього знову.</translation>
 <translation id="6049797270917061226">Через цей файл зловмисники можуть викрасти вашу особисту інформацію.</translation>
@@ -5989,6 +5991,7 @@
 <translation id="7257173066616499747">Мережі Wi-Fi</translation>
 <translation id="725758059478686223">Служба друку</translation>
 <translation id="7257666756905341374">Читати дані, які ви копіюєте та вставляєте</translation>
+<translation id="7258192266780953209">Перетворення</translation>
 <translation id="7258225044283673131">Додаток не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
 <translation id="7262004276116528033">Ця служба входу в обліковий запис зареєстрована в домені <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Для вирішення проблеми виконайте подані нижче дії.
@@ -7345,7 +7348,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Помилка входу. Не вдалося підтвердити ваш пароль. Зв’яжіться з адміністратором або повторіть спробу.</translation>
 <translation id="8657393004602556571">Не надсилати відгук?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> транслює ваш екран і аудіо на вкладку <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Відкрити посилання в аноні&amp;мному вікні</translation>
 <translation id="8662671328352114214">Під’єднатися до мережі <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Це триває довше, ніж очікувалося. Можете пропустити або зачекати.</translation>
@@ -7643,7 +7645,6 @@
 <translation id="8941173171815156065">Скасувати дозвіл "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Програма підвищення до міжнародного рівня Netscape</translation>
 <translation id="8944099748578356325">швидше виснажуватиме акумулятор (наразі <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> транслює вікно на вкладку <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Розмір значка</translation>
 <translation id="8946359700442089734">Функції налагодження не повністю ввімкнено на цьому пристрої <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Хороший сигнал</translation>

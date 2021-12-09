@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">所有檔案都已備份！</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由系統管理員管理，詳細資料</translation>
 <translation id="3645233063072417428">已移動 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
-<translation id="3645531960514756307">取消固定資料夾</translation>
 <translation id="3685122418104378273">使用行動數據時，Google 雲端硬碟同步功能預設為停用。</translation>
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">我們不斷努力提升網路瀏覽的安全性。過去，任何網站都可以提示你在瀏覽器中新增擴充功能。在最新版本的 Google Chrome 中，你必須統一透過「擴充功能」頁面新增擴充功能，讓 Chrome 確實瞭解你要安裝的各項擴充功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">解除鎖定</translation>
 <translation id="912419004897138677">轉碼器</translation>
-<translation id="9129931661813833980">固定資料夾</translation>
 <translation id="9130775360844693113">「<ph name="DESTINATION_NAME" />」的成員將可存取這些項目。</translation>
 <translation id="9131598836763251128">選取一或多個檔案</translation>
 <translation id="9133055936679483811">壓縮失敗。<ph name="ERROR_MESSAGE" /></translation>

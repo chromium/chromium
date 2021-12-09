@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">Povoleno ARC</translation>
 <translation id="1549788673239553762">Aplikace <ph name="APP_NAME" /> chce získat přístup ke svazku <ph name="VOLUME_NAME" />. Bude moci upravit nebo smazat vaše soubory.</translation>
 <translation id="1552301827267621511">Rozšíření <ph name="EXTENSION_NAME" /> změnilo poskytovatele vyhledávání na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Správa rozšíření</translation>
 <translation id="1553538517812678578">neomezené</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556537182262721003">Adresář rozšíření nelze přesunout do profilu.</translation>
@@ -2789,7 +2790,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Patkové písmo</translation>
 <translation id="3843464315703645664">Na interním seznamu povolených</translation>
 <translation id="3844888638014364087">Byla vložena ikona emodži</translation>
-<translation id="384513009320852920">Zařízení Bluetooth musí být v režimu párování a poblíž. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Získejte nástroje k vývoji webů, aplikací pro Android apod. Při instalaci systému Linux se stáhne <ph name="DOWNLOAD_SIZE" /> dat.</translation>
 <translation id="3847319713229060696">Pomáhat se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="3848547754896969219">Otevřít v &amp;anonymním okně</translation>
@@ -4299,7 +4299,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5485102783864353244">Přidat aplikaci</translation>
 <translation id="5485754497697573575">Obnovit všechny karty</translation>
 <translation id="5486261815000869482">Potvrďte heslo</translation>
-<translation id="5486275809415469523">Aplikace <ph name="APP_NAME" /> sdílí vaši obrazovku s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulovat restart prohlížeče</translation>
 <translation id="5487460042548760727">Přejmenovat profil na <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Vymazat data</translation>
@@ -4361,6 +4360,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vyžaduje</translation>
 <translation id="5534304873398226603">Zahodit fotku nebo video</translation>
 <translation id="5535941515421698170">Zároveň z tohoto zařízení odstranit vaše stávající údaje</translation>
+<translation id="5537725057119320332">Odeslat</translation>
 <translation id="5539221284352502426">Zadané heslo bylo serverem odmítnuto. Možné příčiny: Heslo je příliš krátké. Heslo musí obsahovat číslice nebo symboly. Heslo se musí lišit od předchozích hesel.</translation>
 <translation id="5541694225089836610">Administrátor akci zakázal</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4591,6 +4591,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5787146423283493983">Smlouva o klíči</translation>
 <translation id="5787420647064736989">Název zařízení</translation>
 <translation id="5788367137662787332">Je nám líto, minimálně jeden oddíl zařízení <ph name="DEVICE_LABEL" /> nelze připojit.</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
 <translation id="5790651917470750848">Přesměrování portů již existuje</translation>
 <translation id="5792728279623964091">Klepněte na vypínač</translation>
@@ -4823,10 +4824,8 @@ K této akci lze přiřadit několik přepínačů.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Určování polohy můžete vypnout tím, že v zařízení deaktivujete hlavní nastavení polohy. V nastavení polohy můžete také vypnout používání sítí Wi-Fi, mobilních sítí a senzorů k určování polohy.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Ukončit režim celé obrazovky</translation>
 <translation id="6042308850641462728">Více</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> sdílí kartu Chrome s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Konfiguraci se nepodařilo analyzovat</translation>
 <translation id="6043994281159824495">Odhlásit se</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> sdílí kartu Chrome a zvuk s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primární tlačítko TrackPointu</translation>
 <translation id="6047632800149092791">Synchronizace nefunguje. Zkuste se odhlásit a znovu přihlásit.</translation>
 <translation id="6049797270917061226">Tento soubor by útočníkům mohl umožnit ukrást vaše osobní údaje.</translation>
@@ -7329,7 +7328,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Přihlášení se nezdařilo, protože nelze ověřit vaše heslo. Kontaktujte administrátora nebo to zkuste znovu.</translation>
 <translation id="8657393004602556571">Chcete zpětnou vazbu zahodit?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> sdílí vaši obrazovku a zvuk s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Otevřít odkaz v &amp;anonymním okně</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Tato akce trvá déle než obvykle. Můžete ji přeskočit nebo počkat na dokončení.</translation>
@@ -7626,7 +7624,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8941173171815156065">Odebrat oprávnění <ph name="PERMISSION" /></translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Bude rychleji vybíjet baterii (aktuálně <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> sdílí okno s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Velikost ikon</translation>
 <translation id="8946359700442089734">V tomto zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> nebyly úplně povoleny funkce ladění.</translation>
 <translation id="894763922177556086">Dobrá</translation>

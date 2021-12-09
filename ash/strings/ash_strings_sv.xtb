@@ -416,7 +416,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
-<translation id="3744282433224562605">Ange lösenordet om du vill låsa upp Chromebook</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3779139509281456663">Ansluter <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinerades med <ph name="IN_PLACE_APP" /> för att skapa en ny mapp.</translation>
-<translation id="5199367439331364630">Ange lösenordet om du vill logga in på Chromebook</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 avisering till}other{# aviseringar till}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
@@ -765,6 +763,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
 <translation id="6134259848159370930">Sök på enheten, i appar, inställningar och på webben.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Bekräfta nedladdning</translation>
 <translation id="6154006699632741460">Tillbehöret stöds inte</translation>
 <translation id="6156262341071374681">Utöka till alla appar</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>

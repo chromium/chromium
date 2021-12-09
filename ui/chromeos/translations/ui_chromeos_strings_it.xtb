@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Backup di tutti i contenuti completato.</translation>
 <translation id="3634507049637220048">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestita dall'amministratore, dettagli</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementi spostati.</translation>
-<translation id="3645531960514756307">Sblocca cartella</translation>
 <translation id="3685122418104378273">La sincronizzazione con Google Drive è disattivata per impostazione predefinita quando vengono utilizzati i dati mobili.</translation>
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Cerchiamo costantemente nuovi modi per rendere più sicura la navigazione. In passato, qualsiasi sito web poteva chiederti di aggiungere un'estensione nel browser. Nelle ultime versioni di Google Chrome, devi indicare esplicitamente a Chrome di voler installare le estensioni aggiungendole tramite la pagina Estensioni. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Blocca cartella</translation>
 <translation id="9130775360844693113">I membri di "<ph name="DESTINATION_NAME" />" avranno accesso a questi elementi.</translation>
 <translation id="9131598836763251128">Seleziona uno o più file</translation>
 <translation id="9133055936679483811">Compressione non riuscita. <ph name="ERROR_MESSAGE" /></translation>

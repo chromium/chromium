@@ -416,7 +416,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacións máis non están neste dispositivo.</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
-<translation id="3744282433224562605">Para desbloquear o Chromebook, mete o contrasinal</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Un administrador non permitiu o inicio de sesión múltiple de <ph name="USER_EMAIL" />.
 Todos os usuarios deben pechar sesión para poder continuar.</translation>
@@ -628,7 +627,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
-<translation id="5199367439331364630">Para iniciar sesión no Chromebook, mete o contrasinal</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
@@ -766,6 +764,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
 <translation id="6134259848159370930">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración e na Web.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="6154006699632741460">O periférico non é compatible</translation>
 <translation id="6156262341071374681">Despregar todas as aplicacións</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>

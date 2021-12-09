@@ -531,6 +531,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1549275686094429035">ARC gaituta</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> aplikazioak <ph name="VOLUME_NAME" /> atzitu nahi du. Fitxategiak alda edo ezaba ditzake.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" luzapenak bidalketa-hornitzailea aldatu du, eta <ph name="SEARCH_PROVIDER_DOMAIN" /> erabiliko da hemendik aurrera</translation>
+<translation id="1552752544932680961">Kudeatu luzapena</translation>
 <translation id="1553538517812678578">mugagabea</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1556537182262721003">Ezin izan da luzapenen direktorioa profilera eraman.</translation>
@@ -2778,7 +2779,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3842552989725514455">Serif letra</translation>
 <translation id="3843464315703645664">Chrome-ren onartutakoen zerrendan</translation>
 <translation id="3844888638014364087">Txertatu da emojia</translation>
-<translation id="384513009320852920">Ziurtatu Bluetooth bidezko gailua gertu eta parekatzeko moduan dagoela. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Lortu webguneak, Android-erako aplikazioak eta beste garatzeko tresnak. Linux instalatuz gero, <ph name="DOWNLOAD_SIZE" /> deskargatuko dira.</translation>
 <translation id="3847319713229060696">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="3848547754896969219">Ireki &amp;ezkutuko moduko leiho batean</translation>
@@ -4286,7 +4286,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5485102783864353244">Gehitu aplikazioa</translation>
 <translation id="5485754497697573575">Leheneratu fitxa guztiak</translation>
 <translation id="5486261815000869482">Berretsi pasahitza</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> aplikazioa zure pantaila partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="5486561344817861625">Simulatu arakatzailea berrabiaraztea</translation>
 <translation id="5487460042548760727">Aldatu <ph name="PROFILE_NAME" /> profilaren izena</translation>
 <translation id="5487521232677179737">Garbitu datuak</translation>
@@ -4348,6 +4347,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> webguneak hau egin nahi du:</translation>
 <translation id="5534304873398226603">Baztertu argazkia edo bideoa</translation>
 <translation id="5535941515421698170">Eta kendu lehendik dauden datuak gailu honetatik</translation>
+<translation id="5537725057119320332">Igorri</translation>
 <translation id="5539221284352502426">Zerbitzariak idatzi duzun pasahitza baztertu du, arrazoi hauetako baten ondorioz: pasahitza laburregia da, pasahitzak zenbakiak edo ikurrak izan behar ditu, edo pasahitza ezin da izan aurreko baten berdina.</translation>
 <translation id="5541694225089836610">Administratzaileak desgaitu egin du ekintza</translation>
 <translation id="5542132724887566711">Profila</translation>
@@ -4578,6 +4578,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5787146423283493983">Gakoei buruzko akordioa</translation>
 <translation id="5787420647064736989">Gailuaren izena</translation>
 <translation id="5788367137662787332">Ezin izan da muntatu <ph name="DEVICE_LABEL" /> gailuaren partizio bat edo gehiago.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
 <translation id="5790651917470750848">Ataka-birbideratzea badago dagoeneko</translation>
 <translation id="5792728279623964091">Sakatu etengailua</translation>
@@ -4809,10 +4810,8 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
     <ph name="BEGIN_PARAGRAPH2" />Kokapena desaktibatzeko, desaktibatu gailuaren kokapen-ezarpen nagusia. Bestela, desaktibatu kokapena zehazteko wifi-sareak, sare mugikorrak eta sentsoreak erabiltzeko aukera kokapen-ezarpenetan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Irten pantaila osoko modutik</translation>
 <translation id="6042308850641462728">Gehiago</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> Chrome-ko fitxa bat partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="604388835206766544">Ezin izan da analizatu konfigurazioa</translation>
 <translation id="6043994281159824495">Amaitu saioa</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome-ko fitxa bat eta audioa partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="6045114302329202345">TrackPoint botoi nagusia</translation>
 <translation id="6047632800149092791">Sinkronizazioa ez dabil. Amaitu eta hasi berriro saioa.</translation>
 <translation id="6049797270917061226">Baliteke fitxategiak erasotzaileei informazio pertsonala lapurtzen uztea.</translation>
@@ -7307,7 +7306,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655972064210167941">Ezin izan da hasi saioa, ezin izan delako egiaztatu pasahitza. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
 <translation id="8657393004602556571">Oharrak baztertu nahi dituzu?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> pantaila eta audioa partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="8661290697478713397">Ireki esteka &amp;ezkutuko moduko leihoan</translation>
 <translation id="8662671328352114214">Sartu <ph name="TYPE" /> sarean</translation>
 <translation id="8662733268723715832">Ohi baino gehiago ari da luzatzen prozesua. Salta ezazu edo itxaron amaitu arte.</translation>
@@ -7602,7 +7600,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8941173171815156065">Baliogabetu "<ph name="PERMISSION" />" baimena</translation>
 <translation id="894360074127026135">Nazioarteko Netscape Step-Up ziurtagiria</translation>
 <translation id="8944099748578356325">Bateria gehiago kontsumitu (% <ph name="BATTERY_PERCENTAGE" /> geratzen zaizu)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> leiho bat partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="8945274638472141382">Ikonoaren tamaina</translation>
 <translation id="8946359700442089734">Arazketa-eginbideak ez dira guztiz gaitu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailu honetan.</translation>
 <translation id="894763922177556086">ona</translation>

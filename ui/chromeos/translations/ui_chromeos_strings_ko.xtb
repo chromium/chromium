@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">백업되지 않은 파일이 없습니다.</translation>
 <translation id="3634507049637220048">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 관리자가 관리함, 세부정보</translation>
 <translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
-<translation id="3645531960514756307">폴더 고정 해제</translation>
 <translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google Drive 동기화가 기본적으로 사용 중지됩니다.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Google은 더 안전한 인터넷 사용 방법을 끊임없이 모색하고 있습니다. 이전에는 브라우저에 확장 프로그램을 추가하라는 메시지가 어느 웹사이트에서나 표시되었습니다. 하지만 Chrome의 최신 버전에서는 확장 프로그램 페이지를 통해 확장 프로그램을 추가함으로써 설치를 원한다는 사실을 Chrome에 명시적으로 알려야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="912419004897138677">코덱</translation>
-<translation id="9129931661813833980">폴더 고정</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' 멤버에게 이 항목에 액세스할 수 있는 권한이 부여됩니다.</translation>
 <translation id="9131598836763251128">파일을 한 개 이상 선택하세요.</translation>
 <translation id="9133055936679483811">압축에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>

@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Atsarginis kopijavimas baigtas!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, tvarko administratorius, išsami informacija</translation>
 <translation id="3645233063072417428">Perkelta elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Atsegti aplanką</translation>
 <translation id="3685122418104378273">„Google“ disko sinchronizavimas pagal numatytuosius nustatymus yra išjungtas, kai naudojami mobiliojo ryšio duomenys.</translation>
 <translation id="3689865792480713551">Atšaukti <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, nesuaktyvintas, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., išsami informacija</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Nuolat stengiamės padaryti naršymą saugesnį. Anksčiau bet kurioje svetainėje buvo leidžiama raginti jus pridėti plėtinį prie naršyklės. Naudodami naujausių versijų „Google Chrome“, privalote aiškiai nurodyti „Chrome“, kad norite įdiegti šiuos plėtinius, pridėję juos „Plėtinių“ puslapyje. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="912419004897138677">Kodekas</translation>
-<translation id="9129931661813833980">Prisegti aplanką</translation>
 <translation id="9130775360844693113">„<ph name="DESTINATION_NAME" />“ nariai galės pasiekti šiuos elementus.</translation>
 <translation id="9131598836763251128">Pasirinkite bent vieną failą</translation>
 <translation id="9133055936679483811">Archyvuojant įvyko klaida. <ph name="ERROR_MESSAGE" /></translation>

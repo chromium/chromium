@@ -415,7 +415,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
 <translation id="3726171378575546917">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“, „<ph name="UNAVAILABLE_APPS_TWO" />“ ir dar <ph name="UNAVAILABLE_APPS_COUNT" /> program.</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
-<translation id="3744282433224562605">Kad atrakintumėte „Chromebook“, įveskite slaptažodį</translation>
 <translation id="3771549900096082774">Didelio kontrasto režimas</translation>
 <translation id="3773700760453577392">Administratorius neleido <ph name="USER_EMAIL" /> prisijungti prie kelių paskyrų. Norėdami tęsti, visi naudotojai turi atsijungti.</translation>
 <translation id="3779139509281456663">Susiejamas įrenginys „<ph name="NAME" />“</translation>
@@ -626,7 +625,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
 <translation id="5198715732953550718">„<ph name="MOVED_APP_NAME" />“ derinama su „<ph name="IN_PLACE_APP" />“ kuriant naują aplanką.</translation>
-<translation id="5199367439331364630">Jei norite prisijungti prie „Chromebook“, įveskite slaptažodį</translation>
 <translation id="5206028654245650022">„<ph name="APP_NAME" />“, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, „<ph name="PHONE_NAME" />“</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Dar 1 pranešimas}one{Dar # pranešimas}few{Dar # pranešimai}many{Dar # pranešimo}other{Dar # pranešimų}}</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
@@ -764,6 +762,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
 <translation id="6134259848159370930">Ieškokite įrenginyje, programose, nustatymuose ir žiniatinklyje.</translation>
 <translation id="6137566720514957455">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> pašalinimo dialogo langą</translation>
+<translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
 <translation id="6154006699632741460">Išoriniai įrenginiai nepalaikomi</translation>
 <translation id="6156262341071374681">Išskleisti, kad būtų rodomos visos programos</translation>
 <translation id="615957422585914272">Rodyti ekrano klaviatūrą</translation>

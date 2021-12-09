@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">ARC on lubatud</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> soovib juurdepääsu seadmele <ph name="VOLUME_NAME" />. See võib teie faile muuta või need kustutada.</translation>
 <translation id="1552301827267621511">Laiendus „<ph name="EXTENSION_NAME" />” määras otsinguteenuse pakkujaks teenuse <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Laienduse haldamine</translation>
 <translation id="1553538517812678578">piiranguteta</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1556537182262721003">Laienduste kataloogi ei õnnestunud profiili teisaldada.</translation>
@@ -2785,7 +2786,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3842552989725514455">Seriifidega font</translation>
 <translation id="3843464315703645664">Sisemiselt lubamisloendisse lisatud</translation>
 <translation id="3844888638014364087">Emotikon on sisestatud</translation>
-<translation id="384513009320852920">Veenduge, et teie Bluetooth-seade oleks sidumisrežiimis ja läheduses. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Hankige tööriistad veebisaitide, Androidi rakenduste ja muu arendamiseks. Linuxi installimisel laaditakse alla <ph name="DOWNLOAD_SIZE" /> ulatuses andmeid.</translation>
 <translation id="3847319713229060696">Aidake veebi kõigi jaoks turvalisemaks muuta</translation>
 <translation id="3848547754896969219">Ava &amp;inkognito aknas</translation>
@@ -4293,7 +4293,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5485102783864353244">Lisa rakendus</translation>
 <translation id="5485754497697573575">Taasta kõik vahekaardid</translation>
 <translation id="5486261815000869482">Kinnitage parool</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> jagab teie ekraanikuva vahelehega <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simuleeri brauseri taaskäivitamist</translation>
 <translation id="5487460042548760727">Määra profiili uueks nimeks <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Kustuta andmed</translation>
@@ -4355,6 +4354,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> soovib</translation>
 <translation id="5534304873398226603">Eemalda foto või video</translation>
 <translation id="5535941515421698170">Eemaldage sellest seadmest ka oma olemasolevad andmed</translation>
+<translation id="5537725057119320332">Ülekanne</translation>
 <translation id="5539221284352502426">Server lükkas sisestatud parooli tagasi. Võimalikud põhjused on järgmised. Parool on liiga lühike. Parool peab sisaldama numbreid või sümboleid. Parool peab erinema eelmistest paroolidest.</translation>
 <translation id="5541694225089836610">Administraator on selle toimingu keelanud</translation>
 <translation id="5542132724887566711">Profiil</translation>
@@ -4585,6 +4585,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5787146423283493983">Võtme ühildumine</translation>
 <translation id="5787420647064736989">Seadme nimi</translation>
 <translation id="5788367137662787332">Kahjuks ei õnnestunud seadmes <ph name="DEVICE_LABEL" /> vähemalt ühe kettapartitsiooni ühendamine.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
 <translation id="5790651917470750848">Pordisiire on juba olemas</translation>
 <translation id="5792728279623964091">Puudutage toitenuppu.</translation>
@@ -4816,10 +4817,8 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Funktsiooni Asukoht saab välja lülitada, kui lülitate välja oma seadme peamise asukohaseade. Asukohaseadetes võite välja lülitada ka WiFi- ja mobiilsidevõrkude ning andurite kasutamise asukoha määramiseks.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Välju täisekraanilt</translation>
 <translation id="6042308850641462728">Rohkem</translation>
-<translation id="6043317578411397101">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte vahelehega <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Seadistuse sõelumine nurjus</translation>
 <translation id="6043994281159824495">Logi nüüd välja</translation>
-<translation id="6044805581023976844">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte ja heli vahelehega <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Peamine TrackPointi nupp</translation>
 <translation id="6047632800149092791">Sünkroonimine ei tööta. Logige välja ja seejärel uuesti sisse.</translation>
 <translation id="6049797270917061226">See fail võib ründajatel teie isikuandmete varastamist võimaldada.</translation>
@@ -7316,7 +7315,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Sisselogimine ebaõnnestus, kuna teie parooli ei saanud kinnitada. Võtke ühendust administraatoriga või proovige uuesti.</translation>
 <translation id="8657393004602556571">Kas soovite tagasisidest loobuda?</translation>
-<translation id="8658645149275195032">Rakendus <ph name="APP_NAME" /> jagab teie ekraani ja heli vahelehega <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Ava link inko&amp;gnito aknas</translation>
 <translation id="8662671328352114214"><ph name="TYPE" />-võrguga liitumine</translation>
 <translation id="8662733268723715832">See võtab oodatust kauem aega. Võite selle vahele jätta või lõpuni oodata.</translation>
@@ -7611,7 +7609,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8941173171815156065">Tühista luba „<ph name="PERMISSION" />”</translation>
 <translation id="894360074127026135">Netscape'i rahvusvaheline seadistus</translation>
 <translation id="8944099748578356325">Aku kiiremini kulutamine (praegu <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> jagab akent vahelehega <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Ikooni suurus</translation>
 <translation id="8946359700442089734">Silumisfunktsioone ei lubatud täielikult selles toote <ph name="IDS_SHORT_PRODUCT_NAME" /> seadmes.</translation>
 <translation id="894763922177556086">Hea</translation>

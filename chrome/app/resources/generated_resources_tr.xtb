@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
 <translation id="1153636665119721804">Google Gelişmiş Koruma Programı</translation>
 <translation id="1155816283571436363">Telefonunuza bağlanılıyor</translation>
+<translation id="1158080958325422608">Büyük Harf Yap</translation>
 <translation id="1158238185437008462">Anıları gör</translation>
 <translation id="1161575384898972166">Lütfen istemci sertifikasını dışa aktarmak için <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
 <translation id="116173250649946226">Yöneticiniz, değiştirilemeyen bir varsayılan tema ayarladı.</translation>
@@ -530,6 +531,7 @@
 <translation id="1549275686094429035">ARC Etkinleştirildi</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> birimine erişmek istiyor. Uygulama, dosyalarınızı değiştirebilir veya silebilir.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="SEARCH_PROVIDER_DOMAIN" /> alan adını kullanacak şekilde aramayı değiştirdi.</translation>
+<translation id="1552752544932680961">Uzantıyı yönet</translation>
 <translation id="1553538517812678578">sınırsız</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1556537182262721003">Uzantı dizini profile taşınamadı.</translation>
@@ -692,6 +694,7 @@
 <translation id="1700079447639026019">Hiçbir zaman çerez kullanamayan siteler</translation>
 <translation id="1703331064825191675">Şifreleriniz için hiç kaygılanmayın</translation>
 <translation id="1703666494654169921">Sitelerin sanal gerçeklik cihazlarını veya verileri kullanmasına izin verme</translation>
+<translation id="1704097193565924901">Büyük Harf Kullan</translation>
 <translation id="1704230497453185209">Sitelerin ses çalmasına izin verme</translation>
 <translation id="1704970325597567340">Güvenlik kontrolü şu tarihte çalıştırıldı: <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Yöneticiniz tarafından eklendi</translation>
@@ -2775,7 +2778,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Serif yazı tipi</translation>
 <translation id="3843464315703645664">Dahili olarak izin verilenler listesine eklendi</translation>
 <translation id="3844888638014364087">Emoji eklendi</translation>
-<translation id="384513009320852920">Bluetooth cihazınızın eşleme modunda ve yakında olduğundan emin olun. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Web siteleri, Android uygulamaları ve diğer içerikleri geliştirmek için araçlar edinin. Linux'ı yüklediğinizde <ph name="DOWNLOAD_SIZE" /> veri indirilecektir.</translation>
 <translation id="3847319713229060696">Web'de herkes için güvenliğin iyileştirilmesine yardımcı olun</translation>
 <translation id="3848547754896969219">&amp;Gizli pencerede aç</translation>
@@ -3560,6 +3562,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4681453295291708042">Yakındakilerle Paylaş'ı devre dışı bırak</translation>
 <translation id="4681930562518940301">Orijinal &amp;resmi yeni sekmede aç</translation>
 <translation id="4682551433947286597">Duvar kağıtları Oturum Açma Ekranında görüntülenir.</translation>
+<translation id="4683629100208651599">Küçük Harf Yap</translation>
 <translation id="4683947955326903992">%<ph name="PERCENTAGE" /> (varsayılan)</translation>
 <translation id="4684427112815847243">Her şeyi senkronize et</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" />, kameraya erişmeye çalışıyor. Erişime izin vermek için kamera gizliliğini kapatın.</translation>
@@ -4282,7 +4285,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5485102783864353244">Uygulama ekle</translation>
 <translation id="5485754497697573575">Tüm Sekmeleri Kurtar</translation>
 <translation id="5486261815000869482">Şifreyi onaylayın</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> ekranınızı <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="5486561344817861625">Tarayıcı Yeniden Başlatmasını Simüle Et</translation>
 <translation id="5487460042548760727">Profili, <ph name="PROFILE_NAME" /> olarak yeniden adlandır</translation>
 <translation id="5487521232677179737">Verileri temizle</translation>
@@ -4344,6 +4346,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> şunu yapmak istiyor:</translation>
 <translation id="5534304873398226603">Fotoğraf veya videoyu sil</translation>
 <translation id="5535941515421698170">Ayrıca, mevcut verilerinizi bu cihazdan kaldırın</translation>
+<translation id="5537725057119320332">Yayınla</translation>
 <translation id="5539221284352502426">Girdiğiniz şifre, sunucu tarafından reddedildi. Bu durumun olası nedenleri şunlardır: Şifre çok kısadır. Şifre, sayılar veya semboller içermelidir. Şifre, önceki şifrelerden farklı olmalıdır.</translation>
 <translation id="5541694225089836610">İşlem, yöneticiniz tarafından devre dışı bırakıldı</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4575,6 +4578,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5787146423283493983">Anahtar Anlaşması</translation>
 <translation id="5787420647064736989">Cihaz adı</translation>
 <translation id="5788367137662787332">Maalesef, <ph name="DEVICE_LABEL" /> cihazındaki en az bir bölüm eklenemedi.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Başarılı</translation>
 <translation id="5790651917470750848">Bağlantı noktası yönlendirme zaten var</translation>
 <translation id="5792728279623964091">Lütfen cihazınızın güç düğmesine dokunun</translation>
@@ -4806,10 +4810,8 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Konum özelliğini, cihazınızın ana Konum ayarını kapatarak devre dışı bırakabilirsiniz. Ayrıca konum ayarlarından kablosuz, mobil ağlar ve konum sensörlerinin kullanılmasını da devre dışı bırakabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Tam Ekran modundan çık</translation>
 <translation id="6042308850641462728">Daha fazla</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" />, bir Chrome sekmesini <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="604388835206766544">Yapılandırma ayrıştırılamadı</translation>
 <translation id="6043994281159824495">Şimdi çıkış yap</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" />, bir Chrome sekmesini ve sesi <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="6045114302329202345">Birincil TrackPoint düğmesi</translation>
 <translation id="6047632800149092791">Senkronizasyon çalışmıyor. Oturumu kapatıp tekrar açmayı deneyin.</translation>
 <translation id="6049797270917061226">Bu dosya, saldırganların kişisel bilgilerinizi çalmasına neden olabilir.</translation>
@@ -5953,6 +5955,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7257173066616499747">Kablosuz ağlar</translation>
 <translation id="725758059478686223">Yazdırma Hizmeti</translation>
 <translation id="7257666756905341374">Kopyaladığınız ve yapıştırdığınız verileri okuma</translation>
+<translation id="7258192266780953209">Dönüşümler</translation>
 <translation id="7258225044283673131">Uygulama yanıt vermiyor. Uygulamayı kapatmak için "Uygulamayı kapat"ı seçin.</translation>
 <translation id="7262004276116528033">Bu oturum açma hizmeti, <ph name="SAML_DOMAIN" /> tarafından barındırılıyor.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Aşağıdaki sorun giderme adımlarını deneyin:
@@ -7303,7 +7306,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Şifreniz doğrulanamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
 <translation id="8657393004602556571">Geri bildirimi silmek istediğinizden emin misiniz?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" />, ekranınızı ve sesinizi <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="8661290697478713397">Bağlantıyı Giz&amp;li Pencere'de Aç</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
 <translation id="8662733268723715832">Bu işlem beklenenden daha uzun sürüyor. İşlemi atlayabilir veya tamamlanana kadar bekleyebilirsiniz.</translation>
@@ -7598,7 +7600,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8941173171815156065">"<ph name="PERMISSION" />" iznini kaldır</translation>
 <translation id="894360074127026135">Netscape Uluslararası İlerlemesi</translation>
 <translation id="8944099748578356325">Pili daha çabuk tüketir (şu anda %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" />, bir pencereyi <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="8945274638472141382">Simge boyutu</translation>
 <translation id="8946359700442089734">Hata ayıklama özellikleri bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazda tam olarak etkinleştirilmemişti.</translation>
 <translation id="894763922177556086">İyi</translation>

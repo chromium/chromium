@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
 <translation id="3634507049637220048">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, menaxhuar nga administratori yt, detaje</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> artikuj janë zhvendosur.</translation>
-<translation id="3645531960514756307">Zhgozhdo dosjen</translation>
 <translation id="3685122418104378273">Sinkronizimi i "Diskut të Google" është çaktivizuar si parazgjedhje kur përdor të dhënat celulare.</translation>
 <translation id="3689865792480713551">Anuloje <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Ne kërkojmë vazhdimisht mënyra për ta bërë shfletimin tënd më të sigurt. Më parë, çdo uebsajt mund të të kërkonte të shtoje një shtesë në shfletues. Në versioniet e fundit të Google Chrome, duhet t'i tregosh ti vetë posaçërisht Chrome se dëshiron t'i instalosh këto shtesa duke i shtuar ato përmes faqes "Shtesat". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="912419004897138677">Kodeku</translation>
-<translation id="9129931661813833980">Gozhdo dosjen</translation>
 <translation id="9130775360844693113">Anëtarët e "<ph name="DESTINATION_NAME" />" do të fitojnë qasje te këta artikuj.</translation>
 <translation id="9131598836763251128">Zgjidh një ose më shumë skedarë</translation>
 <translation id="9133055936679483811">Ngjeshja dështoi. <ph name="ERROR_MESSAGE" /></translation>

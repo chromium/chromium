@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Wszystko ma już kopię zapasową.</translation>
 <translation id="3634507049637220048">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, zarządzana przez administratora, szczegóły</translation>
 <translation id="3645233063072417428">Liczba przeniesionych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Odepnij folder</translation>
 <translation id="3685122418104378273">Gdy komórkowa transmisja danych jest włączona, synchronizacja z Dyskiem Google jest domyślnie wyłączona.</translation>
 <translation id="3689865792480713551">Anuluj <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Stale szukamy rozwiązań, dzięki którym przeglądanie internetu będzie bezpieczniejsze. Wcześniej każda strona mogła poprosić o dodanie rozszerzenia do przeglądarki. W nowszych wersjach Google Chrome musisz dodać rozszerzenie na stronie Rozszerzenia, by wyraźnie poinformować przeglądarkę, że chcesz je zainstalować. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Przypnij folder</translation>
 <translation id="9130775360844693113">Osoby z uprawnieniami do: „<ph name="DESTINATION_NAME" />” uzyskają dostęp do tych elementów.</translation>
 <translation id="9131598836763251128">Wybierz jeden lub kilka plików</translation>
 <translation id="9133055936679483811">Pakowanie nie powiodło się. <ph name="ERROR_MESSAGE" /></translation>

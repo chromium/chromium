@@ -533,6 +533,7 @@
 <translation id="1549275686094429035">ARC-г идэвхжүүлсэн</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> нь <ph name="VOLUME_NAME" /> руу нэвтрэхийг хүсч байна. Энэ нь таны файлуудыг өөрчилж эсвэл устгаж болно.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" өргөтгөл хайлтыг <ph name="SEARCH_PROVIDER_DOMAIN" />-г ашиглах болгож өөрчилсөн байна</translation>
+<translation id="1552752544932680961">Өргөтгөлийг удирдах</translation>
 <translation id="1553538517812678578">хязгааргүй</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1556537182262721003">Өргөтгөлийн директорыг профайл руу зөөж чадсангүй.</translation>
@@ -2799,7 +2800,6 @@
 <translation id="3842552989725514455">Шовх үзүүртэй үгсийн фонт</translation>
 <translation id="3843464315703645664">Дотооддоо зөвшөөрсөн жагсаалт</translation>
 <translation id="3844888638014364087">Эможиг оруулсан</translation>
-<translation id="384513009320852920">Bluetooth төхөөрөмжөө хослуулах горим болон ойролцоо байгаа эсэхийг шалгаарай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Вебсайт, Android апп болон бусад зүйлийг хөгжүүлэхэд зориулсан хэрэгслийг аваарай. Linux-г суулгаснаар <ph name="DOWNLOAD_SIZE" /> өгөгдөл татаж авах болно.</translation>
 <translation id="3847319713229060696">Хүн бүрийн төлөө вебийн аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="3848547754896969219">&amp;Нууцлалтай цонхонд нээх</translation>
@@ -4310,7 +4310,6 @@
 <translation id="5485102783864353244">Апп нэмэх</translation>
 <translation id="5485754497697573575">Бүх Tab-г дахин сэргээх</translation>
 <translation id="5486261815000869482">Нууц үгийг баталгаажуул</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> нь таны дэлгэцийг <ph name="TAB_NAME" />-тай хуваалцаж байна.</translation>
 <translation id="5486561344817861625">Simulate Browser Restart</translation>
 <translation id="5487460042548760727">Профайлын нэрийг <ph name="PROFILE_NAME" /> болгож өөрчлөх</translation>
 <translation id="5487521232677179737">Өгөгдлийг устгах</translation>
@@ -4372,6 +4371,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />-нь дараах хүсэлтэй байна</translation>
 <translation id="5534304873398226603">Зураг эсвэл видеог устгах</translation>
 <translation id="5535941515421698170">Мөн одоогийн өгөгдлөө энэ төхөөрөмжөөс устгана уу</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Таны оруулсан нууц үгийг серверээс зөвшөөрөөгүй байна. Үүнд дараах шалтгаан байж болно: Нууц үг хэт богино. Нууц үг тоо эсвэл тэмдэгт агуулах ёстой. Нууц үг нь өмнөх нууц үгээс өөр байх шаардлагатай.</translation>
 <translation id="5541694225089836610">Таны админ үйлдлийг идэвхгүй болгосон байна</translation>
 <translation id="5542132724887566711">Танилцуулга</translation>
@@ -4603,6 +4603,7 @@
 <translation id="5787146423283493983">Гол хэлэлцээр</translation>
 <translation id="5787420647064736989">Төхөөрөмжийн нэр</translation>
 <translation id="5788367137662787332">Уучлаарай, <ph name="DEVICE_LABEL" /> төхөөрөмжийн ядаж нэг хуваалтыг засаж чадсангүй.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Амжилттай гүйцэтгэлээ</translation>
 <translation id="5790651917470750848">Порт дамжуулах оролт аль хэдийн байна</translation>
 <translation id="5792728279623964091">Асаах товчийг товшино уу</translation>
@@ -4834,10 +4835,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Та төхөөрөмжийнхөө Байршлын үндсэн тохиргоог унтрааж, Байршлыг унтраах боломжтой. Түүнчлэн та байршлын Wi‑Fi, мобайл сүлжээ болон мэдрэгчийн ашиглалтыг байршлын тохиргоонд унтрааж болно.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Бүтэн дэлгэцээс гарах</translation>
 <translation id="6042308850641462728">Илүү их</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> нь Chrome-н чихтэй хуудсыг <ph name="TAB_NAME" />-тай хуваалцаж байна.</translation>
 <translation id="604388835206766544">Тохируулгын задаргаа амжилтгүй боллоо</translation>
 <translation id="6043994281159824495">Яг одоо гарах</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> нь Chrome-н таб болон дууг <ph name="TAB_NAME" />-тай хуваалцаж байна.</translation>
 <translation id="6045114302329202345">Үндсэн TrackPoint товчлуур</translation>
 <translation id="6047632800149092791">Синк хийх ажиллахгүй байна. Гараад, дахин нэвтэрч үзнэ үү.</translation>
 <translation id="6049797270917061226">Энэ файл нь халдагчдад таны хувийн мэдээллийг хулгайлах боломжийг олгож болзошгүй.</translation>
@@ -7338,7 +7337,6 @@
 <translation id="8655295600908251630">Суваг</translation>
 <translation id="8655972064210167941">Таны нууц үгийг баталгаажуулж чадаагүй тул нэвтэрч чадсангүй. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
 <translation id="8657393004602556571">Та санал хүсэлтээ болихыг хүсэж байна уу?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> нь таны дэлгэц болон дууг <ph name="TAB_NAME" />-тай хуваалцаж байна.</translation>
 <translation id="8661290697478713397">Холбоосыг нууцлалтай цонхонд нээх</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>
 <translation id="8662733268723715832">Энэ нь ердийнхөөс удаж байгаа бөгөөд та алгасах эсвэл үүнийг дуусах хүртэл нь хүлээх боломжтой.</translation>
@@ -7631,7 +7629,6 @@
 <translation id="8941173171815156065">Зөвшөөрлийг "<ph name="PERMISSION" />" хүчингүй болго</translation>
 <translation id="894360074127026135">Нетскейп олон улсын хурдасгагч</translation>
 <translation id="8944099748578356325">Батерейг илүү хурдан ашиглах (одоогоор <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> нь <ph name="TAB_NAME" />-тай цонх хуваалцаж байна.</translation>
 <translation id="8945274638472141382">Дүрс тэмдгийн хэмжээ</translation>
 <translation id="8946359700442089734">Энэ <ph name="IDS_SHORT_PRODUCT_NAME" /> төхөөрөмж дээр алдаа засах тохиргоог бүрэн идэвхжүүлээгүй байна.</translation>
 <translation id="894763922177556086">Сайн</translation>

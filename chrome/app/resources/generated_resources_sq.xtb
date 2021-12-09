@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
 <translation id="1153636665119721804">Programi i "Mbrojtjes së përparuar" të Google</translation>
 <translation id="1155816283571436363">Po lidhet me telefonin tënd</translation>
+<translation id="1158080958325422608">Bëj me shkronja të mëdha</translation>
 <translation id="1158238185437008462">Shiko kujtimet</translation>
 <translation id="1161575384898972166">Identifikohu në <ph name="TOKEN_NAME" /> për të eksportuar certifikatën e klientit.</translation>
 <translation id="116173250649946226">Administratori yt ka caktuar një temë të parazgjedhur e cila nuk mund të modifikohet.</translation>
@@ -527,6 +528,7 @@
 <translation id="1549275686094429035">ARC-ja është aktivizuar</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> dëshiron të ketë qasje te <ph name="VOLUME_NAME" />. Ai mund të modifikojë ose fshijë skedarët e tu.</translation>
 <translation id="1552301827267621511">Shtesa "<ph name="EXTENSION_NAME" />" ndryshoi kërkimin për të përdorur <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Menaxho shtesën</translation>
 <translation id="1553538517812678578">e pakufizuar</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1556537182262721003">Direktoria e shtesës nuk mund të zhvendoset te profili.</translation>
@@ -689,6 +691,7 @@
 <translation id="1700079447639026019">Sajtet që nuk mund t'i përdorin asnjëherë kukit</translation>
 <translation id="1703331064825191675">Mos u shqetëso asnjëherë për fjalëkalime e tua</translation>
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
+<translation id="1704097193565924901">Kapitalizo</translation>
 <translation id="1704230497453185209">Mos lejo që sajtet të luajnë tinguj</translation>
 <translation id="1704970325597567340">Kontrolli i sigurisë u ekzekutua më <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Shtuar nga administratori yt</translation>
@@ -2774,7 +2777,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3842552989725514455">Shkrimi serif</translation>
 <translation id="3843464315703645664">Lista e lejimeve në nivel të brendshëm</translation>
 <translation id="3844888638014364087">Emoji u fut</translation>
-<translation id="384513009320852920">Sigurohu që pajisja jote me Bluetooth të jetë në modalitet çiftimi dhe në afërsi. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Merr vegla për zhvillimin e faqeve të internetit, aplikacioneve për Android dhe shumë të tjera. Instalimi i Linux do të shkarkojë <ph name="DOWNLOAD_SIZE" /> të dhëna.</translation>
 <translation id="3847319713229060696">Ndihmo në përmirësimin e sigurisë për të gjithë</translation>
 <translation id="3848547754896969219">Hape në &amp;dritare "të fshehtë"</translation>
@@ -3559,6 +3561,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4681453295291708042">Çaktivizo "Ndarjen në afërsi"</translation>
 <translation id="4681930562518940301">Hap imazhin &amp;origjinal në skedë të re</translation>
 <translation id="4682551433947286597">Imazhet e sfondit shfaqen në "Ekranin e identifikimit".</translation>
+<translation id="4683629100208651599">Bëj me shkronja të vogla</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (i parazgjedhur)</translation>
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> po përpiqet të ketë qasje te kamera. Çaktivizo çelësin e privatësisë të kamerës për të lejuar qasjen.</translation>
@@ -4281,7 +4284,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5485102783864353244">Shto një aplikacion</translation>
 <translation id="5485754497697573575">Restauro të gjitha skedat</translation>
 <translation id="5486261815000869482">Konfirmo fjalëkalimin</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> po ndan ekranin tënd me <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulo rifillimin e shfletimit</translation>
 <translation id="5487460042548760727">Riemërtoje profilin si <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Pastro të dhënat</translation>
@@ -4343,6 +4345,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dëshiron</translation>
 <translation id="5534304873398226603">Hiq fotografinë dhe videon</translation>
 <translation id="5535941515421698170">Hiq gjithashtu edhe të dhënat ekzistuese nga kjo pajisje</translation>
+<translation id="5537725057119320332">Transmeto</translation>
 <translation id="5539221284352502426">Fjalëkalimi që fute u refuzua nga serveri. Arsyet e mundshme përfshijnë: fjalëkalimi është tepër i shkurtër. Fjalëkalimi duhet të përfshijë numra ose simbole. Fjalëkalimi duhet të jetë i ndryshëm nga fjalëkalimet e mëparshme.</translation>
 <translation id="5541694225089836610">Veprimi është çaktivizuar nga administratori yt</translation>
 <translation id="5542132724887566711">Profili</translation>
@@ -4573,6 +4576,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5787146423283493983">Marrëveshja kryesore</translation>
 <translation id="5787420647064736989">Emri i pajisjes</translation>
 <translation id="5788367137662787332">Na vjen keq, të paktën një pjesë në pajisjen <ph name="DEVICE_LABEL" /> nuk mund të montohej.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Me sukses</translation>
 <translation id="5790651917470750848">Porta transferuese ekziston tashmë</translation>
 <translation id="5792728279623964091">Trokit te butoni i energjisë</translation>
@@ -4804,10 +4808,8 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh "Vendndodhjen" duke çaktivizuar cilësimin kryesor të "Vendndodhjes" në pajisje. Mund dhe të çaktivizosh përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen te cilësimet e vendndodhjes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Dil nga ekrani i plotë</translation>
 <translation id="6042308850641462728">Më shumë</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> po ndan një skedë të Chrome me <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Analizimi i konfigurimit dështoi</translation>
 <translation id="6043994281159824495">Dil tani</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion me <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Butoni kryesor i TrackPoint</translation>
 <translation id="6047632800149092791">Sinkronizimi nuk po punon. Provo të dalësh dhe të identifikohesh sërish.</translation>
 <translation id="6049797270917061226">Ky skedar mund t'u lejojë sulmuesve të vjedhin informacionet e tua personale.</translation>
@@ -5951,6 +5953,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7257173066616499747">Rrjetet Wi-Fi</translation>
 <translation id="725758059478686223">Shërbimi i printimit</translation>
 <translation id="7257666756905341374">Lexo të dhënat që kopjon dhe ngjit</translation>
+<translation id="7258192266780953209">Transformimet</translation>
 <translation id="7258225044283673131">Aplikacioni nuk përgjigjet. Zgjidh "Ndalo me forcë" për ta mbyllur aplikacionin.</translation>
 <translation id="7262004276116528033">Ky shërbim identifikimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Provo këto hapa të zgjidhjes së problemeve:
@@ -7300,7 +7303,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655972064210167941">Identifikimi dështoi pasi fjalëkalimi nuk mund të verifikohej. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> po ndan ekranin tënd dhe audion me <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Kjo po zgjat më shumë nga sa pritej. Mund ta kapërcesh ose të presësh derisa të kryhet.</translation>
@@ -7595,7 +7597,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8941173171815156065">Revoko lejen "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Netscape International me rritje</translation>
 <translation id="8944099748578356325">Përdorë baterinë më shpejt (aktualisht <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> po ndan një dritare me <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Madhësia e ikonës</translation>
 <translation id="8946359700442089734">Karakteristikat e korrigjimit të gabimeve nuk u aktivizuan plotësisht në këtë pajisje <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">E mirë</translation>

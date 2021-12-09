@@ -416,7 +416,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3713734891607377840">Buka apabila sudah selesai</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dan <ph name="UNAVAILABLE_APPS_COUNT" /> lagi tidak tersedia pada peranti ini.</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
-<translation id="3744282433224562605">Untuk membuka kunci Chromebook anda, masukkan kata laluan</translation>
 <translation id="3771549900096082774">Mod Kontras Tinggi</translation>
 <translation id="3773700760453577392">Pentadbir tidak membenarkan log masuk berbilang untuk <ph name="USER_EMAIL" />.
 Semua pengguna mesti log keluar untuk meneruskan.</translation>
@@ -628,7 +627,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5176318573511391780">Rakam skrin separa</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> digabungkan dengan <ph name="IN_PLACE_APP" /> untuk membuat folder baharu.</translation>
-<translation id="5199367439331364630">Untuk log masuk ke Chromebook anda, masukkan kata laluan</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan lain}other{# pemberitahuan lain}}</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
@@ -766,6 +764,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
 <translation id="6134259848159370930">Cari dalam peranti anda, apl, tetapan dan web.</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6154006699632741460">Peranti persisian tidak disokong</translation>
 <translation id="6156262341071374681">Kembangkan kepada semua apl</translation>
 <translation id="615957422585914272">Paparkan papan kekunci pada skrin</translation>

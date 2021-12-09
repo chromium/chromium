@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Všetko je zálohované!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ovládaná správcom, podrobnosti</translation>
 <translation id="3645233063072417428">Počet presunutých položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Odopnúť priečinok</translation>
 <translation id="3685122418104378273">Synchronizácia Disku Google je pri používaní mobilných dát v predvolenom nastavení zakázaná.</translation>
 <translation id="3689865792480713551">Zrušiť <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivovaná, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -927,7 +926,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9110990317705400362">Neustále hľadáme spôsoby, ako zvýšiť bezpečnosť vášho prehliadania. Predtým vás mohli všetky webové stránky vyzvať pridať rozšírenie do prehliadača. Keď chcete v novších verziách prehliadača Google Chrome pridať rozšírenia, musíte to urobiť explicitne ich pridaním na stránke Rozšírenia. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odomknúť</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Pripnúť priečinok</translation>
 <translation id="9130775360844693113">Členovia cieľa <ph name="DESTINATION_NAME" /> získajú prístup k týmto položkám.</translation>
 <translation id="9131598836763251128">Vyberte jeden alebo viac súborov</translation>
 <translation id="9133055936679483811">Komprimovanie zlyhalo. <ph name="ERROR_MESSAGE" /></translation>

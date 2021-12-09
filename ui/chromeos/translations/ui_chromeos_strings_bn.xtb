@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">সব ব্যাকআপ নেওয়া হয়ে গেছে!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সরানো হয়েছে।</translation>
-<translation id="3645531960514756307">ফোল্ডারটি আনপিন করুন</translation>
 <translation id="3685122418104378273">মোবাইল ডেটা ব্যবহার করার সময় ডিফল্টরূপে Google ড্রাইভ সিঙ্ক বন্ধ করা হয়৷</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল করুন।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">আমরা ক্রমাগত আপনার ব্রাউজিং নিরাপদ করতে উপায় খুঁজছি৷ আগে, যে কোনো ওয়েবসাইট আপনার ব্রাউজারে একটি এক্সটেনশন যোগ করার অনুরোধ জানাতে পারত৷ Google Chrome-এর সাম্প্রতিক ভার্সনে, আপনাকে অবশ্যই Chrome-কে স্পষ্টভাবে বলতে হবে যে আপনি এক্সটেনশনগুলির পৃষ্ঠার মাধ্যমে তাদের যোগ করে এই এক্সটেনশনগুলি ইনস্টল করতে চান৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="912419004897138677">কোডেক</translation>
-<translation id="9129931661813833980">ফোল্ডার পিন করুন</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' এর সদস্যরা এই আইটেমগুলির অ্যাক্সেস পাবেন।</translation>
 <translation id="9131598836763251128">এক বা একাধিক ফাইল বেছে নিন৷</translation>
 <translation id="9133055936679483811">জিপ করা ব্যর্থ হয়েছে৷ <ph name="ERROR_MESSAGE" /></translation>

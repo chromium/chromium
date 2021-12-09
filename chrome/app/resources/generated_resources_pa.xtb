@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
 <translation id="1153636665119721804">Google ਉੱਨਤ ਸੁਰੱਖਿਆ ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="1155816283571436363">ਤੁਹਾਡੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="1158080958325422608">ਵੱਡੇ ਅੱਖਰਾਂ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="1158238185437008462">ਯਾਦਾਂ ਦੇਖੋ</translation>
 <translation id="1161575384898972166">ਕਿਰਪਾ ਕਰਕੇ ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਿਰਯਾਤ ਕਰਨ ਲਈ <ph name="TOKEN_NAME" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="116173250649946226">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇੱਕ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਥੀਮ ਸੈੱਟ ਕੀਤਾ ਹੈ ਜਿਸਨੂੰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>
@@ -534,6 +535,7 @@
 <translation id="1549275686094429035">ARC ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਇਹ ਤੁਹਾਡੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਸੰਸ਼ੋਧਿਤ ਕਰ ਜਾਂ ਮਿਟਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੇ <ph name="SEARCH_PROVIDER_DOMAIN" /> ਨੂੰ ਵਰਤਣ ਲਈ ਖੋਜ ਇੰਜਣ ਨੂੰ ਬਦਲਿਆ</translation>
+<translation id="1552752544932680961">ਐਕਸਟੈਂਸ਼ਨ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="1553538517812678578">ਅਸੀਮਿਤ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1556537182262721003">ਐਕਸਟੈਂਸ਼ਨ ਡਾਇਰੈਕਟਰੀ 'ਚ ਪ੍ਰੋਫਾਈਲ ਦੀ ਹਲਚਲ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
@@ -696,6 +698,7 @@
 <translation id="1700079447639026019">ਉਹ ਸਾਈਟਾਂ ਜੋ ਕਦੇ ਵੀ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ</translation>
 <translation id="1703331064825191675">ਕਦੇ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਫ਼ਿਕਰ ਨਾ ਕਰੋ</translation>
 <translation id="1703666494654169921">ਸਾਈਟਾਂ ਨੂੰ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸ ਜਾਂ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="1704097193565924901">ਵੱਡੇ ਅੱਖਰਾਂ ਵਿੱਚ ਲਿਖੋ</translation>
 <translation id="1704230497453185209">ਸਾਈਟਾਂ ਨੂੰ ਧੁਨੀ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="1704970325597567340">ਸੁਰੱਖਿਆ ਜਾਂਚ <ph name="DATE" /> ਨੂੰ ਚਲਾਈ ਗਈ</translation>
 <translation id="1706586824377653884">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਸ਼ਾਮਲ ਕੀਤਾ</translation>
@@ -2792,7 +2795,6 @@
 <translation id="3842552989725514455">Serif ਫੌਂਟ</translation>
 <translation id="3843464315703645664">ਅੰਦਰੂਨੀ ਤੌਰ 'ਤੇ ਪ੍ਰਵਾਨਗੀ ਲਈ ਸੂਚੀਬੱਧ</translation>
 <translation id="3844888638014364087">ਇਮੋਜੀ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="384513009320852920">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧਕਰਨ ਮੋਡ ਵਿੱਚ ਹੈ ਅਤੇ ਨਜ਼ਦੀਕ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ਵੈੱਬਸਾਈਟਾਂ, Android ਐਪਾਂ ਦਾ ਵਿਕਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰਨ ਲਈ ਟੂਲ ਪ੍ਰਾਪਤ ਕਰੋ। Linux ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="DOWNLOAD_SIZE" /> ਡਾਟਾ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3847319713229060696">ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਹਰੇਕ ਲਈ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="3848547754896969219">&amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -3578,6 +3580,7 @@
 <translation id="4681453295291708042">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਬੰਦ ਕਰੋ</translation>
 <translation id="4681930562518940301">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮੂਲ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="4682551433947286597">ਵਾਲਪੇਪਰ ਸਾਈਨ-ਇਨ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ।</translation>
+<translation id="4683629100208651599">ਛੋਟੇ ਅੱਖਰਾਂ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="4684427112815847243">ਸਭ ਕੁਝ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ ਕੈਮਰਾ ਪਰਦੇਦਾਰੀ ਸਵਿੱਚ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
@@ -4300,7 +4303,6 @@
 <translation id="5485102783864353244">ਐਪ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5485754497697573575">ਸਾਰੀਆਂ ਟੈਬਸ ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="5486261815000869482">ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ <ph name="TAB_NAME" /> ਨਾਲ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5486561344817861625">ਬ੍ਰਾਊਜ਼ਰ ਰੀਸਟਾਰਟ ਦੀ ਨਕਲ ਕਰੋ</translation>
 <translation id="5487460042548760727">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲ ਕੇ <ph name="PROFILE_NAME" /> ਕਰੋ</translation>
 <translation id="5487521232677179737">ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
@@ -4362,6 +4364,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ਇਹ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5534304873398226603">ਫ਼ੋਟੋ ਜਾਂ ਵੀਡੀਓ ਰੱਦ ਕਰੋ</translation>
 <translation id="5535941515421698170">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣਾ ਮੌਜੂਦਾ ਡਾਟਾ ਵੀ ਹਟਾਓ</translation>
+<translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="5539221284352502426">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਾਖਲ ਕੀਤੇ ਪਾਸਵਰਡ ਨੂੰ ਸਰਵਰ ਨੇ ਅਸਵੀਕਾਰ ਕੀਤਾ। ਸੰਭਾਵਿਤ ਕਾਰਨਾਂ ਵਿੱਚ ਇਹ ਸ਼ਾਮਲ ਹੈ: ਪਾਸਵਰਡ ਬਹੁਤ ਛੋਟਾ ਹੈ। ਪਾਸਵਰਡ ਵਿੱਚ ਨੰਬਰ ਜਾਂ ਚਿੰਨ੍ਹ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਪਾਸਵਰਡ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਪਿਛਲੇ ਪਾਸਵਰਡਾਂ ਤੋਂ ਵੱਖਰਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="5541694225089836610">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਕਾਰਵਾਈ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5542132724887566711">ਪ੍ਰੋਫਾਈਲ</translation>
@@ -4592,6 +4595,7 @@
 <translation id="5787146423283493983">ਕੁੰਜੀ ਇਕਰਾਰਨਾਮਾ</translation>
 <translation id="5787420647064736989">ਡੀਵਾਈਸ ਦਾ ਨਾਮ</translation>
 <translation id="5788367137662787332">ਮਾਫ਼ ਕਰਨਾ, ਡੀਵਾਈਸ <ph name="DEVICE_LABEL" /> 'ਤੇ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਭਾਗ ਮਾਉਂਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">ਸਫਲਤਾ</translation>
 <translation id="5790651917470750848">ਪੋਰਟ ਫਾਰਵਰਡ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="5792728279623964091">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪਾਵਰ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -4823,10 +4827,8 @@
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਮੁੱਖ ਟਿਕਾਣਾ ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰਕੇ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਲਈ ਵਾਈ-ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਨੂੰ ਵੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /><ph name="TAB_NAME" /> ਦੇ ਨਾਲ Chrome ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="604388835206766544">ਸੰਰੂਪਣ ਨੂੰ ਪਾਰਸ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="6043994281159824495">ਹੁਣ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /><ph name="TAB_NAME" /> ਦੇ ਨਾਲ Chrome ਟੈਬ ਅਤੇ ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="6045114302329202345">ਮੁੱਖ TrackPoint ਬਟਨ</translation>
 <translation id="6047632800149092791">ਸਮਕਾਲੀਕਰਨ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ। ਸਾਈਨ ਆਊਟ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6049797270917061226">ਇਹ ਫ਼ਾਈਲ ਹਮਲਾਵਰਾਂ ਨੂੰ ਤੁਹਾਡੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨ ਦੇ ਸਕਦੀ ਹੈ।</translation>
@@ -5971,6 +5973,7 @@
 <translation id="7257173066616499747">Wi-Fi ਨੈਟਵਰਕ</translation>
 <translation id="725758059478686223">ਪ੍ਰਿੰਟਿੰਗ ਸੇਵਾ</translation>
 <translation id="7257666756905341374">ਉਹ ਡਾਟਾ ਪੜ੍ਹੋ ਜੋ ਤੁਸੀਂ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕਰਦੇ ਹੋ</translation>
+<translation id="7258192266780953209">ਰੁਪਾਂਤਰਣ</translation>
 <translation id="7258225044283673131">ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਪ੍ਰਤੀਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਹੀ ਹੈ। ਐਪ ਬੰਦ ਕਰਨ ਲਈ "ਜ਼ਬਰਦਸਤੀ ਬੰਦ ਕਰੋ" ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="7262004276116528033">ਇਹ ਸਾਈਨ-ਇਨ ਸੇਵਾ <ph name="SAML_DOMAIN" /> ਵੱਲੋਂ ਹੋਸਟ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ਸਮੱਸਿਆ-ਨਿਪਟਾਰਾ ਸੰਬੰਧੀ ਇਨ੍ਹਾਂ ਪੜਾਵਾਂ ਨੂੰ ਅਜ਼ਮਾਓ:
@@ -7321,7 +7324,6 @@
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8655972064210167941">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋ ਗਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8657393004602556571">ਕੀ ਤੁਸੀਂ ਵਿਚਾਰ ਨੂੰ ਬਰਖਾਸਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> ਦੇ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਅਤੇ ਆਡੀਓ  ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="8661290697478713397">ਗੁਮ&amp;ਨਾਮ window ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ਨੈੱਟਵਰਕ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="8662733268723715832">ਇਸ ਵਿੱਚ ਉਮੀਦ ਨਾਲੋਂ ਵੱਧ ਸਮਾਂ ਲੱਗ ਰਿਹਾ ਹੈ, ਤੁਸੀਂ ਛੱਡ ਸਕਦੇ ਹੋ ਜਾਂ ਤੁਸੀਂ ਇਸਦੇ ਪੂਰਾ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -7617,7 +7619,6 @@
 <translation id="8941173171815156065">ਅਨੁਮਤੀ '<ph name="PERMISSION" />' ਰੱਦ ਕਰੋ</translation>
 <translation id="894360074127026135">Netscape ਅੰਤਰਰਾਸ਼ਟਰੀ ਸਟੈਪ-ਅਪ</translation>
 <translation id="8944099748578356325">ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਬੈਟਰੀ ਵਰਤੇਗਾ (ਇਸ ਸਮੇਂ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> ਦੇ ਨਾਲ ਵਿੰਡੋ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="8945274638472141382">ਪ੍ਰਤੀਕ ਆਕਾਰ</translation>
 <translation id="8946359700442089734">ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਡੀਬੱਗ ਕਰਨਾ ਇਸ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ 'ਤੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸਮਰਥਿਤ ਨਹੀਂ ਸੀ।</translation>
 <translation id="894763922177556086">ਵਧੀਆ</translation>

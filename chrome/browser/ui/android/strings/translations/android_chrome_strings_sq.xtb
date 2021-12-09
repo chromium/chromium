@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
+<translation id="1832459821645506983">Po, jam dakord</translation>
 <translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
 <translation id="1856325424225101786">Të rivendoset "Modaliteti i lehtë"?</translation>
 <translation id="1868024384445905608">Chrome tani i shkarkon skedarët më shpejt</translation>
@@ -289,6 +290,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2718846868787000099">Për të shfaqur përmbajtje në gjuhët e tua të preferuara, sajtet që viziton mund të shikojnë preferencat e tua</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Rendit sipas sajtit</translation>
+<translation id="2732063072010454421">Merr një përvojë më të mirë zanore</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Trokit një fjalë për të kërkuar në çast ose për të parë veprimet e lidhura</translation>
 <translation id="2760989362628427051">Aktivizo temën e errët kur tema e errët ose "Kursyesi i baterisë" i pajisjes është aktiv</translation>
@@ -835,6 +837,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="587735546353481577">Për të ndjekur një sajt, shko te sajti, hap menynë e Chrome dhe trokit te Ndiq.</translation>
 <translation id="5880748256563468367">Shko te furnizimi</translation>
 <translation id="5884076754568147479">Për të të ndihmuar të përfundosh detyrat, Google do të marrë URL-të dhe përmbajtjet e sajteve ku ti përdor "Asistentin", si dhe informacionet që dërgon nëpërmjet "Asistentit"</translation>
+<translation id="5906513782029855931">Njohja e URL-ve të sajteve lejon që "Asistenti i Google" të të ndihmojë të përfundosh detyrat. "Asistentin" mund ta çaktivizosh te cilësimet e Chrome.</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5919204609460789179">Përditëso <ph name="PRODUCT_NAME" /> për të nisur sinkronizimin</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> të ruajtura</translation>

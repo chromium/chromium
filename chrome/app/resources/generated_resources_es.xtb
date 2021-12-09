@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">Programa de Protección Avanzada de Google</translation>
 <translation id="1155545602507378023">No, solo este dispositivo</translation>
 <translation id="1155816283571436363">Conectando con tu teléfono</translation>
+<translation id="1158080958325422608">Convertir en mayúsculas</translation>
 <translation id="1158238185437008462">Ver recuerdos</translation>
 <translation id="1161575384898972166">Inicia sesión en <ph name="TOKEN_NAME" /> para exportar el certificado de cliente.</translation>
 <translation id="116173250649946226">El administrador ha establecido un tema predeterminado que no se puede cambiar.</translation>
@@ -532,6 +533,7 @@
 <translation id="1549275686094429035">ARC habilitado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Puede modificar o eliminar tus archivos.</translation>
 <translation id="1552301827267621511">La extensión <ph name="EXTENSION_NAME" /> ha cambiado el proveedor de búsquedas a <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Gestionar extensión</translation>
 <translation id="1553538517812678578">sin límite</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">No se ha podido mover el directorio de la extensión al perfil.</translation>
@@ -694,6 +696,7 @@
 <translation id="1700079447639026019">Sitios web que no pueden usar cookies nunca</translation>
 <translation id="1703331064825191675">No vuelvas a preocuparte por tus contraseñas</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
+<translation id="1704097193565924901">Mayúsculas</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1704970325597567340">La comprobación de seguridad se ejecutó el <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Añadido por tu administrador</translation>
@@ -2786,7 +2789,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3842552989725514455">Fuente Serif</translation>
 <translation id="3843464315703645664">En la lista de permitidos interna</translation>
 <translation id="3844888638014364087">Emoji insertado</translation>
-<translation id="384513009320852920">Comprueba que tu dispositivo Bluetooth esté cerca y en modo de emparejamiento. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Consigue herramientas para desarrollar sitios web, aplicaciones de Android y mucho más. Al instalar Linux, se descargarán <ph name="DOWNLOAD_SIZE" /> de datos.</translation>
 <translation id="3847319713229060696">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="3848547754896969219">Abrir en una ventana de &amp;incógnito</translation>
@@ -3572,6 +3574,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
 <translation id="4681930562518940301">Abrir &amp;imagen original en una pestaña nueva</translation>
 <translation id="4682551433947286597">Aparecen fondos de pantalla en la pantalla de inicio de sesión.</translation>
+<translation id="4683629100208651599">Convertir en minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> está intentando acceder a la cámara. Desactiva el interruptor de privacidad de la cámara para darle acceso.</translation>
@@ -4295,7 +4298,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5485102783864353244">Añadir aplicación</translation>
 <translation id="5485754497697573575">Restaurar todas las pestañas</translation>
 <translation id="5486261815000869482">Confirmar contraseña</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> comparte tu pantalla con <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simular reinicio del navegador</translation>
 <translation id="5487460042548760727">Cambiar el nombre del perfil a <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Borrar datos</translation>
@@ -4357,6 +4359,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5534304873398226603">Descartar foto o vídeo</translation>
 <translation id="5535941515421698170">Eliminar también los datos de este dispositivo</translation>
+<translation id="5537725057119320332">Enviar</translation>
 <translation id="5539221284352502426">El servidor ha rechazado la contraseña que has introducido. Puede deberse a alguna de estas causas: la contraseña es demasiado corta. La contraseña debe contener números o símbolos. La contraseña debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador ha inhabilitado esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4587,6 +4590,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5787146423283493983">Acuerdo de claves</translation>
 <translation id="5787420647064736989">Nombre del dispositivo</translation>
 <translation id="5788367137662787332">Lo sentimos, pero no se ha podido activar al menos una partición del dispositivo <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5790651917470750848">Esa redirección de puertos ya existe</translation>
 <translation id="5792728279623964091">Toca el botón de encendido</translation>
@@ -4819,10 +4823,8 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
     <ph name="BEGIN_PARAGRAPH2" />Para inhabilitar la ubicación, desactiva la opción Ubicación del dispositivo. También puedes inhabilitar el uso de sensores y redes Wi‑Fi o móviles para determinar la ubicación en los ajustes de ubicación.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Salir del modo de pantalla completa</translation>
 <translation id="6042308850641462728">Más</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Se ha producido un error al analizar la configuración</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> está compartiendo audio y una pestaña de Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botón principal del TrackPoint</translation>
 <translation id="6047632800149092791">No funciona la sincronización. Prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="6049797270917061226">Este archivo podría permitir a los atacantes robar tu información personal.</translation>
@@ -5969,6 +5971,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7257173066616499747">Redes Wi-Fi</translation>
 <translation id="725758059478686223">Servicio de impresión</translation>
 <translation id="7257666756905341374">Leer los datos que copias y pegas</translation>
+<translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La aplicación no responde. Selecciona "Forzar cierre" para cerrar la aplicación.</translation>
 <translation id="7262004276116528033">Este servicio de inicio de sesión está alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Prueba estos pasos para solucionar el problema:
@@ -7325,7 +7328,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Se ha producido un error al iniciar sesión porque no ha sido posible verificar la contraseña. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> está compartiendo la pantalla y el audio con <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Abrir enlace en una ventana de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">El proceso está tardando más tiempo del esperado. Puedes saltártelo o esperar hasta que acabe.</translation>
@@ -7620,7 +7622,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8941173171815156065">Revocar el permiso <ph name="PERMISSION" /></translation>
 <translation id="894360074127026135">Certificado Step-Up International de Netscape</translation>
 <translation id="8944099748578356325">Consumirá batería de forma más rápida (carga actual: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> está compartiendo una ventana con <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Tamaño del icono</translation>
 <translation id="8946359700442089734">Las funciones de depuración no se han habilitado completamente en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Buena</translation>

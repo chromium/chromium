@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">ສຳ​ຮອງ​ທັງ​ໝົດ​ແລ້ວ!</translation>
 <translation id="3634507049637220048">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="3645233063072417428">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
-<translation id="3645531960514756307">ຖອດປັກໝຸດໂຟນເດີ</translation>
 <translation id="3685122418104378273">ການ​ຊິງ​ຄ໌ Google Drive ປິດ​ໃຊ້​ງານ​ໂດຍ​ມາດ​ຕະ​ຖານ​ແລ້ວ, ເມື່ອ​ກຳ​ລັງ​ໃຊ້​ຂໍ້​ມູນ​ມື​ຖື.</translation>
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">ພວກເຮົາກໍາລັງຊອກຫາວິທີເຮັດໃຫ້ການທ່ອງເວັບຂອງທ່ານມີຄວາມປອດໄພກ່ວາ​ເກົ່າຢ່າງຕໍ່ເນື່ອງ. ກ່ອນນັ້ນ, ເວັບໄຊທ໌ໃດໜຶ່ງສາມາດເຕືອນໃຫ້ທ່ານເພີມສ່ວນຂະຫຍາຍເຂົ້າໃສ່ບຣາວເຊີຂອງທ່ານ. ຢູ່ໃນ Google Chrome ລຸ້ນຫຼ້າສຸດ, ທ່ານບອກ Chrome ຢ່າງຈະແຈ້ງວ່າ ທ່ານຕ້ອງການຕິດຕັ້ງສ່ວນຂະຫຍາຍນີ້ໂດຍການເພີ່ມພວກມັນຜ່ານໜ້າສ່ວນຂະຫຍາຍ. <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ປົດລັອກ</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">ປັກໝຸດໂຟນເດີ</translation>
 <translation id="9130775360844693113">ສະມາຊິກຂອງ '<ph name="DESTINATION_NAME" />' ຈະມີການເຂົ້າເຖິງລາຍການເຫຼົ່ານີ້.</translation>
 <translation id="9131598836763251128">ເລືອກໜຶ່ງ ຫຼືຫຼາຍໄຟລ໌</translation>
 <translation id="9133055936679483811">ການຊິບບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>

@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
+<translation id="1832459821645506983">כן, אני רוצה</translation>
 <translation id="1843805151597803366">‏כדי לשפר את התרגומים, יש לאפשר לחיפוש Google להשתמש בדף הנוכחי</translation>
 <translation id="1856325424225101786">לאפס את מצב הטעינה המהירה?</translation>
 <translation id="1868024384445905608">‏הורדת קבצים ב-Chrome מתבצעת עכשיו מהר יותר</translation>
@@ -289,6 +290,7 @@
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2728754400939377704">מיון לפי אתר</translation>
+<translation id="2732063072010454421">אפשר ליהנות מחוויה טובה יותר בחיפוש קולי</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
@@ -835,6 +837,7 @@
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
 <translation id="5880748256563468367">לכניסה אל הפיד</translation>
 <translation id="5884076754568147479">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של האתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant</translation>
+<translation id="5906513782029855931">‏אם מכירים כתובות של אתרים, Google Assistant יכולה לעזור להשלים משימות. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> נחסכו</translation>

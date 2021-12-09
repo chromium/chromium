@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Сѐ е ископирано!</translation>
 <translation id="3634507049637220048">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управувана од администраторот, детали</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени.</translation>
-<translation id="3645531960514756307">Откачете ја папката</translation>
 <translation id="3685122418104378273">Кога се користи мобилен интернет, синхронизацијата со Google Drive стандардно е оневозможена.</translation>
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Ние постојано бараме начини да го направиме вашето прелистување побезбедно. Порано, која било веб-локација можеше да побара од вас да додадете наставка на прелистувачот. Во најновите верзии на Google Chrome, мора јасно да му кажете на Chrome дека сакате да ги инсталирате овие наставки со нивно додавање преку страницата Наставки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Прикачи папка</translation>
 <translation id="9130775360844693113">Членовите на „<ph name="DESTINATION_NAME" />“ ќе добијат пристап до ставкиве.</translation>
 <translation id="9131598836763251128">Изберете една или повеќе датотеки</translation>
 <translation id="9133055936679483811">Пакувањето не успеа. <ph name="ERROR_MESSAGE" /></translation>

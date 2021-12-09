@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">पूरा होने पर खोलें</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, और <ph name="UNAVAILABLE_APPS_COUNT" /> ऐप्लिकेशन इस डिवाइस पर मौजूद नहीं हैं.</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
-<translation id="3744282433224562605">अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें</translation>
 <translation id="3771549900096082774">उच्च कंट्रास्ट मोड</translation>
 <translation id="3773700760453577392">किसी एडमिन ने <ph name="USER_EMAIL" /> के लिए एक से ज़्यादा 'साइन इन' नामंज़ूर कर दिए हैं.
 जारी रखने के लिए सभी उपयोगकर्ताओं को साइन आउट करना होगा.</translation>
@@ -628,7 +627,6 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
 <translation id="5198715732953550718">नया फ़ोल्डर बनाने के लिए <ph name="MOVED_APP_NAME" /> को <ph name="IN_PLACE_APP" /> में जोड़ा गया.</translation>
-<translation id="5199367439331364630">अपने Chromebook में साइन इन करने के लिए, पासवर्ड डालें</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 अन्य सूचना}one{# अन्य सूचना}other{# अन्य सूचनाएं}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
@@ -766,6 +764,7 @@
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6134259848159370930">अपने डिवाइस, ऐप्लिकेशन, सेटिंग, के साथ-साथ वेब पर भी खोजें.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> के लिए, खाता हटाएं वाला डायलॉग खोलें</translation>
+<translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
 <translation id="6154006699632741460">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं कर रहा</translation>
 <translation id="6156262341071374681">सभी ऐप्लिकेशन दिखाएं</translation>
 <translation id="615957422585914272">ऑन-स्क्रीन कीबोर्ड दिखाएं</translation>

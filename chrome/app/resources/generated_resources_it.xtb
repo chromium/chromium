@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">ARC attivato</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vorrebbe accedere a <ph name="VOLUME_NAME" />. Potrebbe modificare o eliminare i tuoi file.</translation>
 <translation id="1552301827267621511">L'estensione "<ph name="EXTENSION_NAME" />" ha modificato la ricerca per utilizzare <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Gestisci estensione</translation>
 <translation id="1553538517812678578">illimitato</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1556537182262721003">Impossibile spostare la directory dell'estensione nel profilo.</translation>
@@ -2780,7 +2781,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3842552989725514455">Carattere serif</translation>
 <translation id="3843464315703645664">Consentita internamente</translation>
 <translation id="3844888638014364087">Emoji inserita</translation>
-<translation id="384513009320852920">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Scarica strumenti per sviluppare siti web, app Android e non solo. Se installi Linux verranno scaricati <ph name="DOWNLOAD_SIZE" /> di dati.</translation>
 <translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul Web per tutti gli utenti</translation>
 <translation id="3848547754896969219">Apri l'URL nella finestra di navigazione in &amp;incognito</translation>
@@ -4288,7 +4288,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5485102783864353244">Aggiungi app</translation>
 <translation id="5485754497697573575">Ripristina tutte le schede</translation>
 <translation id="5486261815000869482">Conferma password</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> condivide il tuo schermo con <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simula riavvio browser</translation>
 <translation id="5487460042548760727">Rinomina il profilo in <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Cancella dati</translation>
@@ -4350,6 +4349,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vorrebbe</translation>
 <translation id="5534304873398226603">Elimina foto o video</translation>
 <translation id="5535941515421698170">Rimuovi anche i dati esistenti da questo dispositivo</translation>
+<translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5539221284352502426">La password inserita è stata rifiutata dal server. Alcune possibili cause sono: la password è troppo breve; la password deve includere numeri o simboli; la password deve essere diversa dalle password precedenti.</translation>
 <translation id="5541694225089836610">Azione disattivata dall'amministratore</translation>
 <translation id="5542132724887566711">Profilo</translation>
@@ -4580,6 +4580,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5787146423283493983">Chiave concordata</translation>
 <translation id="5787420647064736989">Nome dispositivo</translation>
 <translation id="5788367137662787332">Spiacenti, impossibile montare almeno una partizione del dispositivo <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Completato</translation>
 <translation id="5790651917470750848">Il port forwarding esiste già</translation>
 <translation id="5792728279623964091">Tocca il tasto di accensione</translation>
@@ -4811,10 +4812,8 @@ Puoi assegnare più sensori a questa azione.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione tramite la disattivazione dell'impostazione Posizione principale del tuo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Chiudi schermo intero</translation>
 <translation id="6042308850641462728">Altro</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> condivide una scheda Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Impossibile analizzare la configurazione</translation>
 <translation id="6043994281159824495">Esci ora</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> condivide l'audio e una scheda Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Pulsante principale TrackPoint</translation>
 <translation id="6047632800149092791">La sincronizzazione non funziona. Prova a uscire e ripetere l'accesso.</translation>
 <translation id="6049797270917061226">Questo file potrebbe consentire agli utenti malintenzionati di rubare le tue informazioni personali.</translation>
@@ -7311,7 +7310,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8655972064210167941">Accesso non riuscito perché non è stato possibile verificare la password. Contatta l'amministratore o riprova.</translation>
 <translation id="8657393004602556571">Vuoi ignorare il feedback?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> condivide l'audio e il tuo schermo con <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Apri link in finestra di navigazione in inco&amp;gnito</translation>
 <translation id="8662671328352114214">Aggiungi la rete <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">L'operazione sta richiedendo più tempo del previsto. Puoi saltarla o attendere fino al completamento.</translation>
@@ -7607,7 +7605,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8941173171815156065">Revoca l'autorizzazione "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Consumerà più velocemente la batteria (attualmente con <ph name="BATTERY_PERCENTAGE" />% di carica)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> condivide una finestra con <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Dimensioni delle icone</translation>
 <translation id="8946359700442089734">Le funzioni di debug non sono state attivate completamente su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Buona</translation>

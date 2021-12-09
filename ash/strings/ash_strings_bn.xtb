@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">সম্পূর্ণ হলে খুলুন</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> এবং আরও <ph name="UNAVAILABLE_APPS_COUNT" />টি অ্যাপ এই ডিভাইসে উপলভ্য নেই।</translation>
 <translation id="3742055079367172538">স্ক্রিনশট নেওয়া হয়েছে</translation>
-<translation id="3744282433224562605">Chromebook আনলক করতে, পাসওয়ার্ড লিখুন</translation>
 <translation id="3771549900096082774">উচ্চ কনট্রাস্ট মোড</translation>
 <translation id="3773700760453577392">একজন অ্যাডমিনিস্ট্রেটর <ph name="USER_EMAIL" />-র জন্য একাধিক সাইন-ইন বাতিল করেছেন। চালিয়ে যাওয়ার জন্য, সব ব্যবহারকারীকে অবশ্যই সাইন-আউট করতে হবে।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> কানেক্ট করা হচ্ছে</translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
 <translation id="5198715732953550718">নতুন ফোল্ডার তৈরি করতে <ph name="MOVED_APP_NAME" /> অ্যাপ <ph name="IN_PLACE_APP" /> অ্যাপের সঙ্গে যোগ করা হয়েছে।</translation>
-<translation id="5199367439331364630">Chromebook-এ সাইন-ইন করতে, পাসওয়ার্ড লিখুন</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{অন্যান্য ১টি বিজ্ঞপ্তি}one{অন্যান্য #টি বিজ্ঞপ্তি}other{অন্যান্য #টি বিজ্ঞপ্তি}}</translation>
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
 <translation id="6134259848159370930">আপনার ডিভাইস, অ্যাপ, সেটিংস এবং ওয়েবে সার্চ করুন।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
+<translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="6154006699632741460">পেরিফেরাল কাজ করে না</translation>
 <translation id="6156262341071374681">সমস্ত অ্যাপ দেখুন</translation>
 <translation id="615957422585914272">অন-স্ক্রিন কীবোর্ড প্রদর্শন করুন</translation>

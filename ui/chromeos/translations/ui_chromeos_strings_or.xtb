@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">ସମସ୍ତ ବ୍ୟାକ୍‍ଅପ୍‍ ନିଆଯାଇଛି!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
-<translation id="3645531960514756307">ଫୋଲ୍ଡର୍ ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
@@ -921,7 +920,6 @@
 <translation id="9110990317705400362">ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌କୁ ସୁରକ୍ଷିତ କରିବାକୁ ଆମେ ନିରିବିଚ୍ଛିନ୍ନ ଭାବରେ ଉପାୟ ଖୋଜୁଛୁ। ପୂର୍ବରୁ, ଯେକୌଣସି ୱେବ୍‌ସାଇଟ୍‍ ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌ରେ ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିବାକୁ ଆପଣଙ୍କୁ ସଙ୍କେତ ଦେଇଥିଲା। Google Chromeର ନବୀନତମ ସଂସ୍କରଣରେ, ଆପଣଙ୍କୁ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପୃଷ୍ଠା ମାଧ୍ୟମରେ ଏହି ଏକ୍ସଟେନ୍‍ସନ୍‌କୁ ଯୋଗ କରି Chromeକୁ ସ୍ପଷ୍ଟ ଭାବରେ କହିବାକୁ ପଡ଼ିବ ଯେ ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌‍ଗୁଡ଼ିକୁ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">ଫୋଲ୍ଡର୍ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="9130775360844693113"><ph name="DESTINATION_NAME" />ର ସଦସ୍ୟମାନେ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
 <translation id="9131598836763251128">ଏକ କିମ୍ବା ଏକାଧିକ ଫାଇଲ୍‌ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="9133055936679483811">ଜିପ୍ କରିବା ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>

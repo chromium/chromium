@@ -537,6 +537,7 @@
 <translation id="1549275686094429035">ARC е овозможена</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> сака да пристапи на <ph name="VOLUME_NAME" />. Тоа може да ги измени или да ги избрише вашите датотеки.</translation>
 <translation id="1552301827267621511">Екстензијата „<ph name="EXTENSION_NAME" />“ го смени пребарувачот и ќе го користи <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Управувај со наставка</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1556537182262721003">Не може да го премести директориумот за наставки во профилот.</translation>
@@ -2804,7 +2805,6 @@
 <translation id="3842552989725514455">Фонт Serif</translation>
 <translation id="3843464315703645664">Внатрешно ставена на списокот на дозволен пристап</translation>
 <translation id="3844888638014364087">Внесено е емоџи</translation>
-<translation id="384513009320852920">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Добијте алатки за програмирање веб-сајтови, апликации за Android и друго. Ако инсталирате Linux, ќе се преземат <ph name="DOWNLOAD_SIZE" /> податоци.</translation>
 <translation id="3847319713229060696">Помогнете да се подобри безбедноста на интернет за сите</translation>
 <translation id="3848547754896969219">Отвори во &amp;прозорец „Инкогнито“</translation>
@@ -4316,7 +4316,6 @@
 <translation id="5485102783864353244">Додај апликација</translation>
 <translation id="5485754497697573575">Обнови ги сите картички</translation>
 <translation id="5486261815000869482">Потврди лозинка</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> го споделува вашиот екран со <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Симулирај рестартирање на прелистувач</translation>
 <translation id="5487460042548760727">Преименувајте го профилот во <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
@@ -4378,6 +4377,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> сака да</translation>
 <translation id="5534304873398226603">Отфрли фотографија или видео</translation>
 <translation id="5535941515421698170">Исто така, отстранете ги постојните податоци од уредов</translation>
+<translation id="5537725057119320332">Емитувај</translation>
 <translation id="5539221284352502426">Серверот ја одби лозинката што ја внесовте. Можни причини за тоа се: лозинката е премногу кратка; лозинката мора да содржи броеви или симболи; лозинката мора да се разликува од претходните лозинки.</translation>
 <translation id="5541694225089836610">Дејството е оневозможено од администраторот</translation>
 <translation id="5542132724887566711">Профил</translation>
@@ -4608,6 +4608,7 @@
 <translation id="5787146423283493983">Клучен договор</translation>
 <translation id="5787420647064736989">Име на уредот</translation>
 <translation id="5788367137662787332">Извинете, најмалку една партиција на уредот <ph name="DEVICE_LABEL" /> не може да се постави.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5790651917470750848">Проследувањето на портата веќе постои</translation>
 <translation id="5792728279623964091">Допрете го копчето за вклучување</translation>
@@ -4840,10 +4841,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Може да ја исклучите „Локацијата“ со исклучување на главната поставка „Локација“ на уредот. Може да го исклучите и користењето Wi-Fi, мобилни мрежи и сензори за локација во поставките за локација.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Излези од цел екран</translation>
 <translation id="6042308850641462728">Повеќе</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> споделува картичка на Chrome со <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Неуспешно анализирање на конфигурацијата</translation>
 <translation id="6043994281159824495">Одјави се сега</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> споделува картичка на Chrome и аудио со <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Примарно копче TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизацијата не функционира. Обидете се да се одјавите и да се најавите повторно.</translation>
 <translation id="6049797270917061226">Датотекава може да дозволи напаѓачи да ги украдат вашите лични податоци.</translation>
@@ -7349,7 +7348,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Најавувањето не успеа бидејќи не може да се потврди вашата лозинка. Контактирајте со администраторот или обидете се повторно.</translation>
 <translation id="8657393004602556571">Дали сакате да ги откажете повратните информации?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> ги споделува вашиот екран и аудио со <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Ова трае подолго од очекуваното, може да прескокнете или да почекате да заврши.</translation>
@@ -7645,7 +7643,6 @@
 <translation id="8941173171815156065">Отповикај ја дозволата „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Меѓународно покачување на Netscape</translation>
 <translation id="8944099748578356325">Ја троши батеријата побрзо (во моментов <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> споделува прозорец со <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Големина на иконата</translation>
 <translation id="8946359700442089734">Функциите за отстранување грешки не се целосно овозможени на овој уред со <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Добро</translation>

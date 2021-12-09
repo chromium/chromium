@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">สำรองข้อมูลทั้งหมดแล้ว!</translation>
 <translation id="3634507049637220048">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="3645233063072417428">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
-<translation id="3645531960514756307">เลิกตรึงโฟลเดอร์</translation>
 <translation id="3685122418104378273">เมื่อใช้ข้อมูลมือถือ การซิงค์ Google ไดรฟ์จะปิดใช้อยู่เป็นค่าเริ่มต้น</translation>
 <translation id="3689865792480713551">ยกเลิก<ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, <ph name="CONNECTION_STATUS" />, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">เรายังคงค้นหาวิธีที่จะทำให้การท่องเว็บของคุณปลอดภัยยิ่งขึ้นอย่างสม่ำเสมอ ก่อนหน้านี้ทุกเว็บไซต์สามารถแสดงข้อความแจ้งให้คุณเพิ่มส่วนขยายในเบราว์เซอร์ แต่ใน Google Chrome เวอร์ชันล่าสุด คุณจะต้องแจ้งให้ Chrome ทราบอย่างชัดเจนว่าคุณต้องการติดตั้งส่วนขยายเหล่านี้โดยการเพิ่มส่วนขยายผ่านหน้า "ส่วนขยาย" <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="912419004897138677">ตัวแปลงรหัส</translation>
-<translation id="9129931661813833980">ตรึงโฟลเดอร์</translation>
 <translation id="9130775360844693113">สมาชิกของ "<ph name="DESTINATION_NAME" />" จะได้รับสิทธิ์เข้าถึงรายการเหล่านี้</translation>
 <translation id="9131598836763251128">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
 <translation id="9133055936679483811">การซิปล้มเหลว <ph name="ERROR_MESSAGE" /></translation>

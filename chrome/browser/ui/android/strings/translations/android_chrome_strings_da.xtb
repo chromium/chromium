@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
 <translation id="1829244130665387512">Find på siden</translation>
+<translation id="1832459821645506983">Ja tak</translation>
 <translation id="1843805151597803366">Du kan få bedre oversættelser ved at lade Google Søgning bruge den aktuelle side</translation>
 <translation id="1856325424225101786">Vil du nulstille Lite-tilstand?</translation>
 <translation id="1868024384445905608">Chrome downloader nu filer endnu hurtigere</translation>
@@ -289,6 +290,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2718846868787000099">For at vise indhold på dine foretrukne sprog kan de websites, du besøger, se dine præferencer</translation>
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2728754400939377704">Sortér efter website</translation>
+<translation id="2732063072010454421">Få en bedre brugeroplevelse med stemmesøgning</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tryk på et ord for at søge øjeblikkeligt eller se relaterede handlinger</translation>
 <translation id="2760989362628427051">Aktivér mørkt tema, når enhedens mørke tema eller batterisparefunktion er aktiveret</translation>
@@ -835,6 +837,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="587735546353481577">Følg et website ved at gå til websitet, åbne Chrome-menuen og trykke på Følg.</translation>
 <translation id="5880748256563468367">Gå til feed</translation>
 <translation id="5884076754568147479">For at hjælpe dig med at udføre opgaver modtager Google webadresser for og indhold på websites, hvor du bruger Assistent, samt oplysninger du indsender via Assistent</translation>
+<translation id="5906513782029855931">Hvis Google Assistent får indsigt i sidernes webadresser, kan du få hjælp med at udføre opgaver. Du kan deaktivere Assistent i indstillingerne for Chrome.</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5919204609460789179">Opdater <ph name="PRODUCT_NAME" /> for at starte synkroniseringen</translation>
 <translation id="5937580074298050696">Du har sparet <ph name="AMOUNT" /></translation>

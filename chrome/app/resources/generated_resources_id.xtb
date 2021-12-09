@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1153636665119721804">Program Perlindungan Lanjutan Google</translation>
 <translation id="1155816283571436363">Menghubungkan ke ponsel Anda</translation>
+<translation id="1158080958325422608">Jadikan Huruf Besar</translation>
 <translation id="1158238185437008462">Lihat kenangan</translation>
 <translation id="1161575384898972166">Masuklah ke <ph name="TOKEN_NAME" /> untuk mengeskpor sertifikat klien.</translation>
 <translation id="116173250649946226">Administrator telah menyetel tema default yang tidak dapat diubah.</translation>
@@ -533,6 +534,7 @@
 <translation id="1549275686094429035">ARC Aktif</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Ini dapat mengubah atau menghapus file Anda.</translation>
 <translation id="1552301827267621511">Ekstensi "<ph name="EXTENSION_NAME" />" mengubah penyedia penelusuran menjadi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Kelola ekstensi</translation>
 <translation id="1553538517812678578">tidak terbatas</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1556537182262721003">Tidak dapat memindah direktori ekstensi ke dalam profil.</translation>
@@ -695,6 +697,7 @@
 <translation id="1700079447639026019">Situs yang tidak boleh menggunakan cookie</translation>
 <translation id="1703331064825191675">Tidak perlu mengkhawatirkan sandi Anda</translation>
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
+<translation id="1704097193565924901">Huruf Besar di Awal Kata</translation>
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
 <translation id="1704970325597567340">Pemeriksaan keamanan berjalan tanggal <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Ditambahkan oleh administrator Anda</translation>
@@ -2792,7 +2795,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3842552989725514455">Font Serif</translation>
 <translation id="3843464315703645664">Diizinkan secara internal</translation>
 <translation id="3844888638014364087">Emoji disisipkan</translation>
-<translation id="384513009320852920">Pastikan perangkat Bluetooth Anda dalam mode penyambungan dan berada di sekitar. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Dapatkan fitur untuk mengembangkan situs, aplikasi Android, dan lainnya. Menginstal Linux akan mendownload <ph name="DOWNLOAD_SIZE" /> data.</translation>
 <translation id="3847319713229060696">Bantu sempurnakan keamanan di web untuk semuanya</translation>
 <translation id="3848547754896969219">Buka di &amp;jendela Samaran</translation>
@@ -3578,6 +3580,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4681453295291708042">Nonaktifkan Berbagi Langsung</translation>
 <translation id="4681930562518940301">Buka &amp;gambar asli di tab baru</translation>
 <translation id="4682551433947286597">Wallpaper muncul di Layar Login.</translation>
+<translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sinkronkan semua</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> sedang mencoba mengakses kamera. Nonaktifkan tombol mode privasi kamera untuk mengizinkan akses.</translation>
@@ -4300,7 +4303,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5485102783864353244">Tambahkan aplikasi</translation>
 <translation id="5485754497697573575">Pulihkan Semua Tab</translation>
 <translation id="5486261815000869482">Konfirmasi sandi</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> membagikan layar Anda dengan <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulasikan Mulai Ulang Browser</translation>
 <translation id="5487460042548760727">Ganti nama profil menjadi <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Hapus data</translation>
@@ -4362,6 +4364,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ingin</translation>
 <translation id="5534304873398226603">Hapus foto atau video</translation>
 <translation id="5535941515421698170">Tindakan ini juga menghapus data yang sudah ada dari perangkat ini</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Sandi yang Anda masukkan ditolak oleh server. Kemungkinan alasannya adalah: Sandi terlalu pendek. Sandi harus menyertakan angka atau simbol. Sandi harus berbeda dari sandi sebelumnya.</translation>
 <translation id="5541694225089836610">Tindakan dinonaktifkan oleh administrator Anda</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4592,6 +4595,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5787146423283493983">Perjanjian Kunci</translation>
 <translation id="5787420647064736989">Nama perangkat</translation>
 <translation id="5788367137662787332">Maaf, setidaknya satu partisi pada perangkat <ph name="DEVICE_LABEL" /> tidak dapat dipasang.</translation>
+<translation id="5789643057113097023">:</translation>
 <translation id="5790085346892983794">Berhasil</translation>
 <translation id="5790651917470750848">Port penerusan sudah ada</translation>
 <translation id="5792728279623964091">Harap ketuk power Anda</translation>
@@ -4823,10 +4827,8 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan Lokasi dengan menonaktifkan setelan Lokasi utama di perangkat. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi di setelan lokasi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Keluar dari Layar Penuh</translation>
 <translation id="6042308850641462728">Lainnya</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> membagikan tab Chrome dengan <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Gagal mengurai konfigurasi</translation>
 <translation id="6043994281159824495">Keluar sekarang</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> membagikan tab Chrome dan audio dengan <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Tombol TrackPoint utama</translation>
 <translation id="6047632800149092791">Sinkronisasi tidak berfungsi. Coba logout lalu login lagi.</translation>
 <translation id="6049797270917061226">File ini dapat memungkinkan penyerang mencuri informasi pribadi Anda.</translation>
@@ -5970,6 +5972,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7257173066616499747">Jaringan Wi-Fi</translation>
 <translation id="725758059478686223">Layanan Pencetakan</translation>
 <translation id="7257666756905341374">Mengakses data yang Anda salin dan tempel</translation>
+<translation id="7258192266780953209">Transformasi</translation>
 <translation id="7258225044283673131">Aplikasi tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
 <translation id="7262004276116528033">Layanan masuk ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Coba langkah pemecahan masalah berikut:
@@ -7322,7 +7325,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Proses masuk gagal karena sandi Anda tidak dapat diverifikasi. Hubungi administrator atau coba lagi.</translation>
 <translation id="8657393004602556571">Ingin menghapus masukan?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> membagikan layar dan audio Anda dengan <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Buka Tautan di Jendela Penya&amp;maran</translation>
 <translation id="8662671328352114214">Bergabung dengan jaringan <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Proses ini lebih lama dari perkiraan. Anda dapat melewati atau menunggu hingga proses selesai.</translation>
@@ -7617,7 +7619,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8941173171815156065">Cabut izin '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Menghabiskan baterai lebih cepat (saat ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> membagikan jendela dengan <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Ukuran ikon</translation>
 <translation id="8946359700442089734">Fitur debug belum diaktifkan sepenuhnya di perangkat <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Baik</translation>

@@ -416,7 +416,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
-<translation id="3744282433224562605">Chromebooki avamiseks sisestage parool</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
 Jätkamiseks peavad kõik kasutajad välja logima.</translation>
@@ -628,7 +627,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombineeriti uue kausta loomiseks rakendusega <ph name="IN_PLACE_APP" />.</translation>
-<translation id="5199367439331364630">Chromebooki sisselogimiseks sisestage parool</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 muu märguanne}other{# muud märguannet}}</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
@@ -766,6 +764,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
 <translation id="6134259848159370930">Otsige oma seadmest, rakendustest, seadetest ja veebist.</translation>
 <translation id="6137566720514957455">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> eemaldamise dialoogi avamine</translation>
+<translation id="6141988275892716286">Allalaadimise kinnitamine</translation>
 <translation id="6154006699632741460">Välisseadet ei toetata</translation>
 <translation id="6156262341071374681">Laiendage kõikide rakenduste kuvamiseks</translation>
 <translation id="615957422585914272">Ekraanil kuvatava klaviatuuri kuvamine</translation>

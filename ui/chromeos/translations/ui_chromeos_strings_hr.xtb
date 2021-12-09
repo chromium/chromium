@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Sve je sigurnosno kopirano!</translation>
 <translation id="3634507049637220048">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja administrator, pojedinosti</translation>
 <translation id="3645233063072417428">Premješteno stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Otkvači mapu</translation>
 <translation id="3685122418104378273">Sinkronizacija Google diska onemogućena je prema zadanim postavkama kada se upotrebljavaju mobilni podaci.</translation>
 <translation id="3689865792480713551">Otkažite <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Neprestano nastojimo učiniti pregledavanje interneta sigurnijim. Ranije je bilo koja web-lokacija mogla tražiti da dodate proširenje u preglednik. Najnovije verzije Google Chromea traže da izričito odobrite instalaciju ovih proširenja tako da ih dodate na stranici Proširenja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Prikvači mapu</translation>
 <translation id="9130775360844693113">Članovi grupe "<ph name="DESTINATION_NAME" />" dobit će pristup tim stavkama.</translation>
 <translation id="9131598836763251128">Odaberite jednu ili više datoteka</translation>
 <translation id="9133055936679483811">Komprimiranje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>

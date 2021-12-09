@@ -537,6 +537,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1549275686094429035">Naka-enable ang ARC</translation>
 <translation id="1549788673239553762">Gusto ng <ph name="APP_NAME" /> na i-access ang <ph name="VOLUME_NAME" />. Maaari nitong baguhin o i-delete ang iyong mga file.</translation>
 <translation id="1552301827267621511">Pinalitan ng extension na "<ph name="EXTENSION_NAME" />" ang paghahanap para magamit ang <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Mamahala ng extension</translation>
 <translation id="1553538517812678578">walang limitasyon</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1556537182262721003">Hindi maililipat ang direktoryo ng extension papunta sa profile.</translation>
@@ -2804,7 +2805,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3842552989725514455">Serif font</translation>
 <translation id="3843464315703645664">Internal na na-allowlist</translation>
 <translation id="3844888638014364087">Naglagay ng emoji</translation>
-<translation id="384513009320852920">Tiyaking nasa pairing mode at nasa malapit ang iyong Bluetooth device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Kumuha ng mga tool sa paggawa ng mga website, Android app, at higit pa. Kapag na-install ang Linux, mada-download ang <ph name="DOWNLOAD_SIZE" /> ng data.</translation>
 <translation id="3847319713229060696">Tumulong na pahusayin ang seguridad sa web para sa lahat</translation>
 <translation id="3848547754896969219">Buksan lahat sa &amp;Incognito window</translation>
@@ -4316,7 +4316,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5485102783864353244">Magdagdag ng app</translation>
 <translation id="5485754497697573575">Ibalik ang Lahat ng Mga Tab</translation>
 <translation id="5486261815000869482">Kumpirmahin ang password</translation>
-<translation id="5486275809415469523">Ibinabahagi ng <ph name="APP_NAME" /> ang iyong screen sa <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">I-simulate ang Pag-restart ng Browser</translation>
 <translation id="5487460042548760727">I-rename ang profile sa <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">I-clear ang data</translation>
@@ -4378,6 +4377,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5533001281916885985">Gusto ng <ph name="SITE_NAME" /> na</translation>
 <translation id="5534304873398226603">I-discard ang larawan o video</translation>
 <translation id="5535941515421698170">Alisin din ang iyong kasalukuyang data sa device na ito</translation>
+<translation id="5537725057119320332">I-cast</translation>
 <translation id="5539221284352502426">Tinanggihan ng server ang password na inilagay mo. Kabilang sa mga posibleng dahilan: Masyadong maikli ang password. Dapat may mga numero o simbolo ang password. Dapat naiiba ang password sa mga nakaraang password.</translation>
 <translation id="5541694225089836610">Na-disable ng iyong administrator ang pagkilos na ito</translation>
 <translation id="5542132724887566711">Profile</translation>
@@ -4608,6 +4608,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5787146423283493983">Pangunahing Kasunduan</translation>
 <translation id="5787420647064736989">Pangalan ng device</translation>
 <translation id="5788367137662787332">Paumanhin, hindi mai-mount ang hindi bababa sa isang bahagi ng device na <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
 <translation id="5790651917470750848">Mayroon nang forward ng port</translation>
 <translation id="5792728279623964091">Paki-tap ang iyong power button</translation>
@@ -4840,10 +4841,8 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Maaari mong i-off ang Lokasyon sa pamamagitan ng pag-off sa pangunahing setting ng Lokasyon sa device na ito. Maaari mo ring i-off ang paggamit ng Wi‑Fi, mga mobile network, at mga sensor para sa lokasyon sa mga setting ng lokasyon.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Lumabas sa Fullscreen</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
-<translation id="6043317578411397101">Nagbabahagi ang <ph name="APP_NAME" /> ng tab ng Chrome sa <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Hindi na-parse ang configuration</translation>
 <translation id="6043994281159824495">Mag-sign out ngayon</translation>
-<translation id="6044805581023976844">Nagbabahagi ang <ph name="APP_NAME" /> ng tab ng Chrome at audio sa <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Pangunahing button ng TrackPoint</translation>
 <translation id="6047632800149092791">Hindi gumagana ang pag-sync. Subukang mag-sign out at mag-sign in ulit.</translation>
 <translation id="6049797270917061226">Puwedeng bigyang-daan ng file na ito na manakaw ng mga attacker ang iyong personal na impormasyon.</translation>
@@ -7348,7 +7347,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Hindi nakapag-sign in dahil hindi ma-verify ang iyong password. Mangyaring makipag-ugnayan sa iyong administrator o subukang muli.</translation>
 <translation id="8657393004602556571">Gusto mo bang i-discard ang feedback?</translation>
-<translation id="8658645149275195032">Ibinabahagi ng <ph name="APP_NAME" /> ang iyong screen at audio sa <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Buksan ang link sa Inco&amp;gnito Window</translation>
 <translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>
 <translation id="8662733268723715832">Mas matagal ito kaysa sa inaasahan, puwede mong laktawan o hintayin hanggang sa matapos ito.</translation>
@@ -7645,7 +7643,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8941173171815156065">Bawiin ang pahintulot na '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">International Step-Up ng Netscape</translation>
 <translation id="8944099748578356325">Mas mabilis na mauubos ang baterya (kasalukuyang <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280">Nagbabahagi ang <ph name="APP_NAME" /> ng window sa <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Laki ng icon</translation>
 <translation id="8946359700442089734">Ang mga feature para sa pagde-debug ay hindi ganap na na-enable sa <ph name="IDS_SHORT_PRODUCT_NAME" /> device na ito.</translation>
 <translation id="894763922177556086">Malakas</translation>

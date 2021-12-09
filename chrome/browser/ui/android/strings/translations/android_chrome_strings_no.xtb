@@ -94,6 +94,7 @@
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1513352483775369820">Bokmerker og nettlogg</translation>
 <translation id="1513858653616922153">Slett passordet</translation>
+<translation id="1518421282666914498">GIF med uttrykksikoner – <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1538801903729528855">Bruk stemmen til å oppleve nettet på en ny måte</translation>
 <translation id="1544826120773021464">For å administrere Google-kontoen din, trykk på «Administrer kontoen»-knappen</translation>
@@ -116,6 +117,7 @@
 <translation id="1702543251015153180">Vil du endre innstillingene for mørkt tema?</translation>
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1724977129262658800">Lås opp for å redigere passordet ditt</translation>
+<translation id="1726477445370128854">Du kan surfe og søke raskere når Chrome forhåndslaster sider du kanskje kommer til å besøke</translation>
 <translation id="173522743738009831">Om Privacy Sandbox</translation>
 <translation id="1736419249208073774">Utforsk</translation>
 <translation id="1749561566933687563">Synkroniser bokmerkene dine</translation>
@@ -277,6 +279,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2649068648233607930">Nettleseren administreres av <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">Vil du laste ned filen på nytt?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}other{# lydfiler}}</translation>
+<translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2689830683995595741">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Merknaden om personvern for Google-kontoer som administreres via Family Link<ph name="END_LINK3" />, gjelder også.</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
@@ -313,6 +316,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2856503607207334158">Pålogging mislyktes</translation>
 <translation id="2860954141821109167">Kontrollér at en telefon-app er påslått på denne enheten</translation>
 <translation id="2870560284913253234">Nettsted</translation>
+<translation id="2871733351037274014">Forhåndslasting av sider</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stopp innlastingen av siden</translation>
 <translation id="2892647708214602204">Du får et varsel når filen er klar</translation>
@@ -342,10 +346,12 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2992473221983447149">Bildebeskrivelser</translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
 <translation id="2996809686854298943">Nettadresse kreves</translation>
+<translation id="2997081575621687554">Når Google-nettsteder ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
 <translation id="301080557829842765">Personvernveiledning</translation>
 <translation id="3016635187733453316">Kontrollér at enheten er koblet til internett</translation>
 <translation id="3026955690410463085">Inkluder link</translation>
+<translation id="3029276696788198026">Ingen forhåndslasting</translation>
 <translation id="3029704984691124060">Passordfrasene stemmer ikke overens</translation>
 <translation id="3031225630520268969">UI for samtykke til talesøk med assistenten</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
@@ -379,6 +385,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3232754137068452469">Nettprogram</translation>
 <translation id="3234978181857588512">Lagre på enheten</translation>
 <translation id="3236059992281584593">1 minutt igjen</translation>
+<translation id="3237087289225714896">Standard forhåndslasting:</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til Wi-Fi</translation>
@@ -412,6 +419,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3389286852084373014">Teksten er for stor</translation>
 <translation id="3391512812407811893">Prøvefunksjoner i Privacy Sandbox</translation>
 <translation id="3398320232533725830">Åpne bokmerkebehandlingen</translation>
+<translation id="3407392651057365886">Flere sider forhåndslastes. Sider kan bli forhåndslastet via Googles tjenere når andre nettsteder ber om det.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3421726884497337397">Velg når informasjonskapsler fra tredjeparter skal blokkeres</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
@@ -534,6 +542,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4196597275619698563">Opprett et kort</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
 <translation id="4209895695669353772">For å få forslag om personlig tilpasset innhold fra Google, slå på synkronisering</translation>
+<translation id="4214315110991671325">Hvis du tillater informasjonskapsler, kan Chrome bruke dem ved forhåndslasting.</translation>
 <translation id="4225895483398857530">Verktøylinje-snarvei</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4248098802131000011">Beskytt passordene dine mot databrudd og andre sikkerhetsproblemer</translation>
@@ -583,6 +592,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4532845899244822526">Velg en mappe</translation>
 <translation id="4538018662093857852">Slå på forenklet modus</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">For å se eller kopiere passordet ditt her, angi skjermlås på denne enheten.</translation>
 <translation id="4554077758708533499">Tilkoblet med USB-kabel</translation>
 <translation id="4557685098773234337">For å komme hit raskere, legg til denne siden på startskjermen</translation>
@@ -725,6 +735,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5324858694974489420">Foreldreinnstillinger</translation>
+<translation id="5326921373682845375">Siden de forhåndslastede sidene er krypterte og nettstedet som linker til sidene, er et Google-nettsted, får ikke Googles tjenere noen ny informasjon ved privat forhåndslasting av disse sidene.</translation>
 <translation id="5329858041417644019">Nettleseren din administreres ikke</translation>
 <translation id="5342314432463739672">Tillatelsesforespørsler</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
@@ -877,6 +888,7 @@ Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjenge
 <translation id="6154478581116148741">Slå på skjermlåsen i Innstillinger for å eksportere passordene dine fra denne enheten</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> datasparing</translation>
 <translation id="6159729262978459665">Tømmer loggen på alle synkroniserte enheter.</translation>
+<translation id="6162892189396105610">Forhåndslaster sider som Chrome tror du kanskje kommer til å besøke.</translation>
 <translation id="6186394685773237175">Fant ingen passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="6192907950379606605">Få bildebeskrivelser</translation>
 <translation id="6203593061661911168">Nedlastingen starter når du er tilkoblet Wi-Fi</translation>
@@ -911,6 +923,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6364438453358674297">Vil du fjerne forslaget fra loggen?</translation>
 <translation id="6378173571450987352">Informasjon: Sortert etter mengden data som er brukt</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="6380100320871303656">Forhåndslaster oftere sider som Chrome tror du sannsynligvis kommer til å besøke. Denne innstillingen kan medføre høyere databruk.</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">På nettet igjen</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
@@ -944,6 +957,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6532866250404780454">Nettsteder du besøker i Chrome, vises ikke. Alle tidtakere for nettsteder blir slettet.</translation>
 <translation id="6534565668554028783">Google brukte for lang tid på å svare</translation>
 <translation id="6539092367496845964">Noe gikk galt. Prøv på nytt senere.</translation>
+<translation id="6541042852576515209">Endre størrelse og rotér</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Sjekket for en time siden}other{Sjekket for # timer siden}}</translation>
 <translation id="6545017243486555795">Slett alle data</translation>
 <translation id="6546511553472444032">Filen kan være skadelig</translation>
@@ -1017,6 +1031,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
+<translation id="6909589135458168665">Forhåndslasting av sider</translation>
 <translation id="6929699136511445623">Slå på Android-systemsynkronisering</translation>
 <translation id="6942665639005891494">Endre standard nedlastingssted når som helst via menyalternativet Innstillinger</translation>
 <translation id="694267552845942083">Du holder på å tilpasse innstillingene for Synkronisering. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
@@ -1101,6 +1116,8 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7444811645081526538">Flere kategorier</translation>
 <translation id="7453467225369441013">Logger deg av de fleste nettsteder. Du blir ikke logget av Google-kontoen din.</translation>
 <translation id="7454641608352164238">Det er ikke nok plass</translation>
+<translation id="7456774706094330779">Utvidet forhåndslasting</translation>
+<translation id="7468819939926272717">Velg et uttrykksikon</translation>
 <translation id="7474822150871987353">Finn ut mer om emner på nettsteder uten å forlate siden. Merk ett eller flere ord på siden for å søke etter dem.</translation>
 <translation id="7475192538862203634">Hvis du ser dette ofte, kan du prøve disse <ph name="BEGIN_LINK" />forslagene<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Finner ikke SD-kort. Noen av filene dine kan mangle.</translation>
@@ -1149,6 +1166,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
+<translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
@@ -1221,6 +1239,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tilgjengelig</translation>
 <translation id="8058655154417507695">Utløpsår</translation>
 <translation id="8058746566562539958">Åpne i en ny Chrome-fane</translation>
+<translation id="8062594758852531064">Utvidet forhåndslasting:</translation>
 <translation id="8063895661287329888">Kunne ikke legge til bokmerket.</translation>
 <translation id="806745655614357130">Hold dataene mine adskilt</translation>
 <translation id="8073388330009372546">Åpne bildet i en ny fane</translation>
@@ -1256,6 +1275,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="825412236959742607">Denne siden bruker for mye minne, så Chrome har fjernet noe av innholdet.</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
+<translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="82619448491672958">Se andre faner</translation>
@@ -1314,6 +1334,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8551513938758868521">Lås inkognitofaner når du går ut av Chrome</translation>
 <translation id="8555836665334561807">Via Wi-Fi</translation>
 <translation id="8559990750235505898">Tilby å oversette sider på andre språk</translation>
+<translation id="8560560256644480257">Oppretter GIF <ph name="PERCENT" /> %%</translation>
 <translation id="8560602726703398413">Finn leselisten din i Bokmerker</translation>
 <translation id="8562452229998620586">Lagrede passord listes opp her.</translation>
 <translation id="856481929701340285">Bruk skrivebordsversjon</translation>
@@ -1332,6 +1353,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="8641930654639604085">Prøv å blokkere nettsteder med voksent innhold</translation>
 <translation id="864544049772947936">Administrer vinduer (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8646467750715887511">Sider lastes bare inn etter at du har åpnet dem.</translation>
 <translation id="8655129584991699539">Du kan slette dataene i Chrome-innstillingene</translation>
 <translation id="8656747343598256512">Logg på dette nettstedet og Chrome med Google-kontoen din. Du kan slå på synkronisering senere.</translation>
 <translation id="8659579665266920523">Slik søker du med Chrome</translation>
@@ -1428,6 +1450,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="9209888181064652401">Kan ikke ringe</translation>
 <translation id="9212845824145208577">Kan ikke gå lavere. Prøv å starte fra lenger ned på siden.</translation>
 <translation id="9219103736887031265">Bilder</translation>
+<translation id="92381315203627188">Når nettsteder ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
 <translation id="926205370408745186">Fjerne Chrome-aktiviteten din fra Digital balanse</translation>
 <translation id="927968626442779827">Bruk forenklet modus i Google Chrome</translation>
 <translation id="928550791203542716">Følger <ph name="SITE_NAME" /></translation>

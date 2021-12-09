@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Todos los archivos están guardados en una copia de seguridad.</translation>
 <translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administrada por tu administrador, detalles</translation>
 <translation id="3645233063072417428">Se movieron <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
-<translation id="3645531960514756307">No fijar carpeta</translation>
 <translation id="3685122418104378273">La sincronización con Google Drive está inhabilitada de manera predeterminada cuando se usan los datos móviles.</translation>
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, no activada, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Constantemente buscamos la forma de ofrecerte una navegación más segura. Antes, cualquier sitio web podía pedirte agregar una extensión al navegador. En las últimas versiones de Google Chrome, debes indicar a Chrome explícitamente que deseas instalar estas extensiones al agregarlas en la página Extensiones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="912419004897138677">Códec</translation>
-<translation id="9129931661813833980">Fijar carpeta</translation>
 <translation id="9130775360844693113">Los miembros de "<ph name="DESTINATION_NAME" />" tendrán acceso a estos elementos.</translation>
 <translation id="9131598836763251128">Selecciona uno o más archivos.</translation>
 <translation id="9133055936679483811">Se produjo un error al comprimir. <ph name="ERROR_MESSAGE" /></translation>

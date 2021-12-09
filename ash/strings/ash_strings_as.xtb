@@ -338,6 +338,7 @@
 <translation id="3307642347673023554">লেপটপ ম’ডলৈ সলনি হ’ল</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />এ তথাপিও পিছত ছাইন ইন কৰিব পাৰে।</translation>
 <translation id="3321628682574733415">পেৰেণ্ট ক'ডটো ভুল</translation>
+<translation id="3340475855009870209">ডাউনল’ড স্কেন কৰি থকা হৈছে <ph name="FILENAME" /></translation>
 <translation id="3341303451326249809">স্ক্ৰীনশ্বট কেপচাৰ কৰা হ'ল</translation>
 <translation id="334252345105450327">এটা স্ক্ৰীনশ্বট লওক</translation>
 <translation id="3351879221545518001">আপুনি বর্তমান স্ক্ৰীণ কাষ্ট কৰি আছে।</translation>
@@ -416,7 +417,6 @@
 <translation id="3713734891607377840">সম্পূৰ্ণ হোৱাৰ পাছত খোলক</translation>
 <translation id="3726171378575546917">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> আৰু <ph name="UNAVAILABLE_APPS_COUNT" /> টা নাই।</translation>
 <translation id="3742055079367172538">স্ক্ৰীণশ্বট লোৱা হ’ল</translation>
-<translation id="3744282433224562605">আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক</translation>
 <translation id="3771549900096082774">হাই কনট্ৰাষ্ট ম’ড</translation>
 <translation id="3773700760453577392">কোনো প্ৰশাসকে <ph name="USER_EMAIL" />ৰ বাবে একাধিক ছাইন ইনৰ সুবিধাটোৰ অনুমতি বাতিল কৰিছে। অব্যাহত ৰাখিবলৈ সকলো ব্যৱহাৰকাৰীয়ে ছাইন আউট কৰিবই লাগিব।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> সংযোগ কৰি থকা হৈছে</translation>
@@ -627,7 +627,6 @@
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5176318573511391780">আংশিক স্ক্ৰীন ৰেকৰ্ড কৰক</translation>
 <translation id="5198715732953550718">নতুন ফ’ল্ডাৰ সৃষ্টি কৰিবলৈ <ph name="MOVED_APP_NAME" />ক <ph name="IN_PLACE_APP" />ৰ সৈতে একত্ৰিত কৰা হৈছে।</translation>
-<translation id="5199367439331364630">আপোনাৰ Chromebookত ছাইন ইন কৰিবলৈ পাছৱৰ্ড দিয়ক</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{১ টা অন্য জাননী}one{# টা অন্য জাননী}other{# টা অন্য জাননী}}</translation>
 <translation id="5207949376430453814">পাঠৰ কেৰেট হাইলাইট কৰক</translation>
@@ -765,6 +764,7 @@
 <translation id="612734058257491180">অতিথিৰ ছেশ্বনত Google Assistant উপলব্ধ নহয়।</translation>
 <translation id="6134259848159370930">আপোনাৰ ডিভাইচ, এপ্‌, ছেটিংসমূহ আৰু ৱেব সন্ধান কৰক।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আঁতৰোৱাৰ ডায়লগ খোলক</translation>
+<translation id="6141988275892716286">ডাউনল’ড নিশ্চিত কৰক</translation>
 <translation id="6154006699632741460">আনুষংগিক সামগ্ৰী সমৰ্থিত নহয়</translation>
 <translation id="6156262341071374681">সূচীখন সকলো এপ্‌ দেখুৱাকৈ বিস্তাৰ কৰক</translation>
 <translation id="615957422585914272">অন-স্ক্ৰীণ কীব’ৰ্ড দেখুৱাওক</translation>

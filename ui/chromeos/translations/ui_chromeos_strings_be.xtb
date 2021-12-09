@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Усё захавана ў рэзервовую копію!</translation>
 <translation id="3634507049637220048">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="3645233063072417428">Перамешчана элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="3645531960514756307">Адмацаваць папку</translation>
 <translation id="3685122418104378273">Пры выкарыстанні мабільнай перадачы даных са стандартнымі наладамі сінхранізацыя з Google Дыскам выключана.</translation>
 <translation id="3689865792480713551">Скасаваць дзеянне "<ph name="ACTIVITY_DESCRIPTION" />".</translation>
 <translation id="3690128548376345212">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Мы пастаянна працуем над новымі спосабамі зрабіць працу ў інтэрнэце больш бяспечнай. Раней любы сайт мог прапанаваць вам дадаць пашырэнні ў браўзер. У апошніх версіях Google Chrome пашырэнні трэба дадаваць праз старонку "Пашырэнні", даючы браўзеру яўнае ўказанне, што вы хочаце іх усталяваць. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>
 <translation id="912419004897138677">Кодэк</translation>
-<translation id="9129931661813833980">Замацаваць папку</translation>
 <translation id="9130775360844693113">Да гэтых элементаў атрымаюць доступ удзельнікі дыска "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="9131598836763251128">Выберыце адзін або некалькі файлаў</translation>
 <translation id="9133055936679483811">Збой архівавання. <ph name="ERROR_MESSAGE" /></translation>

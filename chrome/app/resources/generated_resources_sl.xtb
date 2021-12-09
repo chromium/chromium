@@ -537,6 +537,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1549275686094429035">ARC je omogočen</translation>
 <translation id="1549788673239553762">Aplikacija <ph name="APP_NAME" /> želi dostopati do <ph name="VOLUME_NAME" />. Morda bo spreminjala ali izbrisala vaše datoteke.</translation>
 <translation id="1552301827267621511">Razširitev »<ph name="EXTENSION_NAME" />« je spremenila ponudnika iskanja; poslej se uporablja <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Upravljanje razširitve</translation>
 <translation id="1553538517812678578">neomejeno</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1556537182262721003">Imenika razširitve ni bilo mogoče premakniti v profil.</translation>
@@ -2797,7 +2798,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3842552989725514455">Serifna pisava</translation>
 <translation id="3843464315703645664">Interno na seznamu dovoljenih</translation>
 <translation id="3844888638014364087">Vstavljen je emodži</translation>
-<translation id="384513009320852920">Naprava Bluetooth mora biti v načinu za seznanjanje in v bližini. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Prenesite orodja za razvoj spletnih mest, aplikacij za Android in drugega. Ob namestitvi Linuxa bo prenesenih <ph name="DOWNLOAD_SIZE" /> podatkov.</translation>
 <translation id="3847319713229060696">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="3848547754896969219">Odpiranje v &amp;anonimnem oknu</translation>
@@ -4306,7 +4306,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5485102783864353244">Dodaj aplikacijo</translation>
 <translation id="5485754497697573575">Obnovi vse zavihke</translation>
 <translation id="5486261815000869482">Potrditev gesla</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> souporablja vaš zaslon s kartico <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Posnemaj vnovični zagon brskalnika</translation>
 <translation id="5487460042548760727">Preimenuj profil v <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Izbriši podatke</translation>
@@ -4368,6 +4367,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> želi</translation>
 <translation id="5534304873398226603">Zavrzi fotografijo ali videoposnetek</translation>
 <translation id="5535941515421698170">Odstranite tudi obstoječe podatke iz te naprave</translation>
+<translation id="5537725057119320332">Predvajanje</translation>
 <translation id="5539221284352502426">Vneseno geslo je zavrnil strežnik. Možni razlogi za to so: Geslo je prekratko. Geslo mora vsebovati številke ali simbole. Geslo se mora razlikovati od prejšnjih gesel.</translation>
 <translation id="5541694225089836610">Dejanje je onemogočil skrbnik</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4600,6 +4600,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5787146423283493983">Pogodba o ključu</translation>
 <translation id="5787420647064736989">Ime naprave</translation>
 <translation id="5788367137662787332">Vsaj ene particije v napravi <ph name="DEVICE_LABEL" /> ni bilo mogoče vpeti.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Uspešno</translation>
 <translation id="5790651917470750848">Posredovanje vrat že obstaja</translation>
 <translation id="5792728279623964091">Dotaknite se gumba za vklop</translation>
@@ -4831,10 +4832,8 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Lokacijo lahko izklopite tako, da izklopite glavno nastavitev lokacije v napravi. V nastavitvah lokacije lahko izklopite tudi uporabo omrežij Wi‑Fi, mobilnih omrežij in tipal za zaznavanje lokacije.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Zapri celozaslonski način</translation>
 <translation id="6042308850641462728">Več</translation>
-<translation id="6043317578411397101">Aplikacija <ph name="APP_NAME" /> je v skupno rabo z zavihkom <ph name="TAB_NAME" /> dala Chromov zavihek.</translation>
 <translation id="604388835206766544">Konfiguracije ni bilo mogoče razčleniti</translation>
 <translation id="6043994281159824495">Odjava</translation>
-<translation id="6044805581023976844">Aplikacija <ph name="APP_NAME" /> je v skupno rabo z zavihkom <ph name="TAB_NAME" /> dala Chromov zavihek in zvok.</translation>
 <translation id="6045114302329202345">Glavni gumb sledilne palčke</translation>
 <translation id="6047632800149092791">Sinhronizacija ne deluje. Poskusite se odjaviti in znova prijaviti.</translation>
 <translation id="6049797270917061226">Ta datoteka lahko napadalcem omogoči, da ukradejo vaše osebne podatke.</translation>
@@ -7331,7 +7330,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijava ni uspela, ker ni bilo mogoče preveriti gesla. Obrnite se na skrbnika ali poskusite znova.</translation>
 <translation id="8657393004602556571">Ali želite zavreči povratne informacije?</translation>
-<translation id="8658645149275195032">Aplikacija <ph name="APP_NAME" /> je v skupno rabo z zavihkom <ph name="TAB_NAME" /> dala vaš zaslon in zvok.</translation>
 <translation id="8661290697478713397">Odpri povezavo v oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Postopek traja dlje, kot je pričakovano. Lahko preskočite ali počakate, da se dokonča.</translation>
@@ -7629,7 +7627,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8941173171815156065">Preklic dovoljenja »<ph name="PERMISSION" />«</translation>
 <translation id="894360074127026135">Nadgradnja Netscape International</translation>
 <translation id="8944099748578356325">Hitrejša poraba energije akumulatorja (trenutno <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280">Aplikacija <ph name="APP_NAME" /> je v skupno rabo z zavihkom <ph name="TAB_NAME" /> dala okno.</translation>
 <translation id="8945274638472141382">Velikost ikone</translation>
 <translation id="8946359700442089734">V tej napravi niso bile v celoti omogočene funkcije za odpravljanje napak: <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Dobra</translation>

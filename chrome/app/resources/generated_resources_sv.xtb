@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1153636665119721804">Avancerat skydd från Google</translation>
 <translation id="1155816283571436363">Ansluter till telefonen</translation>
+<translation id="1158080958325422608">Ändra till versaler</translation>
 <translation id="1158238185437008462">Se minnen</translation>
 <translation id="1161575384898972166">Logga in på <ph name="TOKEN_NAME" /> om du vill exportera klientcertifikatet.</translation>
 <translation id="116173250649946226">Administratören har ställt in ett standardtema som inte kan ändras.</translation>
@@ -533,6 +534,7 @@
 <translation id="1549275686094429035">ARC aktiverat</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vill ha åtkomst till <ph name="VOLUME_NAME" />. Den kan ändra eller ta bort dina filer.</translation>
 <translation id="1552301827267621511">Tillägget <ph name="EXTENSION_NAME" /> ändrade sökleverantören till <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Hantera tillägg</translation>
 <translation id="1553538517812678578">obegränsad</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556537182262721003">Det gick inte att flytta tilläggskatalogen till profilen.</translation>
@@ -695,6 +697,7 @@
 <translation id="1700079447639026019">Webbplatser som aldrig kan använda cookies</translation>
 <translation id="1703331064825191675">Tänk inte mer på dina lösenord</translation>
 <translation id="1703666494654169921">Tillåt inte att webbplatser använder VR-enheter eller VR-data</translation>
+<translation id="1704097193565924901">Använd versaler</translation>
 <translation id="1704230497453185209">Tillåt inte att webbplatser spelar upp ljud</translation>
 <translation id="1704970325597567340">Säkerhetskontrollen kördes den <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Lades till av administratören</translation>
@@ -2792,7 +2795,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3842552989725514455">Serif-teckensnitt</translation>
 <translation id="3843464315703645664">Tillagd på den interna godkännandelistan</translation>
 <translation id="3844888638014364087">Emojin infogades</translation>
-<translation id="384513009320852920">Kontrollera att Bluetooth-enheten är i parkopplingsläge och finns i närheten. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Skaffa verktyg för att utveckla webbplatser, Android-appar och mycket annat. <ph name="DOWNLOAD_SIZE" /> data laddas ned när Linux installeras.</translation>
 <translation id="3847319713229060696">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="3848547754896969219">Öppna i ett &amp;inkognitofönster</translation>
@@ -3578,6 +3580,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4681453295291708042">Inaktivera Närdelning</translation>
 <translation id="4681930562518940301">Öppna originalbilden i en ny flik</translation>
 <translation id="4682551433947286597">Bakgrunder visas på inloggningsskärmen.</translation>
+<translation id="4683629100208651599">Ändra till gemener</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> försöker använda kameran. Om du vill låta den göra detta måste du inaktivera integritetsinställningen som blockerar kameran.</translation>
@@ -4300,7 +4303,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5485102783864353244">Lägg till app</translation>
 <translation id="5485754497697573575">Återställ alla flikar</translation>
 <translation id="5486261815000869482">Bekräfta lösenord</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> delar din skärm med <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulera omstart av webbläsaren</translation>
 <translation id="5487460042548760727">Ändra namnet på profilen till <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Rensa data</translation>
@@ -4362,6 +4364,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
 <translation id="5534304873398226603">Släng fotot eller videon</translation>
 <translation id="5535941515421698170">Ta även bort befintlig data från den här enheten</translation>
+<translation id="5537725057119320332">Casta</translation>
 <translation id="5539221284352502426">Det angivna lösenordet avvisades av servern. Möjliga orsaker: Lösenordet är för kort. Lösenordet måste innehålla siffror eller symboler. Det får inte vara ett återanvänt lösenord.</translation>
 <translation id="5541694225089836610">Åtgärden har inaktiverats av administratören</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4592,6 +4595,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5787146423283493983">Nyckelavtal</translation>
 <translation id="5787420647064736989">Enhetens namn</translation>
 <translation id="5788367137662787332">Minst en partition på enheten <ph name="DEVICE_LABEL" /> kunde inte monteras.</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Klart</translation>
 <translation id="5790651917470750848">Portvidarebefordran finns redan</translation>
 <translation id="5792728279623964091">Tryck på strömbrytaren</translation>
@@ -4823,10 +4827,8 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera tjänsten genom att inaktivera huvudinställningen för Plats på enheten. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för plats i platsinställningarna.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Avsluta helskärmsläget</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> delar en Chrome-flik med <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Det gick inte att tolka konfigurationen</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> delar ljud och en flik i Chrome med <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primär TrackPoint-knapp</translation>
 <translation id="6047632800149092791">Det går inte att synkronisera. Testa att logga ut och sedan logga in igen.</translation>
 <translation id="6049797270917061226">Den här filen kan göra att angripare stjäl dina personliga uppgifter.</translation>
@@ -5970,6 +5972,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7257173066616499747">wifi-nätverk</translation>
 <translation id="725758059478686223">Utskriftstjänst</translation>
 <translation id="7257666756905341374">Läsa data som du kopierar och klistrar in</translation>
+<translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarar inte. Stäng appen med Tvångsavsluta.</translation>
 <translation id="7262004276116528033">Inloggningstjänsten tillhandahålls av <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Testa felsökningsåtgärderna nedan:
@@ -7322,7 +7325,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Inloggningen misslyckades eftersom ditt lösenord inte kunde verifieras. Kontakta administratören eller försök igen.</translation>
 <translation id="8657393004602556571">Vill du inte skicka feedback?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> delar skärmen och ljudet med <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Öppna länk i inko&amp;gnitofönster</translation>
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>
 <translation id="8662733268723715832">Det här tar längre tid än väntat. Du kan vänta tills det är klart eller hoppa över detta.</translation>
@@ -7617,7 +7619,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8941173171815156065">Återkalla behörigheten <ph name="PERMISSION" /></translation>
 <translation id="894360074127026135">Netscapes internationella uppgradering</translation>
 <translation id="8944099748578356325">Batteriet förbrukas snabbare (för närvarande <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> delar ett fönster med <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Ikonstorlek</translation>
 <translation id="8946359700442089734">Felsökningsfunktionerna aktiverades inte helt på den här <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
 <translation id="894763922177556086">Bra</translation>

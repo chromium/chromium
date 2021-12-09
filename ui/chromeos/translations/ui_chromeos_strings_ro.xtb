@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">S-a făcut backup pentru tot!</translation>
 <translation id="3634507049637220048">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionată de administratorul tău, detalii</translation>
 <translation id="3645233063072417428">Elemente mutate: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Anulează fixarea dosarului</translation>
 <translation id="3685122418104378273">Sincronizarea cu Google Drive este dezactivată în mod prestabilit la folosirea datelor mobile.</translation>
 <translation id="3689865792480713551">Anulează <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Google caută mereu modalități de a face navigarea mai sigură. Înainte, orice site îți putea solicita să adaugi o extensie în browser. În ultimele versiuni Google Chrome, trebuie să indici explicit că dorești să instalezi aceste extensii, adăugându-le în pagina Extensii. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Fixează dosarul</translation>
 <translation id="9130775360844693113">Membrii „<ph name="DESTINATION_NAME" />” vor obține acces la aceste articole.</translation>
 <translation id="9131598836763251128">Selectează un fișier sau mai multe</translation>
 <translation id="9133055936679483811">Arhivarea nu a reușit. <ph name="ERROR_MESSAGE" /></translation>

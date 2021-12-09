@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">ਸਾਰੇ ਬੈਕ ਅਪ ਕੀਤੇ ਗਏ!</translation>
 <translation id="3634507049637220048">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਵੇਰਵੇ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਲਿਜਾਈਆਂ ਗਈਆਂ।</translation>
-<translation id="3645531960514756307">ਫੋਲਡਰ ਨੂੰ ਅਨਪਿੰਨ ਕਰੋ</translation>
 <translation id="3685122418104378273">Google Drive ਸਿੰਕ ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਦੇ ਸਮੇਂ, ਬਾਇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਸਮਰਥਿਤ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ਨੂੰ ਰੱਦ ਕਰੋ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">ਅਸੀਂ ਲਗਾਤਾਰ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਧ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣ ਦੇ ਤਰੀਕੇ ਖੋਜਦੇ ਰਹਿੰਦੇ ਹਾਂ। ਪਹਿਲਾਂ, ਕੋਈ ਵੀ ਵੈੱਬਸਾਈਟ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਕਹਿ ਸਕਦੀ ਸੀ। Google Chrome ਦੇ ਨਵੇਂ ਵਰਜਨਾਂ ਵਿੱਚ, ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਸਪਸ਼ਟ ਰੂਪ ਨਾਲ ਦੱਸਣਾ ਪਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਹਨਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਪੰਨੇ ਰਾਹੀਂ ਸ਼ਾਮਲ ਕਰਕੇ ਇਹਨਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="912419004897138677">ਕੋਡੈਕ</translation>
-<translation id="9129931661813833980">ਫੋਲਡਰ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' ਦੇ ਮੈਂਬਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨਗੇ।</translation>
 <translation id="9131598836763251128">ਇੱਕ ਜਾਂ ਵੱਧ ਫਾਈਲਾਂ ਚੁਣੋ</translation>
 <translation id="9133055936679483811">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>

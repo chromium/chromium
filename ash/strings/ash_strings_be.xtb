@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">Адкрыць пасля завяршэння</translation>
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
-<translation id="3744282433224562605">Каб разблакіраваць Chromebook, увядзіце пароль</translation>
 <translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
 <translation id="3779139509281456663">Ідзе падключэнне прылады "<ph name="NAME" />"</translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
 <translation id="5198715732953550718">Праграма <ph name="MOVED_APP_NAME" /> была выкарыстана з праграмай <ph name="IN_PLACE_APP" /> для стварэння новай папкі.</translation>
-<translation id="5199367439331364630">Каб увайсці на прыладзе Chromebook, увядзіце пароль</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{яшчэ 1 апавяшчэнне}one{яшчэ # апавяшчэнне}few{яшчэ # апавяшчэнні}many{яшчэ # апавяшчэнняў}other{яшчэ # апавяшчэння}}</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
 <translation id="6134259848159370930">Пошук на прыладзе, у праграмах, наладах і інтэрнэце.</translation>
 <translation id="6137566720514957455">Адкрыць дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>
 <translation id="6154006699632741460">Перыферыйная прылада не падтрымліваецца</translation>
 <translation id="6156262341071374681">Разгарнуць да ўсіх праграм</translation>
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>

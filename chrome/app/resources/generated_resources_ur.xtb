@@ -533,6 +533,7 @@
 <translation id="1549275686094429035">‏ARC فعال ہے</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> تک رسائی حاصل کرنا چاہتی ہے۔ یہ آپ کی فائلوں میں ترمیم یا انہیں حذف کر سکتی ہے۔</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> کے استعمال کے لیے "<ph name="EXTENSION_NAME" />" ایکسٹینشن نے تلاش کو تبدیل کر دیا</translation>
+<translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="1556537182262721003">ایکسٹینشن ڈائرکٹری کو پروفائل میں منتقل نہیں کیا جا سکا۔</translation>
@@ -2787,7 +2788,6 @@
 <translation id="3842552989725514455">‏Serif فونٹ</translation>
 <translation id="3843464315703645664">اندرونی طور پر اجازت یافتہ</translation>
 <translation id="3844888638014364087">ایموجی داخل کی گئی</translation>
-<translation id="384513009320852920">اس بات کو یقینی بنائیں کہ آپ کا بلوٹوتھ آلہ جوڑا بنانے والے موڈ میں اور قریبی ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">‏ویب سائٹس، Android ایپس، اور مزید کو ڈیولپ کرنے والے ٹولز حاصل کریں۔ Linux انسٹال کرنے پر <ph name="DOWNLOAD_SIZE" /> ڈیٹا ڈاؤن لوڈ ہوگا۔</translation>
 <translation id="3847319713229060696">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3848547754896969219">&amp;پوشیدگی ونڈو میں کھولیں</translation>
@@ -4297,7 +4297,6 @@
 <translation id="5485102783864353244">ایپ شامل کریں</translation>
 <translation id="5485754497697573575">سبھی ٹیبز بحال کریں</translation>
 <translation id="5486261815000869482">پاس ورڈ کی توثیق کریں</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> آپ کی اسکرین کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
 <translation id="5486561344817861625">براؤزر کو دوبارہ شروع کرنے کی نقل کریں</translation>
 <translation id="5487460042548760727">پروفائل کا نام <ph name="PROFILE_NAME" /> میں تبدیل کریں</translation>
 <translation id="5487521232677179737">ڈیٹا صاف کریں</translation>
@@ -4359,6 +4358,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> چاہتی ہے کہ</translation>
 <translation id="5534304873398226603">تصویر یا ویڈیو مسترد کریں</translation>
 <translation id="5535941515421698170">نیز اس آلہ سے اپنا موجودہ ڈیٹا ہٹائیں</translation>
+<translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="5539221284352502426">آپ کا درج کردہ پاس ورڈ سرور کی طرف سے مسترد کر دیا گیا۔ ممکنہ وجوہات میں شامل ہیں: پاس ورڈ کافی چھوٹا ہے۔ پاس ورڈ میں نمبرز یا علامتوں کا شامل ہونا ضروری ہے۔ پاس ورڈ کا پرانے پاس ورڈز سے مختلف ہونا ضروری ہے۔</translation>
 <translation id="5541694225089836610">آپ کے منتظم نے کارروائی کو غیر فعال کر دیا ہے</translation>
 <translation id="5542132724887566711">پروفائل</translation>
@@ -4589,6 +4589,7 @@
 <translation id="5787146423283493983">کلیدی اقرارنامہ</translation>
 <translation id="5787420647064736989">آلہ کا نام</translation>
 <translation id="5788367137662787332">معذرت، کم از کم ایک حصہ آلہ <ph name="DEVICE_LABEL" /> پر ماؤنٹ نہیں کیا جا سکا۔</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5790651917470750848">پورٹ فارورڈ پہلے سے ہی دستیاب ہے</translation>
 <translation id="5792728279623964091">براہ کرم اپنے پاور بٹن پر تھپتھپائیں</translation>
@@ -4821,10 +4822,8 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے آلہ پر 'مقام' کی مرکزی ترتیب کو آف کر کے 'مقام' کو آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">پوری اسکرین سے باہر نکلیں</translation>
 <translation id="6042308850641462728">مزید</translation>
-<translation id="6043317578411397101">‏<ph name="APP_NAME" /> ایک Chrome ٹیب کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
 <translation id="604388835206766544">کنفیگریشن پارس کرنے میں ناکام</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
-<translation id="6044805581023976844">‏<ph name="APP_NAME" /> ایک Chrome ٹیب اور آڈیو کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
 <translation id="6045114302329202345">‏بنیادی TrackPoint بٹن</translation>
 <translation id="6047632800149092791">مطابقت پذیری کام نہیں کر رہی ہے۔ سائن آؤٹ اور پھر دوبارہ سائن ان کر کے دیکھیں۔</translation>
 <translation id="6049797270917061226">یہ فائل حملہ آوروں کو آپ کی ذاتی معلومات چوری کرنے کی اجازت دے سکتی ہے۔</translation>
@@ -7327,7 +7326,6 @@
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655972064210167941">سائن ان ناکام ہو گیا کیونکہ آپ کے پاس ورڈز کی توثیق نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> آپ کی اسکرین اور آڈیو کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
 <translation id="8662733268723715832">اس میں توقع سے زیادہ وقت لگ رہا ہے، آپ اسے نظر انداز کر سکتے ہیں یا اس کے مکمل ہونے تک انتظار کر سکتے ہیں۔</translation>
@@ -7622,7 +7620,6 @@
 <translation id="8941173171815156065">اجازت '<ph name="PERMISSION" />' کو کالعدم کریں</translation>
 <translation id="894360074127026135">‏Netscape انٹرنیشنل سٹیپ اپ</translation>
 <translation id="8944099748578356325">مزید تیزی سے بیٹری کا استعمال کریں (فی الحال %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> ایک ونڈو کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
 <translation id="8945274638472141382">آئیکن کا سائز</translation>
 <translation id="8946359700442089734">ڈیبگ کرنے کی خصوصیات اس <ph name="IDS_SHORT_PRODUCT_NAME" /> آلے پر مکمل طورپر فعال نہیں کی گئی تھیں۔</translation>
 <translation id="894763922177556086">اچھا</translation>

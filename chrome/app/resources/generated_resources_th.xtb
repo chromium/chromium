@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">ARC เปิดใช้งานอยู่</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ต้องการเข้าถึง <ph name="VOLUME_NAME" /> แอปอาจแก้ไขหรือลบไฟล์ของคุณได้</translation>
 <translation id="1552301827267621511">ส่วนขยาย "<ph name="EXTENSION_NAME" />" เปลี่ยนไปใช้การค้นหาโดย <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">จัดการส่วนขยาย</translation>
 <translation id="1553538517812678578">ไม่จำกัด</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1556537182262721003">ไม่สามารถย้ายไดเรกทอรีส่วนขยายเข้าไปในโปรไฟล์</translation>
@@ -2778,7 +2779,6 @@
 <translation id="3842552989725514455">แบบอักษร Serif</translation>
 <translation id="3843464315703645664">เป็นรายการที่อนุญาตภายใน</translation>
 <translation id="3844888638014364087">แทรกอีโมจิแล้ว</translation>
-<translation id="384513009320852920">โปรดตรวจสอบว่าอุปกรณ์บลูทูธอยู่ในโหมดการจับคู่และอยู่ใกล้ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">รับเครื่องมือสำหรับพัฒนาเว็บไซต์, แอป Android และอื่นๆ การติดตั้ง Linux จะดาวน์โหลดข้อมูลขนาด <ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3847319713229060696">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตให้กับทุกคน</translation>
 <translation id="3848547754896969219">เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -4286,7 +4286,6 @@
 <translation id="5485102783864353244">เพิ่มแอป</translation>
 <translation id="5485754497697573575">คืนค่าแท็บทั้งหมด</translation>
 <translation id="5486261815000869482">ยืนยันรหัสผ่าน</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> กำลังแชร์หน้าจอของคุณกับ <ph name="TAB_NAME" /></translation>
 <translation id="5486561344817861625">จำลองการรีสตาร์ทเบราว์เซอร์</translation>
 <translation id="5487460042548760727">เปลี่ยนชื่อโปรไฟล์เป็น <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">ล้างข้อมูล</translation>
@@ -4348,6 +4347,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ต้องการที่จะ</translation>
 <translation id="5534304873398226603">ทิ้งรูปภาพหรือวิดีโอ</translation>
 <translation id="5535941515421698170">นำข้อมูลที่มีอยู่ของคุณออกจากอุปกรณ์นี้ด้วย</translation>
+<translation id="5537725057119320332">แคสต์</translation>
 <translation id="5539221284352502426">เซิร์ฟเวอร์ปฏิเสธรหัสผ่านที่คุณป้อน สาเหตุที่เป็นไปได้คือรหัสผ่านสั้นเกินไป ทั้งนี้รหัสผ่านต้องมีตัวเลขหรือสัญลักษณ์อยู่ด้วย และต้องแตกต่างจากรหัสผ่านที่เคยใช้</translation>
 <translation id="5541694225089836610">ผู้ดูแลระบบของคุณปิดการทำงาน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
@@ -4578,6 +4578,7 @@
 <translation id="5787146423283493983">ข้อตกลงเกี่ยวกับคีย์</translation>
 <translation id="5787420647064736989">ชื่ออุปกรณ์</translation>
 <translation id="5788367137662787332">ขออภัย ไม่สามารถติดตั้งอย่างน้อยหนึ่งพาร์ทิชันลงในอุปกรณ์ <ph name="DEVICE_LABEL" /> ได้</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5790651917470750848">มีการส่งต่อพอร์ตอยู่แล้ว</translation>
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
@@ -4809,10 +4810,8 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดตำแหน่งได้โดยปิดการตั้งค่าตำแหน่งหลักในอุปกรณ์ และปิดการใช้ Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับการบอกตำแหน่งในการตั้งค่าตำแหน่งได้ด้วย<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">ออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> กำลังแชร์แท็บใน Chrome กับ <ph name="TAB_NAME" /></translation>
 <translation id="604388835206766544">แยกวิเคราะห์ค่ากำหนดไม่สำเร็จ</translation>
 <translation id="6043994281159824495">ออกจากระบบเลย</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> กำลังแชร์แท็บและเสียงใน Chrome กับ <ph name="TAB_NAME" /></translation>
 <translation id="6045114302329202345">ปุ่ม TrackPoint หลัก</translation>
 <translation id="6047632800149092791">การซิงค์ไม่ทำงาน โปรดลองออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6049797270917061226">ไฟล์นี้อาจปล่อยให้ผู้โจมตีขโมยข้อมูลส่วนบุคคลของคุณได้</translation>
@@ -7307,7 +7306,6 @@
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655972064210167941">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถยืนยันรหัสผ่านได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
 <translation id="8657393004602556571">ต้องการทิ้งความคิดเห็นใช่ไหม</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> กำลังแชร์หน้าจอและเสียงของคุณกับ <ph name="TAB_NAME" /></translation>
 <translation id="8661290697478713397">เปิดลิงก์ในหน้าต่าง&amp;ที่ไม่ระบุตัวตน</translation>
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">การดำเนินการนี้ใช้เวลานานกว่าที่คาดไว้ คุณจะข้ามไปก่อนหรือรอให้ดำเนินการเสร็จก็ได้</translation>
@@ -7602,7 +7600,6 @@
 <translation id="8941173171815156065">เพิกถอนสิทธิ์ "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ใช้แบตเตอรี่หมดเร็วขึ้น (ขณะนี้อยู่ที่ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> กำลังแชร์หน้าต่างกับ <ph name="TAB_NAME" /></translation>
 <translation id="8945274638472141382">ขนาดไอคอน</translation>
 <translation id="8946359700442089734">ไม่ได้เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องอย่างสมบูรณ์บนอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> นี้</translation>
 <translation id="894763922177556086">ดี</translation>

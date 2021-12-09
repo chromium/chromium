@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> へのアクセスを求めています。ファイルが変更または削除される可能性があります。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
+<translation id="1552752544932680961">拡張機能を管理</translation>
 <translation id="1553538517812678578">無制限</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
@@ -2776,7 +2777,6 @@
 <translation id="3842552989725514455">Serif フォント</translation>
 <translation id="3843464315703645664">内部で許可リストに登録済み</translation>
 <translation id="3844888638014364087">絵文字を挿入しました</translation>
-<translation id="384513009320852920">Bluetooth デバイスがペア設定モードになっていて、近くにあることを確認してください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ウェブサイト、Android アプリなどの開発に役立つツールをご利用ください。Linux をインストールする際には <ph name="DOWNLOAD_SIZE" /> のデータがダウンロードされます。</translation>
 <translation id="3847319713229060696">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="3848547754896969219">シークレット ウィンドウで開く(&amp;I)</translation>
@@ -4275,7 +4275,6 @@
 <translation id="5485102783864353244">アプリを追加</translation>
 <translation id="5485754497697573575">すべてのタブを復元</translation>
 <translation id="5486261815000869482">パスワードの確認入力</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の画面を共有しています。</translation>
 <translation id="5486561344817861625">ブラウザ再起動のシミュレート</translation>
 <translation id="5487460042548760727">プロファイル名を <ph name="PROFILE_NAME" /> に変更します</translation>
 <translation id="5487521232677179737">データを削除</translation>
@@ -4337,6 +4336,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> が次の許可を求めています</translation>
 <translation id="5534304873398226603">写真または動画を破棄</translation>
 <translation id="5535941515421698170">このデバイスから既存のデータも削除する</translation>
+<translation id="5537725057119320332">キャスト</translation>
 <translation id="5539221284352502426">入力したパスワードはサーバーによって拒否されました。考えられる原因は次のとおりです。パスワードが短すぎる。パスワードに数字または記号が含まれていない。以前と同じパスワードを指定した。</translation>
 <translation id="5541694225089836610">操作が管理者によって無効にされています</translation>
 <translation id="5542132724887566711">プロフィール</translation>
@@ -4564,6 +4564,7 @@
 <translation id="5787146423283493983">キー合意</translation>
 <translation id="5787420647064736989">デバイス名</translation>
 <translation id="5788367137662787332">デバイス <ph name="DEVICE_LABEL" /> の少なくとも 1 つのパーティションがマウントできませんでした。</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">完了</translation>
 <translation id="5790651917470750848">ポート転送はすでに設定されています</translation>
 <translation id="5792728279623964091">電源ボタンをタップしてください</translation>
@@ -4795,10 +4796,8 @@
     <ph name="BEGIN_PARAGRAPH2" />位置情報の使用を無効にするには、お使いのデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">全画面表示を終了</translation>
 <translation id="6042308850641462728">もっと見る</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の Chrome タブを共有しています。</translation>
 <translation id="604388835206766544">設定を解析処理できませんでした</translation>
 <translation id="6043994281159824495">ログアウト</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の Chrome タブと音声を共有しています。</translation>
 <translation id="6045114302329202345">メインの TrackPoint ボタン</translation>
 <translation id="6047632800149092791">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
 <translation id="6049797270917061226">このファイルを開くと攻撃者に個人情報を盗まれる可能性があります。</translation>
@@ -7288,7 +7287,6 @@
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655972064210167941">パスワードを確認できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の画面と音声を共有しています。</translation>
 <translation id="8661290697478713397">シークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>
 <translation id="8662733268723715832">予想以上に時間がかかっています。スキップするか、終わるまでお待ちください。</translation>
@@ -7583,7 +7581,6 @@
 <translation id="8941173171815156065">権限「<ph name="PERMISSION" />」を取り消します</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">バッテリー消費が速くなります（現在 <ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> のウィンドウを共有しています。</translation>
 <translation id="8945274638472141382">アイコンのサイズ</translation>
 <translation id="8946359700442089734">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能が完全に有効になっていませんでした。</translation>
 <translation id="894763922177556086">良い</translation>

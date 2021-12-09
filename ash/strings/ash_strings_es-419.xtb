@@ -416,7 +416,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
-<translation id="3744282433224562605">Para desbloquear la Chromebook, ingresa la contraseña</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
 Todos los usuarios deben salir de sus cuentas para continuar.</translation>
@@ -628,7 +627,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
 <translation id="5198715732953550718">Se combinó <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una nueva carpeta.</translation>
-<translation id="5199367439331364630">Para acceder a la Chromebook, ingresa la contraseña</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
@@ -766,6 +764,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6134259848159370930">Realiza búsquedas en tu dispositivo, apps, configuración y la Web.</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirmar la descarga</translation>
 <translation id="6154006699632741460">El dispositivo periférico no es compatible</translation>
 <translation id="6156262341071374681">Expande la lista a todas las apps</translation>
 <translation id="615957422585914272">Mostrar el teclado en pantalla</translation>

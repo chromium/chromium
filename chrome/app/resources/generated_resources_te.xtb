@@ -536,6 +536,7 @@
 <translation id="1549275686094429035">ARC ఎనేబుల్ చేయబడింది</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" />ని యాక్సెస్ చేయాలనుకుంటోంది. దీని వలన మీ ఫైళ్లు మారవచ్చు లేదా తొలగించబడవచ్చు.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" />ను ఉపయోగించడానికి "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ సెర్చ్‌ను మార్చింది</translation>
+<translation id="1552752544932680961">ఎక్స్‌టెన్షన్‌ను నిర్వహించండి</translation>
 <translation id="1553538517812678578">అపరిమిత</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1556537182262721003">ఎక్స్‌టెన్షన్ డైరెక్టరీని ప్రొఫైల్ లోపలికి తరలించలేకపోయింది.</translation>
@@ -2802,7 +2803,6 @@
 <translation id="3842552989725514455">Serif ఫాంట్</translation>
 <translation id="3843464315703645664">ఇంటర్నల్‌గా వైట్‌లిస్ట్ చేయబడింది</translation>
 <translation id="3844888638014364087">ఎమోజి చొప్పించబడింది</translation>
-<translation id="384513009320852920">మీ బ్లూటూత్ పరికరం పెయిరింగ్ మోడ్‌లో ఉందని, ఇంకా సమీపంలో ఉందని నిర్ధారించుకోండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">వెబ్‌సైట్‌లు, Android యాప్‌లు మరియు మరిన్నింటిని అభివృద్ధి చేయడానికి సాధనాలను పొందండి. Linuxను ఇన్‌స్టాల్ చేయడం ద్వారా <ph name="DOWNLOAD_SIZE" /> డేటా డౌన్‌లోడ్ అవుతుంది.</translation>
 <translation id="3847319713229060696">వెబ్‌లో ప్రతిఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="3848547754896969219">&amp;అజ్ఞాత విండోలో తెరువు</translation>
@@ -4314,7 +4314,6 @@
 <translation id="5485102783864353244">యాప్‌ను జోడించు</translation>
 <translation id="5485754497697573575">అన్ని ట్యాబ్‌లను పునరుద్ధరించు</translation>
 <translation id="5486261815000869482">పాస్‌వర్డ్‌ని నిర్ధారించండి</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> మీ స్క్రీన్‌ను <ph name="TAB_NAME" />తో భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="5486561344817861625">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించండి</translation>
 <translation id="5487460042548760727"><ph name="PROFILE_NAME" />కు ప్రొఫైల్ పేరుమార్చండి</translation>
 <translation id="5487521232677179737">డేటాని తీసివేయి</translation>
@@ -4376,6 +4375,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది</translation>
 <translation id="5534304873398226603">ఫోటో లేదా వీడియోను విస్మరించు</translation>
 <translation id="5535941515421698170">అలాగే ఈ పరికరం నుండి ఇప్పటికే ఉన్న మీ డేటాను తీసివేయండి</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">మీరు నమోదు చేసిన పాస్‌వర్డ్‌ను సర్వర్ తిరస్కరించింది. సంభావ్య కారణాలు: పాస్‌వర్డ్ చాలా చిన్నదిగా ఉంది. పాస్‌వర్డ్ తప్పనిసరిగా సంఖ్యలు లేదా గుర్తులను కలిగి ఉండాలి. మునుపు ఉపయోగించిన పాస్‌వర్డ్‌లలో దేనినీ తిరిగి ఉపయోగించకూడదు.</translation>
 <translation id="5541694225089836610">మీ నిర్వాహకుల ద్వారా చర్య నిలిపివేయబడింది</translation>
 <translation id="5542132724887566711">ప్రొఫైల్</translation>
@@ -4606,6 +4606,7 @@
 <translation id="5787146423283493983">కీ ఒప్పందాలు</translation>
 <translation id="5787420647064736989">పరికరం పేరు</translation>
 <translation id="5788367137662787332">క్షమించండి, పరికరం <ph name="DEVICE_LABEL" /> లో కనీసం ఒక విభజన కూడా ఉంచబడదు.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">విజయవంతం</translation>
 <translation id="5790651917470750848">పోర్ట్ ఫార్వర్డ్ ఇప్పటికే ఉంది</translation>
 <translation id="5792728279623964091">దయచేసి మీ పవర్ బటన్‌పై నొక్కండి</translation>
@@ -4838,10 +4839,8 @@
     <ph name="BEGIN_PARAGRAPH2" />మీరు మీ పరికరంలో ప్రధాన స్థాన సెట్టింగ్‌ని ఆఫ్ చేయడం ద్వారా స్థానాన్ని ఆఫ్ చేయవచ్చు. మీరు స్థాన సెట్టింగ్‌లలో స్థానం కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను <ph name="TAB_NAME" />తో భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="604388835206766544">కాన్ఫిగరేషన్ అన్వయింపు విఫలమైంది</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను, ఆడియోను <ph name="TAB_NAME" />తో భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="6045114302329202345">ప్రధాన TrackPoint బటన్</translation>
 <translation id="6047632800149092791">సింక్ పని చేయడం లేదు. సైన్ అవుట్ చేసి, తిరిగి సైన్ ఇన్ చేయడాన్ని ట్రై చేయండి.</translation>
 <translation id="6049797270917061226">ఈ ఫైల్ మీ వ్యక్తిగత సమాచారాన్ని దొంగింలించేందుకు దాడులకు పాల్పడే వారిని అనుమతించవచ్చు.</translation>
@@ -7341,7 +7340,6 @@
 <translation id="8655295600908251630">ఛానల్</translation>
 <translation id="8655972064210167941">మీ పాస్‌వర్డ్‌ను ధృవీకరించలేకపోయినందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="8657393004602556571">మీరు ఫీడ్‌బ్యాక్‌ను విస్మరించాలనుకుంటున్నారా?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> మీ స్క్రీన్ మరియు ఆడియోను <ph name="TAB_NAME" />తో భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="8661290697478713397">అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> నెట్‌వర్క్‌లో చేరండి</translation>
 <translation id="8662733268723715832">దీనికి ఊహించిన దాని కంటే ఎక్కువ సమయం పడుతోంది, అందుచేత మీరు స్కిప్ చేయవచ్చు లేదా ఇది పూర్తి అయ్యేవరకు వేచి ఉండవచ్చు.</translation>
@@ -7636,7 +7634,6 @@
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' అనుమతిని ఉపసంహరించు</translation>
 <translation id="894360074127026135">Netscape అంతర్జాతీయ స్టెప్‌-అప్</translation>
 <translation id="8944099748578356325">బ్యాటరీని మరింత వేగంగా ఉపయోగిస్తుంది (ప్రస్తుతం <ph name="BATTERY_PERCENTAGE" />% ఉంది)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> ఒక విండోను <ph name="TAB_NAME" />తో షేర్ చేస్తోంది.</translation>
 <translation id="8945274638472141382">చిహ్నం పరిమాణం</translation>
 <translation id="8946359700442089734">డీబగ్గింగ్ ఫీచ‌ర్‌లు ఈ <ph name="IDS_SHORT_PRODUCT_NAME" /> పరికరంలో పూర్తిగా ప్రారంభించబడలేదు.</translation>
 <translation id="894763922177556086">బాగుంది</translation>

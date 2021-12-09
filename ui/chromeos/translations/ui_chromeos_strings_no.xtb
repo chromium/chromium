@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Alt er sikkerhetskopiert!</translation>
 <translation id="3634507049637220048">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer er flyttet.</translation>
-<translation id="3645531960514756307">Løsne mappen</translation>
 <translation id="3685122418104378273">Google Disk-synkronisering er deaktivert som standard ved bruk av mobile data.</translation>
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Vi jobber kontinuerlig for å gjøre surfingen din tryggere. Tidligere kunne et hvilket som helst nettsted be deg å legge til en utvidelse i nettleseren din. I de nyeste versjonene av Google Chrome må du gi Chrome uttrykkelig beskjed om at du ønsker å installere disse utvidelsene ved å legge dem til via Utvidelser-siden. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Fest mappe</translation>
 <translation id="9130775360844693113">Medlemmer av «<ph name="DESTINATION_NAME" />» får tilgang til disse elementene.</translation>
 <translation id="9131598836763251128">Velg én eller flere filer</translation>
 <translation id="9133055936679483811">Opprettelsen av zip-filen mislyktes. <ph name="ERROR_MESSAGE" /></translation>

@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">СИПC (средата на изпълнение на приложенията в Chrome) е активирана</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> иска достъп до „<ph name="VOLUME_NAME" />“. Приложението може да промени или изтрие файловете ви.</translation>
 <translation id="1552301827267621511">Разширението <ph name="EXTENSION_NAME" /> промени търсещата машина на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Управление на разширението</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1556537182262721003">Не можа да се премести директорията на разширението в потребителския профил.</translation>
@@ -2790,7 +2791,6 @@
 <translation id="3842552989725514455">Серифен шрифт</translation>
 <translation id="3843464315703645664">В списъка на разрешените вътрешно</translation>
 <translation id="3844888638014364087">Вмъкнахте емоджи</translation>
-<translation id="384513009320852920">Уверете се, че устройството ви с Bluetooth е в режим за сдвояване и наблизо. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Получете инструменти за разработка на уебсайтове, приложения за Android и др. 
 При инсталирането на Linux ще бъдат изтеглени <ph name="DOWNLOAD_SIZE" /> данни.</translation>
 <translation id="3847319713229060696">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
@@ -4300,7 +4300,6 @@
 <translation id="5485102783864353244">Добавяне на приложението</translation>
 <translation id="5485754497697573575">Възстановяване на всички раздели</translation>
 <translation id="5486261815000869482">Потвърждаване на паролата</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> споделя екрана ви с/ъс <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Симулиране на рестартиране на браузъра</translation>
 <translation id="5487460042548760727">Преименуване на потребителския профил на <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Изчиств. на данните</translation>
@@ -4362,6 +4361,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> иска да</translation>
 <translation id="5534304873398226603">Отхвърляне на снимката или видеоклипа</translation>
 <translation id="5535941515421698170">Премахване и на съществуващите ви данни от това устройство</translation>
+<translation id="5537725057119320332">Предаване</translation>
 <translation id="5539221284352502426">Въведената от вас парола бе отхвърлена от сървъра. Ето някои от възможните причини: паролата е твърде кратка; необходимо е да съдържа цифри или символи; трябва да е различна от предишните пароли.</translation>
 <translation id="5541694225089836610">Действието е деактивирано от администратора ви</translation>
 <translation id="5542132724887566711">Потребителски профил</translation>
@@ -4593,6 +4593,7 @@
 <translation id="5787146423283493983">Договаряне на ключ</translation>
 <translation id="5787420647064736989">Име на устройството</translation>
 <translation id="5788367137662787332">За съжаление поне един дял на устройството <ph name="DEVICE_LABEL" /> не можа да бъде свързан.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Успех</translation>
 <translation id="5790651917470750848">Пренасочването на порта вече съществува</translation>
 <translation id="5792728279623964091">Моля, докоснете бутона за захранване</translation>
@@ -4824,10 +4825,8 @@
 <ph name="BEGIN_PARAGRAPH2" />Можете да изключите местоположението, като деактивирате главната настройка за него на устройството си. Също така от настройките за местоположението имате възможност да изключите използването на Wi-Fi, мобилни мрежи и сензори за определянето му.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Изход от цял екран</translation>
 <translation id="6042308850641462728">Още</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> споделя раздел в Chrome с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="604388835206766544">Синтактичният анализ на конфигурацията не бе успешен</translation>
 <translation id="6043994281159824495">Изход сега</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> споделя раздел в Chrome и звук с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="6045114302329202345">Основен бутон за TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизирането не работи. Опитайте да излезете и отново да влезете в профила си.</translation>
 <translation id="6049797270917061226">Този файл може да даде възможност на хакери да откраднат личната ви информация.</translation>
@@ -7324,7 +7323,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="8657393004602556571">Искате ли да отхвърлите отзивите?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> споделя екрана и звука ви с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
 <translation id="8662733268723715832">Процесът отнема по-дълго от очакваното. Можете да го пропуснете или да изчакате да завърши.</translation>
@@ -7619,7 +7617,6 @@
 <translation id="8941173171815156065">Отмяна на разрешението „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Международно повишаване на сигурността от Netscape</translation>
 <translation id="8944099748578356325">използва батерията по-бързо (понастоящем тя е <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> споделя прозорец с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="8945274638472141382">Размер на иконите</translation>
 <translation id="8946359700442089734">Функциите за отстраняване на грешки не бяха напълно активирани на това устройство с <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">добра</translation>

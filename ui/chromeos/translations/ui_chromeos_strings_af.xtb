@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Alles is gerugsteun!</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items is geskuif.</translation>
-<translation id="3645531960514756307">Ontspeld vouer</translation>
 <translation id="3685122418104378273">Google Drive-sinkronisering is by verstek afgeskakel wanneer dit mobiele data gebruik.</translation>
 <translation id="3689865792480713551">Kanselleer <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; <ph name="CONNECTION_STATUS" />; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Ons soek gedurig na maniere om jou blaai-ervaring veiliger te maak. Voorheen kon enige webwerf jou vra om 'n uitbreiding by jou blaaier te voeg. In die nuutste weergawes van Google Chrome moet jy Chrome spesifiek aansê dat jy hierdie uitbreidings wil installeer deur hulle via die uitbreidingbladsy by te voeg. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Speld vouer vas</translation>
 <translation id="9130775360844693113">Lede van "<ph name="DESTINATION_NAME" />" sal toegang tot hierdie items kry.</translation>
 <translation id="9131598836763251128">Kies een of meer lêers</translation>
 <translation id="9133055936679483811">Kon nie kompakteer nie. <ph name="ERROR_MESSAGE" /></translation>

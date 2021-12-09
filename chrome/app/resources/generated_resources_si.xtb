@@ -533,6 +533,7 @@
 <translation id="1549275686094429035">ARC සබලයි</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />හට <ph name="VOLUME_NAME" /> වෙත ප්‍රවේශ වීමට අවශ්‍යය. එය ඔබේ ගොනු විකරණය කිරීමට හෝ මැකීමට හැකිය.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" දිගුව <ph name="SEARCH_PROVIDER_DOMAIN" /> භාවිතයට ඇති සෙවීම වෙනස් කළා</translation>
+<translation id="1552752544932680961">දිගු කළමනාකරණය කරන්න</translation>
 <translation id="1553538517812678578">අසීමිත</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
@@ -2791,7 +2792,6 @@
 <translation id="3842552989725514455">සෙරිෆ් අකුර</translation>
 <translation id="3843464315703645664">අභ්‍යන්තරව ඉඩ දෙන ලේඛනගත කෙරිණි</translation>
 <translation id="3844888638014364087">ඉමොජි ඇතුළත් කරන ලදි</translation>
-<translation id="384513009320852920">ඔබගේ බ්ලූටූත් උපාංගය යුගල කිරීමේ ප්‍රකාරයේ සහ අවට තිබෙන බව සහතික කර ගන්න. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">වෙබ් අඩවි, Android යෙදුම් සහ තවත් දේ සංවර්ධනයට මෙවලම් ලබා ගන්න.
 Linux ස්ථාපනය කිරීම දත්තවලින් <ph name="DOWNLOAD_SIZE" /> බාගනු ඇත.</translation>
 <translation id="3847319713229060696">සියලු දෙනා සඳහා වෙබය මත ආරක්‍ෂාව වැඩිදියුණු කිරීමට උදවු කරන්න</translation>
@@ -4303,7 +4303,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5485102783864353244">යෙදුම එක් කරන්න</translation>
 <translation id="5485754497697573575">සියලු ටැබ ප්‍රතිසාධනය කරන්න</translation>
 <translation id="5486261815000869482">රහස්වචනය තහවුරු කරන්න</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> විසින් ඔබේ තිරය <ph name="TAB_NAME" /> සමග හුවමාරු කර ගනී.</translation>
 <translation id="5486561344817861625">බ්‍රවුසර යළි ආරම්භය ප්‍රති නිර්මාණය කරන්න</translation>
 <translation id="5487460042548760727">පැතිකඩ <ph name="PROFILE_NAME" /> ලෙස යළි නම් කරන ලදි</translation>
 <translation id="5487521232677179737">දත්ත හිස් කරන්නෙ</translation>
@@ -4365,6 +4364,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> හට කිරීමට අවශ්‍ය වන්නේ</translation>
 <translation id="5534304873398226603">ඡායාරූපය හෝ වීඩියෝව ඉවත ලන්න</translation>
 <translation id="5535941515421698170">මෙම උපාංගයෙන් ඔබගේ පවතින දත්තද ඉවත් කරන්න</translation>
+<translation id="5537725057119320332">විකාශය</translation>
 <translation id="5539221284352502426">ඔබ ඇතුළු කළ මුරපදය සේවාදායකය විසින් ප්‍රතික්ෂේප කරන ලදී. විය හැකි හේතුවල ඇතුළත් වන්නේ: මුරපදය ඉතා කෙටි වේ. මුරපදයේ අංක හෝ සංකේත ඇතුළත් විය යුතුය. මුරපදය මීට පෙර මුරපදවලින් වෙනස් විය යුතුය.</translation>
 <translation id="5541694225089836610">ක්‍රියාව ඔබේ පරිපාලකයා විසින් අබල කරනු ලැබ ඇත</translation>
 <translation id="5542132724887566711">පැතිකඩ</translation>
@@ -4596,6 +4596,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5787146423283493983">ප්‍රධාන ගිවිසුම</translation>
 <translation id="5787420647064736989">උපාංග නම</translation>
 <translation id="5788367137662787332">සමාවන්න, අඩුවශයෙන් <ph name="DEVICE_LABEL" /> උපාංගය මත එක් කොටසක්වත් නැංවිය නොහැක.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">සාර්ථකයි</translation>
 <translation id="5790651917470750848">පෝර්ට් ඉදිරියට ගෙන යාම දැනටමත් පවතී</translation>
 <translation id="5792728279623964091">ඔබේ බල බොත්තමට තට්ටු කරන්න</translation>
@@ -4828,10 +4829,8 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_PARAGRAPH2" />ඔබේ උපාංගයෙහි ප්‍රධාන ස්ථාන සැකසීම ක්‍රියාවිරහිත කිරීමෙන් ඔබට ස්ථානය ක්‍රියාවිරහිත කළ හැකිය. ඔබට ස්ථානය සඳහා Wi‑Fi, ජංගම ජාල සහ සංවේදක භාවිතය ස්ථාන සැකසීම් තුළ ක්‍රියාවිරහිත කිරීමත් කළ හැකිය.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">පූර්ණ තිරයෙන් ඉවත් වන්න</translation>
 <translation id="6042308850641462728">වැඩිදුර</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> සමග Chrome ටැබයක් බෙදා ගනිමින් සිටී.</translation>
 <translation id="604388835206766544">වින්‍යාසය විග්‍රහ කිරීම අසාර්ථක විය</translation>
 <translation id="6043994281159824495">දැන් පිටවන්න</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> සමග Chrome ටැබයක් සහ ශ්‍රව්‍යයක් බෙදා ගනිමින් සිටී.</translation>
 <translation id="6045114302329202345">ප්‍රාථමික TrackPoint බොත්තම</translation>
 <translation id="6047632800149092791">සමමුහුර්ත කිරීම ක්‍රියා නොකරයි. වරා ආපසු පිරීමට උත්සාහ කරන්න.</translation>
 <translation id="6049797270917061226">මෙම ගොනුව ඔබගේ පුද්ගලික තොරතුරු සොරකම් කිරීමට ප්‍රහාරකයන්ට ඉඩ දිය හැකිය.</translation>
@@ -7330,7 +7329,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8655295600908251630">නාලිකාව</translation>
 <translation id="8655972064210167941">ඔබේ මුරපදය තහවුරු කළ නොහැකි වූ බැවින් පිරීම අසාර්ථකයි. කරුණාකර ඔබගේ පරිපාලක අමතන්න නැතහොත් නැවත උත්සාහ කරන්න.</translation>
 <translation id="8657393004602556571">ඔබට ප්‍රතිපෝෂණය ඉවත ලෑමට අවශ්‍යද?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> ඔබේ තිරය සහ ශ්‍රව්‍යය <ph name="TAB_NAME" /> සමග බෙදා ගනිමින් සිටී.</translation>
 <translation id="8661290697478713397">Incognito කවුළුව තුළ සබැඳිය විවෘත කරන්න</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ජාලයට එකතු වන්න</translation>
 <translation id="8662733268723715832">මෙය බලාපොරොත්තු වූවාට වඩා වැඩි කාලයක් ගනී, ඔබට එය මඟ හැරීමට හෝ එය නිම කරන තෙක් රැඳී සිටීමට හැකිය.</translation>
@@ -7626,7 +7624,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' අවසරය ඉවත් කරන්න</translation>
 <translation id="894360074127026135">Netscape අන්තර්ජාතික ඉහල පියවර</translation>
 <translation id="8944099748578356325">වඩා ඉක්මනින් බැටරිය භාවිත කරන්න (දැනට <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> සමගින් කවුළුවක් බෙදා ගනිමින් සිටී.</translation>
 <translation id="8945274638472141382">නිරූපක තරම</translation>
 <translation id="8946359700442089734">මෙම <ph name="IDS_SHORT_PRODUCT_NAME" /> උපාංගය මත දෝශ නිරාකරණ විශේශාංග සම්පූර්ණයෙන් සක්‍රීය කර නොමැත.</translation>
 <translation id="894763922177556086">හොඳ</translation>

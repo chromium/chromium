@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">ARC activé</translation>
 <translation id="1549788673239553762">"<ph name="APP_NAME" />" souhaite accéder à "<ph name="VOLUME_NAME" />". L'application peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1552301827267621511">L'extension "<ph name="EXTENSION_NAME" />" a remplacé le moteur de recherche par <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Gérer l'extension</translation>
 <translation id="1553538517812678578">sans limite</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
@@ -2780,7 +2781,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3842552989725514455">Police Serif</translation>
 <translation id="3843464315703645664">Ajouté à la liste d'autorisation interne</translation>
 <translation id="3844888638014364087">Emoji ajouté</translation>
-<translation id="384513009320852920">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Accédez à des outils conçus pour développer des sites Web, des applications Android, etc. En installant Linux, vous téléchargerez <ph name="DOWNLOAD_SIZE" /> de données.</translation>
 <translation id="3847319713229060696">Contribuer à améliorer la sécurité sur le Web pour tous</translation>
 <translation id="3848547754896969219">Ouvrir dans une fenêtre de navigation &amp;privée</translation>
@@ -4288,7 +4288,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5485102783864353244">Ajouter l'application</translation>
 <translation id="5485754497697573575">Restaurer tous les onglets</translation>
 <translation id="5486261815000869482">Confirmer le mot de passe</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> partage votre écran avec <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simuler le redémarrage du navigateur</translation>
 <translation id="5487460042548760727">Renommer le profil en <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Effacer les données</translation>
@@ -4350,6 +4349,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
 <translation id="5534304873398226603">Supprimer la photo ou la vidéo</translation>
 <translation id="5535941515421698170">Supprimer également les données de cet appareil</translation>
+<translation id="5537725057119320332">Caster</translation>
 <translation id="5539221284352502426">Le serveur a refusé le mot de passe que vous avez saisi. Voici plusieurs raisons possibles : le mot de passe est trop court. Il ne contient pas de chiffres ni de symboles. Il est identique aux précédents mots de passe.</translation>
 <translation id="5541694225089836610">Votre administrateur a désactivé cette action</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4581,6 +4581,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Désolé, impossible d'installer au moins une partition du périphérique <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5790651917470750848">Ce port existe déjà</translation>
 <translation id="5792728279623964091">Veuillez appuyer sur le bouton Marche/Arrêt</translation>
@@ -4812,10 +4813,8 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Pour arrêter ce service, désactivez le paramètre de localisation principal sur votre appareil. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux mobiles et des capteurs dans vos paramètres de localisation.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Quitter le mode plein écran</translation>
 <translation id="6042308850641462728">Plus</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> partage un onglet Chrome avec <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Échec de l'analyse de la configuration</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio avec <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter, puis de vous reconnecter.</translation>
 <translation id="6049797270917061226">Ce fichier pourrait permettre à des pirates informatiques de dérober vos informations personnelles.</translation>
@@ -7312,7 +7311,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655972064210167941">Échec de la connexion, car il est impossible de valider votre mot de passe. Veuillez contacter votre administrateur ou réessayer.</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires ?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> partage votre écran et un contenu audio avec <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Ouvrir le lien dans la fenêtre de navi&amp;gation privée</translation>
 <translation id="8662671328352114214">Rejoindre le réseau <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Cette opération dure plus longtemps que prévu. Vous pouvez l'annuler ou attendre qu'elle prenne fin.</translation>
@@ -7608,7 +7606,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8941173171815156065">Révoquer l'autorisation "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape </translation>
 <translation id="8944099748578356325">Sollicitera davantage la batterie (<ph name="BATTERY_PERCENTAGE" /> % actuellement)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> partage une fenêtre avec <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Taille des icônes</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage n'ont pas été complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Bonne</translation>

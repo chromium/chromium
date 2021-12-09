@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">ARC പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> എന്നത് ആക്‌സസ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു. ഇത് നിങ്ങളുടെ ഫയലുകൾ പരിഷ്‌ക്കരിക്കുകയോ ഇല്ലാതാക്കുകയോ ചെയ്യാം</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" വിപുലീകരണം <ph name="SEARCH_PROVIDER_DOMAIN" /> ഉപയോഗിക്കാൻ തിരയൽ മാറ്റി</translation>
+<translation id="1552752544932680961">വിപുലീകരണം നിയന്ത്രിക്കുക</translation>
 <translation id="1553538517812678578">പരിമിതികളില്ലാത്ത</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1556537182262721003">വിപുലീകരണ ഡയറക്ടറി പ്രൊഫൈലിലേക്ക് നീക്കാന്‍ കഴിഞ്ഞില്ല.</translation>
@@ -2787,7 +2788,6 @@
 <translation id="3842552989725514455">Serif font </translation>
 <translation id="3843464315703645664">ആന്തരികമായി വൈറ്റ്‌ലിസ്റ്റ് ചെയ്‌തത്</translation>
 <translation id="3844888638014364087">ഇമോജി ചേർത്തു</translation>
-<translation id="384513009320852920">നിങ്ങളുടെ Bluetooth ഉപകരണം ജോടിയാക്കൽ മോഡിലാണെന്നും സമീപത്തുണ്ടെന്നും ഉറപ്പാക്കുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">വെബ്സൈറ്റുകളും Android ആപ്പുകളും മറ്റും വികസിപ്പിച്ചെടുക്കാൻ ടൂളുകൾ നേടുക. Linux ഇൻസ്‌റ്റാൾ ചെയ്യുമ്പോൾ <ph name="DOWNLOAD_SIZE" /> ഡാറ്റ ഡൗൺലോഡ് ചെയ്യപ്പെടും.</translation>
 <translation id="3847319713229060696">എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="3848547754896969219">&amp;അദൃശ്യ വിൻഡോയിൽ തുറക്കുക</translation>
@@ -4297,7 +4297,6 @@
 <translation id="5485102783864353244">ആപ്പ് ചേർക്കുക</translation>
 <translation id="5485754497697573575">എല്ലാ ടാബുകളും പുനസ്ഥാപിക്കുക</translation>
 <translation id="5486261815000869482">പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" />,<ph name="TAB_NAME" /> എന്നതുമായി നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടുന്നു.</translation>
 <translation id="5486561344817861625">ബ്രൗസർ പുനരാരംഭിക്കൽ പരീക്ഷിക്കുക</translation>
 <translation id="5487460042548760727"><ph name="PROFILE_NAME" /> എന്നതായി പ്രൊഫൈലിന്റെ പേര് മാറ്റുക</translation>
 <translation id="5487521232677179737">ഡാറ്റ മായ്‌ക്കുക</translation>
@@ -4359,6 +4358,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ഇത് ചെയ്യാൻ ആവശ്യപ്പെടുന്നു</translation>
 <translation id="5534304873398226603">ഫോട്ടോയോ വീഡിയോയോ തള്ളിക്കളയുക</translation>
 <translation id="5535941515421698170">ഈ ഉപകരണത്തിൽ നിന്ന് നിലവിലുള്ള വിവരങ്ങളും നീക്കംചെയ്യുക</translation>
+<translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="5539221284352502426">നിങ്ങൾ നൽകിയ പാസ്‍വേഡ് സെർവർ നിരസിച്ചു. സാധ്യമായ കാരണങ്ങൾ ഇവയാണ്: പാസ്‍വേഡ് വളരെ ചെറുതാണ്. പാസ്‍വേഡിൽ അക്കങ്ങളും ചിഹ്നങ്ങളും അടങ്ങിയിരിക്കണം. പുതിയ പാസ്‌വേഡ്, മുമ്പ് ഉപയോഗിച്ചിട്ടുള്ള പാസ്‍വേഡുകളിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കണം.</translation>
 <translation id="5541694225089836610">പ്രവർത്തനം നിങ്ങളുടെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5542132724887566711">പ്രൊഫൈൽ</translation>
@@ -4590,6 +4590,7 @@
 <translation id="5787146423283493983">കീ കരാര്‍‌</translation>
 <translation id="5787420647064736989">ഉപകരണത്തിന്റെ പേര്</translation>
 <translation id="5788367137662787332">ക്ഷമിക്കണം, <ph name="DEVICE_LABEL" /> എന്ന ഉപകരണത്തിലെ ഏറ്റവും കുറഞ്ഞത് ഒരു ഭാഗം പോലും മൗണ്ട് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
 <translation id="5790651917470750848">പോർട്ട് ഫോർവേഡ് ഇതിനകം തന്നെ നിലവിലുള്ളതാണ്.</translation>
 <translation id="5792728279623964091">നിങ്ങളുടെ പവർ ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
@@ -4822,10 +4823,8 @@
     <ph name="BEGIN_PARAGRAPH2" />നിങ്ങളുടെ ഉപകരണത്തിലെ പ്രധാന ലൊക്കേഷൻ ക്രമീകരണം ഓഫാക്കി, നിങ്ങൾക്ക് ലൊക്കേഷൻ ഓഫാക്കാം. ലൊക്കേഷന് വേണ്ടിയുള്ള വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകൾ, സെൻസറുകൾ എന്നിവയുടെ ഉപയോഗവും ലൊക്കേഷൻ ക്രമീകരണത്തിൽ ഓഫാക്കാനാവും.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">മുഴുവൻസ്‌ക്രീനിൽ നിന്നും നിർഗമിക്കുക</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി Chrome ടാബ് പങ്കിടുന്നു.</translation>
 <translation id="604388835206766544">കോൺഫിഗറേഷൻ പാഴ്‌സ് ചെയ്യാനായില്ല</translation>
 <translation id="6043994281159824495">ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുക</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി Chrome ടാബും ഓഡിയോയും പങ്കിടുന്നു.</translation>
 <translation id="6045114302329202345">പ്രാഥമിക TrackPoint ബട്ടൺ</translation>
 <translation id="6047632800149092791">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സൈൻ ഔട്ട് ചെയ്‌ത ശേഷം വീണ്ടും സൈൻ ഇൻ ചെയ്‌ത് നോക്കുക.</translation>
 <translation id="6049797270917061226">ആക്രമണകാരികളെ നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ മോഷ്‌ടിക്കാൻ ഈ ഫയൽ അനുവദിച്ചേക്കാം.</translation>
@@ -7329,7 +7328,6 @@
 <translation id="8655295600908251630">ചാനല്‍</translation>
 <translation id="8655972064210167941">നിങ്ങളുടെ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനാകാത്തതിനാൽ സൈൻ ഇൻ ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു. അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുകയോ വീണ്ടും ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="8657393004602556571">ഫീഡ്‌ബാക്ക് ഉപേക്ഷിക്കണോ?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി നിങ്ങളുടെ സ്‌ക്രീനും ഓഡിയോയും പങ്കിടുന്നു.</translation>
 <translation id="8661290697478713397">അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> നെറ്റ്‌വർക്കിൽ ചേരുക</translation>
 <translation id="8662733268723715832">ഇത് പ്രതീക്ഷിച്ചതിലും കൂടുതൽ സമയമെടുക്കുന്നു, ഇത് പൂർത്തിയാകുന്നത് വരെ നിങ്ങൾക്ക് ഒഴിവാക്കുകയോ കാത്തിരിക്കുകയോ ചെയ്യാം.</translation>
@@ -7623,7 +7621,6 @@
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' എന്ന അനുമതി റദ്ദാക്കുക</translation>
 <translation id="894360074127026135">നെറ്റ്‌സ്‌കേപ്പ് അന്തര്‍‌ദ്ദേശീയ സ്റ്റെപ്പ്-അപ്പ്</translation>
 <translation id="8944099748578356325">കൂടുതൽ വേഗത്തിൽ ബാറ്ററി ഉപയോഗിക്കുക (നിലവിൽ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി ഒരു വിൻഡോ പങ്കിടുന്നു.</translation>
 <translation id="8945274638472141382">ഐക്കൺ വലുപ്പം</translation>
 <translation id="8946359700442089734">ഈ <ph name="IDS_SHORT_PRODUCT_NAME" /> ഉപകരണത്തിൽ ഡീബഗ് ചെയ്യൽ ഫീച്ചറുകൾ പൂർണ്ണമായി പ്രവർത്തനക്ഷമമാക്കിയിട്ടില്ല.</translation>
 <translation id="894763922177556086">നല്ലത്</translation>

@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">ເປີດການນຳໃຊ້ ARC ແລ້ວ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ຕ້ອງ​ການ​ເຂົ້າ​ຫາ <ph name="VOLUME_NAME" />. ມັນ​ອາດ​ຈະ​ດັດ​ແປງ ຫຼື​ລຶບ​ໄຟ​ລ໌​ຂອງ​ທ່ານ.</translation>
 <translation id="1552301827267621511">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນການຊອກຫາໄປໃຊ້ <ph name="SEARCH_PROVIDER_DOMAIN" /> ແລ້ວ</translation>
+<translation id="1552752544932680961">ຈັດການສ່ວນຂະຫຍາຍ</translation>
 <translation id="1553538517812678578">ບໍ່ຈໍາກັດ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1556537182262721003">ບໍ່ສາມາດຍ້າຍໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍເພີ່ມເຕີມໄປເປັນໂປຣໄຟລ໌ໄດ້.</translation>
@@ -2800,7 +2801,6 @@
 <translation id="3842552989725514455">ຟອນ Serif</translation>
 <translation id="3843464315703645664">ເປັນລາຍການທີ່ອະນຸຍາດພາຍໃນ</translation>
 <translation id="3844888638014364087">ແຊກອີໂມຈິແລ້ວ</translation>
-<translation id="384513009320852920">ກະລຸນາກວດສອບວ່າອຸປະກອນ Bluetooth ຂອງທ່ານຢູ່ໃນໂໝດຈັບຄູ່ ແລະ ຢູ່ໃກ້ຄຽງ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ດາວໂຫຼດເຄື່ອງມືສຳລັບພັດທະນາເວັບໄຊ, ແອັບ Android ແລະ ອື່ນໆອີກ. ການຕິດຕັ້ງ Linux ຈະດາວໂຫຼດຂໍ້ມູນ <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນເວັັບໄຊສຳລັບທຸກຄົນ</translation>
 <translation id="3848547754896969219">ເປີດໃນ&amp;ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -4311,7 +4311,6 @@
 <translation id="5485102783864353244">ເພີ່ມ​ແອັບ</translation>
 <translation id="5485754497697573575">ຟື້ນ​ຄືນທຸກແຖບ</translation>
 <translation id="5486261815000869482">ຢືນ​ຢັນ​ລະ​ຫັດ​ຜ່ານ​</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> ກໍາລັງແຊຣ໌ໜ້າຈໍຂອງທ່ານກັບ <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">ຈໍາລອງການເລີ່ມປິດເປີດບຣາວ​ເຊີໃໝ່</translation>
 <translation id="5487460042548760727">ປ່ຽນຊື່ໂປຣໄຟລ໌ເປັນ <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">ລຶບລ້າງຂໍ້ມູນ</translation>
@@ -4373,6 +4372,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ຕ້ອງການ</translation>
 <translation id="5534304873398226603">ລຶບຮູບພາບ ຫຼື ວິດີໂອຖິ້ມ</translation>
 <translation id="5535941515421698170">ຍັງລຶບຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ນຳອີກ</translation>
+<translation id="5537725057119320332">ຄາສທ໌</translation>
 <translation id="5539221284352502426">ລະຫັດຜ່ານທີ່ທ່ານປ້ອນເຂົ້າໄດ້ຖືກປະຕິເສດໂດຍເຊີເວີແລ້ວ. ເຫດຜົນທີ່ເປັນໄປໄດ້ລວມມີ: ລະຫັດຜ່ານສັ້ນເກີນໄປ. ລະຫັດຜ່ານຕ້ອງລວມມີຕົວເລກ ຫຼື ສັນຍາລັກ. ລະຫັດຜ່ານຕ້ອງແຕກຕ່າງຈາກລະຫັດຜ່ານໃນເມື່ອກ່ອນ.</translation>
 <translation id="5541694225089836610">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດນຳໃຊ້ຄຳສັ່ງນີ້</translation>
 <translation id="5542132724887566711">ໂປຣໄຟລ໌</translation>
@@ -4603,6 +4603,7 @@
 <translation id="5787146423283493983">ຂໍ້ຕົກລົງລະຫັດ</translation>
 <translation id="5787420647064736989">ຊື່ອຸປະກອນ</translation>
 <translation id="5788367137662787332">ຂໍອະໄພ, ຢ່າງໜ້ອຍສ່ວນແບ່ງໜຶ່ງຢູ່ໃນອຸປະກອນ <ph name="DEVICE_LABEL" /> ບໍ່ສາມາດຕໍ່ໄດ້.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">ສໍາ​ເລັດ</translation>
 <translation id="5790651917470750848">ມີການສົ່ງຕໍ່ຜອດຢູ່ແລ້ວ</translation>
 <translation id="5792728279623964091">ກະລຸນາແຕະປຸ່ມປິດເປີດເຄື່ອງຂອງທ່ານ</translation>
@@ -4835,10 +4836,8 @@
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດປິດສະຖານທີ່ໄດ້ໂດຍການປິດການຕັ້ງຄ່າສະຖານທີ່ຫຼັກຢູ່ໃນອຸປະກອນຂອງທ່ານ. ນອກຈາກທ່ານຍັງສາມາດປິດການໃຊ້ Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີຕ່າງໆສຳລັບສະຖານທີ່ໄດ້ໃນການຕັ້ງຄ່າສະຖານທີ່.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome ກັບ <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">ແຍກວິເຄາະການກຳນົດຄ່າບໍ່ສຳເລັດ</translation>
 <translation id="6043994281159824495">ອອກຈາກ​ລະບົບ ດຽວນີ້</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome ແລະ ສຽງກັບ <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">ປຸ່ມ TrackPoint ຫຼັກ</translation>
 <translation id="6047632800149092791">ການຊິ້ງຂໍ້ມູນໃຊ້ບໍ່ໄດ້. ລອງອອກຈາກລະບົບແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
 <translation id="6049797270917061226">ໄຟລ໌ນີ້ອາດເຮັດໃຫ້ຜູ້ໂຈມຕີສາມາດລັກຂໍ້ມູນສ່ວນຕົວຂອງທ່ານໄດ້.</translation>
@@ -7340,7 +7339,6 @@
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8655972064210167941">ລົງຊື່ເຂົ້າໃຊ້​ບໍ່​ສຳ​ເລັດ ເພາະ​ວ່າ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ​ບໍ່​ສາ​ມາດ​ຢືນ​ຢັນ​ໄດ້. ກະ​ລຸ​ນາ​ຕິດ​ຕໍ່​ຜູ້ຄວບຄຸມຂອງທ່ານ ຫຼື ລອງໃໝ່ອີກ.</translation>
 <translation id="8657393004602556571">ທ່ານຕ້ອງການຍົກເລີກຄຳຕິຊົມບໍ?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນໜ້າຈໍ ແລະ ສຽງຂອງທ່ານກັບ <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">ເປີດລິ້ງຢູ່ໃນໜ້າ​ຕ່າງທີ່ບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="8662671328352114214">ເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">ຂັ້ນຕອນນີ້ກຳລັງໃຊ້ເວລາດົນກວ່າທີ່ຄາດໄວ້, ທ່ານສາມາດຂ້າມ ຫຼື ລໍຖ້າຈົນກວ່າມັນຈະແລ້ວໄດ້.</translation>
@@ -7635,7 +7633,6 @@
 <translation id="8941173171815156065">ຖອນ​ໃບ​ອະ​ນຸ​ຍາດ​ '<ph name="PERMISSION" />' ຄືນ</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ໃຊ້ແບັດເຕີຣີໝົດໄວກວ່າ (ປັດຈຸບັນ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນໜ້າຈໍກັບ <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">ຂະໜາດໄອຄອນ</translation>
 <translation id="8946359700442089734">ຄຸນສົມບັດ​ແກ້​ໄຂ​ບັນ​ຫາ​ບໍ່​ຖືກ​ເປີດ​ໃຊ້​ງານ​ຢ່າງ​ເຕັມ​ທີ່​ຢູ່​ເທິງ​ອຸ​ປະ​ກອນ <ph name="IDS_SHORT_PRODUCT_NAME" /> ນີ້.</translation>
 <translation id="894763922177556086">ແຮງ​ດີ</translation>

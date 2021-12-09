@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Kaikki on varmuuskopioitu!</translation>
 <translation id="3634507049637220048">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty</translation>
-<translation id="3645531960514756307">Irrota kansio</translation>
 <translation id="3685122418104378273">Google Driven synkronointi on oletuksena pois käytöstä käyttäessäsi mobiilitiedonsiirtoa.</translation>
 <translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Pyrimme jatkuvasti tekemään selaamisesta turvallisempaa. Aiemmin mikä tahansa sivusto pystyi pyytämään laajennuksen lisäämistä selaimeen. Uusimmissa Google Chrome -versioissa sinun on erikseen ilmoitettava Chromelle, että haluat asentaa nämä laajennukset, lisäämällä ne Laajennukset-sivulla. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
 <translation id="912419004897138677">Pakkaus</translation>
-<translation id="9129931661813833980">Kiinnitä kansio</translation>
 <translation id="9130775360844693113">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näihin kohteisiin.</translation>
 <translation id="9131598836763251128">Valitse vähintään yksi tiedosto</translation>
 <translation id="9133055936679483811">Pakkaus epäonnistui. <ph name="ERROR_MESSAGE" /></translation>

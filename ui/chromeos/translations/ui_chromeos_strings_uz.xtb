@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Ma’lumotlar saqlandi!</translation>
 <translation id="3634507049637220048">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Administrator boshqaruvida, Batafsil</translation>
 <translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="3645531960514756307">Jildni olib tashlash</translation>
 <translation id="3685122418104378273">Google Disk‘ni mobil internet orqali sinxronlash birlamchi holatda o‘chirib qo‘yilgan.</translation>
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, <ph name="CONNECTION_STATUS" />, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
@@ -926,7 +925,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9110990317705400362">Biz doim brauzerimizni yanada havfsizroq qilish ustida ishlaymiz. Avval har qanday sayt kengaytma o‘rnatishga ruxsati bo‘lgan edi. Google Chrome‘ning so‘nggi versiyalarida kengaytmalar endi faqat “Kengaytmalar” sahifasidan o‘rnatiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Jildni mahkamlash</translation>
 <translation id="9130775360844693113">“<ph name="DESTINATION_NAME" />” foydalanuvchilari bu elemntlardan foydalana olishadi.</translation>
 <translation id="9131598836763251128">Fayllarni tanlang</translation>
 <translation id="9133055936679483811">Arxivlashda xatolik yuz berdi. <ph name="ERROR_MESSAGE" /></translation>

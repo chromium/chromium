@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">Đã bật ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> muốn truy cập <ph name="VOLUME_NAME" />. Ứng dụng này có thể sửa đổi hoặc xóa các tệp của bạn.</translation>
 <translation id="1552301827267621511">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi công cụ tìm kiếm thành <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Quản lý tiện ích</translation>
 <translation id="1553538517812678578">không giới hạn</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
@@ -2794,7 +2795,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3842552989725514455">Phông chữ Serif</translation>
 <translation id="3843464315703645664">Đã cho phép trong nội bộ</translation>
 <translation id="3844888638014364087">Đã chèn biểu tượng cảm xúc</translation>
-<translation id="384513009320852920">Hãy đảm bảo thiết bị Bluetooth của bạn đang ở gần và đã bật chế độ ghép nối. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Tải các công cụ phát triển trang web, ứng dụng Android, v.v. Việc cài đặt Linux sẽ tải <ph name="DOWNLOAD_SIZE" /> dữ liệu xuống.</translation>
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
 <translation id="3848547754896969219">Mở trong cửa sổ Ẩ&amp;n danh</translation>
@@ -4303,7 +4303,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5485102783864353244">Thêm ứng dụng</translation>
 <translation id="5485754497697573575">Khôi phục Tất cả các Thẻ</translation>
 <translation id="5486261815000869482">Xác nhận mật khẩu</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> đang chia sẻ màn hình của bạn với <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Mô phỏng khởi động lại trình duyệt</translation>
 <translation id="5487460042548760727">Đổi tên hồ sơ thành <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
@@ -4365,6 +4364,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> muốn</translation>
 <translation id="5534304873398226603">Hủy ảnh hoặc video</translation>
 <translation id="5535941515421698170">Đồng thời, xóa dữ liệu hiện có của bạn khỏi thiết bị này</translation>
+<translation id="5537725057119320332">Truyền</translation>
 <translation id="5539221284352502426">Mật khẩu bạn nhập đã bị máy chủ từ chối. Các lý do có thể bao gồm: Mật khẩu quá ngắn. Mật khẩu phải chứa chữ số hoặc biểu tượng. Mật khẩu phải khác với mật khẩu cũ.</translation>
 <translation id="5541694225089836610">Quản trị viên đã vô hiệu hóa thao tác này</translation>
 <translation id="5542132724887566711">Tiểu sử</translation>
@@ -4595,6 +4595,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5787146423283493983">Thoả thuận về Khoá</translation>
 <translation id="5787420647064736989">Tên thiết bị</translation>
 <translation id="5788367137662787332">Rất tiếc, ít nhất một phân vùng trên thiết bị <ph name="DEVICE_LABEL" /> không thể kết nối được.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Thành công</translation>
 <translation id="5790651917470750848">Đã chuyển tiếp cổng này</translation>
 <translation id="5792728279623964091">Vui lòng nhấn vào nút nguồn</translation>
@@ -4826,10 +4827,8 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt Vị trí bằng cách tắt tùy chọn cài đặt Vị trí chính trên thiết bị. Ngoài ra, bạn có thể tắt tùy chọn sử dụng mạng Wi-Fi, mạng di động và cảm biến cho vị trí trong mục cài đặt vị trí.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Thoát chế độ toàn màn hình</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> đang chia sẻ một thẻ trong Chrome với <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Không thể phân tích cú pháp cấu hình</translation>
 <translation id="6043994281159824495">Đăng xuất bây giờ</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> đang chia sẻ âm thanh và một thẻ trong Chrome với <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Nút TrackPoint chính</translation>
 <translation id="6047632800149092791">Tính năng đồng bộ hóa hiện không hoạt động. Hãy thử đăng xuất rồi đăng nhập lại.</translation>
 <translation id="6049797270917061226">Tệp này có thể cho phép kẻ tấn công đánh cắp thông tin cá nhân của bạn.</translation>
@@ -7326,7 +7325,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8655972064210167941">Đăng nhập không thành công vì không thể xác minh mật khẩu của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="8657393004602556571">Bạn có muốn loại bỏ ý kiến phản hồi này không?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> đang chia sẻ màn hình và âm thanh của bạn với <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Mở Liên kết bằn&amp;g Cửa sổ Ẩn danh</translation>
 <translation id="8662671328352114214">Kết nối mạng <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Quá trình này mất nhiều thời gian hơn dự kiến, bạn có thể bỏ qua hoặc đợi cho đến khi hoàn tất.</translation>
@@ -7621,7 +7619,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8941173171815156065">Thu hồi quyền '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Sử dụng pin nhanh hơn (hiện tại là <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> đang chia sẻ một cửa sổ với <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Kích thước biểu tượng</translation>
 <translation id="8946359700442089734">Tính năng gỡ lỗi không được bật hoàn toàn trên thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này.</translation>
 <translation id="894763922177556086">Tốt</translation>

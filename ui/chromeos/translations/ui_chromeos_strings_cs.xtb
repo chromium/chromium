@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Vše je zálohováno</translation>
 <translation id="3634507049637220048">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, spravováno administrátorem, podrobnosti</translation>
 <translation id="3645233063072417428">Přesunuté položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Odepnout složku</translation>
 <translation id="3685122418104378273">Když používáte mobilní datové připojení, synchronizace s Diskem Google je ve výchozím nastavení vypnutá.</translation>
 <translation id="3689865792480713551">Zrušit <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, <ph name="CONNECTION_STATUS" />, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Neustále hledáme způsoby, jak zvýšit bezpečnost prohlížení. V minulosti vás k přidání rozšíření do prohlížeče mohl vyzvat kterýkoliv web. V nejnovějších verzích Google Chrome musíte Chromu výslovně sdělit, že rozšíření chcete nainstalovat. Učiníte tak tím, že rozšíření přidáte na stránce Rozšíření. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Připnout složku</translation>
 <translation id="9130775360844693113">Členové týmu <ph name="DESTINATION_NAME" /> získají přístup k těmto položkám.</translation>
 <translation id="9131598836763251128">Vyberte jeden nebo více souborů</translation>
 <translation id="9133055936679483811">Komprimace se nezdařila. <ph name="ERROR_MESSAGE" /></translation>

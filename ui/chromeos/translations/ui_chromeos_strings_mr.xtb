@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">सर्व बॅकअप घेतला!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवले.</translation>
-<translation id="3645531960514756307">फोल्डर अनपिन करा</translation>
 <translation id="3685122418104378273">मोबाइल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, <ph name="CONNECTION_STATUS" /> सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
@@ -927,7 +926,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9110990317705400362">आम्ही तुमचे ब्राउझिंग सुरक्षित करण्यासाठी सातत्याने मार्ग शोधत आहोत. मागे, तुमच्या ब्राउझरमध्ये एक्स्टेंशन जोडण्यासाठी कोणतीही वेबसाइट तुम्हाला सूचित करू शकत होती. Google Chrome च्या नवीनतम आवृत्तीमध्ये, एक्स्टेंशन पेजद्वारे ते जोडून हे एक्स्टेंशन तुम्ही इंस्टॉल करू इच्छित आहात हे तुम्ही Chrome ला स्पष्टपणे सांगणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 <translation id="912419004897138677">कोडेक</translation>
-<translation id="9129931661813833980">फोल्डर पिन करा</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' चे सदस्य या आयटमचा ॲक्सेस मिळवतील.</translation>
 <translation id="9131598836763251128">एक किंवा अधिक फाइल निवडा</translation>
 <translation id="9133055936679483811">झिप करणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>

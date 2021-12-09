@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Napravljene su rezervne kopije svih datoteka!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja administrator, detalji</translation>
 <translation id="3645233063072417428">Premeštenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Otkači direktorijum</translation>
 <translation id="3685122418104378273">Sinhronizacija sa Google diskom je podrazumevano onemogućena kada se koristi mobilna veza za prenos podataka.</translation>
 <translation id="3689865792480713551">Otkažite <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Stalno tražimo nove načine da učinimo pregledanje bezbednijim. Ranije je svaki veb-sajt mogao da vam zatraži da dodate dodatak u pregledač. U najnovijim verzijama Google Chrome-a morate eksplicitno da kažete Chrome-u da želite da instalirate te dodatke tako što ćete ih dodati preko stranice Dodaci. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Zakači direktorijum</translation>
 <translation id="9130775360844693113">Članovi iz „<ph name="DESTINATION_NAME" />“ će dobiti pristup ovim stavkama.</translation>
 <translation id="9131598836763251128">Izbor jedne ili više datoteka</translation>
 <translation id="9133055936679483811">Dodavanje u zip datoteku nije uspelo. <ph name="ERROR_MESSAGE" /></translation>

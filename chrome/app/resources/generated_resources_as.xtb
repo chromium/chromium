@@ -2800,7 +2800,6 @@
 <translation id="3842552989725514455">চেৰিফ ফণ্ট</translation>
 <translation id="3843464315703645664">অভ্যন্তৰীণভাৱে অনুমতিৰ তালিকাত ৰখা হৈছে</translation>
 <translation id="3844888638014364087">ইম'জী ভৰোৱা হ’ল</translation>
-<translation id="384513009320852920">আপোনাৰ ব্লুটুথ ডিভাইচটো পেয়াৰ কৰা ম’ডত আৰু ওচৰত থকাটো নিশ্চিত কৰক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ৱেবছাইট, Android এপ্ আৰু বহুতো কাম কৰিবলৈ সঁজুলি লাভ কৰক। Linux ইনষ্টল কৰিলে <ph name="DOWNLOAD_SIZE" /> পৰিমাণৰ ডেটা ডাউনল‘ড হ‘ব।</translation>
 <translation id="3847319713229060696">প্ৰত্যেকজন বাবে ৱেবত সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="3848547754896969219">&amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
@@ -4311,7 +4310,6 @@
 <translation id="5485102783864353244">এপ্ যোগ কৰক</translation>
 <translation id="5485754497697573575">সকলো টেব পুনৰুদ্ধাৰ কৰক</translation>
 <translation id="5486261815000869482">পাছৱৰ্ড নিশ্চিত কৰক</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে আপোনাৰ স্ক্ৰীণ শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="5486561344817861625">ছিমুলে’ট ব্ৰাউজাৰ ৰিষ্টাৰ্ট</translation>
 <translation id="5487460042548760727">প্ৰ'ফাইলটোৰ নাম <ph name="PROFILE_NAME" />লৈ সলনি কৰক</translation>
 <translation id="5487521232677179737">ডেটা মচক</translation>
@@ -4373,6 +4371,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />এ কৰিব বিচাৰে</translation>
 <translation id="5534304873398226603">ফট’ বা ভিডিঅ’ অগ্ৰাহ্য কৰক</translation>
 <translation id="5535941515421698170">এই ডিভাইচটোৰ পৰা আপোনাৰ পূর্বে থকা ডেটাও মচি পেলাওক</translation>
+<translation id="5537725057119320332">কাষ্ট কৰক</translation>
 <translation id="5539221284352502426">আপুনি দিয়া পাছৱর্ডটো ছার্ভাৰে অগ্ৰাহ্য কৰিছে। সম্ভাব্য কাৰণ: পাছৱৰ্ডটো যথেষ্ট চুটি। পাছৱর্ডটোত সংখ্যা বা চিহ্ন অন্তর্ভুক্ত হ'ব লাগিব। পাছৱর্ডটো পূর্বৱর্তী পাছৱর্ডসমূহতকৈ পৃথক হ'ব লাগিব।</translation>
 <translation id="5541694225089836610">আপোনাৰ প্ৰশাসকে এই কার্যটো অক্ষম কৰিছে</translation>
 <translation id="5542132724887566711">প্ৰ’ফাইল</translation>
@@ -4603,6 +4602,7 @@
 <translation id="5787146423283493983">মুখ্য চুক্তি</translation>
 <translation id="5787420647064736989">ডিভাইচৰ নাম</translation>
 <translation id="5788367137662787332">ক্ষমা কৰিব, ডিভাইচটোৰ <ph name="DEVICE_LABEL" /> এতি কমেও এটা পাৰ্টিশ্বন মাউণ্ট কৰিব পৰা নাযাব।</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">সফল হৈছে</translation>
 <translation id="5790651917470750848">প’ৰ্ট ফৰৱাৰ্ড কৰাৰ সুবিধাটো ইতিমধ্যে আছে</translation>
 <translation id="5792728279623964091">অনুগ্ৰহ কৰি, আপোনাৰ পাৱাৰ বুটামটো টিপক</translation>
@@ -4835,10 +4835,8 @@
     <ph name="BEGIN_PARAGRAPH2" />আপুনি আপোনাৰ ডিভাইচৰ মুখ্য অৱস্থান সেৱাৰ ছেটিং অফ কৰি অৱস্থান সেৱা অফ কৰিব পাৰে৷ ইয়াৰ উপৰি, আপুনি অৱস্থান আৰু ৱাই-ফাই আৰু ব্লুটুথ স্কেনিঙৰ বাবে ৱাই-ফাই আৰু ম’বাইল নেটৱৰ্কৰ ব্যৱহাৰ কৰা কাৰ্য অৱস্থান ছেটিংসমূহলৈ গৈ অফ কৰিব পাৰে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">পূৰ্ণ স্ক্ৰীণৰ পৰা বাহিৰ হওক</translation>
 <translation id="6042308850641462728">অধিক</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে এটা Chrome টেব শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="604388835206766544">কনফিগাৰেশ্বন পার্ছ কৰিব পৰা নগ’ল</translation>
 <translation id="6043994281159824495">এতিয়াই ছাইন আউট কৰক</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে এটা Chrome টেব আৰু অডিঅ’ শ্বেয়াৰ কৰি আছে৷</translation>
 <translation id="6045114302329202345">প্ৰাথমিক TrackPoint বুটাম</translation>
 <translation id="6047632800149092791">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই। ছাইন আউট কৰি পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="6049797270917061226">এই ফাইলটোৱে আক্ৰমণকাৰীক আপোনাৰ ব্যক্তিগত তথ্য চুৰি কৰিবলৈ দিব পাৰে।</translation>
@@ -7340,7 +7338,6 @@
 <translation id="8655295600908251630">চেনেল</translation>
 <translation id="8655972064210167941">ছাইন ইন বিফল হ’ল কিয়নো আপোনাৰ পাছৱৰ্ডটোৰ প্ৰমাণীকৰণ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা আকৌ চেষ্টা কৰক।</translation>
 <translation id="8657393004602556571">আপুনি মতামতটো বাতিল কৰিব বিচাৰেনে?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে আপোনাৰ স্ক্ৰীণ আৰু অডিঅ’ শ্বেয়াৰ কৰিছে।</translation>
 <translation id="8661290697478713397">লিংকটো ইনক’&amp;গনিট’ ৱিণ্ড'ত খোলক</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটৱর্কত যোগদান কৰক</translation>
 <translation id="8662733268723715832">এইটোৱে আশা কৰাতকৈ বেছি সময় লৈছে, আপুনি এইটো বাদ দিব পাৰে অথবা এইটো সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰিব পাৰে।</translation>
@@ -7636,7 +7633,6 @@
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' অনুমতিটো প্ৰত্যাহাৰ কৰক</translation>
 <translation id="894360074127026135">নেটস্কেপৰ আন্তঃৰাষ্ট্ৰীয় ষ্টেপ আপ</translation>
 <translation id="8944099748578356325">বেটাৰী খৰকৈ ব্যৱহাৰ কৰক (বৰ্তমান <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে এখন ৱিণ্ড’ শ্বেয়াৰ কৰিছে।</translation>
 <translation id="8945274638472141382">চিহ্নৰ আকাৰ</translation>
 <translation id="8946359700442089734">ডিবাগিঙৰ সুবিধাসমূহ এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচটোত সম্পূৰ্ণৰূপে সক্ষম কৰা হোৱা নাছিল।</translation>
 <translation id="894763922177556086">উন্নত মানৰ</translation>

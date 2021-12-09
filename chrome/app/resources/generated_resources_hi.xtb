@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">एआरसी चालू है</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ऐक्‍सेस करना चाहता है <ph name="VOLUME_NAME" />. वह आपकी फ़ाइलों में बदलाव कर सकता है या उन्‍हें मिटा सकता है.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने <ph name="SEARCH_PROVIDER_DOMAIN" /> का इस्तेमाल करने के लिए सर्च इंजन बदला है</translation>
+<translation id="1552752544932680961">एक्सटेंशन प्रबंधित करें</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="1556537182262721003">एक्सटेंशन निर्देशिका को प्रोफ़ाइल में नहीं ले जा सका.</translation>
@@ -2794,7 +2795,6 @@
 <translation id="3842552989725514455">Serif फ़ॉन्ट</translation>
 <translation id="3843464315703645664">डिफ़ॉल्ट के तौर पर चालू है</translation>
 <translation id="3844888638014364087">इमोजी डाला गया</translation>
-<translation id="384513009320852920">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में और आस-पास है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">वेबसाइटें, Android ऐप्लिकेशन वगैरह बनाने के टूल पाएं. Linux इंस्टॉल करने पर <ph name="DOWNLOAD_SIZE" /> डेटा डाउनलोड होगा.</translation>
 <translation id="3847319713229060696">वेब को सभी के लिए ज़्यादा सुरक्षित बनाने में मदद करें</translation>
 <translation id="3848547754896969219">यूआरएल को &amp;गुप्त विंडो में खोलें</translation>
@@ -4302,7 +4302,6 @@
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
 <translation id="5485754497697573575">सभी टैब पुनर्स्थापित करें</translation>
 <translation id="5486261815000869482">पासवर्ड की पुष्टि करें</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> आपकी स्क्रीन <ph name="TAB_NAME" /> के साथ शेयर कर रहा है.</translation>
 <translation id="5486561344817861625">ब्राउज़र पुनर्प्रारंभ को सिम्युलेट करें</translation>
 <translation id="5487460042548760727">प्रोफ़ाइल नाम को <ph name="PROFILE_NAME" /> से बदलें</translation>
 <translation id="5487521232677179737">डेटा साफ़ करें</translation>
@@ -4364,6 +4363,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> को अनुमति चाहिए</translation>
 <translation id="5534304873398226603">फ़ोटो या वीडियो खारिज करें</translation>
 <translation id="5535941515421698170">इस डिवाइस से अपना मौजूदा डेटा भी निकालें</translation>
+<translation id="5537725057119320332">कास्‍ट करें</translation>
 <translation id="5539221284352502426">आपने जो पासवर्ड डाला है, उसे सर्वर ने अस्वीकार कर दिया है. संभावित कारण ये हो सकते हैं: पासवर्ड बहुत छोटा है. पासवर्ड में संख्याएं या चिह्न होने चाहिए. पासवर्ड, पिछले पासवर्ड से अलग होना चाहिए.</translation>
 <translation id="5541694225089836610">आपके एडमिन ने कार्रवाई बंद कर दी है</translation>
 <translation id="5542132724887566711">प्रोफ़ाइल</translation>
@@ -4594,6 +4594,7 @@
 <translation id="5787146423283493983">मुख्य अनुबंध</translation>
 <translation id="5787420647064736989">डिवाइस का नाम</translation>
 <translation id="5788367137662787332">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> पर कम-से-कम एक विभाजन माउंट नहीं हो सका.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">सफलता</translation>
 <translation id="5790651917470750848">पोर्ट फ़ॉरवर्ड की सुविधा पहले से मौजूद है</translation>
 <translation id="5792728279623964091">'पावर बटन' पर टैप करें</translation>
@@ -4825,10 +4826,8 @@
     <ph name="BEGIN_PARAGRAPH2" />आप अपने डिवाइस पर जगह की मुख्य सेटिंग बंद करके जगह की जानकारी वाली सेवा को बंद कर सकते हैं. आप जगह की सेटिंग में जाकर वाई-फ़ाई, मोबाइल नेटवर्क और जगह की जानकारी का पता लगाने वाले सेंसर का इस्तेमाल करना बंद भी कर सकते हैं.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">पूर्णस्‍क्रीन से बाहर निकलें</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> के साथ Chrome टैब को शेयर कर रहा है.</translation>
 <translation id="604388835206766544">कॉन्फ़िगरेशन को पार्स नहीं किया जा सका</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> के साथ Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
 <translation id="6045114302329202345">मुख्य TrackPoint बटन</translation>
 <translation id="6047632800149092791">सिंक करने की सुविधा काम नहीं कर रही. साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="6049797270917061226">इस फ़ाइल से हमलावर आपकी निजी जानकारी चुरा सकते हैं.</translation>
@@ -7324,7 +7323,6 @@
 <translation id="8655295600908251630">चैनल</translation>
 <translation id="8655972064210167941">साइन इन नहीं हो पाया क्योंकि आपके पासवर्ड की पुष्टि नहीं की जा सकी. कृपया अपने एडमिन से संपर्क करें या फिर से कोशिश करें.</translation>
 <translation id="8657393004602556571">क्या आप फ़ीडबैक (सुझाव, शिकायत या राय) को खारिज करना चाहते हैं?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> के साथ आपकी स्क्रीन और ऑडियो को शेयर कर रहा है.</translation>
 <translation id="8661290697478713397">लिंक को गुप्त&amp; विंडो में खोलें</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
 <translation id="8662733268723715832">इसमें उम्मीद से ज़्यादा समय लग रहा है. आप चाहें, तो इसे स्किप कर दें या फिर इसके पूरा होने का इंतज़ार करें.</translation>
@@ -7620,7 +7618,6 @@
 <translation id="8941173171815156065">अनुमति '<ph name="PERMISSION" />' को निरस्‍त करें</translation>
 <translation id="894360074127026135">Netscape अंतर्राष्ट्रीय स्टेप-अप</translation>
 <translation id="8944099748578356325">बैटरी का उपयोग ज़्यादा तेज़ी से करेंं (इस समय <ph name="BATTERY_PERCENTAGE" />% है)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> के साथ कोई विंडो शेयर कर रहा है.</translation>
 <translation id="8945274638472141382">आइकॉन का साइज़</translation>
 <translation id="8946359700442089734">डीबग करने वाली सुविधाएं इस <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस पर पूरी तरह सक्षम नहीं की गई थीं.</translation>
 <translation id="894763922177556086">अच्छा</translation>

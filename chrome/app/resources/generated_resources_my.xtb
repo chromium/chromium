@@ -535,6 +535,7 @@
 <translation id="1549275686094429035">ARC ဖွင့်ထားသည်</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> သည် <ph name="VOLUME_NAME" /> သို့ ဝင်ရောက်သုံးခွင့် ရလိုသည်။ ၎င်းသည် သင့်ဖိုင်များအား ပြင်ဆင်ခြင်း သို့မဟုတ် ဖျက်ပစ်ခြင်းများ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> အသုံးပြုရန် <ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲက ရှာဖွေမှုစနစ်ကို ပြောင်းလိုက်သည်</translation>
+<translation id="1552752544932680961">အိတ်စတန်းရှင်း စီမံမည်</translation>
 <translation id="1553538517812678578">အကန့်အသတ်မရှိ</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1556537182262721003">တိုးချဲ့မှုကို ပရိုဖိုင် ထဲကို တိုက်ရိုက် ရွှေ့မပေးနိုင်ပါ။</translation>
@@ -2801,7 +2802,6 @@
 <translation id="3842552989725514455">Serif ဖောင့်</translation>
 <translation id="3843464315703645664">စက်အတွင်း ခွင့်ပြုစာရင်း</translation>
 <translation id="3844888638014364087">အီမိုဂျီ ထည့်ထားသည်</translation>
-<translation id="384513009320852920">သင့်ဘလူးတုသ်သုံးစက်သည် တွဲချိတ်ခြင်းမုဒ်တွင် ရှိပြီး အနီးအနားတွင် ရှိနေကြောင်း သေချာပါစေ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">ဝဘ်ဆိုက်များ၊ Android အက်ပ်များနှင့် အခြားအရာများ တီထွင်ရန် တူးလ်များ ရယူပါ။ Linux ကို ထည့်သွင်းခြင်းက ဒေတာ <ph name="DOWNLOAD_SIZE" /> ကို ဒေါင်းလုဒ်လုပ်သွားပါမည်။</translation>
 <translation id="3847319713229060696">လူတိုင်းအတွက် ဝဘ်ပေါ်တွင် လုံခြုံရေးပိုမိုကောင်းမွန်လာအောင် ကူညီပါ</translation>
 <translation id="3848547754896969219">&amp;ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
@@ -4312,7 +4312,6 @@
 <translation id="5485102783864353244">အပ်ဖ်ပေါင်းထည့်မည်</translation>
 <translation id="5485754497697573575">တဲဘ်မျာ အားလုံး ပြန်ဖေါ်ထုတ်ရန်</translation>
 <translation id="5486261815000869482">စကားဝှက် အတည်ပြုရန်</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> က သင်၏ မျက်နှာပြင်ကို <ph name="TAB_NAME" />အာ မျှဝေပေးနေသည်။</translation>
 <translation id="5486561344817861625">ဘရောင်ဇာ စတင်မှု ဟန်ပြပြုလုပ်ရန်</translation>
 <translation id="5487460042548760727">ပရိုဖိုင်ကို <ph name="PROFILE_NAME" /> ဟု အမည်ပြောင်းရန်</translation>
 <translation id="5487521232677179737">ဒေတာများကို ရှင်းလင်းပါ</translation>
@@ -4374,6 +4373,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> က ပြုလုပ်လိုသည်မှာ</translation>
 <translation id="5534304873398226603">ဓာတ်ပုံ သို့မဟုတ် ဗီဒီယိုကို ဖယ်ပစ်ရန်</translation>
 <translation id="5535941515421698170">သင်၏ လက်ရှိဒေတာများကို ဤစက်ပစ္စည်းမှ ဖယ်ရှားလိုက်ပါမည်</translation>
+<translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="5539221284352502426">သင်ထည့်ထားသော စကားဝှက်ကို ဆာဗာမှ ငြင်းဆိုလိုက်သည်။ ဖြစ်နိုင်သည့် အကြောင်းရင်းများတွင် − စကားဝှက်တိုလွန်းခြင်းတို့ ပါဝင်သည်။ စကားဝှက်တွင် နံပါတ် သို့မဟုတ် သင်္ကေတများ ပါရမည်။ စကားဝှက်သည် ယခင်စကားဝှက်များနှင့် ကွဲပြားရမည်။</translation>
 <translation id="5541694225089836610">လုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက ပိတ်ထားပါသည်</translation>
 <translation id="5542132724887566711">ပရိုဖိုင်</translation>
@@ -4605,6 +4605,7 @@
 <translation id="5787146423283493983">ကီးဘုတ် သဘောတူညီချက်</translation>
 <translation id="5787420647064736989">စက်အမည်</translation>
 <translation id="5788367137662787332">ဆော်ရီး၊ အနည်းဆုံးအားဖြင့် ကိရိယာ <ph name="DEVICE_LABEL" /> ပေါ်က အကန့် တစ်ခုကို တပ်မထားရန် လိုသည်။</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
 <translation id="5790651917470750848">ပို့တ်ထပ်ဆင့်ပို့ခြင်း ရှိပြီးဖြစ်သည်</translation>
 <translation id="5792728279623964091">သင့်ဖွင့်ပိတ်ခလုတ်ကို တို့ပါ</translation>
@@ -4835,10 +4836,8 @@
     <ph name="BEGIN_PARAGRAPH2" />ဤစက်ပေါ်ရှိ ပင်မ 'တည်နေရာ' ဆက်တင်ကို ပိတ်ခြင်းဖြင့် 'တည်နေရာ' ကို ပိတ်နိုင်သည်။တည်နေရာဆက်တင်များတွင် Wi-Fi၊ မိုဘိုင်းကွန်ရက်နှင့် တည်နေရာအတွက် အာရုံခံစနစ်များ အသုံးပြုခြင်းကိုလည်း ပိတ်နိုင်သည်။<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">မျက်နှာပြင်အပြည့်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> သည် Chrome တဘ်ကို <ph name="TAB_NAME" /> ဖြင့်မျှဝေနေသည်။</translation>
 <translation id="604388835206766544">စီစဉ်သတ်မှတ်မှုကို ခွဲခြမ်းစိတ်ဖြာ၍မရပါ</translation>
 <translation id="6043994281159824495">ယခု ထွက်ခွာရန်</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> သည် Chrome တဘ်နှင့် အသံကို <ph name="TAB_NAME" /> ဖြင့်မျှဝေနေသည်။</translation>
 <translation id="6045114302329202345">ပင်မ TrackPoint ခလုတ်</translation>
 <translation id="6047632800149092791">စင့်ခ်လုပ်၍ မရပါ။ ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="6049797270917061226">ဤဖိုင်သည် တိုက်ခိုက်သူများအား သင်၏ကိုယ်ရေးကိုယ်တာအချက်လက်များကို ခိုးယူခွင့်ပေးနိုင်သည်။</translation>
@@ -7340,7 +7339,6 @@
 <translation id="8655295600908251630">လိုင်း</translation>
 <translation id="8655972064210167941">သင့်စကားဝှက်အား အတည်ပြုနိုင်သောကြောင့် လက်မှတ်ထိုးဝင်ရောက်မှု မအောင်မြင်ပါ။ ကျေးဇူးပြု၍ သင့်ကြီးကြပ်သူကို ဆက်သွယ်ပါ သို့မဟုတ် နောက်တစ်ကြိမ်ကြိုးစားပါ။</translation>
 <translation id="8657393004602556571">အကြံပြုချက်ကို ဖယ်ပစ်လိုသလား။</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> သည် သင့်ဖန်သားပြင်နှင့် အသံကို <ph name="TAB_NAME" /> နှင့်မျှဝေနေပါသည်။</translation>
 <translation id="8661290697478713397">ရုပ်&amp;ဖျက် ဝင်ဒိုး ထဲမှာ လင့်ကို ဖွင့်ရန်</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>
 <translation id="8662733268723715832">မျှော်မှန်းထားသည်ထက် ပိုကြာနေသည်။ ၎င်းကို ကျော်နိုင်သည် (သို့) ပြီးသည်အထိ စောင့်နိုင်သည်။</translation>
@@ -7635,7 +7633,6 @@
 <translation id="8941173171815156065">ခွင့်ပြုချက် '<ph name="PERMISSION" />'ကို ရုပ်သိမ်းရန်</translation>
 <translation id="894360074127026135">Netscape အပြည်ပြည်ဆိုင်ရာ Step-Up</translation>
 <translation id="8944099748578356325">ဘက်ထရီကို ပိုမိုလျှင်မြန်စွာ အသုံးပြုမည် (လက်ရှိ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> သည် ဝင်းဒိုးတစ်ခုကို <ph name="TAB_NAME" /> နှင့်မျှဝေနေပါသည်။</translation>
 <translation id="8945274638472141382">သင်္ကေတ အရွယ်အစား</translation>
 <translation id="8946359700442089734">ဤ<ph name="IDS_SHORT_PRODUCT_NAME" /> ကိရိယာပေါ်တွင် ချို့ယွင်းချက်ရှာဖွေပြင်ဆင်ခြင်း အင်္ဂါရပ်အား အပြည့်အဝ မဖွင့်ထားပါ။</translation>
 <translation id="894763922177556086">ကောင်း</translation>

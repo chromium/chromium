@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">‏زمان اجرای برنامه ویژه (ARC) فعال شد</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> می‌خواهد به <ph name="VOLUME_NAME" /> دسترسی یابد. ممکن است فایل‌هایتان را تغییر داده یا حذف کند.</translation>
 <translation id="1552301827267621511">افزونه «<ph name="EXTENSION_NAME" />»، <ph name="SEARCH_PROVIDER_DOMAIN" /> را تغییر داد تا جستجو با استفاده از آن انجام شود</translation>
+<translation id="1552752544932680961">مدیریت برنامه افزودنی</translation>
 <translation id="1553538517812678578">نامحدود</translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1556537182262721003">انتقال دایرکتوری برنامهٔ افزودنی به نمایه ممکن نیست.</translation>
@@ -2791,7 +2792,6 @@
 <translation id="3842552989725514455">‏قلم Serif</translation>
 <translation id="3843464315703645664">به‌صورت داخلی در فهرست مجازها قرار گرفته است</translation>
 <translation id="3844888638014364087">اموجی درج شد</translation>
-<translation id="384513009320852920">مطمئن شوید دستگاه بلوتوث در حالت مرتبط‌سازی و در همین اطراف باشد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">‏دریافت ابزارهایی برای برنامه‌نویسی وب‌سایت، برنامه‌های Android و سایر موارد. با نصب Linux، <ph name="DOWNLOAD_SIZE" /> داده بارگیری خواهد شد.</translation>
 <translation id="3847319713229060696">کمک به بهبود امنیت برای همه کاربران وب</translation>
 <translation id="3848547754896969219">باز کردن در «پنجره ناشناس»</translation>
@@ -4300,7 +4300,6 @@
 <translation id="5485102783864353244">افزودن برنامه</translation>
 <translation id="5485754497697573575">بازیابی همه برگه‌ها</translation>
 <translation id="5486261815000869482">تأیید گذرواژه</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> در حال اشتراک‌گذاری صفحه نمایشتان با <ph name="TAB_NAME" /> است.</translation>
 <translation id="5486561344817861625">شبیه‌سازی راه‌اندازی مجدد مرورگر</translation>
 <translation id="5487460042548760727">تغییر دادن نام نمایه به <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
@@ -4362,6 +4361,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> می‌خواهد</translation>
 <translation id="5534304873398226603">صرف‌نظر کردن از عکس یا ویدیو</translation>
 <translation id="5535941515421698170">همچنین داده‌های موجودتان را در این دستگاه پاک کنید</translation>
+<translation id="5537725057119320332">فرستادن</translation>
 <translation id="5539221284352502426">سرور گذرواژه‌ای را که وارد کرده‌اید نپذیرفته است. دلایل احتمالی عبارت‌ است از: گذرواژه خیلی کوتاه است. گذرواژه باید حاوی اعداد یا نمادها باشد. گذرواژه باید با گذرواژه‌های قبلی متفاوت باشد.</translation>
 <translation id="5541694225089836610">سرپرستتان کنش را غیرفعال کرده است</translation>
 <translation id="5542132724887566711">نمایه</translation>
@@ -4592,6 +4592,7 @@
 <translation id="5787146423283493983">قرارداد کلید</translation>
 <translation id="5787420647064736989">نام دستگاه</translation>
 <translation id="5788367137662787332">متأسفیم، حداقل یک پارتیشن در دستگاه <ph name="DEVICE_LABEL" /> نصب نمی‌شود.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">موفق شدید</translation>
 <translation id="5790651917470750848">بازارسال درگاه ازقبل موجود است</translation>
 <translation id="5792728279623964091">لطفاً روی دکمه روشن/خاموش ضربه بزنید</translation>
@@ -4823,10 +4824,8 @@
     <ph name="BEGIN_PARAGRAPH2" />با خاموش کردن تنظیم اصلی «مکان» در دستگاهتان می‌توانید «مکان» را خاموش کنید. همچنین می‌توانید در تنظیمات مکان، استفاده از Wi-Fi، شبکه‌های تلفن همراه و حسگرها را برای مکان خاموش کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">خروج از تمام صفحه</translation>
 <translation id="6042308850641462728">بیشتر</translation>
-<translation id="6043317578411397101">‏<ph name="APP_NAME" /> در حال اشتراک‌گذاری یک برگه Chrome با <ph name="TAB_NAME" /> است.</translation>
 <translation id="604388835206766544">پیکربندی تجزیه‌وتحلیل نشد</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
-<translation id="6044805581023976844">‏<ph name="APP_NAME" /> درحال اشتراک‌گذاری یک برگه Chrome و صوت با <ph name="TAB_NAME" /> است.</translation>
 <translation id="6045114302329202345">‏دکمه TrackPoint اصلی</translation>
 <translation id="6047632800149092791">همگام‌سازی کار نمی‌کند. تلاش کنید از سیستم خارج و دوباره وارد شوید.</translation>
 <translation id="6049797270917061226">این فایل می‌تواند به مهاجمان اجازه دهد اطلاعات شخصی شما را سرقت کنند.</translation>
@@ -7323,7 +7322,6 @@
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655972064210167941">ورود به سیستم ناموفق بود زیرا گذرواژه شما تأیید نشد. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
 <translation id="8657393004602556571">می‌خواهید از بازخورد صرف‌نظر کنید؟</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> درحال اشتراک‌گذاری صفحه و صوت شما با <ph name="TAB_NAME" /> است.</translation>
 <translation id="8661290697478713397">باز کردن پیوند در پنجره حالت &amp;ناشناس</translation>
 <translation id="8662671328352114214">پیوستن به شبکه <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">این کار بیش‌از حد انتظار طول کشیده است، می‌توانید این مرحله را رد کنید یا منتظر بمانید تا تمام شود.</translation>
@@ -7619,7 +7617,6 @@
 <translation id="8941173171815156065">لغو مجوز «<ph name="PERMISSION" />»</translation>
 <translation id="894360074127026135">‏ارتقاء بین‌المللی Netscape</translation>
 <translation id="8944099748578356325">استفاده سریع‌تر از باتری (درحال‌حاضر <ph name="BATTERY_PERCENTAGE" />٪)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> درحال اشتراک‌گذاری یک پنجره با <ph name="TAB_NAME" /> است.</translation>
 <translation id="8945274638472141382">اندازه نماد</translation>
 <translation id="8946359700442089734">ویژگی‌های رفع اشکال در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> کاملاً فعال نشدند.</translation>
 <translation id="894763922177556086">خوب</translation>

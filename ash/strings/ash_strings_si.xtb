@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">සම්පූර්ණ විට විවෘත කරන්න</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" /> <ph name="UNAVAILABLE_APPS_TWO" /> සහ තව <ph name="UNAVAILABLE_APPS_COUNT" />ක් මෙම උපාංගයෙහි නැත.</translation>
 <translation id="3742055079367172538">තිර ඡායාව ගැනිණි</translation>
-<translation id="3744282433224562605">ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න</translation>
 <translation id="3771549900096082774">අධි අසමානතා ප්‍රකාරය</translation>
 <translation id="3773700760453577392">පරිපාලකයෙකු විසින් <ph name="USER_EMAIL" /> සඳහා බහු පුරනයට ඉඩ දී නොමැත. සියලු පරිශීලකයින් ඉදිරියට යෑමට වරනය විය යුතුයි.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> සම්බන්ධ වෙමින්</translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5176318573511391780">අර්ධ තිරය පටිගත කරන්න</translation>
 <translation id="5198715732953550718">නව ෆෝල්ඩරයක් සෑදීමට <ph name="IN_PLACE_APP" /> සමඟ <ph name="MOVED_APP_NAME" /> සංයුක්ත වේ.</translation>
-<translation id="5199367439331364630">ඔබගේ Chromebook වෙත පිරීමට, මුරපදය ඇතුළු කරන්න</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{වෙනත් දැනුම්දීම් 1}one{වෙනත් දැනුම්දීම් #}other{වෙනත් දැනුම්දීම් #}}</translation>
 <translation id="5207949376430453814">පෙළ කාකපාදය උද්දීපනය කරන්න</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">ආගන්තුක සැසියකදී Google සහකරු නොලැබේ.</translation>
 <translation id="6134259848159370930">ඔබේ උපාංගය, යෙදුම්, සැකසීම් සහ වෙබය තුළ සොයන්න.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> සඳහා සංවාදය ඉවත් කරන්න විවෘත කරන්න</translation>
+<translation id="6141988275892716286">බාගැනීම තහවුරු කරන්න</translation>
 <translation id="6154006699632741460">උපාංග සහාය නොදක්වයි</translation>
 <translation id="6156262341071374681">සියලු යෙදුම්වලට දිග හරින්න</translation>
 <translation id="615957422585914272">තිරය-මත යතුරුපුවරුව පෙන්වන්න</translation>

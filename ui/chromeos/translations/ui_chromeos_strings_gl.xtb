@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Todos os ficheiros teñen unha copia de seguranza</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, xestionada polo teu administrador, detalles</translation>
 <translation id="3645233063072417428">Movéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
-<translation id="3645531960514756307">Deixar de fixar cartafol</translation>
 <translation id="3685122418104378273">A sincronización con Google Drive está desactivada de xeito predeterminado cando se utilizan os datos móbiles.</translation>
 <translation id="3689865792480713551">Cancelar esta actividade: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Estamos buscando constantemente maneiras de navegar de xeito máis seguro. Anteriormente calquera sitio web podía solicitarche engadir unha extensión ao teu navegador. Nas versións máis recentes de Google Chrome, debes indicar explicitamente a Chrome que queres instalar estas extensións engadíndoas a través da páxina Extensións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="912419004897138677">Códec</translation>
-<translation id="9129931661813833980">Fixar cartafol</translation>
 <translation id="9130775360844693113">Os membros de "<ph name="DESTINATION_NAME" />" terán acceso a estes elementos.</translation>
 <translation id="9131598836763251128">Seleccionar un ou máis ficheiros</translation>
 <translation id="9133055936679483811">Non se puido comprimir. <ph name="ERROR_MESSAGE" /></translation>

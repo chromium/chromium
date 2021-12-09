@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">எல்லாம் காப்புப் பிரதி எடுக்கப்பட்டன!</translation>
 <translation id="3634507049637220048">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /கோப்பகங்கள் நகர்த்தப்பட்டன.</translation>
-<translation id="3645531960514756307">ஃபோல்டரைப் பிரித்தெடு</translation>
 <translation id="3685122418104378273">மொபைல் டேட்டாவைப் பயன்படுத்தும்போது, இயல்புநிலையாகவே Google இயக்கக ஒத்திசைவு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3690128548376345212">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">உங்கள் உலாவலைத் பாதுகாப்பாக்கும் வழிகளைத் தொடர்ந்து தேடுகிறோம். முன்னர், எந்த இணையதளமும் நீட்டிப்பை உங்கள் உலாவியில் சேர்க்கக் கேட்கலாம். சமீபத்திய Google Chrome பதிப்புகளில், நீட்டிப்புகள் பக்கம் வழியாக அவற்றைச் சேர்ப்பதன் மூலம், இந்த நீட்டிப்புகளை நிறுவ விரும்புகிறீர்களா என்பதை வெளிப்படையாக Chromeக்குக் கூற வேண்டும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">அன்லாக் செய்</translation>
 <translation id="912419004897138677">கோடெக்</translation>
-<translation id="9129931661813833980">ஃபோல்டரைப் பின் செய்</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' இன் உறுப்பினர்கள் இந்த ஃபைல்களுக்கான அணுகலைப் பெறுவார்கள்.</translation>
 <translation id="9131598836763251128">ஒன்று அல்லது அதற்குமேற்பட்ட ஃபைல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="9133055936679483811">ஜிப் செய்தல் தோல்வி. <ph name="ERROR_MESSAGE" /></translation>

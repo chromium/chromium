@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Napravljene su sigurnosne kopije za sve fajlove!</translation>
 <translation id="3634507049637220048">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja vaš administrator, detalji</translation>
 <translation id="3645233063072417428">Broj premještenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Otkači folder</translation>
 <translation id="3685122418104378273">Sinkronizacija Google diska onemogućena je prema zadanim postavkama kada se upotrebljavaju mobilni podaci.</translation>
 <translation id="3689865792480713551">Otkaži <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, <ph name="CONNECTION_STATUS" />, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Stalno tražimo načine da učinimo pregledanje sigurnijim. Prethodno je svaka web lokacija od vas mogla zatražiti da dodate ekstenziju u preglednik. U najnovijoj verziji Google Chromea, izričito morate reći Chromeu da želite instalirati ove ekstenzije tako što ćete ih dodati putem stranice Ekstenzije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Zakači folder</translation>
 <translation id="9130775360844693113">Članovi tima "<ph name="DESTINATION_NAME" />" dobit će pristup ovim stavkama.</translation>
 <translation id="9131598836763251128">Odaberite jedan ili više fajlova</translation>
 <translation id="9133055936679483811">Komprimiranje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>

@@ -211,6 +211,7 @@
       Als je het beleid niet instelt of als de waarde na vervanging geen geldige hostnaam is, wordt er geen hostnaam ingesteld in het DHCP-verzoek.</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
+<translation id="1268548671627260798">Lijst met URL's die zijn vrijgesteld van de melding over volledig scherm</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
@@ -382,6 +383,18 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Dit beleid is ook van toepassing op componentextensies, zoals de Hangout Services-extensie.</translation>
 <translation id="148194404518916594">Toestaan dat gebruikers 'Tikken om te zoeken' gebruiken</translation>
+<translation id="1485570394283692769">Hiermee bepaal je of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.
+
+          Dit beleid heeft betrekking op de specificatie voor toegang tot privénetwerken. Zie https://wicg.github.io/private-network-access/ voor meer informatie.
+
+          Een netwerkeindpunt is meer privé dan een ander eindpunt als:
+1) het IP-adres van het netwerkeindpunt localhost is en het andere niet,
+          2) het IP-adres van het netwerkeindpunt privé is en het andere openbaar.
+          Afhankelijk van hoe de specificatie zich ontwikkelt, kan dit beleid in de toekomt van toepassing zijn op alle cross-origin-verzoeken naar privé-IP-adressen of localhost.
+
+          Als je dit beleid niet instelt of instelt op False, hangt het standaardgedrag voor verzoeken naar netwerkeindpunten die meer privé zijn af van de persoonlijke instellingen van de gebruiker voor de functievlaggen <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> en <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, die kunnen worden ingesteld via praktijktests of via de opdrachtregel.
+
+          Als je dit beleid instelt op True, mogen websites verzoeken sturen naar elk willekeurig netwerkeindpunt (hiervoor worden andere cross-origin-checks uitgevoerd).</translation>
 <translation id="1486021504508098388">Informatie over schermverlichting melden</translation>
 <translation id="1487916040416013623">Als je het beleid instelt, geef je aan welke servers op de toelatingslijst voor geïntegreerde verificatie moeten worden gezet. Geïntegreerde verificatie is alleen aangezet als <ph name="PRODUCT_NAME" /> een verificatie-uitdaging ontvangt van een proxy of een server die op deze toelatingslijst staat.
 
@@ -2718,6 +2731,11 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden overzetten naar Drive via een mobiele verbinding.</translation>
 <translation id="4248277954659222481">Automatisch afspelen van media toestaan op een toelatingslijst met URL-patronen</translation>
 <translation id="4250680216510889253">Nee</translation>
+<translation id="4257545866869267519">Hiermee kun je een lijst met URL's instellen die zijn vrijgesteld van de melding over volledig scherm. De melding wordt getoond als het apparaat uit de slaapstand wordt gehaald, de helderheid wordt verhoogd of het vergrendelscherm wordt ontgrendeld en het apparaat een venster in de modus voor volledig scherm heeft. De bedoeling is om gebruikers ervan bewust te maken dat de modus voor volledig scherm aanstaat. Dit verkleint het risico op phishingaanvallen.
+
+          Met dit beleid kun je de melding uitzetten voor specifieke URL's die als vertrouwde bronnen worden beschouwd. Het beleid wordt ingesteld door een lijst met URL-patronen op te geven die zijn ingedeeld volgens https://www.chromium.org/administrators/url-blocklist-filter-format. Het is bijvoorbeeld mogelijk om de meldingen helemaal uit te zetten door het jokerteken <ph name="WILDCARD_VALUE" /> op te geven dat overeenkomt met alle URL's.
+
+Als je dit beleid instelt voor een lege lijst of niet instelt, zijn er geen URL's vrijgesteld van de melding over volledig scherm.</translation>
 <translation id="4260027436474745627">Als je dit beleid toepast, wordt elk van de benoemde herkomsten in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Elk proces van een benoemde herkomst mag alleen documenten bevatten van de betreffende herkomst en de subdomeinen daarvan. Als je bijvoorbeeld https://a1.example.com/ opgeeft, valt https://a2.a1.example.com/ onder hetzelfde proces, maar https://example.com of https://b.example.com niet.
 
 Sinds <ph name="PRODUCT_NAME" /> 77 kun je met een jokerteken een herkomstbereik opgeven om te isoleren. Als je bijvoorbeeld https://[*.]corp.example.com opgeeft, wordt elke herkomst onder https://corp.example.com uitgevoerd in een eigen proces, waaronder https://corp.example.com zelf, https://a1.corp.example.com en https://a2.a1.corp.example.com.
@@ -4244,6 +4262,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Anders worden lokale IP-adressen verborgen met mDNS-hostnamen.
       Houd er rekening mee dat dit beleid de beveiliging van lokale IP's verzwakt als beheerders dit nodig hebben.</translation>
 <translation id="614662973812186053">Met dit beleid wordt ook het gebruik van Android en het verzamelen van diagnostische gegevens bepaald.</translation>
+<translation id="614665605501218241">Hiermee sta je de vermelde sites toe om op een onbeveiligde manier verzoeken te sturen naar netwerkeindpunten die meer privé zijn.</translation>
 <translation id="6154509171634387825">Waarschuwing: 3DES wordt volledig verwijderd uit <ph name="PRODUCT_NAME" /> vanaf versie 95 (rond oktober 2021). Dit beleid werkt dan niet meer.
 
       Als je het beleid instelt op True, worden 3DES cipher suites in TLS aangezet. Als je het beleid instelt op False, worden ze uitgezet. Als je het beleid niet instelt, staan 3DES cipher suites standaard uit. Je kunt dit beleid gebruiken om de compatibiliteit met een verouderde server tijdelijk te behouden. Dit is slechts een noodoplossing. De server moet opnieuw worden ingesteld.
@@ -4258,6 +4277,13 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Als je het beleid niet instelt, kunnen gebruikers zelf bepalen of ze deze functie willen aan- of uitzetten.</translation>
 <translation id="6174065452773547810">Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.
       Als je het beleid niet toepast, kunnen ingeschreven apparaten geen opties voor gedetailleerde rapportage krijgen.</translation>
+<translation id="6174187836314350835">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan checks voor toegang tot privénetwerken.
+
+          Als je dit beleid niet instelt, gedraagt het zich alsof het is ingesteld op de lege lijst.
+
+          Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, wordt de algemene standaardwaarde gebruikt op basis van het beleid <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (als dit is ingesteld) of anders op basis van de persoonlijke instellingen van de gebruiker.
+
+          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="6178075938488052838">Met dit beleid wordt bepaald wie een <ph name="PRODUCT_OS_NAME" />-sessie mag starten. Hiermee wordt niet voorkomen dat gebruikers binnen Android inloggen op extra Google-accounts. Als je dit wilt voorkomen, kun je het Android-specifieke beleid <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> configureren als onderdeel van <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">De SHA-256-hash van de bureautemplate.</translation>
 <translation id="6181618732396778048">Geen sites toestemming geven om schrijftoegang tot bestanden en directory's te vragen</translation>
@@ -4693,6 +4719,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Opmerking: Hoewel er met het beleid meerdere items kunnen worden geaccepteerd in <ph name="ENTRIES_FIELD_NAME" />, wordt alleen het eerste item gebruikt. De andere items worden genegeerd.
       Waarschuwing: Als je dit beleid instelt, kan de toepassing van software-updates worden vertraagd.</translation>
 <translation id="6698632841807204978">Monochroom afdrukken aanzetten</translation>
+<translation id="6699740789657890714">Hiermee kun je aangeven of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.</translation>
 <translation id="6699880231565102694">Verificatie in 2 stappen aanzetten voor hosts voor externe toegang</translation>
 <translation id="6703251016607733593">Als je dit beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor een lijst van <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hashes. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitzetten, moet de hash aan een van de volgende voorwaarden voldoen:
 

@@ -530,6 +530,7 @@
 <translation id="1549275686094429035">Compatible con ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quere acceder a <ph name="VOLUME_NAME" />. É posible que modifique ou elimine os teus ficheiros.</translation>
 <translation id="1552301827267621511">A extensión <ph name="EXTENSION_NAME" /> cambiou o provedor de busca para que se utilice <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Xestionar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
@@ -2777,7 +2778,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3842552989725514455">Tipo de letra Serif</translation>
 <translation id="3843464315703645664">Lista de entidades permitidas internamente</translation>
 <translation id="3844888638014364087">Púxose o emoji</translation>
-<translation id="384513009320852920">Asegúrate de que o dispositivo Bluetooth estea teña activado o modo de vinculación e estea preto. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Consigue ferramentas para programar sitios web, aplicacións Android etc. A instalación de Linux provocará a descarga de <ph name="DOWNLOAD_SIZE" /> de datos.</translation>
 <translation id="3847319713229060696">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="3848547754896969219">Abrir nunha ventá do modo de &amp;incógnito</translation>
@@ -4285,7 +4285,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5485102783864353244">Engadir aplicación</translation>
 <translation id="5485754497697573575">Restaurar todas as pestanas</translation>
 <translation id="5486261815000869482">Confirmar contrasinal</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> está compartindo a túa pantalla con <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simular o reinicio do navegador</translation>
 <translation id="5487460042548760727">Cambiar nome do perfil por <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Borrar datos</translation>
@@ -4347,6 +4346,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quere:</translation>
 <translation id="5534304873398226603">Descartar foto ou vídeo</translation>
 <translation id="5535941515421698170">Eliminar tamén os datos existentes deste dispositivo</translation>
+<translation id="5537725057119320332">Emitir</translation>
 <translation id="5539221284352502426">O servidor rexeitou o contrasinal que introduciches. Pode deberse a algunha destas causas: o contrasinal é demasiado curto, debe incluír números ou símbolos, ou non é diferente dos contrasinais anteriores.</translation>
 <translation id="5541694225089836610">O teu administrador desactivou esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4577,6 +4577,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5787146423283493983">Acordo de claves</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
 <translation id="5788367137662787332">É posible que polo menos unha partición do dispositivo <ph name="DEVICE_LABEL" /> non estea instalada.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Correcto</translation>
 <translation id="5790651917470750848">O encamiñamento de porto xa existe</translation>
 <translation id="5792728279623964091">Toca o botón de acendido.</translation>
@@ -4808,10 +4809,8 @@ Podes asignarlles esta acción a varios interruptores.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Para desactivar a localización, desactiva a opción principal de localización do teu dispositivo. Tamén podes desactivar o uso de sensores e redes wifi ou de telefonía móbil para calcular a localización na configuración da localización.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Saír da pantalla completa</translation>
 <translation id="6042308850641462728">Máis</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> está compartindo unha pestana de Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Produciuse un erro ao analizar a configuración</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
 <translation id="6047632800149092791">A sincronización non funciona. Tenta pechar sesión e iniciala de novo.</translation>
 <translation id="6049797270917061226">Con este ficheiro, os atacantes poderían roubarche información persoal.</translation>
@@ -7306,7 +7305,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655972064210167941">Produciuse un erro no inicio de sesión porque o teu contrasinal non se puido verificar. Contacta co administrador ou téntao de novo.</translation>
 <translation id="8657393004602556571">Queres descartar o comentario?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> está compartindo a túa pantalla e o teu audio con <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Este proceso está demorándose máis do previsto. Podes omitilo ou agardar a que remate.</translation>
@@ -7601,7 +7599,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8941173171815156065">Revogar o permiso "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Certificado Step-Up de Netscape International</translation>
 <translation id="8944099748578356325">Consome a batería de forma máis rápida (actualmente <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> está compartindo unha ventá con <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Tamaño das iconas</translation>
 <translation id="8946359700442089734">As funcións de depuración non se activaron completamente neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Boa</translation>

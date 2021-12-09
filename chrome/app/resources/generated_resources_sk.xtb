@@ -534,6 +534,7 @@
 <translation id="1549275686094429035">ARC je aktivované</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vyžaduje prístup k médiu <ph name="VOLUME_NAME" />. Aplikácia môže upraviť alebo odstrániť vaše súbory.</translation>
 <translation id="1552301827267621511">Rozšírenie <ph name="EXTENSION_NAME" /> zmenilo vyhľadávanie na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Spravovať rozšírenie</translation>
 <translation id="1553538517812678578">bez obmedzenia</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556537182262721003">Nepodarilo sa do profilu presunúť adresár rozšírenia.</translation>
@@ -2788,7 +2789,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3842552989725514455">Pätkové písmo</translation>
 <translation id="3843464315703645664">Povolené interne</translation>
 <translation id="3844888638014364087">Bolo vložené emodži</translation>
-<translation id="384513009320852920">Skontrolujte, či je zariadenie s rozhraním Bluetooth v párovacom režime a nablízku. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Získajte nástroje na vývoj webov, aplikácií pre Android atď. Inštaláciou systému Linux stiahnete <ph name="DOWNLOAD_SIZE" /> dát.</translation>
 <translation id="3847319713229060696">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="3848547754896969219">Otvoriť v okne &amp;inkognito</translation>
@@ -4298,7 +4298,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5485102783864353244">Pridať aplikáciu</translation>
 <translation id="5485754497697573575">Obnoviť všetky karty</translation>
 <translation id="5486261815000869482">Potvrďte heslo</translation>
-<translation id="5486275809415469523">Aplikácia <ph name="APP_NAME" /> zdieľa vašu obrazovku s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulovať reštartovanie prehliadača</translation>
 <translation id="5487460042548760727">Premenovať profil na <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Vymazať dáta</translation>
@@ -4360,6 +4359,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vyžaduje</translation>
 <translation id="5534304873398226603">Zahodiť fotku alebo video</translation>
 <translation id="5535941515421698170">Zároveň z tohto zariadenia odstrániť existujúce dáta</translation>
+<translation id="5537725057119320332">Prenášať</translation>
 <translation id="5539221284352502426">Zadané heslo bolo zamietnuté serverom. Možné dôvody: Heslo je príliš krátke. Heslo musí obsahovať čísla alebo symboly. Heslo sa musí odlišovať od predchádzajúcich hesiel.</translation>
 <translation id="5541694225089836610">Správca akciu zakázal</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4590,6 +4590,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5787146423283493983">Odsúhlasenie kľúča</translation>
 <translation id="5787420647064736989">Názov zariadenia</translation>
 <translation id="5788367137662787332">Je nám ľúto, ale nepodarilo sa pripojiť minimálne jeden oddiel zariadenia <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Úspešné</translation>
 <translation id="5790651917470750848">Presmerovanie portov už existuje</translation>
 <translation id="5792728279623964091">Klepnite na vypínač</translation>
@@ -4822,10 +4823,8 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Nastavenie Poloha môžete deaktivovať vypnutím hlavného nastavenia Poloha v tomto zariadení. V nastaveniach polohy môžete tiež vypnúť určovanie polohy pomocou siete Wi‑Fi, mobilnej siete a senzorov.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Ukončiť režim celej obrazovky</translation>
 <translation id="6042308850641462728">Viac</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> zdieľa kartu Chromu s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Konfiguráciu sa nepodarilo analyzovať</translation>
 <translation id="6043994281159824495">Odhlásiť sa</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> zdieľa kartu Chromu a zvuk s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primárne tlačidlo TrackPoint</translation>
 <translation id="6047632800149092791">Synchronizácia nefunguje. Skúste sa odhlásiť a znova prihlásiť.</translation>
 <translation id="6049797270917061226">Tento súbor môže útočníkom umožniť ukradnúť vaše osobné údaje.</translation>
@@ -7327,7 +7326,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Prihlásenie zlyhalo, pretože sa heslo nepodarilo overiť. Kontaktujte svojho správcu alebo to skúste znova.</translation>
 <translation id="8657393004602556571">Chcete spätnú väzbu zahodiť?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> zdieľa vašu obrazovku a zvuk s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Otvoriť odkaz v okne inko&amp;gnito</translation>
 <translation id="8662671328352114214">Pridanie sa k sieti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Trvá to dlhšie, ako sa očakávalo. Môžete preskočiť alebo čakať na dokončenie.</translation>
@@ -7624,7 +7622,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8941173171815156065">Odvolať povolenie „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Netscape – medzinárodný prestup na vyššiu edíciu</translation>
 <translation id="8944099748578356325">Bude intenzívnejšie využívať batériu (aktuálne <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> zdieľa okno s kartou <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Veľkosť ikony</translation>
 <translation id="8946359700442089734">Na tomto zariadení <ph name="IDS_SHORT_PRODUCT_NAME" /> neboli úplne povolené funkcie ladenia</translation>
 <translation id="894763922177556086">Dobré</translation>

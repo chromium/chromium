@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">הכול מגובה!</translation>
 <translation id="3634507049637220048">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו.</translation>
-<translation id="3645531960514756307">ביטול הצמדת התיקייה</translation>
 <translation id="3685122418104378273">‏הסנכרון של Google Drive מושבת כברירת מחדל בעת שימוש בנתונים לנייד.</translation>
 <translation id="3689865792480713551">ביטול <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, <ph name="CONNECTION_STATUS" />, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
@@ -928,7 +927,6 @@
 <translation id="9110990317705400362">‏אנחנו מחפשים כל הזמן דרכים לגלישה בטוחה יותר. בעבר, כל אתר יכול היה להציע לך להוסיף תוסף לדפדפן. בגרסאות האחרונות של Google Chrome, עליך לציין באופן מפורש ל-Chrome שברצונך להתקין תוספים אלה על-ידי הוספתם דרך הדף 'תוספים'. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">הצמדת התיקייה</translation>
 <translation id="9130775360844693113">חברים באחסון השיתופי '<ph name="DESTINATION_NAME" />' יקבלו גישה לפריטים האלה.</translation>
 <translation id="9131598836763251128">יש לבחור קובץ אחד או יותר</translation>
 <translation id="9133055936679483811">הכיווץ נכשל. <ph name="ERROR_MESSAGE" /></translation>

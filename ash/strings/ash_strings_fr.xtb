@@ -416,7 +416,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
-<translation id="3744282433224562605">Pour déverrouiller votre Chromebook, saisissez le mot de passe</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
 <translation id="3779139509281456663">Connexion à <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
-<translation id="5199367439331364630">Pour vous connecter à votre Chromebook, saisissez le mot de passe</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 autre notification}one{# autre notification}other{# autres notifications}}</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
@@ -765,6 +763,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="612734058257491180">L'Assistant Google n'est pas disponible dans une session Invité.</translation>
 <translation id="6134259848159370930">Effectuez des recherches sur votre appareil, dans vos applications et paramètres, et sur le Web.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de suppression du compte <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="6154006699632741460">Périphérique non compatible</translation>
 <translation id="6156262341071374681">Développer pour afficher toutes les applications</translation>
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>

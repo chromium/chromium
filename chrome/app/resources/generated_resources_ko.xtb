@@ -533,6 +533,7 @@
 <translation id="1549275686094429035">ARC 사용 설정됨</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1552301827267621511">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 검색에 <ph name="SEARCH_PROVIDER_DOMAIN" /> 서비스를 사용하도록 변경했습니다.</translation>
+<translation id="1552752544932680961">확장 프로그램 관리</translation>
 <translation id="1553538517812678578">무제한</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1556537182262721003">확장 프로그램 디렉터리를 프로필로 이동하지 못했습니다.</translation>
@@ -2792,7 +2793,6 @@
 <translation id="3842552989725514455">Serif</translation>
 <translation id="3843464315703645664">내부적으로 허용됨</translation>
 <translation id="3844888638014364087">그림 이모티콘 삽입됨</translation>
-<translation id="384513009320852920">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">웹사이트, Android 앱 등을 개발할 수 있는 도구를 이용해 보세요. Linux를 설치하면 <ph name="DOWNLOAD_SIZE" />의 데이터가 다운로드됩니다.</translation>
 <translation id="3847319713229060696">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="3848547754896969219">시크릿 창에서 열기(&amp;I)</translation>
@@ -4297,7 +4297,6 @@
 <translation id="5485102783864353244">앱 추가</translation>
 <translation id="5485754497697573575">모든 탭 복원</translation>
 <translation id="5486261815000869482">비밀번호 확인</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" />에서 <ph name="TAB_NAME" />와(과) 내 화면을 공유 중입니다.</translation>
 <translation id="5486561344817861625">브라우저 다시 시작 시뮬레이션</translation>
 <translation id="5487460042548760727">프로필 이름을 다음으로 변경 <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
@@ -4359,6 +4358,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
 <translation id="5534304873398226603">사진 또는 동영상 삭제</translation>
 <translation id="5535941515421698170">기기에서 기존 데이터도 삭제</translation>
+<translation id="5537725057119320332">전송</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
 <translation id="5541694225089836610">관리자가 사용 중지한 작업입니다.</translation>
 <translation id="5542132724887566711">프로필</translation>
@@ -4589,6 +4589,7 @@
 <translation id="5787146423283493983">키 계약</translation>
 <translation id="5787420647064736989">기기 이름</translation>
 <translation id="5788367137662787332">죄송합니다. 기기(<ph name="DEVICE_LABEL" />)에 있는 하나 이상의 파티션을 마운트하지 못했습니다.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">완료</translation>
 <translation id="5790651917470750848">포트 전달이 이미 존재합니다.</translation>
 <translation id="5792728279623964091">전원 버튼을 탭하세요.</translation>
@@ -4820,10 +4821,8 @@
     <ph name="BEGIN_PARAGRAPH2" />기기에서 기본 위치 설정을 사용 중지하여 위치 정보를 끌 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">전체화면 종료</translation>
 <translation id="6042308850641462728">자세히</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" />에서 <ph name="TAB_NAME" />와(과) Chrome 탭을 공유 중입니다.</translation>
 <translation id="604388835206766544">설정을 파싱할 수 없습니다.</translation>
 <translation id="6043994281159824495">지금 로그아웃</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" />에서 <ph name="TAB_NAME" />와(과) Chrome 탭과 오디오를 공유 중입니다.</translation>
 <translation id="6045114302329202345">기본 TrackPoint 버튼</translation>
 <translation id="6047632800149092791">동기화가 작동하지 않습니다. 로그아웃한 뒤 다시 로그인해 보세요.</translation>
 <translation id="6049797270917061226">이 파일로 인해 공격자가 개인 정보를 도용할 가능성이 있습니다.</translation>
@@ -7319,7 +7318,6 @@
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="8657393004602556571">의견을 삭제하시겠습니까?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" />에서 <ph name="TAB_NAME" />와(과) 내 화면 및 오디오를 공유 중입니다.</translation>
 <translation id="8661290697478713397">시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
 <translation id="8662733268723715832">예상보다 많은 시간이 걸리고 있습니다. 계속 기다리거나 건너뛸 수 있습니다.</translation>
@@ -7614,7 +7612,6 @@
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' 권한 취소</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" />에서 <ph name="TAB_NAME" />와(과) 창을 공유 중입니다.</translation>
 <translation id="8945274638472141382">아이콘 크기</translation>
 <translation id="8946359700442089734">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능의 사용 설정을 완료하지 못했습니다.</translation>
 <translation id="894763922177556086">좋음</translation>

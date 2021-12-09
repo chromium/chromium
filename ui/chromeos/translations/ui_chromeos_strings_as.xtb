@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">সকলো বেক আপ সম্পূর্ণ হৈ আছে!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু স্থানান্তৰ কৰা হ'ল।</translation>
-<translation id="3645531960514756307">ফ’ল্ডাৰ আনপিন কৰক</translation>
 <translation id="3685122418104378273">ডিফ’ল্ট অনুসৰি ম’বাইল ডেটা ব্যৱহাৰ কৰাৰ সময়ত Google Drive ছিংক অক্ষম কৰা হৈছে।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল কৰক।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> টাৰ ভিতৰত <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সক্ৰিয় নকৰা, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">আমি আপোনাৰ ব্ৰাউজিং সুৰক্ষিত কৰিবলৈ সদায়েই উপায় বিচাৰি আছোঁ। পূৰ্বতে, যিকোনো ৱেবছাইটে আপোনাৰ ব্ৰাউজাৰত এক্সটেনশ্বন যোগ কৰিবলৈ আপোনাক প্ৰ’ম্প্‌ট কৰিব পাৰিছিল। Google Chromeৰ শেহতীয়া সংস্কৰণত আপুনি Chromeক স্পষ্টভাৱে ক’ব লাগিব যে আপুনি এক্সটেনশ্বন পৃষ্ঠাটোৰ জৰিয়তে এই এক্সটেনশ্বনসমূহ ইনষ্টল কৰিবলৈ বিচাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="912419004897138677">ক’ডেক</translation>
-<translation id="9129931661813833980">ফ’ল্ডাৰ পিন কৰক</translation>
 <translation id="9130775360844693113">‘<ph name="DESTINATION_NAME" />’ৰ সদস্যসকলে এই বস্তুবোৰলৈ এক্সেছ পাব।</translation>
 <translation id="9131598836763251128">এটা বা একাধিক ফাইল বাছনি কৰক</translation>
 <translation id="9133055936679483811">জিপ কৰিব পৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>

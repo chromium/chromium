@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылды.</translation>
-<translation id="3645531960514756307">Папканы бошотуу</translation>
 <translation id="3685122418104378273">Мобилдик дайындар колдонулуп жатканда, Google Drive шайкештештирүүсү демейки шартта өчүрүлөт.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Серептөө аракетиңиздин коопсуздугун чыңдоо үчүн болгон аракетибизди жумшап жатабыз. Буга чейин серепчиңизге кеңейтүү кошууну вебсайттар сунуштап турушчу. Ал эми Google Chrome'дун эң акыркы версияларында керектүү кеңейтүүлөрдү Кеңейтүүлөр бетинен кошуп, орното турганыңызды Chrome'го өзүңүз ачык билдиресиз. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Папканы кадап коюу</translation>
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" жалпы дискинин колдонуучулары бул файлдарды колдоно алышат.</translation>
 <translation id="9131598836763251128">Бир же бир нече файл тандаңыз</translation>
 <translation id="9133055936679483811">Кысылбай калды. <ph name="ERROR_MESSAGE" /></translation>

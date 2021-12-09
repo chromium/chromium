@@ -536,6 +536,7 @@
 <translation id="1549275686094429035">ARC enabled</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wants to access <ph name="VOLUME_NAME" />. It may modify or delete your files.</translation>
 <translation id="1552301827267621511">The '<ph name="EXTENSION_NAME" />' extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Manage extension</translation>
 <translation id="1553538517812678578">unlimited</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1556537182262721003">Could not move extension directory into profile.</translation>
@@ -2803,7 +2804,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3842552989725514455">Serif font</translation>
 <translation id="3843464315703645664">Allowlisted internally</translation>
 <translation id="3844888638014364087">Emoji inserted</translation>
-<translation id="384513009320852920">Make sure that your Bluetooth device is in pairing mode and nearby. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Get tools for developing websites, Android apps and more. Installing Linux will download <ph name="DOWNLOAD_SIZE" /> of data.</translation>
 <translation id="3847319713229060696">Help improve security on the web for everyone</translation>
 <translation id="3848547754896969219">Open in &amp;Incognito window</translation>
@@ -4315,7 +4315,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5485102783864353244">Add app</translation>
 <translation id="5485754497697573575">Restore All Tabs</translation>
 <translation id="5486261815000869482">Confirm password</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> is sharing your screen with <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulate browser restart</translation>
 <translation id="5487460042548760727">Rename profile to <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Clear data</translation>
@@ -4377,6 +4376,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
 <translation id="5534304873398226603">Discard photo or video</translation>
 <translation id="5535941515421698170">Also remove your existing data from this device</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
 <translation id="5541694225089836610">Action is disabled by your administrator</translation>
 <translation id="5542132724887566711">Profile</translation>
@@ -4607,6 +4607,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5787146423283493983">Key Agreement</translation>
 <translation id="5787420647064736989">Device name</translation>
 <translation id="5788367137662787332">Sorry, at least one partition on the device <ph name="DEVICE_LABEL" /> could not be mounted.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5790651917470750848">Port forward already exists</translation>
 <translation id="5792728279623964091">Please tap your power button</translation>
@@ -4839,10 +4840,8 @@ You can assign multiple switches to this action.</translation>
     <ph name="BEGIN_PARAGRAPH2" />You can turn off location by turning off the main location setting on your device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Exit Full Screen</translation>
 <translation id="6042308850641462728">More</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> is sharing a Chrome tab with <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Failed to parse configuration</translation>
 <translation id="6043994281159824495">Sign out now</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> is sharing a Chrome tab and audio with <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primary TrackPoint button</translation>
 <translation id="6047632800149092791">Sync isn't working. Try signing out and back in again.</translation>
 <translation id="6049797270917061226">This file could let attackers steal your personal information.</translation>
@@ -7346,7 +7345,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Sign-in failed because your password could not be verified. Please contact your administrator or try again.</translation>
 <translation id="8657393004602556571">Do you want to discard the feedback?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> is sharing your screen and audio with <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Open Link in Inco&amp;gnito Window</translation>
 <translation id="8662671328352114214">Join <ph name="TYPE" /> network</translation>
 <translation id="8662733268723715832">This is taking longer than expected; you can skip or wait until it's done.</translation>
@@ -7641,7 +7639,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8941173171815156065">Revoke the permission '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> is sharing a window with <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Icon size</translation>
 <translation id="8946359700442089734">Debugging features were not completely enabled on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device.</translation>
 <translation id="894763922177556086">Good</translation>

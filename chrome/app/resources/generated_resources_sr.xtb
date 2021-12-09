@@ -532,6 +532,7 @@
 <translation id="1549275686094429035">Време извршавања апликације за Chrome је омогућено</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> жели да приступа <ph name="VOLUME_NAME" />. Можда ће да мења или брише датотеке.</translation>
 <translation id="1552301827267621511">Додатак „<ph name="EXTENSION_NAME" />“ је променио претрагу тако да користи <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Управљајте додатком</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1556537182262721003">Каталог додатака није било могуће преместити у профил.</translation>
@@ -2787,7 +2788,6 @@
 <translation id="3842552989725514455">Фонт Serif</translation>
 <translation id="3843464315703645664">На интерној листи дозвољених</translation>
 <translation id="3844888638014364087">Емоџи је уметнут</translation>
-<translation id="384513009320852920">Проверите да ли је Bluetooth уређај у режиму упаривања и у близини. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Пронађите алатке за програмирање веб-сајтова, Android апликација и друго. Инсталирање Linux-а ће преузети податке (<ph name="DOWNLOAD_SIZE" />).</translation>
 <translation id="3847319713229060696">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="3848547754896969219">Отвори у &amp;прозору без архивирања</translation>
@@ -4297,7 +4297,6 @@
 <translation id="5485102783864353244">Додај апликацију</translation>
 <translation id="5485754497697573575">Врати све картице</translation>
 <translation id="5486261815000869482">Потврдите лозинку</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> дели екран са <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Симулирај поновно покретање прегледача</translation>
 <translation id="5487460042548760727">Преименујте профил у <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Обриши податке</translation>
@@ -4359,6 +4358,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> жели да</translation>
 <translation id="5534304873398226603">Одбаци слику или видео</translation>
 <translation id="5535941515421698170">Уклања и постојеће податке са овог уређаја</translation>
+<translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5539221284352502426">Сервер је одбио лозинку коју сте унели. Могући разлози обухватају: Лозинка је прекратка. Лозинка мора да садржи бројеве или симболе. Лозинка мора да се разликује од претходних лозинки.</translation>
 <translation id="5541694225089836610">Администратор је онемогућио радњу</translation>
 <translation id="5542132724887566711">Профил</translation>
@@ -4590,6 +4590,7 @@
 <translation id="5787146423283493983">Слагање кључа</translation>
 <translation id="5787420647064736989">Назив уређаја</translation>
 <translation id="5788367137662787332">Жао нам је, најмање једну партицију на уређају <ph name="DEVICE_LABEL" /> није било могуће укључити.</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5790651917470750848">Прослеђивање порта већ постоји</translation>
 <translation id="5792728279623964091">Додирните дугме за укључивање</translation>
@@ -4822,10 +4823,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Локацију можете да искључите ако искључите главно подешавање Локација на уређају. У подешавањима локације можете да искључите и коришћење Wi‑Fi мрежа, мобилних мрежа и сензора за локацију.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Изађи из целог екрана</translation>
 <translation id="6042308850641462728">Још</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> дели Chrome картицу са <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Рашчлањивање конфигурације није успело</translation>
 <translation id="6043994281159824495">Одјави ме одмах</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> дели Chrome картицу и звук са <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Примарно дугме TrackPoint-а</translation>
 <translation id="6047632800149092791">Синхронизација не ради. Пробајте да се одјавите и поново пријавите.</translation>
 <translation id="6049797270917061226">Овај фајл може да дозволи нападачима да вам украду личне податке.</translation>
@@ -7328,7 +7327,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Пријављивање није успело јер нисмо успели да верификујемо лозинку. Контактирајте администратора или покушајте поново.</translation>
 <translation id="8657393004602556571">Желите да одбаците повратне информације?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> дели екран и звук са <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Отвори линк у прозору за пре&amp;гледање без архивирања</translation>
 <translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>
 <translation id="8662733268723715832">Ово траје дуже од очекиваног, па можете да прескочите или да сачекате док не буде готово.</translation>
@@ -7625,7 +7623,6 @@
 <translation id="8941173171815156065">Опозовите дозволу „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">бржа потрошња батерије (тренутно <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> дели прозор са <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Величина иконе</translation>
 <translation id="8946359700442089734">Функције за отклањање грешака нису у потпуности омогућене на овом <ph name="IDS_SHORT_PRODUCT_NAME" /> уређају.</translation>
 <translation id="894763922177556086">Добра</translation>

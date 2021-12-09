@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
 <translation id="1153636665119721804">‏תוכנית ההגנה המתקדמת של Google</translation>
 <translation id="1155816283571436363">מתבצע חיבור לטלפון שלך</translation>
+<translation id="1158080958325422608">שינוי לאותיות גדולות</translation>
 <translation id="1158238185437008462">להצגת הזיכרונות</translation>
 <translation id="1161575384898972166">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייצא את אישור הלקוח.</translation>
 <translation id="116173250649946226">מנהל המערכת הגדיר עיצוב כברירת מחדל שלא ניתן לשנות.</translation>
@@ -532,6 +533,7 @@
 <translation id="1549275686094429035">‏ARC מופעל</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> רוצה לגשת אל <ph name="VOLUME_NAME" />. ייתכן שהוא יישנה או ימחק את הקבצים.</translation>
 <translation id="1552301827267621511">התוסף "<ph name="EXTENSION_NAME" />" שינה את הגדרות החיפוש לשימוש ב-<ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">נהל תוספים</translation>
 <translation id="1553538517812678578">לא מוגבל</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1556537182262721003">לא היתה אפשרות להעביר ספריית תוספים לפרופיל.</translation>
@@ -694,6 +696,7 @@
 <translation id="1700079447639026019">‏אתרים שאף פעם לא יכולים להשתמש בקובצי cookie</translation>
 <translation id="1703331064825191675">אין יותר צורך לדאוג לגבי הסיסמאות שלך</translation>
 <translation id="1703666494654169921">לא לאפשר לאתרים להשתמש במכשירי מציאות מדומה או בנתונים כאלה</translation>
+<translation id="1704097193565924901">אותיות רישיות</translation>
 <translation id="1704230497453185209">לא לאפשר לאתרים להפעיל צליל</translation>
 <translation id="1704970325597567340">בדיקת הבטיחות פעלה בתאריך <ph name="DATE" /></translation>
 <translation id="1706586824377653884">נוסף על ידי מנהל המערכת שלך</translation>
@@ -2792,7 +2795,6 @@
 <translation id="3842552989725514455">‏גופן Serif</translation>
 <translation id="3843464315703645664">ברשימת ההיתרים הפנימית</translation>
 <translation id="3844888638014364087">האמוג'י נוסף</translation>
-<translation id="384513009320852920">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">‏אפשר להוריד כלים לפיתוח אתרים, אפליקציות Android ועוד. התקנת Linux תוריד נתונים בנפח של <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">סיוע לשיפור האבטחה באינטרנט לטובת כולם</translation>
 <translation id="3848547754896969219">פתיחה בחלון &amp;אנונימי</translation>
@@ -3578,6 +3580,7 @@
 <translation id="4681453295291708042">השבתה של 'שיתוף בקרבת מקום'</translation>
 <translation id="4681930562518940301">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="4682551433947286597">טפטים מופיעים במסך הכניסה.</translation>
+<translation id="4683629100208651599">שינוי לאותיות קטנות</translation>
 <translation id="4683947955326903992">‏‎<ph name="PERCENTAGE" />%‎ (ברירת מחדל)</translation>
 <translation id="4684427112815847243">סנכרון הכל</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> מנסה לגשת למצלמה. יש לכבות את מתג הפרטיות של המצלמה כדי להתיר גישה.</translation>
@@ -4300,7 +4303,6 @@
 <translation id="5485102783864353244">התקנת האפליקציה</translation>
 <translation id="5485754497697573575">שחזור כל הכרטיסיות</translation>
 <translation id="5486261815000869482">אישור סיסמה</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> משתף את המסך שלך עם <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">ביצוע הדמיה של הפעלת דפדפן מחדש</translation>
 <translation id="5487460042548760727">שינוי שם הפרופיל לשם <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
@@ -4362,6 +4364,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> מבקש</translation>
 <translation id="5534304873398226603">מחיקת תמונה או סרטון</translation>
 <translation id="5535941515421698170">הסרה גם של הנתונים הקיימים שלך ממכשיר זה</translation>
+<translation id="5537725057119320332">העברה</translation>
 <translation id="5539221284352502426">השרת דחה את הסיסמה שהזנת. סיבות אפשריות לכך: הסיסמה קצרה מדי; הסיסמה חייבת לכלול ספרות או סמלים; הסיסמה לא יכולה להיות זהה לסיסמה שכבר השתמשת בה בעבר.</translation>
 <translation id="5541694225089836610">האפשרות לבצע את הפעולה הזו הושבתה על-ידי מנהל המערכת</translation>
 <translation id="5542132724887566711">פרופיל</translation>
@@ -4592,6 +4595,7 @@
 <translation id="5787146423283493983">הסכם מפתח</translation>
 <translation id="5787420647064736989">שם המכשיר</translation>
 <translation id="5788367137662787332">מצטערים, לא ניתן להעלות לפחות מחיצה אחת במכשיר <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">הצלחה</translation>
 <translation id="5790651917470750848">היציאה המועברת כבר קיימת</translation>
 <translation id="5792728279623964091">יש להקיש על לחצן ההפעלה</translation>
@@ -4823,10 +4827,8 @@
 <ph name="BEGIN_PARAGRAPH2" />ניתן להשבית את ההעברה של נתוני מיקום על-ידי כיבוי של הגדרת המיקום הראשית במכשיר. אפשר גם להשבית את השימוש ב-Wi-Fi, ברשתות סלולריות ובחיישנים לאיתור המיקום בהגדרות המיקום.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">יציאה ממסך מלא</translation>
 <translation id="6042308850641462728">עוד</translation>
-<translation id="6043317578411397101">‏<ph name="APP_NAME" /> משתף כרטיסיית Chrome עם <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">ניתוח ההגדרה נכשל</translation>
 <translation id="6043994281159824495">יציאה עכשיו</translation>
-<translation id="6044805581023976844">‏<ph name="APP_NAME" /> משתף כרטיסייה ואודיו של Chrome עם <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">‏לחצן TrackPoint ראשי</translation>
 <translation id="6047632800149092791">הסנכרון לא פועל. יש לנסות לצאת ולהיכנס שוב.</translation>
 <translation id="6049797270917061226">הקובץ הזה עלול לאפשר לתוקפים לגנוב את המידע האישי שלך.</translation>
@@ -5970,6 +5972,7 @@
 <translation id="7257173066616499747">‏רשתות Wi-Fi</translation>
 <translation id="725758059478686223">שירות הדפסה</translation>
 <translation id="7257666756905341374">קריאת נתונים שהועתקו והודבקו</translation>
+<translation id="7258192266780953209">טרנספורמציות</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7262004276116528033">שירות הכניסה הזה מתארח ב-<ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />מומלץ לפעול לפי השלבים הבאים לפתרון הבעיה:
@@ -7323,7 +7326,6 @@
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655972064210167941">הכניסה נכשלה מפני שלא ניתן היה לאמת את הסיסמה. יש לפנות למנהל המערכת או לנסות שוב.</translation>
 <translation id="8657393004602556571">רוצה למחוק את המשוב?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> משתף את המסך והאודיו שלך עם <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">פתיחת הקישור בחלון &amp;אנונימי</translation>
 <translation id="8662671328352114214">התחברות לרשת <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">נראה שהפעולה נמשכת יותר זמן מהצפוי. יש לך אפשרות לדלג או להמתין עד סיום הפעולה.</translation>
@@ -7620,7 +7622,6 @@
 <translation id="8941173171815156065">ביטול ההרשאה '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">‏הגברה בינלאומית של Netscape</translation>
 <translation id="8944099748578356325">אפשרות זו גורמת לפריקה מהירה יותר של הסוללה (כרגע %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> משתף חלון עם <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">גודל סמלים</translation>
 <translation id="8946359700442089734">תכונות לניפוי באגים לא הופעלו באופן מלא במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
 <translation id="894763922177556086">איכות טובה</translation>

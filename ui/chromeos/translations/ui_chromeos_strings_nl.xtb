@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Er is een back-up van alles gemaakt</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, beheerd door je beheerder, details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items verplaatst.</translation>
-<translation id="3645531960514756307">Map losmaken</translation>
 <translation id="3685122418104378273">De synchronisatie van Google Drive is bij het gebruik van mobiele data standaard uitgezet.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> annuleren.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -928,7 +927,6 @@
 <translation id="9110990317705400362">We zijn altijd op zoek naar manieren om het surfen veiliger te maken. Vroeger kon elke website je vragen een extensie toe te voegen aan je browser. In de nieuwste versies van Google Chrome moet je Chrome expliciet toestemming geven om deze extensies te installeren door ze toe te voegen via de pagina 'Extensies'. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Map vastzetten</translation>
 <translation id="9130775360844693113">Leden van '<ph name="DESTINATION_NAME" />' krijgen toegang tot deze items.</translation>
 <translation id="9131598836763251128">Selecteer een of meer bestanden</translation>
 <translation id="9133055936679483811">Inpakken mislukt. <ph name="ERROR_MESSAGE" /></translation>

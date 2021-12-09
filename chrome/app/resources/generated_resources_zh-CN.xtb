@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">已配对的设备</translation>
 <translation id="1153636665119721804">Google 高级保护计划</translation>
 <translation id="1155816283571436363">正在连接到您的手机</translation>
+<translation id="1158080958325422608">转换为大写</translation>
 <translation id="1158238185437008462">查看回忆集锦</translation>
 <translation id="1161575384898972166">请登录“<ph name="TOKEN_NAME" />”，导出客户端证书。</translation>
 <translation id="116173250649946226">您的管理员已设置默认主题，您无法更改。</translation>
@@ -527,6 +528,7 @@
 <translation id="1549275686094429035">已启用 ARC</translation>
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">管理扩展程序</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
@@ -689,6 +691,7 @@
 <translation id="1700079447639026019">始终无法使用 Cookie 的网站</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
 <translation id="1703666494654169921">不允许网站使用虚拟实境设备或数据</translation>
+<translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1704970325597567340"><ph name="DATE" />运行过安全检查</translation>
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
@@ -2773,7 +2776,6 @@
 <translation id="3842552989725514455">Serif 字体</translation>
 <translation id="3843464315703645664">已列入内部许可名单</translation>
 <translation id="3844888638014364087">已插入表情符号</translation>
-<translation id="384513009320852920">请确保您的蓝牙设备处于配对模式且就在附近。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">获取用于开发网站、Android 应用等内容的工具。安装 Linux 会使系统下载 <ph name="DOWNLOAD_SIZE" /> 的数据。</translation>
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="3848547754896969219">在无痕式窗口中打开(&amp;I)</translation>
@@ -3557,6 +3559,7 @@
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="4682551433947286597">登录屏幕上显示的壁纸。</translation>
+<translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据类型</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" />正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
@@ -4279,7 +4282,6 @@
 <translation id="5485102783864353244">添加应用</translation>
 <translation id="5485754497697573575">还原所有标签页</translation>
 <translation id="5486261815000869482">确认密码</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" />正在与<ph name="TAB_NAME" />共享您的屏幕。</translation>
 <translation id="5486561344817861625">模拟浏览器重启</translation>
 <translation id="5487460042548760727">将配置文件重命名为“<ph name="PROFILE_NAME" />”</translation>
 <translation id="5487521232677179737">清除数据</translation>
@@ -4341,6 +4343,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />想要</translation>
 <translation id="5534304873398226603">舍弃照片或视频</translation>
 <translation id="5535941515421698170">一并从这台设备中移除您的现有数据</translation>
+<translation id="5537725057119320332">投射</translation>
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
 <translation id="5542132724887566711">个人资料</translation>
@@ -4571,6 +4574,7 @@
 <translation id="5787146423283493983">密钥协议</translation>
 <translation id="5787420647064736989">设备名称</translation>
 <translation id="5788367137662787332">抱歉，“<ph name="DEVICE_LABEL" />”设备上至少有一个分区无法加载。</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">端口转发已存在</translation>
 <translation id="5792728279623964091">请点按您的电源按钮</translation>
@@ -4802,10 +4806,8 @@
     <ph name="BEGIN_PARAGRAPH2" />您可以通过关闭相应设备上的主要“位置信息”设置来关闭位置信息服务。此外，您还可以在“位置信息”设置中关闭那些使用 WLAN、移动网络和传感器来获取位置信息的功能。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">退出全屏</translation>
 <translation id="6042308850641462728">展开</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页。</translation>
 <translation id="604388835206766544">无法解析配置</translation>
 <translation id="6043994281159824495">立即退出</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页和音频。</translation>
 <translation id="6045114302329202345">TrackPoint 主按钮</translation>
 <translation id="6047632800149092791">同步功能无法正常运行。请尝试退出帐号并重新登录。</translation>
 <translation id="6049797270917061226">攻击者可能会利用此文件窃取您的个人信息。</translation>
@@ -5949,6 +5951,7 @@
 <translation id="7257173066616499747">Wi-Fi 网络</translation>
 <translation id="725758059478686223">打印服务</translation>
 <translation id="7257666756905341374">读取您复制和粘贴的数据</translation>
+<translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
@@ -7300,7 +7303,6 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">由于无法验证您的密码，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="8657393004602556571">您想舍弃反馈吗？</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享您的屏幕和音频。</translation>
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8662733268723715832">这项操作的用时超出了预期，您可以选择跳过或继续等待。</translation>
@@ -7595,7 +7597,6 @@
 <translation id="8941173171815156065">撤消“<ph name="PERMISSION" />”权限</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享窗口。</translation>
 <translation id="8945274638472141382">图标大小</translation>
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>
 <translation id="894763922177556086">良好</translation>

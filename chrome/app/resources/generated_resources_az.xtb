@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">ARC Aktivdir</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> daxil olmaq istəyir. Fayllarınızı dəyişə və ya silə bilər.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" artırması axtarış sistemini <ph name="SEARCH_PROVIDER_DOMAIN" /> seçiminə dəyişib</translation>
+<translation id="1552752544932680961">Artırmanı idarə edin</translation>
 <translation id="1553538517812678578">Limitsiz</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1556537182262721003">Artırmanı birbaşa qovluğa daşıya bilmədi.</translation>
@@ -2786,7 +2787,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3842552989725514455">Serif şrifti</translation>
 <translation id="3843464315703645664">Daxili icazə verilənlər siyahısındadır</translation>
 <translation id="3844888638014364087">Emoji daxil edildi</translation>
-<translation id="384513009320852920">Bluetooth cihazınızın birləşmə rejimində və yaxınlıqda olduğuna əmin olun. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Veb sayt, Android tətbiqləri və sairəni təkmilləşdirmək üçün alətlər əldə edin. Linux'un quraşdırılması ilə <ph name="DOWNLOAD_SIZE" /> data endiriləcək.</translation>
 <translation id="3847319713229060696">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="3848547754896969219">&amp;Anonim pəncərədə açın</translation>
@@ -4295,7 +4295,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
 <translation id="5485754497697573575">Bütün Panelləri Bərpa edin</translation>
 <translation id="5486261815000869482">Şifrəni tesdiq edin:</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> ekranınızı <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="5486561344817861625">Yenidən Brauzer Başladılmasını Modelləşdirmək</translation>
 <translation id="5487460042548760727">Profilin adını <ph name="PROFILE_NAME" /> olaraq dəyişin</translation>
 <translation id="5487521232677179737">Datanı silin</translation>
@@ -4357,6 +4356,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> bunu etmək istəyir:</translation>
 <translation id="5534304873398226603">Foto və ya videonu yadda saxlamayın</translation>
 <translation id="5535941515421698170">Həmçinin, mövcud datanı bu cihazdan silin</translation>
+<translation id="5537725057119320332">Yayım</translation>
 <translation id="5539221284352502426">Daxil etdiyiniz parol server tərəfindən rədd edildi. Səbəblər bunlar ola bilər: Parol çox qısadır. Parol rəqəm və ya simvollardan ibarət olmalıdır. Parol əvvəlki paroldan fərqli olmalıdır.</translation>
 <translation id="5541694225089836610">Administrator əməliyyatı deaktiv edib</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4587,6 +4587,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5787146423283493983">Açar Anlaşması</translation>
 <translation id="5787420647064736989">Cihaz adı</translation>
 <translation id="5788367137662787332">Üzr istəyirik, <ph name="DEVICE_LABEL" /> cihazının ən azı bir hissəsi montaj edilə bilməz.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Uğur</translation>
 <translation id="5790651917470750848">Port yönləndirməsi artıq mövcuddur</translation>
 <translation id="5792728279623964091">Yandırıb-söndürmə düyməsinə toxunun</translation>
@@ -4817,10 +4818,8 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Cihazda əsas Məkan ayarını deaktiv etməklə Məkanı deaktiv edə bilərsiniz. Həmçinin, məkanın Wi-Fi və mobil şəbəkələr və sensorlardan istifadəsini məkan ayarlarından deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">"Tam ekran" rejimindən çıxın</translation>
 <translation id="6042308850641462728">Daha çox</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> tətbiqi Chrome panelini <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="604388835206766544">Konfiqurasiyanı nəzərdən keçirmək alınmadı</translation>
 <translation id="6043994281159824495">Hesabdan çıxın</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> tətbiqi Chrome paneli və audionu <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="6045114302329202345">Əsas TrackPoint düyməsi</translation>
 <translation id="6047632800149092791">Sinxronlaşdırma işləmir. Çıxın və yenidən daxil olun.</translation>
 <translation id="6049797270917061226">Bu fayl hücumçulara şəxsi məlumatlarınızı oğurlamaq imkanı vermiş ola bilər.</translation>
@@ -7322,7 +7321,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Sign-sizin parol təsdiq edilə bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
 <translation id="8657393004602556571">Rəydən imtina etmək istəyirsiniz?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> ekran və audionu <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="8661290697478713397">Linki gizli pəncərədə açın</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> şəbəkəsinə qoşulun</translation>
 <translation id="8662733268723715832">Bu, gözləniləndən daha uzun çəkir, keçə və ya tamamlanana qədər gözləyə bilərsiniz.</translation>
@@ -7615,7 +7613,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' icazəsini ləğv edin</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Batareyanı daha sürətlə istifadə edin (hazırda <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> ilə pəncərə paylaşır.</translation>
 <translation id="8945274638472141382">İkona ölçüsü</translation>
 <translation id="8946359700442089734">Debaq funksiyaları bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında yarımçıq aktiv edilib.</translation>
 <translation id="894763922177556086">Yaxşı</translation>

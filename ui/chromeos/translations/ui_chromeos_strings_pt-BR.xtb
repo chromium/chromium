@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Backup completo.</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gerenciada pelo seu administrador, detalhes</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> itens movidos.</translation>
-<translation id="3645531960514756307">Liberar pasta</translation>
 <translation id="3685122418104378273">A sincronização do Google Drive é desativada por padrão durante o uso de dados móveis.</translation>
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, <ph name="CONNECTION_STATUS" />, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Estamos constantemente à procura de maneiras para tornar sua navegação mais segura. Anteriormente, qualquer website podia pedir que você adicionasse uma extensão no seu navegador. Nas versões mais recentes do Google Chrome, você deve dizer explicitamente ao Chrome que deseja instalar essas extensões, adicionando-as através da página de extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Fixar pasta</translation>
 <translation id="9130775360844693113">Membros de '<ph name="DESTINATION_NAME" />' terão acesso a esses itens.</translation>
 <translation id="9131598836763251128">Selecione um ou mais arquivos</translation>
 <translation id="9133055936679483811">Falha na compactação. <ph name="ERROR_MESSAGE" /></translation>

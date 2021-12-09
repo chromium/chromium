@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Бүгдийг хадгалсан болно!</translation>
 <translation id="3634507049637220048">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> зүйлийг зөөсөн.</translation>
-<translation id="3645531960514756307">Фолдерийг тогтоосныг болиулах</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />-г цуцлах.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
@@ -924,7 +923,6 @@
 <translation id="9110990317705400362">Бид таны веб хөтчийг илүү аюулгүй болгох аргыг үргэлж хайж байдаг. Өмнө нь ямар ч вебсайт таны веб хөтчид өргөтгөл нэмэхийг таниас хүсэж болдог байсан. Google Chrome-ийн сүүлийн үеийн хувилбаруудын тусламжтай та эдгээр өргөтгөлүүдийг Өргөтгөлийн хуудсанд нэмсэнээр суурьлуулж болох сонголтыг Chrome-д хийж болно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй мэдээллийг<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Нээх</translation>
 <translation id="912419004897138677">Кодлогч</translation>
-<translation id="9129931661813833980">Фолдерийг бэхлэх</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'-н гишүүд эдгээр зүйлд хандах эрхтэй болно.</translation>
 <translation id="9131598836763251128">Нэг буюу хэд хэдэн файлуудыг сонгох</translation>
 <translation id="9133055936679483811">Файл нэгтгэлт амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>

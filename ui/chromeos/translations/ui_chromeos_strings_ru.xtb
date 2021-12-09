@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Данные сохранены!</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Открепить папку</translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>
 <translation id="3689865792480713551">Отменить <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Мы постоянно работаем над тем, чтобы сделать наш браузер ещё более защищенным. Раньше любой сайт мог предложить вам установить расширение, что было небезопасно. В последних версиях Google Chrome добавить расширения можно только на странице "Расширения". <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Закрепить папку</translation>
 <translation id="9130775360844693113">Пользователи общего диска "<ph name="DESTINATION_NAME" />" получат доступ к этим объектам.</translation>
 <translation id="9131598836763251128">Выберите файлы</translation>
 <translation id="9133055936679483811">Не удалось выполнить архивирование. <ph name="ERROR_MESSAGE" />.</translation>

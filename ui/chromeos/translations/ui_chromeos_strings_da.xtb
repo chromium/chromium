@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Alt er sikkerhedskopieret.</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
-<translation id="3645531960514756307">Frigør mappe</translation>
 <translation id="3685122418104378273">Synkronisering af Google Drev er som standard deaktiveret, når du bruger mobildata.</translation>
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">Vi leder hele tiden efter nye metoder til at gøre din browsing mere sikker. Før kunne ethvert website anmode dig om at tilføje en udvidelse i din browser. I de nyeste versioner af Google Chrome skal du udtrykkeligt give Chrome besked om, at du vil installere udvidelser, ved at tilføje dem via siden Udvidelser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Fastgør mappe</translation>
 <translation id="9130775360844693113">Medlemmer af "<ph name="DESTINATION_NAME" />" får adgang til disse elementer.</translation>
 <translation id="9131598836763251128">Vælg en eller flere filer</translation>
 <translation id="9133055936679483811">Komprimering mislykkedes. <ph name="ERROR_MESSAGE" /></translation>

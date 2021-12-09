@@ -416,7 +416,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
 <translation id="3726171378575546917">A app <ph name="UNAVAILABLE_APPS_ONE" />, a app <ph name="UNAVAILABLE_APPS_TWO" /> e mais <ph name="UNAVAILABLE_APPS_COUNT" /> apps não se encontram neste dispositivo.</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
-<translation id="3744282433224562605">Para desbloquear o Chromebook, introduza a palavra-passe</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
 <translation id="3779139509281456663">A ligar ao dispositivo <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> em combinação com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
-<translation id="5199367439331364630">Para iniciar sessão no Chromebook, introduza a palavra-passe</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}one{Mais # notificação(ões)}other{Mais # notificações}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
@@ -765,6 +763,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
 <translation id="6134259848159370930">Pesquise no dispositivo, nas apps, nas definições e na Web.</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirmar transferência</translation>
 <translation id="6154006699632741460">O periférico não é suportado</translation>
 <translation id="6156262341071374681">Expandir para ver todas as aplicações</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>

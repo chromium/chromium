@@ -536,6 +536,7 @@
 <translation id="1549275686094429035">ARC Didayakan</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Apl mungkin mengubah suai atau memadamkan fail anda.</translation>
 <translation id="1552301827267621511">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar carian agar menggunakan <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552752544932680961">Uruskan sambungan</translation>
 <translation id="1553538517812678578">tidak terhad</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1556537182262721003">Tidak dapat menggerakkan direktori sambungan ke profil.</translation>
@@ -2803,7 +2804,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3842552989725514455">Fon Serif</translation>
 <translation id="3843464315703645664">Senarai izin dalaman</translation>
 <translation id="3844888638014364087">Emoji disisipkan</translation>
-<translation id="384513009320852920">Pastikan peranti Bluetooth anda dalam mod penggandingan dan berdekatan. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Dapatkan alatan untuk membangunkan laman web, apl Android dan pelbagai lagi. Pemasangan Linux akan memuat turun <ph name="DOWNLOAD_SIZE" /> data.</translation>
 <translation id="3847319713229060696">Bantu tingkatkan keselamatan di web untuk semua orang</translation>
 <translation id="3848547754896969219">Buka dalam tetingkap &amp;Inkognito</translation>
@@ -4315,7 +4315,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5485102783864353244">Tambah apl</translation>
 <translation id="5485754497697573575">Pulihkan Semua Tab</translation>
 <translation id="5486261815000869482">Sahkan kata laluan</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> mengongsi skrin anda dengan <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Rangsang Mula Semula Penyemak Imbas</translation>
 <translation id="5487460042548760727">Namakan semula profil kepada <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Kosongkan data</translation>
@@ -4377,6 +4376,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ingin</translation>
 <translation id="5534304873398226603">Buang foto atau video</translation>
 <translation id="5535941515421698170">Turut mengalih keluar data sedia ada anda daripada peranti ini</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Kata laluan yang anda masukkan telah ditolak oleh pelayan. Sebab yang mungkin termasuk: Kata laluan terlalu pendek. Kata laluan mesti merangkumi nombor atau simbol. Kata laluan mesti berbeza daripada kata laluan yang sebelumnya.</translation>
 <translation id="5541694225089836610">Tindakan dilumpuhkan oleh pentadbir anda</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4607,6 +4607,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5787146423283493983">Perjanjian Penting</translation>
 <translation id="5787420647064736989">Nama peranti</translation>
 <translation id="5788367137662787332">Maaf, sekurang-kurangnya satu pemetakan pada peranti <ph name="DEVICE_LABEL" /> tidak dapat dilekapkan.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Berjaya</translation>
 <translation id="5790651917470750848">Kiriman semula sudah wujud</translation>
 <translation id="5792728279623964091">Sila ketik butang kuasa anda</translation>
@@ -4839,10 +4840,8 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan Lokasi dengan mematikan tetapan Lokasi utama pada peranti anda. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi dalam tetapan lokasi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Keluar Daripada Skrin Penuh</translation>
 <translation id="6042308850641462728">Lagi</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> berkongsi tab Chrome dengan <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Gagal menghuraikan konfigurasi</translation>
 <translation id="6043994281159824495">Log keluar sekarang</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> berkongsi tab dan audio Chrome dengan <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Butang TrackPoint utama</translation>
 <translation id="6047632800149092791">Penyegerakan tidak berfungsi. Cuba log keluar dan log masuk semula.</translation>
 <translation id="6049797270917061226">Fail ini dapat membolehkan penyerang mencuri maklumat peribadi anda.</translation>
@@ -7347,7 +7346,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Log masuk gagal kerana kata laluan anda tidak dapat disahkan. Sila hubungi pentadbir anda atau cuba lagi.</translation>
 <translation id="8657393004602556571">Adakah anda ingin membuang maklum balas?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> berkongsi skrin dan audio anda dengan <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Buka Pautan dalam Tetingkap Inko&amp;gnito</translation>
 <translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Proses ini mengambil masa lebih lama daripada jangkaan, anda boleh melangkau atau menunggu sehingga selesai.</translation>
@@ -7642,7 +7640,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8941173171815156065">Tarik balik kebenaran '<ph name="PERMISSION" />'</translation>
 <translation id="894360074127026135">Peningkatan Antarabangsa Netscape</translation>
 <translation id="8944099748578356325">Gunakan bateri dengan lebih cepat (pada masa ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> berkongsi tetingkap dengan <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Saiz ikon</translation>
 <translation id="8946359700442089734">Ciri penyahpepijatan tidak didayakan sepenuhnya pada peranti ini <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Bagus</translation>

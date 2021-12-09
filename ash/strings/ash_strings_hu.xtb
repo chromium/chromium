@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
-<translation id="3744282433224562605">A Chromebook zárolásának feloldásához írja be jelszavát.</translation>
 <translation id="3771549900096082774">Nagy kontrasztú mód</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
 Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
@@ -628,7 +627,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
-<translation id="5199367439331364630">A Chromebookba való bejelentkezéshez írja be a jelszót</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 egyéb értesítés}other{# egyéb értesítés}}</translation>
 <translation id="5207949376430453814">Szövegbeszúrási pont kiemelése</translation>
@@ -766,6 +764,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
 <translation id="6134259848159370930">Kereshet az eszközén, az alkalmazások és a beállítások között, valamint az interneten.</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Letöltés megerősítése</translation>
 <translation id="6154006699632741460">A periféria nem támogatott</translation>
 <translation id="6156262341071374681">Összes alkalmazás kibontása</translation>
 <translation id="615957422585914272">A képernyő-billentyűzet megjelenítése</translation>

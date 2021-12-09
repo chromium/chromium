@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Fitxategi guztien babeskopia egin da!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
-<translation id="3645531960514756307">Kendu aingura karpetari</translation>
 <translation id="3685122418104378273">Datu-konexioa erabiltzean, Google Drive sinkronizazioa modu lehenetsian desaktibatuta dago.</translation>
 <translation id="3689865792480713551">Utzi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, <ph name="CONNECTION_STATUS" />, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Arakatzea geroz eta seguruagoa izan dadin saiatzen gara etengabe. Lehen, edozein webgunek eskain ziezazukeen arakatzailean gehitzeko luzapen bat. Google Chrome-ren azken bertsioetan, ordea, luzapen horiek Luzapenak orrian gehituta instalatu nahi dituzula berariaz esan behar diozu Chrome-ri. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="912419004897138677">Kodeka</translation>
-<translation id="9129931661813833980">Ainguratu karpeta</translation>
 <translation id="9130775360844693113">Elementu hauetarako sarbidea izango dute "<ph name="DESTINATION_NAME" />" unitateko kideek.</translation>
 <translation id="9131598836763251128">Hautatu fitxategi bat edo gehiago</translation>
 <translation id="9133055936679483811">Ezin izan da konprimatu. <ph name="ERROR_MESSAGE" /></translation>

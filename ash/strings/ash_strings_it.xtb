@@ -416,7 +416,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e altre <ph name="UNAVAILABLE_APPS_COUNT" /> app non sono disponibili su questo dispositivo.</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
-<translation id="3744282433224562605">Per sbloccare Chromebook, inserisci la password</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
  Per continuare, devono disconnettersi tutti gli utenti.</translation>
@@ -628,7 +627,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
-<translation id="5199367439331364630">Per accedere a Chromebook, inserisci la password</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}one{altre # notifiche}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
@@ -766,6 +764,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6134259848159370930">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Conferma download</translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
 <translation id="6156262341071374681">Espandi per vedere tutte le app</translation>
 <translation id="615957422585914272">Mostra tastiera sullo schermo</translation>

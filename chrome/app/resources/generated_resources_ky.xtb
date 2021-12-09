@@ -536,6 +536,7 @@
 <translation id="1549275686094429035">ARC иштетилди</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> колдонмосу <ph name="VOLUME_NAME" /> дегенге мүмкүнчүлүк алгысы келет. Ал файлдарыңызды өзгөртүп же жок кылышы мүмкүн.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтүүсү эми издөө үчүн <ph name="SEARCH_PROVIDER_DOMAIN" /> колдонула тургандай кылып өзгөртүп койду</translation>
+<translation id="1552752544932680961">Кеңейтүүнү башкаруу</translation>
 <translation id="1553538517812678578">чексиз</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1556537182262721003">Кеңейтүү каталогу профилге жылган жок.</translation>
@@ -2803,7 +2804,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3842552989725514455">Serif ариби</translation>
 <translation id="3843464315703645664">Ички колдонууга уруксат берилгендердин тизмеси</translation>
 <translation id="3844888638014364087">Быйтыкча коюлду</translation>
-<translation id="384513009320852920">Bluetooth түзмөгүңүз жупташтыруу режиминде жана жакын турат. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Вебсайттарды, Android колдонмолорун жана башкаларды иштеп чыгуу үчүн куралдарды орнотуп алыңыз. Linux'ту орнотуу үчүн <ph name="DOWNLOAD_SIZE" /> дайын жүктөлүп алынат.</translation>
 <translation id="3847319713229060696">Баары үчүн Интернеттеги коопсуздукту арттырууга жардам берүү</translation>
 <translation id="3848547754896969219">&amp;Жашыруун терезеде ачуу</translation>
@@ -4315,7 +4315,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5485102783864353244">Колдонмо кошуу</translation>
 <translation id="5485754497697573575">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="5486261815000869482">Сырсөздү ырастаңыз</translation>
-<translation id="5486275809415469523"><ph name="APP_NAME" /> экраныңызды <ph name="TAB_NAME" /> менен бөлүшүүдө.</translation>
 <translation id="5486561344817861625">Серепчини өчүрүп күйгүзүп көрүү</translation>
 <translation id="5487460042548760727">Профилди <ph name="PROFILE_NAME" /> кылып өзгөртүү</translation>
 <translation id="5487521232677179737">Дайын-даректерди өчүрүү</translation>
@@ -4377,6 +4376,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> бул аракеттерди аткарат</translation>
 <translation id="5534304873398226603">Сүрөттү же видеону жарактан чыгаруу</translation>
 <translation id="5535941515421698170">Учурдагы дайын-даректериңизди да бул түзмөктөн алып саласызбы?</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Киргизген сырсөзүңүздү сервер кабыл алган жок. Сырсөз өтө кыска болушу мүмкүн. Ал сандардан жана символдордон туруп, мурунку сырсөздөрдөн башкача болушу керек.</translation>
 <translation id="5541694225089836610">Аракетти администраторуңуз өчүрүп койгон</translation>
 <translation id="5542132724887566711">Профиль</translation>
@@ -4607,6 +4607,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5787146423283493983">Негизги макулдашуу</translation>
 <translation id="5787420647064736989">Түзмөктүн аталышы</translation>
 <translation id="5788367137662787332">Кечиресиз, <ph name="DEVICE_LABEL" /> түзмөгүнүн жада калса 1 бөлүгү жалгаштырылган жок.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Ийгилик</translation>
 <translation id="5790651917470750848">Портту багыттоо мурунтан эле бар</translation>
 <translation id="5792728279623964091">Кубат баскычын басыңыз</translation>
@@ -4839,10 +4840,8 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BEGIN_PARAGRAPH2" />Бул кызматты өчүрүү үчүн түзмөгүңүздөгү Жайгашкан жерди аныктоо функциясын өчүрүп салыңыз. Ошол эле жерден жайгашкан жерди аныктай турган Wi-Fi жана мобилдик тармактардын сигналдарынын, сенсорлордун колдонулушуна тыюу сала аласыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Толук экран режиминен чыгуу</translation>
 <translation id="6042308850641462728">Дагы</translation>
-<translation id="6043317578411397101"><ph name="APP_NAME" /> колдонмосу Chrome өтмөгүн <ph name="TAB_NAME" /> менен бөлүшүп жатат.</translation>
 <translation id="604388835206766544">Конфигурация талданган жок</translation>
 <translation id="6043994281159824495">Азыр чыгуу</translation>
-<translation id="6044805581023976844"><ph name="APP_NAME" /> колдонмосу Chrome өтмөгүн жана аудио файлын <ph name="TAB_NAME" /> менен бөлүп жатат.</translation>
 <translation id="6045114302329202345">Негизги TrackPoint баскычы</translation>
 <translation id="6047632800149092791">Шайкештирүү иштебей жатат. Чыгып, кайра кирип көрүңүз.</translation>
 <translation id="6049797270917061226">Бул файл чабуулчуларга жеке маалыматыңызды уурдаганда уруксат бериши мүмкүн.</translation>
@@ -7345,7 +7344,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Сырсөзүңүз тастыкталбай койгондуктан, аккаунтка кире албай калдыңыз. Администраторуңузга кайрылыңыз же кайталап көрүңүз.</translation>
 <translation id="8657393004602556571">Пикирди өчүрөсүзбү?</translation>
-<translation id="8658645149275195032"><ph name="APP_NAME" /> колдонмосу экраныңызды жана аудио файлын <ph name="TAB_NAME" /> менен бөлүшүп жатат.</translation>
 <translation id="8661290697478713397">Шилтемени жашыр&amp;уун терезеде ачуу</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>
 <translation id="8662733268723715832">Бул күтүлгөндөн көбүрөөк созулуп жатат. Өткөрүп жиберип же бүткөнгө чейин күтө турсаңыз болот.</translation>
@@ -7640,7 +7638,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8941173171815156065">"<ph name="PERMISSION" />" уруксатын жоюу</translation>
 <translation id="894360074127026135">Netscape эл аралык жогорулатмасы</translation>
 <translation id="8944099748578356325">Батареяны тезирээк сарптайт (учурда <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280"><ph name="APP_NAME" /> колдонмосу терезесин <ph name="TAB_NAME" /> менен бөлүшүп жатат.</translation>
 <translation id="8945274638472141382">Сүрөтчө өлчөмү</translation>
 <translation id="8946359700442089734">Бул <ph name="IDS_SHORT_PRODUCT_NAME" /> түзмөгүндө мүчүлүштүктөрдү таап оңдоо өзгөчөлүктөрү толук иштетилген эмес.</translation>
 <translation id="894763922177556086">Жакшы</translation>

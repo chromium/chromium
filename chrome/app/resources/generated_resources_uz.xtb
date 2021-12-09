@@ -531,6 +531,7 @@
 <translation id="1549275686094429035">ARC yoniq</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ilovasi <ph name="VOLUME_NAME" /> bo‘limiga ruxsat so‘rayapti. Bu fayllarni tahrirlash va o‘chirib yuborishi mumkin.</translation>
 <translation id="1552301827267621511">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="SEARCH_PROVIDER_DOMAIN" /> saytini qidiruv tizimi sifatida belgiladi</translation>
+<translation id="1552752544932680961">Kengaytmalar boshqaruvi</translation>
 <translation id="1553538517812678578">cheksiz</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1556537182262721003">Kengaytmalar katalogini profilga ko‘chirib bo‘lmadi.</translation>
@@ -2790,7 +2791,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3842552989725514455">Serif shrifti</translation>
 <translation id="3843464315703645664">Ichki ruxsat etilganlar</translation>
 <translation id="3844888638014364087">Emoji joylandi</translation>
-<translation id="384513009320852920">Bluetooth qurilmasi ulanish rejimida va yaqin-atrofdaligini tekshiring. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Saytlar, Android ilovalar va boshqa narsalar yaratish vositalariga ruxsat oling. Linuxni o‘rnatishda <ph name="DOWNLOAD_SIZE" /> axborot yuklab olinadi.</translation>
 <translation id="3847319713229060696">Internetni hamma uchun xavfsiz boʻlishiga yordam berish</translation>
 <translation id="3848547754896969219">&amp;Inkognito oynasida ochish</translation>
@@ -4302,7 +4302,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5485102783864353244">Ilovani o‘rnatish</translation>
 <translation id="5485754497697573575">Barcha ichki oynalarni qayta tiklash</translation>
 <translation id="5486261815000869482">Parolni tasdiqlang</translation>
-<translation id="5486275809415469523">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga ekraningizdan foydalanishga ruxsat berdi.</translation>
 <translation id="5486561344817861625">Brauzerning qayta ishga tushishini simulyatsiyalash</translation>
 <translation id="5487460042548760727">Profil nomini bunga qayta nomlash: <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Tarixni tozalash</translation>
@@ -4364,6 +4363,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> bunday qilmoqchi:</translation>
 <translation id="5534304873398226603">Fotosurat yoki videoni o‘chirib tashlash</translation>
 <translation id="5535941515421698170">Bu qurilmadan mavjud ma’lumotlaringizni ham olib tashlang</translation>
+<translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Server kiritilgan parolni qabul qilmadi. Unutmangki: Parol juda qisqa, raqamlar va belgilardan iborat va avval ishlatilmagan bo‘lishi zarur.</translation>
 <translation id="5541694225089836610">Bu amalni administrator faolsizlantirgan</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4594,6 +4594,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5787146423283493983">Asosiy kelishuv</translation>
 <translation id="5787420647064736989">Qurilma nomi</translation>
 <translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> qurilmasida bir yoki undan ortiq bo‘lim qo‘shib bo‘lmadi.</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Bajarildi</translation>
 <translation id="5790651917470750848">Port allaqachon uzatilmoqda</translation>
 <translation id="5792728279623964091">Quvvat tugmasini bosing</translation>
@@ -4826,10 +4827,8 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
     <ph name="BEGIN_PARAGRAPH2" />Bu qurilmada asosiy Joylashuv sozlamasini faolsizlantirish orqali Joylashuvni aniqlash xizmatini faolsizlantirish mumkin. Shuningdek, joylashuv parametri orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish hamda sensorlarni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">To‘liq ekran rejimidan chiqish</translation>
 <translation id="6042308850641462728">Yana</translation>
-<translation id="6043317578411397101">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga Chrome sahifasiga kirish uchun ruxsat berdi.</translation>
 <translation id="604388835206766544">Konfiguratsiya tahlil qilinmadi</translation>
 <translation id="6043994281159824495">Chiqish</translation>
-<translation id="6044805581023976844">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga Chrome sahifasi va audioga kirish uchun ruxsat berdi.</translation>
 <translation id="6045114302329202345">Asosiy TrackPoint tugmasi</translation>
 <translation id="6047632800149092791">Sinxronizatsiya ishlamayapti. Profilingizdan chiqing va qaytadan urining.</translation>
 <translation id="6049797270917061226">Bu fayl yordamida firibgarlar shaxsiy axborotingizni oʻgʻirlashi mumkin.</translation>
@@ -7332,7 +7331,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Hisobingizga kirish amalga oshmadi, chunki parolni tekshirib bo‘lmadi. Qaytadan urinib ko‘ring.</translation>
 <translation id="8657393004602556571">Fikr-mulohaza yuborish bekor qilinsinmi?</translation>
-<translation id="8658645149275195032">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga ekraningizdan foydalanishga ruxsat berdi.</translation>
 <translation id="8661290697478713397">Havolani &amp;inkognito rejimida ochish</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>
 <translation id="8662733268723715832">Bu odatdagidan koʻproq vaqt oladi, keyinga qoldiring yoki tugashini kuting.</translation>
@@ -7627,7 +7625,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8941173171815156065">“<ph name="PERMISSION" />” ruxsatnomalarini bekor qilish</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Batareya quvvati tezroq sarflanadi (hozirda: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944964446326379280">“<ph name="APP_NAME" />” ilovasi<ph name="TAB_NAME" /> saytiga ekraningizdan foydalanishga ruxsat berdi.</translation>
 <translation id="8945274638472141382">Belgi oʻlchami</translation>
 <translation id="8946359700442089734">Nosozliklarni ko‘rib chiqish xususiyatlari <ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmaga to‘liq yoqilmagan.</translation>
 <translation id="894763922177556086">Yaxshi</translation>

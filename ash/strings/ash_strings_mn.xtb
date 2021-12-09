@@ -417,7 +417,6 @@
 <translation id="3713734891607377840">Дуусах үед нээх</translation>
 <translation id="3726171378575546917">Энэ төхөөрөмж дээр <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> болон өөр <ph name="UNAVAILABLE_APPS_COUNT" /> апп байхгүй байна.</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
-<translation id="3744282433224562605">Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу</translation>
 <translation id="3771549900096082774">Өндөр ялгаралтай горим</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
 Үргэлжлүүлэхийн тулд бүх хэрэглэгч гарах шаардлагатай.</translation>
@@ -629,7 +628,6 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
 <translation id="5198715732953550718">Шинэ фолдер үүсгэхийн тулд <ph name="MOVED_APP_NAME" />-г <ph name="IN_PLACE_APP" />-тай цуг нийлүүлсэн.</translation>
-<translation id="5199367439331364630">Chromebook-дээ нэвтрэхийн тулд нууц үг оруулна уу</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Бусад 1 мэдэгдэл}other{Бусад # мэдэгдэл}}</translation>
 <translation id="5207949376430453814">Текст оруулах тэмдгийг тодруулах</translation>
@@ -767,6 +765,7 @@
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
 <translation id="6134259848159370930">Төхөөрөмж, апп, тохиргоо, вебээс хайна уу.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
+<translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
 <translation id="6154006699632741460">Нэмэлтийг дэмждэггүй</translation>
 <translation id="6156262341071374681">Бүх аппыг харуулах</translation>
 <translation id="615957422585914272">Дэлгэц дээрх гарыг харуулах</translation>

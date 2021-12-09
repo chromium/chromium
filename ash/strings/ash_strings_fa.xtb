@@ -416,7 +416,6 @@
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
-<translation id="3744282433224562605">‏برای باز کردن قفل Chromebook، گذرواژه را وارد کنید</translation>
 <translation id="3771549900096082774">حالت تضاد بالا</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3779139509281456663">درحال اتصال <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5176318573511391780">ضبط کردن نیم‌صفحه</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> با <ph name="IN_PLACE_APP" /> ترکیب شد تا پوشه جدیدی ایجاد شود.</translation>
-<translation id="5199367439331364630">‏برای ورود به سیستم Chromebook، گذرواژه را وارد کنید</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />، <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />، <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان دیگر}one{# اعلان دیگر}other{# اعلان دیگر}}</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
@@ -765,6 +763,7 @@
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6134259848159370930">دستگاه، برنامه‌ها، تنظیمات، و وب را جستجو کنید.</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">تأیید بارگیری</translation>
 <translation id="6154006699632741460">از دستگاه‌های جانبی پشتیبانی نمی‌شود</translation>
 <translation id="6156262341071374681">بزرگ کردن برای مشاهده همه برنامه‌ها</translation>
 <translation id="615957422585914272">نمایش صفحه‌کلید مجازی</translation>

@@ -417,7 +417,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
-<translation id="3744282433224562605">Geef het wachtwoord op om je Chromebook je ontgrendelen</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
@@ -628,7 +627,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
-<translation id="5199367439331364630">Geef het wachtwoord op om in te loggen op je Chromebook</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
@@ -766,6 +764,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
 <translation id="6134259848159370930">Zoek op je apparaat, in apps en instellingen en op internet.</translation>
 <translation id="6137566720514957455">Dialoogvenster 'Account verwijderen' openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Download bevestigen</translation>
 <translation id="6154006699632741460">Randapparaat niet ondersteund</translation>
 <translation id="6156262341071374681">Uitbreiden naar alle apps</translation>
 <translation id="615957422585914272">Schermtoetsenbord bekijken</translation>

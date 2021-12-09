@@ -416,7 +416,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3713734891607377840">Avaa kun valmis</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja <ph name="UNAVAILABLE_APPS_COUNT" /> muuta puuttuvat laitteelta.</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
-<translation id="3744282433224562605">Avaa Chromebookin lukitus lisäämällä salasana</translation>
 <translation id="3771549900096082774">Suuri kontrasti ‑tila</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
 <translation id="3779139509281456663">Yhdistetään <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5176318573511391780">Tallenna osittainen näyttö</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ja <ph name="IN_PLACE_APP" /> yhdistettiin uudeksi kansioksi.</translation>
-<translation id="5199367439331364630">Voit kirjautua Chromebookiin lisäämällä salasanan</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 muu ilmoitus}other{# muuta ilmoitusta}}</translation>
 <translation id="5207949376430453814">Korosta tekstikursori</translation>
@@ -765,6 +763,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
 <translation id="6134259848159370930">Hae laitteelta, sovelluksista, asetuksista ja verkosta.</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Vahvista lataus</translation>
 <translation id="6154006699632741460">Lisälaitetta ei tueta</translation>
 <translation id="6156262341071374681">Laajenna ja näytä kaikki sovellukset.</translation>
 <translation id="615957422585914272">Näytä ruutunäppäimistö</translation>

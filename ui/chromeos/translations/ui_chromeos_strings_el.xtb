@@ -312,7 +312,6 @@
 <translation id="3620292326130836921">Δημιουργήθηκαν αντίγραφα ασφαλείας για όλα τα αρχεία!</translation>
 <translation id="3634507049637220048">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Διαχειριζόμενο από το διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="3645233063072417428">Μετακινήθηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία.</translation>
-<translation id="3645531960514756307">Ξεκαρφίτσωμα φακέλου</translation>
 <translation id="3685122418104378273">Ο συγχρονισμός του Google Drive είναι απενεργοποιημένος από προεπιλογή όταν χρησιμοποιούνται δεδομένα κινητής τηλεφωνίας.</translation>
 <translation id="3689865792480713551">Ακύρωση <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
@@ -950,7 +949,6 @@
 <translation id="9110990317705400362">Αναζητούμε συνεχώς νέους τρόπους για να κάνουμε πιο ασφαλή την περιήγησή σας. Παλιότερα, ένας ιστότοπος μπορούσε να σας ζητήσει να προσθέσετε μια επέκταση στο πρόγραμμα περιήγησής σας. Στις πιο πρόσφατες εκδόσεις του Google Chrome, πρέπει να πείτε ρητά στο Chrome ότι επιθυμείτε την εγκατάσταση αυτών των επεκτάσεων, προσθέτοντάς τες μέσω της σελίδας "Επεκτάσεις". <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 <translation id="912419004897138677">Κωδικοποιητής</translation>
-<translation id="9129931661813833980">Καρφίτσωμα φακέλου</translation>
 <translation id="9130775360844693113">Τα μέλη του "<ph name="DESTINATION_NAME" />" θα αποκτήσουν πρόσβαση σε αυτά τα στοιχεία.</translation>
 <translation id="9131598836763251128">Επιλέξτε ένα ή περισσότερα αρχεία</translation>
 <translation id="9133055936679483811">Αποτυχία συμπίεσης. <ph name="ERROR_MESSAGE" /></translation>

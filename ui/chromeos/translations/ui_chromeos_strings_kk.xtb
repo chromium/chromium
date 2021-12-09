@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Барлығының сақтық көшірмесі жасалған!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> элемент жылжытылды.</translation>
-<translation id="3645531960514756307">Қалтаны босату</translation>
 <translation id="3685122418104378273">Ұялы деректерді пайдалану кезінде әдепкі бойынша Google Drive синхрондауы өшіріледі.</translation>
 <translation id="3689865792480713551">Келесі әрекеттен бас тарту: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, өшірілді, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Біз интернет шолуды барынша қауіпсіз ету жолдарын іздеуден жалықпаймыз. Бұрын кез келген сайт браузеріңізге кеңейтім қосу ұсынысын жасай алатын болса, Google Chrome соңғы нұсқасында енді кеңейтімдерді "Кеңейтімдер" бетіне кіріп қана орната аласыз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Қалтаны бекіту</translation>
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" мүшелері бұл файлдарға кіру рұқсатын алады.</translation>
 <translation id="9131598836763251128">Бір немесе бірнеше файлды таңдаңыз</translation>
 <translation id="9133055936679483811">Қысу орындалмады. <ph name="ERROR_MESSAGE" /></translation>

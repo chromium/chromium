@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">Allt afritað!</translation>
 <translation id="3634507049637220048">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> atriði færð.</translation>
-<translation id="3645531960514756307">Losa möppu</translation>
 <translation id="3685122418104378273">Sjálfgefið er slökkt á Google Drive samstillingu þegar farsímagögn eru notuð.</translation>
 <translation id="3689865792480713551">Hætta við að <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, óvirkt, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, upplýsingar</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">Við erum sífellt að leita leiða við að gera vefnotkun öruggari fyrir þig. Áður var það þannig að hvaða vefsvæði sem var gat birt kvaðningu um að þú bættir viðbót við vafrann. Í nýjustu útgáfum Google Chrome þarf notandinn að taka sérstaklega fram að Chrome eigi að setja upp viðbætur með því að bæta þeim við í gegnum síðuna Viðbætur. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>
 <translation id="912419004897138677">Kóðari</translation>
-<translation id="9129931661813833980">Festa möppu</translation>
 <translation id="9130775360844693113">Meðlimir „<ph name="DESTINATION_NAME" />“ fá aðgang að þessum atriðum.</translation>
 <translation id="9131598836763251128">Veldu eina eða fleiri skrár</translation>
 <translation id="9133055936679483811">Zip-þjöppun mistókst. <ph name="ERROR_MESSAGE" /></translation>

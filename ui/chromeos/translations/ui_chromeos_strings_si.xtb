@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">සියල්ල උපස්ථ කර ඇත!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="3645233063072417428">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් ගෙන යන ලදී.</translation>
-<translation id="3645531960514756307">ෆෝල්ඩරය නොඅමුණන්න</translation>
 <translation id="3685122418104378273">ජංගම දත්ත භාවිතා කරන විට, Google Drive සමමුහුර්තය සුපුරුද්දෙන් අබල කර ඇත.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> අවලංගු කරන්න.</translation>
 <translation id="3690128548376345212">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
@@ -926,7 +925,6 @@
 <translation id="9110990317705400362">අපි නිරන්තරයෙන්ම ඔබගේ පිරික්සීම වඩාත් ආරක්ෂිත කිරීමට ක්‍රම සොයමින් සිටිමු. කලින්, ඕනෑම වෙබ් අඩවියකට ඔබගේ බ්‍රවුසරය වෙත දිගුවක් එක් කිරීමට ඔබව පෙළඹවීය හැකි විය. Google Chrome නවතම අනුවාදයේ දී, ඔබ ඒවා දිගු පිටුව හරහා එක් කිරීමෙන් මෙම දිගු ස්ථාපනය කිරීමට අවශ්‍ය බව Chrome හට ප්‍රකාශිතවම පැවසිය යුතුයි. <ph name="BEGIN_LINK" />වැඩිදුර හදාරන්න<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">අගුලු හරන්න</translation>
 <translation id="912419004897138677">කොඩෙක්</translation>
-<translation id="9129931661813833980">ෆෝල්ඩරය අමුණන්න</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම වෙත ප්‍රවේශය ලැබෙනු ඇත.</translation>
 <translation id="9131598836763251128">ගොනු එකක් හෝ කිහිපයක් තෝරන්න</translation>
 <translation id="9133055936679483811">සිප් කිරීම අසාර්තකයි. <ph name="ERROR_MESSAGE" /></translation>

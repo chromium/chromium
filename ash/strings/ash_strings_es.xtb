@@ -416,7 +416,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3713734891607377840">Abrir al terminar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y <ph name="UNAVAILABLE_APPS_COUNT" /> más no están en este dispositivo.</translation>
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
-<translation id="3744282433224562605">Para desbloquear tu Chromebook, escribe la contraseña</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador ha inhabilitado el inicio de sesión múltiple para <ph name="USER_EMAIL" />.
 Todos los usuarios deben cerrar sesión para continuar.</translation>
@@ -628,7 +627,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar una parte de la pantalla</translation>
 <translation id="5198715732953550718">Se ha combinado <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una carpeta.</translation>
-<translation id="5199367439331364630">Para iniciar sesión en tu Chromebook, escribe la contraseña</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
@@ -766,6 +764,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6134259848159370930">Busca en el dispositivo, en las aplicaciones, en los ajustes y en la Web.</translation>
 <translation id="6137566720514957455">Abre el cuadro de diálogo para quitar la cuenta de <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Confirmar descarga</translation>
 <translation id="6154006699632741460">Periférico no admitido</translation>
 <translation id="6156262341071374681">Mostrar todas las aplicaciones</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>

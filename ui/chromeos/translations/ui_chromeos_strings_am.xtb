@@ -305,7 +305,6 @@
 <translation id="3620292326130836921">ሁሉም በምትኬ ተቀምጧል!</translation>
 <translation id="3634507049637220048">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተወስደዋል።</translation>
-<translation id="3645531960514756307">አቃፍን አታያይዝ</translation>
 <translation id="3685122418104378273">የሞባይል ውሂብ ጥቅም ላይ በሚውልበት ጊዜ Google Drive ማመሳሰል በነባሪ ይሰናከላል።</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ን ሰርዝ።</translation>
 <translation id="3690128548376345212">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ያልነቃ፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
@@ -927,7 +926,6 @@
 <translation id="9110990317705400362">የእርስዎን አሰሳ ይበልጥ ደህንነቱ የተጠበቀ የሚሆንባቸው መንገዶችን በቋሚነት እየፈለግን ነው። ከዚህ ቀደም ማንኛውም ድር ጣቢያ ቅጥያ በአሳሽዎ ላይ እንዲያክሉ ሊጠይቅዎ ይችል ነበር። በቅርቦቹ የGoogle Chrome ስሪቶች ላይ እነዚህን ቅጥያዎች በቅጥያዎች ገጹ በኩል በማከል እንደሚፈልጓቸው በግልጽ ለChrome መንገር አለብዎት። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ክፈት</translation>
 <translation id="912419004897138677">ኮዴክ</translation>
-<translation id="9129931661813833980">አቃፊን አያይዝ</translation>
 <translation id="9130775360844693113">የ«<ph name="DESTINATION_NAME" />» አባላት የእነዚህ ንጥሎች መዳረሻ ያገኛሉ።</translation>
 <translation id="9131598836763251128">አንድ ወይም ተጨማሪ ፋይሎችን ይምረጡ</translation>
 <translation id="9133055936679483811">መጭመቅ አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>

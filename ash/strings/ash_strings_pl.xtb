@@ -416,7 +416,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
-<translation id="3744282433224562605">Aby odblokować Chromebooka, wpisz hasło</translation>
 <translation id="3771549900096082774">Tryb wysokiego kontrastu</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
@@ -627,7 +626,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
-<translation id="5199367439331364630">Aby zalogować się na Chromebooku, wpisz hasło</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}many{# innych powiadomień}other{# innego powiadomienia}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
@@ -765,6 +763,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
 <translation id="6134259848159370930">Przeszukaj urządzenie, aplikacje, ustawienia i internet.</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6154006699632741460">Nieobsługiwane urządzenie peryferyjne</translation>
 <translation id="6156262341071374681">Rozwiń, by wyświetlić wszystkie aplikacje</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
