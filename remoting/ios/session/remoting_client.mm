@@ -38,7 +38,7 @@ NSString* const kHostSessionPinProvided = @"kHostSessionPinProvided";
 
 NSString* const kSessionDetails = @"kSessionDetails";
 NSString* const kSessionSupportsPairing = @"kSessionSupportsPairing";
-NSString* const kSessonStateErrorCode = @"kSessonStateErrorCode";
+NSString* const kSessionStateErrorCode = @"kSessionStateErrorCode";
 
 NSString* const kHostSessionCreatePairing = @"kHostSessionCreatePairing";
 NSString* const kHostSessionHostName = @"kHostSessionHostName";
@@ -63,7 +63,7 @@ static void ResolveFeedbackDataCallback(
 
 @interface RemotingClient () {
   remoting::ChromotingClientRuntime* _runtime;
-  std::unique_ptr<remoting::RemotingClientSessonDelegate> _sessonDelegate;
+  std::unique_ptr<remoting::RemotingClientSessionDelegate> _sessionDelegate;
   ClientSessionDetails* _sessionDetails;
   remoting::protocol::SecretFetchedCallback _secretFetchedCallback;
   remoting::GestureInterpreter _gestureInterpreter;
@@ -82,7 +82,7 @@ static void ResolveFeedbackDataCallback(
   self = [super init];
   if (self) {
     _runtime = remoting::ChromotingClientRuntime::GetInstance();
-    _sessonDelegate.reset(new remoting::RemotingClientSessonDelegate(self));
+    _sessionDelegate.reset(new remoting::RemotingClientSessionDelegate(self));
     _sessionDetails = [[ClientSessionDetails alloc] init];
 
     [[NSNotificationCenter defaultCenter]
@@ -142,7 +142,7 @@ static void ResolveFeedbackDataCallback(
   _displayHandler.delegate = self;
 
   _session = std::make_unique<remoting::ChromotingSession>(
-      _sessonDelegate->GetWeakPtr(), [_displayHandler createCursorShapeStub],
+      _sessionDelegate->GetWeakPtr(), [_displayHandler createCursorShapeStub],
       [_displayHandler createVideoRenderer], std::move(audioStream), info);
   _gestureInterpreter.SetContext(_displayHandler.rendererProxy, _session.get());
   _keyboardInterpreter.SetContext(_session.get());
