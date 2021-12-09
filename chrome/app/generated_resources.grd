@@ -7507,7 +7507,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Side Search -->
       <if expr="enable_side_search">
-        <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The accessible name for the side search toolbar button">
+        <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">
+          Side Search
+        </message>
+        <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The accessible name for the side search toolbar button.">
           Toggle side search
         </message>
         <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED" desc="The accessible name for the side search toolbar button when side search is activated.">
@@ -7516,17 +7519,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED" desc="The accessible name for the side search toolbar button when side search is not activated.">
           Toggle side search. Side search not activated.
         </message>
-        <message name="IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON" desc="The accessible name for the side search header close button">
+        <message name="IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON" desc="The accessible name for the side search header close button.">
           Close side search
+        </message>
+        <message name="IDS_ACCNAME_SIDE_SEARCH_FEEDBACK_BUTTON" desc="The accessible name for the side search header feedback button.">
+          Submit Feedback
         </message>
         <message name="IDS_SIDE_SEARCH_PROMO" desc="Promo UI shown next to the side search button to encourage its use.">
           See more search results in side panel
         </message>
-        <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The tooltip for the side search toolbar button">
+        <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The tooltip for the side search toolbar button.">
           Toggle side search
         </message>
-        <message name="IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON" desc="The tooltip for the side search header close button">
+        <message name="IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON" desc="The tooltip for the side search header close button.">
           Close side search
+        </message>
+        <message name="IDS_TOOLTIP_SIDE_SEARCH_FEEDBACK_BUTTON" desc="The tooltip for the side search header feedback button.">
+          Submit Feedback
         </message>
       </if>
 

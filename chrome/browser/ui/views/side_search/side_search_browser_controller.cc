@@ -10,10 +10,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -44,7 +46,6 @@
 namespace {
 
 constexpr int kSidePanelWidth = 380;
-constexpr int kDefaultIconSize = 16;
 constexpr int kDefaultTouchableIconSize = 24;
 
 // Below are hardcoded color constants for the side panel. This is a UX decision
@@ -61,50 +62,80 @@ constexpr SkColor kIconColor = gfx::kGoogleGrey700;
 // Default light mode separator color.
 constexpr SkColor kSeparatorColor = gfx::kGoogleGrey300;
 
-// Close button used in the header of the side panel. Responds appropriately to
-// touch ui changes.
-class CloseButton : public views::ImageButton {
+// Base header button class. Responds appropriately to touch ui changes.
+class HeaderButton : public views::ImageButton {
  public:
-  METADATA_HEADER(CloseButton);
-  explicit CloseButton(base::RepeatingClosure callback)
-      : ImageButton(std::move(callback)) {
+  METADATA_HEADER(HeaderButton);
+  HeaderButton(const gfx::VectorIcon& icon, base::RepeatingClosure callback)
+      : ImageButton(std::move(callback)), icon_(icon) {
     views::ConfigureVectorImageButton(this);
-    views::InstallCircleHighlightPathGenerator(this);
 
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets(views::LayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_CLOSE_BUTTON_MARGIN))));
-    SetID(SideSearchBrowserController::SideSearchViewID::
-              VIEW_ID_SIDE_PANEL_CLOSE_BUTTON);
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON));
-    SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON));
 
     UpdateIcon();
   }
-  ~CloseButton() override = default;
+  ~HeaderButton() override = default;
 
   void UpdateIcon() {
-    const int icon_size = ui::TouchUiController::Get()->touch_ui()
-                              ? kDefaultTouchableIconSize
-                              : kDefaultIconSize;
-    views::SetImageFromVectorIconWithColor(this, vector_icons::kCloseIcon,
-                                           icon_size, kIconColor);
+    const int icon_size =
+        ui::TouchUiController::Get()->touch_ui()
+            ? kDefaultTouchableIconSize
+            : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  ChromeDistanceMetric::
+                      DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
+    views::SetImageFromVectorIconWithColor(this, icon_, icon_size, kIconColor);
   }
+
+ private:
+  const gfx::VectorIcon& icon_;
 };
 
-BEGIN_METADATA(CloseButton, views::ImageButton)
+BEGIN_METADATA(HeaderButton, views::ImageButton)
 END_METADATA
 
 // Header view used to house the close control at the top of the side panel.
 class HeaderView : public views::View {
  public:
   METADATA_HEADER(HeaderView);
-  explicit HeaderView(base::RepeatingClosure callback)
-      : close_button_(
-            AddChildView(std::make_unique<CloseButton>(std::move(callback)))),
+  explicit HeaderView(base::RepeatingClosure callback, Browser* browser)
+      : close_button_(AddChildView(
+            std::make_unique<HeaderButton>(vector_icons::kCloseIcon,
+                                           std::move(callback)))),
         layout_(SetLayoutManager(std::make_unique<views::BoxLayout>())) {
+    views::InstallCircleHighlightPathGenerator(close_button_);
+    close_button_->SetID(SideSearchBrowserController::SideSearchViewID::
+                             VIEW_ID_SIDE_PANEL_CLOSE_BUTTON);
+    close_button_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON));
+    close_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON));
+
+    if (base::FeatureList::IsEnabled(features::kSideSearchFeedback)) {
+      base::RepeatingClosure feedback_callback = base::BindRepeating(
+          [](Browser* browser) {
+            chrome::ShowFeedbackPage(
+                browser, chrome::FeedbackSource::kFeedbackSourceChromeLabs,
+                std::string() /* description_template */,
+                l10n_util::GetStringFUTF8(
+                    IDS_CHROMELABS_SEND_FEEDBACK_DESCRIPTION_PLACEHOLDER,
+                    l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_TOOL)),
+                std::string("chrome-labs-side-search"),
+                std::string() /* extra_diagnostics */);
+          },
+          browser);
+
+      feedback_button_ =
+          AddChildViewAt(std::make_unique<HeaderButton>(
+                             kSubmitFeedbackIcon, std::move(feedback_callback)),
+                         0);
+      feedback_button_->SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_FEEDBACK_BUTTON));
+      feedback_button_->SetTooltipText(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_FEEDBACK_BUTTON));
+    }
+
     SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -118,11 +149,16 @@ class HeaderView : public views::View {
  private:
   void UpdateSpacing() {
     close_button_->UpdateIcon();
+
+    if (feedback_button_)
+      feedback_button_->UpdateIcon();
+
     layout_->set_inside_border_insets(
         GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN));
   }
 
-  CloseButton* const close_button_;
+  HeaderButton* const close_button_;
+  HeaderButton* feedback_button_ = nullptr;
   views::BoxLayout* const layout_;
 
   base::CallbackListSubscription subscription_ =
@@ -142,6 +178,7 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 
 views::WebView* ConfigureSidePanel(views::View* side_panel,
                                    Profile* profile,
+                                   Browser* browser,
                                    base::RepeatingClosure callback) {
   // BrowserViewLayout will layout the SidePanel to match the height of the
   // content area.
@@ -150,8 +187,8 @@ views::WebView* ConfigureSidePanel(views::View* side_panel,
   auto container = std::make_unique<views::FlexLayoutView>();
   container->SetOrientation(views::LayoutOrientation::kVertical);
   container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-
-  container->AddChildView(std::make_unique<HeaderView>(std::move(callback)));
+  container->AddChildView(
+      std::make_unique<HeaderView>(std::move(callback), browser));
   container->AddChildView(CreateSeparator());
 
   // The WebView will fill the remaining space after the header view has been
@@ -183,6 +220,7 @@ SideSearchBrowserController::SideSearchBrowserController(
       web_view_(ConfigureSidePanel(
           side_panel,
           browser_view_->GetProfile(),
+          browser_view_->browser(),
           base::BindRepeating(
               &SideSearchBrowserController::SidePanelCloseButtonPressed,
               base::Unretained(this)))),

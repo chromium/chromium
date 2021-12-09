@@ -66,6 +66,7 @@ extern const base::Feature kSidePanelDragAndDrop;
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 extern const base::Feature kSideSearch;
 extern const base::Feature kSideSearchClearCacheWhenClosed;
+extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchStatePerTab;
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 

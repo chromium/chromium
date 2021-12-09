@@ -92,6 +92,9 @@ const base::Feature kSideSearch{"SideSearch",
 const base::Feature kSideSearchClearCacheWhenClosed{
     "SideSearchClearCacheWhenClosed", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSideSearchFeedback{"SideSearchFeedback",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the state of side search is set at a per tab level.
 const base::Feature kSideSearchStatePerTab{"SideSearchStatePerTab",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
