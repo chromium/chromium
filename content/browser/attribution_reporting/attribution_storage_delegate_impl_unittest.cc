@@ -32,13 +32,7 @@ AttributionReport GetReport(base::Time impression_time,
 
 }  // namespace
 
-class AttributionStorageDelegateImplTest : public testing::Test {
- public:
-  AttributionStorageDelegateImplTest() = default;
-};
-
-TEST_F(AttributionStorageDelegateImplTest,
-       ImmediateConversion_FirstWindowUsed) {
+TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time impression_time = base::Time::Now();
   const AttributionReport report =
       GetReport(impression_time, /*conversion_time=*/impression_time);
@@ -47,8 +41,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ConversionImmediatelyBeforeWindow_NextWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ConversionImmediatelyBeforeWindow_NextWindowUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time =
       impression_time + base::Days(2) - base::Minutes(1);
@@ -58,8 +52,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ConversionBeforeWindowDelay_WindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ConversionBeforeWindowDelay_WindowUsed) {
   base::Time impression_time = base::Time::Now();
 
   // The deadline for a window is 1 hour before the window. Use a time just
@@ -72,8 +66,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::Hours(1);
 
@@ -85,8 +79,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::Days(3);
 
@@ -100,8 +94,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::Days(7);
 
@@ -115,8 +109,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::Days(3);
   const AttributionReport report =
@@ -127,8 +121,8 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::Days(3);
   const AttributionReport report =
@@ -139,7 +133,7 @@ TEST_F(AttributionStorageDelegateImplTest,
                 report.impression, report.conversion_time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
+TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
   EXPECT_TRUE(AttributionStorageDelegateImpl().NewReportID().is_valid());
 }
 

@@ -15,8 +15,6 @@ namespace attribution_host_utils {
 
 namespace {
 
-class AttributionHostUtilsTest : public ::testing::Test {};
-
 TEST(AttributionHostUtilsTest, AppImpression_Valid) {
   absl::optional<blink::Impression> impression =
       ParseImpressionFromApp("9223372036854775807", "https://example.com",

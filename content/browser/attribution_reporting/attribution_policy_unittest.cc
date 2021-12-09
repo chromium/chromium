@@ -34,14 +34,9 @@ class ConfigurableAttributionPolicy : public AttributionPolicy {
   bool should_noise_;
 };
 
-class AttributionPolicyTest : public testing::Test {
- public:
-  AttributionPolicyTest() = default;
-};
-
 }  // namespace
 
-TEST_F(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
+TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
   std::unique_ptr<AttributionPolicy> policy =
       std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);
 
@@ -56,7 +51,7 @@ TEST_F(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
             policy->SanitizeTriggerData(3, StorableSource::SourceType::kEvent));
 }
 
-TEST_F(AttributionPolicyTest, SanitizeHighEntropySourceEventId_Unchanged) {
+TEST(AttributionPolicyTest, SanitizeHighEntropySourceEventId_Unchanged) {
   uint64_t source_event_id = 256LU;
 
   // The policy should not alter the impression data, and return the base 10
@@ -64,7 +59,7 @@ TEST_F(AttributionPolicyTest, SanitizeHighEntropySourceEventId_Unchanged) {
   EXPECT_EQ(256LU, AttributionPolicy().SanitizeSourceEventId(source_event_id));
 }
 
-TEST_F(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
+TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
   std::unique_ptr<AttributionPolicy> policy =
       std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);
 
@@ -80,7 +75,7 @@ TEST_F(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
   }
 }
 
-TEST_F(AttributionPolicyTest, SanitizeTriggerData_OutputHasNoise) {
+TEST(AttributionPolicyTest, SanitizeTriggerData_OutputHasNoise) {
   // The policy should include noise when sanitizing data.
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(1LU, ConfigurableAttributionPolicy(/*should_noise=*/true)
@@ -89,7 +84,7 @@ TEST_F(AttributionPolicyTest, SanitizeTriggerData_OutputHasNoise) {
 }
 
 // This test will fail flakily if noise is used.
-TEST_F(AttributionPolicyTest, DebugMode_TriggerDataNotNoised) {
+TEST(AttributionPolicyTest, DebugMode_TriggerDataNotNoised) {
   const uint64_t trigger_data = 0UL;
   for (auto source_type : kSourceTypes) {
     for (int i = 0; i < 100; i++) {
@@ -100,7 +95,7 @@ TEST_F(AttributionPolicyTest, DebugMode_TriggerDataNotNoised) {
   }
 }
 
-TEST_F(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
+TEST(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
@@ -111,7 +106,7 @@ TEST_F(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
   }
 }
 
-TEST_F(AttributionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
+TEST(AttributionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   constexpr base::TimeDelta declared_expiry = base::Days(60);
   const base::Time impression_time = base::Time::Now();
 
@@ -122,7 +117,7 @@ TEST_F(AttributionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   }
 }
 
-TEST_F(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
+TEST(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
   const struct {
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
@@ -143,7 +138,7 @@ TEST_F(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
   }
 }
 
-TEST_F(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
+TEST(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
     StorableSource::SourceType source_type;
     base::TimeDelta declared_expiry;
@@ -170,7 +165,7 @@ TEST_F(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   }
 }
 
-TEST_F(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
+TEST(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   constexpr base::TimeDelta declared_expiry = base::Days(10);
   const base::Time impression_time = base::Time::Now();
 
@@ -181,7 +176,7 @@ TEST_F(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   }
 }
 
-TEST_F(AttributionPolicyTest, GetFailedReportDelay) {
+TEST(AttributionPolicyTest, GetFailedReportDelay) {
   const struct {
     int failed_send_attempts;
     absl::optional<base::TimeDelta> expected;
