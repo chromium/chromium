@@ -168,6 +168,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       forCellWithReuseIdentifier:kCellIdentifier];
   [collectionView registerClass:[PlusSignCell class]
       forCellWithReuseIdentifier:kPlusSignCellIdentifier];
+  // During deletion (in horizontal layout) the backgroundView can resize,
+  // revealing temporarily the collectionView background. This makes sure
+  // both are the same color.
+  collectionView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   // If this stays as the default |YES|, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
