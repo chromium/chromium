@@ -79,14 +79,8 @@ bool IsArchitectureArm() {
 static const int kExpectedValue = 1;
 static const int kIgnoreThisTest = 43;
 static const int kExitWithAssertionFailure = 1;
-#if !defined(OS_NACL_NONSFI)
 static const int kExitForTimeout = 2;
-#endif
 
-// PNaCl toolchain's signal ABIs are incompatible with Linux's.
-// So, for simplicity, just drop the "timeout" feature from unittest framework
-// with relying on the buildbot's timeout feature.
-#if !defined(OS_NACL_NONSFI)
 static void SigAlrmHandler(int) {
   const char failure_message[] = "Timeout reached!\n";
   // Make sure that we never block here.
@@ -118,7 +112,6 @@ static void SetProcessTimeout(int time_in_seconds) {
   SANDBOX_ASSERT(alarm(time_in_seconds) == 0);  // There should be no previous
                                                 // alarm.
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // Runs a test in a sub-process. This is necessary for most of the code
 // in the BPF sandbox, as it potentially makes global state changes and as
@@ -164,9 +157,7 @@ void UnitTests::RunTestInProcess(SandboxTestRunner* test_runner,
     SANDBOX_ASSERT(!close(fds[0]));
     SANDBOX_ASSERT(!close(fds[1]));
 
-#if !defined(OS_NACL_NONSFI)
     SetProcessTimeout(GetSubProcessTimeoutTimeInSeconds());
-#endif
 
     // Disable core files. They are not very useful for our individual test
     // cases.

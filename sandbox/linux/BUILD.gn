@@ -386,7 +386,6 @@ source_set("sandbox_services_headers") {
     "system_headers/linux_stat.h",
     "system_headers/linux_syscalls.h",
     "system_headers/linux_time.h",
-    "system_headers/linux_ucontext.h",
     "system_headers/mips64_linux_syscalls.h",
     "system_headers/mips_linux_syscalls.h",
     "system_headers/x86_32_linux_syscalls.h",

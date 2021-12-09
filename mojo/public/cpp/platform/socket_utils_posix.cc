@@ -8,15 +8,15 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#if !defined(OS_NACL)
-#include <sys/uio.h>
-#endif
-
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+
+#if !defined(OS_NACL)
+#include <sys/uio.h>
+#endif
 
 namespace mojo {
 
@@ -79,7 +79,7 @@ constexpr int kSendmsgFlags = MSG_NOSIGNAL;
 ssize_t SocketWrite(base::PlatformFile socket,
                     const void* bytes,
                     size_t num_bytes) {
-#if defined(OS_APPLE) || defined(OS_NACL_NONSFI)
+#if defined(OS_APPLE)
   return HANDLE_EINTR(write(socket, bytes, num_bytes));
 #else
   return send(socket, bytes, num_bytes, kSendmsgFlags);

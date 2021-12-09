@@ -10,8 +10,10 @@
 #include <sched.h>
 #include <signal.h>
 #include <stdint.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
+#include <sys/ptrace.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -33,10 +35,6 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
-// PNaCl toolchain does not provide sys/ioctl.h and sys/ptrace.h headers.
-#if !defined(OS_NACL_NONSFI)
-#include <sys/ioctl.h>
-#include <sys/ptrace.h>
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     !defined(__arm__) && !defined(__aarch64__) &&           \
     !defined(PTRACE_GET_THREAD_AREA)
@@ -46,7 +44,6 @@
 // defined on aarch64, so don't try to include this on those platforms.
 #include <asm/ptrace-abi.h>
 #endif
-#endif  // !OS_NACL_NONSFI
 
 #if defined(OS_ANDROID)
 
@@ -130,7 +127,6 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
 
-#if !defined(OS_NACL_NONSFI)
 // Allow Glibc's and Android pthread creation flags, crash on any other
 // thread creation attempts and EPERM attempts to use neither
 // CLONE_VM nor CLONE_THREAD (all fork implementations), unless CLONE_VFORK is
@@ -380,7 +376,6 @@ ResultExpr RestrictGetrusage() {
   return If(AnyOf(who == RUSAGE_SELF, who == RUSAGE_THREAD), Allow())
          .Else(CrashSIGSYS());
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 ResultExpr RestrictClockID() {
   static_assert(4 == sizeof(clockid_t), "clockid_t is not 32bit");
@@ -434,7 +429,6 @@ ResultExpr RestrictPrlimitToGetrlimit(pid_t target_pid) {
       .Else(Error(EPERM));
 }
 
-#if !defined(OS_NACL_NONSFI)
 ResultExpr RestrictPtrace() {
   const Arg<int> request(0);
 #if defined(__aarch64__)
@@ -459,7 +453,6 @@ ResultExpr RestrictPtrace() {
 #endif
       .Default(CrashSIGSYSPtrace());
 }
-#endif  // defined(OS_NACL_NONSFI)
 
 ResultExpr RestrictPkeyAllocFlags() {
   const Arg<int> flags(0);

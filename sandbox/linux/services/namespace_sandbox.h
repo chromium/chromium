@@ -36,7 +36,6 @@ namespace sandbox {
 //    Credentials::DropAllCapabilities().
 class SANDBOX_EXPORT NamespaceSandbox {
  public:
-#if !defined(OS_NACL_NONSFI)
   struct Options {
     Options();
     ~Options();
@@ -75,7 +74,6 @@ class SANDBOX_EXPORT NamespaceSandbox {
       const std::vector<std::string>& argv,
       const base::LaunchOptions& launch_options,
       const Options& ns_sandbox_options);
-#endif  // !defined(OS_NACL_NONSFI)
 
   // Forks a process in its own PID namespace. The child process is the init
   // process inside of the PID namespace, so if the child needs to fork further,

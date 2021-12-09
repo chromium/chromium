@@ -36,6 +36,7 @@
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
+#include "sandbox/policy/chromecast_sandbox_allowlist_buildflags.h"
 #include "sandbox/policy/linux/bpf_audio_policy_linux.h"
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cdm_policy_linux.h"
@@ -50,10 +51,6 @@
 #include "sandbox/policy/linux/bpf_service_policy_linux.h"
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 #include "sandbox/policy/linux/bpf_utility_policy_linux.h"
-
-#if !defined(OS_NACL_NONSFI)
-#include "sandbox/policy/chromecast_sandbox_allowlist_buildflags.h"
-#endif  // !defined(OS_NACL_NONSFI)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "sandbox/policy/features.h"
@@ -84,8 +81,6 @@ namespace policy {
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
 namespace {
-
-#if !defined(OS_NACL_NONSFI)
 
 // nacl_helper needs to be tiny and includes only part of content/
 // in its dependencies. Make sure to not link things that are not needed.
@@ -128,7 +123,6 @@ std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
   return std::make_unique<GpuProcessPolicy>();
 }
 #endif  // !defined(IN_NACL_HELPER)
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace
 
@@ -154,8 +148,6 @@ bool SandboxSeccompBPF::SupportsSandbox() {
   return false;
 #endif
 }
-
-#if !defined(OS_NACL_NONSFI)
 
 bool SandboxSeccompBPF::SupportsSandboxWithTsync() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
@@ -273,7 +265,6 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       break;
   }
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     std::unique_ptr<bpf_dsl::Policy> policy,
@@ -303,7 +294,6 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
   return false;
 }
 
-#if !defined(OS_NACL_NONSFI)
 std::unique_ptr<bpf_dsl::Policy> SandboxSeccompBPF::GetBaselinePolicy() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   return std::make_unique<BaselinePolicy>();
@@ -311,7 +301,6 @@ std::unique_ptr<bpf_dsl::Policy> SandboxSeccompBPF::GetBaselinePolicy() {
   return nullptr;
 #endif  // BUILDFLAG(USE_SECCOMP_BPF)
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace policy
 }  // namespace sandbox

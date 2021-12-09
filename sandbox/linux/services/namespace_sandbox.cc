@@ -37,7 +37,6 @@ const char kSandboxUSERNSEnvironmentVarName[] = "SBX_USER_NS";
 const char kSandboxPIDNSEnvironmentVarName[] = "SBX_PID_NS";
 const char kSandboxNETNSEnvironmentVarName[] = "SBX_NET_NS";
 
-#if !defined(OS_NACL_NONSFI)
 class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   WriteUidGidMapDelegate()
@@ -71,7 +70,6 @@ void SetEnvironForNamespaceType(base::EnvironmentMap* environ,
   // An empty string causes the env var to be unset in the child process.
   (*environ)[env_var] = value ? "1" : "";
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // Linux supports up to 64 signals. This should be updated if that ever changes.
 int g_signal_exit_codes[64];
@@ -136,7 +134,6 @@ void MaybeUpdateGlibcTidCache() {
 
 }  // namespace
 
-#if !defined(OS_NACL_NONSFI)
 NamespaceSandbox::Options::Options()
     : ns_types(CLONE_NEWUSER | CLONE_NEWPID | CLONE_NEWNET),
       fail_on_unsupported_ns_type(false) {}
@@ -211,7 +208,6 @@ base::Process NamespaceSandbox::LaunchProcessWithOptions(
 
   return base::LaunchProcess(argv, launch_options_copy);
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // static
 pid_t NamespaceSandbox::ForkInNewPidNamespace(bool drop_capabilities_in_child) {
@@ -255,12 +251,10 @@ bool NamespaceSandbox::InstallTerminationSignalHandler(
   struct sigaction old_action;
   PCHECK(sys_sigaction(sig, nullptr, &old_action) == 0);
 
-#if !defined(OS_NACL_NONSFI)
   if (old_action.sa_flags & SA_SIGINFO &&
       old_action.sa_sigaction != nullptr) {
     return false;
   }
-#endif
 
   if (old_action.sa_handler != LINUX_SIG_DFL) {
     return false;

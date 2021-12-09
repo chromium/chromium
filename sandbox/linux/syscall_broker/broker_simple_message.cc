@@ -142,15 +142,9 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlagsMultipleFds(
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
 
-#if defined(OS_NACL_NONSFI)
-  const size_t kControlBufferSize =
-      CMSG_SPACE(sizeof(fd) * base::UnixDomainSocket::kMaxFileDescriptors);
-#else
   const size_t kControlBufferSize =
       CMSG_SPACE(sizeof(fd) * base::UnixDomainSocket::kMaxFileDescriptors) +
-      // The PNaCl toolchain for Non-SFI binary build does not support ucred.
       CMSG_SPACE(sizeof(struct ucred));
-#endif  // defined(OS_NACL_NONSFI)
 
   char control_buffer[kControlBufferSize];
   msg.msg_control = control_buffer;
@@ -174,16 +168,12 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlagsMultipleFds(
         wire_fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
         wire_fds_len = payload_len / sizeof(fd);
       }
-#if !defined(OS_NACL_NONSFI)
-      // The PNaCl toolchain for Non-SFI binary build does not support
-      // SCM_CREDENTIALS.
       if (cmsg->cmsg_level == SOL_SOCKET &&
           cmsg->cmsg_type == SCM_CREDENTIALS) {
         DCHECK_EQ(payload_len, sizeof(struct ucred));
         DCHECK_EQ(pid, -1);
         pid = reinterpret_cast<struct ucred*>(CMSG_DATA(cmsg))->pid;
       }
-#endif
     }
   }
 
