@@ -15,9 +15,10 @@
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
+#include "components/power_metrics/iopm_power_source_sampling_event_source.h"
+#include "components/power_metrics/timer_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
-#include "tools/mac/power/power_sampler/iopm_power_source_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
 #include "tools/mac/power/power_sampler/main_display_sampler.h"
 #include "tools/mac/power/power_sampler/resource_coalition_sampler.h"
@@ -25,7 +26,6 @@
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
 #include "tools/mac/power/power_sampler/smc_sampler.h"
-#include "tools/mac/power/power_sampler/timer_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
 
 namespace {

@@ -7,14 +7,20 @@ if (is_mac) {
     sources = [
       "energy_impact_mac.h",
       "energy_impact_mac.mm",
+      "iopm_power_source_sampling_event_source.cc",
+      "iopm_power_source_sampling_event_source.h",
       "mach_time_mac.h",
       "mach_time_mac.mm",
       "resource_coalition_internal_types_mac.h",
       "resource_coalition_mac.h",
       "resource_coalition_mac.mm",
+      "sampling_event_source.cc",
+      "sampling_event_source.h",
       "smc_internal_types_mac.h",
       "smc_mac.h",
       "smc_mac.mm",
+      "timer_sampling_event_source.cc",
+      "timer_sampling_event_source.h",
     ]
 
     deps = [ "//base" ]
@@ -26,6 +32,7 @@ if (is_mac) {
     sources = [
       "energy_impact_mac_unittest.mm",
       "resource_coalition_mac_unittest.mm",
+      "timer_sampling_event_source_unittest.cc",
     ]
 
     data = [ "test/data/" ]
@@ -33,6 +40,7 @@ if (is_mac) {
     deps = [
       ":power_metrics",
       "//base",
+      "//base/test:test_support",
       "//testing/gtest",
     ]
   }

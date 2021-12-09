@@ -29,8 +29,6 @@ static_library("power_sampler_lib") {
     "power_sampler/battery_sampler.mm",
     "power_sampler/csv_exporter.cc",
     "power_sampler/csv_exporter.h",
-    "power_sampler/iopm_power_source_sampling_event_source.cc",
-    "power_sampler/iopm_power_source_sampling_event_source.h",
     "power_sampler/json_exporter.cc",
     "power_sampler/json_exporter.h",
     "power_sampler/main_display_sampler.cc",
@@ -45,12 +43,8 @@ static_library("power_sampler_lib") {
     "power_sampler/sampler.h",
     "power_sampler/sampling_controller.cc",
     "power_sampler/sampling_controller.h",
-    "power_sampler/sampling_event_source.cc",
-    "power_sampler/sampling_event_source.h",
     "power_sampler/smc_sampler.h",
     "power_sampler/smc_sampler.mm",
-    "power_sampler/timer_sampling_event_source.cc",
-    "power_sampler/timer_sampling_event_source.h",
     "power_sampler/user_idle_level_sampler.cc",
     "power_sampler/user_idle_level_sampler.h",
   ]
@@ -74,6 +68,7 @@ executable("power_sampler") {
   deps = [
     ":power_sampler_lib",
     "//base",
+    "//components/power_metrics",
   ]
 }
 
@@ -87,7 +82,6 @@ test("power_sampler_unittests") {
     "power_sampler/resource_coalition_sampler_unittest.cc",
     "power_sampler/sampling_controller_unittest.cc",
     "power_sampler/smc_sampler_unittest.mm",
-    "power_sampler/timer_sampling_event_source_unittest.cc",
     "power_sampler/user_idle_level_sampler_unittest.cc",
   ]
 

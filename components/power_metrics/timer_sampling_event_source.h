@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_MAC_POWER_POWER_SAMPLER_TIMER_SAMPLING_EVENT_SOURCE_H_
-#define TOOLS_MAC_POWER_POWER_SAMPLER_TIMER_SAMPLING_EVENT_SOURCE_H_
+#ifndef COMPONENTS_POWER_METRICS_TIMER_SAMPLING_EVENT_SOURCE_H_
+#define COMPONENTS_POWER_METRICS_TIMER_SAMPLING_EVENT_SOURCE_H_
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "tools/mac/power/power_sampler/sampling_event_source.h"
+#include "components/power_metrics/sampling_event_source.h"
 
 namespace power_sampler {
 
@@ -29,4 +29,4 @@ class TimerSamplingEventSource : public SamplingEventSource {
 
 }  // namespace power_sampler
 
-#endif  // TOOLS_MAC_POWER_POWER_SAMPLER_TIMER_SAMPLING_EVENT_SOURCE_H_
+#endif  // COMPONENTS_POWER_METRICS_TIMER_SAMPLING_EVENT_SOURCE_H_

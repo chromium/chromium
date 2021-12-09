@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_MAC_POWER_POWER_SAMPLER_SAMPLING_EVENT_SOURCE_H_
-#define TOOLS_MAC_POWER_POWER_SAMPLER_SAMPLING_EVENT_SOURCE_H_
+#ifndef COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_
+#define COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_
 
 #include "base/callback_forward.h"
 
@@ -23,4 +23,4 @@ class SamplingEventSource {
 
 }  // namespace power_sampler
 
-#endif  // TOOLS_MAC_POWER_POWER_SAMPLER_SAMPLING_EVENT_SOURCE_H_
+#endif  // COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_

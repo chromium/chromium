@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/mac/power/power_sampler/iopm_power_source_sampling_event_source.h"
+#include "components/power_metrics/iopm_power_source_sampling_event_source.h"
 
 #include <IOKit/IOMessage.h>
 #include <dispatch/queue.h>

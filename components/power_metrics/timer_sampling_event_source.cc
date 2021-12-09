@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/mac/power/power_sampler/timer_sampling_event_source.h"
+#include "components/power_metrics/timer_sampling_event_source.h"
 
 #include "base/check.h"
 

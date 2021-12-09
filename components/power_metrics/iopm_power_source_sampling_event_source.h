@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_MAC_POWER_POWER_SAMPLER_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
-#define TOOLS_MAC_POWER_POWER_SAMPLER_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#ifndef COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#define COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
 
 #include "base/callback.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
-#include "tools/mac/power/power_sampler/sampling_event_source.h"
+#include "components/power_metrics/sampling_event_source.h"
 
 namespace power_sampler {
 
@@ -37,4 +37,4 @@ class IOPMPowerSourceSamplingEventSource : public SamplingEventSource {
 
 }  // namespace power_sampler
 
-#endif  // TOOLS_MAC_POWER_POWER_SAMPLER_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#endif  // COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
