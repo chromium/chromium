@@ -1212,35 +1212,28 @@ class PaintLayerPainterPaintedOutputInvisibleTest
     EXPECT_EQ(gfx::Size(200, 100), cc_layer->bounds());
 
     auto chunks = ContentPaintChunks();
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      EXPECT_THAT(
-          chunks,
-          ElementsAre(
-              VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(parent_layer->Id(), DisplayItem::kLayerChunk),
-                  parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 10, 10)),
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(target_layer->Id(), DisplayItem::kLayerChunk),
-                  target->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 100, 100)),
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
-                  child->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 200, 50))));
-      EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
-      EXPECT_EQ(expected_invisible_,
-                (chunks.begin() + 2)->effectively_invisible);
-      EXPECT_EQ(expected_invisible_,
-                (chunks.begin() + 3)->effectively_invisible);
-    } else {
-      EXPECT_EQ(expected_paints_with_transparency_,
-                target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
-    }
+    EXPECT_THAT(
+        chunks,
+        ElementsAre(
+            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(parent_layer->Id(), DisplayItem::kLayerChunk),
+                parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 10, 10)),
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(target_layer->Id(), DisplayItem::kLayerChunk),
+                target->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 100, 100)),
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
+                child->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 200, 50))));
+    EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
+    EXPECT_EQ(expected_invisible_, (chunks.begin() + 2)->effectively_invisible);
+    EXPECT_EQ(expected_invisible_, (chunks.begin() + 3)->effectively_invisible);
   }
 
   String additional_style_;

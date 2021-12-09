@@ -602,11 +602,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const LayoutBoxModelObject& paint_invalidation_container,
       PhysicalOffset&);
 
-  bool PaintsWithTransparency(GlobalPaintFlags global_paint_flags) const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return IsTransparent() && !PaintsIntoOwnBacking(global_paint_flags);
-  }
-
   // Returns the ScrollingCoordinator associated with this layer, if
   // any. Otherwise nullptr.
   ScrollingCoordinator* GetScrollingCoordinator();
@@ -619,13 +614,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool PaintsIntoOwnOrGroupedBacking(GlobalPaintFlags) const;
 
   bool SupportsSubsequenceCaching() const;
-
-  // Returns true if background phase is painted opaque in the given rect.
-  // The query rect is given in local coordinates.
-  // if |should_check_children| is true, checks non-composited stacking children
-  // recursively to see if they paint opaquely over the rect.
-  bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
-                                         bool should_check_children) const;
 
   // If the input CompositorFilterOperation is not empty, it will be populated
   // only if |filter_on_effect_node_dirty_| is true or the reference box has
@@ -1081,17 +1069,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has3d_transformed_descendant_;
   }
 
-  // Whether the value of isSelfPaintingLayer() changed since the last clearing
-  // (which happens after the flag is chedked during compositing update).
-  bool SelfPaintingStatusChanged() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return self_painting_status_changed_;
-  }
-  void ClearSelfPaintingStatusChanged() {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    self_painting_status_changed_ = false;
-  }
-
   // Returns true if this PaintLayer should be fragmented, relative
   // to the given |compositing_layer| backing. In SPv1 mode, fragmentation
   // may not cross compositing boundaries, so this wil return false
@@ -1130,16 +1107,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalOffset OffsetForInFlowRelPosition() const {
     return rare_data_ ? rare_data_->offset_for_in_flow_rel_position
                       : PhysicalOffset();
-  }
-
-  bool NeedsPaintOffsetTranslationForCompositing() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    DCHECK(IsAllowedToQueryCompositingInputs());
-    return needs_paint_offset_translation_for_compositing_;
-  }
-
-  void SetNeedsPaintOffsetTranslationForCompositing(bool b) {
-    needs_paint_offset_translation_for_compositing_ = b;
   }
 
   bool KnownToClipSubtree() const;
@@ -1242,8 +1209,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
-
-  bool ChildBackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const;
 
   bool ShouldBeSelfPaintingLayer() const;
 
@@ -1387,8 +1352,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned has_non_contained_absolute_position_descendant_ : 1;
   unsigned has_stacked_descendant_in_current_stacking_context_ : 1;
 
-  unsigned self_painting_status_changed_ : 1;
-
   // These are set to true when filter style or filter resource changes,
   // indicating that we need to update the filter (or backdrop_filter) field of
   // the effect paint property node. They are cleared when the effect paint
@@ -1415,8 +1378,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
-
-  unsigned needs_paint_offset_translation_for_compositing_ : 1;
 
   unsigned needs_check_raster_invalidation_ : 1;
 

@@ -237,69 +237,6 @@ void CompositedLayerMapping::CreatePrimaryGraphicsLayer() {
   graphics_layer_->SetHitTestable(true);
 }
 
-void CompositedLayerMapping::UpdateGraphicsLayerContentsOpaque(
-    bool should_check_children) {
-  if (BackgroundPaintsOntoGraphicsLayer()) {
-    bool contents_opaque = owning_layer_->BackgroundIsKnownToBeOpaqueInRect(
-        CompositedBounds(), should_check_children);
-    graphics_layer_->CcLayer().SetContentsOpaque(contents_opaque);
-    if (!contents_opaque) {
-      graphics_layer_->CcLayer().SetContentsOpaqueForText(
-          GetLayoutObject().TextIsKnownToBeOnOpaqueBackground());
-    }
-  } else {
-    // If we only paint the background onto the scrolling contents layer we
-    // are going to leave a hole in the m_graphicsLayer where the background
-    // is so it is not opaque.
-    graphics_layer_->CcLayer().SetContentsOpaque(false);
-  }
-}
-
-void CompositedLayerMapping::UpdateContentsOpaque() {
-  // If there is a foreground layer, children paint into that layer and
-  // not graphics_layer_, and so don't contribute to the opaqueness of the
-  // latter.
-  bool should_check_children = !foreground_layer_;
-  if (BackgroundPaintsOntoScrollingContentsLayer()) {
-    DCHECK(scrolling_contents_layer_);
-    // Backgrounds painted onto the foreground are clipped by the padding box
-    // rect.
-    // TODO(flackr): This should actually check the entire overflow rect
-    // within the scrolling contents layer but since we currently only trigger
-    // this for solid color backgrounds the answer will be the same.
-    bool contents_opaque = owning_layer_->BackgroundIsKnownToBeOpaqueInRect(
-        To<LayoutBox>(GetLayoutObject()).PhysicalPaddingBoxRect(),
-        should_check_children);
-    scrolling_contents_layer_->CcLayer().SetContentsOpaque(contents_opaque);
-    if (!contents_opaque) {
-      scrolling_contents_layer_->CcLayer().SetContentsOpaqueForText(
-          GetLayoutObject().TextIsKnownToBeOnOpaqueBackground());
-    }
-
-    UpdateGraphicsLayerContentsOpaque(should_check_children);
-  } else {
-    DCHECK(BackgroundPaintsOntoGraphicsLayer());
-    if (scrolling_contents_layer_)
-      scrolling_contents_layer_->CcLayer().SetContentsOpaque(false);
-    UpdateGraphicsLayerContentsOpaque(should_check_children);
-  }
-
-  if (non_scrolling_squashing_layer_) {
-    non_scrolling_squashing_layer_->CcLayer().SetContentsOpaque(false);
-    bool contents_opaque_for_text = true;
-    for (const GraphicsLayerPaintInfo* squashed_layer :
-         non_scrolling_squashed_layers_) {
-      if (!squashed_layer->paint_layer->GetLayoutObject()
-               .TextIsKnownToBeOnOpaqueBackground()) {
-        contents_opaque_for_text = false;
-        break;
-      }
-    }
-    non_scrolling_squashing_layer_->CcLayer().SetContentsOpaqueForText(
-        contents_opaque_for_text);
-  }
-}
-
 void CompositedLayerMapping::UpdateCompositedBounds() {
   DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
             DocumentLifecycle::kInCompositingAssignmentsUpdate);
@@ -686,7 +623,6 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
   UpdateContentsRect();
   UpdateDrawsContentAndPaintsHitTest();
   UpdateElementId();
-  UpdateContentsOpaque();
   UpdateCompositingReasons();
 }
 

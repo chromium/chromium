@@ -500,18 +500,14 @@ static bool NeedsPaintOffsetTranslation(
       object.HasLayer()) {
     PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
     if (!layer->EnclosingPaginationLayer()) {
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-        if (direct_compositing_reasons != CompositingReason::kNone)
-          return true;
-        // In CompositeAfterPaint though we don't treat hidden backface as
-        // a direct compositing reason, it's very likely that the object will
-        // be composited, so a paint offset translation will be beneficial.
-        if (box_model.StyleRef().BackfaceVisibility() ==
-            EBackfaceVisibility::kHidden)
-          return true;
-      } else {
-        if (layer->NeedsPaintOffsetTranslationForCompositing())
-          return true;
+      if (direct_compositing_reasons != CompositingReason::kNone)
+        return true;
+      // In CompositeAfterPaint though we don't treat hidden backface as a
+      // direct compositing reason, it's very likely that the object will be
+      // composited, so a paint offset translation will be beneficial.
+      if (box_model.StyleRef().BackfaceVisibility() ==
+          EBackfaceVisibility::kHidden) {
+        return true;
       }
     }
   }

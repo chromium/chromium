@@ -98,8 +98,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
     PaintLayer* layer,
     UpdateType update_type,
     AncestorInfo info) {
-  LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
-
   // UpdateAncestorInfo has been already computed in ApplyAncestorInfo() for
   // layers from root_layer_ down to compositing_inputs_root_ both included.
   if (layer != root_layer_ && layer != compositing_inputs_root_)
@@ -171,29 +169,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   if (!recursion_blocked_by_display_lock)
     layer->ClearChildNeedsCompositingInputsUpdate();
 
-  if (layer->SelfPaintingStatusChanged()) {
-    layer->ClearSelfPaintingStatusChanged();
-    // If the floating object becomes non-self-painting, so some ancestor should
-    // paint it; if it becomes self-painting, it should paint itself and no
-    // ancestor should paint it.
-    if (layout_object.IsFloating()) {
-      LayoutBlockFlow::UpdateAncestorShouldPaintFloatingObject(
-          *layer->GetLayoutBox());
-    }
-  }
-
   compositor->ClearCompositingInputsRoot();
-
-  bool previously_needed_paint_offset_translation =
-      layer->NeedsPaintOffsetTranslationForCompositing();
-
-  layer->SetNeedsPaintOffsetTranslationForCompositing(
-      NeedsPaintOffsetTranslationForCompositing(layer));
-
-  // Invalidate if needed to affect NeedsPaintOffsetTranslation().
-  if (previously_needed_paint_offset_translation !=
-      layer->NeedsPaintOffsetTranslationForCompositing())
-    layout_object.SetNeedsPaintPropertyUpdate();
 }
 
 bool CompositingInputsUpdater::NeedsPaintOffsetTranslationForCompositing(

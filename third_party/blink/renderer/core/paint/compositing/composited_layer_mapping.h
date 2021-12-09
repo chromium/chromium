@@ -110,9 +110,6 @@ class CORE_EXPORT CompositedLayerMapping final
       const PaintLayer* compositing_container,
       HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
-  // Update whether layer needs blending.
-  void UpdateContentsOpaque();
-
   GraphicsLayer* MainGraphicsLayer() const { return graphics_layer_; }
 
   GraphicsLayer* ForegroundLayer() const { return foreground_layer_; }
@@ -327,7 +324,6 @@ class CORE_EXPORT CompositedLayerMapping final
   bool UpdateSquashingLayers(bool needs_squashing_layers);
   void UpdateDrawsContentAndPaintsHitTest();
   void UpdateCompositedBounds();
-  void UpdateGraphicsLayerContentsOpaque(bool should_check_children);
 
   // Also sets subpixelAccumulation on the layer.
   void ComputeBoundsOfOwningLayer(

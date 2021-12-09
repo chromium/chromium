@@ -114,17 +114,6 @@ PaintResult PaintLayerPainter::Paint(
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  // If this layer is totally invisible then there is nothing to paint.
-  // In CompositeAfterPaint we simplify this optimization by painting even when
-  // effectively invisible but skipping the painted content during layerization
-  // in PaintArtifactCompositor.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      paint_layer_.PaintsWithTransparency(
-          painting_info.GetGlobalPaintFlags()) &&
-      PaintedOutputInvisible(layout_object.StyleRef())) {
-    return kFullyPainted;
-  }
-
   // If the transform can't be inverted, don't paint anything. We still need
   // to paint with CompositeAfterPaint if there are animations to ensure the
   // animation can be setup to run on the compositor.

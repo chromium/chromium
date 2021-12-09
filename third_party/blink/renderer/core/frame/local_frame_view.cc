@@ -1758,13 +1758,8 @@ void LocalFrameView::SetBaseBackgroundColor(const Color& background_color) {
 
   base_background_color_ = background_color;
 
-  if (auto* layout_view = GetLayoutView()) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (auto* mapping = layout_view->Layer()->GetCompositedLayerMapping())
-        mapping->UpdateContentsOpaque();
-    }
+  if (auto* layout_view = GetLayoutView())
     layout_view->SetBackgroundNeedsFullPaintInvalidation();
-  }
 
   if (!ShouldThrottleRendering())
     GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());

@@ -2533,32 +2533,6 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   }
 }
 
-TEST_P(PaintLayerTest, BackgroundIsKnownToBeOpaqueInRectChildren) {
-  // This test doesn't apply in CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      div {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        isolation: isolate;
-      }
-    </style>
-    <div id='target'>
-      <div style='background: blue'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* target_layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(target_layer->BackgroundIsKnownToBeOpaqueInRect(
-      PhysicalRect(0, 0, 100, 100), true));
-  EXPECT_FALSE(target_layer->BackgroundIsKnownToBeOpaqueInRect(
-      PhysicalRect(0, 0, 100, 100), false));
-}
-
 TEST_P(PaintLayerTest,
        ChangeAlphaNeedsCompositingInputsAndPaintPropertyUpdate) {
   SetBodyInnerHTML(R"HTML(

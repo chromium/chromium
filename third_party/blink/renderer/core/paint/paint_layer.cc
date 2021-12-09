@@ -212,7 +212,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       has_sticky_position_descendant_(false),
       has_non_contained_absolute_position_descendant_(false),
       has_stacked_descendant_in_current_stacking_context_(false),
-      self_painting_status_changed_(false),
       filter_on_effect_node_dirty_(false),
       backdrop_filter_on_effect_node_dirty_(false),
       has_filter_that_moves_pixels_(false),
@@ -227,7 +226,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_reorder_overlay_overflow_controls_(false),
       static_inline_edge_(InlineEdge::kInlineStart),
       static_block_edge_(BlockEdge::kBlockStart),
-      needs_paint_offset_translation_for_compositing_(false),
       needs_check_raster_invalidation_(false),
 #if DCHECK_IS_ON()
       layer_list_mutation_allowed_(true),
@@ -3223,78 +3221,6 @@ bool PaintLayer::CompositesWithTransform() const {
   return TransformAncestor() || Transform();
 }
 
-bool PaintLayer::BackgroundIsKnownToBeOpaqueInRect(
-    const PhysicalRect& local_rect,
-    bool should_check_children) const {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  // We can't use hasVisibleContent(), because that will be true if our
-  // layoutObject is hidden, but some child is visible and that child doesn't
-  // cover the entire rect.
-  if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)
-    return false;
-
-  if (GetLayoutObject().HasMask() || GetLayoutObject().HasClipPath())
-    return false;
-
-  if (PaintsWithFilters() &&
-      GetLayoutObject().StyleRef().Filter().HasFilterThatAffectsOpacity())
-    return false;
-
-  // FIXME: Handle simple transforms.
-  if (Transform() && GetCompositingState() != kPaintsIntoOwnBacking)
-    return false;
-
-  if (GetLayoutObject().StyleRef().GetPosition() == EPosition::kFixed &&
-      GetCompositingState() != kPaintsIntoOwnBacking)
-    return false;
-
-  // FIXME: We currently only check the immediate layoutObject,
-  // which will miss many cases where additional layout objects paint
-  // into this layer.
-  if (GetLayoutObject().BackgroundIsKnownToBeOpaqueInRect(local_rect))
-    return true;
-
-  if (!should_check_children)
-    return false;
-
-  // We can't consult child layers if we clip, since they might cover
-  // parts of the rect that are clipped out.
-  if (GetLayoutObject().HasClipRelatedProperty())
-    return false;
-
-  // TODO(schenney): This could be improved by unioning the opaque regions of
-  // all the children.  That would require a refactoring because currently
-  // children just check they at least cover the given rect, but a unioning
-  // method would require children to compute and report their rects.
-  return ChildBackgroundIsKnownToBeOpaqueInRect(local_rect);
-}
-
-bool PaintLayer::ChildBackgroundIsKnownToBeOpaqueInRect(
-    const PhysicalRect& local_rect) const {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  PaintLayerPaintOrderReverseIterator reverse_iterator(this, kAllChildren);
-  while (PaintLayer* child_layer = reverse_iterator.Next()) {
-    // Stop at composited paint boundaries and non-self-painting layers.
-    if (child_layer->IsPaintInvalidationContainer())
-      continue;
-
-    if (!child_layer->CanUseConvertToLayerCoords())
-      continue;
-
-    if (child_layer->PaintsWithTransparency(kGlobalPaintNormalPhase))
-      continue;
-
-    PhysicalOffset child_offset;
-    PhysicalRect child_local_rect(local_rect);
-    child_layer->ConvertToLayerCoords(this, child_offset);
-    child_local_rect.Move(-child_offset);
-
-    if (child_layer->BackgroundIsKnownToBeOpaqueInRect(child_local_rect, true))
-      return true;
-  }
-  return false;
-}
-
 bool PaintLayer::ShouldBeSelfPaintingLayer() const {
   return GetLayoutObject().LayerTypeRequired() == kNormalPaintLayer ||
          (scrollable_area_ && scrollable_area_->HasOverlayOverflowControls()) ||
@@ -3313,7 +3239,6 @@ void PaintLayer::UpdateSelfPaintingLayer() {
   // descendants of this layer because of the self painting status change.
   SetNeedsRepaint();
   is_self_painting_layer_ = is_self_painting_layer;
-  self_painting_status_changed_ = true;
   // Self-painting change can change the compositing container chain;
   // invalidate the new chain in addition to the old one.
   MarkCompositingContainerChainForNeedsRepaint();
