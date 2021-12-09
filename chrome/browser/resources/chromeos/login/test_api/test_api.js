@@ -156,6 +156,11 @@ class NetworkScreenTester extends ScreenElementApi {
     super('network-selection');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipNetworkFirstShow');
+  }
 }
 
 class EulaScreenTester extends ScreenElementApi {

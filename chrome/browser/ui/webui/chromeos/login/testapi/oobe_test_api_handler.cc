@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -38,6 +41,10 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 void OobeTestAPIHandler::Initialize() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
+  login::NetworkStateHelper helper_;
+  dict->SetBoolean("testapi_shouldSkipNetworkFirstShow",
+                   features::IsOobeNetworkScreenSkipEnabled() &&
+                       helper_.IsConnectedToEthernet());
   dict->SetBoolean(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
