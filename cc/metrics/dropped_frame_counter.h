@@ -162,9 +162,13 @@ class CC_EXPORT DroppedFrameCounter {
   void PopSlidingWindow();
   void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
+  // Adds count to dropped_frame_count_in_window_ of each strategy.
+  void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
+
   const base::TimeDelta kSlidingWindowInterval = base::Seconds(1);
   std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
-  uint32_t dropped_frame_count_in_window_ = 0;
+  uint32_t dropped_frame_count_in_window_[SmoothnessStrategy::kStrategyCount] =
+      {0};
   double total_frames_in_window_ = 60.0;
   SlidingWindowHistogram
       sliding_window_histogram_[SmoothnessStrategy::kStrategyCount];

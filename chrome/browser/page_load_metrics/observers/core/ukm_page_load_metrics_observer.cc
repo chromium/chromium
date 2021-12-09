@@ -1162,7 +1162,15 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetSmoothnessBad(smoothness_data.buckets[3])
       .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
       .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
-      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6]);
+      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
+      .SetMainFocusedMedian(smoothness_data.main_focused_median)
+      .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
+      .SetMainFocusedVariance(smoothness_data.main_focused_variance)
+      .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
+      .SetCompositorFocusedPercentile95(
+          smoothness_data.compositor_focused_percentile_95)
+      .SetCompositorFocusedVariance(
+          smoothness_data.compositor_focused_variance);
   if (smoothness_data.worst_smoothness_after1sec >= 0)
     builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
   if (smoothness_data.worst_smoothness_after2sec >= 0)
