@@ -3171,6 +3171,38 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Loading…
       </message>
 
+      <!-- Feature notification guide -->
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_TITLE" desc="Notification title text educating user about tips and tricks in chrome.">
+        Chrome tips:
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_DEFAULT_BROWSER" desc="Notification body text educating user about setting chrome as default browser.">
+        Learn how to set chrome as your default
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_SIGN_IN" desc="Notification body text educating user about signing in into chrome.">
+        To get your Google stuff across devices, sign in
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_INCOGNITO_TAB" desc="Notification body text educating user about incognito tab in chrome.">
+        To browse without saving activity to your device, try out Incognito
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_NTP_SUGGESTION_CARD" desc="Notification body text educating user about discovering suggested articles in chrome new tab page.">
+        Discover new content on Chrome’s homepage
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_VOICE_SEARCH" desc="Notification body text educating user about voice search in chrome.">
+        You can use your voice to search in Chrome
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_INCOGNITO_TAB" desc="Tooltip text educating user about using incognito tab in chrome.">
+        To open a new Incognito tab, open the menu
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_NTP_SUGGESTION_CARD" desc="Tooltip text educating user about discovering suggested articles in chrome new tab page.">
+        Scroll down to see suggested articles
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_VOICE_SEARCH" desc="Tooltip text educating user about voice search in chrome.">
+        To search with your voice, tap the microphone
+      </message>
+      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_SIGN_IN" desc="Tooltip text educating user about signing in into chrome.">
+        Sign in to Chrome with your Google Account
+      </message>
+
       <!-- Toolbar button strings -->
       <message name="IDS_OPEN_TABS" desc="Text for button to enter the tab switcher and show tabs that are open on this device">
         Open tabs
