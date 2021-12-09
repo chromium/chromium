@@ -146,13 +146,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
-                  std::move(credential_id), "relying-party.example"),
+                  std::move(credential_id), "relying-party.example",
+                  std::move(user_id)),
               /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -175,13 +177,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
   // We test both with and without a matching credential, so add a credential
   // for the former case.
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
-                  std::move(credential_id), "relying-party.example"),
+                  std::move(credential_id), "relying-party.example",
+                  std::move(user_id)),
               /*consumer=*/this);
 
   // canMakePayment does not check for a valid icon, so should return true.
@@ -637,17 +641,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   std::string first_credential_identifier =
-      content::EvalJs(
-          GetActiveWebContents(),
-          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+      content::EvalJs(GetActiveWebContents(),
+                      "createPublicKeyCredentialWithPaymentExtensionAndReturnIt"
+                      "sId('user_123')")
           .ExtractString();
   ASSERT_EQ(std::string::npos, first_credential_identifier.find("Error"))
       << first_credential_identifier;
 
   std::string second_credential_identifier =
-      content::EvalJs(
-          GetActiveWebContents(),
-          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+      content::EvalJs(GetActiveWebContents(),
+                      "createPublicKeyCredentialWithPaymentExtensionAndReturnIt"
+                      "sId('user_456')")
           .ExtractString();
   ASSERT_EQ(std::string::npos, second_credential_identifier.find("Error"))
       << second_credential_identifier;

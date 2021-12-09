@@ -13,19 +13,20 @@ namespace payments {
 // the correct credential ID size.
 TEST(SecurePaymentConfirmationCredentialTest, CredentialIdSizeHistogram) {
   const std::string rp_id = "relyingparty.com";
+  const std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
 
   base::HistogramTester histogram_tester;
 
   std::vector<uint8_t> credential_id(8);
-  SecurePaymentConfirmationCredential i1(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i1(credential_id, rp_id, user_id);
   credential_id = std::vector<uint8_t>(64);
-  SecurePaymentConfirmationCredential i2(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i2(credential_id, rp_id, user_id);
   credential_id = std::vector<uint8_t>(120);
-  SecurePaymentConfirmationCredential i3(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i3(credential_id, rp_id, user_id);
   credential_id = std::vector<uint8_t>(1024);
-  SecurePaymentConfirmationCredential i4(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i4(credential_id, rp_id, user_id);
   credential_id = std::vector<uint8_t>(9000);
-  SecurePaymentConfirmationCredential i5(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i5(credential_id, rp_id, user_id);
 
   const std::string kHistogram =
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes";

@@ -168,9 +168,10 @@ async function createAndReturnPaymentCredential(icon) {
 /**
  * Creates a public key credential with 'payment' extension and returns its
  * identifier in base64 encoding.
+ * @param {string} userId - the user ID for the credential.
  * @return {DOMString} - The new credential's identifier in base64 encoding.
  */
-async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId() { // eslint-disable-line no-unused-vars, max-len
+async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId(userId) { // eslint-disable-line no-unused-vars, max-len
   try {
     const textEncoder = new TextEncoder();
     const credential = await navigator.credentials.create({
@@ -182,7 +183,7 @@ async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId() { /
         },
         user: {
           displayName: 'User',
-          id: textEncoder.encode('user_123'),
+          id: textEncoder.encode(userId),
           name: 'user@acme.com',
         },
         pubKeyCredParams: [{

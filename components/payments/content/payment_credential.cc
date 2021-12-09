@@ -41,9 +41,10 @@ PaymentCredential::~PaymentCredential() {
 void PaymentCredential::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
+    const std::vector<uint8_t>& user_id,
     StorePaymentCredentialCallback callback) {
   if (state_ != State::kIdle || !IsCurrentStateValid() ||
-      credential_id.empty() || rp_id.empty()) {
+      credential_id.empty() || rp_id.empty() || user_id.empty()) {
     Reset();
     std::move(callback).Run(
         mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
@@ -58,7 +59,7 @@ void PaymentCredential::StorePaymentCredential(
   data_service_request_handle_ =
       web_data_service_->AddSecurePaymentConfirmationCredential(
           std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
-                                                                rp_id),
+                                                                rp_id, user_id),
           /*consumer=*/this);
 }
 

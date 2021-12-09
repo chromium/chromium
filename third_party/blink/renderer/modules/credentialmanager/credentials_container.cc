@@ -629,6 +629,7 @@ void OnSaveCredentialIdForPaymentExtension(
 void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     const String& rp_id_for_payment_extension,
+    const WTF::Vector<uint8_t>& user_id_for_payment_extension,
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential) {
   auto* resolver = scoped_resolver->Release();
@@ -649,6 +650,7 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
           ->PaymentCredential();
   payment_credential_remote->StorePaymentCredential(
       std::move(credential_id), rp_id_for_payment_extension,
+      std::move(user_id_for_payment_extension),
       WTF::Bind(&OnSaveCredentialIdForPaymentExtension,
                 std::make_unique<ScopedPromiseResolver>(resolver),
                 std::move(credential)));
@@ -1475,11 +1477,14 @@ ScriptPromise CredentialsContainer::create(
         CredentialManagerProxy::From(script_state)->Authenticator();
     if (mojo_options->is_payment_credential_creation) {
       String rp_id_for_payment_extension = mojo_options->relying_party->id;
+      WTF::Vector<uint8_t> user_id_for_payment_extension =
+          mojo_options->user->id;
       authenticator->MakeCredential(
           std::move(mojo_options),
           WTF::Bind(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
                     std::make_unique<ScopedPromiseResolver>(resolver),
-                    rp_id_for_payment_extension));
+                    rp_id_for_payment_extension,
+                    std::move(user_id_for_payment_extension)));
     } else {
       authenticator->MakeCredential(
           std::move(mojo_options),

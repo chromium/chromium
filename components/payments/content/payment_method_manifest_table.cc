@@ -75,6 +75,16 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     }
   }
 
+  if (!db_->DoesColumnExist("secure_payment_confirmation_instrument",
+                            "user_id")) {
+    if (!db_->Execute(
+            "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
+            "user_id BLOB")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -161,7 +171,7 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
 
 bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
     const SecurePaymentConfirmationCredential& credential) {
-  if (!credential.IsValid())
+  if (!credential.IsValidNewCredential())
     return false;
 
   sql::Transaction transaction(db_);
@@ -193,19 +203,35 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
   }
 
   {
+    // The system authenticator will overwrite a discoverable credential with
+    // the same relying party and user ID, so we also clear any such credential.
     sql::Statement s2(db_->GetUniqueStatement(
-        "INSERT INTO secure_payment_confirmation_instrument "
-        "(credential_id, relying_party_id, label, icon, date_created) "
-        "VALUES (?, ?, ?, ?, ?)"));
+        "DELETE FROM secure_payment_confirmation_instrument "
+        "WHERE relying_party_id=? "
+        "AND user_id=?"));
     int index = 0;
-    s2.BindBlob(index++, credential.credential_id);
     s2.BindString(index++, credential.relying_party_id);
-    s2.BindString(index++, std::string());
-    s2.BindBlob(index++, std::vector<uint8_t>());
-    s2.BindInt64(index++,
-                 base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s2.BindBlob(index++, credential.user_id);
 
     if (!s2.Run())
+      return false;
+  }
+
+  {
+    sql::Statement s3(db_->GetUniqueStatement(
+        "INSERT INTO secure_payment_confirmation_instrument "
+        "(credential_id, relying_party_id, user_id, label, icon, date_created) "
+        "VALUES (?, ?, ?, ?, ?, ?)"));
+    int index = 0;
+    s3.BindBlob(index++, credential.credential_id);
+    s3.BindString(index++, credential.relying_party_id);
+    s3.BindBlob(index++, credential.user_id);
+    s3.BindString(index++, std::string());
+    s3.BindBlob(index++, std::vector<uint8_t>());
+    s3.BindInt64(index++,
+                 base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+    if (!s3.Run())
       return false;
   }
 
@@ -220,7 +246,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
     std::vector<std::vector<uint8_t>> credential_ids) {
   std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
   sql::Statement s(
-      db_->GetUniqueStatement("SELECT relying_party_id "
+      db_->GetUniqueStatement("SELECT relying_party_id, user_id "
                               "FROM secure_payment_confirmation_instrument "
                               "WHERE credential_id=?"));
   // The `credential_id` temporary variable is not `const` because it is
@@ -240,6 +266,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
 
     int index = 0;
     credential->relying_party_id = s.ColumnString(index++);
+    s.ColumnBlobAsVector(index++, &(credential->user_id));
 
     if (!credential->IsValid())
       continue;

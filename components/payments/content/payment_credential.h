@@ -48,6 +48,7 @@ class PaymentCredential
   // mojom::PaymentCredential:
   void StorePaymentCredential(const std::vector<uint8_t>& credential_id,
                               const std::string& rp_id,
+                              const std::vector<uint8_t>& user_id,
                               StorePaymentCredentialCallback callback) override;
 
  private:
