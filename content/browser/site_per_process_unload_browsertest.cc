@@ -1339,10 +1339,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   delete_B1.WaitUntilDeleted();
 }
 
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+// See crbug.com/1275848.
+#define MAYBE_NestedSubframeWithUnloadHandler \
+  DISABLED_NestedSubframeWithUnloadHandler
+#else
+#define MAYBE_NestedSubframeWithUnloadHandler NestedSubframeWithUnloadHandler
+#endif
 // After a same-origin iframe navigation, check that gradchild iframe are
 // properly deleted and their unload handler executed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       NestedSubframeWithUnloadHandler) {
+                       MAYBE_NestedSubframeWithUnloadHandler) {
   GURL main_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b,c))");
   GURL iframe_new_url = embedded_test_server()->GetURL("b.com", "/title1.html");
