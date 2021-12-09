@@ -50,10 +50,12 @@ HidChooserController::HidChooserController(
           IDS_HID_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
-      origin_(content::WebContents::FromRenderFrameHost(render_frame_host)
-                  ->GetMainFrame()
-                  ->GetLastCommittedOrigin()),
+      origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
       frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
+  // The use above of GetMainFrame is safe as content::HidService instances are
+  // not created for fenced frames.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* profile =

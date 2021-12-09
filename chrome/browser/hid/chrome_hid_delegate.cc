@@ -54,6 +54,10 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
 
 bool ChromeHidDelegate::CanRequestDevicePermission(
     content::RenderFrameHost* render_frame_host) {
+  // The use below of GetMainFrame is safe as content::HidService instances are
+  // not created for fenced frames.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+
   auto* chooser_context = GetChooserContext(render_frame_host);
   const auto& origin =
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
@@ -63,6 +67,10 @@ bool ChromeHidDelegate::CanRequestDevicePermission(
 bool ChromeHidDelegate::HasDevicePermission(
     content::RenderFrameHost* render_frame_host,
     const device::mojom::HidDeviceInfo& device) {
+  // The use below of GetMainFrame is safe as content::HidService instances are
+  // not created for fenced frames.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+
   auto* chooser_context = GetChooserContext(render_frame_host);
   const auto& origin =
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
