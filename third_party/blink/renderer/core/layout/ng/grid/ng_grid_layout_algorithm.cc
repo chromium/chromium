@@ -3773,19 +3773,22 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
       if (row_has_container_separation &&
           item_row_set_index < breakpoint_row_set_index) {
+        const auto break_between = row_break_between[item_row_set_index];
+
         // The row may have a forced break, move it to the next fragmentainer.
-        if (IsForcedBreakValue(ConstraintSpace(),
-                               row_break_between[item_row_set_index])) {
+        if (IsForcedBreakValue(ConstraintSpace(), break_between)) {
           container_builder_.SetHasForcedBreak();
           breakpoint_row_set_index = item_row_set_index;
           continue;
         }
 
-        // TODO(ikilpatrick): Implement a grid specific version of
-        // |CalculateBreakAppealBefore| to pass into |MovePastBreakpoint|.
+        container_builder_.SetPreviousBreakAfter(break_between);
+        const NGBreakAppeal appeal_before = CalculateBreakAppealBefore(
+            ConstraintSpace(), grid_item.node, *result, container_builder_,
+            row_has_container_separation);
         if (!MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
-                                fragment_relative_block_offset,
-                                kBreakAppealPerfect, /* builder */ nullptr)) {
+                                fragment_relative_block_offset, appeal_before,
+                                /* builder */ nullptr)) {
           // TODO(ikilpatrick): We may have break-before:avoid on this row, we
           // should search upwards (ensuring that we are still in this
           // fragmentainer), for the first row with the highest break appeal.
