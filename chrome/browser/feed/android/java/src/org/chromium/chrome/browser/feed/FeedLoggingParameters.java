@@ -5,8 +5,6 @@ package org.chromium.chrome.browser.feed;
 
 import androidx.annotation.Nullable;
 
-import com.google.protobuf.ByteString;
-
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.components.feed.proto.FeedUiProto;
 
@@ -18,38 +16,31 @@ class FeedLoggingParameters implements LoggingParameters {
     private final String mAccountName;
     private final boolean mLoggingEnabled;
     private final boolean mViewActionsEnabled;
-    private final byte[] mRootEventId;
 
     /**
      * Creates logging parameters. Creation of this implies that logging is enabled.
      */
     public FeedLoggingParameters(String clientInstanceId, String accountName,
-            boolean loggingEnabled, boolean viewActionsEnabled, byte[] rootEventId) {
+            boolean loggingEnabled, boolean viewActionsEnabled) {
         mClientInstanceId = clientInstanceId;
         mAccountName = accountName;
         mLoggingEnabled = loggingEnabled;
         mViewActionsEnabled = viewActionsEnabled;
-        mRootEventId = rootEventId;
     }
 
     public FeedLoggingParameters(FeedUiProto.LoggingParameters proto) {
         this(proto.getClientInstanceId(), proto.getEmail(), proto.getLoggingEnabled(),
-                proto.getViewActionsEnabled(), proto.getRootEventId().toByteArray());
+                proto.getViewActionsEnabled());
     }
 
     public static FeedUiProto.LoggingParameters convertToProto(
             LoggingParameters loggingParameters) {
-        FeedUiProto.LoggingParameters.Builder builder =
-                FeedUiProto.LoggingParameters.newBuilder()
-                        .setEmail(loggingParameters.accountName())
-                        .setClientInstanceId(loggingParameters.clientInstanceId())
-                        .setLoggingEnabled(loggingParameters.loggingEnabled())
-                        .setViewActionsEnabled(loggingParameters.viewActionsEnabled());
-        byte[] rootEventId = loggingParameters.rootEventId();
-        if (rootEventId != null) {
-            builder.setRootEventId(ByteString.copyFrom(rootEventId));
-        }
-        return builder.build();
+        return FeedUiProto.LoggingParameters.newBuilder()
+                .setEmail(loggingParameters.accountName())
+                .setClientInstanceId(loggingParameters.clientInstanceId())
+                .setLoggingEnabled(loggingParameters.loggingEnabled())
+                .setViewActionsEnabled(loggingParameters.viewActionsEnabled())
+                .build();
     }
 
     @Override
@@ -60,10 +51,16 @@ class FeedLoggingParameters implements LoggingParameters {
     public String clientInstanceId() {
         return mClientInstanceId;
     }
-    @Deprecated
     @Override
     public boolean loggingParametersEquals(LoggingParameters otherObject) {
-        return false;
+        if (otherObject == null) {
+            return false;
+        }
+        FeedLoggingParameters rhs = (FeedLoggingParameters) otherObject;
+        return mLoggingEnabled == rhs.mLoggingEnabled
+                && mViewActionsEnabled == rhs.mViewActionsEnabled
+                && nullableStringEqual(mAccountName, rhs.mAccountName)
+                && nullableStringEqual(mClientInstanceId, rhs.mClientInstanceId);
     }
     @Override
     public boolean loggingEnabled() {
@@ -73,9 +70,7 @@ class FeedLoggingParameters implements LoggingParameters {
     public boolean viewActionsEnabled() {
         return mViewActionsEnabled;
     }
-    @Override
-    @Nullable
-    public byte[] rootEventId() {
-        return mRootEventId;
+    static boolean nullableStringEqual(@Nullable String a, @Nullable String b) {
+        return (a == null ? "" : a).equals(b == null ? "" : b);
     }
 }

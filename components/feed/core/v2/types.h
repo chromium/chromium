@@ -150,12 +150,6 @@ struct LaunchResult {
 };
 
 struct LoggingParameters {
-  LoggingParameters();
-  ~LoggingParameters();
-  LoggingParameters(const LoggingParameters&);
-  LoggingParameters(LoggingParameters&&);
-  LoggingParameters& operator=(const LoggingParameters&);
-
   // User ID, if the user is signed-in.
   std::string email;
   // A unique ID for this client. Used for reliability logging.
@@ -164,8 +158,6 @@ struct LoggingParameters {
   bool logging_enabled = false;
   // Whether view actions may be recorded.
   bool view_actions_enabled = false;
-  // EventID of the first page response.
-  std::string root_event_id;
 
   bool operator==(const LoggingParameters& rhs) const;
 };
