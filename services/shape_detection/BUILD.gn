@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
+use_barhopper = is_chrome_branded && (is_chromeos_ash || is_chromeos_lacros)
+
 source_set("lib") {
   sources = [
     "shape_detection_service.cc",
@@ -12,16 +14,16 @@ source_set("lib") {
     "text_detection_impl.h",
   ]
 
+  deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
   if (is_mac) {
     sources += [
-      "barcode_detection_impl_mac.h",
-      "barcode_detection_impl_mac.mm",
-      "barcode_detection_impl_mac_vision.h",
-      "barcode_detection_impl_mac_vision.mm",
-      "barcode_detection_impl_mac_vision_api.h",
-      "barcode_detection_impl_mac_vision_api.mm",
-      "barcode_detection_provider_mac.h",
-      "barcode_detection_provider_mac.mm",
       "detection_utils_mac.h",
       "detection_utils_mac.mm",
       "face_detection_impl_mac.h",
@@ -37,8 +39,6 @@ source_set("lib") {
     weak_frameworks = [ "Vision.framework" ]
   } else if (is_win) {
     sources += [
-      "barcode_detection_provider_impl.cc",
-      "barcode_detection_provider_impl.h",
       "detection_utils_win.cc",
       "detection_utils_win.h",
       "face_detection_impl_win.cc",
@@ -48,39 +48,47 @@ source_set("lib") {
       "text_detection_impl_win.cc",
       "text_detection_impl_win.h",
     ]
-  } else if (is_chromeos_ash && is_chrome_branded) {
+  } else if (is_android) {
+    # No C++ sources needed, face and text detection is provided by Java.
+  } else {
+    sources += [
+      "face_detection_provider_impl.cc",
+      "face_detection_provider_impl.h",
+      "text_detection_impl.cc",
+    ]
+  }
+
+  if (is_mac) {
+    # On macOS there is a barcode detection API available from the platform.
+    sources += [
+      "barcode_detection_impl_mac.h",
+      "barcode_detection_impl_mac.mm",
+      "barcode_detection_impl_mac_vision.h",
+      "barcode_detection_impl_mac_vision.mm",
+      "barcode_detection_impl_mac_vision_api.h",
+      "barcode_detection_impl_mac_vision_api.mm",
+      "barcode_detection_provider_mac.h",
+      "barcode_detection_provider_mac.mm",
+    ]
+  } else if (is_android) {
+    # No C++ sources needed, barcode detection is provided by Java.
+  } else if (use_barhopper) {
     sources += [
       "barcode_detection_impl_barhopper.cc",
       "barcode_detection_impl_barhopper.h",
       "barcode_detection_provider_barhopper.cc",
       "barcode_detection_provider_barhopper.h",
-      "face_detection_provider_impl.cc",
-      "face_detection_provider_impl.h",
-      "text_detection_impl.cc",
     ]
+    deps += [ "//third_party/barhopper" ]
   } else {
+    # Otherwise, use a stub implementation.
     sources += [
       "barcode_detection_provider_impl.cc",
       "barcode_detection_provider_impl.h",
-      "face_detection_provider_impl.cc",
-      "face_detection_provider_impl.h",
-      "text_detection_impl.cc",
     ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-    "//mojo/public/cpp/bindings",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-  ]
-
-  if (is_chromeos_ash && is_chrome_branded) {
-    deps += [ "//third_party/barhopper:barhopper" ]
-  }
 
   public_deps = [
     "//base",
@@ -153,7 +161,7 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos_ash && is_chrome_branded) {
+  if (use_barhopper) {
     sources += [ "barcode_detection_impl_barhopper_unittest.cc" ]
   }
 

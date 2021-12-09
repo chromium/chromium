@@ -286,6 +286,7 @@
         // platforms. See //services/shape_detection.
         "Android": "stable",
         "ChromeOS": "stable",
+        "Lacros": "stable",
         "Mac": "stable",
         "default": "test",
       },
