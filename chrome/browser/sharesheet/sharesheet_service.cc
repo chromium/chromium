@@ -197,7 +197,6 @@ void SharesheetService::ShowBubbleForTesting(
     CloseCallback close_callback) {
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   auto targets = GetActionsForIntent(intent, contains_hosted_document);
-  RecordTargetCountMetrics(targets);
   OnReadyToShowBubble(native_window, std::move(intent),
                       std::move(delivered_callback), std::move(close_callback),
                       std::move(targets));
@@ -324,9 +323,6 @@ void SharesheetService::OnAppIconsLoaded(
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
-  RecordTargetCountMetrics(targets);
-  RecordShareDataMetrics(intent);
-
   if (!web_contents) {
     std::move(delivered_callback).Run(SharesheetResult::kErrorWindowClosed);
     return;
@@ -343,6 +339,9 @@ void SharesheetService::OnReadyToShowBubble(
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
   auto* delegator = GetOrCreateDelegator(native_window);
+
+  RecordTargetCountMetrics(targets);
+  RecordShareDataMetrics(intent);
 
   // If SetSelectedAppForTesting() has been called, immediately launch the app.
   const std::u16string selected_app = GetSelectedApp();

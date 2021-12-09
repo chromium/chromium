@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -63,6 +65,7 @@ class CopyToClipboardShareActionTest : public ChromeAshTestBase {
 };
 
 TEST_F(CopyToClipboardShareActionTest, CopyToClipboardText) {
+  base::HistogramTester histograms;
   auto* copy_action =
       share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
           IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
@@ -74,9 +77,13 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardText) {
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
       &clipboard_text);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kText, 1);
 }
 
 TEST_F(CopyToClipboardShareActionTest, CopyToClipboardUrl) {
+  base::HistogramTester histograms;
   auto* copy_action =
       share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
           IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
@@ -88,9 +95,13 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardUrl) {
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
       &clipboard_url);
   EXPECT_EQ(::sharesheet::kTestUrl, base::UTF16ToUTF8(clipboard_url));
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kUrl, 1);
 }
 
 TEST_F(CopyToClipboardShareActionTest, CopyToClipboardOneFile) {
+  base::HistogramTester histograms;
   auto* copy_action =
       share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
           IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
@@ -107,9 +118,13 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardOneFile) {
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
   EXPECT_EQ(filenames.size(), 1u);
   EXPECT_EQ(url.path(), filenames[0].path);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kTextFile, 1);
 }
 
 TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
+  base::HistogramTester histograms;
   auto* copy_action =
       share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
           IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
@@ -130,6 +145,12 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
   EXPECT_EQ(filenames.size(), 2u);
   EXPECT_EQ(url1.path(), filenames[0].path);
   EXPECT_EQ(url2.path(), filenames[1].path);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kTextFile, 1);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kPdfFile, 1);
 }
 
 TEST_F(CopyToClipboardShareActionTest,
@@ -193,6 +214,32 @@ TEST_F(CopyToClipboardShareActionTest, CopyFilesShowsToast) {
       apps_util::CreateShareIntentFromFiles(
           {url1.ToGURL(), url2.ToGURL()},
           {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleImageFiles) {
+  base::HistogramTester histograms;
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath("path/to/image1.png"));
+  storage::FileSystemURL url2 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath("path/to/image2.jpg"));
+  copy_action->LaunchAction(
+      /*controller=*/nullptr, /*root_view=*/nullptr,
+      apps_util::CreateShareIntentFromFiles({url1.ToGURL(), url2.ToGURL()},
+                                            {"image/png", "image/jpg"}));
+
+  // Check filenames copied correctly.
+  std::vector<ui::FileInfo> filenames;
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  EXPECT_EQ(filenames.size(), 2u);
+  EXPECT_EQ(url1.path(), filenames[0].path);
+  EXPECT_EQ(url2.path(), filenames[1].path);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
+      ::sharesheet::SharesheetMetrics::MimeType::kImageFile, 1);
 }
 
 }  // namespace sharesheet

@@ -1897,6 +1897,21 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Sharesheet.CopyToClipboard.MimeType" units="mimetype"
+    expires_after="2022-10-08">
+  <owner>melzhang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the mime type of the content being copied after the Copy To
+    Clipboard action is invoked from the Sharesheet by the user.
+
+    This histogram could record multiple times in a single share in the event
+    that the user shares data of mime types at once. However, a single share
+    will not record the same mime type twice. E.g. sharing 2 images in one share
+    will record the image mimetype once.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
     expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>

@@ -12427,6 +12427,21 @@ not CDM specific. See media/base/cdm_promise.h. -->
   <int value="5" label="Invoked through the omnibox entry point"/>
 </enum>
 
+<enum name="ChromeOSSharesheetMimeType">
+  <summary>
+    The mime types of the content the user is trying to share from the
+    sharesheet.
+  </summary>
+  <int value="0" label="Unknown mime type"/>
+  <int value="1" label="Text"/>
+  <int value="2" label="Url"/>
+  <int value="3" label="Text file"/>
+  <int value="4" label="Image file"/>
+  <int value="5" label="Video file"/>
+  <int value="6" label="Audio file"/>
+  <int value="7" label="Pdf file"/>
+</enum>
+
 <enum name="ChromeOSSharesheetShareAction">
   <summary>
     The types of share actions present in the sharesheet when it is invoked.

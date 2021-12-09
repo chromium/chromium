@@ -28,6 +28,8 @@ const char kSharesheetIsDriveFolderResultHistogram[] =
     "ChromeOS.Sharesheet.IsDriveFolder";
 const char kSharesheetIsImagePressedResultHistogram[] =
     "ChromeOS.Sharesheet.IsImagePreviewPressed";
+const char kSharesheetCopyToClipboardMimeTypeResultHistogram[] =
+    "ChromeOS.Sharesheet.CopyToClipboard.MimeType";
 
 SharesheetMetrics::SharesheetMetrics() = default;
 
@@ -79,6 +81,12 @@ void SharesheetMetrics::RecordSharesheetImagePreviewPressed(
     const bool is_pressed) {
   base::UmaHistogramBoolean(kSharesheetIsImagePressedResultHistogram,
                             is_pressed);
+}
+
+void SharesheetMetrics::RecordCopyToClipboardShareActionMimeType(
+    const MimeType mime_type) {
+  base::UmaHistogramEnumeration(
+      kSharesheetCopyToClipboardMimeTypeResultHistogram, mime_type);
 }
 
 }  // namespace sharesheet

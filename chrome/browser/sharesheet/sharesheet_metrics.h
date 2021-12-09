@@ -17,6 +17,7 @@ extern const char kSharesheetLaunchSourceResultHistogram[];
 extern const char kSharesheetFileCountResultHistogram[];
 extern const char kSharesheetIsDriveFolderResultHistogram[];
 extern const char kSharesheetIsImagePressedResultHistogram[];
+extern const char kSharesheetCopyToClipboardMimeTypeResultHistogram[];
 
 class SharesheetMetrics {
  public:
@@ -55,6 +56,20 @@ class SharesheetMetrics {
     kMaxValue = kOmniboxShare,
   };
 
+  // The mime type that is being shared.
+  // This enum is for recording histograms and must be treated as append-only.
+  enum class MimeType {
+    kUnknown = 0,
+    kText = 1,
+    kUrl = 2,
+    kTextFile = 3,
+    kImageFile = 4,
+    kVideoFile = 5,
+    kAudioFile = 6,
+    kPdfFile = 7,
+    kMaxValue = kPdfFile
+  };
+
   SharesheetMetrics();
 
   static void RecordSharesheetActionMetrics(const UserAction action);
@@ -76,6 +91,9 @@ class SharesheetMetrics {
   // Records true if the image preview was pressed in the current invocation.
   // False otherwise.
   static void RecordSharesheetImagePreviewPressed(const bool is_pressed);
+
+  static void RecordCopyToClipboardShareActionMimeType(
+      const MimeType mime_type);
 };
 
 }  // namespace sharesheet
