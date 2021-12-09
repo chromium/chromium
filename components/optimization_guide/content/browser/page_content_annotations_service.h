@@ -62,7 +62,8 @@ struct HistoryVisit {
 class PageContentAnnotationsService : public KeyedService,
                                       public EntityMetadataProvider {
  public:
-  explicit PageContentAnnotationsService(
+  PageContentAnnotationsService(
+      const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service);
   ~PageContentAnnotationsService() override;

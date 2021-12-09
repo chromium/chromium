@@ -60,7 +60,8 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   explicit FakePageContentAnnotationsService(
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service)
-      : PageContentAnnotationsService(optimization_guide_model_provider,
+      : PageContentAnnotationsService("en-US",
+                                      optimization_guide_model_provider,
                                       history_service) {}
   ~FakePageContentAnnotationsService() override = default;
 

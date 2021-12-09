@@ -35,7 +35,8 @@ using EntityMetadataRetrievedCallback =
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
-  explicit PageContentAnnotationsModelManager(
+  PageContentAnnotationsModelManager(
+      const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider);
   ~PageContentAnnotationsModelManager() override;
   PageContentAnnotationsModelManager(
@@ -45,10 +46,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // Requests to annotate |text|, will invoke |callback| when completed.
   //
-  // This will execute all supported models based on the models_to_execute
-  // param on the PageContentAnnotationsService feature and is only used by the
-  // History service code path. See the below |Annotate| for the publicly
-  // available Annotation code path.
+  // This will execute all supported models of the PageContentAnnotationsService
+  // feature and is only used by the History service code path. See the below
+  // |Annotate| for the publicly available Annotation code path.
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
 
   // PageContentAnnotator:

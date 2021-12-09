@@ -119,7 +119,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   PageContentAnnotationsModelManagerTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageContentAnnotations,
-        {{"models_to_execute", "OPTIMIZATION_TARGET_PAGE_TOPICS"}});
+        {{"models_to_execute_v2", "OPTIMIZATION_TARGET_PAGE_TOPICS"}});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
@@ -128,7 +128,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
     model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
-        model_observer_tracker_.get());
+        "en-US", model_observer_tracker_.get());
   }
 
   void TearDown() override {
@@ -919,7 +919,7 @@ class PageContentAnnotationsModelManagerEntitiesOnlyTest
   PageContentAnnotationsModelManagerEntitiesOnlyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageContentAnnotations,
-        {{"models_to_execute", "OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
+        {{"models_to_execute_v2", "OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
   }
 
  private:
@@ -1001,7 +1001,7 @@ class PageContentAnnotationsModelManagerMultipleModelsTest
   PageContentAnnotationsModelManagerMultipleModelsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageContentAnnotations,
-        {{"models_to_execute",
+        {{"models_to_execute_v2",
           "OPTIMIZATION_TARGET_PAGE_ENTITIES,OPTIMIZATION_TARGET_PAGE_"
           "TOPICS"}});
   }

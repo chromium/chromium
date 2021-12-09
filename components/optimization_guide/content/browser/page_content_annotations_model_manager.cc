@@ -62,8 +62,10 @@ void PretendToExecuteJob(base::OnceClosure callback,
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
+    const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
-  for (auto opt_target : features::GetPageContentModelsToExecute()) {
+  for (auto opt_target :
+       features::GetPageContentModelsToExecute(application_locale)) {
     if (opt_target == proto::OPTIMIZATION_TARGET_PAGE_TOPICS) {
       SetUpPageTopicsModel(optimization_guide_model_provider);
       ordered_models_to_execute_.push_back(opt_target);

@@ -215,9 +215,10 @@ bool ShouldExtractRelatedSearches();
 // at most once in the returned vector. However, it is not guaranteed that it
 // will only contain models that the current PageContentAnnotationsService
 // supports, so it is up to the caller to ensure that it can execute the
-// specified models.
+// specified models. `locale` is used for implement client-side locale filtering
+// for models that only work for some locales.
 std::vector<optimization_guide::proto::OptimizationTarget>
-GetPageContentModelsToExecute();
+GetPageContentModelsToExecute(const std::string& locale);
 
 // Returns whether page entities should be retrieved from the remote
 // Optimization Guide service.

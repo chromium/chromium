@@ -74,6 +74,7 @@ void MaybeRecordVisibilityUKM(
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
+    const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider,
     history::HistoryService* history_service)
     : last_annotated_history_visits_(
@@ -83,7 +84,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   history_service_ = history_service;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
-      optimization_guide_model_provider);
+      application_locale, optimization_guide_model_provider);
   annotator_ = model_manager_.get();
 #endif
 }

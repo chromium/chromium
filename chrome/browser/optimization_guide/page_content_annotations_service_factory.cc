@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -54,6 +55,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (optimization_guide_keyed_service && history_service) {
     return new optimization_guide::PageContentAnnotationsService(
+        g_browser_process->GetApplicationLocale(),
         optimization_guide_keyed_service, history_service);
   }
   return nullptr;
