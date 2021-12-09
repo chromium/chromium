@@ -1637,18 +1637,10 @@ bool RenderWidgetHostViewAura::AddGrammarFragments(
   if (!input_handler || fragments.empty())
     return false;
 
-  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
-    return false;
-
   unsigned max_fragment_end = 0;
   std::vector<::ui::ImeTextSpan> ime_text_spans;
   ime_text_spans.reserve(fragments.size());
-  bool conflict_with_spellcheck = false;
   for (auto& fragment : fragments) {
-    if (text_input_manager_->OverlapsWithSpellCheckMarker(fragment.range)) {
-      conflict_with_spellcheck = true;
-      break;
-    }
     ui::ImeTextSpan ui_ime_text_span;
     ui_ime_text_span.type = ui::ImeTextSpan::Type::kGrammarSuggestion;
     ui_ime_text_span.start_offset = fragment.range.start();
@@ -1663,10 +1655,6 @@ bool RenderWidgetHostViewAura::AddGrammarFragments(
       max_fragment_end = fragment.range.end();
     }
   }
-
-  if (conflict_with_spellcheck)
-    return false;
-
   input_handler->AddImeTextSpansToExistingText(0, max_fragment_end,
                                                ime_text_spans);
 
