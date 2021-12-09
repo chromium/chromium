@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -171,13 +172,38 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Standard) {
   prefs->SetString(prefs::kWebRTCIPHandlingPolicy,
                    blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
 
-  const char kExtensionPath[] = "preference/standard";
+  // The 'protectedContentEnabled' pref is only available on ChromeOS and
+  // Windows, so pass a JSON array object with any unsupported prefs into
+  // the test , so it can skip those.
+  static constexpr char kMissingPrefs[] =
+#if defined(OS_WIN) || (defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+      "[ ]";
+#else
+      "[ \"protectedContentEnabled\" ]";
+#endif
 
-  EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
+  SetCustomArg(kMissingPrefs);
+
+  base::FilePath extension_path =
+      test_data_dir_.AppendASCII("preference/standard");
+  {
+    extensions::ResultCatcher catcher;
+    ExtensionTestMessageListener listener("ready", true);
+    EXPECT_TRUE(LoadExtension(extension_path)) << message_;
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    // Run the tests.
+    listener.Reply("run test");
+    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  }
   CheckPreferencesSet();
 
   // The settings should not be reset when the extension is reloaded.
-  ReloadExtension(last_loaded_extension_id());
+  {
+    ExtensionTestMessageListener listener("ready", true);
+    ReloadExtension(last_loaded_extension_id());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    listener.Reply("");
+  }
   CheckPreferencesSet();
 
   // Uninstalling and installing the extension (without running the test that
@@ -188,7 +214,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Standard) {
   observer.WaitForExtensionUninstalled();
   CheckPreferencesCleared();
 
-  LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));
+  {
+    ExtensionTestMessageListener listener("ready", true);
+    EXPECT_TRUE(LoadExtension(extension_path));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    listener.Reply("");
+  }
   CheckPreferencesCleared();
 }
 
