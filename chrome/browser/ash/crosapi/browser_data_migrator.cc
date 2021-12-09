@@ -243,14 +243,32 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
   // If `MigrationStep` is not `kCheckStep`, `MaybeRestartToMigrate()` has
   // already moved on to later steps. Namely either in the middle of migration
   // or migration has already run.
-  if (GetMigrationStep(g_browser_process->local_state()) !=
-      MigrationStep::kCheckStep) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this
-    // log message.
-    LOG(WARNING) << "Migration step is "
-                 << static_cast<int>(
-                        GetMigrationStep(g_browser_process->local_state()));
+  MigrationStep step = GetMigrationStep(g_browser_process->local_state());
+  if (step != MigrationStep::kCheckStep) {
+    switch (step) {
+      case MigrationStep::kRestartCalled:
+        LOG(ERROR) << "RestartToMigrate() was called but Migrate() was not. "
+                      "This indicates that eitehr "
+                      "SessionManagerClient::RequestBrowserDataMigration() "
+                      "failed or ash crashed before reaching Migrate(). Check "
+                      "the previous chrome log and the one before.";
+        break;
+      case MigrationStep::kStarted:
+        LOG(ERROR) << "Migrate() was called but "
+                      "MigrateInternalFinishedUIThread() was not indicating "
+                      "that ash might have crashed during the migration.";
+        break;
+      case MigrationStep::kEnded:
+      default:
+        // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
+        // remove
+        // this log message or reduce to VLOG(1).
+        LOG(WARNING)
+            << "Migration has ended and either completed or failed. step = "
+            << static_cast<int>(step);
+        break;
+    }
+
     return;
   }
 
@@ -319,6 +337,9 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
 
   int attempts = GetMigrationAttemptCountForUser(
       g_browser_process->local_state(), user_id_hash);
+  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
+  // log level to VLOG(1).
+  LOG(WARNING) << "Attempt #" << attempts;
   if (attempts >= kMaxMigrationAttemptCount) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
@@ -415,6 +436,9 @@ base::OnceClosure BrowserDataMigrator::Migrate(
     const std::string& user_id_hash,
     const ProgressCallback& progress_callback,
     base::OnceClosure completion_callback) {
+  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
+  // log level to VLOG(1).
+  LOG(WARNING) << "BrowserDataMigrator::Migrate() is called.";
   DCHECK(GetMigrationStep(g_browser_process->local_state()) ==
          MigrationStep::kRestartCalled);
   SetMigrationStep(g_browser_process->local_state(), MigrationStep::kStarted);
@@ -498,6 +522,7 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
 
   if (base::DirectoryExists(new_user_dir)) {
     if (!base::DeletePathRecursively(new_user_dir)) {
+      PLOG(ERROR) << "Deleting " << new_user_dir.value() << " failed: ";
       RecordStatus(FinalStatus::kDataWipeFailed);
       return {ResultValue::kFailed, ResultValue::kFailed};
     }
@@ -533,6 +558,7 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
       base::DeletePathRecursively(tmp_dir);
     }
     if (cancel_flag->IsSet()) {
+      LOG(WARNING) << "Migration was cancelled.";
       RecordStatus(FinalStatus::kCancelled, &target_info);
       return {data_wipe_result, ResultValue::kCancelled};
     }
