@@ -56,17 +56,15 @@ const char* const Partitions::kAllocatedObjectPoolName =
 
 #if defined(PA_ALLOW_PCSCAN)
 // Runs PCScan on WTF partitions.
-const base::Feature kPCScanBlinkPartitions{"PCScanBlinkPartitions",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPCScanBlinkPartitions{
+    "PartitionAllocPCScanBlinkPartitions", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 bool Partitions::initialized_ = false;
 
 // These statics are inlined, so cannot be LazyInstances. We create the values,
 // and then set the pointers correctly in Initialize().
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 base::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ = nullptr;
-#endif
 base::ThreadSafePartitionRoot* Partitions::array_buffer_root_ = nullptr;
 base::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
 
@@ -94,19 +92,44 @@ bool Partitions::InitializeOnce() {
           ? base::PartitionOptions::LazyCommit::kEnabled
           : base::PartitionOptions::LazyCommit::kDisabled;
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init(
-      {base::PartitionOptions::AlignedAlloc::kDisallowed,
-       base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::Quarantine::kAllowed,
-       base::PartitionOptions::Cookie::kAllowed,
-       (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
-                   : base::PartitionOptions::BackupRefPtr::kDisabled),
-       base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
+  const bool enable_scan_on_blink_partitions =
+      !enable_brp &&
+#if defined(PA_ALLOW_PCSCAN)
+      (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
+       base::FeatureList::IsEnabled(kPCScanBlinkPartitions));
+#else
+      false;
+#endif
 
-  fast_malloc_root_ = fast_malloc_allocator->root();
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // FastMalloc doesn't provide isolation, only a (hopefully fast) malloc().
+  // When PartitionAlloc is already the malloc() implementation, there is
+  // nothing to do.
+  //
+  // Note that we could keep the two heaps separate, but each PartitionAlloc's
+  // root has a cost, both in used memory and in virtual address space. Don't
+  // pay it when we don't have to.
+  //
+  // In addition, enable the FastMalloc partition if
+  // --enable-features=PartitionAllocPCScanBlinkPartitions is specified.
+  if (enable_scan_on_blink_partitions ||
+      !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
+    static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
+    fast_malloc_allocator->init({
+      base::PartitionOptions::AlignedAlloc::kDisallowed,
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+          base::PartitionOptions::ThreadCache::kDisabled,
+#else
+          base::PartitionOptions::ThreadCache::kEnabled,
+#endif
+          base::PartitionOptions::Quarantine::kAllowed,
+          base::PartitionOptions::Cookie::kAllowed,
+          (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                      : base::PartitionOptions::BackupRefPtr::kDisabled),
+          base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit
+    });
+
+    fast_malloc_root_ = fast_malloc_allocator->root();
+  }
 
   static base::NoDestructor<base::PartitionAllocator> buffer_allocator{};
 
@@ -124,12 +147,15 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
 
 #if defined(PA_ALLOW_PCSCAN)
-  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
-      base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (enable_scan_on_blink_partitions) {
+    if (!base::internal::PCScan::IsInitialized()) {
+      base::internal::PCScan::Initialize(
+          {base::internal::PCScan::InitConfig::WantedWriteProtectionMode::
+               kDisabled,
+           base::internal::PCScan::InitConfig::SafepointMode::kDisabled});
+    }
     base::internal::PCScan::RegisterScannableRoot(fast_malloc_root_);
-#endif
-    base::internal::PCScan::RegisterScannableRoot(buffer_root_);
+    // Ignore other partitions for now.
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
 
@@ -191,10 +217,10 @@ void Partitions::DumpMemoryStats(
   // accessed only on the main thread.
   DCHECK(IsMainThread());
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  FastMallocPartition()->DumpStats("fast_malloc", is_light_dump,
-                                   partition_stats_dumper);
-#endif
+  if (auto* fast_malloc_partition = FastMallocPartition()) {
+    fast_malloc_partition->DumpStats("fast_malloc", is_light_dump,
+                                     partition_stats_dumper);
+  }
   if (ArrayBufferPartitionInitialized()) {
     ArrayBufferPartition()->DumpStats("array_buffer", is_light_dump,
                                       partition_stats_dumper);
@@ -231,10 +257,10 @@ size_t Partitions::TotalSizeOfCommittedPages() {
   DCHECK(initialized_);
   size_t total_size = 0;
   // Racy reads below: this is fine to collect statistics.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  total_size +=
-      TS_UNCHECKED_READ(FastMallocPartition()->total_size_of_committed_pages);
-#endif
+  if (auto* fast_malloc_partition = FastMallocPartition()) {
+    total_size +=
+        TS_UNCHECKED_READ(fast_malloc_partition->total_size_of_committed_pages);
+  }
   if (ArrayBufferPartitionInitialized()) {
     total_size += TS_UNCHECKED_READ(
         ArrayBufferPartition()->total_size_of_committed_pages);
@@ -340,30 +366,31 @@ size_t Partitions::BufferPotentialCapacity(size_t n) {
 // no-op.
 // static
 void* Partitions::FastMalloc(size_t n, const char* type_name) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return FastMallocPartition()->Alloc(n, type_name);
-#else
-  return malloc(n);
-#endif
+  auto* fast_malloc_partition = FastMallocPartition();
+  if (UNLIKELY(fast_malloc_partition))
+    return fast_malloc_partition->Alloc(n, type_name);
+  else
+    return malloc(n);
 }
 
 // static
 void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return FastMallocPartition()->AllocFlags(base::PartitionAllocZeroFill, n,
-                                           type_name);
-#else
-  return calloc(n, 1);
-#endif
+  auto* fast_malloc_partition = FastMallocPartition();
+  if (UNLIKELY(fast_malloc_partition)) {
+    return fast_malloc_partition->AllocFlags(base::PartitionAllocZeroFill, n,
+                                             type_name);
+  } else {
+    return calloc(n, 1);
+  }
 }
 
 // static
 void Partitions::FastFree(void* p) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  FastMallocPartition()->Free(p);
-#else
-  free(p);
-#endif
+  auto* fast_malloc_partition = FastMallocPartition();
+  if (UNLIKELY(fast_malloc_partition))
+    fast_malloc_partition->Free(p);
+  else
+    free(p);
 }
 
 // static
