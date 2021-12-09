@@ -436,27 +436,20 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     return;
   }
 
-  // If fenced frames are enabled, create and return a URN URL instead of the
-  // real URL.
-  //
-  // TODO(https://crbug.com/1253118): Consider removing the non-fenced frame
-  // path, and just disabling FLEDGE when fenced frames are disabled.
-  if (blink::features::IsFencedFramesEnabled()) {
-    render_url =
-        GetFrame()
-            ->GetPage()
-            .fenced_frame_urls_map()
-            .AddFencedFrameURLWithInterestGroupAdComponentUrls(
-                *render_url,
-                // Always pass in non-empty component URL vector, to avoid
-                // leaking any data to fenced frame.
-                //
-                // TODO(mmenke):  Make `ad_component_urls` non-optional
-                // everywhere instead of preserving the empty vs null
-                // distinction, only to discard it here.
-                std::move(ad_component_urls).value_or(std::vector<GURL>()));
-    DCHECK(render_url->is_valid());
-  }
+  render_url =
+      GetFrame()
+          ->GetPage()
+          .fenced_frame_urls_map()
+          .AddFencedFrameURLWithInterestGroupAdComponentUrls(
+              *render_url,
+              // Always pass in non-empty component URL vector, to avoid
+              // leaking any data to fenced frame.
+              //
+              // TODO(mmenke):  Make `ad_component_urls` non-optional
+              // everywhere instead of preserving the empty vs null
+              // distinction, only to discard it here.
+              std::move(ad_component_urls).value_or(std::vector<GURL>()));
+  DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);
 
