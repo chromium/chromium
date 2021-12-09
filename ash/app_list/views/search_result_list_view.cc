@@ -119,15 +119,13 @@ SearchResultListView::SearchResultListView(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   title_label_ = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH),
-      CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_PRODUCTIVITY_LAUNCHER));
+      u"", CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_PRODUCTIVITY_LAUNCHER));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
       kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins));
-  title_label_->SetVisible(true);
+  title_label_->SetVisible(false);
   results_container_->AddChildView(title_label_);
 
   size_t result_count =
