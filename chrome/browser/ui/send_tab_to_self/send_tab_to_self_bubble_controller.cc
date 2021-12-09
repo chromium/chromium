@@ -60,12 +60,12 @@ void SendTabToSelfBubbleController::HideBubble() {
 void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   show_back_button_ = show_back_button;
   bubble_shown_ = true;
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   send_tab_to_self_bubble_view_ =
-      browser->window()->ShowSendTabToSelfBubble(web_contents_, this, true);
+      browser->window()->ShowSendTabToSelfBubble(&GetWebContents(), this, true);
 
   if (sharing_hub::SharingHubOmniboxEnabled(
-          web_contents_->GetBrowserContext())) {
+          GetWebContents().GetBrowserContext())) {
     UpdateIcon();
   }
 }
@@ -75,8 +75,7 @@ SendTabToSelfBubbleController::send_tab_to_self_bubble_view() const {
   return send_tab_to_self_bubble_view_;
 }
 
-std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
-    const {
+std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices() {
   SendTabToSelfSyncService* const service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
   SendTabToSelfModel* const model =
@@ -85,22 +84,23 @@ std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
                : std::vector<TargetDeviceInfo>();
 }
 
-AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() const {
+AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   return identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
-Profile* SendTabToSelfBubbleController::GetProfile() const {
-  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+Profile* SendTabToSelfBubbleController::GetProfile() {
+  return Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
 }
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_name,
     const std::string& target_device_guid) {
   send_tab_to_self::RecordDeviceClicked(ShareEntryPoint::kOmniboxIcon);
-  CreateNewEntry(web_contents_, target_device_name, target_device_guid, GURL());
+  CreateNewEntry(&GetWebContents(), target_device_name, target_device_guid,
+                 GURL());
 }
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
@@ -126,7 +126,7 @@ void SendTabToSelfBubbleController::OnBubbleClosed() {
 void SendTabToSelfBubbleController::OnBackButtonPressed() {
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
-          web_contents_);
+          &GetWebContents());
   controller->ShowBubble();
 }
 
@@ -135,7 +135,7 @@ void SendTabToSelfBubbleController::ShowConfirmationMessage() {
   UpdateIcon();
 }
 
-bool SendTabToSelfBubbleController::InitialSendAnimationShown() const {
+bool SendTabToSelfBubbleController::InitialSendAnimationShown() {
   return GetProfile()->GetPrefs()->GetBoolean(
       prefs::kInitialSendAnimationShown);
 }
@@ -146,17 +146,13 @@ void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
 }
 
 void SendTabToSelfBubbleController::UpdateIcon() {
-  // |web_contents_| can be null in tests.
-  if (!web_contents_)
-    return;
-
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   // UpdateIcon() can be called during browser teardown.
   if (!browser)
     return;
 
   if (sharing_hub::SharingHubOmniboxEnabled(
-          web_contents_->GetBrowserContext())) {
+          GetWebContents().GetBrowserContext())) {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
   } else {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kSendTabToSelf);
@@ -169,13 +165,10 @@ void SendTabToSelfBubbleController::RegisterProfilePrefs(
   user_prefs->RegisterBooleanPref(prefs::kInitialSendAnimationShown, false);
 }
 
-SendTabToSelfBubbleController::SendTabToSelfBubbleController() = default;
-
 SendTabToSelfBubbleController::SendTabToSelfBubbleController(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  DCHECK(web_contents);
-}
+    : content::WebContentsUserData<SendTabToSelfBubbleController>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SendTabToSelfBubbleController);
 

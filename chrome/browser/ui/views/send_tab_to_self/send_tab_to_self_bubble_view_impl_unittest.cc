@@ -11,9 +11,12 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -24,10 +27,12 @@ namespace {
 
 class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
  public:
-  SendTabToSelfBubbleControllerMock() = default;
+  explicit SendTabToSelfBubbleControllerMock(content::WebContents* web_contents)
+      : SendTabToSelfBubbleController(web_contents) {}
+
   ~SendTabToSelfBubbleControllerMock() override = default;
 
-  std::vector<TargetDeviceInfo> GetValidDevices() const override {
+  std::vector<TargetDeviceInfo> GetValidDevices() override {
     base::SimpleTestClock clock;
     return {
         {"Device_1", "Device_1", "device_guid_1",
@@ -39,7 +44,7 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
          clock.Now() - base::Days(5)}};
   }
 
-  AccountInfo GetSharingAccountInfo() const override {
+  AccountInfo GetSharingAccountInfo() override {
     AccountInfo info;
     info.email = "user@host.com";
     info.account_image = gfx::Image(gfx::test::CreateImageSkia(96, 96));
@@ -61,7 +66,13 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     // Create an anchor for the bubble.
     anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
 
-    controller_ = std::make_unique<SendTabToSelfBubbleControllerMock>();
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    // Owned by WebContents.
+    controller_ = new SendTabToSelfBubbleControllerMock(web_contents_.get());
+    web_contents_->SetUserData(SendTabToSelfBubbleControllerMock::UserDataKey(),
+                               base::WrapUnique(controller_.get()));
+
     bubble_ = new SendTabToSelfBubbleViewImpl(anchor_widget_->GetContentsView(),
                                               nullptr, controller_.get());
     views::BubbleDialogDelegateView::CreateBubble(bubble_);
@@ -73,9 +84,13 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  TestingProfile profile_;
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  std::unique_ptr<SendTabToSelfBubbleControllerMock> controller_;
   raw_ptr<SendTabToSelfBubbleViewImpl> bubble_;
+  // Owned by WebContents.
+  raw_ptr<SendTabToSelfBubbleControllerMock> controller_;
 };
 
 TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
@@ -94,8 +109,7 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
 }
 
 TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
-  EXPECT_CALL(*controller_.get(),
-              OnDeviceSelected("Device_3", "device_guid_3"));
+  EXPECT_CALL(*controller_, OnDeviceSelected("Device_3", "device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
   bubble_->DeviceButtonPressed(static_cast<SendTabToSelfBubbleDeviceButton*>(

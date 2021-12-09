@@ -24,10 +24,11 @@ namespace {
 
 class TestSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
  public:
-  TestSendTabToSelfBubbleController() = default;
+  explicit TestSendTabToSelfBubbleController(content::WebContents* web_contents)
+      : SendTabToSelfBubbleController(web_contents) {}
   ~TestSendTabToSelfBubbleController() override = default;
 
-  std::vector<TargetDeviceInfo> GetValidDevices() const override {
+  std::vector<TargetDeviceInfo> GetValidDevices() override {
     const auto now = base::Time::Now();
     return {{"Device_1", "Device_1", "device_guid_1",
              sync_pb::SyncEnums_DeviceType_TYPE_LINUX, now - base::Days(0)},
@@ -43,7 +44,7 @@ class TestSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
              sync_pb::SyncEnums_DeviceType_TYPE_PHONE, now - base::Days(5)}};
   }
 
-  AccountInfo GetSharingAccountInfo() const override {
+  AccountInfo GetSharingAccountInfo() override {
     AccountInfo info;
     info.email = "user@host.com";
     info.account_image = gfx::Image(gfx::test::CreateImageSkia(96, 96));
@@ -66,14 +67,19 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest,
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    // Owned by WebContents.
+    TestSendTabToSelfBubbleController* controller =
+        new TestSendTabToSelfBubbleController(web_contents);
+    web_contents->SetUserData(TestSendTabToSelfBubbleController::UserDataKey(),
+                              base::WrapUnique(controller));
     BrowserView::GetBrowserViewForBrowser(browser())->ShowSendTabToSelfBubble(
-        browser()->tab_strip_model()->GetActiveWebContents(), &controller_,
-        true);
+        web_contents, controller, true);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestSendTabToSelfBubbleController controller_;
 };
 
 // crbug.com/1272360
