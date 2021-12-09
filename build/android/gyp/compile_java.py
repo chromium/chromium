@@ -331,19 +331,16 @@ class _InfoFileContext:
     if self._pool is None:
       return {}
     ret = {}
-    try:
-      for result in self._results:
-        for java_file, package_name, class_names in result:
-          source = self._srcjar_files.get(java_file, java_file)
-          for fully_qualified_name in self._ProcessInfo(java_file, package_name,
-                                                        class_names, source):
-            if self._ShouldIncludeInJarInfo(fully_qualified_name):
-              ret[fully_qualified_name] = java_file
-    finally:
-      self._pool.terminate()
+    for result in self._results:
+      for java_file, package_name, class_names in result:
+        source = self._srcjar_files.get(java_file, java_file)
+        for fully_qualified_name in self._ProcessInfo(java_file, package_name,
+                                                      class_names, source):
+          if self._ShouldIncludeInJarInfo(fully_qualified_name):
+            ret[fully_qualified_name] = java_file
     return ret
 
-  def __del__(self):
+  def Close(self):
     # Work around for Python 2.x bug with multiprocessing and daemon threads:
     # https://bugs.python.org/issue4106
     if self._pool is not None:
@@ -474,6 +471,7 @@ def _RunCompiler(changes,
   temp_dir = jar_path + '.staging'
   shutil.rmtree(temp_dir, True)
   os.makedirs(temp_dir)
+  info_file_context = None
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
     service_provider_configuration = os.path.join(
@@ -575,6 +573,8 @@ def _RunCompiler(changes,
 
     logging.info('Completed all steps in _RunCompiler')
   finally:
+    if info_file_context:
+      info_file_context.Close()
     shutil.rmtree(temp_dir)
 
 
