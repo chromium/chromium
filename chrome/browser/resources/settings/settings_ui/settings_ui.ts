@@ -29,9 +29,8 @@ import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_too
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {Debouncer, DomIf, html, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -44,8 +43,6 @@ import {SettingsMenuElement} from '../settings_menu/settings_menu.js';
 
 declare global {
   interface HTMLElementEventMap {
-    'scroll-to-top': CustomEvent<{top: number, callback: () => void}>;
-    'scroll-to-bottom': CustomEvent<{bottom: number, callback: () => void}>;
     'refresh-pref': CustomEvent<string>;
   }
 
@@ -127,7 +124,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
   private narrow_: boolean;
   private pageVisibility_: PageVisibility;
   private lastSearchQuery_: string;
-  private debouncer_: Debouncer|null = null;
 
   constructor() {
     super();
@@ -198,39 +194,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
     // https://github.com/microsoft/TypeScript/issues/13569
     (document as any).fonts.load('bold 12px Roboto');
     setGlobalScrollTarget(this.$.container);
-
-    const scrollToTop = (top: number) => new Promise<void>(resolve => {
-      if (this.$.container.scrollTop === top) {
-        resolve();
-        return;
-      }
-
-      // When transitioning  back to main page from a subpage on ChromeOS,
-      // using 'smooth' scroll here results in the scroll changing to whatever
-      // is last value of |top|. This happens even after setting the scroll
-      // position the UI or programmatically.
-      const behavior = isChromeOS ? 'auto' : 'smooth';
-      this.$.container.scrollTo({top: top, behavior: behavior});
-      const onScroll = () => {
-        this.debouncer_ =
-            Debouncer.debounce(this.debouncer_, timeOut.after(75), () => {
-              this.$.container.removeEventListener('scroll', onScroll);
-              resolve();
-            });
-      };
-      this.$.container.addEventListener('scroll', onScroll);
-    });
-    this.addEventListener(
-        'scroll-to-top',
-        (e: CustomEvent<{top: number, callback: () => void}>) => {
-          scrollToTop(e.detail.top).then(e.detail.callback);
-        });
-    this.addEventListener(
-        'scroll-to-bottom',
-        (e: CustomEvent<{bottom: number, callback: () => void}>) => {
-          scrollToTop(e.detail.bottom - this.$.container.clientHeight)
-              .then(e.detail.callback);
-        });
   }
 
   disconnectedCallback() {
