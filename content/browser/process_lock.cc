@@ -82,24 +82,16 @@ bool ProcessLock::IsCompatibleWithWebExposedIsolation(
 }
 
 bool ProcessLock::operator==(const ProcessLock& rhs) const {
-  // As we add additional features to SiteInfo, we'll expand this comparison.
-  // Note that this should *not* compare site_url() values from the SiteInfo,
-  // since those include effective URLs which may differ even if the actual
-  // document origins match. We use process_lock_url() comparisons to account
-  // for this.
-  bool is_equal = site_info_.has_value() == rhs.site_info_.has_value();
+  if (site_info_.has_value() != rhs.site_info_.has_value())
+    return false;
 
-  if (is_equal && site_info_.has_value()) {
-    is_equal =
-        site_info_->process_lock_url() == rhs.site_info_->process_lock_url() &&
-        site_info_->requires_origin_keyed_process() ==
-            rhs.site_info_->requires_origin_keyed_process() &&
-        site_info_->is_pdf() == rhs.site_info_->is_pdf() &&
-        (site_info_->web_exposed_isolation_info() ==
-         rhs.site_info_->web_exposed_isolation_info());
-  }
+  if (!site_info_.has_value())  // Neither has a value, so they're equal.
+    return true;
 
-  return is_equal;
+  // At this point, both `this` and `rhs` are known to have valid SiteInfos.
+  // Here we proceed with a comparison almost identical to
+  // SiteInfo::MakeSecurityPrincipalKey(), except that `site_url_` is excluded.
+  return site_info_->ProcessLockCompareTo(rhs.site_info_.value()) == 0;
 }
 
 bool ProcessLock::operator!=(const ProcessLock& rhs) const {
@@ -107,16 +99,17 @@ bool ProcessLock::operator!=(const ProcessLock& rhs) const {
 }
 
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
-  const auto this_is_origin_keyed_process = is_origin_keyed_process();
-  const auto this_is_pdf = is_pdf();
-  const auto this_web_exposed_isolation_info = GetWebExposedIsolationInfo();
-  const auto rhs_is_origin_keyed_process = is_origin_keyed_process();
-  const auto rhs_is_pdf = rhs.is_pdf();
-  const auto rhs_web_exposed_isolation_info = GetWebExposedIsolationInfo();
-  return std::tie(lock_url(), this_is_origin_keyed_process, this_is_pdf,
-                  this_web_exposed_isolation_info) <
-         std::tie(rhs.lock_url(), rhs_is_origin_keyed_process, rhs_is_pdf,
-                  rhs_web_exposed_isolation_info);
+  if (!site_info_.has_value() && !rhs.site_info_.has_value())
+    return false;
+  if (!site_info_.has_value())  // Here rhs.site_info_.has_value() is true.
+    return true;
+  if (!rhs.site_info_.has_value())  // Here site_info_.has_value() is true.
+    return false;
+
+  // At this point, both `this` and `rhs` are known to have valid SiteInfos.
+  // Here we proceed with a comparison almost identical to
+  // SiteInfo::MakeSecurityPrincipalKey(), except that `site_url_` is excluded.
+  return site_info_->ProcessLockCompareTo(rhs.site_info_.value()) < 0;
 }
 
 std::string ProcessLock::ToString() const {

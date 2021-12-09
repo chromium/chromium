@@ -450,6 +450,27 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
   return is_match;
 }
 
+auto SiteInfo::MakeProcessLockComparisonKey() const {
+  // As we add additional features to SiteInfo, we'll expand this comparison.
+  // Note that this should *not* compare site_url() values from the SiteInfo,
+  // since those include effective URLs which may differ even if the actual
+  // document origins match. We use process_lock_url() comparisons to account
+  // for this.
+  return std::tie(process_lock_url_, requires_origin_keyed_process_, is_pdf_,
+                  is_jit_disabled_, is_guest_, web_exposed_isolation_info_,
+                  storage_partition_config_);
+}
+
+int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
+  auto a = MakeProcessLockComparisonKey();
+  auto b = other.MakeProcessLockComparisonKey();
+  if (a < b)
+    return -1;
+  if (b < a)
+    return 1;
+  return 0;
+}
+
 bool SiteInfo::operator==(const SiteInfo& other) const {
   return IsSamePrincipalWith(other);
 }

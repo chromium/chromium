@@ -213,6 +213,13 @@ class CONTENT_EXPORT SiteInfo {
   // this object.
   bool IsExactMatch(const SiteInfo& other) const;
 
+  // Determines how a ProcessLock based on this SiteInfo compares to a
+  // ProcessLock based on the `other` SiteInfo. Note that this doesn't just
+  // compare all SiteInfo fields, e.g. it doesn't use site_url_ since that
+  // may include effective URLs.
+  // Returns -1 if `this` < `other`, 1 if `this` > `other`, 0 otherwise.
+  int ProcessLockCompareTo(const SiteInfo& other) const;
+
   // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
   bool operator!=(const SiteInfo& other) const;
@@ -298,6 +305,10 @@ class CONTENT_EXPORT SiteInfo {
   static GURL GetSiteForURLInternal(const IsolationContext& isolation_context,
                                     const UrlInfo& url,
                                     bool should_use_effective_urls);
+
+  // Helper function for ProcessLockCompareTo(). Returns a std::tie of the
+  // SiteInfo elements required for doing a ProcessLock comparison.
+  auto MakeProcessLockComparisonKey() const;
 
   GURL site_url_;
 
