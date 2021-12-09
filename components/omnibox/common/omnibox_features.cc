@@ -149,7 +149,7 @@ const base::Feature kOnFocusSuggestionsContextualWeb{
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
     "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-    enabled_by_default_android_only};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
     enabled_by_default_android_only};
@@ -302,7 +302,7 @@ const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{
-    "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxAssistantVoiceSearch", enabled_by_default_android_only};
 
 // When enabled, a setting is added to chrome://settings/searchEngines to
 // control whether <space> can be used to trigger keyword mode.
