@@ -21,11 +21,11 @@ AbortController::AbortController(AbortSignal* signal) : signal_(signal) {}
 AbortController::~AbortController() = default;
 
 void AbortController::abort(ScriptState* script_state) {
-  ScriptValue reason(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrEmpty(script_state->GetIsolate(),
-                                         DOMExceptionCode::kAbortError,
-                                         "signal is aborted without reason"));
+  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+      "signal is aborted without reason");
+  CHECK(!dom_exception.IsEmpty());
+  ScriptValue reason(script_state->GetIsolate(), dom_exception);
   abort(script_state, reason);
 }
 

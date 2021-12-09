@@ -68,11 +68,11 @@ AbortSignal::~AbortSignal() = default;
 
 // static
 AbortSignal* AbortSignal::abort(ScriptState* script_state) {
-  ScriptValue reason(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrEmpty(script_state->GetIsolate(),
-                                         DOMExceptionCode::kAbortError,
-                                         "signal is aborted without reason"));
+  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+      "signal is aborted without reason");
+  CHECK(!dom_exception.IsEmpty());
+  ScriptValue reason(script_state->GetIsolate(), dom_exception);
   return abort(script_state, reason);
 }
 
@@ -116,11 +116,11 @@ void AbortSignal::AddAlgorithm(base::OnceClosure algorithm) {
 }
 
 void AbortSignal::SignalAbort(ScriptState* script_state) {
-  ScriptValue reason(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrEmpty(script_state->GetIsolate(),
-                                         DOMExceptionCode::kAbortError,
-                                         "signal is aborted without reason"));
+  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+      "signal is aborted without reason");
+  CHECK(!dom_exception.IsEmpty());
+  ScriptValue reason(script_state->GetIsolate(), dom_exception);
   SignalAbort(script_state, reason);
 }
 
