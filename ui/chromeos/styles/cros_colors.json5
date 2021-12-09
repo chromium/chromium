@@ -188,6 +188,10 @@
       dark: "rgba($google_blue_300_rgb, 0.3)",
       debug: "rgba($google_red_300_rgb, 0.3)",
     },
+    highlight_color_error: {
+      light: "$google_red_50",
+      dark: "rgba($color_alert_rgb, 0.3)",
+    },
     highlight_color_hover: {
       light: "rgba($google_grey_700_rgb, 0.2)",
       dark: "rgba($white_rgb, 0.2)",

@@ -292,7 +292,7 @@ html.pointer-active #directory-tree :not(:active) {
 }
 
 html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row {
-  background-color: var(--google-red-50);
+  background-color: var(--cros-highlight-color-error);
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
