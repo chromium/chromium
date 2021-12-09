@@ -18,10 +18,15 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/file_manager/url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -63,12 +68,24 @@ DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!data_dst || !data_dst->IsUrlType())
     return false;
 
   GURL url = data_dst->GetOrigin()->GetURL();
-  return url.has_scheme() && url.SchemeIs(extensions::kExtensionScheme) &&
-         url.has_host() && url.host() == extension_misc::kFilesManagerAppId;
+  // TODO(b/207576430): Once Files Extension is removed, remove this condition.
+  bool is_files_extension =
+      url.has_scheme() && url.SchemeIs(extensions::kExtensionScheme) &&
+      url.has_host() && url.host() == extension_misc::kFilesManagerAppId;
+  bool is_files_swa = url.has_scheme() &&
+                      url.SchemeIs(content::kChromeUIScheme) &&
+                      url.has_host() &&
+                      url.host() == ash::file_manager::kChromeUIFileManagerHost;
+
+  return is_files_extension || is_files_swa;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsClipboardHistory(const ui::DataTransferEndpoint* const data_dst) {
