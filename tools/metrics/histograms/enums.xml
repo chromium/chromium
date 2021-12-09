@@ -3830,6 +3830,18 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Forwarded to a normal tab"/>
 </enum>
 
+<enum name="ArcDataRestoreStatus">
+  <summary>
+    Tracks status of SELinux contexts restore flows of Android /data for ARC++ P
+    container. This also means ARC++ container boot delay.
+  </summary>
+  <int value="0" label="NotNeeded">
+    SELinux data restoration was not needed.
+  </int>
+  <int value="1" label="Success">SELinux data restoration succeeded.</int>
+  <int value="2" label="Failed">SELinux data restoration failed.</int>
+</enum>
+
 <enum name="ArcEnableState">
   <int value="0" label="Enabled not managed"/>
   <int value="1" label="Disabled not managed"/>
