@@ -247,7 +247,7 @@
     "name": "arc-usb-device-attach-to-vm-experiment",
     "owners": [ "lgcheng" ],
     // Used on ChromeOS to temperorily attach unclaimed USB device to ARCVM
-    "expiry_milestone": 98
+    "expiry_milestone": 100
   },
   {
     "name": "arc-use-high-memory-dalvik-profile",

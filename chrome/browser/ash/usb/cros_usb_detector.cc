@@ -287,7 +287,8 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  if (IsPlayStoreEnabledWithArcVmForProfile(profile())) {
+  if (IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
+      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
     vm_name_button_text =
         l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
@@ -504,7 +505,8 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
       !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
-      !IsPlayStoreEnabledWithArcVmForProfile(profile())) {
+      !(IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
+        base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm))) {
     return false;
   }
   if (!device.shareable) {
@@ -620,7 +622,6 @@ void CrosUsbDetector::OnDeviceChecked(
   // Copy fields prior to moving |device_info| and |new_device|.
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
-  uint32_t allowed_interfaces_mask = new_device.allowed_interfaces_mask;
 
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
@@ -631,20 +632,6 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
-
-  // Temporarily allow User to attach un claimed USB devices to ARC VM.
-  // This part as well as the emperiment flag should go away once UI permission
-  // is integrated in |ShowNotificationForDevice|.
-  if (arc::IsArcVmEnabled() &&
-      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
-    if (has_supported_interface || allowed_interfaces_mask != 0) {
-      // USB devices not claimed by Chrome OS get automatically attached to the
-      // ARCVM. Note that this relies on the underlying VM (ARCVM) having
-      // its own permission model to restrict access to the device.
-      AttachUsbDeviceToVm(arc::kArcVmName, guid, base::DoNothing());
-      return;
-    }
-  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {
