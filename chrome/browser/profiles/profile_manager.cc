@@ -918,48 +918,68 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
 }
 
 // static
-base::FilePath ProfileManager::CreateMultiProfileAsync(
-    const std::u16string& name,
-    size_t icon_index,
-    bool is_hidden,
-    const CreateCallback& callback) {
+void ProfileManager::CreateMultiProfileAsync(const std::u16string& name,
+                                             size_t icon_index,
+                                             bool is_hidden,
+                                             const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!name.empty());
   DCHECK(profiles::IsDefaultAvatarIconIndex(icon_index));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  DCHECK(profile_manager->CanCreateProfileAtPath(new_path));
-
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(new_path);
-  if (entry) {
-    LOG(WARNING) << "Failed to generate a unique profile name for a new "
-                    "profile. Creation parameters will be ignored, loading an "
-                    "existing profile at path \""
-                 << new_path << "\" instead.";
-  } else {
-    // Add a storage entry early here to set up a new profile with user selected
-    // name and avatar.
-    // These parameters will be used to initialize profile's prefs in
-    // InitProfileUserPrefs(). AddProfileToStorage() will set any missing
-    // attributes after prefs are loaded.
-    // TODO(alexilin): consider using the user data to supply these parameters
-    // to profile.
-    ProfileAttributesInitParams init_params;
-    init_params.profile_path = new_path;
-    init_params.profile_name = name;
-    init_params.icon_index = icon_index;
-    init_params.is_ephemeral = is_hidden;
-    init_params.is_omitted = is_hidden;
-    storage.AddProfile(std::move(init_params));
+  base::FilePath new_path;
+  ProfileAttributesEntry* entry = nullptr;
+  // In some crashes, it can happen that next profile dir (backed up by local
+  // pref) is out-of-sync with profiles dir. Keep generating next profile path
+  // until that path is _not_ present in `storage`.
+  do {
+    new_path = profile_manager->GenerateNextProfileDirectoryPath();
+    // The generated path should be unused and free to use.
+    DCHECK_EQ(profile_manager->GetProfileByPath(new_path), nullptr);
+    DCHECK(profile_manager->CanCreateProfileAtPath(new_path));
+
+    entry = storage.GetProfileAttributesWithPath(new_path);
+  } while (entry != nullptr);
+
+  // Add a storage entry early here to set up a new profile with user selected
+  // name and avatar.
+  // These parameters will be used to initialize profile's prefs in
+  // InitProfileUserPrefs(). AddProfileToStorage() will set any missing
+  // attributes after prefs are loaded.
+  // TODO(alexilin): consider using the user data to supply these parameters
+  // to profile.
+  ProfileAttributesInitParams init_params;
+  init_params.profile_path = new_path;
+  init_params.profile_name = name;
+  init_params.icon_index = icon_index;
+  init_params.is_ephemeral = is_hidden;
+  init_params.is_omitted = is_hidden;
+  storage.AddProfile(std::move(init_params));
+
+  if (!base::FeatureList::IsEnabled(
+          features::kNukeProfileBeforeCreateMultiAsync)) {
+    profile_manager->CreateProfileAsync(new_path, callback);
+    return;
   }
 
-  profile_manager->CreateProfileAsync(new_path, callback);
-  return new_path;
+  // As another check, make sure the generated path is not present in the file
+  // system (there could be orphan profile dirs).
+  // TODO(crbug.com/1277948): There can be a theoretical race condition with a
+  // direct CreateProfileAsync() call that can create the directory before
+  // adding an entry to ProfileAttributesStorage. Creating a new
+  // ProfileAttributesEntry consistently before writing the profile folder to
+  // disk would resolve this.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&NukeProfileFromDisk, new_path,
+                     base::BindOnce(&ProfileManager::CreateProfileAsync,
+                                    profile_manager->weak_factory_.GetWeakPtr(),
+                                    new_path, callback)));
 }
 
 // static

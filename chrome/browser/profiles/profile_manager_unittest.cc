@@ -232,6 +232,8 @@ class ProfileManagerTest : public testing::Test {
     entry->SetIsEphemeral(true);
   }
 
+  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
@@ -644,6 +646,97 @@ TEST_F(ProfileManagerTest, CreateMultiProfileAsyncMultipleRequests) {
   EXPECT_NE(profile2, profile3);
 }
 
+TEST_F(ProfileManagerTest,
+       CreateMultiProfilesAsyncWithBrokenPrefAndProfileInCache) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  // Simulate having "Profile 1" in the storage without properly incrementing
+  // the prefs::kProfilesNumCreated counter.
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path =
+      profile_manager->user_data_dir().AppendASCII("Profile 1");
+  params_1.profile_name = u"name_1";
+  params_1.gaia_id = "12345";
+  params_1.is_consented_primary_account = true;
+  profile_manager->GetProfileAttributesStorage().AddProfile(
+      std::move(params_1));
+
+  MockObserver mock_observer2;
+  Profile* profile2 = nullptr;
+  EXPECT_CALL(mock_observer2, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(2))
+      .WillRepeatedly(testing::SaveArg<0>(&profile2));
+  CreateMultiProfileAsync(profile_manager, "Profile B", &mock_observer2);
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_NE(profile2, nullptr);
+  EXPECT_EQ(profile2->GetPath().BaseName().value(),
+            FILE_PATH_LITERAL("Profile 2"));
+  ProfileAttributesEntry* entry2 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
+}
+
+TEST_F(ProfileManagerTest,
+       PRE_CreateMultiProfilesAsyncWithBrokenPrefAndProfileOnDisk) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  MockObserver mock_observer1;
+  Profile* profile1 = nullptr;
+  EXPECT_CALL(mock_observer1, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(2))
+      .WillRepeatedly(testing::SaveArg<0>(&profile1));
+  CreateMultiProfileAsync(profile_manager, "Profile A", &mock_observer1);
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_NE(profile1, nullptr);
+  EXPECT_EQ(profile1->GetPath().BaseName().value(),
+            FILE_PATH_LITERAL("Profile 1"));
+  ProfileAttributesEntry* entry1 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile1->GetPath());
+  ASSERT_NE(entry1, nullptr);
+
+  // Decrement next profile number to simulate it was never incremented.
+  EXPECT_EQ(local_state()->GetUserPref(prefs::kProfilesNumCreated)->GetInt(),
+            2);
+  local_state()->SetUserPref(prefs::kProfilesNumCreated,
+                             std::make_unique<base::Value>(1));
+  // Wipe the profile from profile attributes storage to simulate it got deleted
+  // but not wiped from disk.
+  profile_manager->GetProfileAttributesStorage().RemoveProfile(
+      profile1->GetPath());
+}
+
+// We need to restart Chrome in the mean-time to make sure the profile is not
+// loaded in memory.
+TEST_F(ProfileManagerTest,
+       CreateMultiProfilesAsyncWithBrokenPrefAndProfileOnDisk) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  MockObserver mock_observer2;
+  Profile* profile2 = nullptr;
+  EXPECT_CALL(mock_observer2, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(2))
+      .WillRepeatedly(testing::SaveArg<0>(&profile2));
+  CreateMultiProfileAsync(profile_manager, "Profile B", &mock_observer2);
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_NE(profile2, nullptr);
+  // The profile uses the same base name as in the pre test.
+  EXPECT_EQ(profile2->GetPath().BaseName().value(),
+            FILE_PATH_LITERAL("Profile 1"));
+  ProfileAttributesEntry* entry2 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
+  EXPECT_EQ(base::UTF16ToUTF8(entry2->GetName()), "Profile B");
+}
+
 TEST_F(ProfileManagerTest, CreateHiddenProfileAsync) {
   Profile* profile = nullptr;
   MockObserver mock_observer;
@@ -842,14 +935,14 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state_.Get()->SetUserPref(prefs::kBackgroundModeEnabled,
-                                  std::make_unique<base::Value>(true));
+  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
+                             std::make_unique<base::Value>(true));
 
   // Setting a pref which is not applicable to a system (i.e., Android in this
   // case) does not necessarily create it. Don't bother continuing with the
   // test if this pref doesn't exist because it will not load the profiles if
   // it cannot verify that the pref for background mode is enabled.
-  if (!local_state_.Get()->HasPrefPath(prefs::kBackgroundModeEnabled))
+  if (!local_state()->HasPrefPath(prefs::kBackgroundModeEnabled))
     return;
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
@@ -892,8 +985,8 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state_.Get()->SetUserPref(prefs::kBackgroundModeEnabled,
-                                  std::make_unique<base::Value>(false));
+  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
+                             std::make_unique<base::Value>(false));
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 

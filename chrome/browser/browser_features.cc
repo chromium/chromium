@@ -30,6 +30,11 @@ const base::Feature kColorProviderRedirectionForThemeProvider = {
 const base::Feature kDestroyProfileOnBrowserClose{
     "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Nukes profile directory before creating a new profile using
+// ProfileManager::CreateMultiProfileAsync().
+const base::Feature kNukeProfileBeforeCreateMultiAsync{
+    "NukeProfileBeforeCreateMultiAsync", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables executing the browser commands sent by the NTP promos.
 const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -183,21 +184,19 @@ class ProfileManager : public Profile::Delegate {
   // otherwise return null.
   Profile* GetProfileByPath(const base::FilePath& path) const;
 
-  // Creates a new profile in the next available multiprofile directory.
-  // Directories are named "profile_1", "profile_2", etc., in sequence of
-  // creation. (Because directories can be removed, however, it may be the case
-  // that at some point the list of numbered profiles is not continuous.)
-  // |callback| may be invoked multiple times (for CREATE_STATUS_INITIALIZED
-  // and CREATE_STATUS_CREATED) so binding parameters with bind::Passed() is
-  // prohibited. Returns the file path to the profile that will be created
-  // asynchronously.
-  // If |is_hidden| is true, the new profile will be created as ephemeral
-  // (removed on the next startup) and omitted (not visible in the list of
-  // profiles).
-  static base::FilePath CreateMultiProfileAsync(const std::u16string& name,
-                                                size_t icon_index,
-                                                bool is_hidden,
-                                                const CreateCallback& callback);
+  // Asynchronously creates a new profile in the next available multiprofile
+  // directory. Directories are named "profile_1", "profile_2", etc., in
+  // sequence of creation. (Because directories can be removed, however, it may
+  // be the case that at some point the list of numbered profiles is not
+  // continuous.) |callback| may be invoked multiple times (for
+  // CREATE_STATUS_INITIALIZED and CREATE_STATUS_CREATED) so binding parameters
+  // with bind::Passed() is prohibited. If |is_hidden| is true, the new profile
+  // will be created as ephemeral (removed on the next startup) and omitted (not
+  // visible in the list of profiles).
+  static void CreateMultiProfileAsync(const std::u16string& name,
+                                      size_t icon_index,
+                                      bool is_hidden,
+                                      const CreateCallback& callback);
 
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
@@ -594,6 +593,8 @@ class ProfileManager : public Profile::Delegate {
   // enough to do as part of the mass refactor CL which introduced
   // |thread_checker_|, ref. https://codereview.chromium.org/2907253003/#msg37.
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<ProfileManager> weak_factory_{this};
 };
 
 // Same as the ProfileManager, but doesn't initialize some services of the
