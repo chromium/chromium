@@ -33,8 +33,6 @@
 
 namespace {
 
-#if !defined(OS_NACL_NONSFI)
-
 bool WaitpidWithTimeout(base::ProcessHandle handle,
                         int* status,
                         base::TimeDelta wait) {
@@ -226,7 +224,6 @@ bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
   }
   return exited;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace
 
@@ -310,7 +307,6 @@ void Process::Close() {
   // end up w/ a zombie when it does finally exit.
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool Process::Terminate(int exit_code, bool wait) const {
   // exit_code isn't supportable.
   DCHECK(IsValid());
@@ -331,7 +327,6 @@ bool Process::Terminate(int exit_code, bool wait) const {
 
   return did_terminate;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool Process::WaitForExit(int* exit_code) const {
   return WaitForExitWithTimeout(TimeDelta::Max(), exit_code);

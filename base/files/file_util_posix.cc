@@ -76,7 +76,6 @@ namespace base {
 
 namespace {
 
-#if !defined(OS_NACL_NONSFI)
 // Helper for VerifyPathControlledByUser.
 bool VerifySpecificPathControlledByUser(const FilePath& path,
                                         uid_t owner_uid,
@@ -314,7 +313,6 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
   }
   return success;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 #if !defined(OS_APPLE)
 // Appends |mode_char| to |mode| before the optional character set encoding; see
@@ -331,7 +329,6 @@ std::string AppendModeCharacter(StringPiece mode, char mode_char) {
 
 }  // namespace
 
-#if !defined(OS_NACL_NONSFI)
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   char full_path[PATH_MAX];
@@ -370,7 +367,6 @@ bool CopyDirectoryExcl(const FilePath& from_path,
                        bool recursive) {
   return DoCopyDirectory(from_path, to_path, recursive, true);
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool CreatePipe(ScopedFD* read_fd, ScopedFD* write_fd, bool non_blocking) {
   int fds[2];
@@ -418,15 +414,11 @@ bool SetNonBlocking(int fd) {
 }
 
 bool SetCloseOnExec(int fd) {
-#if defined(OS_NACL_NONSFI)
-  const int flags = 0;
-#else
   const int flags = fcntl(fd, F_GETFD);
   if (flags == -1)
     return false;
   if (flags & FD_CLOEXEC)
     return true;
-#endif  // defined(OS_NACL_NONSFI)
   if (HANDLE_EINTR(fcntl(fd, F_SETFD, flags | FD_CLOEXEC)) == -1)
     return false;
   return true;
@@ -442,19 +434,15 @@ bool PathExists(const FilePath& path) {
   return access(path.value().c_str(), F_OK) == 0;
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool PathIsReadable(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return access(path.value().c_str(), R_OK) == 0;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
-#if !defined(OS_NACL_NONSFI)
 bool PathIsWritable(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return access(path.value().c_str(), W_OK) == 0;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool DirectoryExists(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -475,8 +463,6 @@ bool ReadFromFD(int fd, char* buffer, size_t bytes) {
   }
   return total_read == bytes;
 }
-
-#if !defined(OS_NACL_NONSFI)
 
 ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
                                               FilePath* path) {
@@ -814,7 +800,6 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   results->FromStat(file_info);
   return true;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 FILE* OpenFile(const FilePath& filename, const char* mode) {
   // 'e' is unconditionally added below, so be sure there is not one already
@@ -982,8 +967,6 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
 
   return true;
 }
-
-#if !defined(OS_NACL_NONSFI)
 
 bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -1289,8 +1272,6 @@ bool CopyFileContentsWithSendfile(File& infile,
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 }  // namespace internal
-
-#endif  // !defined(OS_NACL_NONSFI)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 BASE_EXPORT bool IsPathExecutable(const FilePath& path) {

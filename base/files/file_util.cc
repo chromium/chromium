@@ -31,7 +31,6 @@
 
 namespace base {
 
-#if !defined(OS_NACL_NONSFI)
 #if !defined(OS_WIN)
 OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
   return BindOnce(IgnoreResult(&DeleteFile));
@@ -179,7 +178,6 @@ bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 
   return true;
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool ReadStreamToString(FILE* stream, std::string* contents) {
   return ReadStreamToStringWithMaxSize(
@@ -202,7 +200,6 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   // chunk size if available.
   constexpr int64_t kDefaultChunkSize = 1 << 16;
   int64_t chunk_size = kDefaultChunkSize - 1;
-#if !defined(OS_NACL_NONSFI)
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if defined(OS_WIN)
   BY_HANDLE_FILE_INFORMATION file_info = {};
@@ -229,9 +226,6 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   // We need to attempt to read at EOF for feof flag to be set so here we
   // use |chunk_size| + 1.
   chunk_size = std::min<uint64_t>(chunk_size, max_size) + 1;
-#else   // !defined(OS_NACL_NONSFI)
-  chunk_size = kDefaultChunkSize;
-#endif  // !defined(OS_NACL_NONSFI)
   size_t bytes_read_this_pass;
   size_t bytes_read_so_far = 0;
   bool read_status = true;
@@ -285,7 +279,6 @@ bool ReadFileToStringWithMaxSize(const FilePath& path,
   return ReadStreamToStringWithMaxSize(file_stream.get(), max_size, contents);
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool IsDirectoryEmpty(const FilePath& dir_path) {
   FileEnumerator files(dir_path, false,
       FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
@@ -340,7 +333,6 @@ bool TouchFile(const FilePath& path,
 
   return file.SetTimes(last_accessed, last_modified);
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool CloseFile(FILE* file) {
   if (file == nullptr)
@@ -348,7 +340,6 @@ bool CloseFile(FILE* file) {
   return fclose(file) == 0;
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool TruncateFile(FILE* file) {
   if (file == nullptr)
     return false;
@@ -439,7 +430,5 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 }
 
 }  // namespace internal
-
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace base

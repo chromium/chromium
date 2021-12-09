@@ -68,8 +68,6 @@ extern char** environ;
 
 namespace base {
 
-#if !defined(OS_NACL_NONSFI)
-
 namespace {
 
 // Get the process's "environment" (i.e. the thing that setenv/getenv
@@ -672,10 +670,7 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
                               exit_code);
 }
 
-#endif  // !defined(OS_NACL_NONSFI)
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI) || \
-    defined(OS_AIX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 namespace {
 
 // This function runs on the stack specified on the clone call. It uses longjmp
@@ -750,6 +745,6 @@ pid_t ForkWithFlags(unsigned long flags, pid_t* ptid, pid_t* ctid) {
 
   return 0;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 
 }  // namespace base

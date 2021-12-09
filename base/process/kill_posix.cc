@@ -90,7 +90,6 @@ TerminationStatus GetKnownDeadTerminationStatus(ProcessHandle handle,
   return GetTerminationStatusImpl(handle, true /* can_block */, exit_code);
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
                             TimeDelta wait,
                             const ProcessFilter* filter) {
@@ -174,6 +173,5 @@ void EnsureProcessGetsReaped(Process process) {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #endif  // !defined(OS_APPLE)
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace base

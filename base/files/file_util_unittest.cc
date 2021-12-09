@@ -4093,7 +4093,6 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
 }
 #endif
 
-#if !defined(OS_NACL_NONSFI)
 TEST_F(FileUtilTest, GetUniquePathNumberNoFile) {
   // This file does not exist.
   const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
@@ -4205,8 +4204,6 @@ TEST_F(FileUtilTest, PreReadFile_InexistentFile) {
   EXPECT_FALSE(
       PreReadFile(inexistent_file, /*is_executable=*/false).succeeded());
 }
-
-#endif  // !defined(OS_NACL_NONSFI)
 
 // Test that temp files obtained racily are all unique (no interference between
 // threads). Mimics file operations in DoLaunchChildTestProcess() to rule out
