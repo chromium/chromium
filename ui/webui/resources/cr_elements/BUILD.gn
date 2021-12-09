@@ -53,7 +53,7 @@ preprocess_if_expr("preprocess_src") {
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
     "find_shortcut_mixin.ts",
-    "mouse_hoverable_mixin.js",
+    "mouse_hoverable_mixin.ts",
   ]
 
   if (is_chromeos_ash) {
@@ -280,12 +280,6 @@ js_library("cr_container_shadow_behavior") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
 
-js_library("mouse_hoverable_mixin") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 # Targets for auto-generating Polymer 3 JS Modules.
 
 polymer_modulizer("action_link_css") {
@@ -399,7 +393,6 @@ js_type_check("cr_elements_module_resources") {
   deps = [
     ":cr_container_shadow_behavior.m",
     ":cr_scrollable_behavior.m",
-    ":mouse_hoverable_mixin",
   ]
 
   if (is_chromeos_ash) {

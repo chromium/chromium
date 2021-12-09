@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/mwb_shared_icons.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 
-import {MouseHoverableMixin, MouseHoverableMixinInterface} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
+import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -15,8 +15,7 @@ import {ariaLabel, TabGroupData} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {highlightText} from './tab_search_utils.js';
 
-const TabSearchGroupItemBase = MouseHoverableMixin(PolymerElement) as
-    {new (): PolymerElement & MouseHoverableMixinInterface};
+const TabSearchGroupItemBase = MouseHoverableMixin(PolymerElement);
 
 export interface TabSearchGroupItem {
   $: {

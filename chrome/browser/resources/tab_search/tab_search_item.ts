@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 
-import {MouseHoverableMixin, MouseHoverableMixinInterface} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
+import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {get as deepGet, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,8 +28,7 @@ export interface TabSearchItem {
   };
 }
 
-const TabSearchItemBase = MouseHoverableMixin(PolymerElement) as
-    {new (): PolymerElement & MouseHoverableMixinInterface};
+const TabSearchItemBase = MouseHoverableMixin(PolymerElement);
 
 
 export class TabSearchItem extends TabSearchItemBase {
