@@ -14,6 +14,8 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,6 +24,17 @@
 #include "url/gurl.h"
 
 namespace policy {
+
+void SendInterstitialCommand(
+    content::WebContents* tab,
+    security_interstitials::SecurityInterstitialCommand command) {
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+      ->CommandReceived(base::NumberToString(command));
+  return;
+}
 
 // Test that when SSL error overriding policies are unset, the proceed link
 // appears on SSL blocking pages.

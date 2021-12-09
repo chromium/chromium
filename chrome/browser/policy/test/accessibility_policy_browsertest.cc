@@ -21,6 +21,20 @@ using ::ash::AccessibilityManager;
 using ::ash::MagnificationManager;
 using ::ash::MagnifierType;
 
+namespace {
+
+void SetEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  keyboard_client->SetEnableFlag(flag);
+}
+
+void ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  keyboard_client->ClearEnableFlag(flag);
+}
+
+}  // namespace
+
 class AccessibilityPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, LargeCursorEnabled) {

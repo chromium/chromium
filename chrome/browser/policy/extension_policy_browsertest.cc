@@ -52,6 +52,7 @@
 #include "components/version_info/channel.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -186,6 +187,22 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
         return response;
       },
       base::Unretained(test_server), match_path, template_file));
+}
+
+// Sends a mouse click at the given coordinates to the current renderer.
+void PerformClick(content::WebContents* contents, int x, int y) {
+  blink::WebMouseEvent click_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  click_event.button = blink::WebMouseEvent::Button::kLeft;
+  click_event.click_count = 1;
+  click_event.SetPositionInWidget(x, y);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
+  click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
 }
 
 class ExtensionPolicyTest : public PolicyTest {
@@ -1938,7 +1955,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, MAYBE_ExtensionInstallSources) {
   content::DownloadTestObserverTerminal download_observer(
       browser()->profile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_DENY);
-  PerformClick(0, 0);
+  PerformClick(browser()->tab_strip_model()->GetActiveWebContents(), 0, 0);
   download_observer.WaitForFinished();
 
   // Install the policy and trigger another download.
@@ -1952,7 +1969,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, MAYBE_ExtensionInstallSources) {
   UpdateProviderPolicy(policies);
 
   extensions::TestExtensionRegistryObserver observer(extension_registry());
-  PerformClick(1, 0);
+  PerformClick(browser()->tab_strip_model()->GetActiveWebContents(), 1, 0);
   observer.WaitForExtensionWillBeInstalled();
   // Note: Cannot check that the notification details match the expected
   // exception, since the details object has already been freed prior to

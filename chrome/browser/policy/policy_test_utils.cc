@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -25,18 +24,13 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/variations/variations_params_manager.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/http/transport_security_state.h"
-#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
@@ -78,26 +72,6 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
       {{"sendingThreshold", "1.0"}}, command_line);
 }
 
-void PolicyTest::SetRequireCTForTesting(bool required) {
-  if (content::IsOutOfProcessNetworkService()) {
-    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterface(
-        network_service_test.BindNewPipeAndPassReceiver());
-    network::mojom::NetworkServiceTest::RequireCT required_ct =
-        required ? network::mojom::NetworkServiceTest::RequireCT::REQUIRE
-                 : network::mojom::NetworkServiceTest::RequireCT::DEFAULT;
-
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->SetRequireCT(required_ct);
-    return;
-  }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&net::TransportSecurityState::SetRequireCTForTesting,
-                     required));
-}
-
 scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
   base::FilePath extension_path(ui_test_utils::GetTestFilePath(
@@ -115,23 +89,6 @@ void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
   DCHECK(base::CurrentThread::Get());
   base::RunLoop loop;
   loop.RunUntilIdle();
-}
-
-void PolicyTest::PerformClick(int x, int y) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  blink::WebMouseEvent click_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  click_event.button = blink::WebMouseEvent::Button::kLeft;
-  click_event.click_count = 1;
-  click_event.SetPositionInWidget(x, y);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
-  click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
 }
 
 // static
@@ -155,18 +112,6 @@ void PolicyTest::ApplySafeSearchPolicy(
   SetPolicy(&policies, key::kForceYouTubeRestrict, std::move(youtube_restrict));
   UpdateProviderPolicy(policies);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PolicyTest::SetEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
-  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
-  keyboard_client->SetEnableFlag(flag);
-}
-
-void PolicyTest::ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
-  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
-  keyboard_client->ClearEnableFlag(flag);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 GURL PolicyTest::GetExpectedSearchURL(bool expect_safe_search) {
@@ -192,38 +137,6 @@ void PolicyTest::CheckSafeSearch(Browser* browser,
       browser->window()->GetLocationBar()->GetOmniboxView()->model();
   EXPECT_TRUE(model->CurrentMatch(nullptr).destination_url.is_valid());
   EXPECT_EQ(GetExpectedSearchURL(expect_safe_search), web_contents->GetURL());
-}
-
-// static
-void PolicyTest::CheckYouTubeRestricted(
-    int youtube_restrict_mode,
-    const net::HttpRequestHeaders& headers) {
-  std::string header;
-  headers.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
-  if (youtube_restrict_mode == safe_search_util::YOUTUBE_RESTRICT_OFF) {
-    EXPECT_TRUE(header.empty());
-  } else if (youtube_restrict_mode ==
-             safe_search_util::YOUTUBE_RESTRICT_MODERATE) {
-    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueModerate);
-  } else if (youtube_restrict_mode ==
-             safe_search_util::YOUTUBE_RESTRICT_STRICT) {
-    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueStrict);
-  }
-}
-
-// static
-void PolicyTest::CheckAllowedDomainsHeader(
-    const std::string& allowed_domain,
-    const net::HttpRequestHeaders& headers) {
-  if (allowed_domain.empty()) {
-    EXPECT_TRUE(
-        !headers.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
-    return;
-  }
-
-  std::string header;
-  headers.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
-  EXPECT_EQ(header, allowed_domain);
 }
 
 // static
@@ -263,17 +176,6 @@ bool PolicyTest::IsShowingInterstitial(content::WebContents* tab) {
 void PolicyTest::WaitForInterstitial(content::WebContents* tab) {
   ASSERT_TRUE(IsShowingInterstitial(tab));
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
-}
-
-void PolicyTest::SendInterstitialCommand(
-    content::WebContents* tab,
-    security_interstitials::SecurityInterstitialCommand command) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          tab);
-  helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
-      ->CommandReceived(base::NumberToString(command));
-  return;
 }
 
 void PolicyTest::FlushBlocklistPolicy() {

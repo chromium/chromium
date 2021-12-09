@@ -29,6 +29,34 @@
 
 namespace policy {
 
+void CheckYouTubeRestricted(int youtube_restrict_mode,
+                            const net::HttpRequestHeaders& headers) {
+  std::string header;
+  headers.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
+  if (youtube_restrict_mode == safe_search_util::YOUTUBE_RESTRICT_OFF) {
+    EXPECT_TRUE(header.empty());
+  } else if (youtube_restrict_mode ==
+             safe_search_util::YOUTUBE_RESTRICT_MODERATE) {
+    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueModerate);
+  } else if (youtube_restrict_mode ==
+             safe_search_util::YOUTUBE_RESTRICT_STRICT) {
+    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueStrict);
+  }
+}
+
+void CheckAllowedDomainsHeader(const std::string& allowed_domain,
+                               const net::HttpRequestHeaders& headers) {
+  if (allowed_domain.empty()) {
+    EXPECT_TRUE(
+        !headers.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
+    return;
+  }
+
+  std::string header;
+  headers.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
+  EXPECT_EQ(header, allowed_domain);
+}
+
 class PolicyTestGoogle : public PolicyTest {
  public:
   PolicyTestGoogle() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
