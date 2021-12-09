@@ -1470,6 +1470,7 @@ source_set("chromeos") {
     "../ash/file_manager/open_with_browser.h",
     "../ash/file_manager/path_util.cc",
     "../ash/file_manager/path_util.h",
+    "../ash/file_manager/prefs_migration_uma.h",
     "../ash/file_manager/select_file_dialog_util.cc",
     "../ash/file_manager/select_file_dialog_util.h",
     "../ash/file_manager/snapshot_manager.cc",

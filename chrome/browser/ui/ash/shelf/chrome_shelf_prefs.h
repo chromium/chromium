@@ -80,6 +80,11 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
 
+  // Ensure the Files Chrome app pinned positions are appropriately migrated to
+  // the Files System Web App.
+  void MigrateFilesChromeAppToSWA(
+      app_list::AppListSyncableService* syncable_service);
+
   // This is run once each time ash launches. If the chrome app is not pinned
   // then this creates a pin for the chrome app.
   void EnsureChromePinned(app_list::AppListSyncableService* syncable_service);

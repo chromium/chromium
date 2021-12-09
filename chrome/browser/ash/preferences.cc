@@ -488,6 +488,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kFilesAppFolderShortcuts,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  registry->RegisterBooleanPref(
+      prefs::kFilesAppUIPrefsMigrated, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

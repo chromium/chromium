@@ -897,6 +897,10 @@ const char kProjectorCreationFlowLanguage[] =
 // across devices.
 const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
 
+// A boolean pref that indicates if the Files app UI prefs have migrated from
+// the Chrome app to System Web App.
+const char kFilesAppUIPrefsMigrated[] = "ash.filesapp.ui_prefs_migrated";
+
 // An integer pref counting the number of times the Onboarding flow has been
 // shown to the user inside the Projector Gallery.
 const char kProjectorGalleryOnboardingShowCount[] =

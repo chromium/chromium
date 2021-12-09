@@ -775,6 +775,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.SWA.PrefsMigrationStatus"
+    enum="FileManagerPrefsMigrationStatus" expires_after="2022-04-17">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Status of migration of preferences from Chrome app
+    version to System Web App
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.TeamDrivesCount" units="Team Drives"
     expires_after="M98">
   <owner>simmonsjosh@google.com</owner>

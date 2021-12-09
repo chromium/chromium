@@ -13,12 +13,15 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -382,6 +385,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
 
   if (ShouldPerformConsistencyMigrations()) {
     needs_consistency_migrations_ = false;
+    MigrateFilesChromeAppToSWA(syncable_service);
     EnsureChromePinned(syncable_service);
   }
 
@@ -523,6 +527,38 @@ void ChromeShelfPrefs::SetPinPosition(
 
 void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
   skip_pinned_apps_from_sync_for_test = true;
+}
+
+void ChromeShelfPrefs::MigrateFilesChromeAppToSWA(
+    app_list::AppListSyncableService* syncable_service) {
+  bool is_swa_enabled = chromeos::features::IsFileManagerSwaEnabled();
+
+  if (!is_swa_enabled ||
+      (is_swa_enabled &&
+       GetPrefs()->GetBoolean(ash::prefs::kFilesAppUIPrefsMigrated))) {
+    return;
+  }
+
+  // Avoid migrating the user prefs (even if the migration fails) to avoid
+  // overriding preferences that a user may set on the SWA explicitly.
+  GetPrefs()->SetBoolean(ash::prefs::kFilesAppUIPrefsMigrated, true);
+
+  using MigrationStatus = file_manager::FileManagerPrefsMigrationStatus;
+  if (!syncable_service->GetSyncItem(extension_misc::kFilesManagerAppId)) {
+    base::UmaHistogramEnumeration(file_manager::kPrefsMigrationStatusUMA,
+                                  MigrationStatus::kFailNoExistingPreferences);
+    return;
+  }
+  if (!syncable_service->TransferItemAttributes(
+          /*from_app=*/extension_misc::kFilesManagerAppId,
+          /*to_app=*/file_manager::kFileManagerSwaAppId)) {
+    base::UmaHistogramEnumeration(file_manager::kPrefsMigrationStatusUMA,
+                                  MigrationStatus::kFailMigratingPreferences);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(file_manager::kPrefsMigrationStatusUMA,
+                                MigrationStatus::kSuccess);
 }
 
 void ChromeShelfPrefs::EnsureChromePinned(

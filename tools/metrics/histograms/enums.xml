@@ -37310,6 +37310,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="OPEN_MEDIA_DEVICE_IMPORT"/>
 </enum>
 
+<enum name="FileManagerPrefsMigrationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to get existing preferences"/>
+  <int value="2" label="Fail to migrate preferences"/>
+</enum>
+
 <enum name="FileManagerQuickViewWayToOpen">
   <int value="0" label="Context menu"/>
   <int value="1" label="Space key"/>
