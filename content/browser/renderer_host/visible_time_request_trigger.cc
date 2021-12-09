@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
@@ -57,7 +56,6 @@ void VisibleTimeRequestTrigger::UpdateRequest(
     bool show_reason_tab_switching,
     bool show_reason_unoccluded,
     bool show_reason_bfcache_restore) {
-  last_update_request_stack_trace_ = base::debug::StackTrace();
   auto new_request = blink::mojom::RecordContentToVisibleTimeRequest::New(
       start_time, destination_is_loaded, show_reason_tab_switching,
       show_reason_unoccluded, show_reason_bfcache_restore);

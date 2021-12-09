@@ -4,11 +4,8 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 
-#include <ostream>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,8 +15,6 @@
 #include "content/browser/portal/portal.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -37,9 +32,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -385,19 +378,17 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 }
 
 // Validate that OOPIFs receive presentation feedbacks.
-// TODO(crbug.com/1270981): Remove extra debug logs once the flake has been
-// diagnosed.
+// TODO(crbug.com/1270981): Flaky.
+#if defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_PresentationFeedback DISABLED_PresentationFeedback
+#else
+#define MAYBE_PresentationFeedback PresentationFeedback
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       PresentationFeedback) {
-  using ::testing::IsEmpty;
-  using ::testing::SizeIs;
-
+                       MAYBE_PresentationFeedback) {
   base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Browser.Tabs.TotalSwitchDuration"),
-              IsEmpty());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
@@ -406,33 +397,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   GURL cross_site_url(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Browser.Tabs.TotalSwitchDuration"),
-              IsEmpty());
 
   auto* child_rwh_impl =
       root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
   // Hide the frame and make it visible again, to force it to record the
   // tab-switch time, which is generated from presentation-feedback.
   child_rwh_impl->WasHidden();
-
-  shell()->web_contents()->ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHost* rfh) {
-        auto* rwh_impl =
-            static_cast<RenderWidgetHostImpl*>(rfh->GetRenderWidgetHost());
-        VisibleTimeRequestTrigger* trigger =
-            rwh_impl->GetVisibleTimeRequestTrigger();
-        if (!trigger)
-          return;
-        blink::mojom::RecordContentToVisibleTimeRequestPtr request =
-            trigger->TakeRequest();
-        ASSERT_FALSE(request && request->show_reason_tab_switching)
-            << "A pre-existing tab switch request will interfere with the "
-               "test. Request was created at:"
-            << std::endl
-            << trigger->TakeLastUpdateRequestStackTrace().value();
-      }));
-
   child_rwh_impl->WasShown(blink::mojom::RecordContentToVisibleTimeRequest::New(
       base::TimeTicks::Now(),
       /* destination_is_loaded */ true,
@@ -447,13 +417,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     GiveItSomeTime();
   } while (histogram_tester
                .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
-               .size() < 1);
-
-  // The test only creates a single ContentToVisibleTimeRequest, so only one
-  // Browser.Tabs.TotalSwitchDuration histogram should be logged.
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Browser.Tabs.TotalSwitchDuration"),
-              SizeIs(1));
+               .size() != 1);
 }
 
 // Auto-resize is only implemented for Ash and GuestViews. So we need to inject

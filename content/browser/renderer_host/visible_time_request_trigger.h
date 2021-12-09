@@ -5,11 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_VISIBLE_TIME_REQUEST_TRIGGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_VISIBLE_TIME_REQUEST_TRIGGER_H_
 
-#include <utility>
-
-#include "base/debug/stack_trace.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
 namespace base {
@@ -83,22 +79,10 @@ class CONTENT_EXPORT VisibleTimeRequestTrigger {
     return is_tab_switch_metrics2_feature_enabled_;
   }
 
-  // Returns the stack trace where UpdateRequest was last called, or nullopt if
-  // it was never called.
-  absl::optional<base::debug::StackTrace> TakeLastUpdateRequestStackTrace() {
-    return std::move(last_update_request_stack_trace_);
-  }
-
  private:
   // The last visible event start request. This should only be set and
   // retrieved using UpdateRequest and TakeRequest.
   blink::mojom::RecordContentToVisibleTimeRequestPtr last_request_;
-
-  // Stack trace where `last_request_` was set.
-  // TODO(crbug.com/1270981): Remove this once the test flake in
-  // RenderWidgetHostViewChildFrameBrowserTest.PresentationFeedback is
-  // diagnosed.
-  absl::optional<base::debug::StackTrace> last_update_request_stack_trace_;
 
   bool is_tab_switch_metrics2_feature_enabled_;
 };
