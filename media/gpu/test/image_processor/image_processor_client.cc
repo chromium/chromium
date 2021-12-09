@@ -14,21 +14,16 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
-
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/platform_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace media {
 namespace test {
@@ -157,7 +152,6 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
                            CreateVideoFrameFromImage(input_image).get(),
                            *input_layout, VideoFrame::STORAGE_OWNED_MEMORY);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_TRUE_OR_RETURN_NULLPTR(
         input_storage_type == VideoFrame::STORAGE_DMABUFS ||
         input_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
@@ -171,9 +165,6 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
     return CloneVideoFrame(gpu_memory_buffer_factory_.get(),
                            CreateVideoFrameFromImage(input_image).get(),
                            *input_layout, input_storage_type, dst_buffer_usage);
-#else
-    return nullptr;
-#endif
   }
 }
 
@@ -195,7 +186,6 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
         base::TimeDelta(), false /* zero_initialize_memory*/);
   }
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   ASSERT_TRUE_OR_RETURN_NULLPTR(
       output_storage_type == VideoFrame::STORAGE_DMABUFS ||
       output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
@@ -211,9 +201,6 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
   }
   return output_frame;
-#else
-  return nullptr;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 }
 
 void ImageProcessorClient::FrameReady(size_t frame_index,
