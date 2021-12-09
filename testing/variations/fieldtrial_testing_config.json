@@ -1235,6 +1235,27 @@
             ]
         }
     ],
+    "AutofillMorePredictableDesktopUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021-12-09",
+                    "enable_features": [
+                        "AutofillCenterAlignedSuggestions",
+                        "AutofillTypeSpecificPopupWidth",
+                        "AutofillUseConsistentPopupSettingsIcons"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRendererFormCacheMemoryLeak": [
         {
             "platforms": [

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +56,12 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
 class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  public:
-  AutofillPopupBaseViewTest() = default;
+  AutofillPopupBaseViewTest() {
+    // The only test in this class is a regression test for the legacy
+    // implementation. Disable the new method for placing the bubble.
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillCenterAlignedSuggestions);
+  }
 
   AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
   AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
@@ -93,6 +99,9 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
   raw_ptr<AutofillPopupBaseView> view_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Regression test for crbug.com/391316
