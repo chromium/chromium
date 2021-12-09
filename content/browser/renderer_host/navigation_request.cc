@@ -3169,7 +3169,16 @@ void NavigationRequest::OnResponseStarted(
 
   if (network::IsUrlPotentiallyTrustworthy(url)) {
     // https://mikewest.github.io/corpp/#process-navigation-response
-    if (auto* const parent = GetParentFrame()) {
+    auto* parent = GetParentFrame();
+    // Fenced Frames should respect the outer frame's COEP.
+    // Note: we only check the outer document for fenced frames, because it's
+    // unclear if other embedded cases like Portals should inherit COEP from the
+    // embedder as well.
+    // TODO(https://crbug.com/1278207) add other embedded cases if needed.
+    if (GetNavigatingFrameType() == NavigatingFrameType::kFencedFrameRoot) {
+      parent = GetParentFrameOrOuterDocument();
+    }
+    if (parent) {
       const auto& parent_coep = parent->cross_origin_embedder_policy();
       CrossOriginEmbedderPolicyReporter* parent_coep_reporter =
           parent->coep_reporter();

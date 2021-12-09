@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Test COEP properties set for a Fenced Frame Tree</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+// This key is used by `resources/embeddee-coep-require-corp.https.html` to
+// let us know if a script inside has been executed.
+const corp_key = KEYS["embed_coep_require_corp"];
+
+// This key is used by `resources/embeddee-no-coep.https.html` to let us know
+// if a script inside has been executed.
+const no_coep_key = KEYS["embed_no_coep"];
+
+async function setupTest(test_type) {
+  switch (test_type) {
+    case "coep:require-corp":
+      return attachFencedFrame(`resources/embeddee-coep-require-corp.https.html`);
+      break;
+    case "no coep":
+      return attachFencedFrame(`resources/embeddee-no-coep.https.html`);
+      break;
+  }
+}
+
+promise_test(async () => {
+  const frame = setupTest("coep:require-corp");
+  const result = await nextValueFromServer(corp_key);
+  assert_equals(result, "PASS", "embedded page has been loaded.");
+}, "Create fencedframe with COEP:require-corp");
+
+promise_test(async () => {
+  const frame = setupTest("no coep");
+  const result = await nextValueFromServer(no_coep_key);
+  assert_equals(result, "PASS",
+                "page without COEP should be able to load page with COEP");
+}, "Create fencedframe without COEP header");
+
+</script>
+</body>

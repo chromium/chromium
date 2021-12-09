@@ -92,6 +92,9 @@ const KEYS = {
 
   "fenced_history_length"                       : "00000000-0000-0000-0000-00000000002F",
   "outer_page_ready_for_next_navigation"        : "00000000-0000-0000-0000-000000000030",
+
+  "embed_coep_require_corp"                     : "00000000-0000-0000-0000-000000000031",
+  "embed_no_coep"                               : "00000000-0000-0000-0000-000000000032",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
