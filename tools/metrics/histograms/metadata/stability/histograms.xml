@@ -143,7 +143,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Autofill"
-    enum="BadMessageReasonAutofill" expires_after="2022-09-16">
+    enum="BadMessageReasonAutofill" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by auto-fill. -->
+
   <owner>vollick@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -153,7 +155,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Chrome"
-    enum="BadMessageReasonChrome" expires_after="2021-12-12">
+    enum="BadMessageReasonChrome" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by //chrome. -->
+
   <owner>creis@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -164,7 +168,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Content"
-    enum="BadMessageReasonContent" expires_after="2022-05-22">
+    enum="BadMessageReasonContent" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by //content. -->
+
   <owner>jam@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -175,7 +181,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.BadMessageTerminated.Extensions"
     enum="BadMessageReasonExtensions" expires_after="never">
-<!-- expires-never: Monitoring core extension system health. -->
+<!-- expires-never: Monitoring renderer kills triggered by //extensions. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -187,31 +193,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.GuestView"
-    enum="BadMessageReasonGuestView" expires_after="M85">
+    enum="BadMessageReasonGuestView" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by GuestView. -->
+
   <owner>mcnee@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
   <summary>
     Count of processes killed because they sent a bad IPC that couldn't be
     properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from M85 to M97; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.NaCl"
-    enum="BadMessageReasonNaCl" expires_after="2020-11-01">
+    enum="BadMessageReasonNaCl" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by NaCl. -->
+
   <owner>creis@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
     Count of processes killed because they sent a NaCl IPC that couldn't be
     properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from 2020-11-01 to 2021-12-07; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.PasswordManager"
-    enum="BadMessageReasonPasswordManager" expires_after="M85">
+    enum="BadMessageReasonPasswordManager" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by password manager. -->
+
   <owner>creis@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
     Count of processes killed because they sent a bad IPC that couldn't be
     properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from M85 to M97; data may be missing.
   </summary>
 </histogram>
 
