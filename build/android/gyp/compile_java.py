@@ -331,14 +331,16 @@ class _InfoFileContext:
     if self._pool is None:
       return {}
     ret = {}
-    for result in self._results:
-      for java_file, package_name, class_names in result:
-        source = self._srcjar_files.get(java_file, java_file)
-        for fully_qualified_name in self._ProcessInfo(java_file, package_name,
-                                                      class_names, source):
-          if self._ShouldIncludeInJarInfo(fully_qualified_name):
-            ret[fully_qualified_name] = java_file
-    self._pool.terminate()
+    try:
+      for result in self._results:
+        for java_file, package_name, class_names in result:
+          source = self._srcjar_files.get(java_file, java_file)
+          for fully_qualified_name in self._ProcessInfo(java_file, package_name,
+                                                        class_names, source):
+            if self._ShouldIncludeInJarInfo(fully_qualified_name):
+              ret[fully_qualified_name] = java_file
+    finally:
+      self._pool.terminate()
     return ret
 
   def __del__(self):
