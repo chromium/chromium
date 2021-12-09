@@ -547,10 +547,6 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [3420],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [3440],
-  },
   # END chromeos/ section.
 
   # START components/ section.

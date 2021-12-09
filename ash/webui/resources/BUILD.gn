@@ -76,11 +76,6 @@ ash_generated_grit("firmware_update_app_resources") {
   deps = [ "//ash/webui/firmware_update_ui/resources:build_grd" ]
 }
 
-ash_generated_grit("system_extensions_internals_resources") {
-  source = "$root_gen_dir/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd"
-  deps = [ "//ash/webui/system_extensions_internals_ui:build_grd" ]
-}
-
 if (!is_official_build) {
   # Resources used by chrome://demo-mode-app
   ash_generated_grit("demo_mode_app_resources") {
