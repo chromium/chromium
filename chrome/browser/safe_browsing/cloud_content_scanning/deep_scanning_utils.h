@@ -156,9 +156,11 @@ enum class ScanningCrashKey {
   PENDING_FILE_UPLOADS,
   PENDING_TEXT_UPLOADS,
   PENDING_FILE_DOWNLOADS,
+  PENDING_PRINTS,
   TOTAL_FILE_UPLOADS,
   TOTAL_TEXT_UPLOADS,
-  TOTAL_FILE_DOWNLOADS
+  TOTAL_FILE_DOWNLOADS,
+  TOTAL_PRINTS
 };
 void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
 void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
