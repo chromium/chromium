@@ -267,13 +267,13 @@ class DroppedFrameCounterMainDropsSmoothnessTest
 
 class DroppedFrameCounterTest : public testing::Test {
  public:
-  DroppedFrameCounterTest() {
+  explicit DroppedFrameCounterTest(SmoothnessStrategy smoothness_strategy =
+                                       SmoothnessStrategy::kDefaultStrategy)
+      : smoothness_strategy_(smoothness_strategy) {
     dropped_frame_counter_.set_total_counter(&total_frame_counter_);
     dropped_frame_counter_.OnFcpReceived();
   }
   ~DroppedFrameCounterTest() override = default;
-
-  SmoothnessStrategy default_strategy = SmoothnessStrategy::kDefaultStrategy;
 
   // For each boolean in frame_states produces a frame
   void SimulateFrameSequence(std::vector<bool> frame_states, int repeat) {
@@ -359,22 +359,25 @@ class DroppedFrameCounterTest : public testing::Test {
     return percent_dropped.value();
   }
 
-  double PercentDroppedFrame95Percentile(SmoothnessStrategy strategy) {
+  double PercentDroppedFrame95Percentile() {
     return dropped_frame_counter_.SlidingWindow95PercentilePercentDropped(
-        strategy);
+        smoothness_strategy_);
   }
 
-  double PercentDroppedFrameMedian(SmoothnessStrategy strategy) {
-    return dropped_frame_counter_.SlidingWindowMedianPercentDropped(strategy);
+  double PercentDroppedFrameMedian() {
+    return dropped_frame_counter_.SlidingWindowMedianPercentDropped(
+        smoothness_strategy_);
   }
 
-  double PercentDroppedFrameVariance(SmoothnessStrategy strategy) {
-    return dropped_frame_counter_.SlidingWindowPercentDroppedVariance(strategy);
+  double PercentDroppedFrameVariance() {
+    return dropped_frame_counter_.SlidingWindowPercentDroppedVariance(
+        smoothness_strategy_);
   }
 
   const DroppedFrameCounter::SlidingWindowHistogram*
   GetSlidingWindowHistogram() {
-    return dropped_frame_counter_.GetSlidingWindowHistogram(default_strategy);
+    return dropped_frame_counter_.GetSlidingWindowHistogram(
+        smoothness_strategy_);
   }
 
   double GetTotalFramesInWindow() { return base::Seconds(1) / interval_; }
@@ -420,6 +423,8 @@ class DroppedFrameCounterTest : public testing::Test {
   base::TimeTicks frame_time_ = tick_clock_->NowTicks();
   base::TimeDelta interval_ = base::Microseconds(16667);  // 16.667 ms
 
+  SmoothnessStrategy smoothness_strategy_;
+
   viz::BeginFrameArgs SimulateBeginFrameArgs() {
     viz::BeginFrameId current_id_(source_id_, sequence_number_);
     viz::BeginFrameArgs args = viz::BeginFrameArgs();
@@ -430,7 +435,30 @@ class DroppedFrameCounterTest : public testing::Test {
   }
 };
 
-TEST_F(DroppedFrameCounterTest, SimplePattern1) {
+// Test class that supports parameterized tests for each of the different
+// SmoothnessStrategy.
+//
+// TODO(jonross): when we build the other strategies parameterize the
+// expectations.
+class SmoothnessStrategyDroppedFrameCounterTest
+    : public DroppedFrameCounterTest,
+      public testing::WithParamInterface<SmoothnessStrategy> {
+ public:
+  SmoothnessStrategyDroppedFrameCounterTest()
+      : DroppedFrameCounterTest(GetParam()) {}
+  ~SmoothnessStrategyDroppedFrameCounterTest() override = default;
+  SmoothnessStrategyDroppedFrameCounterTest(
+      const SmoothnessStrategyDroppedFrameCounterTest&) = delete;
+  SmoothnessStrategyDroppedFrameCounterTest& operator=(
+      const SmoothnessStrategyDroppedFrameCounterTest&) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DefaultStrategy,
+    SmoothnessStrategyDroppedFrameCounterTest,
+    ::testing::Values(SmoothnessStrategy::kDefaultStrategy));
+
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest, SimplePattern1) {
   // 2 out of every 3 frames are dropped (In total 80 frames out of 120).
   SimulateFrameSequence({true, true, true, false, true, false}, 20);
 
@@ -438,48 +466,47 @@ TEST_F(DroppedFrameCounterTest, SimplePattern1) {
   //    16 * <sequence> + {true, true, true, false
   // Which means a max of 67 dropped frames.
   EXPECT_EQ(std::round(MaxPercentDroppedFrame()), 67);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(default_strategy),
-            67);  // all values are in the
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);  // all values are in the
   // 65th-67th bucket, and as a result 95th percentile is also 67.
-  EXPECT_EQ(PercentDroppedFrameMedian(default_strategy), 65);
-  EXPECT_LE(PercentDroppedFrameVariance(default_strategy), 1);
+  EXPECT_EQ(PercentDroppedFrameMedian(), 65);
+  EXPECT_LE(PercentDroppedFrameVariance(), 1);
 }
 
-TEST_F(DroppedFrameCounterTest, SimplePattern2) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest, SimplePattern2) {
   // 1 out of every 5 frames are dropped (In total 24 frames out of 120).
   SimulateFrameSequence({false, false, false, false, true}, 24);
 
   double expected_percent_dropped_frame = (12 / GetTotalFramesInWindow()) * 100;
   EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(default_strategy),
+  EXPECT_EQ(PercentDroppedFrame95Percentile(),
             20);  // all values are in the
   // 20th bucket, and as a result 95th percentile is also 20.
-  EXPECT_EQ(PercentDroppedFrameMedian(default_strategy), 20);
-  EXPECT_LE(PercentDroppedFrameVariance(default_strategy), 1);
+  EXPECT_EQ(PercentDroppedFrameMedian(), 20);
+  EXPECT_LE(PercentDroppedFrameVariance(), 1);
 }
 
-TEST_F(DroppedFrameCounterTest, IncompleteWindow) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest, IncompleteWindow) {
   // There are only 5 frames submitted, so Max, 95pct, median and variance
   // should report zero.
   SimulateFrameSequence({false, false, false, false, true}, 1);
   EXPECT_EQ(MaxPercentDroppedFrame(), 0.0);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(default_strategy), 0);
-  EXPECT_EQ(PercentDroppedFrameMedian(default_strategy), 0);
-  EXPECT_LE(PercentDroppedFrameVariance(default_strategy), 1);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0);
+  EXPECT_EQ(PercentDroppedFrameMedian(), 0);
+  EXPECT_LE(PercentDroppedFrameVariance(), 1);
 }
 
-TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // First 60 frames have 20% dropped.
   SimulateFrameSequence({false, false, false, false, true}, 12);
 
   double expected_percent_dropped_frame1 =
       (12 / GetTotalFramesInWindow()) * 100;
   EXPECT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame1);
-  EXPECT_FLOAT_EQ(PercentDroppedFrame95Percentile(default_strategy),
+  EXPECT_FLOAT_EQ(PercentDroppedFrame95Percentile(),
                   20);  // There is only one
   // element in the histogram and that is 20.
-  EXPECT_EQ(PercentDroppedFrameMedian(default_strategy), 20);
-  EXPECT_LE(PercentDroppedFrameVariance(default_strategy), 1);
+  EXPECT_EQ(PercentDroppedFrameMedian(), 20);
+  EXPECT_LE(PercentDroppedFrameVariance(), 1);
 
   // 30 new frames are added that have 18 dropped frames.
   // and the 30 frame before that had 6 dropped frames.
@@ -501,7 +528,7 @@ TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // 1 value exist when we reach 60 frames and 1 value thereafter for each
   // frame added. So there 61 values in histogram. Last value is 70 (2 sampels)
   // and then 67 with 1 sample, which would be the 95th percentile.
-  EXPECT_EQ(PercentDroppedFrame95Percentile(default_strategy), 67);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);
 }
 
 TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {
@@ -525,7 +552,7 @@ TEST_F(DroppedFrameCounterTest, NoCrashForIntervalLargerThanWindow) {
   SimulateFrameSequence({false, false}, 1);
 }
 
-TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest, Percentile95WithIdleFrames) {
   // Test scenario:
   //  . 4s of 20% dropped frames.
   //  . 96s of idle time.
@@ -539,8 +566,7 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
       "kFps must be a multiple of 5 because this test depends on it.");
   SetInterval(kInterval);
 
-  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram(
-      DroppedFrameCounter::SmoothnessStrategy::kDefaultStrategy);
+  const auto* histogram = GetSlidingWindowHistogram();
 
   // First 4 seconds with 20% dropped frames.
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
@@ -558,7 +584,8 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
   EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
 }
 
-TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesWhileHidden) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest,
+       Percentile95WithIdleFramesWhileHidden) {
   // The test scenario is the same as |Percentile95WithIdleFrames| test:
   //  . 4s of 20% dropped frames.
   //  . 96s of idle time.
@@ -591,7 +618,8 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesWhileHidden) {
   EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
 }
 
-TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest,
+       Percentile95WithIdleFramesThenHide) {
   // The test scenario is the same as |Percentile95WithIdleFramesWhileHidden|:
   //  . 4s of 20% dropped frames.
   //  . 96s of idle time.
@@ -627,7 +655,7 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
 
 // Tests that when ResetPendingFrames updates the sliding window, that the max
 // PercentDroppedFrames is also updated accordingly. (https://crbug.com/1225307)
-TEST_F(DroppedFrameCounterTest,
+TEST_P(SmoothnessStrategyDroppedFrameCounterTest,
        ResetPendingFramesUpdatesMaxPercentDroppedFrames) {
   // This tests a scenario where gaps in frame production lead to having
   // leftover frames in the sliding window for calculations of
@@ -667,7 +695,7 @@ TEST_F(DroppedFrameCounterTest,
 
   // There should be enough sliding windows reported with 0 dropped frames that
   // the 95th percentile stays at 0.
-  EXPECT_EQ(PercentDroppedFrame95Percentile(default_strategy), 0u);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0u);
 }
 
 TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
