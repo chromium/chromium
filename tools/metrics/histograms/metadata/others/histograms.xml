@@ -5766,6 +5766,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EphemeralTab.Ctr" enum="BooleanOpened"
     expires_after="2021-12-12">
+  <obsolete>
+    Deprecated as of 12/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -5776,6 +5779,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EphemeralTab.CtrPeek" enum="BooleanOpened"
     expires_after="2021-12-12">
+  <obsolete>
+    Deprecated as of 12/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -5786,6 +5792,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EphemeralTab.DurationOpened" units="ms"
     expires_after="2021-12-12">
+  <obsolete>
+    Deprecated as of 12/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -5796,6 +5805,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EphemeralTab.DurationPeeked" units="ms"
     expires_after="2021-10-10">
+  <obsolete>
+    Deprecated as of 12/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>

@@ -62,7 +62,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final ActivityTabProvider mTabProvider;
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
-    private final EphemeralTabMetrics mMetrics = new EphemeralTabMetrics();
     private final boolean mCanPromoteToNewTab;
 
     private EphemeralTabMediator mMediator;
@@ -75,7 +74,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private GURL mUrl;
     private int mCurrentMaxViewHeight;
     private boolean mPeeked;
-    private boolean mViewed; // Moved up from peek state by user
     private boolean mFullyOpened;
 
     /**
@@ -132,8 +130,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             float topControlsHeight =
                     mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                     / mWindow.getDisplay().getDipScale();
-            mMediator = new EphemeralTabMediator(mBottomSheetController,
-                    new FaviconLoader(mContext), mMetrics, (int) topControlsHeight);
+            mMediator = new EphemeralTabMediator(
+                    mBottomSheetController, new FaviconLoader(mContext), (int) topControlsHeight);
         }
         if (mWebContents == null) {
             assert mSheetContent == null;
@@ -148,26 +146,16 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 }
 
                 @Override
-                public void onSheetOpened(@StateChangeReason int reason) {
-                    if (!mViewed) {
-                        mMetrics.recordMetricsForViewed();
-                        mViewed = true;
-                    }
-                }
-
-                @Override
                 public void onSheetStateChanged(int newState, int reason) {
                     if (mSheetContent == null) return;
                     switch (newState) {
                         case SheetState.PEEK:
                             if (!mPeeked) {
-                                mMetrics.recordMetricsForPeeked();
                                 mPeeked = true;
                             }
                             break;
                         case SheetState.FULL:
                             if (!mFullyOpened) {
-                                mMetrics.recordMetricsForOpened();
                                 mFullyOpened = true;
                             }
                             break;
@@ -191,7 +179,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         }
 
         mPeeked = false;
-        mViewed = false;
         mFullyOpened = false;
         mMediator.requestShowContent(url, title);
 
@@ -246,7 +233,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                     mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
             mTabCreator.get().createNewTab(new LoadUrlParams(mUrl.getSpec(), PageTransition.LINK),
                     TabLaunchType.FROM_LINK, mTabProvider.get());
-            mMetrics.recordOpenInNewTab();
         }
     }
 

@@ -6971,12 +6971,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="EphemeralTab.NavigateLink">
+  <obsolete>Deprecated as of 12/2021</obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <description>User navigated to a link inside the ephemeral tab.</description>
 </action>
 
 <action name="EphemeralTab.OpenInNewTab">
+  <obsolete>Deprecated as of 12/2021</obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <description>User promoted the ephemeral tab to the full tab.</description>
