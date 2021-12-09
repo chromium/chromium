@@ -112,7 +112,7 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return "DANGEROUS_URL";
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-      return "DANGEROUS";
+      return "THIS_IS_A_VERY_DANGEROUS_CONTENT_TYPE_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa";
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return "UNCOMMON";
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
