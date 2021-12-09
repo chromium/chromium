@@ -35,6 +35,10 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
+#if defined(OS_APPLE)
+#include "base/mac/backup_util.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -704,6 +708,15 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
     return false;
   }
 
+#if defined(OS_APPLE)
+  // This prevents backing up and then later restoring the file created above.
+  // Preventing backup saves space and bandwidth. There is little value in
+  // backing up this file since the metrics stored in this file will likely
+  // have already been uploaded at some point between the time the backup was
+  // created and the time it is restored.
+  base::mac::SetBackupExclusion(file_path);
+#endif
+
   Set(WrapUnique(new GlobalHistogramAllocator(
       std::make_unique<FilePersistentMemoryAllocator>(std::move(mmfile), 0, id,
                                                       name, false))));
@@ -827,6 +840,15 @@ bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
 
   if (success)
     success = ReplaceFile(temp_spare_path, spare_path, nullptr);
+
+#if defined(OS_APPLE)
+  // Then purpose of the "spare" file created above is to save time during the
+  // next startup, when this file can be used instead of creating a new one.
+  // However, this file is large, so it's not worth the storage and bandwidth
+  // costs to back up and restore it; instead, after restoration, a new file
+  // will be created on the next startup.
+  base::mac::SetBackupExclusion(spare_path);
+#endif
 
   if (!success)
     DeleteFile(temp_spare_path);
