@@ -77,7 +77,6 @@ constexpr int kActionsRowHorizontalSpacing = 8;
 constexpr int kContentRowHorizontalSpacing = 16;
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
-constexpr int kHeaderRowSpacing = 4;
 
 // Bullet character. The divider symbol between the title and the timestamp.
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
@@ -390,8 +389,12 @@ AshNotificationView::AshNotificationView(
                                views::MaximumFlexSizeRule::kUnbounded));
 
   static_cast<views::FlexLayout*>(header_row()->GetLayoutManager())
-      ->SetDefault(views::kMarginsKey, gfx::Insets(0, 0, 0, kHeaderRowSpacing))
+      ->SetDefault(views::kMarginsKey, gfx::Insets())
       .SetInteriorMargin(gfx::Insets());
+  header_row()->ConfigureLabelsStyle(
+      gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, kHeaderViewLabelSize,
+                    gfx::Font::Weight::NORMAL),
+      gfx::Insets(), true);
 
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

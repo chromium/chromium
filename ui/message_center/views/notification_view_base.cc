@@ -451,11 +451,14 @@ NotificationViewBase::CreateHeaderRowBuilder() {
     header_view_in_ash_notification_ = true;
 #endif
 
-  return views::Builder<NotificationHeaderView>()
-      .SetID(kHeaderRow)
-      .CopyAddressTo(&header_row_)
-      .SetCallback(base::BindRepeating(&NotificationViewBase::HeaderRowPressed,
-                                       base::Unretained(this)));
+  auto header_row_builder = views::Builder<NotificationHeaderView>()
+                                .SetID(kHeaderRow)
+                                .CopyAddressTo(&header_row_);
+  if (!header_view_in_ash_notification_) {
+    header_row_builder.SetCallback(base::BindRepeating(
+        &NotificationViewBase::HeaderRowPressed, base::Unretained(this)));
+  }
+  return header_row_builder;
 }
 
 views::Builder<views::BoxLayoutView>
