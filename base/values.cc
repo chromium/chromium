@@ -1192,18 +1192,6 @@ bool DictionaryValue::Get(StringPiece path, Value** out_value) {
   return as_const(*this).Get(path, const_cast<const Value**>(out_value));
 }
 
-bool DictionaryValue::GetBoolean(StringPiece path, bool* bool_value) const {
-  const Value* value;
-  if (!Get(path, &value))
-    return false;
-
-  if (bool_value && value->is_bool()) {
-    *bool_value = value->GetBool();
-    return true;
-  }
-  return value->is_bool();
-}
-
 bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
   const Value* value;
   if (!Get(path, &value))

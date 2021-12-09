@@ -697,9 +697,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // and the return value will be true if the path is valid and the value at
   // the end of the path can be returned in the form specified.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `Value::FindBoolKey(key)` or `Value::FindBoolPath(path)`
-  // instead.
-  bool GetBoolean(StringPiece path, bool* out_value) const;
   // DEPRECATED, use `Value::FindIntKey(key)` or `Value::FindIntPath(path)`
   // instead.
   bool GetInteger(StringPiece path, int* out_value) const;
