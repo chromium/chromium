@@ -5,10 +5,13 @@
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/values.h"
+#include "chromeos/dbus/fwupd/dbus_constants.h"
+#include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -18,14 +21,6 @@ namespace chromeos {
 namespace {
 
 FwupdClient* g_instance = nullptr;
-
-const char kFwupdServiceName[] = "org.freedesktop.fwupd";
-const char kFwupdServicePath[] = "/";
-const char kFwupdServiceInterface[] = "org.freedesktop.fwupd";
-const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
-const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
-const char kFwupdGetDevicesMethodName[] = "GetDevices";
-const char kFwupdInstallMethodName[] = "Install";
 
 }  // namespace
 
@@ -49,6 +44,12 @@ class FwupdClientImpl : public FwupdClient {
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&FwupdClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    properties_ = std::make_unique<FwupdProperties>(
+        proxy_, base::BindRepeating(&FwupdClientImpl::OnPropertyChanged,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    properties_->ConnectSignals();
+    properties_->GetAll();
   }
 
   void RequestUpdates(const std::string& device_id) override {
@@ -255,7 +256,6 @@ class FwupdClientImpl : public FwupdClient {
     if (!is_connected) {
       LOG(ERROR) << "Failed to connect to signal " << signal_name;
     }
-    DCHECK_EQ(kFwupdServiceInterface, interface_name);
   }
 
   // TODO(swifton): This is a stub implementation.
@@ -267,6 +267,14 @@ class FwupdClientImpl : public FwupdClient {
     if (client_is_in_testing_mode_) {
       ++device_signal_call_count_for_testing_;
     }
+  }
+
+  void OnPropertyChanged(const std::string& name) {
+    if (!features::IsFirmwareUpdaterAppEnabled())
+      return;
+
+    for (auto& observer : observers_)
+      observer.OnPropertiesChangedResponse(properties_.get());
   }
 
   dbus::ObjectProxy* proxy_ = nullptr;

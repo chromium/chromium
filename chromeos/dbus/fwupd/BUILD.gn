@@ -15,12 +15,15 @@ component("fwupd") {
   ]
 
   sources = [
+    "dbus_constants.h",
     "fake_fwupd_client.cc",
     "fake_fwupd_client.h",
     "fwupd_client.cc",
     "fwupd_client.h",
     "fwupd_device.cc",
     "fwupd_device.h",
+    "fwupd_properties.cc",
+    "fwupd_properties.h",
     "fwupd_update.cc",
     "fwupd_update.h",
   ]

@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -49,6 +50,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void OnUpdateListResponse(const std::string& device_id,
                             chromeos::FwupdUpdateList* updates) override;
   void OnInstallResponse(bool success) override;
+  // TODO(jimmyxgong): Implement this function to send property updates via
+  // mojo.
+  void OnPropertiesChangedResponse(
+      chromeos::FwupdProperties* properties) override {}
 
   // Query all updates for all devices.
   void RequestAllUpdates();

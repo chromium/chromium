@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -53,6 +54,10 @@ class MockObserver : public chromeos::FwupdClient::Observer {
                chromeos::FwupdUpdateList* updates),
               (override));
   MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
+  MOCK_METHOD(void,
+              OnPropertiesChangedResponse,
+              (chromeos::FwupdProperties * properties),
+              (override));
 };
 
 }  // namespace
@@ -77,8 +82,12 @@ class FwupdClientTest : public testing::Test {
                 GetObjectProxy(kFwupdServiceName, fwupd_service_path))
         .WillRepeatedly(testing::Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_, DoConnectToSignal(kFwupdServiceName, _, _, _))
+    EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
+
+    expected_properties_ = std::make_unique<chromeos::FwupdProperties>(
+        bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
+        base::DoNothing());
 
     fwupd_client_ = FwupdClient::Create();
     fwupd_client_->InitForTesting(bus_.get());
@@ -125,12 +134,26 @@ class FwupdClientTest : public testing::Test {
 
   void SetInstallState(bool success) { install_success_ = success; }
 
+  void CheckPropertyChanged(FwupdProperties* properties) {
+    if (properties->percentage.is_valid()) {
+      CHECK_EQ(expected_properties_->percentage.value(),
+               properties->percentage.value());
+    }
+
+    if (properties->status.is_valid()) {
+      CHECK_EQ(expected_properties_->status.value(),
+               properties->status.value());
+    }
+  }
+
   void AddDbusMethodCallResultSimulation(
       std::unique_ptr<dbus::Response> response,
       std::unique_ptr<dbus::ErrorResponse> error_response) {
     dbus_method_call_simulated_results_.emplace_back(std::move(response),
                                                      std::move(error_response));
   }
+
+  FwupdProperties* GetProperties() { return fwupd_client_->properties_.get(); }
 
  protected:
   // Synchronously passes |signal| to |client_|'s handler, simulating the signal
@@ -145,6 +168,7 @@ class FwupdClientTest : public testing::Test {
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
   std::unique_ptr<FwupdClient> fwupd_client_;
+  std::unique_ptr<chromeos::FwupdProperties> expected_properties_;
 
  private:
   // Handles calls to |proxy_|'s ConnectToSignal() method.
@@ -153,7 +177,6 @@ class FwupdClientTest : public testing::Test {
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
-    CHECK_EQ(interface_name, kFwupdServiceName);
     signal_callbacks_[signal_name] = signal_callback;
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -308,6 +331,23 @@ TEST_F(FwupdClientTest, Install) {
                                std::map<std::string, bool>());
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, PropertiesChanged) {
+  const uint32_t expected_percentage = 50u;
+  const uint32_t expected_status = 1u;
+
+  expected_properties_->percentage.ReplaceValue(expected_percentage);
+  expected_properties_->status.ReplaceValue(expected_status);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, OnPropertiesChangedResponse(_))
+      .Times(2)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckPropertyChanged));
+  fwupd_client_->AddObserver(&observer);
+
+  GetProperties()->percentage.ReplaceValue(expected_percentage);
+  GetProperties()->status.ReplaceValue(expected_status);
 }
 
 }  // namespace chromeos

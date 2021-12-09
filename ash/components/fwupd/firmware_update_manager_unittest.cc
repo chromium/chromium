@@ -100,7 +100,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
                 GetObjectProxy(kFwupdServiceName, fwupd_service_path))
         .WillRepeatedly(testing::Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_, DoConnectToSignal(kFwupdServiceName, _, _, _))
+    EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Return());
 
     dbus_client_ = FwupdClient::Create();
@@ -419,6 +419,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   // Create a temporary file to simulate a .cab available for install.
   base::WriteFile(full_path, "", 0);
   EXPECT_TRUE(base::PathExists(full_path));
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, GetOnInstallResponseCallbackCallCountForTesting());
   StartInstall(std::string(kFakeDeviceIdForTesting), /*release=*/0);

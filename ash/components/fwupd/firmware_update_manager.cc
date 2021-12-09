@@ -166,8 +166,10 @@ void FirmwareUpdateManager::OnCacheDirectoryCreated(
   // to remain dynamic.
   // Fwupd Install Dbus flags, flag documentation can be found in
   // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h#L749.
-  std::map<std::string, bool> options = {
-      {"none", false}, {"force", true}, {"allow-older", true}};
+  std::map<std::string, bool> options = {{"none", false},
+                                         {"force", true},
+                                         {"allow-older", true},
+                                         {"allow-reinstall", true}};
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&OpenFileAndGetFileDescriptor, patch_path),
