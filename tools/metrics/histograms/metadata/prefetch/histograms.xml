@@ -554,6 +554,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrefetchProxy.WasPrefetchTypeStateChangeValid"
+    enum="BooleanSupported" expires_after="2022-06-08">
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records whether a pretch type change was or was not supported by the
+    PrefetchProxy code. A page can change the speculation rule for a given
+    prefetch, but not all possible changes are currently supported. If the type
+    change is not supported then the prefetch retains its initial type.
+
+    This histogram is recorded each time the type of a prefetch is attempted to
+    be changed.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

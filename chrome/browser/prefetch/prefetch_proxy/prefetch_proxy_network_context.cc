@@ -27,8 +27,10 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-PrefetchProxyNetworkContext::PrefetchProxyNetworkContext(Profile* profile)
-    : profile_(profile) {}
+PrefetchProxyNetworkContext::PrefetchProxyNetworkContext(Profile* profile,
+                                                         bool is_isolated,
+                                                         bool use_proxy)
+    : profile_(profile), is_isolated_(is_isolated), use_proxy_(use_proxy) {}
 
 PrefetchProxyNetworkContext::~PrefetchProxyNetworkContext() = default;
 
@@ -41,14 +43,22 @@ network::mojom::NetworkContext* PrefetchProxyNetworkContext::GetNetworkContext()
 network::mojom::URLLoaderFactory*
 PrefetchProxyNetworkContext::GetUrlLoaderFactory() {
   if (!url_loader_factory_) {
-    CreateIsolatedUrlLoaderFactory();
+    if (is_isolated_) {
+      CreateIsolatedUrlLoaderFactory();
+      DCHECK(network_context_);
+    } else {
+      // TODO(crbug.com/1278103): Use
+      // RenderFrameHost::CreateNetworkServiceDefaultFactory if possible.
+      url_loader_factory_ = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
+    }
   }
-  DCHECK(network_context_);
   DCHECK(url_loader_factory_);
   return url_loader_factory_.get();
 }
 
 network::mojom::CookieManager* PrefetchProxyNetworkContext::GetCookieManager() {
+  DCHECK(is_isolated_);
   DCHECK(network_context_);
   if (!cookie_manager_)
     network_context_->GetCookieManager(
@@ -60,6 +70,10 @@ network::mojom::CookieManager* PrefetchProxyNetworkContext::GetCookieManager() {
 void PrefetchProxyNetworkContext::CreateNewUrlLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     absl::optional<net::IsolationInfo> isolation_info) {
+  // Since PrefetchProxy code doesn't handle same origin prefetches with
+  // subresources, we don't have to worry about this function being called when
+  // network_context_ is not bound.
+  DCHECK(is_isolated_);
   DCHECK(network_context_);
 
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
@@ -75,11 +89,13 @@ void PrefetchProxyNetworkContext::CreateNewUrlLoaderFactory(
 }
 
 void PrefetchProxyNetworkContext::CloseIdleConnections() {
-  DCHECK(network_context_);
-  network_context_->CloseIdleConnections(base::DoNothing());
+  if (network_context_)
+    network_context_->CloseIdleConnections(base::DoNothing());
 }
 
 void PrefetchProxyNetworkContext::CreateIsolatedUrlLoaderFactory() {
+  DCHECK(is_isolated_);
+
   network_context_.reset();
   url_loader_factory_.reset();
 
@@ -93,11 +109,6 @@ void PrefetchProxyNetworkContext::CreateIsolatedUrlLoaderFactory() {
       version_info::GetMajorVersionNumber());
   context_params->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-  context_params->initial_custom_proxy_config =
-      prefetch_proxy_service->proxy_configurator()->CreateCustomProxyConfig();
-  context_params->custom_proxy_connection_observer_remote =
-      prefetch_proxy_service->proxy_configurator()
-          ->NewProxyConnectionObserverRemote();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {
@@ -108,13 +119,21 @@ void PrefetchProxyNetworkContext::CreateIsolatedUrlLoaderFactory() {
   context_params->http_cache_enabled = true;
   DCHECK(!context_params->http_cache_path);
 
-  // Register a client config receiver so that updates to the set of proxy hosts
-  // or proxy headers will be updated.
-  mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
-  context_params->custom_proxy_config_client_receiver =
-      config_client.BindNewPipeAndPassReceiver();
-  prefetch_proxy_service->proxy_configurator()->AddCustomProxyConfigClient(
-      std::move(config_client), base::DoNothing());
+  if (use_proxy_) {
+    context_params->initial_custom_proxy_config =
+        prefetch_proxy_service->proxy_configurator()->CreateCustomProxyConfig();
+    context_params->custom_proxy_connection_observer_remote =
+        prefetch_proxy_service->proxy_configurator()
+            ->NewProxyConnectionObserverRemote();
+
+    // Register a client config receiver so that updates to the set of proxy
+    // hosts or proxy headers will be updated.
+    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
+    context_params->custom_proxy_config_client_receiver =
+        config_client.BindNewPipeAndPassReceiver();
+    prefetch_proxy_service->proxy_configurator()->AddCustomProxyConfigClient(
+        std::move(config_client), base::DoNothing());
+  }
 
   // Explicitly disallow network service features which could cause a privacy
   // leak.
@@ -125,13 +144,15 @@ void PrefetchProxyNetworkContext::CreateIsolatedUrlLoaderFactory() {
   content::CreateNetworkContextInNetworkService(
       network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 
-  // Configure a context client to ensure Web Reports and other privacy leak
-  // surfaces won't be enabled.
-  mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<PrefetchProxyNetworkContextClient>(),
-      client_remote.InitWithNewPipeAndPassReceiver());
-  network_context_->SetClient(std::move(client_remote));
+  if (use_proxy_) {
+    // Configure a context client to ensure Web Reports and other privacy leak
+    // surfaces won't be enabled.
+    mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<PrefetchProxyNetworkContextClient>(),
+        client_remote.InitWithNewPipeAndPassReceiver());
+    network_context_->SetClient(std::move(client_remote));
+  }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
 

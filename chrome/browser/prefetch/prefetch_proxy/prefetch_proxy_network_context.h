@@ -23,7 +23,9 @@ class Profile;
 // any cookies.
 class PrefetchProxyNetworkContext {
  public:
-  explicit PrefetchProxyNetworkContext(Profile* profile);
+  PrefetchProxyNetworkContext(Profile* profile,
+                              bool is_isolated,
+                              bool use_proxy);
   ~PrefetchProxyNetworkContext();
 
   PrefetchProxyNetworkContext(const PrefetchProxyNetworkContext&) = delete;
@@ -63,6 +65,13 @@ class PrefetchProxyNetworkContext {
 
   // The profile to use when configuring |network_context_|.
   Profile* profile_;
+
+  // Whether an isolated network context should be used, or if the default
+  // network context should be used.
+  const bool is_isolated_;
+
+  // Whether the network context should be configured to use the Prefetch Proxy.
+  const bool use_proxy_;
 
   // The network context and URL loader factory to use when making prefetches.
   mojo::Remote<network::mojom::NetworkContext> network_context_;

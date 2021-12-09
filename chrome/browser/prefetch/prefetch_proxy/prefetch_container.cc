@@ -4,19 +4,46 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/gurl.h"
 
 PrefetchContainer::PrefetchContainer(const GURL& url,
+                                     const PrefetchType& prefetch_type,
                                      size_t original_prediction_index)
-    : url_(url), original_prediction_index_(original_prediction_index) {}
+    : url_(url),
+      prefetch_type_(prefetch_type),
+      original_prediction_index_(original_prediction_index) {}
 
 PrefetchContainer::~PrefetchContainer() = default;
+
+void PrefetchContainer::ChangePrefetchType(
+    const PrefetchType& new_prefetch_type) {
+  // The only supported state change is to upgrade a private cross origin
+  // prefetch to allow for subresources to be prefetched. Other state changes
+  // would require changing |network_context_| which is not supported yet.
+  bool supported_state_change =
+      prefetch_type_.IsIsolatedNetworkContextRequired() &&
+      prefetch_type_.IsProxyRequired() &&
+      !prefetch_type_.AllowedToPrefetchSubresources() &&
+      new_prefetch_type.IsIsolatedNetworkContextRequired() &&
+      new_prefetch_type.IsProxyRequired() &&
+      new_prefetch_type.AllowedToPrefetchSubresources();
+
+  // TODO(crbug.com/1278104): Add support for other prefetch type state changes.
+  if (supported_state_change) {
+    prefetch_type_ = new_prefetch_type;
+  }
+
+  base::UmaHistogramBoolean("PrefetchProxy.WasPrefetchTypeStateChangeValid",
+                            supported_state_change);
+}
 
 PrefetchProxyPrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
   DCHECK(prefetch_status_);
@@ -74,7 +101,7 @@ PrefetchContainer::ClonePrefetchedResponse() const {
 
 void PrefetchContainer::SetNoStatePrefetchStatus(
     NoStatePrefetchStatus no_state_prefetch_status) {
-  DCHECK(allowed_to_prefetch_subresources_);
+  DCHECK(prefetch_type_.AllowedToPrefetchSubresources());
 
   // The only valid state changes are: kNotStarted to kInProgress, kInProgress
   // to kSucceeded, and kInProgress to kFailed.
@@ -89,7 +116,9 @@ void PrefetchContainer::SetNoStatePrefetchStatus(
 }
 
 void PrefetchContainer::CreateNetworkContextForPrefetch(Profile* profile) {
-  network_context_ = std::make_unique<PrefetchProxyNetworkContext>(profile);
+  network_context_ = std::make_unique<PrefetchProxyNetworkContext>(
+      profile, prefetch_type_.IsIsolatedNetworkContextRequired(),
+      prefetch_type_.IsProxyRequired());
 }
 
 std::unique_ptr<PrefetchProxyNetworkContext>

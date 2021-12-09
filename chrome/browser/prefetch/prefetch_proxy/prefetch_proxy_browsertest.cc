@@ -548,15 +548,17 @@ class PrefetchProxyBrowserTest
   }
 
   void InsertSpeculation(bool subresources,
+                         bool use_prefetch_proxy,
                          const std::vector<GURL>& prefetch_urls) {
     std::string speculation_script = R"(
       var script = document.createElement('script');
       script.type = 'speculationrules';
       script.text = `{)";
-    if (subresources)
+    if (subresources) {
       speculation_script.append(R"("prefetch_with_subresources": [{)");
-    else
+    } else {
       speculation_script.append(R"("prefetch": [{)");
+    }
     speculation_script.append(R"("source": "list",
           "urls": [)");
 
@@ -567,8 +569,12 @@ class PrefetchProxyBrowserTest
       first = false;
       speculation_script.append("\"").append(url.spec()).append("\"");
     }
-    speculation_script.append(R"(],
-          "requires": ["anonymous-client-ip-when-cross-origin"]
+    speculation_script.append("]");
+
+    if (use_prefetch_proxy)
+      speculation_script.append(R"(,
+          "requires": ["anonymous-client-ip-when-cross-origin"])");
+    speculation_script.append(R"(
         }]
       }`;
       document.head.appendChild(script);)");
@@ -4071,7 +4077,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // Make sure we are on a valid referring page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetReferringPageServerURL("/search/q=blah")));
-  InsertSpeculation(true, {eligible_link});
+  InsertSpeculation(true, true, {eligible_link});
 
   // This run loop will quit when all the prefetch responses have been
   // successfully done and processed.
@@ -4237,7 +4243,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // Make sure we are on a valid referring page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetReferringPageServerURL("/search/q=blah")));
-  InsertSpeculation(false, {prefetch_url});
+  InsertSpeculation(false, true, {prefetch_url});
 
   // This run loop will quit when the prefetch response has been successfully
   // done and processed.
@@ -4275,7 +4281,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // Make sure we are on a valid referring page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetReferringPageServerURL("/search/q=blah")));
-  InsertSpeculation(false, {prefetch_url});
+  InsertSpeculation(false, true, {prefetch_url});
 
   // This run loop will quit when the prefetch response has been successfully
   // done and processed.
@@ -4288,7 +4294,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   GURL prefetch_url_2 = GetOriginServerURL("/title1.html");
   tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop_2.QuitClosure());
   tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url_2});
-  InsertSpeculation(false, {prefetch_url_2});
+  InsertSpeculation(false, true, {prefetch_url_2});
 
   // This run loop will quit when the prefetch response has been successfully
   // done and processed.
@@ -4548,4 +4554,203 @@ IN_PROC_BROWSER_TEST_F(IndividualNetworkContextsPrefetchProxyBrowserTest,
             content::GetCookies(
                 browser()->profile(), eligible_link_1,
                 net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+}
+
+class SpeculationOnlyPrivatePrefetchesPrefetchProxyTest
+    : public PrefetchProxyBrowserTest {
+ public:
+  void SetFeatures() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIsolatePrerenders,
+          {
+              {"use_speculation_rules", "true"},
+              {"max_srp_prefetches", "3"},
+              {"use_individual_network_contexts", "true"},
+              {"support_non_private_prefetches", "false"},
+          }},
+         {blink::features::kLightweightNoStatePrefetch, {}},
+         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
+        {{features::kLazyImageLoading}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SpeculationOnlyPrivatePrefetchesPrefetchProxyTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(SkipNonPrivatePrefetches)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  SetDataSaverEnabled(true);
+
+  GURL starting_page = GetReferringPageServerURL("/search/q=blah");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch_page.html");
+
+  // Specify that this speculation does not require use of the prefetch
+  // proxy. Since non-private prefetches are disabled, then the speculation rule
+  // for |eligible_link| should be ignored, and therefore we won't prefetch
+  // |eligible_link| not be prefetched.
+  InsertSpeculation(false, false, {eligible_link});
+  base::RunLoop().RunUntilIdle();
+
+  // Check that no prefetch was attempted.
+  EXPECT_EQ(tab_helper->srp_metrics().predicted_urls_count_, 0U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 0U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 0U);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
+  EXPECT_FALSE(tab_helper->after_srp_metrics());
+}
+
+class SpeculationNonPrivatePrefetchesPrefetchProxyTest
+    : public PrefetchProxyBrowserTest {
+ public:
+  void SetFeatures() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIsolatePrerenders,
+          {
+              {"use_speculation_rules", "true"},
+              {"max_srp_prefetches", "3"},
+              {"use_individual_network_contexts", "true"},
+              {"support_non_private_prefetches", "true"},
+          }},
+         {blink::features::kLightweightNoStatePrefetch, {}},
+         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
+        {{features::kLazyImageLoading}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SpeculationNonPrivatePrefetchesPrefetchProxyTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(SuccessfulNonPrivateCrossOriginPrefetch)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  SetDataSaverEnabled(true);
+
+  GURL starting_page = GetReferringPageServerURL("/search/q=blah");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  // Specify that this speculation does not require use of the prefetch
+  // proxy.
+  InsertSpeculation(false, false, {eligible_link});
+
+  prefetch_run_loop.Run();
+
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 1U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 1U);
+
+  // The prefetch requests shouldn't use the proxy and should  go directly to
+  // the origin server.
+  EXPECT_EQ(proxy_server_requests().size(), 0U);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      tab_helper->after_srp_metrics()->prefetch_status_,
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe));
+
+  // The cookies from the prefetch should be copied from the isolated network
+  // context to the default network context.
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 1, 1);
+
+  EXPECT_EQ("type=ChocolateChip",
+            content::GetCookies(
+                browser()->profile(), eligible_link,
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SpeculationNonPrivatePrefetchesPrefetchProxyTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(SuccessfulNonPrivateSameOriginPrefetch)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  SetDataSaverEnabled(true);
+
+  GURL starting_page = GetOriginServerURL("/search/q=blah");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+                                       url::Origin::Create(starting_page));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  // Specify that this speculation does not require use of the prefetch proxy..
+  InsertSpeculation(false, false, {eligible_link});
+
+  prefetch_run_loop.Run();
+
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 1U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 1U);
+
+  // The prefetch requests shouldn't use the proxy and should  go directly to
+  // the origin server.
+  EXPECT_EQ(proxy_server_requests().size(), (unsigned int)0);
+
+  // The prefetch should be made using the default network context, so the
+  // cookie should be present once the prefetch is complete.
+  EXPECT_EQ("type=ChocolateChip",
+            content::GetCookies(
+                browser()->profile(), eligible_link,
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      tab_helper->after_srp_metrics()->prefetch_status_,
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe));
+
+  // The prefetch should be made using the default network context so there
+  // should be no copying of cookies.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 0, 1);
 }

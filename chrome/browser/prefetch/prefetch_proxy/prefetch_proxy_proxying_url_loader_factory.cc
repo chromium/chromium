@@ -98,6 +98,9 @@ void CheckRedirectsBeforeRunningResourceSuccessfulCallback(
   for (const GURL& url : resources) {
     PrefetchProxyTabHelper::CheckEligibilityOfURL(
         profile, url,
+        PrefetchType(/*use_isolated_network_context=*/true,
+                     /*use_prefetch_proxy=*/true,
+                     /*can_prefetch_subresources=*/true),
         base::BindOnce(&SingleURLEligibilityCheckResult, resources, callback,
                        success_count));
   }
@@ -414,6 +417,9 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     // flag if so.
     PrefetchProxyTabHelper::CheckEligibilityOfURL(
         profile, request.url,
+        PrefetchType(/*use_isolated_network_context=*/true,
+                     /*use_prefetch_proxy=*/true,
+                     /*can_prefetch_subresources=*/true),
         base::BindOnce(
             &PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult,
             weak_factory_.GetWeakPtr(), profile, std::move(loader_receiver),

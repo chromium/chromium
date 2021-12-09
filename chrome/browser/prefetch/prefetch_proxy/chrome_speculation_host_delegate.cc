@@ -7,6 +7,8 @@
 #include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -35,14 +37,15 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   auto* prefetch_proxy_tab_helper =
       PrefetchProxyTabHelper::FromWebContents(web_contents);
 
-  // TODO(ryansturm): Handle non-private speculations.
-  // https://crbug.com/1190331
   if (!prefetch_proxy_tab_helper)
     return;
 
-  std::vector<GURL> private_prefetches;
-  std::vector<GURL> private_prefetches_with_subresources;
+  // The set of prefetches to be handled by the PrefetchProxy code.
+  std::vector<std::pair<GURL, PrefetchType>> prefetches;
 
+  // Same origin prefetches with subresources are handled by NSP.
+  // TODO(crbug.com/1278102): Allow for the PrefetchProxy code to handle
+  // non-private prefetches with subresources.
   std::vector<GURL> same_origin_prefetches_with_subresources;
 
   const url::Origin origin = render_frame_host_.GetLastCommittedOrigin();
@@ -58,9 +61,6 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
             candidate->requires_anonymous_client_ip_when_cross_origin &&
             !is_same_origin;
 
-        if (!private_prefetch && !is_same_origin)
-          return false;
-
         if (is_same_origin) {
           DCHECK(!private_prefetch);
           if (candidate->action ==
@@ -68,19 +68,47 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
             same_origin_prefetches_with_subresources.push_back(candidate->url);
             return true;
           }
+          if (PrefetchProxySupportNonPrivatePrefetches() &&
+              candidate->action == blink::mojom::SpeculationAction::kPrefetch) {
+            prefetches.emplace_back(
+                candidate->url,
+                PrefetchType(/*use_isolated_network_context=*/false,
+                             /*use_prefetch_proxy=*/false,
+                             /*can_prefetch_subresources=*/false));
+            return true;
+          }
           return false;
         }
 
-        if (!private_prefetch)
-          return false;
         if (candidate->action ==
             blink::mojom::SpeculationAction::kPrefetchWithSubresources) {
-          private_prefetches_with_subresources.push_back(candidate->url);
-          return true;
+          if (private_prefetch) {
+            prefetches.emplace_back(
+                candidate->url,
+                PrefetchType(/*use_isolated_network_context=*/true,
+                             /*use_prefetch_proxy=*/true,
+                             /*can_prefetch_subresources=*/true));
+            return true;
+          }
+          return false;
         }
         if (candidate->action == blink::mojom::SpeculationAction::kPrefetch) {
-          private_prefetches.push_back(candidate->url);
-          return true;
+          if (PrefetchProxySupportNonPrivatePrefetches() && !private_prefetch) {
+            prefetches.emplace_back(
+                candidate->url,
+                PrefetchType(/*use_isolated_network_context=*/true,
+                             /*use_prefetch_proxy=*/false,
+                             /*can_prefetch_subresources=*/false));
+            return true;
+          }
+          if (private_prefetch) {
+            prefetches.emplace_back(
+                candidate->url,
+                PrefetchType(/*use_isolated_network_context=*/true,
+                             /*use_prefetch_proxy=*/true,
+                             /*can_prefetch_subresources=*/false));
+            return true;
+          }
         }
         return false;
       };
@@ -91,11 +119,9 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   candidates.erase(new_end, candidates.end());
 
   // TODO(ryansturm): Handle CSP prefetch-src. https://crbug.com/1192857
-  if (private_prefetches.size() ||
-      private_prefetches_with_subresources.size()) {
+  if (prefetches.size()) {
     prefetch_proxy_tab_helper->PrefetchSpeculationCandidates(
-        private_prefetches_with_subresources, private_prefetches,
-        render_frame_host_.GetLastCommittedURL());
+        prefetches, render_frame_host_.GetLastCommittedURL());
   }
 
   if (same_origin_prefetches_with_subresources.size() > 0) {

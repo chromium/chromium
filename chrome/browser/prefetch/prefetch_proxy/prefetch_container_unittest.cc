@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
@@ -73,25 +74,31 @@ class PrefetchContainerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(PrefetchContainerTest, ConstructContainer) {
   GURL test_url = GURL("https://www.test.com/");
+  PrefetchType test_type = PrefetchType(/*use_isolated_network_context=*/true,
+                                        /*use_prefetch_proxy=*/true,
+                                        /*can_prefetch_subresources=*/false);
   size_t test_prediction_index = 4;
 
-  PrefetchContainer prefetch_container(test_url, test_prediction_index);
+  PrefetchContainer prefetch_container(test_url, test_type,
+                                       test_prediction_index);
 
   EXPECT_EQ(prefetch_container.GetUrl(), test_url);
   EXPECT_EQ(prefetch_container.GetOriginalPredictionIndex(),
             test_prediction_index);
-  EXPECT_FALSE(prefetch_container.AllowedToPrefetchSubresources());
+  EXPECT_EQ(prefetch_container.GetPrefetchType(), test_type);
   EXPECT_FALSE(prefetch_container.IsDecoy());
-
-  prefetch_container.SetAllowedToPrefetchSubresources(true);
-  EXPECT_TRUE(prefetch_container.AllowedToPrefetchSubresources());
 
   prefetch_container.SetIsDecoy(true);
   EXPECT_TRUE(prefetch_container.IsDecoy());
 }
 
 TEST_F(PrefetchContainerTest, PrefetchStatus) {
-  PrefetchContainer prefetch_container(GURL("https://www.test.com/"), 0);
+  PrefetchContainer prefetch_container(
+      GURL("https://www.test.com/"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/false),
+      0);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
 
@@ -105,7 +112,12 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
 
 TEST_F(PrefetchContainerTest, CookieListener) {
   GURL test_url = GURL("https://www.test.com/");
-  PrefetchContainer prefetch_container(test_url, 0);
+  PrefetchContainer prefetch_container(
+      test_url,
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/false),
+      0);
 
   EXPECT_FALSE(prefetch_container.HaveCookiesChanged());
 
@@ -119,7 +131,12 @@ TEST_F(PrefetchContainerTest, CookieListener) {
 }
 
 TEST_F(PrefetchContainerTest, HandlePrefetchedResponse) {
-  PrefetchContainer prefetch_container(GURL("https://www.test.com/"), 0);
+  PrefetchContainer prefetch_container(
+      GURL("https://www.test.com/"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/false),
+      0);
   EXPECT_FALSE(prefetch_container.HasPrefetchedResponse());
 
   std::string body = "test_body";
@@ -145,7 +162,12 @@ TEST_F(PrefetchContainerTest, HandlePrefetchedResponse) {
 }
 
 TEST_F(PrefetchContainerTest, IsPrefetchedResponseValid) {
-  PrefetchContainer prefetch_container(GURL("https://www.test.com/"), 0);
+  PrefetchContainer prefetch_container(
+      GURL("https://www.test.com/"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/false),
+      0);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchedResponse());
   EXPECT_FALSE(
@@ -165,11 +187,14 @@ TEST_F(PrefetchContainerTest, IsPrefetchedResponseValid) {
 }
 
 TEST_F(PrefetchContainerTest, NoStatePrefetchStatus) {
-  PrefetchContainer prefetch_container(GURL("https://www.test.com/"), 0);
+  PrefetchContainer prefetch_container(
+      GURL("https://www.test.com/"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/true),
+      0);
   EXPECT_EQ(prefetch_container.GetNoStatePrefetchStatus(),
             PrefetchContainer::NoStatePrefetchStatus::kNotStarted);
-
-  prefetch_container.SetAllowedToPrefetchSubresources(true);
 
   prefetch_container.SetNoStatePrefetchStatus(
       PrefetchContainer::NoStatePrefetchStatus::kInProgress);
@@ -182,6 +207,56 @@ TEST_F(PrefetchContainerTest, NoStatePrefetchStatus) {
 
   EXPECT_EQ(prefetch_container.GetNoStatePrefetchStatus(),
             PrefetchContainer::NoStatePrefetchStatus::kSucceeded);
+}
+
+TEST_F(PrefetchContainerTest, ChangePrefetchType) {
+  GURL test_url = GURL("https://www.test.com/");
+
+  PrefetchType cross_origin_private =
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   /*can_prefetch_subresources=*/false);
+  PrefetchType cross_origin_private_with_subresources = PrefetchType(
+      /*use_isolated_network_context=*/true,
+      /*use_prefetch_proxy=*/true,
+      /*can_prefetch_subresources=*/true);
+  PrefetchType cross_origin_public =
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/false,
+                   /*can_prefetch_subresources=*/false);
+  PrefetchType same_origin_public = PrefetchType(
+      /*use_isolated_network_context=*/false,
+      /*use_prefetch_proxy=*/false,
+      /*can_prefetch_subresources=*/false);
+
+  PrefetchContainer prefetch_container(test_url, cross_origin_private, 0);
+
+  base::HistogramTester histogram_tester;
+
+  // Test invalid state changes.
+  prefetch_container.ChangePrefetchType(cross_origin_public);
+
+  EXPECT_EQ(prefetch_container.GetPrefetchType(), cross_origin_private);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.WasPrefetchTypeStateChangeValid", false, 1);
+
+  prefetch_container.ChangePrefetchType(same_origin_public);
+
+  EXPECT_EQ(prefetch_container.GetPrefetchType(), cross_origin_private);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.WasPrefetchTypeStateChangeValid", false, 2);
+
+  // Test valid state change.
+  prefetch_container.ChangePrefetchType(cross_origin_private_with_subresources);
+
+  EXPECT_EQ(prefetch_container.GetPrefetchType(),
+            cross_origin_private_with_subresources);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.WasPrefetchTypeStateChangeValid", 3);
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.WasPrefetchTypeStateChangeValid", false, 2);
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.WasPrefetchTypeStateChangeValid", true, 1);
 }
 
 }  // namespace

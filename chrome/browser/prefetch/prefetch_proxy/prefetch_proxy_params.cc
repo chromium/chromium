@@ -294,3 +294,11 @@ bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kIsolatePrerenders, "use_individual_network_contexts", false);
 }
+
+bool PrefetchProxySupportNonPrivatePrefetches() {
+  // The non-private prefetches require individual network contexts.
+  return PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             features::kIsolatePrerenders, "support_non_private_prefetches",
+             true);
+}

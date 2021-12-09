@@ -10,6 +10,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -21,7 +22,9 @@ class Profile;
 // any subresources for the page.
 class PrefetchContainer {
  public:
-  PrefetchContainer(const GURL& url, size_t original_prediction_index);
+  PrefetchContainer(const GURL& url,
+                    const PrefetchType& prefetch_type,
+                    size_t original_prediction_index);
   ~PrefetchContainer();
 
   PrefetchContainer(const PrefetchContainer&) = delete;
@@ -29,6 +32,12 @@ class PrefetchContainer {
 
   // The URL that will potentially be prefetched.
   GURL GetUrl() const { return url_; }
+
+  // The type of this Prefetch. Used to control how the prefetch is handled.
+  const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
+
+  // Changes the type of this prefetch.
+  void ChangePrefetchType(const PrefetchType& new_prefetch_type);
 
   // The ordering of this prefetch in the context of other prefetches from the
   // same main frame.
@@ -43,14 +52,6 @@ class PrefetchContainer {
   }
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchProxyPrefetchStatus GetPrefetchStatus() const;
-
-  // Whether this prefetch can use No State Prefetch to fetch subresources.
-  void SetAllowedToPrefetchSubresources(bool allowed_to_prefetch_subresources) {
-    allowed_to_prefetch_subresources_ = allowed_to_prefetch_subresources;
-  }
-  bool AllowedToPrefetchSubresources() const {
-    return allowed_to_prefetch_subresources_;
-  }
 
   // The possible statuses of NoStatePrefetch for a URL. All prefetches start
   // with a status of kNotStarted. Then the only valid transitions are
@@ -120,15 +121,19 @@ class PrefetchContainer {
   // chain.
   const GURL url_;
 
+  // The type of this prefetch. This controls some specific details about how
+  // the prefetch is handled, including whether an isolated network context or
+  // the default network context is used to perform the prefetch, whether or
+  // not the preftch proxy is used, and whether or not subresources are
+  // prefetched.
+  PrefetchType prefetch_type_;
+
   // The ordering of this prefetch in the context of other prefetches from the
   // same main frame.
   const size_t original_prediction_index_;
 
   // The current status, if any, of the prefetch.
   absl::optional<PrefetchProxyPrefetchStatus> prefetch_status_;
-
-  // Whether this prefetch can use NoStatePrefetch to fetch subresources.
-  bool allowed_to_prefetch_subresources_ = false;
 
   // The status of the NoStatePrefetch for this prefetch. Note that NSP can only
   // be run if |allowed_to_prefetch_subresources_| is true.

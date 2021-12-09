@@ -22,6 +22,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -169,6 +170,7 @@ class PrefetchProxyTabHelper
   static void CheckEligibilityOfURL(
       Profile* profile,
       const GURL& url,
+      const PrefetchType& prefetch_type,
       OnEligibilityResultCallback result_callback);
 
   const PrefetchMetrics& srp_metrics() const { return *(page_->srp_metrics_); }
@@ -178,12 +180,9 @@ class PrefetchProxyTabHelper
   absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics()
       const;
 
-  // Fetches |private_prefetches| (up to a limit) and upon completion of each
-  // prefetch, fetches subresources if the prefetch URL is in
-  // |private_prefetches_with_subresources| (up to a limit).
+  // Fetches |prefetches| (up to a limit) with the given |PrefetchType|.
   void PrefetchSpeculationCandidates(
-      const std::vector<GURL>& private_prefetches_with_subresources,
-      const std::vector<GURL>& private_prefetches,
+      const std::vector<std::pair<GURL, PrefetchType>>& prefetches,
       const GURL& source_document_url);
 
   // content::WebContentsObserver implementation.
@@ -360,7 +359,9 @@ class PrefetchProxyTabHelper
   // considering any user data like service workers or cookies. Used to
   // determine eligibility and whether to send decoy requests.
   static std::pair<bool, absl::optional<PrefetchProxyPrefetchStatus>>
-  CheckEligibilityOfURLSansUserData(Profile* profile, const GURL& url);
+  CheckEligibilityOfURLSansUserData(Profile* profile,
+                                    const GURL& url,
+                                    const PrefetchType& prefetch_type);
 
   // Computes the AfterSRPMetrics that would be returned for the next
   // navigation, when it commits. This method exists to allow the PLM
@@ -430,11 +431,9 @@ class PrefetchProxyTabHelper
       const absl::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
 
-  // Fetches the |prefetch_targets|, and considers fetching subresources for
-  // |allowed_to_prefetch_subresources_| based on limits on per page subresource
-  // fetching.
-  void PrefetchUrls(const std::vector<GURL>& prefetch_targets,
-                    const std::set<GURL>& allowed_to_prefetch_subresources);
+  // Fetches the |prefetch_targets| with the given |PrefetchType|.
+  void PrefetchUrls(
+      const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets);
 
   // Used as a callback for when the eligibility of |url| is determined.
   void OnGotEligibilityResult(

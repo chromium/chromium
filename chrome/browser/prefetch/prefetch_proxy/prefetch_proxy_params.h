@@ -133,4 +133,7 @@ std::string PrefetchProxyServerExperimentGroup();
 // network context (returns false).
 bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch();
 
+// Whether the PrefetchProxy code can handle non-private prefetches.
+bool PrefetchProxySupportNonPrivatePrefetches();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_
