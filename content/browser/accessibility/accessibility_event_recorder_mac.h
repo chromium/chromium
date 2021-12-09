@@ -41,11 +41,6 @@ class CONTENT_EXPORT AccessibilityEventRecorderMac
   // observer.
   void AddNotification(NSString* notification);
 
-  // Convenience function to get the value of an AX attribute from
-  // an AXUIElementRef as a string.
-  std::string GetAXAttributeValue(AXUIElementRef element,
-                                  NSString* attribute_name);
-
   // The AXUIElement for the Chrome application.
   base::ScopedCFTypeRef<AXUIElementRef> application_;
 

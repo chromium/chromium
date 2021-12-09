@@ -104,47 +104,24 @@ void AccessibilityEventRecorderMac::AddNotification(NSString* notification) {
                             base::mac::NSToCFCast(notification), this);
 }
 
-std::string AccessibilityEventRecorderMac::GetAXAttributeValue(
-    AXUIElementRef element,
-    NSString* attribute_name) {
-  base::ScopedCFTypeRef<CFTypeRef> value;
-  AXError err = AXUIElementCopyAttributeValue(
-      element, base::mac::NSToCFCast(attribute_name), value.InitializeInto());
-  if (err != kAXErrorSuccess)
-    return std::string();
-
-  CFStringRef value_string = base::mac::CFCast<CFStringRef>(value.get());
-  if (value_string)
-    return base::SysCFStringRefToUTF8(value_string);
-
-  // TODO(dmazzoni): And if it's not a string, can we return something better?
-  return {};
-}
-
 void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
                                                   CFStringRef notification,
                                                   CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
-  std::string role = GetAXAttributeValue(element, NSAccessibilityRoleAttribute);
-  if (role.empty())
-    return;
-  std::string log =
-      base::StringPrintf("%s on %s", notification_str.c_str(), role.c_str());
 
-  std::string title =
-      GetAXAttributeValue(element, NSAccessibilityTitleAttribute);
-  if (!title.empty())
-    log += base::StringPrintf(" AXTitle=\"%s\"", title.c_str());
+  auto formatter = AccessibilityTreeFormatterMac();
+  formatter.SetPropertyFilters({}, ui::AXTreeFormatter::kFiltersDefaultSet);
 
-  std::string description =
-      GetAXAttributeValue(element, NSAccessibilityDescriptionAttribute);
-  if (!description.empty())
-    log += base::StringPrintf(" AXDescription=\"%s\"", description.c_str());
+  std::string element_str =
+      formatter.FormatTree(formatter.BuildNode(static_cast<id>(element)));
 
-  std::string value =
-      GetAXAttributeValue(element, NSAccessibilityValueAttribute);
-  if (!value.empty())
-    log += base::StringPrintf(" AXValue=\"%s\"", value.c_str());
+  // Element dumps contain a new line character at the end, remove it.
+  if (!element_str.empty() && element_str.back() == '\n') {
+    element_str.pop_back();
+  }
+
+  std::string log = base::StringPrintf("%s on %s", notification_str.c_str(),
+                                       element_str.c_str());
 
   if (notification_str ==
       base::SysNSStringToUTF8(NSAccessibilitySelectedTextChangedNotification))

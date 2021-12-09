@@ -1,2 +1,2 @@
-AXValueChanged on AXCheckBox AXDescription="My Checkbox"
-AXValueChanged on AXRow AXTitle="Treeitem"
+AXValueChanged on AXCheckBox AXDescription='My Checkbox' AXValue=2
+AXValueChanged on AXRow AXTitle='Treeitem' AXValue=2

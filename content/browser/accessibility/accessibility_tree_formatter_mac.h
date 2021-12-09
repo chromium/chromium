@@ -19,6 +19,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
   AccessibilityTreeFormatterMac();
   ~AccessibilityTreeFormatterMac() override;
 
+  // AXTreeFormatter
   base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -31,6 +32,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
       size_t start_index,
       size_t end_index) const override;
 
+  // AccessibilityTreeFormatterMac
+  base::Value BuildNode(const id node) const;
+
  protected:
   void AddDefaultFilters(
       std::vector<ui::AXPropertyFilter>* property_filters) override;
@@ -38,8 +42,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
  private:
   base::Value BuildTree(const id root) const;
   base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
-
-  base::Value BuildNode(const id node) const;
 
   void RecursiveBuildTree(const id node,
                           const NSRect& root_rect,
