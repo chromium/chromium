@@ -63,6 +63,7 @@
 #include "components/content_settings/core/browser/cookie_settings_policy_handler.h"
 #include "components/content_settings/core/browser/insecure_private_network_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/custom_handlers/pref_names.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
@@ -1735,7 +1736,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kRegisteredProtocolHandlers,
-      prefs::kPolicyRegisteredProtocolHandlers, chrome_schema,
+      custom_handlers::prefs::kPolicyRegisteredProtocolHandlers, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED));

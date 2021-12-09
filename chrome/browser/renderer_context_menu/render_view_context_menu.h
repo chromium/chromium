@@ -17,10 +17,10 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -87,8 +87,9 @@ class DlpRulesManager;
 }  // namespace policy
 #endif
 
-class RenderViewContextMenu : public RenderViewContextMenuBase,
-                              public ProtocolHandlerRegistry::Observer {
+class RenderViewContextMenu
+    : public RenderViewContextMenuBase,
+      public custom_handlers::ProtocolHandlerRegistry::Observer {
  public:
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
@@ -301,7 +302,8 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
 
   // Returns a list of registered ProtocolHandlers that can handle the clicked
   // on URL.
-  ProtocolHandlerRegistry::ProtocolHandlerList GetHandlersForLinkUrl();
+  custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
+  GetHandlersForLinkUrl();
 
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
@@ -318,10 +320,10 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // - The submenu containing the installed protocol handlers.
   ui::SimpleMenuModel protocol_handler_submenu_model_;
   // - The registry with the protocols.
-  raw_ptr<ProtocolHandlerRegistry> protocol_handler_registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> protocol_handler_registry_;
   // - The observation of the registry.
-  base::ScopedObservation<ProtocolHandlerRegistry,
-                          ProtocolHandlerRegistry::Observer>
+  base::ScopedObservation<custom_handlers::ProtocolHandlerRegistry,
+                          custom_handlers::ProtocolHandlerRegistry::Observer>
       protocol_handler_registry_observation_{this};
   // - Whether or not the registered protocols have changed since the menu was
   //   built.

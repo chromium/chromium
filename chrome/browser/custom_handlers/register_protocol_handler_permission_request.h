@@ -17,7 +17,9 @@ enum class RequestType;
 using content::ProtocolHandler;
 
 class GURL;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 // This class provides display data for a permission request, shown when a page
 // wants to register a protocol handler and was triggered by a user action.
@@ -25,7 +27,7 @@ class RegisterProtocolHandlerPermissionRequest
     : public permissions::PermissionRequest {
  public:
   RegisterProtocolHandlerPermissionRequest(
-      ProtocolHandlerRegistry* registry,
+      custom_handlers::ProtocolHandlerRegistry* registry,
       const ProtocolHandler& handler,
       GURL url,
       base::ScopedClosureRunner fullscreen_block);
@@ -46,7 +48,7 @@ class RegisterProtocolHandlerPermissionRequest
   void PermissionDecided(ContentSetting result, bool is_one_time);
   void DeleteRequest();
 
-  raw_ptr<ProtocolHandlerRegistry> registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   ProtocolHandler handler_;
   // Fullscreen will be blocked for the duration of the lifetime of this block.
   // TODO(avi): Move to either permissions::PermissionRequest or the

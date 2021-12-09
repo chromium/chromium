@@ -13,7 +13,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -32,6 +31,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/lens/lens_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -112,7 +112,7 @@ static content::ContextMenuParams CreateParams(int contexts) {
 // Returns a test context menu.
 std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
     content::WebContents* web_contents,
-    ProtocolHandlerRegistry* registry) {
+    custom_handlers::ProtocolHandlerRegistry* registry) {
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
@@ -383,7 +383,8 @@ class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
   void SetUp() override {
     RenderViewContextMenuTest::SetUp();
     // TestingProfile does not provide a protocol registry.
-    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(), nullptr);
+    registry_ = std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
+        profile(), nullptr);
   }
 
   void TearDown() override {
@@ -396,7 +397,7 @@ class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
   extensions::TestExtensionEnvironment& environment() { return *environment_; }
 
  protected:
-  std::unique_ptr<ProtocolHandlerRegistry> registry_;
+  std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
 };
 
 TEST_F(RenderViewContextMenuExtensionsTest,
@@ -446,7 +447,8 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(), nullptr);
+    registry_ = std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
+        profile(), nullptr);
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
@@ -506,7 +508,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   PrefService* local_state() { return testing_local_state_->Get(); }
 
  private:
-  std::unique_ptr<ProtocolHandlerRegistry> registry_;
+  std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   raw_ptr<TemplateURLService> template_url_service_;
 };

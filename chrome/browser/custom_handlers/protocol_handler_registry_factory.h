@@ -8,7 +8,9 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 namespace base {
 template <typename T> struct DefaultSingletonTraits;
@@ -25,7 +27,7 @@ class ProtocolHandlerRegistryFactory
 
   // Returns the ProtocolHandlerRegistry that provides intent registration for
   // |context|. Ownership stays with this factory object.
-  static ProtocolHandlerRegistry* GetForBrowserContext(
+  static custom_handlers::ProtocolHandlerRegistry* GetForBrowserContext(
       content::BrowserContext* context);
 
   ProtocolHandlerRegistryFactory(const ProtocolHandlerRegistryFactory&) =

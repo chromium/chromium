@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 
 #include <stddef.h>
 
@@ -16,8 +16,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/common/pref_names.h"
+#include "components/custom_handlers/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -27,6 +26,9 @@
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
+using content::ProtocolHandler;
+
+namespace custom_handlers {
 
 namespace {
 
@@ -150,8 +152,7 @@ void ProtocolHandlerRegistry::ClearDefault(const std::string& scheme) {
   NotifyChanged();
 }
 
-bool ProtocolHandlerRegistry::IsDefault(
-    const ProtocolHandler& handler) const {
+bool ProtocolHandlerRegistry::IsDefault(const ProtocolHandler& handler) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetHandlerFor(handler.protocol()) == handler;
 }
@@ -159,14 +160,11 @@ bool ProtocolHandlerRegistry::IsDefault(
 void ProtocolHandlerRegistry::InstallDefaultsForChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only chromeos has default protocol handlers at this point.
-  AddPredefinedHandler(
-      ProtocolHandler::CreateProtocolHandler(
-          "mailto",
-          GURL("https://mail.google.com/mail/?extsrc=mailto&amp;url=%s")));
-  AddPredefinedHandler(
-      ProtocolHandler::CreateProtocolHandler(
-          "webcal",
-          GURL("https://www.google.com/calendar/render?cid=%s")));
+  AddPredefinedHandler(ProtocolHandler::CreateProtocolHandler(
+      "mailto",
+      GURL("https://mail.google.com/mail/?extsrc=mailto&amp;url=%s")));
+  AddPredefinedHandler(ProtocolHandler::CreateProtocolHandler(
+      "webcal", GURL("https://www.google.com/calendar/render?cid=%s")));
 #else
   NOTREACHED();  // this method should only ever be called in chromeos.
 #endif
@@ -227,8 +225,7 @@ int ProtocolHandlerRegistry::GetHandlerIndex(const std::string& scheme) const {
 }
 
 ProtocolHandlerRegistry::ProtocolHandlerList
-ProtocolHandlerRegistry::GetHandlersFor(
-    const std::string& scheme) const {
+ProtocolHandlerRegistry::GetHandlersFor(const std::string& scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto p = protocol_handlers_.find(scheme);
   if (p == protocol_handlers_.end()) {
@@ -514,16 +511,13 @@ void ProtocolHandlerRegistry::Save() {
       EncodeIgnoredHandlers());
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
 
-  prefs->Set(prefs::kRegisteredProtocolHandlers,
-      *registered_protocol_handlers);
-  prefs->Set(prefs::kIgnoredProtocolHandlers,
-      *ignored_protocol_handlers);
+  prefs->Set(prefs::kRegisteredProtocolHandlers, *registered_protocol_handlers);
+  prefs->Set(prefs::kIgnoredProtocolHandlers, *ignored_protocol_handlers);
   prefs->SetBoolean(prefs::kCustomHandlersEnabled, enabled_);
 }
 
 const ProtocolHandlerRegistry::ProtocolHandlerList*
-ProtocolHandlerRegistry::GetHandlerList(
-    const std::string& scheme) const {
+ProtocolHandlerRegistry::GetHandlerList(const std::string& scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto p = protocol_handlers_.find(scheme);
   if (p == protocol_handlers_.end()) {
@@ -649,8 +643,7 @@ void ProtocolHandlerRegistry::RegisterProtocolHandlersFromPref(
       GetHandlersFromPref(pref_name);
   for (std::vector<const base::DictionaryValue*>::const_iterator p =
            registered_handlers.begin();
-       p != registered_handlers.end();
-       ++p) {
+       p != registered_handlers.end(); ++p) {
     ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(*p);
     if (!RegisterProtocolHandler(handler, source))
       continue;
@@ -681,8 +674,7 @@ void ProtocolHandlerRegistry::IgnoreProtocolHandlersFromPref(
       GetHandlersFromPref(pref_name);
   for (std::vector<const base::DictionaryValue*>::const_iterator p =
            ignored_handlers.begin();
-       p != ignored_handlers.end();
-       ++p) {
+       p != ignored_handlers.end(); ++p) {
     IgnoreProtocolHandler(ProtocolHandler::CreateProtocolHandler(*p), source);
   }
 }
@@ -715,6 +707,10 @@ void ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished(
     ClearDefault(protocol);
 }
 
+void ProtocolHandlerRegistry::SetIsLoading(bool is_loading) {
+  is_loading_ = is_loading;
+}
+
 void ProtocolHandlerRegistry::AddPredefinedHandler(
     const ProtocolHandler& handler) {
   DCHECK(!is_loaded_);  // Must be called prior InitProtocolSettings.
@@ -729,3 +725,5 @@ DefaultClientCallback ProtocolHandlerRegistry::GetDefaultWebClientCallback(
       &ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished,
       weak_ptr_factory_.GetWeakPtr(), protocol);
 }
+
+}  // namespace custom_handlers

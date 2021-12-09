@@ -78,6 +78,7 @@ include_rules = [
   "+components/browser_watcher",
   "+components/browsing_data/content",
   "+components/browsing_data/core",
+  "+components/custom_handlers",
   "+components/captive_portal",
   "+components/cast_certificate",
   "+components/cast_channel",

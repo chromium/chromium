@@ -39,7 +39,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
@@ -90,6 +89,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "components/domain_reliability/monitor.h"
 #include "components/favicon/core/favicon_service.h"
@@ -497,7 +497,7 @@ class RemoveFaviconTester {
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ProtocolHandlerRegistry>(
+  return std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
       profile, std::make_unique<TestProtocolHandlerRegistryDelegate>());
 }
 
@@ -2341,10 +2341,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
   base::Time yesterday = base::Time::Now() - base::Days(1);
   registry->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler::CreateProtocolHandler("news", kOrigin));
+      content::ProtocolHandler::CreateProtocolHandler("news", kOrigin));
   registry->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("mailto", kOrigin, yesterday,
-                      blink::ProtocolHandlerSecurityLevel::kStrict));
+      content::ProtocolHandler("mailto", kOrigin, yesterday,
+                               blink::ProtocolHandlerSecurityLevel::kStrict));
   EXPECT_TRUE(registry->IsHandledProtocol("news"));
   EXPECT_TRUE(registry->IsHandledProtocol("mailto"));
   EXPECT_EQ(

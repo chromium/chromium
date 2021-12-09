@@ -6,7 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +16,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
 #endif
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
@@ -64,8 +64,9 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
 
   // Also check for schemes registered via registerProtocolHandler(), which
   // can be handled by web pages/apps.
-  ProtocolHandlerRegistry* registry = profile_ ?
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_) : NULL;
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
+               : NULL;
   if (registry && registry->IsHandledProtocol(scheme))
     return metrics::OmniboxInputType::URL;
 

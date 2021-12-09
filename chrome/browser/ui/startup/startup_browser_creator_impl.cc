@@ -22,7 +22,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
@@ -56,6 +55,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -247,8 +247,9 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 
   bool first_tab = true;
-  ProtocolHandlerRegistry* registry = profile_ ?
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_) : NULL;
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
+               : NULL;
   for (size_t i = 0; i < tabs.size(); ++i) {
     // We skip URLs that we'd have to launch an external protocol handler for.
     // This avoids us getting into an infinite loop asking ourselves to open

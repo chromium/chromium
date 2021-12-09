@@ -306,7 +306,10 @@ source_set("web_applications") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+    deps += [
+      "//chrome/browser/web_applications/chrome_pwa_launcher:util",
+      "//components/custom_handlers",
+    ]
   }
 
   if (is_chromeos_ash) {

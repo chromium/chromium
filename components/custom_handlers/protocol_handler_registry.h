@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_
-#define CHROME_BROWSER_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_
+#ifndef COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_
+#define COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_
 
 #include <map>
 #include <memory>
@@ -24,8 +24,14 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace {
+class ProtocolHandlerRegistryTest;
+}  // namespace
+
 using content::ProtocolHandler;
 using DefaultClientCallback = base::OnceCallback<void(bool)>;
+
+namespace custom_handlers {
 
 // This is where handlers for protocols registered with
 // navigator.registerProtocolHandler() are registered. Each Profile owns an
@@ -204,16 +210,24 @@ class ProtocolHandlerRegistry : public KeyedService {
   // load command was issued, otherwise the command will be ignored.
   void AddPredefinedHandler(const ProtocolHandler& handler);
 
+  // Install default protocol handlers for chromeos which must be done
+  // prior to calling InitProtocolSettings.
+  // TODO(jfernandez): This method is declared as public because it's invoked by
+  // the ProtocolHandlerRegistryFactory. Instead declaring it private and make
+  // the factory a friend class, we  could add a Create() method on
+  // ProtocolHandlerRegistry that constructs the object, calls the necessary
+  // methods on it, then returns it as a unique_ptr (this is the usual way to
+  // have these Init() type methods called correctly).
+  void InstallDefaultsForChromeOS();
+
+  void SetIsLoading(bool is_loading);
+
  private:
   friend class base::DeleteHelper<ProtocolHandlerRegistry>;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::IO>;
 
-  // for access to InstallDefaultsForChromeOS
-  friend class ProtocolHandlerRegistryFactory;
-
-  friend class ProtocolHandlerRegistryTest;
-  friend class RegisterProtocolHandlerBrowserTest;
+  friend class ::ProtocolHandlerRegistryTest;
 
   // Puts the given handler at the top of the list of handlers for its
   // protocol.
@@ -225,10 +239,6 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Returns a pointer to the list of handlers registered for the given scheme,
   // or NULL if there are none.
   const ProtocolHandlerList* GetHandlerList(const std::string& scheme) const;
-
-  // Install default protocol handlers for chromeos which must be done
-  // prior to calling InitProtocolSettings.
-  void InstallDefaultsForChromeOS();
 
   // Makes this ProtocolHandler the default handler for its protocol.
   void SetDefault(const ProtocolHandler& handler);
@@ -352,4 +362,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   // DefaultProtocolClientWorker.
   base::WeakPtrFactory<ProtocolHandlerRegistry> weak_ptr_factory_{this};
 };
-#endif  // CHROME_BROWSER_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_
+
+}  // namespace custom_handlers
+
+#endif  // COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_

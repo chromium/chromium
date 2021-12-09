@@ -23,7 +23,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -48,6 +47,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -406,7 +406,7 @@ enum RPHState {
 ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
     Delegate* delegate,
     WebContents* web_contents,
-    ProtocolHandlerRegistry* registry)
+    custom_handlers::ProtocolHandlerRegistry* registry)
     : ContentSettingSimpleBubbleModel(delegate,
                                       web_contents,
                                       ContentSettingsType::PROTOCOL_HANDLERS),
@@ -1757,7 +1757,7 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
                                                                   web_contents);
   }
   if (content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
-    ProtocolHandlerRegistry* registry =
+    custom_handlers::ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             web_contents->GetBrowserContext());
     return std::make_unique<ContentSettingRPHBubbleModel>(

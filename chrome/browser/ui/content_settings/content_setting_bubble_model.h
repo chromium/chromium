@@ -30,7 +30,9 @@
 
 class ContentSettingBubbleModelDelegate;
 class Profile;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 namespace content {
 class WebContents;
@@ -326,9 +328,10 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
 // RPH stands for Register Protocol Handler.
 class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
  public:
-  ContentSettingRPHBubbleModel(Delegate* delegate,
-                               content::WebContents* web_contents,
-                               ProtocolHandlerRegistry* registry);
+  ContentSettingRPHBubbleModel(
+      Delegate* delegate,
+      content::WebContents* web_contents,
+      custom_handlers::ProtocolHandlerRegistry* registry);
 
   ContentSettingRPHBubbleModel(const ContentSettingRPHBubbleModel&) = delete;
   ContentSettingRPHBubbleModel& operator=(const ContentSettingRPHBubbleModel&) =
@@ -346,7 +349,7 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
   void ClearOrSetPreviousHandler();
   void PerformActionForSelectedItem();
 
-  raw_ptr<ProtocolHandlerRegistry> registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   ProtocolHandler pending_handler_;
   ProtocolHandler previous_handler_;
 };

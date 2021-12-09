@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 
 // A test ProtocolHandlerRegistry::Delegate implementation that keeps track of
 // registered protocols and doesn't change any OS settings.
 class TestProtocolHandlerRegistryDelegate
-    : public ProtocolHandlerRegistry::Delegate {
+    : public custom_handlers::ProtocolHandlerRegistry::Delegate {
  public:
   TestProtocolHandlerRegistryDelegate();
   ~TestProtocolHandlerRegistryDelegate() override;

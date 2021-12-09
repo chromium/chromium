@@ -6,11 +6,11 @@
 
 #include <set>
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
@@ -19,7 +19,7 @@
 SiteSettingsCounter::SiteSettingsCounter(
     HostContentSettingsMap* map,
     content::HostZoomMap* zoom_map,
-    ProtocolHandlerRegistry* handler_registry,
+    custom_handlers::ProtocolHandlerRegistry* handler_registry,
     PrefService* pref_service)
     : map_(map),
       zoom_map_(zoom_map),

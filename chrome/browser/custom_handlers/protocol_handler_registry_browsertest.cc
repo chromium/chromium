@@ -33,6 +33,7 @@
 #endif
 
 using content::WebContents;
+using custom_handlers::ProtocolHandlerRegistry;
 
 namespace {
 
@@ -51,8 +52,8 @@ class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
   void OnProtocolHandlerRegistryChanged() override { run_loop_.Quit(); }
 
  private:
-  base::ScopedObservation<ProtocolHandlerRegistry,
-                          ProtocolHandlerRegistry::Observer>
+  base::ScopedObservation<custom_handlers::ProtocolHandlerRegistry,
+                          custom_handlers::ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
   base::RunLoop run_loop_;
 };
@@ -91,24 +92,24 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
   }
 
   void AddProtocolHandler(const std::string& protocol, const GURL& url) {
-    ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(protocol,
-                                                                     url);
+    ProtocolHandler handler =
+        ProtocolHandler::CreateProtocolHandler(protocol, url);
     ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());
     // Fake that this registration is happening on profile startup. Otherwise
     // it'll try to register with the OS, which causes DCHECKs on Windows when
     // running as admin on Windows 7.
-    registry->is_loading_ = true;
+    registry->SetIsLoading(true);
     registry->OnAcceptRegisterProtocolHandler(handler);
-    registry->is_loading_ = false;
+    registry->SetIsLoading(true);
     ASSERT_TRUE(registry->IsHandledProtocol(protocol));
   }
 
   void RemoveProtocolHandler(const std::string& protocol,
                              const GURL& url) {
-    ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(protocol,
-                                                                     url);
+    ProtocolHandler handler =
+        ProtocolHandler::CreateProtocolHandler(protocol, url);
     ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());

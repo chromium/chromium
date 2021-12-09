@@ -40,7 +40,6 @@
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/defaults.h"
@@ -180,6 +179,7 @@
 #include "components/content_settings/core/browser/private_network_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -1082,7 +1082,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
   }
 
   // Do not launch external requests for schemes that have a handler registered.
-  ProtocolHandlerRegistry* protocol_handler_registry =
+  custom_handlers::ProtocolHandlerRegistry* protocol_handler_registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (protocol_handler_registry &&
@@ -1825,7 +1825,7 @@ bool ChromeContentBrowserClient::IsHandledURL(const GURL& url) {
 bool ChromeContentBrowserClient::HasCustomSchemeHandler(
     content::BrowserContext* browser_context,
     const std::string& scheme) {
-  if (ProtocolHandlerRegistry* protocol_handler_registry =
+  if (custom_handlers::ProtocolHandlerRegistry* protocol_handler_registry =
           ProtocolHandlerRegistryFactory::GetForBrowserContext(
               browser_context)) {
     return protocol_handler_registry->IsHandledProtocol(scheme);
@@ -4551,7 +4551,7 @@ namespace {
 class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
  public:
   explicit ProtocolHandlerThrottle(
-      ProtocolHandlerRegistry* protocol_handler_registry)
+      custom_handlers::ProtocolHandlerRegistry* protocol_handler_registry)
       : protocol_handler_registry_(protocol_handler_registry) {
     DCHECK(protocol_handler_registry);
   }
@@ -4589,7 +4589,7 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
       *url = translated_url;
   }
 
-  raw_ptr<ProtocolHandlerRegistry> protocol_handler_registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> protocol_handler_registry_;
 };
 }  // namespace
 

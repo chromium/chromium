@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -34,6 +33,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -463,7 +463,7 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
                                                GURL(redirect_template)));
   }
 
-  ProtocolHandlerRegistry* protocol_handler_registry() {
+  custom_handlers::ProtocolHandlerRegistry* protocol_handler_registry() {
     return ProtocolHandlerRegistryFactory::GetInstance()->GetForBrowserContext(
         browser()->profile());
   }

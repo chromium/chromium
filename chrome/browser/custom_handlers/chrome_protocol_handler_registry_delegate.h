@@ -9,15 +9,15 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/shell_integration.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 // This class implements the ProtocolHandlerRegistry::Delegate
 // abstract class to provide an OS dependent implementation to handle
 // the user preferences and deal with the //shell_integration module.
 class ChromeProtocolHandlerRegistryDelegate
-    : public ProtocolHandlerRegistry::Delegate {
+    : public custom_handlers::ProtocolHandlerRegistry::Delegate {
  public:
   ChromeProtocolHandlerRegistryDelegate();
   ~ChromeProtocolHandlerRegistryDelegate() override;

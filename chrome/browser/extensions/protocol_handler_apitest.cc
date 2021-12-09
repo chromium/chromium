@@ -6,10 +6,10 @@
 
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -35,9 +35,11 @@ class ProtocolHandlerApiTest : public ExtensionApiTest {
   }
 };
 
-class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
+class ProtocolHandlerChangeWaiter
+    : public custom_handlers::ProtocolHandlerRegistry::Observer {
  public:
-  explicit ProtocolHandlerChangeWaiter(ProtocolHandlerRegistry* registry) {
+  explicit ProtocolHandlerChangeWaiter(
+      custom_handlers::ProtocolHandlerRegistry* registry) {
     registry_observation_.Observe(registry);
   }
   ProtocolHandlerChangeWaiter(const ProtocolHandlerChangeWaiter&) = delete;
@@ -50,8 +52,8 @@ class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
   void OnProtocolHandlerRegistryChanged() override { run_loop_.Quit(); }
 
  private:
-  base::ScopedObservation<ProtocolHandlerRegistry,
-                          ProtocolHandlerRegistry::Observer>
+  base::ScopedObservation<custom_handlers::ProtocolHandlerRegistry,
+                          custom_handlers::ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
   base::RunLoop run_loop_;
 };
@@ -82,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser()->profile());
 

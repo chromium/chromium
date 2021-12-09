@@ -856,12 +856,6 @@ extern const char kDnsOverHttpsMode[];
 extern const char kDnsOverHttpsTemplates[];
 extern const char kAdditionalDnsQueryTypesEnabled[];
 
-extern const char kRegisteredProtocolHandlers[];
-extern const char kIgnoredProtocolHandlers[];
-extern const char kPolicyRegisteredProtocolHandlers[];
-extern const char kPolicyIgnoredProtocolHandlers[];
-extern const char kCustomHandlersEnabled[];
-
 #if defined(OS_MAC)
 extern const char kUserRemovedLoginItem[];
 extern const char kChromeCreatedLoginItem[];

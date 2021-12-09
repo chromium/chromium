@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 
 #include <stddef.h>
 
@@ -21,6 +21,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/custom_handlers/pref_names.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,6 +34,7 @@
 
 using content::BrowserThread;
 using content::ProtocolHandler;
+using custom_handlers::ProtocolHandlerRegistry;
 
 namespace {
 
@@ -165,8 +168,6 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
       registry_observation_{this};
 };
 
-}  // namespace
-
 class ProtocolHandlerRegistryTest : public testing::Test {
  protected:
   ProtocolHandlerRegistryTest()
@@ -214,8 +215,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   int InPrefHandlerCount() {
-    const base::ListValue* in_pref_handlers =
-        profile()->GetPrefs()->GetList(prefs::kRegisteredProtocolHandlers);
+    const base::ListValue* in_pref_handlers = profile()->GetPrefs()->GetList(
+        custom_handlers::prefs::kRegisteredProtocolHandlers);
     return static_cast<int>(in_pref_handlers->GetList().size());
   }
 
@@ -229,7 +230,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
 
   int InPrefIgnoredHandlerCount() {
     const base::ListValue* in_pref_ignored_handlers =
-        profile()->GetPrefs()->GetList(prefs::kIgnoredProtocolHandlers);
+        profile()->GetPrefs()->GetList(
+            custom_handlers::prefs::kIgnoredProtocolHandlers);
     return static_cast<int>(in_pref_ignored_handlers->GetList().size());
   }
 
@@ -275,6 +277,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler test_protocol_handler_;
 };
+
+}  // namespace
 
 TEST_F(ProtocolHandlerRegistryTest, AcceptProtocolHandlerHandlesProtocol) {
   ASSERT_FALSE(registry()->IsHandledProtocol("news"));
@@ -871,10 +875,12 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
   handlers_registered_by_policy.Append(
       GetProtocolHandlerValueWithDefault("mailto", URL_p3u1, true));
 
-  profile()->GetPrefs()->Set(prefs::kRegisteredProtocolHandlers,
-                             handlers_registered_by_pref);
-  profile()->GetPrefs()->Set(prefs::kPolicyRegisteredProtocolHandlers,
-                             handlers_registered_by_policy);
+  profile()->GetPrefs()->Set(
+      custom_handlers::prefs::kRegisteredProtocolHandlers,
+      handlers_registered_by_pref);
+  profile()->GetPrefs()->Set(
+      custom_handlers::prefs::kPolicyRegisteredProtocolHandlers,
+      handlers_registered_by_policy);
   registry()->InitProtocolSettings();
 
   // Duplicate p1u2 eliminated in memory but not yet saved in pref
@@ -948,10 +954,11 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("news", URL_p1u3));
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("im", URL_p2u1));
 
-  profile()->GetPrefs()->Set(prefs::kIgnoredProtocolHandlers,
+  profile()->GetPrefs()->Set(custom_handlers::prefs::kIgnoredProtocolHandlers,
                              handlers_ignored_by_pref);
-  profile()->GetPrefs()->Set(prefs::kPolicyIgnoredProtocolHandlers,
-                             handlers_ignored_by_policy);
+  profile()->GetPrefs()->Set(
+      custom_handlers::prefs::kPolicyIgnoredProtocolHandlers,
+      handlers_ignored_by_policy);
   registry()->InitProtocolSettings();
 
   // Duplicate p1u2 eliminated in memory but not yet saved in pref

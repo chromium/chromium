@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +52,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/app_restore/features.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -162,7 +162,7 @@ void BrowserProcessPlatformPart::BrowserRestoreObserver::RestoreUrls(
   for (const auto& url : pref.urls)
     urls.push_back(url);
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(browser->profile());
   for (const GURL& url : urls) {
     // We skip URLs that we'd have to launch an external protocol handler for.

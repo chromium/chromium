@@ -27,8 +27,9 @@ namespace {
 
 // TODO(https://crbug.com/1251039): Remove usages of base::ListValue
 void GetHandlersAsListValue(
-    const ProtocolHandlerRegistry* registry,
-    const ProtocolHandlerRegistry::ProtocolHandlerList& handlers,
+    const custom_handlers::ProtocolHandlerRegistry* registry,
+    const custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList&
+        handlers,
     base::ListValue* handler_list) {
   for (const auto& handler : handlers) {
     base::DictionaryValue handler_value;
@@ -124,9 +125,11 @@ void ProtocolHandlersHandler::OnWebAppUninstalled(
 void ProtocolHandlersHandler::GetHandlersForProtocol(
     const std::string& protocol,
     base::DictionaryValue* handlers_value) {
-  ProtocolHandlerRegistry* registry = GetProtocolHandlerRegistry();
-  handlers_value->SetString("protocol_display_name",
-                            ProtocolHandler::GetProtocolDisplayName(protocol));
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      GetProtocolHandlerRegistry();
+  handlers_value->SetString(
+      "protocol_display_name",
+      content::ProtocolHandler::GetProtocolDisplayName(protocol));
   handlers_value->SetString("protocol", protocol);
 
   base::ListValue handlers_list;
@@ -136,14 +139,16 @@ void ProtocolHandlersHandler::GetHandlersForProtocol(
 }
 
 void ProtocolHandlersHandler::GetIgnoredHandlers(base::ListValue* handlers) {
-  ProtocolHandlerRegistry* registry = GetProtocolHandlerRegistry();
-  ProtocolHandlerRegistry::ProtocolHandlerList ignored_handlers =
-      registry->GetIgnoredHandlers();
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      GetProtocolHandlerRegistry();
+  custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
+      ignored_handlers = registry->GetIgnoredHandlers();
   return GetHandlersAsListValue(registry, ignored_handlers, handlers);
 }
 
 void ProtocolHandlersHandler::UpdateHandlerList() {
-  ProtocolHandlerRegistry* registry = GetProtocolHandlerRegistry();
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      GetProtocolHandlerRegistry();
   std::vector<std::string> protocols;
   registry->GetRegisteredProtocols(&protocols);
 
@@ -219,7 +224,8 @@ ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
   return ProtocolHandler::CreateProtocolHandler(protocol, GURL(url));
 }
 
-ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
+custom_handlers::ProtocolHandlerRegistry*
+ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
   return ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);
 }
 
@@ -228,7 +234,7 @@ ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
 std::unique_ptr<base::DictionaryValue>
 ProtocolHandlersHandler::GetAppHandlersForProtocol(
     const std::string& protocol,
-    ProtocolHandlerRegistry::ProtocolHandlerList handlers) {
+    custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers) {
   auto handlers_value = std::make_unique<base::DictionaryValue>();
 
   if (!handlers.empty()) {
@@ -255,8 +261,9 @@ void ProtocolHandlersHandler::UpdateAllAllowedLaunchProtocols() {
 
   base::Value handlers(base::Value::Type::LIST);
   for (auto& protocol : protocols) {
-    ProtocolHandlerRegistry::ProtocolHandlerList protocol_handlers =
-        os_integration_manager.GetAllowedHandlersForProtocol(protocol);
+    custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
+        protocol_handlers =
+            os_integration_manager.GetAllowedHandlersForProtocol(protocol);
 
     auto handler_value(GetAppHandlersForProtocol(protocol, protocol_handlers));
     handlers.Append(std::move(*handler_value));
@@ -276,8 +283,9 @@ void ProtocolHandlersHandler::UpdateAllDisallowedLaunchProtocols() {
 
   base::Value handlers(base::Value::Type::LIST);
   for (auto& protocol : protocols) {
-    ProtocolHandlerRegistry::ProtocolHandlerList protocol_handlers =
-        os_integration_manager.GetDisallowedHandlersForProtocol(protocol);
+    custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
+        protocol_handlers =
+            os_integration_manager.GetDisallowedHandlersForProtocol(protocol);
     auto handler_value(GetAppHandlersForProtocol(protocol, protocol_handlers));
     handlers.Append(std::move(*handler_value));
   }

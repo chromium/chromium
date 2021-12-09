@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("custom_handlers") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+    "protocol_handler_registry.cc",
+    "protocol_handler_registry.h",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}

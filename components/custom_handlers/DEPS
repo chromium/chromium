@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/user_prefs",
+  "+content/public/common",
+  "+content/public/browser",
+]

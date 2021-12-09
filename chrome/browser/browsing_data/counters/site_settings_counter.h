@@ -14,14 +14,17 @@ class HostZoomMap;
 }
 
 class PrefService;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 class SiteSettingsCounter : public browsing_data::BrowsingDataCounter {
  public:
-  explicit SiteSettingsCounter(HostContentSettingsMap* map,
-                               content::HostZoomMap* zoom_map,
-                               ProtocolHandlerRegistry* handler_registry,
-                               PrefService* pref_service);
+  explicit SiteSettingsCounter(
+      HostContentSettingsMap* map,
+      content::HostZoomMap* zoom_map,
+      custom_handlers::ProtocolHandlerRegistry* handler_registry,
+      PrefService* pref_service);
   ~SiteSettingsCounter() override;
 
   const char* GetPrefName() const override;
@@ -33,7 +36,7 @@ class SiteSettingsCounter : public browsing_data::BrowsingDataCounter {
 
   scoped_refptr<HostContentSettingsMap> map_;
   raw_ptr<content::HostZoomMap> zoom_map_;
-  raw_ptr<ProtocolHandlerRegistry> handler_registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> handler_registry_;
   raw_ptr<PrefService> pref_service_;
 };
 

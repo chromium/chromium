@@ -2036,7 +2036,7 @@ bool RenderViewContextMenu::AppendAccessibilityLabelsItems() {
 }
 
 void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
-  const ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+  const custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers =
       GetHandlersForLinkUrl();
   if (handlers.empty())
     return;
@@ -2875,9 +2875,9 @@ void RenderViewContextMenu::RegisterExecutePluginActionCallbackForTesting(
   execute_plugin_action_callback_ = std::move(cb);
 }
 
-ProtocolHandlerRegistry::ProtocolHandlerList
+custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
 RenderViewContextMenu::GetHandlersForLinkUrl() {
-  ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+  custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers =
       protocol_handler_registry_->GetHandlersFor(params_.link_url.scheme());
   std::sort(handlers.begin(), handlers.end());
   return handlers;
@@ -3229,7 +3229,7 @@ void RenderViewContextMenu::ExecProtocolHandler(int event_flags,
     return;
   }
 
-  ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+  custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers =
       GetHandlersForLinkUrl();
   if (handlers.empty())
     return;

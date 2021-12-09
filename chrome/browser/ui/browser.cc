@@ -44,7 +44,6 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
 #include "chrome/browser/defaults.h"
@@ -166,6 +165,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -1970,7 +1970,7 @@ void Browser::RegisterProtocolHandler(
   if (!handler.IsValid())
     return;
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
   if (registry->SilentlyHandleRegisterHandlerRequest(handler))
     return;
@@ -2024,7 +2024,7 @@ void Browser::UnregisterProtocolHandler(
   ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
       protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
   registry->RemoveHandler(handler);
 }
