@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+include!(concat!(env!("OUT_DIR"), "/generated/generated.rs"));
+
 pub fn say_hello_from_crate() {
+    assert_eq!(run_some_generated_code(), 42);
     #[cfg(is_new_rustc)]
     println!("Is new rustc!");
     #[cfg(is_old_rustc)]

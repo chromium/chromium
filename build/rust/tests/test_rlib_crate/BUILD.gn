@@ -9,6 +9,7 @@ cargo_crate("test_rlib_crate") {
   sources = [ "crate/src/lib.rs" ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
+  build_script_outputs = [ "generated/generated.rs" ]
   epoch = "0.2"
   features = [
     "my-feature_a",

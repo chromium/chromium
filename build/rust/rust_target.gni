@@ -173,12 +173,17 @@ template("rust_target") {
                              "features",
                              "deps",
                              "rustflags",
+                             "rustenv",
                              "configs",
                              "output_name",
                              "crate_root",
                              "unit_test_target",
                              "visibility",
                            ])
+    rustenv = [ "OUT_DIR=" + rebase_path(target_out_dir) ]
+    if (defined(invoker.rustenv)) {
+      rustenv += invoker.rustenv
+    }
     if (invoker.create_cpp_groups) {
       visibility = [
         ":${_target_name}",
