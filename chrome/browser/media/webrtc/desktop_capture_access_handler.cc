@@ -170,25 +170,6 @@ bool ShouldCaptureAudio(const content::DesktopMediaID& media_id,
 
 }  // namespace
 
-// Holds pending request information so that we display one picker UI at a time
-// for each content::WebContents.
-struct DesktopCaptureAccessHandler::PendingAccessRequest {
-  PendingAccessRequest(std::unique_ptr<DesktopMediaPicker> picker,
-                       const content::MediaStreamRequest& request,
-                       content::MediaResponseCallback callback,
-                       const extensions::Extension* extension)
-      : picker(std::move(picker)),
-        request(request),
-        callback(std::move(callback)),
-        extension(extension) {}
-  ~PendingAccessRequest() = default;
-
-  std::unique_ptr<DesktopMediaPicker> picker;
-  content::MediaStreamRequest request;
-  content::MediaResponseCallback callback;
-  raw_ptr<const extensions::Extension> extension;
-};
-
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler()
     : picker_factory_(new DesktopMediaPickerFactoryImpl()),
       display_notification_(true),
@@ -512,7 +493,9 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
 
   RequestsQueue& queue = pending_requests_[web_contents];
   queue.push_back(std::make_unique<PendingAccessRequest>(
-      std::move(picker), request, std::move(callback), extension));
+      std::move(picker), request, std::move(callback),
+      GetApplicationTitle(web_contents, extension),
+      display_notification_ && ShouldDisplayNotification(extension)));
   // If this is the only request then pop picker UI.
   if (queue.size() == 1)
     ProcessQueuedAccessRequest(queue, web_contents);
@@ -585,8 +568,7 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
-  picker_params.app_name =
-      GetApplicationTitle(web_contents, pending_request.extension);
+  picker_params.app_name = pending_request.application_title;
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio = pending_request.request.audio_type !=
                                 blink::mojom::MediaStreamType::NO_SERVICE;
@@ -644,13 +626,12 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const extensions::Extension* extension = pending_request.extension;
   blink::MediaStreamDevices devices;
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request.request, web_contents, media_id, media_id.audio_share,
       pending_request.request.disable_local_echo,
-      display_notification_ && ShouldDisplayNotification(extension),
-      GetApplicationTitle(web_contents, extension), &devices);
+      pending_request.should_display_notification,
+      pending_request.application_title, &devices);
   std::move(pending_request.callback)
       .Run(devices, blink::mojom::MediaStreamRequestResult::OK, std::move(ui));
 

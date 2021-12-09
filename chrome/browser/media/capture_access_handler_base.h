@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_MEDIA_CAPTURE_ACCESS_HANDLER_BASE_H_
 
 #include <list>
+#include <string>
 
 #include "chrome/browser/media/media_access_handler.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_request_state.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -52,6 +54,29 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
                                       bool is_secure) override;
 
  protected:
+  // Holds pending request information.
+  struct PendingAccessRequest {
+    PendingAccessRequest(std::unique_ptr<DesktopMediaPicker> picker,
+                         const content::MediaStreamRequest& request,
+                         content::MediaResponseCallback callback,
+                         std::u16string application_title,
+                         bool should_display_notification);
+    PendingAccessRequest(const PendingAccessRequest& other) = delete;
+    PendingAccessRequest& operator=(const PendingAccessRequest& other) = delete;
+    ~PendingAccessRequest();
+
+    std::unique_ptr<DesktopMediaPicker> picker;
+    content::MediaStreamRequest request;
+    content::MediaResponseCallback callback;
+    std::u16string application_title;
+    bool should_display_notification;
+  };
+
+  using RequestsQueue =
+      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
+
+  using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
+
   static bool IsExtensionAllowedForScreenCapture(
       const extensions::Extension* extension);
 

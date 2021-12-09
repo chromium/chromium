@@ -55,22 +55,6 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
 
 }  // namespace
 
-// Holds pending request information so that we display one picker UI at a time
-// for each content::WebContents.
-struct DisplayMediaAccessHandler::PendingAccessRequest {
-  PendingAccessRequest(std::unique_ptr<DesktopMediaPicker> picker,
-                       const content::MediaStreamRequest& request,
-                       content::MediaResponseCallback callback)
-      : picker(std::move(picker)),
-        request(request),
-        callback(std::move(callback)) {}
-  ~PendingAccessRequest() = default;
-
-  std::unique_ptr<DesktopMediaPicker> picker;
-  content::MediaStreamRequest request;
-  content::MediaResponseCallback callback;
-};
-
 DisplayMediaAccessHandler::DisplayMediaAccessHandler()
     : picker_factory_(new DesktopMediaPickerFactoryImpl()),
       web_contents_collection_(this) {}
@@ -214,7 +198,8 @@ void DisplayMediaAccessHandler::HandleRequest(
   RequestsQueue& queue = pending_requests_[web_contents];
 
   queue.push_back(std::make_unique<PendingAccessRequest>(
-      std::move(picker), request, std::move(callback)));
+      std::move(picker), request, std::move(callback),
+      GetApplicationTitle(web_contents), display_notification_));
   // If this is the only request then pop picker UI.
   if (queue.size() == 1)
     ProcessQueuedAccessRequest(queue, web_contents);
@@ -231,7 +216,8 @@ void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
 
   RequestsQueue& queue = pending_requests_[web_contents];
   queue.push_back(std::make_unique<PendingAccessRequest>(
-      /*picker=*/nullptr, request, std::move(callback)));
+      /*picker=*/nullptr, request, std::move(callback),
+      GetApplicationTitle(web_contents), display_notification_));
   // If this is the only request then pop it. Otherwise, there is already a task
   // scheduled to pop the next request.
   if (queue.size() == 1)
@@ -324,7 +310,7 @@ void DisplayMediaAccessHandler::RejectRequest(
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
-    const DisplayMediaAccessHandler::PendingAccessRequest& pending_request,
+    const PendingAccessRequest& pending_request,
     content::WebContents* web_contents,
     AllowedScreenCaptureLevel capture_level,
     const GURL& request_origin) {

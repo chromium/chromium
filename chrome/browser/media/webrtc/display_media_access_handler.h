@@ -61,11 +61,6 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
  private:
   friend class DisplayMediaAccessHandlerTest;
 
-  struct PendingAccessRequest;
-  using RequestsQueue =
-      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
-  using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
-
   void ProcessChangeSourceRequest(content::WebContents* web_contents,
                                   const content::MediaStreamRequest& request,
                                   content::MediaResponseCallback callback);
@@ -75,11 +70,10 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
 
-  void ProcessQueuedPickerRequest(
-      const DisplayMediaAccessHandler::PendingAccessRequest& pending_request,
-      content::WebContents* web_contents,
-      AllowedScreenCaptureLevel capture_level,
-      const GURL& request_origin);
+  void ProcessQueuedPickerRequest(const PendingAccessRequest& pending_request,
+                                  content::WebContents* web_contents,
+                                  AllowedScreenCaptureLevel capture_level,
+                                  const GURL& request_origin);
 
   void ProcessQueuedChangeSourceRequest(
       const content::MediaStreamRequest& request,

@@ -84,6 +84,21 @@ struct CaptureAccessHandlerBase::Session {
   std::unique_ptr<WeakPtrToWebContents> target_weak_web_contents;
 };
 
+CaptureAccessHandlerBase::PendingAccessRequest::PendingAccessRequest(
+    std::unique_ptr<DesktopMediaPicker> picker,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback,
+    std::u16string application_title,
+    bool should_display_notification)
+    : picker(std::move(picker)),
+      request(request),
+      callback(std::move(callback)),
+      application_title(std::move(application_title)),
+      should_display_notification(should_display_notification) {}
+
+CaptureAccessHandlerBase::PendingAccessRequest::~PendingAccessRequest() =
+    default;
+
 CaptureAccessHandlerBase::CaptureAccessHandlerBase() = default;
 
 CaptureAccessHandlerBase::~CaptureAccessHandlerBase() = default;

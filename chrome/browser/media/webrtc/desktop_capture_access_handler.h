@@ -67,12 +67,6 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
  private:
   friend class DesktopCaptureAccessHandlerTest;
 
-  class WebContentsDestroyedObserver;
-  struct PendingAccessRequest;
-  using RequestsQueue =
-      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
-  using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
-
   void ProcessScreenCaptureAccessRequest(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
