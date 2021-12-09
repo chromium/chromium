@@ -27,7 +27,7 @@ constexpr int kCircularButtonSize = 32;
 // PersistentDesksBarDeskButton:
 
 PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
-    : DeskButtonBase(desk->name()), desk_(desk) {
+    : DeskButtonBase(desk->name(), /*set_text=*/true), desk_(desk) {
   // TODO(minch): A11y of bento bar.
   SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
   // Only paint the background of the active desk's button.

@@ -42,7 +42,10 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
-      : DeskButtonBase(text, kBorderCornerRadius, kCornerRadius),
+      : DeskButtonBase(text,
+                       /*set_text=*/false,
+                       kBorderCornerRadius,
+                       kCornerRadius),
         outer_button_(outer_button),
         button_callback_(callback) {
     paint_contents_only_ = true;

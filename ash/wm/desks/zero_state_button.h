@@ -26,8 +26,14 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
  public:
   METADATA_HEADER(DeskButtonBase);
 
-  explicit DeskButtonBase(const std::u16string& text);
+  // This LabelButton will include either text or image inside. Set the text
+  // of the button to `text` only if `set_text` is true, otherwise, the given
+  // `text` will only be used for the tooltip, accessible name etc of the
+  // button. If text of the button is empty, an image will be assigned to the
+  // button instead.
+  DeskButtonBase(const std::u16string& text, bool set_text);
   DeskButtonBase(const std::u16string& text,
+                 bool set_text,
                  int border_corder_radius,
                  int corner_radius);
   ~DeskButtonBase() override = default;

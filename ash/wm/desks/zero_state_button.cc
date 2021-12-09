@@ -46,10 +46,11 @@ constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 // -----------------------------------------------------------------------------
 // DeskButtonBase:
 
-DeskButtonBase::DeskButtonBase(const std::u16string& text)
-    : DeskButtonBase(text, kCornerRadius, kCornerRadius) {}
+DeskButtonBase::DeskButtonBase(const std::u16string& text, bool set_text)
+    : DeskButtonBase(text, set_text, kCornerRadius, kCornerRadius) {}
 
 DeskButtonBase::DeskButtonBase(const std::u16string& text,
+                               bool set_text,
                                int border_corder_radius,
                                int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
@@ -57,6 +58,8 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                   std::u16string()),
       corner_radius_(corner_radius) {
   DCHECK(!text.empty());
+  if (set_text)
+    SetText(text);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -141,7 +144,8 @@ END_METADATA
 // ZeroStateDefaultDeskButton:
 
 ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
-    : DeskButtonBase(DesksController::Get()->desks()[0]->name()),
+    : DeskButtonBase(DesksController::Get()->desks()[0]->name(),
+                     /*set_text=*/true),
       bar_view_(bar_view) {
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
@@ -199,7 +203,7 @@ END_METADATA
 ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure callback)
-    : DeskButtonBase(text),
+    : DeskButtonBase(text, /*set_text=*/false),
       button_icon_(button_icon),
       button_callback_(callback) {
   should_paint_background_ = false;
