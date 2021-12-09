@@ -2443,15 +2443,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_ACTION" desc="The Add button in the in-product help message encouraging users to add a commonly visited webpage to the home screen.">
         Add
       </message>
-      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
-        Install this app
-      </message>
-      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_SCREENSHOT" desc="The content description string for a screenshot in the bottom sheet install UI.">
-        Screenshot
-      </message>
-      <message name="IDS_IMAGE_ZOOM_CONTENT_DESCRIPTION" desc="The content description string for the screenshot in the image zoom view.">
-        Screenshot. Tap to close.
-      </message>
       <message name="IDS_IPH_MESSAGE_SHARED_HIGHLIGHTING_TITLE" desc="The title of in-product-help message encouraging users to create highlights.">
         Create a highlighted link like this one?
       </message>

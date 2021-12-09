@@ -187,6 +187,15 @@
       <message name="IDS_ADDED_TO_HOMESCREEN" desc="Text in a toast indicating that the website with the specified name was added to the user's Home screen.">
         <ph name="NAME">%1$s<ex>Google</ex></ph> was added to your Home screen
       </message>
+      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+        Install this app
+      </message>
+      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_SCREENSHOT" desc="The content description string for a screenshot in the bottom sheet install UI.">
+        Screenshot
+      </message>
+      <message name="IDS_IMAGE_ZOOM_CONTENT_DESCRIPTION" desc="The content description string for the screenshot in the image zoom view.">
+        Screenshot. Tap to close.
+      </message>
     </messages>
   </release>
 </grit>

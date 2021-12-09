@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
+#include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
-#include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"

@@ -62,6 +62,8 @@ source_set("browser") {
       "android/add_to_homescreen_params.h",
       "android/app_banner_manager_android.cc",
       "android/app_banner_manager_android.h",
+      "android/bottomsheet/pwa_bottom_sheet_controller.cc",
+      "android/bottomsheet/pwa_bottom_sheet_controller.h",
       "android/features.cc",
       "android/features.h",
       "android/installable/installable_ambient_badge_client.h",

@@ -4754,14 +4754,6 @@
     </issue>
 
     <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
-        <location
-            file="../../chrome/browser/webapps/android/java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetController.java"
-            line="127"/>
-    </issue>
-
-    <issue
         id="UseCompoundDrawables"
         message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable">
         <location

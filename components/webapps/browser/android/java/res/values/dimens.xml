@@ -21,4 +21,5 @@
 
     <dimen name="webapk_monochrome_icon_size">24dp</dimen>
     <dimen name="webapk_prompt_ui_icon_radius">16dp</dimen>
+    <dimen name="webapk_screenshot_margin">16dp</dimen>
 </resources>

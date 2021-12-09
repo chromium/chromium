@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
+
 /**
  * The custom view part of the {@link WebApkIconNameUpdateDialog}. Shows the icon changes and
  * changes to name and short_name.

@@ -3415,8 +3415,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/video_tutorials/internal",
       "//chrome/browser/video_tutorials/internal:jni_headers",
-      "//chrome/browser/webapps/android:android",
-      "//chrome/browser/webapps/android:jni_headers",
       "//chrome/common:non_code_constants",
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/assist_ranker/proto",
@@ -3523,14 +3521,7 @@ static_library("browser") {
       "//url:origin_android",
     ]
 
-    allow_circular_includes_from += [
-      # chrome/browser depends on webapps, but that module needs
-      # app_banner_manager_android.h from chrome. However, the .h file will soon
-      # be moved to a component (when WebLayer starts relying on it). Allow the
-      # circular dependency until then.
-      "//chrome/browser/webapps/android:android",
-      "//chrome/browser/share",
-    ]
+    allow_circular_includes_from += [ "//chrome/browser/share" ]
 
     deps -= [ "//components/storage_monitor" ]
 

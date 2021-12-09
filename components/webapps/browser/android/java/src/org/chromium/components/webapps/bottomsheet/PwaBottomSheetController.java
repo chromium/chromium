@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.components.webapps.bottomsheet;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.InstallTrigger;
+import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
@@ -122,6 +123,7 @@ public class PwaBottomSheetController
             mScreenshots = new ArrayList<Bitmap>();
         }
 
+        @SuppressWarnings("NotifyDataSetChanged")
         public void addScreenshot(Bitmap screenshot) {
             mScreenshots.add(screenshot);
             notifyDataSetChanged();
