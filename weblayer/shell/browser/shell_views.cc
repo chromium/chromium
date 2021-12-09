@@ -86,14 +86,10 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     views::Builder<views::View>(contents_view_.get())
         .AddChild(views::Builder<views::WebView>()
                       .CopyAddressTo(&web_view_)
-                      .SetPreferredSize(size)
-                      .CustomConfigure(base::BindOnce(
-                          [](Tab* tab, views::WebView* web_view) {
-                            tab->AttachToView(web_view);
-                            web_view->SizeToPreferredSize();
-                          },
-                          base::Unretained(tab))))
+                      .SetPreferredSize(size))
         .BuildChildren();
+    tab->AttachToView(web_view_);
+    web_view_->SizeToPreferredSize();
 
     // Resize the widget, keeping the same origin.
     gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
