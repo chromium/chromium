@@ -353,8 +353,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
-         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature,
+        {media::kGlobalMediaControls, media::kLiveCaption,
+         feature_engagement::kIPHLiveCaptionFeature,
          media::kLiveCaptionMultiLanguage, media::kUseSodaForLiveCaption},
         {});
 

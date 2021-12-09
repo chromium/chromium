@@ -136,7 +136,6 @@ MEDIA_EXPORT extern const base::Feature kFallbackAfterDecodeError;
 MEDIA_EXPORT extern const base::Feature kGav1VideoDecoder;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControls;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsAutoDismiss;
-MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsForCast;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsForChromeOS;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsPictureInPicture;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsSeamlessTransfer;
@@ -208,7 +207,6 @@ MEDIA_EXPORT extern const base::Feature kWakeLockOptimisationHiddenMuted;
 MEDIA_EXPORT extern const base::Feature kResolutionBasedDecoderPriority;
 MEDIA_EXPORT extern const base::Feature kForceHardwareVideoDecoders;
 MEDIA_EXPORT extern const base::Feature kForceHardwareAudioDecoders;
-
 
 #if defined(OS_ANDROID)
 MEDIA_EXPORT extern const base::Feature kAllowNonSecureOverlays;
