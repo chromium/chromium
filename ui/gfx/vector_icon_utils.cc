@@ -4,6 +4,8 @@
 
 #include "ui/gfx/vector_icon_utils.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "ui/gfx/vector_icon_types.h"
 

@@ -5,6 +5,7 @@
 #include "cc/metrics/event_metrics.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 
 #include "base/check.h"

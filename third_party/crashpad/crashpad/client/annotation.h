@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <ostream>
 
 #include <stdint.h>
 #include <string.h>

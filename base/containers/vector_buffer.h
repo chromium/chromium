@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <ios>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 

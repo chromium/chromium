@@ -4,6 +4,7 @@
 
 #include "testing/perf/perf_result_reporter.h"
 
+#include <ostream>
 #include <vector>
 
 #include "base/check.h"

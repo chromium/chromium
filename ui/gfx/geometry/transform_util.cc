@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 #include <string>
 
 #include "base/check.h"

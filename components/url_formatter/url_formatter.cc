@@ -5,6 +5,7 @@
 #include "components/url_formatter/url_formatter.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 #include <vector>
 

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"

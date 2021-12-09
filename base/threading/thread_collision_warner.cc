@@ -4,6 +4,8 @@
 
 #include "base/threading/thread_collision_warner.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 

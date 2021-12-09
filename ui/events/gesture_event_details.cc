@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/events/gesture_event_details.h"
+
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 

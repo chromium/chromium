@@ -6,6 +6,8 @@
 
 #include <linux/input.h>
 
+#include <ostream>
+
 namespace ui {
 
 void HeuristicStylusPalmDetectionFilter::Filter(

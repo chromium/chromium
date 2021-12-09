@@ -4,6 +4,8 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 

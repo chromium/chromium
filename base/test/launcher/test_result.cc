@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 

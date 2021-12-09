@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
