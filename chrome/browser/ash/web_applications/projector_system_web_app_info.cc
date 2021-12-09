@@ -8,6 +8,7 @@
 #include "ash/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,5 +50,12 @@ bool ProjectorSystemWebAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
-  return ash::features::IsProjectorEnabled();
+  if (!profile_->GetProfilePolicyConnector()->IsManaged() ||
+      profile_->IsChild()) {
+    return ash::features::IsProjectorAllUserEnabled();
+  }
+
+  // TODO(b/209675088): Check Projector admin policy.
+  return ash::features::IsProjectorEnabled() ||
+         ash::features::IsProjectorManagedUserEnabled();
 }

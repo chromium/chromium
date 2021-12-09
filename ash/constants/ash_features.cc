@@ -1006,6 +1006,10 @@ const base::Feature kProductivityLauncherAnimation{
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable Projector for managed users.
+const base::Feature kProjectorManagedUser{"ProjectorManagedUser",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable Projector in status tray.
 const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1757,7 +1761,15 @@ bool IsProductivityLauncherAnimationEnabled() {
 }
 
 bool IsProjectorEnabled() {
+  return IsProjectorAllUserEnabled() || IsProjectorManagedUserEnabled();
+}
+
+bool IsProjectorAllUserEnabled() {
   return base::FeatureList::IsEnabled(kProjector);
+}
+
+bool IsProjectorManagedUserEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorManagedUser);
 }
 
 bool IsProjectorFeaturePodEnabled() {

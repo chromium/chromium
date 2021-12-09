@@ -382,6 +382,8 @@ extern const base::Feature kProductivityLauncher;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProductivityLauncherAnimation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProjectorManagedUser;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorAnnotator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -609,6 +611,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipRoundedCornersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAllUserEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorManagedUserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAnnotatorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
