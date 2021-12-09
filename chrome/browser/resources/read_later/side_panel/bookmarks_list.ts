@@ -137,16 +137,6 @@ export class BookmarksListElement extends PolymerElement {
     }
 
     this.focusBookmark_(bookmarks[0]!.id);
-
-    // <if expr="is_macosx">
-    // On Mac, the hover effect on the dragged item can linger on before the
-    // user moves the pointer after drop. Reset pointer events on the whole
-    // list temporarily to reset the effect.
-    this.style.pointerEvents = 'none';
-    setTimeout(() => {
-      this.style.pointerEvents = 'auto';
-    }, 50);
-    // </if>
   }
 
   /** BookmarksDragDelegate */
