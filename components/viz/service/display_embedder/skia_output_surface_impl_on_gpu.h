@@ -243,8 +243,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   const scoped_refptr<AsyncReadResultLock> GetAsyncReadResultLock() const;
 
-  void AddAsyncReadResultHelper(AsyncReadResultHelper* helper);
-  void RemoveAsyncReadResultHelper(AsyncReadResultHelper* helper);
+  void AddAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
+  void RemoveAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
 
  private:
   class DisplayContext;

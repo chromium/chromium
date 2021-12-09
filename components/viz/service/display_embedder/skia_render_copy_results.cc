@@ -20,12 +20,14 @@ AsyncReadResultHelper::AsyncReadResultHelper(
     : lock_(impl_on_gpu->GetAsyncReadResultLock()),
       impl_on_gpu_(impl_on_gpu),
       result_(std::move(result)) {
-  impl_on_gpu_->AddAsyncReadResultHelper(this);
+  base::AutoLock auto_lock(lock());
+  impl_on_gpu_->AddAsyncReadResultHelperWithLock(this);
 }
 
 AsyncReadResultHelper::~AsyncReadResultHelper() {
+  base::AutoLock auto_lock(lock());
   if (impl_on_gpu_) {
-    impl_on_gpu_->RemoveAsyncReadResultHelper(this);
+    impl_on_gpu_->RemoveAsyncReadResultHelperWithLock(this);
   }
 }
 
