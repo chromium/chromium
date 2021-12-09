@@ -851,8 +851,14 @@ void ShelfAppButton::InkDropAnimationStarted() {
 void ShelfAppButton::InkDropRippleAnimationEnded(views::InkDropState state) {
   // Notify the host view of the ink drop to be hidden at the end of ink drop
   // animation.
-  if (state == views::InkDropState::HIDDEN)
+  // TODO(https://crbug.com/1126491): Ideally ink drops should be hidden at the
+  // end. However, it may not be guaranteed in reality. Therefore decrease the
+  // ink drop count when `state` is DEACTIVATED. If this tentative fixing works,
+  // we should fix the code so that an ink drop's final state is HIDDEN.
+  if (state == views::InkDropState::HIDDEN ||
+      state == views::InkDropState::DEACTIVATED) {
     SetInkDropAnimationStarted(/*started=*/false);
+  }
 }
 
 void ShelfAppButton::UpdateState() {
