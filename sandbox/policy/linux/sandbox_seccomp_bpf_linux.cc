@@ -189,6 +189,11 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
+      // TODO(b/195769334): we're using the GPU process sandbox policy for now
+      // as a transition step. However, we should create a policy that's tighter
+      // just for hardware video decoding.
+      return GetGpuProcessSandbox(options.use_amd_specific_policies);
     case sandbox::mojom::Sandbox::kIme:
       return std::make_unique<ImeProcessPolicy>();
     case sandbox::mojom::Sandbox::kTts:
@@ -245,6 +250,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #endif  // !defined(NDEBUG)
     } break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

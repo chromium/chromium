@@ -51,6 +51,7 @@ const char kMirroringSandbox[] = "mirroring";
 #endif  // OS_MAC
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kHardwareVideoDecodingSandbox[] = "hardware_video_decoding";
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

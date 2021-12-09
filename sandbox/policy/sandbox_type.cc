@@ -62,6 +62,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
     case Sandbox::kNaClLoader:
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Sandbox::kHardwareVideoDecoding:
     case Sandbox::kIme:
     case Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -131,6 +132,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kWindowsSystemProxyResolver:
 #endif  // defined(OS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Sandbox::kHardwareVideoDecoding:
     case Sandbox::kIme:
     case Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -271,6 +273,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return switches::kMirroringSandbox;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Sandbox::kHardwareVideoDecoding:
+      return switches::kHardwareVideoDecodingSandbox;
     case Sandbox::kIme:
       return switches::kImeSandbox;
     case Sandbox::kTts:
@@ -353,6 +357,8 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kVideoCapture;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (sandbox_string == switches::kHardwareVideoDecodingSandbox)
+    return Sandbox::kHardwareVideoDecoding;
   if (sandbox_string == switches::kImeSandbox)
     return Sandbox::kIme;
   if (sandbox_string == switches::kTtsSandbox)

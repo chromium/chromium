@@ -45,11 +45,17 @@
 #include "ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
+#include "gpu/config/gpu_info_collector.h"
+#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
+
+// gn check is not smart enough to realize that this include only applies to
+// ash-chrome and the BUILD.gn dependencies correctly account for that.
+#include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 #include "base/message_loop/message_pump_mac.h"
@@ -139,6 +145,10 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
+      pre_sandbox_hook =
+          base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
+      break;
     case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
       break;
@@ -156,9 +166,19 @@ int UtilityMain(MainFunctionParams parameters) {
       break;
   }
   if (parameters.zygote_child || !pre_sandbox_hook.is_null()) {
+    sandbox::policy::SandboxLinux::Options sandbox_options;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding) {
+      // The kHardwareVideoDecoding sandbox needs to know the GPU type in order
+      // to select the right policy.
+      gpu::GPUInfo gpu_info{};
+      gpu::CollectBasicGraphicsInfo(&gpu_info);
+      sandbox_options.use_amd_specific_policies =
+          angle::IsAMD(gpu_info.active_gpu().vendor_id);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     sandbox::policy::Sandbox::Initialize(
-        sandbox_type, std::move(pre_sandbox_hook),
-        sandbox::policy::SandboxLinux::Options());
+        sandbox_type, std::move(pre_sandbox_hook), sandbox_options);
   }
 #elif defined(OS_WIN)
   g_utility_target_services = parameters.sandbox_info->target_services;

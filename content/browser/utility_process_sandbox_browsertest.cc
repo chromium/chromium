@@ -122,6 +122,7 @@ class UtilityProcessSandboxBrowserTest
 
       case Sandbox::kAudio:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+      case Sandbox::kHardwareVideoDecoding:
       case Sandbox::kIme:
       case Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

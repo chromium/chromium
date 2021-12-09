@@ -95,6 +95,19 @@ enum Sandbox {
   [EnableIf=is_win]
   kWindowsSystemProxyResolver,
 
+  // Used to protect processes that perform hardware video decode acceleration.
+  // Currently uses the same policy as the GPU process sandbox. Warm-up does
+  // something different depending on the video acceleration API: for VA-API, we
+  // open the render node and load libva plus associated libraries (like i965 or
+  // iHD). For V4L2, we set up the broker process to allow opening certain V4L2
+  // devices and we load the libv4l2.so library.
+  //
+  // TODO(b/195769334): we're using the GPU process sandbox policy for now as a
+  // transition step. However, we should create a policy that's tighter just for
+  // hardware video decoding.
+  [EnableIf=is_chromeos_ash]
+  kHardwareVideoDecoding,
+
   // Hosts Input Method Editors.
   [EnableIf=is_chromeos_ash]
   kIme,

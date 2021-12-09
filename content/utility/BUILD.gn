@@ -85,6 +85,9 @@ source_set("utility") {
       "//ash/services/ime:sandbox_hook",
       "//chromeos/assistant:buildflags",
       "//chromeos/services/tts:sandbox_hook",
+      "//gpu/config",
+      "//media/gpu/sandbox",
+      "//third_party/angle:angle_gpu_info_util",
     ]
     if (use_vaapi || use_v4l2_codec) {
       deps += [ "//ash/components/arc/video_accelerator" ]

@@ -52,6 +52,7 @@ SANDBOX_POLICY_EXPORT extern const char kMirroringSandbox[];
 #endif  // OS_MAC
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+SANDBOX_POLICY_EXPORT extern const char kHardwareVideoDecodingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

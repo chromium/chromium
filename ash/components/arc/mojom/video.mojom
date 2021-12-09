@@ -31,9 +31,23 @@ interface VideoInstance {
   [MinVersion=5] Init@1(pending_remote<VideoHost> host_remote) => ();
 };
 
+// This interface allows ARC++/ARCVM to create connections to various hardware
+// video acceleration interfaces. There's always an implementation of this
+// interface living in the browser process which handles connections from
+// ARC++/ARCVM. However, we declare this interface as needing a
+// kHardwareVideoDecoding sandbox so that the browser process has the option of
+// starting a utility process to host an implementation of this interface and
+// delegating the connection of the video accelerator interfaces to that
+// process. This is intended for out-of-process video decoding where we want
+// accelerated video decoding to run outside the GPU process.
+//
+// TODO(b/195769334): we would probably want different sandboxes for decoding
+// and encoding. Figure out the best way to do this when we implement
+// out-of-process video encoding.
+//
 // Deprecated method IDs: 0
 // Next method ID: 4
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoDecoding]
 interface VideoAcceleratorFactory {
   [MinVersion=1]
   CreateEncodeAccelerator@1(
