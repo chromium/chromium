@@ -196,6 +196,12 @@ bool InitServerDirectory(const Capabilities& capabilities,
     LOG(ERROR) << "Unable to create runtime directory under " << parent_path;
     return false;
   }
+  if (!base::SetPosixFilePermissions(out_temp_dir.GetPath(), 0755)) {
+    LOG(ERROR) << "Could not set permissions for directory "
+               << out_temp_dir.GetPath()
+               << ", deleted=" << out_temp_dir.Delete();
+    return false;
+  }
   return true;
 }
 
