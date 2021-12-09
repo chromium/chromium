@@ -36,6 +36,32 @@ An `ItemSelector` implementation that randomly selects items in a batch.
 restrictions given (max_selections_per_batch, selection_rate and
 unselectable_ids).
 
+#### Example:
+
+```
+>>> vocab = ["[UNK]", "[MASK]", "[RANDOM]", "[CLS]", "[SEP]",
+...          "abc", "def", "ghi"]
+>>> # Note that commonly in masked language model work, there are
+>>> # special tokens we don't want to mask, like CLS, SEP, and probably
+>>> # any OOV (out-of-vocab) tokens here called UNK.
+>>> # Note that if e.g. there are bucketed OOV tokens in the code,
+>>> # that might be a use case for overriding `get_selectable()` to
+>>> # exclude a range of IDs rather than enumerating them.
+>>> tf.random.set_seed(1234)
+>>> selector = tf_text.RandomItemSelector(
+...     max_selections_per_batch=2,
+...     selection_rate=0.2,
+...     unselectable_ids=[0, 3, 4])  # indices of UNK, CLS, SEP
+>>> selection = selector.get_selection_mask(
+...     tf.ragged.constant([[3, 5, 7, 7], [4, 6, 7, 5]]), axis=1)
+>>> print(selection)
+<tf.RaggedTensor [[False, False, False, True], [False, False, True, False]]>
+```
+
+The selection has skipped the first elements (the CLS and SEP token codings) and
+picked random elements from the other elements of the segments -- if run with a
+different random seed the selections might be different.
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -130,6 +156,9 @@ uses `tf.random.shuffle`.
 
 Return a boolean mask of items that can be chosen for selection.
 
+The default implementation marks all items whose IDs are not in the
+`unselectable_ids` list. This can be overridden if there is a need for a more
+complex or algorithmic approach for selectability.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -186,7 +215,8 @@ selectable.
 
 Returns a mask of items that have been selected.
 
-The default implementation returns all selectable items as selectable.
+The default implementation simply returns all items not excluded by
+`get_selectable`.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

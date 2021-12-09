@@ -31,6 +31,22 @@ An abstract base class for splitting text.
 
 <!-- Placeholder for "Used in" -->
 
+A Splitter is a module that splits strings into pieces. Generally, the pieces
+returned by a splitter correspond to substrings of the original string, and can
+be encoded using either strings or integer ids (where integer ids could be
+created by hashing strings or by looking them up in a fixed vocabulary table
+that maps strings to ids).
+
+Each Splitter subclass must implement a `split` method, which subdivides each
+string in an input Tensor into pieces. E.g.:
+
+```
+>>> class SimpleSplitter(tf_text.Splitter):
+...   def split(self, input):
+...     return tf.strings.split(input)
+>>> print(SimpleSplitter().split(["hello world", "this is a test"]))
+<tf.RaggedTensor [[b'hello', b'world'], [b'this', b'is', b'a', b'test']]>
+```
 
 ## Methods
 
@@ -45,8 +61,17 @@ An abstract base class for splitting text.
 )
 </code></pre>
 
-Splits the strings from the input tensor.
+Splits the input tensor into pieces.
 
+Generally, the pieces returned by a splitter correspond to substrings of the
+original string, and can be encoded using either strings or integer ids.
+
+#### Example:
+
+```
+>>> print(tf_text.WhitespaceTokenizer().split("small medium large"))
+tf.Tensor([b'small' b'medium' b'large'], shape=(3,), dtype=string)
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

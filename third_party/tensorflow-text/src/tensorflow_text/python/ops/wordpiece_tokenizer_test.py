@@ -599,6 +599,15 @@ class WordpieceOpTest(test_util.TensorFlowTestCase, parameterized.TestCase):
       result = tokenizer.detokenize(subwords_ids)
       self.evaluate(result)
 
+  def testVocabSize(self):
+    vocab_table = _CreateTable(
+        _ENGLISH_VOCAB,
+        100  # OOV values
+    )
+    self.evaluate(vocab_table.initializer)
+    tokenizer = WordpieceTokenizer(
+        vocab_table, unknown_token=None)
+    self.assertEqual(self.evaluate(tokenizer.vocab_size()), 121)
 
 if __name__ == "__main__":
   test.main()

@@ -40,10 +40,9 @@ def gather_with_default(params, indices, default, name=None, axis=0):
   This operation is similar to `tf.gather()`, except that any value of `-1`
   in `indices` will be mapped to `default`.  Example:
 
-  ```python
-  >>> gather_with_default(['a', 'b', 'c', 'd'], [2, 0, -1, 2, -1], '_').eval()
-  array(['c', 'a', '_', 'c', '_'], dtype=object)
-  ```
+  >>> gather_with_default(['a', 'b', 'c', 'd'], [2, 0, -1, 2, -1], '_')
+  <tf.Tensor: shape=(5,), dtype=string,
+      numpy=array([b'c', b'a', b'_', b'c', b'_'], dtype=object)>
 
   Args:
     params: The `Tensor` from which to gather values.  Must be at least rank
@@ -140,6 +139,28 @@ def span_overlaps(source_start,
     * `partial_overlap` is true, and there is a non-zero overlap between the
       source span and the target span.
 
+  #### Example:
+    Given the following source and target spans (with no batch dimensions):
+
+    >>>  #         0    5    10   15   20   25   30   35   40
+    >>>  #         |====|====|====|====|====|====|====|====|
+    >>>  # Source: [-0-]     [-1-] [2] [-3-][-4-][-5-]
+    >>>  # Target: [-0-][-1-]     [-2-] [3]   [-4-][-5-]
+    >>>  #         |====|====|====|====|====|====|====|====|
+    >>> source_start = [0, 10, 16, 20, 25, 30]
+    >>> source_limit = [5, 15, 19, 25, 30, 35]
+    >>> target_start = [0,  5, 15, 21, 27, 31]
+    >>> target_limit = [5, 10, 20, 24, 32, 37]
+
+    `result[i, j]` will be true at the following locations:
+
+      * `[0, 0]` (always)
+      * `[2, 2]` (if contained_by=True or partial_overlaps=True)
+      * `[3, 3]` (if contains=True or partial_overlaps=True)
+      * `[4, 4]` (if partial_overlaps=True)
+      * `[5, 4]` (if partial_overlaps=True)
+      * `[5, 5]` (if partial_overlaps=True)
+
   Args:
     source_start: A B+1 dimensional potentially ragged tensor with shape
       `[D1...DB, source_size]`: the start offset of each source span.
@@ -163,30 +184,6 @@ def span_overlaps(source_start,
 
   Raises:
     ValueError: If the span tensors are incompatible.
-
-  #### Example:
-    Given the following source and target spans (with no batch dimensions):
-
-    ```python
-    #         0    5    10   15   20   25   30   35   40
-    #         |====|====|====|====|====|====|====|====|
-    # Source: [-0-]     [-1-] [2] [-3-][-4-][-5-]
-    # Target: [-0-][-1-]     [-2-] [3]   [-4-][-5-]
-    #         |====|====|====|====|====|====|====|====|
-    >>> source_start = [0, 10, 16, 20, 25, 30]
-    >>> source_limit = [5, 15, 19, 25, 30, 35]
-    >>> target_start = [0,  5, 15, 21, 27, 31]
-    >>> target_limit = [5, 10, 20, 24, 32, 37]
-    ```
-
-    `result[i, j]` will be true at the following locations:
-
-      * `[0, 0]` (always)
-      * `[2, 2]` (if contained_by=True or partial_overlaps=True)
-      * `[3, 3]` (if contains=True or partial_overlaps=True)
-      * `[4, 4]` (if partial_overlaps=True)
-      * `[5, 5]` (if partial_overlaps=True)
-
   """
   _check_type(contains, 'contains', bool)
   _check_type(contained_by, 'contained_by', bool)
@@ -449,6 +446,33 @@ def span_alignment(source_start,
 
   For a definition of span overlap, see the docstring for `span_overlaps()`.
 
+  #### Examples:
+
+  Given the following source and target spans (with no batch dimensions):
+
+  >>> #         0    5    10   15   20   25   30   35   40   45   50   55   60
+  >>> #         |====|====|====|====|====|====|====|====|====|====|====|====|
+  >>> # Source: [-0-]     [-1-] [2] [3]    [4][-5-][-6-][-7-][-8-][-9-]
+  >>> # Target: [-0-][-1-]     [-2-][-3-][-4-] [5] [6]    [7]  [-8-][-9-][10]
+  >>> #         |====|====|====|====|====|====|====|====|====|====|====|====|
+  >>> source_starts = [0, 10, 16, 20, 27, 30, 35, 40, 45, 50]
+  >>> source_limits = [5, 15, 19, 23, 30, 35, 40, 45, 50, 55]
+  >>> target_starts = [0,  5, 15, 20, 25, 31, 35, 42, 47, 52, 57]
+  >>> target_limits = [5, 10, 20, 25, 30, 34, 38, 45, 52, 57, 61]
+  >>> span_alignment(source_starts, source_limits, target_starts, target_limits)
+  <tf.Tensor: shape=(10,), dtype=int64,
+      numpy=array([ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1])>
+  >>> span_alignment(source_starts, source_limits, target_starts, target_limits,
+  ...                multivalent_result=True)
+  <tf.RaggedTensor [[0], [], [], [], [], [], [], [], [], []]>
+  >>> span_alignment(source_starts, source_limits, target_starts, target_limits,
+  ...                contains=True)
+  <tf.Tensor: shape=(10,), dtype=int64,
+      numpy=array([ 0, -1, -1, -1, -1,  5,  6,  7, -1, -1])>
+  >>> span_alignment(source_starts, source_limits, target_starts, target_limits,
+  ...                 partial_overlap=True, multivalent_result=True)
+  <tf.RaggedTensor [[0], [], [2], [3], [4], [5], [6], [7], [8], [8, 9]]>
+
   Args:
     source_start: A B+1 dimensional potentially ragged tensor with shape
       `[D1...DB, source_size]`: the start offset of each source span.
@@ -475,40 +499,6 @@ def span_alignment(source_start,
       `[source_size]`, where `source_size` is the length of the `source_start`
       and `source_limit` input tensors.  If `multivalent_result=True`, then the
       returned tensor has shape `[source_size, (num_aligned_target_spans)].
-
-  #### Examples:
-
-    Given the following source and target spans (with no batch dimensions):
-
-    ```python
-    >>> #         0    5    10   15   20   25   30   35   40   45   50   55   60
-    >>> #         |====|====|====|====|====|====|====|====|====|====|====|====|
-    >>> # Source: [-0-]     [-1-] [2] [3]    [4][-5-][-6-][-7-][-8-][-9-]
-    >>> # Target: [-0-][-1-]     [-2-][-3-][-4-] [5] [6]    [7]  [-8-][-9-][10]
-    >>> #         |====|====|====|====|====|====|====|====|====|====|====|====|
-    >>> source_start=[0, 10, 16, 20, 27, 30, 35, 40, 45, 50]
-    >>> source_limit=[5, 15, 19, 23, 30, 35, 40, 45, 50, 55]
-    >>> target_start=[0,  5, 15, 20, 25, 31, 35, 42, 47, 52, 57]
-    >>> target_limit=[5, 10, 20, 25, 30, 34, 38, 45, 52, 57, 61]
-
-    >>> span_alignment_lists(source_starts, source_limits,
-                             target_starts, target_limits)
-    [0, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-    >>> span_alignment_lists(source_starts, source_limits,
-    ...                      target_starts, target_limits,
-    ...                      multivalent_result=True)
-    [[0], [], [], [], [], [], [], [], [], []]
-
-    >>> span_alignment_lists(source_starts, source_limits,
-    ...                      target_starts, target_limits,
-    ...                      contains=True)
-    [ 0, -1, -1, -1, -1, 5, 6, 7, -1, -1]
-
-    >>> span_alignment_lists(source_starts, source_limits,
-    ...                      target_starts, target_limits,
-    ...                      partial_overlap=True,
-    ...                      multivalent_result=True)
-    [[0], [], [2], [3], [4], [5], [6], [7], [8], [8, 9]]
   """
   scope_tensors = [source_start, source_limit, target_start, target_limit]
   with ops.name_scope(name, 'SpanAlignment', scope_tensors):

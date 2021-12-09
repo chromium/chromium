@@ -35,30 +35,31 @@ class ItemSelector(object):
   `get_selection_mask()` to retrieve a bool `RaggedTensor` mask indicating the
   items that have been selected. For example:
 
-  ```
-  inputs = tf.ragged.constant([
-    [1, 2, 3, 4],
-    [100, 200]
-  ])
+  >>> inputs = tf.ragged.constant([
+  ...     [1, 2, 3, 4],
+  ...     [100, 200]
+  ...   ])
+  >>> tf.random.set_seed(1234)
+  >>> selector = RandomItemSelector(3, .5)
+  >>> selected = selector.get_selection_mask(inputs, axis=1)
+  >>> print(selected)
+  <tf.RaggedTensor [[False, True, True, False],
+                    [False, True]]>
 
-  selector = RandomItemSelector(...)
 
-  selected = selector.get_selection_mask(inputs)
+  An important use case for these classes is in creating inputs for masked
+  language model training dataset preparation. See `masked_language_model` for
+  an example of using the selectors in such a context.
 
-  #  selected = [
-  #    [True, False, False, True],
-  #    [True, True],
-  #  ]
-  ```
-
-  For subclass writers that wish to implement their own custom, selection
-  algorithm, please override `get_selection_mask()`.
+  Subclass writers will typically implement a selection algorithm by overriding
+  `get_selection_mask()`.
 
   A helper function `get_selectable()` is provided to help subclass writers
-  filter out undesirable items from selection. The default implementation will
-  filter out items listed in `unselectable_ids`. Subclass writers may also
-  override `get_selectable()` if they wish to customize the items to filter out
-  from the selection algorithm.
+  filter out excluded items from selection (e.g. CLS and SEP for bert style
+  models). This will frequently serve as a prefilter for subclass item
+  selection (see e.g. the implementation of `RandomItemSelector`. The base class
+  behavior is to simply return the mask obtained by filtering out items listed
+  in `unselectable_ids`.
   """
 
   def __init__(self, unselectable_ids=None):
@@ -87,6 +88,10 @@ class ItemSelector(object):
 
   def get_selectable(self, input_ids, axis):
     """Return a boolean mask of items that can be chosen for selection.
+
+    The default implementation marks all items whose IDs are not in the
+    `unselectable_ids` list. This can be overridden if there is a need for
+    a more complex or algorithmic approach for selectability.
 
     Args:
       input_ids: a `RaggedTensor`.
@@ -129,7 +134,8 @@ class ItemSelector(object):
   def get_selection_mask(self, input_ids, axis=1):
     """Returns a mask of items that have been selected.
 
-    The default implementation returns all selectable items as selectable.
+    The default implementation simply returns all items not excluded by
+    `get_selectable`.
 
     Args:
       input_ids: A `RaggedTensor`.
@@ -149,6 +155,29 @@ class RandomItemSelector(ItemSelector):
     `RandomItemSelector` randomly selects items in a batch subject to
     restrictions given (max_selections_per_batch, selection_rate and
     unselectable_ids).
+
+    Example:
+    >>> vocab = ["[UNK]", "[MASK]", "[RANDOM]", "[CLS]", "[SEP]",
+    ...          "abc", "def", "ghi"]
+    >>> # Note that commonly in masked language model work, there are
+    >>> # special tokens we don't want to mask, like CLS, SEP, and probably
+    >>> # any OOV (out-of-vocab) tokens here called UNK.
+    >>> # Note that if e.g. there are bucketed OOV tokens in the code,
+    >>> # that might be a use case for overriding `get_selectable()` to
+    >>> # exclude a range of IDs rather than enumerating them.
+    >>> tf.random.set_seed(1234)
+    >>> selector = tf_text.RandomItemSelector(
+    ...     max_selections_per_batch=2,
+    ...     selection_rate=0.2,
+    ...     unselectable_ids=[0, 3, 4])  # indices of UNK, CLS, SEP
+    >>> selection = selector.get_selection_mask(
+    ...     tf.ragged.constant([[3, 5, 7, 7], [4, 6, 7, 5]]), axis=1)
+    >>> print(selection)
+    <tf.RaggedTensor [[False, False, False, True], [False, False, True, False]]>
+
+    The selection has skipped the first elements (the CLS and SEP token codings)
+    and picked random elements from the other elements of the segments -- if
+    run with a different random seed the selections might be different.
   """
 
   def __init__(self,
@@ -157,6 +186,10 @@ class RandomItemSelector(ItemSelector):
                unselectable_ids=None,
                shuffle_fn=None):
     """Creates instance of `RandomItemSelector`.
+
+    By default the source of randomness will be the one set by
+    tf.random.set_seed. Users can adjust this independently by providing
+    a separate `shuffle_fn` to the selector.
 
     Args:
       max_selections_per_batch: An int of the max number of items to mask out.
@@ -190,8 +223,7 @@ class RandomItemSelector(ItemSelector):
     return self._selection_rate
 
   def get_selection_mask(self, input_ids, axis):
-    selectable = super(RandomItemSelector, self).get_selectable(
-        input_ids, axis)
+    selectable = self.get_selectable(input_ids, axis)
 
     # Run the selection algorithm on positions RT
     positions_flat = math_ops.range(array_ops.size(input_ids.flat_values))
@@ -284,6 +316,16 @@ class FirstNItemSelector(ItemSelector):
   def __init__(self, num_to_select, unselectable_ids=None):
     """Creates an instance of `FirstNItemSelector`.
 
+    Example:
+    >>> selector = FirstNItemSelector(2)
+    >>> selection = selector.get_selection_mask(
+    ...     tf.ragged.constant([[1, 2, 3, 4], [5, 6, 7, 8]]), axis=1)
+    >>> print(selection)
+    <tf.RaggedTensor [[True, True, False, False], [True, True, False, False]]>
+
+    This kind of selection mechanism is useful for batch trimming operations,
+    e.g. for `RoundRobinTrimmer`.
+
     Args:
       num_to_select: An int which is the leading number of items to select.
       unselectable_ids: (optional) A list of int ids that cannot be selected.
@@ -341,7 +383,7 @@ class NothingSelector(ItemSelector):
     super(NothingSelector, self).__init__([])
 
   def get_selectable(self, tokens, axis):
-    """See `get_selectable()` in superclass."""
+    """Returns a prefilter mask which excludes all items."""
     flat_false_values = math_ops.cast(
         array_ops.zeros_like(tokens.flat_values), dtypes.bool)
     results = tokens.with_flat_values(flat_false_values)

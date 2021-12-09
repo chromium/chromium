@@ -68,6 +68,26 @@ def viterbi_constrained_sequence(scores,
   Finally, if a RaggedTensor is provided, the sequence_lengths will be ignored
   and the variable length sequences in the RaggedTensor will be used.
 
+  >>> scores = np.array([[10.0, 12.0, 6.0, 4.0],
+  ...                    [13.0, 12.0, 11.0, 10.0]], dtype=np.float32)
+  >>> sequence_length = np.array([2])
+  >>> transition_weights = np.array([[ .1,  .2,  .3,  .4],
+  ...                                [ .5,  .6,  .7,  .8],
+  ...                                [ .9,  .1, .15,  .2],
+  ...                                [.25, .35, .45, .55]], dtype=np.float32)
+  >>> allowed_transitions = np.array([[True,  True,  True,  True],
+  ...                                 [True,  True,  True,  True],
+  ...                                 [True, False,  True, False],
+  ...                                 [True,  True,  True,  True]])
+  >>> viterbi_constrained_sequence(
+  ...      scores=scores,
+  ...      sequence_length=sequence_length,
+  ...      allowed_transitions=allowed_transitions,
+  ...      transition_weights=transition_weights,
+  ...      use_log_space=False,
+  ...      use_start_and_end_states=False)
+  <tf.RaggedTensor [[1, 3]]>
+
   Args:
     scores: `<float32> [batch_size, num_steps, |num_states|]`
       A tensor of scores, where `scores[b, t, s]` is the predicted score for

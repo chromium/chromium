@@ -1,0 +1,22 @@
+toc:
+- title: "Get started with TF-Text"
+  path: /text/guide/tf_text_intro
+- heading: Concepts
+  style: divider
+- title: "Work with Unicode"
+  path: /text/guide/unicode
+- title: "Word embeddings"
+  path: /text/guide/word_embeddings
+- title: "Decoding API"
+  path: /text/guide/decoding_api
+- title: "Convert to TF Lite"
+  path: /text/guide/text_tf_lite
+  status: nightly
+- heading: Pre-processing
+  style: divider
+- title: "BERT preprocessing"
+  path: /text/guide/bert_preprocessing_guide
+- title: "Tokenize strings"
+  path: /text/guide/tokenizers
+- title: "Subword Tokenization"
+  path: /text/guide/subwords_tokenizer

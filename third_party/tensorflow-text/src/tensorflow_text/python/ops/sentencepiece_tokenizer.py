@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Whitespace tokenizer for string tensors."""
+"""Sentencepiece tokenizer for string tensors."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -55,7 +55,19 @@ class _SentencepieceModelResource(tracking.TrackableResource):
 
 
 class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
-  """Tokenizes a tensor of UTF-8 strings."""
+  r"""Tokenizes a tensor of UTF-8 strings.
+
+  SentencePiece is an unsupervised text tokenizer and detokenizer. It is used
+  mainly for Neural Network-based text generation systems where the vocabulary
+  size is predetermined prior to the neural model training. SentencePiece
+  implements subword units with the extension of direct training from raw
+  sentences.
+
+  Before using the tokenizer, you will need to train a vocabulary and build a
+  model configuration for it. Please visit the [Sentencepiece
+  repository](https://github.com/google/sentencepiece#train-sentencepiece-model)
+  for the most up-to-date instructions on this process.
+  """
 
   def __init__(self,
                model=None,
@@ -74,20 +86,22 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
       out_type: output type. tf.int32 or tf.string (Default = tf.int32) Setting
         tf.int32 directly encodes the string into an id sequence.
       nbest_size: A scalar for sampling.
-                nbest_size = {0,1}: No sampling is performed. (default)
-                nbest_size > 1: samples from the nbest_size results.
-                nbest_size < 0: assuming that nbest_size is infinite and samples
-                  from the all hypothesis (lattice) using
-                  forward-filtering-and-backward-sampling algorithm.
+        * `nbest_size = {0,1}`: No sampling is performed. (default)
+        * `nbest_size > 1`: samples from the nbest_size results.
+        * `nbest_size < 0`: assuming that nbest_size is infinite and samples
+            from the all hypothesis (lattice) using
+            forward-filtering-and-backward-sampling algorithm.
       alpha: A scalar for a smoothing parameter. Inverse temperature for
         probability rescaling.
       reverse: Reverses the tokenized sequence (Default = false)
       add_bos: Add beginning of sentence token to the result (Default = false)
       add_eos: Add end of sentence token to the result (Default = false). When
-        reverse=True beginning/end of sentence tokens are added after reversing.
-      return_nbest: If True requires that nbest_size is a scalar and > 1.
-        Returns the nbest_size best tokenizations for each sentence instead of a
-        single one. The returned tensor has shape [batch * nbest, (tokens)].
+        `reverse=True` beginning/end of sentence tokens are added after
+        reversing.
+      return_nbest: If True requires that `nbest_size` is a scalar and `> 1`.
+        Returns the `nbest_size` best tokenizations for each sentence instead
+        of a single one. The returned tensor has shape
+        `[batch * nbest, (tokens)]`.
       name: The name argument that is passed to the op function.
 
     Returns:
@@ -147,6 +161,10 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
   def tokenize_with_offsets(self, input, name=None):  # pylint: disable=redefined-builtin
     """Tokenizes a tensor of UTF-8 strings.
 
+      This function returns a tuple containing the tokens along with
+      start and end byte offsets that mark where in the original string each
+      token was located.
+
     Args:
       input: A `RaggedTensor` or `Tensor` of UTF-8 strings with any shape.
       name: The name argument that is passed to the op function.
@@ -154,14 +172,14 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
     Returns:
       A tuple `(tokens, start_offsets, end_offsets)` where:
 
-        * `tokens` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-            `RaggedTensor`.
-        * `start_offsets` is an N+1-dimensional integer `Tensor` or
-            `RaggedTensor` containing the starting indices of each token (byte
-            indices for input strings).
-        * `end_offsets` is an N+1-dimensional integer `Tensor` or
-            `RaggedTensor` containing the exclusive ending indices of each token
-            (byte indices for input strings).
+      tokens: is an N+1-dimensional UTF-8 string or integer `Tensor` or
+        `RaggedTensor`.
+      start_offsets: is an N+1-dimensional integer `Tensor` or
+        `RaggedTensor` containing the starting indices of each token (byte
+        indices for input strings).
+      end_offsets: is an N+1-dimensional integer `Tensor` or
+        `RaggedTensor` containing the exclusive ending indices of each token
+        (byte indices for input strings).
     """
     with ops.name_scope(name, "SentenceTokenizer", [input, self]):
       input_tensor = ragged_tensor.convert_to_tensor_or_ragged_tensor(input)
@@ -214,6 +232,9 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
   def detokenize(self, input, name=None):  # pylint: disable=redefined-builtin
     """Detokenizes tokens into preprocessed text.
 
+      This function accepts tokenized text, and reforms it back into
+      sentences.
+
     Args:
       input: A `RaggedTensor` or `Tensor` of UTF-8 string tokens with a rank of
         at least 1.
@@ -255,6 +276,9 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
   def vocab_size(self, name=None):
     """Returns the vocabulary size.
 
+      The number of tokens from within the Sentencepiece vocabulary provided at
+      the time of initialization.
+
     Args:
       name: The name argument that is passed to the op function.
 
@@ -295,6 +319,9 @@ class SentencepieceTokenizer(TokenizerWithOffsets, Detokenizer):
 
   def string_to_id(self, input, name=None):  # pylint: disable=redefined-builtin
     """Converts token into a vocabulary id.
+
+    This function is particularly helpful for determining the IDs for any
+    special tokens whose ID could not be determined through normal tokenization.
 
     Args:
       input: An arbitrary tensor of string tokens.

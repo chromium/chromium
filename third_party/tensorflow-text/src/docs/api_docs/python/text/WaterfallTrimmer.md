@@ -5,7 +5,6 @@ description: A Trimmer that allocates a length budget to segments in order.
 <meta itemprop="path" content="Stable" />
 <meta itemprop="property" content="__init__"/>
 <meta itemprop="property" content="generate_mask"/>
-<meta itemprop="property" content="generate_masks"/>
 <meta itemprop="property" content="trim"/>
 </div>
 
@@ -33,10 +32,24 @@ A `Trimmer` that allocates a length budget to segments in order.
 
 <!-- Placeholder for "Used in" -->
 
-A `Trimmer` that allocates a length budget to segments in order, then
-truncates large sequences using a waterfall strategy, then drops elements in a
-sequence according to a max sequence length budget. See `generate_mask()`
-for more details.
+A `Trimmer` that allocates a length budget to segments in order. It selects
+elements to drop, according to a max sequence length budget, and then applies
+this mask to actually drop the elements. See `generate_mask()` for more details.
+
+#### Example:
+
+```
+>>> a = tf.ragged.constant([['a', 'b', 'c'], [], ['d']])
+>>> b = tf.ragged.constant([['1', '2', '3'], [], ['4', '5', '6', '7']])
+>>> trimmer = tf_text.WaterfallTrimmer(4)
+>>> trimmer.trim([a, b])
+[<tf.RaggedTensor [[b'a', b'b', b'c'], [], [b'd']]>,
+ <tf.RaggedTensor [[b'1'], [], [b'4', b'5', b'6']]>]
+```
+
+Here, for the first pair of elements, `['a', 'b', 'c']` and `['1', '2', '3']`,
+the `'2'` and `'3'` are dropped to fit the sequence within the max sequence
+length budget.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -92,6 +105,17 @@ and applied to all batch rows. It can also be a 1D `Tensor` of size
 `batch_size`, in which each batch row i will have a budget corresponding to
 `per_batch_quota[i]`.
 
+#### Example:
+
+```
+>>> a = tf.ragged.constant([['a', 'b', 'c'], [], ['d']])
+>>> b = tf.ragged.constant([['1', '2', '3'], [], ['4', '5', '6', '7']])
+>>> trimmer = tf_text.WaterfallTrimmer(4)
+>>> trimmer.generate_mask([a, b])
+[<tf.RaggedTensor [[True, True, True], [], [True]]>,
+ <tf.RaggedTensor [[True, False, False], [], [True, True, True, False]]>]
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -107,8 +131,6 @@ A list of `RaggedTensor` each w/ a shape of [num_batch,
 </td>
 </tr>
 </table>
-
-
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -117,58 +139,6 @@ A list of `RaggedTensor` each w/ a shape of [num_batch,
 <tr class="alt">
 <td colspan="2">
 a list with len(segments) of `RaggedTensor`s, see superclass for details.
-</td>
-</tr>
-
-</table>
-
-
-
-<h3 id="generate_masks"><code>generate_masks</code></h3>
-
-<a target="_blank" href="https://github.com/tensorflow/text/tree/master/tensorflow_text/python/ops/trimmer_ops.py">View source</a>
-
-<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
-<code>@abc.abstractmethod</code>
-<code>generate_masks(
-    segments
-)
-</code></pre>
-
-Generates a boolean mask specifying which portions of `segments` to drop.
-
-Users should be able to use the results of generate_masks() to drop items
-in segments using `tf.ragged.boolean_mask(seg, mask)`.
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`segments`
-</td>
-<td>
-A list of `RaggedTensor` each w/ a shape of [num_batch,
-(num_items)].
-</td>
-</tr>
-</table>
-
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-a list with len(segments) number of items and where each item is a
-`RaggedTensor` with the same shape as its counterpart in `segments` and
-with a boolean dtype where each value is True if the corresponding
-value in `segments` should be kept and False if it should be dropped
-instead.
 </td>
 </tr>
 
@@ -189,7 +159,7 @@ instead.
 Truncate the list of `segments`.
 
 Truncate the list of `segments` using the truncation strategy defined by
-`generate_masks`.
+`generate_mask`.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
