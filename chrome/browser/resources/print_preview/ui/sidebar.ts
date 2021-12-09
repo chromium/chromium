@@ -248,5 +248,11 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   // </if>
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-sidebar': PrintPreviewSidebarElement;
+  }
+}
+
 customElements.define(
     PrintPreviewSidebarElement.is, PrintPreviewSidebarElement);

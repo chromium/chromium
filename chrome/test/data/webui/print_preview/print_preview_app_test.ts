@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, DuplexMode, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 
@@ -17,33 +19,30 @@ import {getCddTemplate, getCloudDestination} from './print_preview_test_utils.js
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
 
-window.print_preview_app_test = {};
-print_preview_app_test.suiteName = 'PrintPreviewAppTest';
-/** @enum {string} */
-print_preview_app_test.TestNames = {
-  PrintToGoogleDrive: 'print to google drive',
-  PrintPresets: 'print presets',
-  DestinationsManaged: 'destinations managed',
-  HeaderFooterManaged: 'header footer managed',
-  CssBackgroundManaged: 'css background managed',
-  SheetsManaged: 'sheets managed'
+const print_preview_app_test = {
+  suiteName: 'PrintPreviewAppTest',
+  TestNames: {
+    PrintToGoogleDrive: 'print to google drive',
+    PrintPresets: 'print presets',
+    DestinationsManaged: 'destinations managed',
+    HeaderFooterManaged: 'header footer managed',
+    CssBackgroundManaged: 'css background managed',
+    SheetsManaged: 'sheets managed'
+  },
 };
 
+Object.assign(window, {print_preview_app_test: print_preview_app_test});
+
 suite(print_preview_app_test.suiteName, function() {
-  /** @type {?PrintPreviewAppElement} */
-  let page = null;
+  let page: PrintPreviewAppElement;
 
-  /** @type {?NativeLayer} */
-  let nativeLayer = null;
+  let nativeLayer: NativeLayerStub;
 
-  /** @type {?CloudPrintInterface} */
-  let cloudPrintInterface = null;
+  let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  /** @type {?TestPluginProxy} */
-  let pluginProxy = null;
+  let pluginProxy: TestPluginProxy;
 
-  /** @type {!NativeInitialSettings} */
-  const initialSettings = {
+  const initialSettings: NativeInitialSettings = {
     isInKioskAutoPrintMode: false,
     isInAppKioskMode: false,
     thousandsDelimiter: ',',
@@ -59,25 +58,25 @@ suite(print_preview_app_test.suiteName, function() {
     pdfPrinterDisabled: false,
     destinationsManaged: false,
     cloudPrintURL: 'cloudprint URL',
-    userAccounts: ['foo@chromium.org'],
+    previewIsFromArc: false,
+    uiLocale: 'en-us',
   };
 
   /**
    * Set the native layer initial settings and attach the print preview app to
    * the DOM.
-   * @return {!Promise} Returns a promise that resolves when the 'getPreview'
+   * @return Returns a promise that resolves when the 'getPreview'
    *     method is called by the preview area contained inside the app.
    */
-  const initialize = () => {
+  function initialize(): Promise<void> {
     nativeLayer.setInitialSettings(initialSettings);
     nativeLayer.setLocalDestinations(
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     return nativeLayer.whenCalled('getPreview');
-  };
+  }
 
-  /** @override */
   setup(function() {
     // Stub out the native layer, the cloud print interface, and the plugin.
     document.body.innerHTML = '';
@@ -96,13 +95,17 @@ suite(print_preview_app_test.suiteName, function() {
   test(
       assert(print_preview_app_test.TestNames.PrintToGoogleDrive), async () => {
         await initialize();
+        const sidebar =
+            page.shadowRoot!.querySelector('print-preview-sidebar')!;
+        const destinationSettings = sidebar.shadowRoot!.querySelector(
+            'print-preview-destination-settings')!;
         // Set up the UI to have a cloud printer.
-        page.destination_ =
+        destinationSettings.destination =
             getCloudDestination('FooCloud', 'FooName', 'foo@chromium.org');
-        page.destination_.capabilities = getCddTemplate(page.destination_.id);
+        destinationSettings.destination.capabilities =
+            getCddTemplate(destinationSettings.destination.id)!.capabilities;
 
         // Trigger print.
-        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         sidebar.dispatchEvent(new CustomEvent(
             'print-requested', {composed: true, bubbles: true}));
 
@@ -123,8 +126,8 @@ suite(print_preview_app_test.suiteName, function() {
     const copies = 2;
     const duplex = DuplexMode.LONG_EDGE;
     webUIListenerCallback('print-preset-options', true, copies, duplex);
-    assertEquals(copies, page.getSettingValue('copies'));
-    assertTrue(page.getSettingValue('duplex'));
+    assertEquals(copies, page.getSettingValue('copies') as number);
+    assertTrue(page.getSettingValue('duplex') as boolean);
     assertFalse(page.getSetting('duplex').setFromUi);
     assertFalse(page.getSetting('copies').setFromUi);
   });
@@ -134,7 +137,8 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.destinationsManaged = true;
         await initialize();
-        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
+        const sidebar =
+            page.shadowRoot!.querySelector('print-preview-sidebar')!;
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -143,7 +147,8 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {headerFooter: {allowedMode: true}};
         await initialize();
-        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
+        const sidebar =
+            page.shadowRoot!.querySelector('print-preview-sidebar')!;
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -152,14 +157,15 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {cssBackground: {allowedMode: 1}};
         await initialize();
-        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
+        const sidebar =
+            page.shadowRoot!.querySelector('print-preview-sidebar')!;
         assertTrue(sidebar.controlsManaged);
       });
 
   test(assert(print_preview_app_test.TestNames.SheetsManaged), async () => {
     initialSettings.policies = {sheets: {value: 2}};
     await initialize();
-    const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
+    const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
     assertTrue(sidebar.controlsManaged);
   });
 });

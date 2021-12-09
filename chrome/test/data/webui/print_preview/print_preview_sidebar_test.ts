@@ -4,6 +4,7 @@
 
 import {CloudPrintInterfaceImpl, NativeLayerImpl, PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
@@ -15,29 +16,26 @@ import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 
-window.print_preview_sidebar_test = {};
-print_preview_sidebar_test.suiteName = 'PrintPreviewSidebarTest';
-/** @enum {string} */
-print_preview_sidebar_test.TestNames = {
-  SettingsSectionsVisibilityChange: 'settings sections visibility change',
-  SheetCountWithDuplex: 'sheet count with duplex',
-  SheetCountWithCopies: 'sheet count with copies',
+const print_preview_sidebar_test = {
+  suiteName: 'PrintPreviewSidebarTest',
+  TestNames: {
+    SettingsSectionsVisibilityChange: 'settings sections visibility change',
+    SheetCountWithDuplex: 'sheet count with duplex',
+    SheetCountWithCopies: 'sheet count with copies',
+  },
 };
 
+Object.assign(window, {print_preview_sidebar_test: print_preview_sidebar_test});
+
 suite(print_preview_sidebar_test.suiteName, function() {
-  /** @type {?PrintPreviewSidebarElement} */
-  let sidebar = null;
+  let sidebar: PrintPreviewSidebarElement;
 
-  /** @type {?PrintPreviewModelElement} */
-  let model = null;
+  let model: PrintPreviewModelElement;
 
-  /** @type {?NativeLayer} */
-  let nativeLayer = null;
+  let nativeLayer: NativeLayerStub;
 
-  /** @type {CloudPrintInterfaceStub} */
-  let cloudPrintInterface = null;
+  let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  /** @override */
   setup(function() {
     // Stub out the native layer and cloud print interface
     nativeLayer = new NativeLayerStub();
@@ -59,7 +57,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
     sidebar.pageCount = 1;
     fakeDataBind(model, sidebar, 'settings');
     document.body.appendChild(sidebar);
-    sidebar.init(false, 'FooDevice', null);
+    sidebar.init(false, 'FooDevice', null, false, true);
 
     return nativeLayer.whenCalled('getPrinterCapabilities');
   });
@@ -69,14 +67,17 @@ suite(print_preview_sidebar_test.suiteName, function() {
                  .SettingsSectionsVisibilityChange),
       function() {
         const moreSettingsElement =
-            sidebar.shadowRoot.querySelector('print-preview-more-settings');
+            sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
         moreSettingsElement.$.label.click();
-        const camelToKebab = s => s.replace(/([A-Z])/g, '-$1').toLowerCase();
+        function camelToKebab(s: string): string {
+          return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+        }
+
         ['copies', 'layout', 'color', 'mediaSize', 'margins', 'dpi', 'scaling',
          'duplex', 'otherOptions']
             .forEach(setting => {
-              const element = sidebar.shadowRoot.querySelector(
-                  `print-preview-${camelToKebab(setting)}-settings`);
+              const element = sidebar.shadowRoot!.querySelector<HTMLElement>(
+                  `print-preview-${camelToKebab(setting)}-settings`)!;
               // Show, hide and reset.
               [true, false, true].forEach(value => {
                 sidebar.set(`settings.${setting}.available`, value);
@@ -91,7 +92,8 @@ suite(print_preview_sidebar_test.suiteName, function() {
   test(
       assert(print_preview_sidebar_test.TestNames.SheetCountWithDuplex),
       function() {
-        const header = sidebar.shadowRoot.querySelector('print-preview-header');
+        const header =
+            sidebar.shadowRoot!.querySelector('print-preview-header')!;
         assertEquals(1, header.sheetCount);
         sidebar.setSetting('pages', [1, 2, 3]);
         assertEquals(3, header.sheetCount);
@@ -106,7 +108,8 @@ suite(print_preview_sidebar_test.suiteName, function() {
   test(
       assert(print_preview_sidebar_test.TestNames.SheetCountWithCopies),
       function() {
-        const header = sidebar.shadowRoot.querySelector('print-preview-header');
+        const header =
+            sidebar.shadowRoot!.querySelector('print-preview-header')!;
         assertEquals(1, header.sheetCount);
         sidebar.setSetting('copies', 4);
         assertEquals(4, header.sheetCount);
