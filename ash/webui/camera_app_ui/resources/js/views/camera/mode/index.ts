@@ -5,44 +5,42 @@
 import {
   assert,
   assertInstanceof,
-  assertNotReached,
 } from '../../../assert.js';
 import {
-  CaptureCandidate,           // eslint-disable-line no-unused-vars
-  ConstraintsPreferrer,       // eslint-disable-line no-unused-vars
-  PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
-  VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
+  CaptureCandidate,
+  ConstraintsPreferrer,
+  PhotoConstraintsPreferrer,
+  VideoConstraintsPreferrer,
 } from '../../../device/constraints_preferrer.js';
-// eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as dom from '../../../dom.js';
-// eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {CaptureIntent} from '../../../mojo/type.js';
 import * as state from '../../../state.js';
 import {
-  Facing,  // eslint-disable-line no-unused-vars
+  Facing,
   Mode,
-  Resolution,  // eslint-disable-line no-unused-vars
+  Resolution,
 } from '../../../type.js';
+import {assertEnumVariant} from '../../../util.js';
 
 import {
-  ModeBase,     // eslint-disable-line no-unused-vars
-  ModeFactory,  // eslint-disable-line no-unused-vars
+  ModeBase,
+  ModeFactory,
 } from './mode_base.js';
 import {
   PhotoFactory,
-  PhotoHandler,  // eslint-disable-line no-unused-vars
+  PhotoHandler,
 } from './photo.js';
 import {PortraitFactory} from './portrait.js';
 import {
   ScanFactory,
-  ScanHandler,  // eslint-disable-line no-unused-vars
+  ScanHandler,
 } from './scan.js';
 import {SquareFactory} from './square.js';
 import {
   VideoFactory,
-  VideoHandler,  // eslint-disable-line no-unused-vars
+  VideoHandler,
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
@@ -50,155 +48,99 @@ export {getDefaultScanCorners, ScanHandler} from './scan.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**
- * Callback to trigger mode switching.
- * return {!Promise}
- * @typedef {function(): !Promise}
+ * Callback to trigger mode switching. Should return whether mode switching
+ * succeed.
  */
-export let DoSwitchMode;
-
-/* eslint-disable no-unused-vars */
+export type DoSwitchMode = () => Promise<boolean>;
 
 /**
  * Parameters for capture settings.
- * @typedef {{
- *   mode: !Mode,
- *   constraints: !StreamConstraints,
- *   captureResolution: !Resolution,
- *   videoSnapshotResolution: !Resolution,
- * }}
  */
-let CaptureParams;
+interface CaptureParams {
+  mode: Mode;
+  constraints: StreamConstraints;
+  captureResolution: Resolution;
+  videoSnapshotResolution: Resolution;
+}
 
 /**
  * The abstract interface for the mode configuration.
- * @interface
  */
-class ModeConfig {
+interface ModeConfig {
   /**
-   * @param {string} deviceId
-   * @return {!Promise<boolean>} Resolves to boolean indicating whether the mode
-   *     is supported by video device with specified device id.
-   * @abstract
+   * @return Resolves to boolean indicating whether the mode is supported by
+   *     video device with specified device id.
    */
-  async isSupported(deviceId) {
-    assertNotReached();
-  }
+  isSupported(deviceId: string): Promise<boolean>;
 
-  /**
-   * @param {!Resolution} captureResolution
-   * @param {!Resolution} previewResolution
-   * @return {boolean}
-   * @abstract
-   */
-  isSupportPTZ(captureResolution, previewResolution) {
-    assertNotReached();
-  }
+  isSupportPTZ(captureResolution: Resolution, previewResolution: Resolution):
+      boolean;
 
   /**
    * Makes video capture device prepared for capturing in this mode.
-   * @param {!StreamConstraints} constraints Constraints for preview
-   *     stream.
-   * @param {!Resolution} captureResolution
-   * @return {!Promise}
-   * @abstract
+   * @param constraints Constraints for preview stream.
    */
-  async prepareDevice(constraints, captureResolution) {
-    assertNotReached();
-  }
+  prepareDevice(constraints: StreamConstraints, captureResolution: Resolution):
+      Promise<void>;
 
   /**
    * Get general stream constraints of this mode for fake cameras.
-   * @param {?string} deviceId
-   * @return {!Array<!StreamConstraints>}
-   * @abstract
    */
-  getConstraintsForFakeCamera(deviceId) {
-    assertNotReached();
-  }
-
-  /* eslint-disable getter-return */
+  getConstraintsForFakeCamera(deviceId: string|null): StreamConstraints[];
 
   /**
    * Gets factory to create capture object for this mode.
-   * @return {!ModeFactory}
-   * @abstract
    */
-  getCaptureFactory() {
-    assertNotReached();
-  }
+  getCaptureFactory(): ModeFactory;
 
   /**
    * HALv3 constraints preferrer for this mode.
-   * @return {!ConstraintsPreferrer}
-   * @abstract
    */
-  get constraintsPreferrer() {
-    return assertNotReached();
-  }
+  readonly constraintsPreferrer: ConstraintsPreferrer;
 
   /**
    * Mode to be fallbacked to when fail to configure this mode.
-   * @return {!Mode}
-   * @abstract
    */
-  get fallbackMode() {
-    return assertNotReached();
-  }
-
-  /* eslint-enable getter-return */
+  readonly fallbackMode: Mode;
 }
-
-/* eslint-enable no-unused-vars */
 
 /**
  * Mode controller managing capture sequence of different camera mode.
  */
 export class Modes {
   /**
-   * @param {!Mode} defaultMode Default mode to be switched to.
-   * @param {!PhotoConstraintsPreferrer} photoPreferrer
-   * @param {!VideoConstraintsPreferrer} videoPreferrer
-   * @param {!DoSwitchMode} doSwitchMode
-   * @param {!PhotoHandler} photoHandler
-   * @param {!VideoHandler} videoHandler
-   * @param {!ScanHandler} scanHandler
+   * Capture controller of current camera mode.
+   */
+  current: ModeBase|null = null;
+  private readonly modesGroup = dom.get('#modes-group', HTMLElement);
+  /**
+   * Parameters to create mode capture controller.
+   */
+  private captureParams: CaptureParams|null = null;
+  /**
+   * Mode classname and related functions and attributes.
+   */
+  private readonly allModes: {[mode in Mode]: ModeConfig};
+  /**
+   * @param defaultMode Default mode to be switched to.
    */
   constructor(
-      defaultMode, photoPreferrer, videoPreferrer, doSwitchMode, photoHandler,
-      videoHandler, scanHandler) {
-    /**
-     * @type {!DoSwitchMode}
-     * @private
-     */
-    this.doSwitchMode_ = doSwitchMode;
-
-    /**
-     * Capture controller of current camera mode.
-     * @type {?ModeBase}
-     */
-    this.current = null;
-
-    /**
-     * @type {!HTMLElement}
-     * @private
-     */
-    this.modesGroup_ = dom.get('#modes-group', HTMLElement);
-
-    /**
-     * Parameters to create mode capture controller.
-     * @type {?CaptureParams}
-     * @private
-     */
-    this.captureParams_ = null;
-
+      defaultMode: Mode,
+      photoPreferrer: PhotoConstraintsPreferrer,
+      videoPreferrer: VideoConstraintsPreferrer,
+      private readonly doSwitchMode: DoSwitchMode,
+      photoHandler: PhotoHandler,
+      videoHandler: VideoHandler,
+      scanHandler: ScanHandler,
+  ) {
     /**
      * Returns a set of general constraints for fake cameras.
-     * @param {boolean} videoMode Is getting constraints for video mode.
-     * @param {string} deviceId Id of video device.
-     * @return {!Array<!StreamConstraints>} Result of
-     *     constraints-candidates.
+     * @param videoMode Is getting constraints for video mode.
+     * @param deviceId Id of video device.
+     * @return Result of constraints-candidates.
      */
-    const getConstraintsForFakeCamera = function(videoMode, deviceId) {
+    const getConstraintsForFakeCamera = function(
+        videoMode: boolean, deviceId: string): StreamConstraints[] {
       const frameRate = {min: 20, ideal: 30};
       return [
         {
@@ -227,14 +169,13 @@ export class Modes {
         (captureResolution, previewResolution) =>
             captureResolution.equals(previewResolution);
 
-    /**
-     * @param {!StreamConstraints} constraints
-     * @param {!Resolution} resolution
-     * @param {CaptureIntent} captureIntent
-     * @return {!Promise}
-     */
-    const prepareDeviceForPhoto =
-        async (constraints, resolution, captureIntent) => {
+    // clang-format format this wrong if we use async (...) => {...} (missing a
+    // space after async). Using async function instead to get around this.
+    // TODO(pihsun): style guide recommends using function xxx() instead of
+    // lambda anyway, change other location too.
+    async function prepareDeviceForPhoto(
+        constraints: StreamConstraints, resolution: Resolution,
+        captureIntent: CaptureIntent): Promise<void> {
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator === null) {
         return;
@@ -242,14 +183,9 @@ export class Modes {
       const deviceId = constraints.deviceId;
       await deviceOperator.setCaptureIntent(deviceId, captureIntent);
       await deviceOperator.setStillCaptureResolution(deviceId, resolution);
-    };
+    }
 
-    /**
-     * Mode classname and related functions and attributes.
-     * @type {!Object<!Mode, !ModeConfig>}
-     * @private
-     */
-    this.allModes_ = {
+    this.allModes = {
       [Mode.VIDEO]: {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
@@ -259,7 +195,7 @@ export class Modes {
         },
         isSupported: async () => true,
         isSupportPTZ: () => true,
-        prepareDevice: async (constraints, resolution) => {
+        prepareDevice: async (constraints) => {
           const deviceOperator = await DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return;
@@ -272,11 +208,14 @@ export class Modes {
                 deviceId, this.getCaptureParams().videoSnapshotResolution);
           }
 
-          let /** number */ minFrameRate = 0;
-          let /** number */ maxFrameRate = 0;
+          let minFrameRate = 0;
+          let maxFrameRate = 0;
           if (constraints.video && constraints.video.frameRate) {
             const frameRate = constraints.video.frameRate;
-            if (frameRate.exact) {
+            if (typeof frameRate === 'number') {
+              minFrameRate = frameRate;
+              maxFrameRate = frameRate;
+            } else if (frameRate.exact) {
               minFrameRate = frameRate.exact;
               maxFrameRate = frameRate.exact;
             } else if (frameRate.min && frameRate.max) {
@@ -373,59 +312,48 @@ export class Modes {
           event.preventDefault();
         }
       });
-      element.addEventListener('change', async (event) => {
+      element.addEventListener('change', async () => {
         if (element.checked) {
-          const mode = /** @type {!Mode} */ (element.dataset['mode']);
-          this.updateModeUI_(mode);
+          const mode = assertEnumVariant(Mode, element.dataset['mode']);
+          this.updateModeUI(mode);
           state.set(state.State.MODE_SWITCHING, true);
-          const isSuccess = await this.doSwitchMode_();
+          const isSuccess = await this.doSwitchMode();
           state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
         }
       });
     });
 
-    [state.State.EXPERT, state.State.SAVE_METADATA].forEach(
-        (/** !state.State */ s) => {
-          state.addObserver(s, () => {
-            this.updateSaveMetadata_();
-          });
-        });
+    [state.State.EXPERT, state.State.SAVE_METADATA].forEach((s) => {
+      state.addObserver(s, () => {
+        this.updateSaveMetadata();
+      });
+    });
 
     // Set default mode when app started.
-    this.updateModeUI_(defaultMode);
+    this.updateModeUI(defaultMode);
   }
 
-  /**
-   * @return {!Array<!Mode>}
-   * @private
-   */
-  get allModeNames_() {
+  private get allModeNames(): Mode[] {
     return Object.values(Mode);
   }
 
-  /**
-   * @return {!CaptureParams}
-   * @private
-   */
-  getCaptureParams() {
-    assert(this.captureParams_ !== null);
-    return this.captureParams_;
+  private getCaptureParams(): CaptureParams {
+    assert(this.captureParams !== null);
+    return this.captureParams;
   }
 
   /**
    * Updates state of mode related UI to the target mode.
-   * @param {!Mode} mode Mode to be toggled.
-   * @private
    */
-  updateModeUI_(mode) {
-    this.allModeNames_.forEach((m) => state.set(m, m === mode));
+  private updateModeUI(mode: Mode) {
+    this.allModeNames.forEach((m) => state.set(m, m === mode));
     const element =
         dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
     element.checked = true;
     const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
     const scrollLeft = wrapper.offsetLeft -
-        (this.modesGroup_.offsetWidth - wrapper.offsetWidth) / 2;
-    this.modesGroup_.scrollTo({
+        (this.modesGroup.offsetWidth - wrapper.offsetWidth) / 2;
+    this.modesGroup.scrollTo({
       left: scrollLeft,
       top: 0,
       behavior: 'smooth',
@@ -435,17 +363,16 @@ export class Modes {
   /**
    * Gets all mode candidates. Desired trying sequence of candidate modes is
    * reflected in the order of the returned array.
-   * @return {!Array<!Mode>} Mode candidates to be tried out.
    */
-  getModeCandidates() {
+  getModeCandidates(): Mode[] {
     const tried = {};
-    const /** !Array<!Mode> */ results = [];
-    let mode = this.allModeNames_.find(state.get);
+    const results: Mode[] = [];
+    let mode = this.allModeNames.find((mode) => state.get(mode));
     assert(mode !== undefined);
     while (!tried[mode]) {
       tried[mode] = true;
       results.push(mode);
-      mode = this.allModes_[mode].fallbackMode;
+      mode = this.allModes[mode].fallbackMode;
     }
     return results;
   }
@@ -453,73 +380,61 @@ export class Modes {
   /**
    * Gets all available capture resolution and its corresponding preview
    * constraints for the given |mode| and |deviceId|.
-   * @param {!Mode} mode
-   * @param {string} deviceId
-   * @return {!Array<!CaptureCandidate>}
    */
-  getResolutionCandidates(mode, deviceId) {
-    return this.allModes_[mode].constraintsPreferrer.getSortedCandidates(
+  getResolutionCandidates(mode: Mode, deviceId: string): CaptureCandidate[] {
+    return this.allModes[mode].constraintsPreferrer.getSortedCandidates(
         deviceId);
   }
 
   /**
    * Gets a general set of resolution candidates given by |mode| and |deviceId|
    * for fake cameras.
-   * @param {!Mode} mode
-   * @param {string} deviceId
-   * @return {!Array<!CaptureCandidate>}
    */
-  getFakeResolutionCandidates(mode, deviceId) {
+  getFakeResolutionCandidates(mode: Mode, deviceId: string):
+      CaptureCandidate[] {
     const previewCandidates =
-        this.allModes_[mode].getConstraintsForFakeCamera(deviceId);
+        this.allModes[mode].getConstraintsForFakeCamera(deviceId);
     return [{resolution: null, previewCandidates}];
   }
 
   /**
    * Gets factory to create mode capture object.
-   * @param {!Mode} mode
-   * @return {!ModeFactory}
    */
-  getModeFactory(mode) {
-    return this.allModes_[mode].getCaptureFactory();
+  getModeFactory(mode: Mode): ModeFactory {
+    return this.allModes[mode].getCaptureFactory();
   }
 
   /**
-   * @param {!Mode} mode
-   * @param {!StreamConstraints} constraints Constraints for preview
-   *     stream.
-   * @param {!Resolution} captureResolution
-   * @param {!Resolution} videoSnapshotResolution
+   * @param constraints Constraints for preview stream.
    */
   setCaptureParams(
-      mode, constraints, captureResolution, videoSnapshotResolution) {
-    this.captureParams_ =
+      mode: Mode, constraints: StreamConstraints, captureResolution: Resolution,
+      videoSnapshotResolution: Resolution): void {
+    this.captureParams =
         {mode, constraints, captureResolution, videoSnapshotResolution};
   }
 
   /**
    * Makes video capture device prepared for capturing in this mode.
-   * @return {!Promise}
    */
-  async prepareDevice() {
+  async prepareDevice(): Promise<void> {
     if (state.get(state.State.USE_FAKE_CAMERA)) {
       return;
     }
     const {mode, captureResolution, constraints} = this.getCaptureParams();
-    return this.allModes_[mode].prepareDevice(
+    return this.allModes[mode].prepareDevice(
         constraints, assertInstanceof(captureResolution, Resolution));
   }
 
   /**
    * Gets supported modes for video device of given device id.
-   * @param {string} deviceId Device id of the video device.
-   * @return {!Promise<!Array<!Mode>>} All supported mode for
-   *     the video device.
+   * @param deviceId Device id of the video device.
+   * @return All supported mode for the video device.
    */
-  async getSupportedModes(deviceId) {
-    const /** !Array<!Mode> */ supportedModes = [];
-    for (const mode of this.allModeNames_) {
-      const obj = this.allModes_[mode];
+  async getSupportedModes(deviceId: string): Promise<Mode[]> {
+    const supportedModes: Mode[] = [];
+    for (const mode of this.allModeNames) {
+      const obj = this.allModes[mode];
       if (await obj.isSupported(deviceId)) {
         supportedModes.push(mode);
       }
@@ -527,23 +442,17 @@ export class Modes {
     return supportedModes;
   }
 
-  /**
-   * @param {!Mode} mode
-   * @param {!Resolution} captureResolution
-   * @param {!Resolution} previewResolution
-   * @return {boolean}
-   */
-  isSupportPTZ(mode, captureResolution, previewResolution) {
-    return this.allModes_[mode].isSupportPTZ(
+  isSupportPTZ(
+      mode: Mode, captureResolution: Resolution,
+      previewResolution: Resolution): boolean {
+    return this.allModes[mode].isSupportPTZ(
         captureResolution, previewResolution);
   }
 
   /**
    * Updates mode selection UI according to given device id.
-   * @param {string} deviceId
-   * @return {!Promise}
    */
-  async updateModeSelectionUI(deviceId) {
+  async updateModeSelectionUI(deviceId: string): Promise<void> {
     const supportedModes = await this.getSupportedModes(deviceId);
     const items = dom.getAll('div.mode-item', HTMLDivElement);
     let first = null;
@@ -551,7 +460,7 @@ export class Modes {
     items.forEach((el) => {
       const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
       const supported =
-          supportedModes.includes(/** @type {!Mode} */ (radio.dataset['mode']));
+          (supportedModes as string[]).includes(radio.dataset['mode']);
       el.classList.toggle('hide', !supported);
       if (supported) {
         if (first === null) {
@@ -568,60 +477,57 @@ export class Modes {
 
   /**
    * Creates and updates current mode object.
-   * @param {!ModeFactory} factory The factory ready for producing mode capture
-   *     object.
-   * @param {!MediaStream} stream Stream of the new switching mode.
-   * @param {!Facing} facing Camera facing of the current mode.
-   * @param {?string} deviceId Device id of currently working video device.
-   * @return {!Promise}
+   * @param factory The factory ready for producing mode capture object.
+   * @param stream Stream of the new switching mode.
+   * @param facing Camera facing of the current mode.
+   * @param deviceId Device id of currently working video device.
    */
-  async updateMode(factory, stream, facing, deviceId) {
+  async updateMode(
+      factory: ModeFactory, stream: MediaStream, facing: Facing,
+      deviceId: string|null): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata_();
+      await this.disableSaveMetadata();
     }
     const {mode, captureResolution} = this.getCaptureParams();
-    this.updateModeUI_(mode);
+    this.updateModeUI(mode);
     this.current = factory.produce();
     if (deviceId && captureResolution) {
-      this.allModes_[mode].constraintsPreferrer.updateValues(
+      this.allModes[mode].constraintsPreferrer.updateValues(
           deviceId, stream, facing, captureResolution);
     }
-    await this.updateSaveMetadata_();
+    await this.updateSaveMetadata();
   }
 
   /**
    * Clears everything when mode is not needed anymore.
-   * @return {!Promise}
    */
-  async clear() {
+  async clear(): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata_();
+      await this.disableSaveMetadata();
     }
-    this.captureParams_ = null;
+    this.captureParams = null;
     this.current = null;
   }
 
   /**
    * Checks whether to save image metadata or not.
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  async updateSaveMetadata_() {
+  private async updateSaveMetadata(): Promise<void> {
     if (state.get(state.State.EXPERT) && state.get(state.State.SAVE_METADATA)) {
-      await this.enableSaveMetadata_();
+      await this.enableSaveMetadata();
     } else {
-      await this.disableSaveMetadata_();
+      await this.disableSaveMetadata();
     }
   }
 
   /**
    * Enables save metadata of subsequent photos in the current mode.
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  async enableSaveMetadata_() {
+  private async enableSaveMetadata(): Promise<void> {
     if (this.current !== null) {
       await this.current.addMetadataObserver();
     }
@@ -629,10 +535,9 @@ export class Modes {
 
   /**
    * Disables save metadata of subsequent photos in the current mode.
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  async disableSaveMetadata_() {
+  private async disableSaveMetadata(): Promise<void> {
     if (this.current !== null) {
       await this.current.removeMetadataObserver();
     }

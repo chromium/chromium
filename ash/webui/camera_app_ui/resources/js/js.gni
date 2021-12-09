@@ -73,7 +73,7 @@ compile_js_files = [
   "views/camera_intent.js",
   "views/camera.js",
   "views/camera/layout.js",
-  "views/camera/mode/index.js",
+  "views/camera/mode/index.ts",
   "views/camera/mode/mode_base.js",
   "views/camera/mode/photo.js",
   "views/camera/mode/portrait.js",
