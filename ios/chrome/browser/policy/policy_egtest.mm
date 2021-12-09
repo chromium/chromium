@@ -522,4 +522,31 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
 }
 
+// Tests that the UI notifying the user of their sign out is displayed when the
+// primary account is restricted.
+- (void)testBrowserAccountRestrictedAlert {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Set restrictions.
+  std::vector<base::Value> restrictions;
+  restrictions.push_back(base::Value("restricted"));
+  SetPolicy(base::Value(std::move(restrictions)),
+            policy::key::kRestrictAccountsToPatterns);
+
+  // Check that the sign out pop up is presented.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_SIGNED_OUT))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
+}
+
 @end
