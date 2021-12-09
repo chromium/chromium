@@ -128,6 +128,46 @@ message BusDeviceInfo {
   optional ThunderboltInfo thunderbolt_info = 1;
 }
 
+enum MemoryEncryptionState {
+  UNSPECIFIED_MEMORY_ENCRYPTION_STATE = 0;
+  // The memory encryption state is unknown.
+  MEMORY_ENCRYPTION_STATE_UNKNOWN = 1;
+  // Memory encrpytion on the device is disabled.
+  MEMORY_ENCRYPTION_STATE_DISABLED = 2;
+  // Memory encryption on the device uses total memory encryption.
+  MEMORY_ENCRYPTION_STATE_TME = 3;
+  // Memory encryption on the device uses multi-key total memory encryption.
+  MEMORY_ENCRYPTION_STATE_MKTME = 4;
+}
+
+enum MemoryEncryptionAlgorithm {
+  UNSPECIFIED_MEMORY_ENCRYPTION_ALGORITHM = 0;
+  // The memory encryption algorithm being used is unknown.
+  MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN = 1;
+  // The memory encryption algorithm is using the AES_XTS encryption algorithm
+  // with a 128 bit block cypher.
+  MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_128 = 2;
+  // The memory encryption algorithm is using the AES_XTS encryption algorithm
+  // with a 256 bit block cypher.
+  MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_256 = 3;
+}
+
+message TotalMemoryEncryptionInfo {
+  // The state of memory encryption on the device.
+  optional MemoryEncryptionState encryption_state = 1;
+  // The maximum number of keys that can be used for encryption.
+  optional uint32 max_keys = 2;
+  // The length of the encryption keys.
+  optional uint32 key_length = 3;
+  // The encryption algorithm being used on the device.
+  optional MemoryEncryptionAlgorithm encryption_algorithm = 4;
+}
+
+message MemoryInfo {
+  // TME info for the device.
+  optional TotalMemoryEncryptionInfo tme_info = 1;
+}
+
 // Information about keylocker. This is supported on Intel CPUs.
 message KeylockerInfo {
   // If keylocker is supported on the devices CPUs.
@@ -148,6 +188,8 @@ message InfoData {
   optional CpuInfo cpu_info = 1;
   // Bus Device info for the device.
   optional BusDeviceInfo bus_device_info = 2;
+  // Memory info for the device.
+  optional MemoryInfo memory_info = 3;
 }
 
 // Audio telemetry data recorded intermittently
