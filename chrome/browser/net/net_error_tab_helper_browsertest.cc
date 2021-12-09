@@ -241,21 +241,14 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
             result.ExtractString());
 }
 
-// TODO(crbug.com/1269931): Make this test work properly and not result in an
-// error page being navigated to in the fenced frame, and then re-enable the
-// test.
 IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
-                       DISABLED_CanRunDiagnosticsDialogOnFencedFrame) {
-  GURL initial_url =
+                       CanRunDiagnosticsDialogOnFencedFrame) {
+  GURL fenced_frame_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   RenderFrameHost* inner_fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), initial_url);
-  const GURL fenced_frame_url =
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  inner_fenced_frame_rfh =
-      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-          inner_fenced_frame_rfh, fenced_frame_url);
+          GetWebContents()->GetMainFrame(), fenced_frame_url,
+          net::ERR_NAME_NOT_RESOLVED);
   EvalJsResult result =
       EvalJs(inner_fenced_frame_rfh, kSearchingForDiagnosisScript);
   ASSERT_TRUE(result.error.empty());
