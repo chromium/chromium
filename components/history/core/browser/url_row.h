@@ -175,6 +175,9 @@ using VisitContentAnnotationFlags = uint64_t;
 // for a visit. Be cautious when changing the default values as they may already
 // have been written to the storage.
 struct VisitContentModelAnnotations {
+  static constexpr float kDefaultVisibilityScore = -1;
+  static constexpr int kDefaultPageTopicsModelVersion = -1;
+
   struct Category {
     Category();
     Category(const std::string& id, int weight);
@@ -200,17 +203,20 @@ struct VisitContentModelAnnotations {
 
   // A value from 0 to 1 that represents how prominent, or visible, the page
   // might be considered on UI surfaces.
-  float visibility_score = -1.0;
+  float visibility_score = kDefaultVisibilityScore;
   // A vector that contains category IDs and their weights. It is guaranteed
   // that there will not be duplicates in the category IDs contained in this
   // field.
   std::vector<Category> categories;
   // The version of the page topics model that was used to annotate content.
-  int64_t page_topics_model_version = -1;
+  int64_t page_topics_model_version = kDefaultPageTopicsModelVersion;
   // A vector that contains entity IDs and their weights. It is guaranteed
   // that there will not be duplicates in the category IDs contained in this
   // field.
   std::vector<Category> entities;
+
+  // Any field added here must also update the
+  // `MergeUpdateIntoExistingModelAnnotations` function in history_backend.cc.
 };
 
 // A structure containing the annotations made to page content for a visit.

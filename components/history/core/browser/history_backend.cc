@@ -161,6 +161,30 @@ constexpr int kDomainDiversityMaxBacktrackedDays = 7;
 // avoid other potential issues.
 constexpr int kDSTRoundingOffsetHours = 4;
 
+// Merges `update` into `existing` by overwriting fields in `existing` that are
+// not the default value in `update`.
+void MergeUpdateIntoExistingModelAnnotations(
+    const VisitContentModelAnnotations& update,
+    VisitContentModelAnnotations& existing) {
+  if (update.visibility_score !=
+      VisitContentModelAnnotations::kDefaultVisibilityScore) {
+    existing.visibility_score = update.visibility_score;
+  }
+
+  if (!update.categories.empty()) {
+    existing.categories = update.categories;
+  }
+
+  if (update.page_topics_model_version !=
+      VisitContentModelAnnotations::kDefaultPageTopicsModelVersion) {
+    existing.page_topics_model_version = update.page_topics_model_version;
+  }
+
+  if (!update.entities.empty()) {
+    existing.entities = update.entities;
+  }
+}
+
 }  // namespace
 
 std::u16string FormatUrlForRedirectComparison(const GURL& url) {
@@ -491,7 +515,8 @@ void HistoryBackend::AddContentModelAnnotationsForVisit(
   if (db_->GetRowForVisit(visit_id, &visit_row)) {
     VisitContentAnnotations annotations;
     if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
-      annotations.model_annotations = model_annotations;
+      MergeUpdateIntoExistingModelAnnotations(model_annotations,
+                                              annotations.model_annotations);
       db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
     } else {
       annotations.model_annotations = model_annotations;
