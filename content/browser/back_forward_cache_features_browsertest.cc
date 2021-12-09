@@ -310,9 +310,8 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the case when the page starts fetching in a dedicated worker, goes to
 // BFcache, and then a redirection happens. The cached page should evicted in
 // this case.
-// TODO(crbug.com/1275477): Test is flaky.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       DISABLED_FetchRedirectedWhileStoring) {
+                       FetchRedirectedWhileStoring) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse fetch1_response(https_server(),
@@ -345,7 +344,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   fetch1_response.WaitForRequest();
 
   // Navigate to B.
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  delegate.WaitForInBackForwardCacheAck();
 
   // Page A is initially stored in the back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -378,9 +380,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when the page starts fetching in a nested dedicated worker,
 // goes to BFcache, and then a redirection happens. The cached page should
 // evicted in this case.
-// TODO(crbug.com/1275477): Test is flaky.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       DISABLED_FetchRedirectedWhileStoring_Nested) {
+                       FetchRedirectedWhileStoring_Nested) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse fetch1_response(https_server(),
@@ -421,7 +422,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   fetch1_response.WaitForRequest();
 
   // Navigate to B.
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  delegate.WaitForInBackForwardCacheAck();
 
   // Page A is initially stored in the back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
