@@ -2551,6 +2551,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         (status) -> {});
             }
             RecordUserAction.record("MobileMenuEnablePriceTracking");
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_MENU);
             return true;
         }
 

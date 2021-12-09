@@ -14,6 +14,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.datareduction.DataReductionSavingsMilestonePromo;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
@@ -137,6 +139,7 @@ public class ToolbarButtonInProductHelpController
 
                 showDownloadPageTextBubble(tab, FeatureConstants.DOWNLOAD_PAGE_FEATURE);
                 showTranslateMenuButtonTextBubble(tab);
+                showPriceTrackingIPH(tab);
             }
 
             private void handleIPHForErrorPageShown(Tab tab) {
@@ -161,6 +164,29 @@ public class ToolbarButtonInProductHelpController
     public void destroy() {
         mPageLoadObserver.destroy();
         mLifecycleDispatcher.unregister(this);
+    }
+
+    /**
+     * Attempt to show the IPH for price tracking.
+     * @param tab The tab currently being displayed to the user.
+     */
+    private void showPriceTrackingIPH(Tab tab) {
+        if (!ShoppingFeatures.isShoppingListEnabled()
+                || !PowerBookmarkUtils.isPriceTrackingEligible(tab)) {
+            return;
+        }
+
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mActivity.getResources(),
+                        FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
+                        R.string.iph_price_tracking_menu_item,
+                        R.string.iph_price_tracking_menu_item_accessibility)
+                        .setAnchorView(mMenuButtonAnchorView)
+                        .setOnShowCallback(()
+                                                   -> turnOnHighlightForMenuItem(
+                                                           R.id.enable_price_tracking_menu_id))
+                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                        .build());
     }
 
     /**

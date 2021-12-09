@@ -283,6 +283,10 @@ public final class EventConstants {
     /** The feed swipe refresh event. */
     public static final String FEED_SWIPE_REFRESHED = "feed_swipe_refresh_shown";
 
+    /** The option to track the price of a product was selected from the main menu. */
+    public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
+            "shopping_list_track_price_from_menu";
+
     /**
      * Do not instantiate.
      */
