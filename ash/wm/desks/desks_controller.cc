@@ -27,6 +27,7 @@
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -62,6 +63,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -605,6 +607,12 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
   if (desk_to_activate) {
     ActivateDesk(desk_to_activate, source);
   } else {
+    // Fire a haptic event if necessary.
+    if (source == DesksSwitchSource::kDeskSwitchTouchpad) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kKnock,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
     for (auto* root : Shell::GetAllRootWindows())
       desks_animations::PerformHitTheWallAnimation(root, going_left);
   }

@@ -10,13 +10,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -28,8 +25,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
@@ -37,9 +32,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kNumFingersForHighlight = 3;
-constexpr int kNumFingersForDesksSwitch = 4;
 
 bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
@@ -72,18 +64,6 @@ int GetOffsetY(int offset) {
   return offset;
 }
 
-const Desk* GetActiveDesk() {
-  return DesksController::Get()->active_desk();
-}
-
-const Desk* GetNextDesk() {
-  return DesksController::Get()->GetNextDesk();
-}
-
-void AddDesk() {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
-}
-
 }  // namespace
 
 class WmGestureHandlerTest : public AshTestBase {
@@ -97,65 +77,6 @@ class WmGestureHandlerTest : public AshTestBase {
     GetEventGenerator()->ScrollSequence(
         gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
         GetOffsetY(y_offset), /*steps=*/100, fingers);
-  }
-
-  void ScrollToSwitchDesks(bool scroll_left) {
-    // Scrolling to switch desks with enhanced desk animations is a bit tricky
-    // because it involves multiple async operations.
-    ui::ScopedAnimationDurationScaleMode test_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-    // Start off with a fling cancel (touchpad start) to start the touchpad
-    // swipe sequence.
-    base::TimeTicks timestamp = ui::EventTimeForNow();
-    ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
-                                 timestamp, 0, 0, 0, 0, 0,
-                                 kNumFingersForDesksSwitch);
-    auto* event_generator = GetEventGenerator();
-    event_generator->Dispatch(&fling_cancel);
-
-    // Continue with a large enough scroll to start the desk switch animation.
-    // The animation does not start on fling cancel since there is no finger
-    // data in production code.
-    const base::TimeDelta step_delay = base::Milliseconds(5);
-    timestamp += step_delay;
-    const int direction = scroll_left ? -1 : 1;
-    const int initial_move_x =
-        (WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) * direction;
-    ui::ScrollEvent initial_move(ui::ET_SCROLL, gfx::Point(), timestamp, 0,
-                                 initial_move_x, 0, initial_move_x, 0,
-                                 kNumFingersForDesksSwitch);
-    event_generator->Dispatch(&initial_move);
-
-    // Wait until the animations ending screenshot has been taken. Otherwise,
-    // we will just stay at the initial desk if no screenshot has been taken.
-    auto* animation = DesksController::Get()->animation();
-    DCHECK(animation);
-    auto* desk_switch_animator =
-        animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
-    base::RunLoop run_loop;
-    RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
-        .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
-    run_loop.Run();
-
-    // Send some more move events, enough to shift to the next desk.
-    const int steps = 100;
-    const float x_offset = direction * WmGestureHandler::kHorizontalThresholdDp;
-    float dx = x_offset / steps;
-    for (int i = 0; i < steps; ++i) {
-      timestamp += step_delay;
-      ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, dx, 0, dx,
-                           0, kNumFingersForDesksSwitch);
-      event_generator->Dispatch(&move);
-    }
-
-    // End the swipe and wait for the animation to finish.
-    ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
-                                timestamp, 0, x_offset, 0, x_offset, 0,
-                                kNumFingersForDesksSwitch);
-    DeskSwitchAnimationWaiter animation_finished_waiter;
-    event_generator->Dispatch(&fling_start);
-    animation_finished_waiter.Wait();
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -313,11 +234,11 @@ TEST_F(DesksGestureHandlerTest, HorizontalScrolls) {
   ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that scrolling right should take us to the next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/false);
+  ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
   EXPECT_EQ(desk_controller->desks()[1].get(), desk_controller->active_desk());
 
   // Tests that scrolling left should take us to the previous desk.
-  ScrollToSwitchDesks(/*scroll_left=*/true);
+  ScrollToSwitchDesks(/*scroll_left=*/true, GetEventGenerator());
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that since there is no previous desk, we remain on the same desk when
@@ -457,15 +378,15 @@ TEST_F(ReverseGestureHandlerTest, Overview) {
 
 TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   // Add a new desk2.
-  AddDesk();
+  NewDesk();
   const Desk* desk1 = GetActiveDesk();
   const Desk* desk2 = GetNextDesk();
 
   // Scroll left to get next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/true);
+  ScrollToSwitchDesks(/*scroll_left=*/true, GetEventGenerator());
   EXPECT_EQ(desk2, GetActiveDesk());
   // Scroll right to get previous desk.
-  ScrollToSwitchDesks(/*scroll_left=*/false);
+  ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
   EXPECT_EQ(desk1, GetActiveDesk());
 }
 

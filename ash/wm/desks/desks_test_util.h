@@ -8,7 +8,16 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/run_loop.h"
 
+namespace ui {
+namespace test {
+class EventGenerator;
+}  // namespace test
+}  // namespace ui
+
 namespace ash {
+
+constexpr int kNumFingersForHighlight = 3;
+constexpr int kNumFingersForDesksSwitch = 4;
 
 // Used for waiting for the desk switch animations on all root windows to
 // complete.
@@ -43,9 +52,22 @@ class DeskSwitchAnimationWaiter : public DesksController::Observer {
 // complete before returning.
 void ActivateDesk(const Desk* desk);
 
+// Creates a desk through keyboard.
+void NewDesk();
+
 // Removes the given |desk| and waits for the desk-removal animation to finish
 // if one would launch.
 void RemoveDesk(const Desk* desk);
+
+// Returns the active desk.
+const Desk* GetActiveDesk();
+
+// Returns the next desk.
+const Desk* GetNextDesk();
+
+// Scrolls to the adjacent desk and waits for the animation if applicable.
+void ScrollToSwitchDesks(bool scroll_left,
+                         ui::test::EventGenerator* event_generator);
 
 }  // namespace ash
 

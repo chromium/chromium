@@ -8,6 +8,9 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
@@ -143,8 +146,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
     for (HapticTouchpadEffectStrength strength : strengths) {
       for (int count = 0; count < 16; count++) {
         haptics_util::PlayHapticTouchpadEffect(effect, strength);
-        EXPECT_EQ(input_controller->GetSendHapticCount(effect, strength),
-                  count + 1);
+        EXPECT_EQ(count + 1,
+                  input_controller->GetSendHapticCount(effect, strength));
       }
     }
   }
@@ -179,12 +182,11 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
     event_generator->set_current_screen_location(start);
     event_generator->PressTouch();
     event_generator->MoveTouch(test_case.first);
-    EXPECT_EQ(
-        input_controller->GetSendHapticCount(
-            HapticTouchpadEffect::kSnap, HapticTouchpadEffectStrength::kMedium),
-        0);
+    EXPECT_EQ(0, input_controller->GetSendHapticCount(
+                     HapticTouchpadEffect::kSnap,
+                     HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseTouch();
-    EXPECT_EQ(window->GetBoundsInScreen(), test_case.second);
+    EXPECT_EQ(test_case.second, window->GetBoundsInScreen());
   }
 
   // Drag by touchpad/mouse should trigger haptic feedback.
@@ -200,12 +202,11 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
         WorkspaceWindowResizer::GetInstanceForTest();
     if (workspace_resizer->dwell_countdown_timer_.IsRunning())
       workspace_resizer->dwell_countdown_timer_.FireNow();
-    EXPECT_EQ(
-        input_controller->GetSendHapticCount(
-            HapticTouchpadEffect::kSnap, HapticTouchpadEffectStrength::kMedium),
-        (int)i + 1);
+    EXPECT_EQ((int)i + 1, input_controller->GetSendHapticCount(
+                              HapticTouchpadEffect::kSnap,
+                              HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseLeftButton();
-    EXPECT_EQ(window->GetBoundsInScreen(), test_case.second);
+    EXPECT_EQ(test_case.second, window->GetBoundsInScreen());
   }
 }
 
@@ -242,13 +243,12 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
     event_generator->PressTouch();
     event_generator->MoveTouch(test_case.first);
     EXPECT_TRUE(overview_controller->InOverviewSession());
-    EXPECT_EQ(
-        input_controller->GetSendHapticCount(
-            HapticTouchpadEffect::kSnap, HapticTouchpadEffectStrength::kMedium),
-        0);
+    EXPECT_EQ(0, input_controller->GetSendHapticCount(
+                     HapticTouchpadEffect::kSnap,
+                     HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseTouch();
     EXPECT_FALSE(overview_controller->InOverviewSession());
-    EXPECT_EQ(window->GetBoundsInScreen(), test_case.second);
+    EXPECT_EQ(test_case.second, window->GetBoundsInScreen());
   }
 
   // Drag by touchpad/mouse should trigger haptic feedback.
@@ -264,14 +264,45 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
     event_generator->PressLeftButton();
     event_generator->MoveMouseTo(test_case.first);
     EXPECT_TRUE(overview_controller->InOverviewSession());
-    EXPECT_EQ(
-        input_controller->GetSendHapticCount(
-            HapticTouchpadEffect::kSnap, HapticTouchpadEffectStrength::kMedium),
-        (int)i + 1);
+    EXPECT_EQ((int)i + 1, input_controller->GetSendHapticCount(
+                              HapticTouchpadEffect::kSnap,
+                              HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseLeftButton();
     EXPECT_FALSE(overview_controller->InOverviewSession());
-    EXPECT_EQ(window->GetBoundsInScreen(), test_case.second);
+    EXPECT_EQ(test_case.second, window->GetBoundsInScreen());
   }
+}
+
+// Test haptic feedback for off limits desk switching, e.g. swiping left from
+// the first desk and swiping right from the last desk.
+TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
+  auto* desk_controller = DesksController::Get();
+  auto input_controller = std::make_unique<InputControllerForTesting>();
+  haptics_util::SetInputControllerForTesting(input_controller.get());
+
+  // Make sure to start with two desks.
+  NewDesk();
+  EXPECT_EQ(2u, desk_controller->desks().size());
+  EXPECT_EQ(0, desk_controller->GetActiveDeskIndex());
+  EXPECT_EQ(
+      input_controller->GetSendHapticCount(
+          HapticTouchpadEffect::kKnock, HapticTouchpadEffectStrength::kMedium),
+      0);
+
+  // Swipe from `desk 0` to `desk 1` should not trigger `kKnock` effect.
+  ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
+  EXPECT_EQ(1, desk_controller->GetActiveDeskIndex());
+  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kKnock,
+                   HapticTouchpadEffectStrength::kMedium));
+
+  // Swipe from `desk 1` to right should trigger `kKnock` effect.
+  ScrollToSwitchDesks(/*scroll_left=*/false,
+                      /*event_generator=*/GetEventGenerator());
+  EXPECT_EQ(1, desk_controller->GetActiveDeskIndex());
+  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kKnock,
+                   HapticTouchpadEffectStrength::kMedium));
 }
 
 }  // namespace ash
