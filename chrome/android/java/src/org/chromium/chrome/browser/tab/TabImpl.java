@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -70,8 +69,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 
 /**
@@ -213,22 +210,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
     private boolean mUsedCriticalPersistedTabData;
-
-    /** Tab level Request Desktop Site setting. */
-    private @TabUserAgent int mTabUserAgent;
-
-    // TODO(https://crbug.com/1251794): Determine if this should be defined somewhere like TabState
-    // for when we persist to disk.
-    /**
-     * Defines the tab level Request Desktop Site settings.
-     */
-    @IntDef({TabUserAgent.DEFAULT, TabUserAgent.MOBILE, TabUserAgent.DESKTOP})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TabUserAgent {
-        int DEFAULT = 0; /* No tab level setting */
-        int MOBILE = 1; /* Tab level setting is mobile layout */
-        int DESKTOP = 2; /* Tab level setting is desktop layout */
-    }
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -983,6 +964,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         CriticalPersistedTabData.from(this).setRootId(
                 state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
+        CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
     }
 
     /**
@@ -1652,13 +1634,27 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
-        boolean currentRequestDesktopSite = getWebContents() == null
+        WebContents webContents = getWebContents();
+        boolean currentRequestDesktopSite = webContents == null
                 ? false
-                : getWebContents().getNavigationController().getUseDesktopUserAgent();
+                : webContents.getNavigationController().getUseDesktopUserAgent();
 
+        @TabUserAgent
+        int tabUserAgent = CriticalPersistedTabData.from(this).getUserAgent();
+        // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
+        // we set the TabUserAgent bit based on last committed entry's user agent. If webContents is
+        // null, this method is triggered too early, and we cannot read the last committed entry's
+        // user agent yet. We will skip for now and let the following call set the TabUserAgent bit.
+        if (webContents != null && tabUserAgent == TabUserAgent.UNSET) {
+            if (currentRequestDesktopSite) {
+                tabUserAgent = TabUserAgent.DESKTOP;
+            } else {
+                tabUserAgent = TabUserAgent.DEFAULT;
+            }
+            CriticalPersistedTabData.from(this).setUserAgent(tabUserAgent);
+        }
         // We only calculate the user agent when users did not manually choose one.
-        // TODO(crbug.com/1251794): Desktop site setting in app menu does not persist after restart.
-        if (mTabUserAgent == TabUserAgent.DEFAULT
+        if (tabUserAgent == TabUserAgent.DEFAULT
                 && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
             // We only do the following logic to choose the desktop/mobile user agent if:
             // 1. User never manually made a choice in the app menu for requesting desktop site.
@@ -1691,10 +1687,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
         // INHERIT means use the same that was used last time.
         return UserAgentOverrideOption.INHERIT;
-    }
-
-    void setTabUserAgent(@TabUserAgent int tabUserAgent) {
-        mTabUserAgent = tabUserAgent;
     }
 
     private void switchUserAgentIfNeeded() {

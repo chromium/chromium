@@ -21,6 +21,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -581,7 +582,13 @@ public class TabPersistentStore {
         // 1. The user just upgraded, has not yet set the new active tab id pref yet. Or
         // 2. restoreTab is used to preempt async queue and restore immediately on the UI thread.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        try {
+        // As we add more field to TabState, we are crossing the 10 operation counts threshold to
+        // enforce the detection of unbuffered input/output operations, which results in
+        // https://crbug.com/1276907. After evaluating the performance impact, here we disabled the
+        // detection of unbuffered input/output operations.
+        // TabState is on a deprecation path and the intention is to replace with
+        // CriticalPersistedTabData. So this workaround should be temporary.
+        try (StrictModeContext ignored = StrictModeContext.allowUnbufferedIo()) {
             TabState state;
             int restoredTabId = SharedPreferencesManager.getInstance().readInt(
                     ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, Tab.INVALID_TAB_ID);
