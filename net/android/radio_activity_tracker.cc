@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/features.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
 namespace android {
@@ -83,6 +84,28 @@ bool RadioActivityTracker::ShouldRecordActivityForWakeupTriggerInternal() {
       last_radio_data_activity_ != base::android::RadioDataActivity::kDormant;
   last_radio_data_activity_ = *radio_activity;
   return should_record;
+}
+
+void MaybeRecordTCPWriteForWakeupTrigger(
+    const NetworkTrafficAnnotationTag& traffic_annotation) {
+  if (!RadioActivityTracker::GetInstance()
+           .ShouldRecordActivityForWakeupTrigger()) {
+    return;
+  }
+
+  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerTCPWriteAnnotationId,
+                           traffic_annotation.unique_id_hash_code);
+}
+
+void MaybeRecordUDPWriteForWakeupTrigger(
+    const NetworkTrafficAnnotationTag& traffic_annotation) {
+  if (!RadioActivityTracker::GetInstance()
+           .ShouldRecordActivityForWakeupTrigger()) {
+    return;
+  }
+
+  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerUDPWriteAnnotationId,
+                           traffic_annotation.unique_id_hash_code);
 }
 
 }  // namespace android

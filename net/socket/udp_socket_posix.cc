@@ -55,6 +55,7 @@
 #include "base/android/build_info.h"
 #include "base/native_library.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/android/radio_activity_tracker.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)
@@ -394,6 +395,9 @@ int UDPSocketPosix::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
+#if defined(OS_ANDROID)
+  android::MaybeRecordUDPWriteForWakeupTrigger(traffic_annotation);
+#endif  // defined(OS_ANDROID)
   return SendToOrWrite(buf, buf_len, nullptr, std::move(callback));
 }
 

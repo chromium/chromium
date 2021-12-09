@@ -13,6 +13,8 @@
 
 namespace net {
 
+struct NetworkTrafficAnnotationTag;
+
 namespace android {
 
 // Tracks radio states and provides helper methods to record network activities
@@ -69,6 +71,19 @@ class NET_EXPORT RadioActivityTracker {
   absl::optional<base::android::RadioConnectionType>
       radio_type_override_for_testing_;
 };
+
+constexpr char kUmaNamePossibleWakeupTriggerTCPWriteAnnotationId[] =
+    "Net.Radio.PossibleWakeupTrigger.TCPWriteAnnotationId";
+constexpr char kUmaNamePossibleWakeupTriggerUDPWriteAnnotationId[] =
+    "Net.Radio.PossibleWakeupTrigger.UDPWriteAnnotationId";
+
+// Records a histogram when writing data to a TCP socket likely wake-ups radio.
+NET_EXPORT void MaybeRecordTCPWriteForWakeupTrigger(
+    const NetworkTrafficAnnotationTag& traffic_annotation);
+
+// Records a histogram when writing data to a UDP socket likely wake-ups radio.
+NET_EXPORT void MaybeRecordUDPWriteForWakeupTrigger(
+    const NetworkTrafficAnnotationTag& traffic_annotation);
 
 }  // namespace android
 }  // namespace net

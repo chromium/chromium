@@ -45,7 +45,10 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
+#include "base/android/radio_utils.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "net/android/network_change_notifier_factory_android.h"
+#include "net/android/radio_activity_tracker.h"
 #include "net/base/network_change_notifier.h"
 #endif
 
@@ -1390,7 +1393,27 @@ TEST_F(UDPSocketTest, Tag) {
   EXPECT_EQ(simple_message, str);
   EXPECT_GT(GetTaggedBytes(tag_val1), old_traffic);
 }
-#endif
+
+TEST_F(UDPSocketTest, RecordRadioWakeUpTrigger) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kRecordRadioWakeupTrigger);
+
+  base::HistogramTester histograms;
+
+  // Simulates the radio state is dormant.
+  android::RadioActivityTracker::GetInstance().OverrideRadioActivityForTesting(
+      base::android::RadioDataActivity::kDormant);
+  android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+
+  ConnectTest(/*use_nonblocking_io=*/false);
+
+  // Check the write is recorded as a possible radio wake-up trigger.
+  histograms.ExpectTotalCount(
+      android::kUmaNamePossibleWakeupTriggerUDPWriteAnnotationId, 1);
+}
+
+#endif  // defined(OS_ANDROID)
 
 // Scoped helper to override the process-wide UDP socket limit.
 class OverrideUDPSocketLimit {
