@@ -54,6 +54,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -1127,6 +1128,15 @@ void TranslateBubbleView::SwitchView(
 
   UpdateChildVisibilities();
   SizeToContents();
+
+  if (view_state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        IDS_TRANSLATE_BUBBLE_TRANSLATION_COMPLETE_ANNOUNCEMENT,
+        model_->GetTargetLanguageNameAt(model_->GetTargetLanguageIndex())));
+  } else if (view_state == TranslateBubbleModel::VIEW_STATE_ERROR) {
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
+  }
 }
 
 void TranslateBubbleView::SwitchTabForViewState(
