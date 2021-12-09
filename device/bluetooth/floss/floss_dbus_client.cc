@@ -64,6 +64,7 @@ bool ReadReturnFromResponse(dbus::MessageReader* reader,
 
 // TODO(b/189499077) - Expose via floss package
 const char kAdapterService[] = "org.chromium.bluetooth";
+const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";

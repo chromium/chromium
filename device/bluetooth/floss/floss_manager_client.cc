@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/bus.h"
@@ -20,6 +21,7 @@
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace floss {
 
@@ -259,6 +261,8 @@ void FlossManagerClient::Init(dbus::Bus* bus,
 
   // Get manager ready.
   RegisterWithManager();
+
+  SetFlossEnabled(base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
 }
 
 void FlossManagerClient::HandleGetAvailableAdapters(

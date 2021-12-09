@@ -38,6 +38,8 @@
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
+#include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -58,6 +60,21 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   should_check_object_manager = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  if (!use_dbus_fakes) {
+    // Make sure that Floss manager daemon is in agreement with Chrome about the
+    // state of Floss enable/disable.
+    dbus::MethodCall floss_method_call(dbus::kObjectManagerInterface,
+                                       dbus::kObjectManagerGetManagedObjects);
+    GetSystemBus()
+        ->GetObjectProxy(floss::kManagerService, dbus::ObjectPath("/"))
+        ->CallMethodWithErrorCallback(
+            &floss_method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+            base::BindOnce(&BluezDBusManager::OnFlossObjectManagerSupported,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&BluezDBusManager::OnFlossObjectManagerNotSupported,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (!should_check_object_manager || use_dbus_fakes) {
     client_bundle_ =
@@ -217,6 +234,18 @@ void BluezDBusManager::OnObjectManagerNotSupported(
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_)
     std::move(object_manager_support_known_callback_).Run();
+}
+
+void BluezDBusManager::OnFlossObjectManagerSupported(dbus::Response* response) {
+  DVLOG(1) << "Floss manager present. Making sure Floss is enabled/disabled.";
+  floss_manager_client_ = floss::FlossManagerClient::Create();
+  floss_manager_client_->Init(GetSystemBus(), floss::kManagerInterface,
+                              std::string());
+}
+
+void BluezDBusManager::OnFlossObjectManagerNotSupported(
+    dbus::ErrorResponse* response) {
+  LOG(WARNING) << "Floss manager not present, cannot set Floss enable/disable.";
 }
 
 void BluezDBusManager::InitializeClients() {

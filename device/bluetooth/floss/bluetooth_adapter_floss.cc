@@ -16,7 +16,6 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace floss {
@@ -129,11 +128,6 @@ void BluetoothAdapterFloss::Init() {
   }
 
   BLUETOOTH_LOG(EVENT) << "Floss Adapter Initialized";
-
-  // Tie rest of init behind feature flag
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
-    FlossDBusManager::Get()->GetManagerClient()->SetFlossEnabled(true);
-  }
 
   // Register for manager callbacks
   FlossDBusManager::Get()->GetManagerClient()->AddObserver(this);

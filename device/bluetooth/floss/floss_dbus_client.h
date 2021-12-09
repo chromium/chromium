@@ -24,6 +24,7 @@ extern int kDBusTimeoutMs;
 
 // TODO(b/189499077) - Expose via floss package
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
+extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];

@@ -20,6 +20,10 @@ class Response;
 class ErrorResponse;
 }  // namespace dbus
 
+namespace floss {
+class FlossManagerClient;
+}
+
 namespace bluez {
 
 // Style Note: Clients are sorted by names.
@@ -164,6 +168,9 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
 
+  void OnFlossObjectManagerSupported(dbus::Response* response);
+  void OnFlossObjectManagerNotSupported(dbus::ErrorResponse* response);
+
   // Initializes all currently stored DBusClients with the system bus and
   // performs additional setup.
   void InitializeClients();
@@ -174,6 +181,11 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   dbus::Bus* alternate_bus_;
 
   std::unique_ptr<BluetoothDBusClientBundle> client_bundle_;
+
+  // Needed to enable/disable Floss at D-Bus initialization. We treat this
+  // D-Bus client specially and not include it in client bundle since we only
+  // need to Init() it and nothing else.
+  std::unique_ptr<floss::FlossManagerClient> floss_manager_client_;
 
   base::OnceClosure object_manager_support_known_callback_;
 
