@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -178,7 +177,8 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
       const size_t count =
           std::ceil(difference / latest_sliding_window_interval_);
       if (count > 0)
-        sliding_window_histogram_.AddPercentDroppedFrame(0., count);
+        sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy]
+            .AddPercentDroppedFrame(0., count);
     }
   }
 
@@ -268,7 +268,8 @@ void DroppedFrameCounter::ReportFrames() {
   }
 
   uint32_t sliding_window_95pct_percent_dropped =
-      SlidingWindow95PercentilePercentDropped();
+      SlidingWindow95PercentilePercentDropped(
+          SmoothnessStrategy::kDefaultStrategy);
   if (sliding_window_95pct_percent_dropped !=
       last_reported_metrics_.p95_window) {
     UMA_HISTOGRAM_PERCENTAGE(
@@ -294,16 +295,19 @@ void DroppedFrameCounter::ReportFrames() {
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
-    smoothness_data.median_smoothness = SlidingWindowMedianPercentDropped();
+    smoothness_data.median_smoothness =
+        SlidingWindowMedianPercentDropped(SmoothnessStrategy::kDefaultStrategy);
 
     uint32_t default_variance =
-        static_cast<uint32_t>(SlidingWindowPercentDroppedVariance());
-    DCHECK_GE(default_variance, 0u);
+        static_cast<uint32_t>(SlidingWindowPercentDroppedVariance(
+            SmoothnessStrategy::kDefaultStrategy));
     DCHECK_LE(default_variance, 5000u);
+    DCHECK_LE(0u, default_variance);
     smoothness_data.variance = default_variance;
 
     std::vector<double> sliding_window_buckets =
-        sliding_window_histogram_.GetPercentDroppedFrameBuckets();
+        sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy]
+            .GetPercentDroppedFrameBuckets();
     DCHECK_EQ(sliding_window_buckets.size(),
               base::size(smoothness_data.buckets));
     std::copy(sliding_window_buckets.begin(), sliding_window_buckets.end(),
@@ -372,7 +376,7 @@ void DroppedFrameCounter::Reset() {
   fcp_received_ = false;
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
-  sliding_window_histogram_.Clear();
+  sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy].Clear();
   ring_buffer_.Clear();
   time_max_delta_ = {};
   last_reported_metrics_ = {};
@@ -395,10 +399,9 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   if (args.interval >= kSlidingWindowInterval)
     return;
 
-  const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
-  sliding_window_.push({args, is_dropped});
+  sliding_window_.push({args, frame_info});
 
-  if (is_dropped)
+  if (frame_info.IsDroppedAffectingSmoothness())
     ++dropped_frame_count_in_window_;
   if (ComputeCurrentWindowSize() < kSlidingWindowInterval)
     return;
@@ -414,7 +417,8 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
 
 void DroppedFrameCounter::PopSlidingWindow() {
   const auto removed_args = sliding_window_.front().first;
-  const auto removed_was_dropped = sliding_window_.front().second;
+  const auto removed_was_dropped =
+      sliding_window_.front().second.IsDroppedAffectingSmoothness();
   if (removed_was_dropped) {
     DCHECK_GT(dropped_frame_count_in_window_, 0u);
     --dropped_frame_count_in_window_;
@@ -425,7 +429,8 @@ void DroppedFrameCounter::PopSlidingWindow() {
 
   // Don't count the newest element if it is outside the current window.
   const auto& newest_args = sliding_window_.back().first;
-  const auto newest_was_dropped = sliding_window_.back().second;
+  const auto newest_was_dropped =
+      sliding_window_.back().second.IsDroppedAffectingSmoothness();
   auto dropped = dropped_frame_count_in_window_;
   if (ComputeCurrentWindowSize() > kSlidingWindowInterval && newest_was_dropped)
     --dropped;
@@ -446,8 +451,8 @@ void DroppedFrameCounter::PopSlidingWindow() {
                            : 1;
   double percent_dropped_frame =
       std::min((dropped * 100.0) / total_frames_in_window_, 100.0);
-  sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
-                                                   count);
+  sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy]
+      .AddPercentDroppedFrame(percent_dropped_frame, count);
 
   if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
     time_max_delta_ = newest_args.frame_time - time_fcp_received_;

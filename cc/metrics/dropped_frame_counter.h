@@ -14,12 +14,12 @@
 #include "base/containers/ring_buffer.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
-struct FrameInfo;
 class TotalFrameCounter;
 
 // This class maintains a counter for produced/dropped frames, and can be used
@@ -30,6 +30,15 @@ class CC_EXPORT DroppedFrameCounter {
     kFrameStateDropped,
     kFrameStatePartial,
     kFrameStateComplete
+  };
+
+  enum SmoothnessStrategy {
+    kDefaultStrategy,  // All threads and interactions are considered equal.
+    kScrollFocusedStrategy,  // Scroll interactions has the highest priority.
+    kMainFocusedStrategy,    // Reports dropped frames with main thread updates.
+    kCompositorFocusedStrategy,  // Reports dropped frames with compositor
+    // thread updates.
+    kStrategyCount
   };
 
   class CC_EXPORT SlidingWindowHistogram {
@@ -119,20 +128,30 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_After_5_sec_;
   }
 
-  uint32_t SlidingWindow95PercentilePercentDropped() const {
-    return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.95);
+  uint32_t SlidingWindow95PercentilePercentDropped(
+      SmoothnessStrategy strategy) const {
+    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
+    return sliding_window_histogram_[strategy].GetPercentDroppedFramePercentile(
+        0.95);
   }
 
-  uint32_t SlidingWindowMedianPercentDropped() const {
-    return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.5);
+  uint32_t SlidingWindowMedianPercentDropped(
+      SmoothnessStrategy strategy) const {
+    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
+    return sliding_window_histogram_[strategy].GetPercentDroppedFramePercentile(
+        0.5);
   }
 
-  double SlidingWindowPercentDroppedVariance() const {
-    return sliding_window_histogram_.GetPercentDroppedFrameVariance();
+  double SlidingWindowPercentDroppedVariance(
+      SmoothnessStrategy strategy) const {
+    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
+    return sliding_window_histogram_[strategy].GetPercentDroppedFrameVariance();
   }
 
-  const SlidingWindowHistogram* GetSlidingWindowHistogram() const {
-    return &sliding_window_histogram_;
+  const SlidingWindowHistogram* GetSlidingWindowHistogram(
+      SmoothnessStrategy strategy) const {
+    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
+    return &sliding_window_histogram_[strategy];
   }
 
  private:
@@ -144,10 +163,11 @@ class CC_EXPORT DroppedFrameCounter {
   void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
   const base::TimeDelta kSlidingWindowInterval = base::Seconds(1);
-  std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
+  std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
   uint32_t dropped_frame_count_in_window_ = 0;
   double total_frames_in_window_ = 60.0;
-  SlidingWindowHistogram sliding_window_histogram_;
+  SlidingWindowHistogram
+      sliding_window_histogram_[SmoothnessStrategy::kStrategyCount];
 
   base::TimeTicks latest_sliding_window_start_;
   base::TimeDelta latest_sliding_window_interval_;
