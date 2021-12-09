@@ -4867,6 +4867,10 @@
         'swarming': {},
         'test': 'test_cpp_including_rust_unittests',
       },
+      'test_serde_jsonrc': {
+        'swarming': {},
+        'test': 'test_serde_jsonrc',
+      },
     },
 
     'site_isolation_android_fyi_gtests': {

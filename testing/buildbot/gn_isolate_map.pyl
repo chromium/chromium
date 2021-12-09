@@ -1778,6 +1778,10 @@
     "label": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
     "type": "console_test_launcher",
   },
+  "test_serde_jsonrc": {
+    "label": "//build/rust/tests/test_serde_jsonrc:test_serde_jsonrc",
+    "type": "console_test_launcher",
+  },
   "third_party/openscreen/src/cast/cast_core/api": {
     "label": "//third_party/openscreen/src/cast/cast_core/api:api",
     "type": "additional_compile_target",

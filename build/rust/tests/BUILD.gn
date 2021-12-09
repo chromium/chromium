@@ -23,6 +23,7 @@ group("tests") {
       "test_mixed_source_set",
       "test_rlib_crate",
       "test_rust_source_set",
+      "test_serde_jsonrc",
     ]
     if (build_rust_unit_tests) {
       deps += [
