@@ -304,6 +304,7 @@ class Target(object):
       if ssh_proc.wait() == 0:
         logging.info('Connected!')
         self._started = True
+        self._command_runner = runner
         return True
       time.sleep(_ATTACH_RETRY_INTERVAL)
 
