@@ -19,7 +19,10 @@ class NavigationHandle;
 
 namespace optimization_guide {
 
+enum class OptimizationGuideDecision;
 struct HistoryVisit;
+class OptimizationGuideDecider;
+class OptimizationMetadata;
 class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
@@ -41,7 +44,8 @@ class PageContentAnnotationsWebContentsObserver
   PageContentAnnotationsWebContentsObserver(
       content::WebContents* web_contents,
       PageContentAnnotationsService* page_content_annotations_service,
-      TemplateURLService* template_url_service);
+      TemplateURLService* template_url_service,
+      OptimizationGuideDecider* optimization_guide_decider);
 
  private:
   friend class content::WebContentsUserData<
@@ -61,11 +65,20 @@ class PageContentAnnotationsWebContentsObserver
   void OnTextDumpReceived(const HistoryVisit& visit,
                           const PageTextDumpResult& result);
 
+  // Callback invoked when the page entities have been received from
+  // |optimization_guide_decider_| for |visit|.
+  void OnRemotePageEntitiesReceived(const HistoryVisit& visit,
+                                    OptimizationGuideDecision decision,
+                                    const OptimizationMetadata& metadata);
+
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<const TemplateURLService> template_url_service_;
+
+  // Not owned. Guaranteed to outlive |this|.
+  raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
 
   // The max size to request for text dump.
   const uint64_t max_size_for_text_dump_;

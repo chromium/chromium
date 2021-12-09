@@ -61,6 +61,8 @@ std::string GetStringNameForOptimizationType(
       return "AboutThisSite";
     case proto::OptimizationType::MERCHANT_TRUST_SIGNALS_V2:
       return "MerchantTrustSignalsV2";
+    case proto::OptimizationType::PAGE_ENTITIES:
+      return "PageEntities";
   }
 
   // The returned string is used to record histograms for the optimization type.

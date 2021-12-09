@@ -96,6 +96,8 @@ chromium-metrics-reviews@google.com.
       Removed in M89.
     </obsolete>
   </variant>
+  <variant name="PageEntities"
+      summary="Provides the entities that are present on the page"/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
   <variant name="PriceTracking"

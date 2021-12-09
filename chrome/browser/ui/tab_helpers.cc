@@ -322,8 +322,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (page_content_annotations_service) {
     optimization_guide::PageContentAnnotationsWebContentsObserver::
-        CreateForWebContents(web_contents, page_content_annotations_service,
-                             TemplateURLServiceFactory::GetForProfile(profile));
+        CreateForWebContents(
+            web_contents, page_content_annotations_service,
+            TemplateURLServiceFactory::GetForProfile(profile),
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);

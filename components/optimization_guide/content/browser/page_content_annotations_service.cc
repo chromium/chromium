@@ -264,6 +264,18 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
+void PageContentAnnotationsService::PersistRemotePageEntities(
+    const HistoryVisit& history_visit,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        entities) {
+  history::VisitContentModelAnnotations annotations;
+  annotations.entities = entities;
+  QueryURL(history_visit,
+           base::BindOnce(
+               &history::HistoryService::AddContentModelAnnotationsForVisit,
+               history_service_->AsWeakPtr(), annotations));
+}
+
 // static
 HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
     content::WebContents* web_contents,

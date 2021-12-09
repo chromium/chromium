@@ -8,8 +8,10 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -72,12 +74,14 @@ PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
         PageContentAnnotationsService* page_content_annotations_service,
-        TemplateURLService* template_url_service)
+        TemplateURLService* template_url_service,
+        OptimizationGuideDecider* optimization_guide_decider)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
       page_content_annotations_service_(page_content_annotations_service),
       template_url_service_(template_url_service),
+      optimization_guide_decider_(optimization_guide_decider),
       max_size_for_text_dump_(features::MaxSizeForPageContentTextDump()) {
   DCHECK(page_content_annotations_service_);
 
@@ -87,6 +91,11 @@ PageContentAnnotationsWebContentsObserver::
     PageTextObserver* observer =
         PageTextObserver::GetOrCreateForWebContents(web_contents);
     observer->AddConsumer(this);
+  }
+
+  if (features::RemotePageEntitiesEnabled() && optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {proto::PAGE_ENTITIES});
   }
 }
 
@@ -122,6 +131,14 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   optimization_guide::HistoryVisit history_visit = optimization_guide::
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
           web_contents(), navigation_handle->GetNavigationId());
+
+  if (features::RemotePageEntitiesEnabled() && optimization_guide_decider_) {
+    optimization_guide_decider_->CanApplyOptimizationAsync(
+        navigation_handle, proto::PAGE_ENTITIES,
+        base::BindOnce(&PageContentAnnotationsWebContentsObserver::
+                           OnRemotePageEntitiesReceived,
+                       weak_ptr_factory_.GetWeakPtr(), history_visit));
+  }
 
   if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
     // Extract related searches.
@@ -230,6 +247,33 @@ void PageContentAnnotationsWebContentsObserver::OnTextDumpReceived(
   }
   page_content_annotations_service_->Annotate(
       visit, *result.GetMainFrameTextContent());
+}
+
+void PageContentAnnotationsWebContentsObserver::OnRemotePageEntitiesReceived(
+    const HistoryVisit& history_visit,
+    OptimizationGuideDecision decision,
+    const OptimizationMetadata& metadata) {
+  if (decision != OptimizationGuideDecision::kTrue)
+    return;
+
+  absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
+      metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
+  if (!page_entities_metadata || page_entities_metadata->entities().size() == 0)
+    return;
+
+  std::vector<history::VisitContentModelAnnotations::Category> entities;
+  for (const auto& entity : page_entities_metadata->entities()) {
+    if (entity.entity_id().empty())
+      continue;
+
+    if (entity.score() < 0 || entity.score() > 100)
+      continue;
+
+    entities.emplace_back(history::VisitContentModelAnnotations::Category(
+        entity.entity_id(), entity.score()));
+  }
+  page_content_annotations_service_->PersistRemotePageEntities(history_visit,
+                                                               entities);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);

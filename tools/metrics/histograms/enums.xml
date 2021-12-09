@@ -64966,6 +64966,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="19" label="BLOOM_FILTER_VALIDATION"/>
   <int value="20" label="ABOUT_THIS_SITE"/>
   <int value="21" label="MERCHANT_TRUST_SIGNALS_V2"/>
+  <int value="22" label="PAGE_ENTITIES"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">

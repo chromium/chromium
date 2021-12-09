@@ -144,6 +144,14 @@ class PageContentAnnotationsService : public KeyedService,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 
+  // Persist |entities| for |visit| in |history_service_|.
+  //
+  // Virtualized for testing.
+  virtual void PersistRemotePageEntities(
+      const HistoryVisit& visit,
+      const std::vector<history::VisitContentModelAnnotations::Category>&
+          entities);
+
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.
   // |callback| will be invoked to write the bound content annotations to

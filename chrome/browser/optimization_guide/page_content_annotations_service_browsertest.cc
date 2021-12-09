@@ -25,6 +25,7 @@
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
@@ -36,10 +37,17 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace optimization_guide {
+
+namespace {
+
+using ::testing::UnorderedElementsAre;
+
+}  // namespace
 
 class FakePageTextService : public mojom::PageTextService {
  public:
@@ -229,7 +237,6 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   absl::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
       const GURL& url) {
     history::HistoryService* history_service =
@@ -260,7 +267,6 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     run_loop->Run();
     return got_content_annotations;
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   void Annotate(const HistoryVisit& visit, const std::string& text) {
     PageContentAnnotationsService* service =
@@ -375,6 +381,64 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
   }
+}
+
+class PageContentAnnotationsServiceRemotePageEntitiesBrowserTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceRemotePageEntitiesBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kPageContentAnnotations,
+          {
+              {"write_to_history_service", "true"},
+              {"fetch_remote_page_entities", "true"},
+          }}},
+        /*disabled_features=*/{});
+    set_load_model_on_startup(false);
+  }
+  ~PageContentAnnotationsServiceRemotePageEntitiesBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceRemotePageEntitiesBrowserTest,
+    StoresPageEntitiesFromRemoteService) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+
+  proto::PageEntitiesMetadata page_entities_metadata;
+  proto::Entity* entity = page_entities_metadata.add_entities();
+  entity->set_entity_id("entity1");
+  entity->set_score(50);
+  OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_THAT(
+      got_content_annotations->model_annotations.entities,
+      UnorderedElementsAre(
+          history::VisitContentModelAnnotations::Category("entity1", 50)));
 }
 
 class PageContentAnnotationsServiceNoHistoryTest

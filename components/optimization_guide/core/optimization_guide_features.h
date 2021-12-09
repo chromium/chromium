@@ -219,6 +219,10 @@ bool ShouldExtractRelatedSearches();
 std::vector<optimization_guide::proto::OptimizationTarget>
 GetPageContentModelsToExecute();
 
+// Returns whether page entities should be retrieved from the remote
+// Optimization Guide service.
+bool RemotePageEntitiesEnabled();
+
 // The time to wait beyond the onload event before sending the hints request for
 // link predictions.
 base::TimeDelta GetOnloadDelayForHintsFetching();

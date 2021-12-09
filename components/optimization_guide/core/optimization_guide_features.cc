@@ -413,6 +413,11 @@ GetPageContentModelsToExecute() {
   return model_targets.vector();
 }
 
+bool RemotePageEntitiesEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(kPageContentAnnotations,
+                                           "fetch_remote_page_entities", false);
+}
+
 base::TimeDelta GetOnloadDelayForHintsFetching() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "onload_delay_for_hints_fetching_ms",
