@@ -1591,6 +1591,82 @@
       "features": [
         "all"
       ]
+    },
+    {
+      "id": 170,
+      "description": "Disable hardware MFT video encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.10.0",
+        "value2": "0.0.10.4425"
+      },
+      "features": [
+        "accelerated_video_encode"
+      ]
+    },
+    {
+      "id": 171,
+      "description": "Disable hardware MFT video encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.13.0",
+        "value2": "0.0.13.5435"
+      },
+      "features": [
+        "accelerated_video_encode"
+      ]
+    },
+    {
+      "id": 172,
+      "description": "Disable hardware MFT video encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.14.0",
+        "value2": "0.0.14.4264"
+      },
+      "features": [
+        "accelerated_video_encode"
+      ]
+    },
+    {
+      "id": 173,
+      "description": "Disable hardware MFT video encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.15.0",
+        "value2": "0.0.15.4256"
+      },
+      "features": [
+        "accelerated_video_encode"
+      ]
     }
   ]
 }
