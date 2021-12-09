@@ -38,6 +38,9 @@ class ChromeOsCdmContext {
   // Gets a CdmContextRef linked with the associated CDM for keeping it alive.
   virtual std::unique_ptr<media::CdmContextRef> GetCdmContextRef() = 0;
 
+  // Returns true if this is coming from a CDM in ARC.
+  virtual bool UsingArcCdm() const = 0;
+
  protected:
   virtual ~ChromeOsCdmContext() = default;
 };

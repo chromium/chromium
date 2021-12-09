@@ -105,6 +105,7 @@ class MockChromeOsCdmContext : public chromeos::ChromeOsCdmContext {
                     const std::vector<uint8_t>&,
                     chromeos::ChromeOsCdmContext::GetHwKeyDataCB));
   MOCK_METHOD0(GetCdmContextRef, std::unique_ptr<CdmContextRef>());
+  MOCK_CONST_METHOD0(UsingArcCdm, bool());
 };
 // A real implementation of this class would actually hold onto a reference of
 // the owner of the CdmContext to ensure it is not destructed before the

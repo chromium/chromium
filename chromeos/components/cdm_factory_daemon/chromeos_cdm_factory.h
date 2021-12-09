@@ -14,6 +14,7 @@
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_context.h"
 #include "media/base/cdm_factory.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
@@ -64,6 +65,10 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   // Used to get screen resolutions from the browser process so we can optimize
   // our decode target size.
   static void GetScreenResolutions(GetScreenResolutionsCB callback);
+
+  // Returns a singleton pointer that can be used as the media::CdmContext for
+  // ARC video decode operations.
+  static media::CdmContext* GetArcCdmContext();
 
  private:
   void OnVerifiedAccessEnabled(
