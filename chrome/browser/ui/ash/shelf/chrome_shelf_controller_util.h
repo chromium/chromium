@@ -48,6 +48,9 @@ void PinAppWithIDToShelf(const std::string& app_id);
 // Unpins an app from the shelf, if it is in the shelf. Otherwise does nothing.
 void UnpinAppWithIDFromShelf(const std::string& app_id);
 
+// Returns whether the app with `app_id` has been pinned to the shelf.
+bool IsAppWithIDPinnedToShelf(const std::string& app_id);
+
 apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);
 

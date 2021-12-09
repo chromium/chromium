@@ -341,6 +341,17 @@ void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const AppId& app_id) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(const AppId& app_id) const {
+  DCHECK(CanAddAppToQuickLaunchBar());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeShelfController does not exist in unit tests.
+  if (auto* controller = ChromeShelfController::instance()) {
+    return IsAppWithIDPinnedToShelf(app_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+}
+
 bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
                                         const AppId* app_id) const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);

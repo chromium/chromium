@@ -52,6 +52,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
                                    const AppId& to_app) override;
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const AppId& app_id) override;
+  bool IsAppInQuickLaunchBar(const AppId& app_id) const override;
   bool IsInAppWindow(content::WebContents* web_contents,
                      const AppId* app_id) const override;
   void NotifyOnAssociatedAppChanged(content::WebContents* web_contents,

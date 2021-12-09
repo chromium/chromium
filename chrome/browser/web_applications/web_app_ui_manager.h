@@ -57,6 +57,7 @@ class WebAppUiManager {
 
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
   virtual void AddAppToQuickLaunchBar(const AppId& app_id) = 0;
+  virtual bool IsAppInQuickLaunchBar(const AppId& app_id) const = 0;
 
   // Returns whether |web_contents| is in a web app window belonging to
   // |app_id|, or any web app window if |app_id| is nullptr.

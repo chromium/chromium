@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
 namespace {
@@ -585,6 +586,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount, 0,
         1);
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::
+            kHistogramAppToReplaceStillSyncInstalledCount,
+        0, 1);
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::
+            kHistogramAppToReplaceStillInstalledInShelfCount,
+        0, 1);
   }
 
   // Manually install Extension app to be replaced.
@@ -598,7 +607,35 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount, 1,
         1);
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::
+            kHistogramAppToReplaceStillSyncInstalledCount,
+        1, 1);
+
+    // Neither app has been added to the shelf.
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::
+            kHistogramAppToReplaceStillInstalledInShelfCount,
+        0, 1);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Pin both apps to the shelf.
+  PinAppWithIDToShelf(GetWebAppId());
+  PinAppWithIDToShelf(kExtensionId);
+
+  // Re-sync preinstalled web apps.
+  {
+    base::HistogramTester histograms;
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+
+    // Apps have been added to the shelf.
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::
+            kHistogramAppToReplaceStillInstalledInShelfCount,
+        1, 1);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Tests the migration from an extension-app to a preinstalled web app provided

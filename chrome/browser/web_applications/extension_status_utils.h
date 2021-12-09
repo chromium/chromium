@@ -32,6 +32,11 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
                                const std::string& extension_id,
                                std::u16string* reason);
 
+// Returns whether the extension with `extension_id` was installed as a default
+// extension/app.
+bool IsExtensionDefaultInstalled(content::BrowserContext* context,
+                                 const std::string& extension_id);
+
 // Returns whether the user has uninstalled an externally installed extension
 // with |extension_id|.
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,

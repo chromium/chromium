@@ -71,6 +71,8 @@ class PreinstalledWebAppManager {
   static const char* kHistogramInstallResult;
   static const char* kHistogramUninstallAndReplaceCount;
   static const char* kHistogramAppToReplaceStillInstalledCount;
+  static const char* kHistogramAppToReplaceStillSyncInstalledCount;
+  static const char* kHistogramAppToReplaceStillInstalledInShelfCount;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -88,6 +90,7 @@ class PreinstalledWebAppManager {
 
   void SetSubsystems(
       WebAppRegistrar* registrar,
+      const WebAppUiManager* ui_manager,
       ExternallyManagedAppManager* externally_managed_app_manager);
 
   // Loads the preinstalled app configs and synchronizes them with the device's
@@ -155,6 +158,7 @@ class PreinstalledWebAppManager {
       int force_reinstall_for_milestone);
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<const WebAppUiManager> ui_manager_ = nullptr;
   raw_ptr<ExternallyManagedAppManager> externally_managed_app_manager_ =
       nullptr;
   const raw_ptr<Profile> profile_;
