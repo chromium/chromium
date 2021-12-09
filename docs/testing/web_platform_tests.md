@@ -387,3 +387,58 @@ unauthenticated requests, so it is recommended that you let `wpt-export` and
        and `GH_TOKEN`, the access token you have just generated. After that,
        pass `--credentials-json <path-to-json>` to `wpt-export` and
        `wpt-import`.
+
+### Debugging failed web platform tests
+
+This section explains the way to debug web platform tests.
+Please build `blink_tests` before running commands below.
+It is explained in [Running Web Tests](./web_tests.md#running-web-tests).
+
+#### Running test(s)
+
+The way to run web tests is explained in [Running the
+Tests](./web_tests.md#running-the-tests).
+
+Assume that you are writing the test named `wpt_internal/fake/foobar.html`.
+You may want to run only the tests and you do not want to run all tests under
+`wpt_internal/fake`.  The following command narrows down the test to only
+`wpt_internal/fake/foobar.html`.
+
+```bash
+third_party/blink/tools/run_web_tests.py -t Default \
+third_party/blink/web_tests/wpt_internal/fake/foobar.html
+```
+
+#### Logging
+
+During the debug, you may want to log what happens during the test.
+You can use `console.log` in JavaScript to log arbitrary strings.
+
+```
+e.g.
+console.log('fake has been executed.');
+console.log('foo=' + foo);
+```
+
+Logs are written under `$root_build_dir/layout-test-results`.
+If you have tested `wpt_internal/fake/foobar.html`, the log will be stored in
+`$root_build_dir/layout-test-results/wpt_internal/fake/foobar-stderr.txt`.
+You can change output directory with `--results-directory=<output directory>`.
+
+#### Checking HTTP servers
+
+For some test cases, you may use .headers file to set arbitrary HTTP headers.
+To verify what is set to headers, you can run an HTTP server used for WPT
+by yourself. The following command starts the HTTP server for you:
+
+```bash
+third_party/blink/tools/run_blink_wptserve.py
+```
+
+To see headers returned by the server, you can use `curl -v`.
+`curl` will show headers in stderr. You may want to use `|& less` to
+see output if it is too long.
+
+```bash
+curl -v http://localhost:8081/wpt_internal/fake/foobar.html |& less
+```

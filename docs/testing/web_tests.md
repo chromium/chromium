@@ -19,6 +19,10 @@ web tests and are located at
 Tests that should work across browsers go there. Other directories are for
 Chrome-specific tests only.
 
+Note: if you are looking for a guide for the Web Platform Test, you should read
+["Web platform tests"](./web_platform_tests.md) (WPT). This document does not
+cover WPT specific features/behaviors.
+
 [TOC]
 
 ## Running Web Tests
@@ -451,6 +455,12 @@ tips for finding the problem.
   (hopefully) reduced test case that exposes a problem.
 
 ### Debugging HTTP Tests
+
+Note: HTTP Tests mean tests under `web_tests/http/tests/`,
+which is a subset of WebKit Layout Tests originated suite.
+If you want to debug WPT's HTTP behavior, you should read
+["Web platform tests"](./web_platform_tests.md) instead.
+
 
 To run the server manually to reproduce/debug a failure:
 
