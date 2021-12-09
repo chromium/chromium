@@ -29,7 +29,6 @@
   CGFloat ntpHeight = collectionViewHeight + headerHeight;
   CGFloat minimumHeight =
       ntpHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
-  CGFloat topSafeArea = self.collectionView.safeAreaInsets.top;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
     CGFloat toolbarHeight =
         IsSplitToolbarMode(self.collectionView)
@@ -37,7 +36,7 @@
                                         .preferredContentSizeCategory)
             : 0;
     CGFloat additionalHeight =
-        toolbarHeight + topSafeArea + self.collectionView.contentInset.bottom;
+        toolbarHeight + self.collectionView.contentInset.bottom;
     minimumHeight -= additionalHeight;
     ntpHeight += additionalHeight;
   }

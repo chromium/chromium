@@ -170,6 +170,10 @@ id<GREYMatcher> ToolsMenuButton() {
   return [ChromeMatchersAppInterface toolsMenuButton];
 }
 
+id<GREYMatcher> NewTabButton() {
+  return [ChromeMatchersAppInterface openNewTabButton];
+}
+
 id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
@@ -429,6 +433,14 @@ id<GREYMatcher> NTPCollectionView() {
 
 id<GREYMatcher> NTPIncognitoView() {
   return [ChromeMatchersAppInterface ntpIncognitoView];
+}
+
+id<GREYMatcher> NTPFeedMenuEnableButton() {
+  return [ChromeMatchersAppInterface ntpFeedMenuEnableButton];
+}
+
+id<GREYMatcher> NTPFeedMenuDisableButton() {
+  return [ChromeMatchersAppInterface ntpFeedMenuDisableButton];
 }
 
 id<GREYMatcher> WarningMessageView() {

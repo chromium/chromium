@@ -754,20 +754,14 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [self checkIfNTPIsScrollable];
 
   // Hide feed.
-  // TODO(crbug.com/1194106): Hide feed using feed header menu instead of
-  // manipulating pref directly.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
+  [self hideFeedFromNTPMenu];
 
   // Check feed label and if NTP is scrollable.
   [self checkFeedLabelForFeedVisible:NO];
   [self checkIfNTPIsScrollable];
 
   // Show feed again.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
+  [self showFeedFromNTPMenu];
 
   // Check feed label and if NTP is scrollable.
   [self checkFeedLabelForFeedVisible:YES];
@@ -846,6 +840,71 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+#pragma mark - New Tab menu tests
+
+// Tests the "new search" menu item from the new tab menu.
+- (void)testNewSearchFromNewTabMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
+  }
+
+  [ChromeEarlGreyUI openNewTabMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuSearch)]
+      performAction:grey_tap()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Check that there's now a new tab, that the new (second) tab is the active
+  // one, and the that the omnibox is first responder.
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+                  @"Tab 1 should be active after starting a new search.");
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:grey_notVisible()];
+  // Fakebox should be covered.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_notVisible()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+// Tests the "new search" menu item from the new tab menu after disabling the
+// feed.
+- (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
+  }
+
+  // Hide feed.
+  [self hideFeedFromNTPMenu];
+
+  [ChromeEarlGreyUI openNewTabMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuSearch)]
+      performAction:grey_tap()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Check that there's now a new tab, that the new (third) tab is the active
+  // one, and the that the omnibox is first responder.
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+                  @"Tab 1 should be active after starting a new search.");
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Fakebox should be covered.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_notVisible()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {
@@ -919,6 +978,50 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // by slowly scrolling to the top.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+}
+
+- (void)showFeedFromNTPMenu {
+  bool feed_visible =
+      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
+  GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
+
+  // The feed header button may be offscreen, so scroll to find it if needed.
+  id<GREYMatcher> headerButton =
+      grey_allOf(grey_accessibilityID(kNTPFeedHeaderButtonIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:headerButton]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NTPFeedMenuEnableButton()]
+      performAction:grey_tap()];
+  feed_visible =
+      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
+  GREYAssertTrue(feed_visible, @"Expect feed to be visible!");
+}
+
+- (void)hideFeedFromNTPMenu {
+  bool feed_visible =
+      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
+  GREYAssertTrue(feed_visible, @"Expect feed to be visible!");
+
+  // The feed header button may be offscreen, so scroll to find it if needed.
+  id<GREYMatcher> headerButton =
+      grey_allOf(grey_accessibilityID(kNTPFeedHeaderButtonIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:headerButton]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NTPFeedMenuDisableButton()]
+      performAction:grey_tap()];
+  feed_visible =
+      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
+  GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
 }
 
 @end

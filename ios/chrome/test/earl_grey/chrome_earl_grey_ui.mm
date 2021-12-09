@@ -126,6 +126,19 @@ class ScopedDisableTimerTracking {
   [self tapToolsMenuButton:SettingsMenuButton()];
 }
 
+- (void)openNewTabMenu {
+  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // state, for example DCHECK if no tabs are displayed.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(chrome_test_util::NewTabButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
+      onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
+      performAction:grey_longPress()];
+  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // to always find it.
+}
+
 - (void)tapToolsMenuButton:(id<GREYMatcher>)buttonMatcher {
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
