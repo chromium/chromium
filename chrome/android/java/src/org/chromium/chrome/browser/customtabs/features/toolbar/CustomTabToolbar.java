@@ -166,6 +166,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
          * @return whether the event is consumed..
          */
         boolean onTouchEvent(MotionEvent event);
+
+        /**
+         * Set a handler to close the current tab.
+         *
+         * @param handler The handler for closing the current tab.
+         */
+        void setCloseClickHandler(Runnable handler);
     }
 
     private HandleStrategy mHandleStrategy;
@@ -352,6 +359,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     public void setHandleStrategy(HandleStrategy strategy) {
         mHandleStrategy = strategy;
+        mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
     }
 
     private void updateButtonsTint() {
