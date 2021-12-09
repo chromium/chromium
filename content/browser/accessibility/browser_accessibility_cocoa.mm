@@ -1697,9 +1697,16 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 }
 
 // internal
-- (NSRect)rectInScreen:(gfx::Rect)rect {
+- (NSRect)rectInScreen:(gfx::Rect)layout_rect {
   if (![self instanceActive])
     return NSZeroRect;
+
+  // Convert to DIPs if UseZoomForDSF is enabled.
+  auto rect =
+      IsUseZoomForDSFEnabled()
+          ? ScaleToRoundedRect(layout_rect,
+                               1.f / _owner->manager()->device_scale_factor())
+          : layout_rect;
 
   // Get the delegate for the topmost BrowserAccessibilityManager, because
   // that's the only one that can convert points to their origin in the screen.
