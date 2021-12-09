@@ -608,12 +608,12 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/r
 crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/rendering/more-than-65536-indices.html [ Failure ]
 
 # Mac / M1 / OpenGL
-crbug.com/1130703 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1130703 [ mac angle-opengl apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1130703 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
-crbug.com/1130703 [ mac angle-opengl apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 # No active browser window, but no crash stack.
-crbug.com/1240443 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
 # Mac / M1 / Metal
 crbug.com/1130758 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
