@@ -135,6 +135,8 @@ class SkiaOutputDevice {
   virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
                                    OutputSurfaceFrame frame);
 
+  virtual void AllocateFrameBuffers(size_t n);
+
   // Release one frame buffer. Only called if `UseDynamicFrameBufferAllocation`
   // is true.
   virtual void ReleaseOneFrameBuffer();
