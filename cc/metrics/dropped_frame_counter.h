@@ -36,6 +36,7 @@ class CC_EXPORT DroppedFrameCounter {
    public:
     void AddPercentDroppedFrame(double percent_dropped_frame, size_t count = 1);
     uint32_t GetPercentDroppedFramePercentile(double percentile) const;
+    double GetPercentDroppedFrameVariance() const;
     std::vector<double> GetPercentDroppedFrameBuckets() const;
     void Clear();
     std::ostream& Dump(std::ostream& stream) const;
@@ -120,6 +121,14 @@ class CC_EXPORT DroppedFrameCounter {
 
   uint32_t SlidingWindow95PercentilePercentDropped() const {
     return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.95);
+  }
+
+  uint32_t SlidingWindowMedianPercentDropped() const {
+    return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.5);
+  }
+
+  double SlidingWindowPercentDroppedVariance() const {
+    return sliding_window_histogram_.GetPercentDroppedFrameVariance();
   }
 
   const SlidingWindowHistogram* GetSlidingWindowHistogram() const {

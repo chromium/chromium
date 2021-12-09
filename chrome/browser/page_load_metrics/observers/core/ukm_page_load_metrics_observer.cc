@@ -1149,9 +1149,11 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
       GetDelegate().GetPageUkmSourceId());
   builder.SetAverage(smoothness_data.avg_smoothness)
+      .SetMedian(smoothness_data.median_smoothness)
       .SetPercentile95(smoothness_data.percentile_95)
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
+      .SetVariance(smoothness_data.variance)
       .SetTimingSinceFCPWorstCase(
           smoothness_data.time_max_delta.InMilliseconds())
       .SetSmoothnessVeryGood(smoothness_data.buckets[0])

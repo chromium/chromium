@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -63,6 +64,27 @@ uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
     skipped_counter += histogram_bins_[current_index];
   }
   return current_index;
+}
+
+double SlidingWindowHistogram::GetPercentDroppedFrameVariance() const {
+  double sum = 0;
+  size_t bin_count = sizeof(histogram_bins_) / sizeof(uint32_t);
+  for (size_t i = 0; i < bin_count; ++i) {
+    sum += histogram_bins_[i] * i;
+  }
+  double average = sum / total_count_;
+  sum = 0;  // Sum is reset to be used for variance calculation
+
+  for (size_t i = 0; i < bin_count; ++i) {
+    sum += histogram_bins_[i] * (i - average) * (i - average);
+    // histogram_bins_[i] is the number of PDFs which were in the range of
+    // [i,i+1) so i is used as the actual value which is repeated for
+    // histogram_bins_[i] times.
+  }
+
+  if (total_count_ <= 1)
+    return 0;
+  return sum / (total_count_ - 1);
 }
 
 std::vector<double> SlidingWindowHistogram::GetPercentDroppedFrameBuckets()
@@ -273,6 +295,13 @@ void DroppedFrameCounter::ReportFrames() {
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
+    smoothness_data.median_smoothness = SlidingWindowMedianPercentDropped();
+
+    uint32_t default_variance =
+        static_cast<uint32_t>(SlidingWindowPercentDroppedVariance());
+    DCHECK_GE(default_variance, 0u);
+    DCHECK_LE(default_variance, 5000u);
+    smoothness_data.variance = default_variance;
 
     std::vector<double> sliding_window_buckets =
         sliding_window_histogram_.GetPercentDroppedFrameBuckets();
