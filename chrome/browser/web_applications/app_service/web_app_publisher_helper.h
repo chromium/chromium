@@ -232,6 +232,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   WebAppRegistrar& registrar() const;
 
+  bool IsShuttingDown() const;
+
  private:
 #if defined(OS_CHROMEOS)
   class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
@@ -359,6 +361,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       content_settings_observation_{this};
 
   std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
+
+  bool is_shutting_down_ = false;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

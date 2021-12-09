@@ -295,6 +295,9 @@ std::vector<std::unique_ptr<apps::App>> WebApps::CreateWebApps() {
 
 void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   DCHECK(provider_);
+  if (publisher_helper().IsShuttingDown()) {
+    return;
+  }
 
   for (const WebApp& web_app : provider_->registrar().GetApps()) {
     if (Accepts(web_app.app_id())) {

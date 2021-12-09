@@ -295,6 +295,7 @@ bool WebAppPublisherHelper::Accepts(const std::string& app_id) {
 void WebAppPublisherHelper::Shutdown() {
   registrar_observation_.Reset();
   content_settings_observation_.Reset();
+  is_shutting_down_ = true;
 }
 
 void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
@@ -413,6 +414,7 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
+  DCHECK(!IsShuttingDown());
   apps::mojom::Readiness readiness =
       web_app->is_locally_installed()
           ? (web_app->is_uninstalling()
@@ -524,6 +526,10 @@ void WebAppPublisherHelper::UninstallWebApp(
     apps::mojom::UninstallSource uninstall_source,
     bool clear_site_data,
     bool report_abuse) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
   auto origin = url::Origin::Create(web_app->start_url());
 
   DCHECK(provider_);
@@ -612,6 +618,10 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                                      int32_t size_hint_in_dip,
                                      LoadIconCallback callback) {
   DCHECK(provider_);
+  if (IsShuttingDown()) {
+    return;
+  }
+
   LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
                      static_cast<IconEffects>(icon_key.icon_effects),
                      std::move(callback));
@@ -622,7 +632,7 @@ content::WebContents* WebAppPublisherHelper::Launch(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
-  if (!profile_) {
+  if (IsShuttingDown()) {
     return nullptr;
   }
 
@@ -704,6 +714,10 @@ void WebAppPublisherHelper::LaunchAppWithFiles(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id, event_flags, launch_source, display::kInvalidDisplayId,
@@ -727,6 +741,11 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     apps::mojom::WindowInfoPtr window_info,
     apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
   CHECK(intent);
+
+  if (IsShuttingDown()) {
+    std::move(callback).Run(false);
+    return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
@@ -773,6 +792,10 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
 
 content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
     apps::AppLaunchParams params) {
+  if (IsShuttingDown()) {
+    return nullptr;
+  }
+
   apps::AppLaunchParams params_for_restore(
       params.app_id, params.container, params.disposition, params.launch_source,
       params.display_id, params.launch_files, params.intent);
@@ -813,7 +836,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
 void WebAppPublisherHelper::SetPermission(
     const std::string& app_id,
     apps::mojom::PermissionPtr permission) {
-  if (!profile_) {
+  if (IsShuttingDown()) {
     return;
   }
 
@@ -856,6 +879,10 @@ void WebAppPublisherHelper::SetPermission(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!IsWebAppsCrosapiEnabled()) {
     return;
@@ -876,7 +903,7 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
 #endif
 
 void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
-  if (!profile_) {
+  if (IsShuttingDown()) {
     return;
   }
 
@@ -985,6 +1012,10 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return provider_->registrar();
+}
+
+bool WebAppPublisherHelper::IsShuttingDown() const {
+  return is_shutting_down_;
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
@@ -1205,6 +1236,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
+  DCHECK(!IsShuttingDown());
   // If content_type is not one of the supported permissions, do nothing.
   if (!content_type_set.ContainsAllTypes() &&
       !IsSupportedWebAppPermissionType(content_type_set.GetType())) {
@@ -1312,11 +1344,6 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     apps::mojom::LaunchSource launch_source,
     int64_t display_id,
     base::OnceCallback<void(content::WebContents*)> callback) {
-  if (!profile_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
   content::WebContents* web_contents =
       MaybeNavigateExistingWindow(app_id, intent->url);
   if (web_contents) {

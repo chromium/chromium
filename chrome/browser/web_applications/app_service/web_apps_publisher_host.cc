@@ -128,7 +128,7 @@ void WebAppsPublisherHost::SetPublisherForTesting(
 }
 
 void WebAppsPublisherHost::OnReady() {
-  if (!remote_publisher_) {
+  if (!remote_publisher_ || publisher_helper().IsShuttingDown()) {
     return;
   }
 
