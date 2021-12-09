@@ -102,11 +102,3 @@ compile_js_files = [
 no_compile_js_files = [ "lib/analytics.js" ]
 
 wasm_files = [ "lib/ffmpeg.wasm" ]
-
-externs_files = [
-  "externs/chrome.js",
-  "externs/svg.js",
-  "externs/typescript.js",
-  "externs/universal_analytics_api.js",
-  "externs/w3c_api.js",
-]
