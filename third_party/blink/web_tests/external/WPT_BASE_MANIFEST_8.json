@@ -354,6 +354,34 @@
       ]
      ],
      "container-queries": {
+      "flex-in-columns-000-crash.html": [
+       "65d5aafe4fde7bafcffdb44aa645baa45c6352c8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-in-columns-001-crash.html": [
+       "b974c7daeae86bc0171a3207753861a555f32184",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-in-columns-002-crash.html": [
+       "a1a66ef3b2578b4fc0e6a815bad1648d0c30b783",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-in-columns-003-crash.html": [
+       "885110a3d0e701dbb381d5ef398031aaf314f6ee",
+       [
+        null,
+        {}
+       ]
+      ],
       "focus-inside-content-visibility-crash.html": [
        "ef2eb979bec14e762ccd347ac47114b8f035f9b1",
        [
@@ -361,8 +389,50 @@
         {}
        ]
       ],
+      "grid-in-columns-000-crash.html": [
+       "95ea340ba7eb585a0324f41096d0fc4afc167994",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-in-columns-001-crash.html": [
+       "752312f2f22474baeb5a9c07caf1739961d3d1c2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-in-columns-002-crash.html": [
+       "8208ca34b98165a6fce917db642221318482368c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-in-columns-003-crash.html": [
+       "f189fd5ddd6e7cdeee393fe37beed8fd7b343c5d",
+       [
+        null,
+        {}
+       ]
+      ],
       "inline-multicol-inside-container-crash.html": [
        "d8ec414e596fb9c83c881206f31311ad1b56a19a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inline-with-columns-000-crash.html": [
+       "6bb178af8503c8661ae3f28e56b453f5bc8be3e4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inline-with-columns-001-crash.html": [
+       "c813375184cfc7890e0168ab2f326e8d5355c0b0",
        [
         null,
         {}
@@ -377,6 +447,34 @@
       ],
       "svg-layout-root-crash.html": [
        "2162e5db03430e59f4ba16a44a8fff5a205e3e40",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-in-columns-000-crash.html": [
+       "7961617a3cac0cc93c67d258806dd0bb78feaa51",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-in-columns-001-crash.html": [
+       "5756b34d23efdc5605a1294ae4a71e452258df8b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-in-columns-002-crash.html": [
+       "4ae02080e3b6a49c1da47e5f529d916f430bc822",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-in-columns-003-crash.html": [
+       "0385ac7b53e41e4e28cc6cd722d5fe96d85bf83f",
        [
         null,
         {}
@@ -3091,7 +3189,7 @@
       ]
      ],
      "display-override-member-css-environment-variables-window-controls-overlay-manual.tentative.html": [
-      "2f06c5d6c7cbe7a8552f7b42315fa349de8f169f",
+      "a49b4f6f9853c3f824347e64b9d2e6b318b4a39e",
       [
        null,
        {}
@@ -79613,6 +79711,32 @@
       ],
       "grid-item-fragmentation-034.html": [
        "9a81c074bf44369b3223b02e7a217209e52dfe36",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-035.html": [
+       "15a544ea229ca1ad6c357f7851f09bfd989c2d3e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-036.html": [
+       "ba44745e9a02d5afffa3f424f68435633c8f571c",
        [
         null,
         [
@@ -251252,14 +251376,6 @@
       "c061a1d6114572c307d058f545e4828e4910250a",
       []
      ],
-     "multicol-overflow-positioned-transform-001-expected.txt": [
-      "1ea3f7d7f64353e17bd16351e44a357c45788e90",
-      []
-     ],
-     "multicol-overflow-transform-001-expected.txt": [
-      "1ea3f7d7f64353e17bd16351e44a357c45788e90",
-      []
-     ],
      "multicol-overflowing-001-ref.xht": [
       "d3a6c6e03c58c17f0dfa4f2e6d9b945e352216af",
       []
@@ -295585,6 +295701,14 @@
      "a86e0a077851a84f704e2aa4df1d526ecd9a55b2",
      []
     ],
+    "MediaDevices-enumerateDevices-persistent-permission.https-expected.txt": [
+     "91119ce94ad223d9054eadcf0c62cd742563dd24",
+     []
+    ],
+    "MediaDevices-enumerateDevices-returned-objects.https-expected.txt": [
+     "d7fe4a5aa6e7cf953f39c36d01c58996c5874877",
+     []
+    ],
     "MediaDevices-enumerateDevices.https-expected.txt": [
      "973e380f7808eec4d031e62130107ec97297c6f5",
      []
@@ -295617,8 +295741,24 @@
      "35a2f4c8c4e26a49ef72cdefc7e9f826f4dbe7fc",
      []
     ],
+    "iframe-enumerate-cleared.html": [
+     "27dd046ac599add88682e29f61034f6cc09317ca",
+     []
+    ],
+    "iframe-enumerate-cleared.html.headers": [
+     "ac4ddd8aba2b0a684a8a2cf984b274a1f4ae42ca",
+     []
+    ],
+    "iframe-enumerate.html": [
+     "27dd046ac599add88682e29f61034f6cc09317ca",
+     []
+    ],
+    "message-enumerateddevices.js": [
+     "4541636b4b1e579694129d11bd48e814bbe47d58",
+     []
+    ],
     "permission-helper.js": [
-     "29d1c9a35a75dc8a86a2326e1aafbfb7ea23f555",
+     "769f3ee24247b4c5231e6cc3b63340bf4659104b",
      []
     ]
    },
@@ -452587,7 +452727,7 @@
         ]
        ],
        "navigator-window-controls-overlay.html": [
-        "0f7230e09db8a8bcf12bae546b5505721c01c17f",
+        "9cff8d316340cdb29edb48405bf5441ab72a4cf1",
         [
          null,
          {}
@@ -459235,8 +459375,26 @@
       {}
      ]
     ],
+    "MediaDevices-enumerateDevices-per-origin-ids.sub.https.html": [
+     "f2b627a349843b68d11990820c3453e7933e87ca",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "MediaDevices-enumerateDevices-persistent-permission.https.html": [
+     "c53309ca1a97831fc0301a8da3ceac5b92598711",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "MediaDevices-enumerateDevices-returned-objects.https.html": [
-     "91982cb5b2ba1b2a0584843a991a29043580d625",
+     "12b858ff09e40cccde4bfe5f6831c553ec5d35e8",
      [
       null,
       {

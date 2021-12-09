@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL enumerateDevices depends only on capture state, not permission state assert_equals: expected (string) "At most one of a kind prior to capture" but got (boolean) false
+Harness: the test ran to completion.
+

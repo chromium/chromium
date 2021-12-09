@@ -2775,6 +2775,9 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
+crbug.com/626703 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac10.15 ] wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
