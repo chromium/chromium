@@ -124,7 +124,7 @@ void LocalMediaStreamAudioSource::OnCaptureError(
     const std::string& why) {
   WebRtcLogMessage(
       base::StringPrintf("LocalMediaStreamAudioSource::OnCaptureError: %d, %s",
-                         code, why.c_str()));
+                         static_cast<int>(code), why.c_str()));
 
   StopSourceOnError(code, why);
 }
