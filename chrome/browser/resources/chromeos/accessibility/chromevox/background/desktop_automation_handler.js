@@ -94,7 +94,10 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, this.onEventDefault);
+    this.addListener_(EventType.MENU_START, (event) => {
+      Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
+      this.onEventDefault(event);
+    });
     this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
