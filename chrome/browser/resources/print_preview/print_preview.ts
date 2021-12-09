@@ -19,7 +19,7 @@ export {PageLayoutInfo} from './data/document_info.js';
 export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
-export {DuplexMode, DuplexType, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, whenReady} from './data/model.js';
+export {DuplexMode, DuplexType, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, whenReady} from './data/model.js';
 // <if expr="chromeos or lacros">
 export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
 // </if>
@@ -81,5 +81,6 @@ export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from '.
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectMixin} from './ui/select_mixin.js';
+export {SettingsMixinInterface} from './ui/settings_mixin.js';
 export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';
 export {PrintPreviewSidebarElement} from './ui/sidebar.js';

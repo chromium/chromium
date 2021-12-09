@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrinterType, PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
+import {PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
@@ -11,39 +11,35 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 
-window.print_server_store_test = {};
-const print_server_store_test = window.print_server_store_test;
-print_server_store_test.suiteName = 'PrintServerStoreTest';
-/** @enum {string} */
-print_server_store_test.TestNames = {
-  PrintServersChanged: 'print servers changed',
-  GetPrintServersConfig: 'get print servers config',
-  ServerPrintersLoading: 'server printers loading',
-  ChoosePrintServers: 'choose print servers',
+const print_server_store_test = {
+  suiteName: 'PrintServerStoreTest',
+  TestNames: {
+    PrintServersChanged: 'print servers changed',
+    GetPrintServersConfig: 'get print servers config',
+    ServerPrintersLoading: 'server printers loading',
+    ChoosePrintServers: 'choose print servers',
+  },
 };
 
+Object.assign(window, {print_server_store_test: print_server_store_test});
+
 suite(print_server_store_test.suiteName, function() {
-  /** @type {!PrintServerStore} */
-  let printServerStore;
+  let printServerStore: PrintServerStore;
 
-  /** @type {!NativeLayerCrosStub} */
-  let nativeLayerCros;
+  let nativeLayerCros: NativeLayerCrosStub;
 
-  /** @type {!Array<WebUIListener>} */
-  let listeners;
+  let listeners: WebUIListener[];
 
-  const addListener = function() {
-    listeners.push(addWebUIListener(...arguments));
-  };
+  function addListener(eventName: string, callback: (p: any) => void) {
+    listeners.push(addWebUIListener(eventName, callback));
+  }
 
-  /** @override */
   setup(function() {
     listeners = [];
     nativeLayerCros = setNativeLayerCrosInstance();
     printServerStore = new PrintServerStore(addListener);
   });
 
-  /** @override */
   teardown(function() {
     listeners.forEach(removeWebUIListener);
   });

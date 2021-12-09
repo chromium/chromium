@@ -73,6 +73,7 @@ export type SerializedSettings = {
   customMargins?: MarginsSetting,
   isColorEnabled?: boolean,
   isDuplexEnabled?: boolean,
+  isDuplexShortEdge?: boolean,
   isHeaderFooterEnabled?: boolean,
   isLandscapeEnabled?: boolean,
   isCollateEnabled?: boolean,
@@ -80,7 +81,7 @@ export type SerializedSettings = {
   scaling?: string,
   scalingType?: ScalingType,
   scalingTypePdf?: ScalingType,
-  vendor_options?: object,
+  vendorOptions?: object,
   // <if expr="chromeos or lacros">
   isPinEnabled?: boolean,
   pinValue?: string,

@@ -27,7 +27,7 @@ preprocessed_tests = [
   "print_preview_app_test.ts",
   "print_preview_sidebar_test.ts",
   "print_preview_test_utils.ts",
-  "restore_state_test.js",
+  "restore_state_test.ts",
   "user_manager_test.js",
 ]
 
@@ -77,7 +77,7 @@ if (is_chromeos) {
     "destination_select_test_cros.ts",
     "native_layer_cros_stub.ts",
     "pin_settings_test.ts",
-    "print_server_store_test.js",
+    "print_server_store_test.ts",
   ]
 } else {
   non_preprocessed_tests += [
