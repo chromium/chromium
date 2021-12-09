@@ -615,7 +615,7 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   private shouldShowFooter_(): boolean {
     let showFooter = false;
-    // <if expr="not chromeos">
+    // <if expr="not chromeos and not lacros">
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;

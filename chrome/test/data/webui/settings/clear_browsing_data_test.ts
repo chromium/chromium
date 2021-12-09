@@ -7,12 +7,17 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import { ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult,InstalledApp, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// <if expr="not chromeos and not lacros">
+import {Router, routes} from 'chrome://settings/settings.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+// </if>
 
 // clang-format on
 
@@ -128,6 +133,8 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
 
+    // The footer is never shown on Lacros.
+    // <if expr="not chromeos and not lacros">
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,
@@ -176,8 +183,11 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(isChildVisible(element, '#sync-paused-info'));
     assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
     assertTrue(isChildVisible(element, '#sync-other-error-info'));
+    // </if>
   });
 
+  // The footer is never shown on Lacros.
+  // <if expr="not chromeos and not lacros">
   test('ClearBrowsingDataPauseSyncDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,
@@ -230,6 +240,7 @@ suite('ClearBrowsingDataDesktop', function() {
     passphraseLink!.click();
     assertEquals(routes.SYNC, Router.getInstance().getCurrentRoute());
   });
+  // </if>
 
   test('ClearBrowsingDataSearchLabelVisibility', function() {
     for (const signedIn of [false, true]) {
@@ -625,7 +636,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     });
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   // On ChromeOS the footer is never shown.
   test('ClearBrowsingDataSyncAccountInfo', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
