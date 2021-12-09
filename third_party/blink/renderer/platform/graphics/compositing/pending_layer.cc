@@ -5,9 +5,10 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -70,10 +71,6 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 }  // anonymous namespace
 
-void PreCompositedLayerInfo::Trace(Visitor* visitor) const {
-  visitor->Trace(graphics_layer);
-}
-
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk)
     : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}
@@ -109,17 +106,6 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
     else if (IsCompositedScrollbar(first_display_item))
       compositing_type_ = kScrollbarLayer;
   }
-}
-
-PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
-    : chunks_(pre_composited_layer.chunks),
-      property_tree_state_(
-          pre_composited_layer.graphics_layer->GetPropertyTreeState()
-              .Unalias()),
-      graphics_layer_(pre_composited_layer.graphics_layer),
-      compositing_type_(kPreCompositedLayer) {
-  DCHECK(graphics_layer_);
-  DCHECK(!graphics_layer_->ShouldCreateLayersAfterPaint());
 }
 
 gfx::Vector2dF PendingLayer::LayerOffset() const {

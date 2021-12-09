@@ -326,7 +326,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(viewport_scrollable_area_);
   visitor->Trace(anchoring_adjustment_queue_);
   visitor->Trace(scroll_event_queue_);
-  visitor->Trace(pre_composited_layers_);
   visitor->Trace(layout_shift_tracker_);
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(mobile_friendliness_checker_);
@@ -2972,108 +2971,55 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
   bool repainted = false;
   bool needs_clear_repaint_flags = false;
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // TODO(paint-dev): We should be able to get rid of AddController entirely
-    // after non-CAP code is removed. The call to EnsurePaintController() will
-    // need to be moved up the call stack.
-    EnsurePaintController();
-    cycle_scope.AddController(*paint_controller_);
+  // TODO(paint-dev): We should be able to get rid of AddController entirely
+  // after non-CAP code is removed. The call to EnsurePaintController() will
+  // need to be moved up the call stack.
+  EnsurePaintController();
+  cycle_scope.AddController(*paint_controller_);
 
-    PaintChunkSubset previous_chunks(
-        paint_controller_->GetPaintArtifactShared());
+  PaintChunkSubset previous_chunks(paint_controller_->GetPaintArtifactShared());
 
-    PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
-                                                          benchmark_mode);
+  PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
+                                                        benchmark_mode);
 
-    if (paint_controller_->ShouldForcePaintForBenchmark() ||
-        GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
-        visual_viewport_or_overlay_needs_repaint_) {
-      GraphicsContext graphics_context(*paint_controller_);
-
-      // Draw the overlay layer (video or WebXR DOM overlay) if present.
-      if (PaintLayer* full_screen_layer = GetFullScreenOverlayLayer()) {
-        PaintLayerPainter(*full_screen_layer)
-            .Paint(graphics_context, CullRect::Infinite(),
-                   kGlobalPaintNormalPhase, 0);
-      } else {
-        PaintInternal(graphics_context, kGlobalPaintNormalPhase,
-                      CullRect::Infinite());
-
-        GetPage()->GetValidationMessageClient().PaintOverlay(graphics_context);
-        ForAllNonThrottledLocalFrameViews(
-            [&graphics_context](LocalFrameView& view) {
-              view.frame_->PaintFrameColorOverlay(graphics_context);
-            });
-
-        // Devtools overlays query the inspected page's paint data so this
-        // update needs to be after other paintings.
-        if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
-          web_local_frame_impl->PaintDevToolsOverlays(graphics_context);
-
-        if (frame_->IsMainFrame())
-          GetPage()->GetVisualViewport().Paint(graphics_context);
-      }
-
-      // Link highlights paint after all other paintings.
-      GetPage()->GetLinkHighlight().Paint(graphics_context);
-
-      paint_controller_->CommitNewDisplayItems();
-
-      repainted = true;
-      PaintChunkSubset repainted_chunks =
-          PaintChunkSubset(paint_controller_->GetPaintArtifactShared());
-      if (paint_artifact_compositor_) {
-        paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
-            previous_chunks, repainted_chunks);
-      }
-
-      // As if we created a root layer containing all paintings which needs full
-      // layerization.
-      pre_composited_layers_ = {{repainted_chunks}};
-    }
-  } else {
-    // A null graphics layer can occur for painting of SVG images that are not
-    // parented into the main frame tree, or when the LocalFrameView is the main
-    // frame view of a page overlay. The page overlay is in the layer tree of
-    // the host page and will be painted during painting of the host page.
-    // Note that paint_controller_ is not added to cycle_scope, because it is
-    // transient and may be deleted before cycle_scope.
-    paint_controller_ =
-        std::make_unique<PaintController>(PaintController::kTransient);
-    pre_composited_layers_.clear();
+  if (paint_controller_->ShouldForcePaintForBenchmark() ||
+      GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
+      visual_viewport_or_overlay_needs_repaint_) {
     GraphicsContext graphics_context(*paint_controller_);
 
-    if (GraphicsLayer* root =
-            layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      {
-        // We use a separate CycleScope because paint_controller_ will be
-        // deleted before the cycle_scope argument to PaintTree.
-        PaintController::CycleScope transient_cycle_scope(
-            *paint_controller_, PaintDebugInfoEnabled());
-        repainted =
-            root->PaintRecursively(graphics_context, pre_composited_layers_,
-                                   cycle_scope, benchmark_mode);
-        if (visual_viewport_or_overlay_needs_repaint_ &&
-            paint_artifact_compositor_)
-          paint_artifact_compositor_->SetNeedsUpdate();
-
-        {
-          PaintChunkSubsetRecorder subset_recorder(*paint_controller_);
-          if (root == GetLayoutView()->Compositor()->RootGraphicsLayer() &&
-              frame_->IsMainFrame()) {
-            GetPage()->GetVisualViewport().Paint(graphics_context);
-          }
-          // Link highlights paint after all other layers.
-          GetPage()->GetLinkHighlight().Paint(graphics_context);
-          pre_composited_layers_.push_back(
-              PreCompositedLayerInfo{subset_recorder.Get()});
-        }
-
-        paint_controller_->CommitNewDisplayItems();
-      }
-      paint_controller_ = nullptr;
+    // Draw the overlay layer (video or WebXR DOM overlay) if present.
+    if (PaintLayer* full_screen_layer = GetFullScreenOverlayLayer()) {
+      PaintLayerPainter(*full_screen_layer)
+          .Paint(graphics_context, CullRect::Infinite(),
+                 kGlobalPaintNormalPhase, 0);
     } else {
-      needs_clear_repaint_flags = true;
+      PaintInternal(graphics_context, kGlobalPaintNormalPhase,
+                    CullRect::Infinite());
+
+      GetPage()->GetValidationMessageClient().PaintOverlay(graphics_context);
+      ForAllNonThrottledLocalFrameViews(
+          [&graphics_context](LocalFrameView& view) {
+            view.frame_->PaintFrameColorOverlay(graphics_context);
+          });
+
+      // Devtools overlays query the inspected page's paint data so this
+      // update needs to be after other paintings.
+      if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
+        web_local_frame_impl->PaintDevToolsOverlays(graphics_context);
+
+      if (frame_->IsMainFrame())
+        GetPage()->GetVisualViewport().Paint(graphics_context);
+    }
+
+    // Link highlights paint after all other paintings.
+    GetPage()->GetLinkHighlight().Paint(graphics_context);
+
+    paint_controller_->CommitNewDisplayItems();
+
+    repainted = true;
+    if (paint_artifact_compositor_) {
+      paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
+          previous_chunks, paint_controller_->GetPaintArtifactShared());
     }
   }
 
@@ -3149,7 +3095,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   // invalidations if possible.
   if (!paint_artifact_compositor_->NeedsUpdate()) {
     if (repainted) {
-      paint_artifact_compositor_->UpdateRepaintedLayers(pre_composited_layers_);
+      paint_artifact_compositor_->UpdateRepaintedLayers(
+          paint_controller_->GetPaintArtifactShared());
       CreatePaintTimelineEvents();
     }
     // TODO(pdr): Should we clear the property tree state change bits (
@@ -3200,8 +3147,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   AppendDocumentTransitionRequests(document_transition_requests);
 
   paint_artifact_compositor_->Update(
-      pre_composited_layers_, viewport_properties, scroll_translation_nodes,
-      std::move(document_transition_requests));
+      paint_controller_->GetPaintArtifactShared(), viewport_properties,
+      scroll_translation_nodes, std::move(document_transition_requests));
 
   CreatePaintTimelineEvents();
 }
@@ -4223,19 +4170,13 @@ void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   AllowThrottlingScope allow_throttling(*this);
   Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(), cull_rect);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintController& paint_controller = EnsurePaintController();
-    if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
-      PaintController::CycleScope cycle_scope(paint_controller);
-      GraphicsContext graphics_context(paint_controller);
-      Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect,
-            gfx::Vector2d());
-      paint_controller.CommitNewDisplayItems();
-    }
-  } else {
-    GraphicsLayer* graphics_layer =
-        GetLayoutView()->Layer()->GraphicsLayerBacking();
-    graphics_layer->PaintForTesting(cull_rect.Rect(), PaintDebugInfoEnabled());
+  PaintController& paint_controller = EnsurePaintController();
+  if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
+    PaintController::CycleScope cycle_scope(paint_controller);
+    GraphicsContext graphics_context(paint_controller);
+    Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect,
+          gfx::Vector2d());
+    paint_controller.CommitNewDisplayItems();
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
 }

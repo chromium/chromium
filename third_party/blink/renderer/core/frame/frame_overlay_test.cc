@@ -98,7 +98,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
 
   // Ideally, we would get results from the compositor that showed that this
   // page overlay actually winds up getting drawn on top of the rest.
-  // For now, we just check that the GraphicsLayer will draw the right thing.
+  // For now, we just check that we drew the right thing.
   MockFrameOverlayCanvas canvas;
   EXPECT_CALL(canvas,
               onDrawRect(SkRect::MakeWH(kViewportWidth, kViewportHeight),

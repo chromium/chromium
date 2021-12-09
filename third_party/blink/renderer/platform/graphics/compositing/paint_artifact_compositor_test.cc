@@ -25,7 +25,6 @@
 #include "cc/trees/transform_node.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -145,10 +144,7 @@ class PaintArtifactCompositorTest : public testing::Test,
       const WTF::Vector<const TransformPaintPropertyNode*>&
           scroll_translation_nodes = {}) {
     paint_artifact_compositor_->SetNeedsUpdate();
-    HeapVector<PreCompositedLayerInfo> pre_composited_layers = {
-        {PaintChunkSubset(artifact)}};
-    paint_artifact_compositor_->Update(pre_composited_layers,
-                                       viewport_properties,
+    paint_artifact_compositor_->Update(artifact, viewport_properties,
                                        scroll_translation_nodes, {});
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
@@ -4579,9 +4575,7 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   Update(artifact);
   scroll_translation->ClearChangedToRoot();
 
-  HeapVector<PreCompositedLayerInfo> pre_composited_layers = {
-      {PaintChunkSubset(artifact)}};
-  GetPaintArtifactCompositor().UpdateRepaintedLayers(pre_composited_layers);
+  GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
   // This test passes if no CHECK occurs.
 }
 

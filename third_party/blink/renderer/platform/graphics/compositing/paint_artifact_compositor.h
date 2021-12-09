@@ -37,7 +37,6 @@ class DocumentTransitionRequest;
 namespace blink {
 
 class ContentLayerClientImpl;
-class GraphicsLayer;
 class JSONObject;
 class SynthesizedClip;
 
@@ -135,18 +134,15 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     const TransformPaintPropertyNode* outer_scroll_translation = nullptr;
   };
 
-  // Updates the layer tree to match the provided |pre_composited_layers|.
-  // In pre-CompositeAfterPaint, |pre_composited_layers| contains information
-  // from the GraphicsLayer tree. Some of the pre-composited layers may need
-  // additional layerization. In CompositeAfterPaint, |pre_composited_layers|
-  // should contain just one entry, and we will do a full layerization.
+  // Updates the cc layer list and property trees to match those provided in
+  // |paint_chunks|.
   //
   // |scroll_translation_nodes| is the complete set of scroll nodes, including
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
   void Update(
-      const HeapVector<PreCompositedLayerInfo>& updated,
+      scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
       Vector<std::unique_ptr<cc::DocumentTransitionRequest>> requests);
@@ -168,7 +164,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // This copies over the newly-painted PaintChunks to existing
   // |pending_layers_|, issues raster invalidations, and updates the existing
   // cc::Layer properties such as background color.
-  void UpdateRepaintedLayers(HeapVector<PreCompositedLayerInfo>& updated);
+  void UpdateRepaintedLayers(scoped_refptr<const PaintArtifact>);
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
@@ -256,7 +252,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
-  void CollectPendingLayers(const HeapVector<PreCompositedLayerInfo>&);
+  void CollectPendingLayers(scoped_refptr<const PaintArtifact>);
 
   // This is the internal recursion of collectPendingLayers. This function
   // loops over the list of paint chunks, scoped by an isolated group

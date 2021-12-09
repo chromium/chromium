@@ -67,7 +67,6 @@ class GraphicsLayer;
 class PaintController;
 class RasterInvalidationTracking;
 class RasterInvalidator;
-struct PreCompositedLayerInfo;
 
 typedef HeapVector<Member<GraphicsLayer>, 64> GraphicsLayerVector;
 
@@ -174,12 +173,6 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
                                const gfx::Rect&,
                                PaintInvalidationReason);
 
-  // Returns true if any layer is repainted.
-  bool PaintRecursively(GraphicsContext&,
-                        HeapVector<PreCompositedLayerInfo>&,
-                        PaintController::CycleScope& cycle_scope,
-                        PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
-
   PaintController& GetPaintController() const;
 
   void SetElementId(const CompositorElementId&);
@@ -219,8 +212,6 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
     needs_check_raster_invalidation_ = true;
   }
 
-  void PaintForTesting(const gfx::Rect& interest_rect, bool record_debug_info);
-
   void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {
     return should_create_layers_after_paint_;
@@ -246,10 +237,6 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   bool FillsBoundsCompletely() const final { return false; }
 
   void ClearPaintStateRecursively();
-  void Paint(HeapVector<PreCompositedLayerInfo>&,
-             PaintBenchmarkMode,
-             PaintController::CycleScope*,
-             const gfx::Rect* interest_rect = nullptr);
 
   // Adds a child without calling NotifyChildListChange(), so that adding
   // children can be batched before updating.
