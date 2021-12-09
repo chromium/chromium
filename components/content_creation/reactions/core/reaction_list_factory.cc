@@ -32,35 +32,39 @@ namespace content_creation {
 std::vector<ReactionMetadata> BuildReactionMetadata() {
   return {
       ReactionMetadata(
-          ReactionType::CLAP,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_CLAPPING),
-          MakeThumbnailUrl("clap"), MakeReactionUrl("clap"), 24),
+          ReactionType::HEART,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_HEART),
+          MakeThumbnailUrl("heart"), MakeReactionUrl("heart"), 48),
+      ReactionMetadata(
+          ReactionType::EMOTIONAL,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_LOUDLY_CRYING),
+          MakeThumbnailUrl("emotional"), MakeReactionUrl("emotional"), 48),
       ReactionMetadata(
           ReactionType::GRIN,
           l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_GRINNING),
           MakeThumbnailUrl("grin"), MakeReactionUrl("grin"), 48),
+      ReactionMetadata(
+          ReactionType::THANKS,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_FOLDED_HANDS),
+          MakeThumbnailUrl("thanks"), MakeReactionUrl("thanks"), 24),
+      ReactionMetadata(
+          ReactionType::SURPRISE,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_FLUSHED),
+          MakeThumbnailUrl("surprise"), MakeReactionUrl("surprise"), 48),
+      ReactionMetadata(
+          ReactionType::CLAP,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_CLAPPING),
+          MakeThumbnailUrl("clap"), MakeReactionUrl("clap"), 24),
+      ReactionMetadata(
+          ReactionType::UNSURE,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_THINKING),
+          MakeThumbnailUrl("unsure"), MakeReactionUrl("unsure"), 48),
       ReactionMetadata(ReactionType::FIRE,
                        l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_FIRE),
                        MakeThumbnailUrl("fire"), MakeReactionUrl("fire"), 48),
       ReactionMetadata(ReactionType::EYES,
                        l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_EYES),
                        MakeThumbnailUrl("eyes"), MakeReactionUrl("eyes"), 48),
-      ReactionMetadata(
-          ReactionType::EMOTIONAL,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_LOUDLY_CRYING),
-          MakeThumbnailUrl("emotional"), MakeReactionUrl("emotional"), 48),
-      ReactionMetadata(
-          ReactionType::SURPRISE,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_FLUSHED),
-          MakeThumbnailUrl("surprise"), MakeReactionUrl("surprise"), 48),
-      ReactionMetadata(
-          ReactionType::THANKS,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_FOLDED_HANDS),
-          MakeThumbnailUrl("thanks"), MakeReactionUrl("thanks"), 24),
-      ReactionMetadata(
-          ReactionType::UNSURE,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_THINKING),
-          MakeThumbnailUrl("unsure"), MakeReactionUrl("unsure"), 48),
   };
 }
 

@@ -20,8 +20,9 @@ enum class ReactionType {
   SURPRISE = 5,
   THANKS = 6,
   UNSURE = 7,
+  HEART = 8,
 
-  MAX_VALUE = UNSURE
+  MAX_VALUE = HEART
 };
 
 }  // namespace content_creation
