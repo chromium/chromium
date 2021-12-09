@@ -613,6 +613,16 @@ void RenderThreadImpl::Init() {
   BindHostReceiver(remote_gpu.InitWithNewPipeAndPassReceiver());
   gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner());
 
+  // Establish the GPU channel now, so its ready when needed and we don't have
+  // to wait on a sync call.
+  if (base::FeatureList::IsEnabled(features::kEarlyEstablishGpuChannel)) {
+    gpu_->EstablishGpuChannel(
+        base::BindOnce([](scoped_refptr<gpu::GpuChannelHost> host) {
+          if (host)
+            GetContentClient()->SetGpuInfo(host->gpu_info());
+        }));
+  }
+
   // NOTE: Do not add interfaces to |binders| within this method. Instead,
   // modify the definition of |ExposeRendererInterfacesToBrowser()| to ensure
   // security review coverage.

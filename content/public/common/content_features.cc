@@ -267,6 +267,10 @@ const base::Feature kDocumentPolicy{"DocumentPolicy",
 const base::Feature kDocumentPolicyNegotiation{
     "DocumentPolicyNegotiation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable establishing the GPU channel early in renderer startup.
+const base::Feature kEarlyEstablishGpuChannel{
+    "EarlyEstablishGpuChannel", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable Early Hints subresource preloads for navigation.
 const base::Feature kEarlyHintsPreloadForNavigation{
     "EarlyHintsPreloadForNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
