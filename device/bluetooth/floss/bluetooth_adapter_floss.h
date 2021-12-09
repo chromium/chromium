@@ -147,6 +147,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                        const absl::optional<Error>& error);
   void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
                           const absl::optional<Error>& error);
+  void OnGetConnectionState(const FlossDeviceId& device_id,
+                            const absl::optional<uint32_t>& ret,
+                            const absl::optional<Error>& error);
+  void OnGetBondState(const FlossDeviceId& device_id,
+                      const absl::optional<uint32_t>& ret,
+                      const absl::optional<Error>& error);
 
   // Announce to observers a change in the adapter state.
   void DiscoverableChanged(bool discoverable);

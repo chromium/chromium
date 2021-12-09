@@ -138,6 +138,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void GetConnectionState(ResponseCallback<uint32_t> callback,
                                   const FlossDeviceId& device);
 
+  // Get bonding state of a device.
+  virtual void GetBondState(ResponseCallback<uint32_t> callback,
+                            const FlossDeviceId& device);
+
   // Connect to all enabled profiles.
   virtual void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
                                          const FlossDeviceId& device);

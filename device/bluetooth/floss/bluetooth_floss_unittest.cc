@@ -255,12 +255,19 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
       base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
         observer->AdapterEnabledChanged(/*hci=*/0, /*enabled=*/true);
       }));
+  base::RunLoop().RunUntilIdle();
 
   // After adapter is enabled, there are known devices.
-  EXPECT_TRUE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1) !=
-              nullptr);
-  EXPECT_TRUE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2) !=
-              nullptr);
+  BluetoothDevice* device1 =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
+  BluetoothDevice* device2 =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2);
+  ASSERT_TRUE(device1);
+  ASSERT_TRUE(device2);
+  EXPECT_TRUE(device1->IsPaired());
+  EXPECT_TRUE(device2->IsPaired());
+  EXPECT_TRUE(device1->IsConnected());
+  EXPECT_FALSE(device2->IsConnected());
 }
 
 }  // namespace floss

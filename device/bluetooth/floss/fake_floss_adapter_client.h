@@ -36,6 +36,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void CreateBond(ResponseCallback<Void> callback,
                   FlossDeviceId device,
                   BluetoothTransport transport) override;
+  void GetConnectionState(ResponseCallback<uint32_t> callback,
+                          const FlossDeviceId& device) override;
+  void GetBondState(ResponseCallback<uint32_t> callback,
+                    const FlossDeviceId& device) override;
   void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
                                  const FlossDeviceId& device) override;
   void SetPairingConfirmation(ResponseCallback<Void> callback,

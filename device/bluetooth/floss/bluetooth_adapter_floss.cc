@@ -330,6 +330,39 @@ void BluetoothAdapterFloss::OnGetBondedDevices(
   }
 }
 
+void BluetoothAdapterFloss::OnGetConnectionState(
+    const FlossDeviceId& device_id,
+    const absl::optional<uint32_t>& ret,
+    const absl::optional<Error>& error) {
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+
+  if (!device) {
+    LOG(WARNING) << "GetConnectionState returned for a non-existing device "
+                 << device_id;
+    return;
+  }
+
+  // Connected if connection state >= 1:
+  // https://android.googlesource.com/platform/packages/modules/Bluetooth/+/84eff3217e552cbb3399e6deecdfce6748ae34ef/system/btif/src/btif_dm.cc#693
+  device->SetIsConnected(*ret >= 1);
+}
+
+void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
+                                           const absl::optional<uint32_t>& ret,
+                                           const absl::optional<Error>& error) {
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+
+  if (!device) {
+    LOG(WARNING) << "GetBondState returned for a non-existing device "
+                 << device_id;
+    return;
+  }
+
+  device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret));
+}
+
 // Announce to observers a change in the adapter state.
 void BluetoothAdapterFloss::DiscoverableChanged(bool discoverable) {
   NOTIMPLEMENTED();
@@ -421,12 +454,20 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
   if (!base::Contains(devices_, canonical_address)) {
-    // TODO(b/204708206): Populate initial device properties first, e.g.
-    // connection state.
-
     // Take copy of pointer before moving ownership.
     BluetoothDeviceFloss* device_ptr = device_floss.get();
     devices_.emplace(canonical_address, std::move(device_floss));
+
+    // TODO(b/204708206): Convert "Paired" and "Connected" property into a
+    // property framework.
+    FlossDBusManager::Get()->GetAdapterClient()->GetBondState(
+        base::BindOnce(&BluetoothAdapterFloss::OnGetBondState,
+                       weak_ptr_factory_.GetWeakPtr(), device_found),
+        device_found);
+    FlossDBusManager::Get()->GetAdapterClient()->GetConnectionState(
+        base::BindOnce(&BluetoothAdapterFloss::OnGetConnectionState,
+                       weak_ptr_factory_.GetWeakPtr(), device_found),
+        device_found);
 
     for (auto& observer : observers_)
       observer.DeviceAdded(this, device_ptr);

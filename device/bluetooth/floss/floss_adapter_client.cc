@@ -65,6 +65,12 @@ void FlossAdapterClient::GetConnectionState(ResponseCallback<uint32_t> callback,
                                adapter::kGetConnectionState, device);
 }
 
+void FlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
+                                      const FlossDeviceId& device) {
+  CallAdapterMethod1<uint32_t>(std::move(callback), adapter::kGetBondState,
+                               device);
+}
+
 void FlossAdapterClient::ConnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {

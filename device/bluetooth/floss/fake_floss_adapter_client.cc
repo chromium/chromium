@@ -97,6 +97,28 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
   }
 }
 
+void FakeFlossAdapterClient::GetConnectionState(
+    ResponseCallback<uint32_t> callback,
+    const FlossDeviceId& device) {
+  // One of the bonded devices is already connected at the beginning.
+  uint32_t conn_state = (device.address == kBondedAddress1) ? 1 : 0;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), conn_state, /*err=*/absl::nullopt));
+}
+
+void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
+                                          const FlossDeviceId& device) {
+  FlossAdapterClient::BondState bond_state =
+      (device.address == kBondedAddress1 || device.address == kBondedAddress2)
+          ? floss::FlossAdapterClient::BondState::kBonded
+          : floss::FlossAdapterClient::BondState::kNotBonded;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), static_cast<uint32_t>(bond_state),
+                     /*err=*/absl::nullopt));
+}
+
 void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
@@ -148,7 +170,9 @@ void FakeFlossAdapterClient::GetBondedDevices(
       FlossDeviceId({.address = kBondedAddress1, .name = ""}));
   known_devices.push_back(
       FlossDeviceId({.address = kBondedAddress2, .name = ""}));
-  std::move(callback).Run(known_devices, absl::nullopt);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), known_devices,
+                                /*err=*/absl::nullopt));
 }
 
 }  // namespace floss
