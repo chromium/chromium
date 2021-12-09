@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_NACL_HOST_NACL_BROWSER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_NACL_HOST_NACL_BROWSER_DELEGATE_IMPL_H_
 
-#include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
@@ -56,6 +56,5 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   raw_ptr<ProfileManager> profile_manager_;
   bool inverse_debug_patterns_;
 };
-
 
 #endif  // CHROME_BROWSER_NACL_HOST_NACL_BROWSER_DELEGATE_IMPL_H_
