@@ -80,7 +80,8 @@ scoped_refptr<HidDeviceInfo> CreateDeviceInfo(
   }
 
   int32_t location_id = GetIntProperty(service, CFSTR(kIOHIDLocationIDKey));
-  std::string physical_device_id = base::NumberToString(location_id);
+  std::string physical_device_id =
+      location_id == 0 ? "" : base::NumberToString(location_id);
 
   return new HidDeviceInfo(
       entry_id, physical_device_id,
