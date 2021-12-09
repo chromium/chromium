@@ -2407,117 +2407,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.Diff.Abs"
+    name="PasswordManager.PasswordStoreProxyBackend.{Function}.{Metric}.{Measurement}"
     units="count" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
-    Records the number of logins in either the main or the shadow backend but
-    not in both of them. In other words, it records |(M \ S) ∪ (S \ M)|, where M
-    and S are the sets of logins from the main and shadow backends,
-    respectively. Recorded when the asynchronous job has returned.
+    Records the number of logins {Metric}{Measurement} Recorded when the
+    asynchronous job for {Function} has returned.
   </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.Diff.Rel"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins in either the main or the shadow backend but
-    not in both of them, divided by the total number of logins, as a percentage
-    rounded up to the next integer. In other words, it records ⌈|(M \ S) ∪ (S \
-    M)| / |M ∪ S| %⌉, where M and S are the sets of logins from the main and
-    shadow backends, respectively. If the denominator is zero, no value is
-    emitted. Recorded when the asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.InconsistentPasswords.Abs"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins that occur in both the main and the shadow
-    backend but differ in their stored passwords. In other words, it records
-    |{(m,s) ∈ M × S | m.password ≠ s.password}|, where M and S are the sets of
-    logins from the main and shadow backends, respectively. Recorded when the
-    asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.InconsistentPasswords.Rel"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins that occur in both the main and the shadow
-    backend but differ in their stored passwords, divided by the number of
-    logins in both the main and the shadow backend, as a percentage rounded up
-    to the next integer. In other words, it records ⌈|{(m,s) ∈ M × S |
-    m.password ≠ s.password}| / |M ∩ S| %⌉, where M and S are the sets of logins
-    from the main and shadow backends, respectively. If the denominator is zero,
-    no value is emitted. Recorded when the asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.MainMinusShadow.Abs"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins in the main backend that are not the shadow
-    backend. In other words, it records |M \ S|, where M and S are the sets of
-    logins from the main and shadow backends, respectively. Recorded when the
-    asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.MainMinusShadow.Rel"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins in the main backend that are not the shadow
-    backend, divided by the total number of logins, as a percentage rounded up
-    to the next integer. In other words, it records ⌈|M \ S| / |M ∪ S| %⌉, where
-    M and S are the sets of logins from the main and shadow backends,
-    respectively. If the denominator is zero, no value is emitted. Recorded when
-    the asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.ShadowMinusMain.Abs"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins in the shadow backend that are not the main
-    backend. In other words, it records |S \ M|, where M and S are the sets of
-    logins from the main and shadow backends, respectively. Recorded when the
-    asynchronous job has returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.ShadowMinusMain.Rel"
-    units="count" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the number of logins in the shadow backend that are not the main
-    backend, divided by the total number of logins, as a percentage rounded up
-    to the next integer. In other words, it records ⌈|S \ M| / |M ∪ S| %⌉, where
-    M and S are the sets of logins from the main and shadow backends,
-    respectively. If the denominator is zero, no value is emitted. Recorded when
-    the asynchronous job has returned.
-  </summary>
+  <token key="Function">
+    <variant name="GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
+  </token>
+  <token key="Metric">
+    <variant name="Diff"
+        summary="in either the main or the shadow backend but not in both of
+                 them"/>
+    <variant name="InconsistentPasswords"
+        summary="that occur in both the main and the shadow backend but
+                 differ in their stored passwords"/>
+    <variant name="MainMinusShadow"
+        summary="in the main backend that are not in the shadow backend"/>
+    <variant name="ShadowMinusMain"
+        summary="in the shadow backend that are not the main backend"/>
+  </token>
+  <token key="Measurement">
+    <variant name="Abs" summary="."/>
+    <variant name="Rel"
+        summary=", divided by the total number of logins, as a percentage
+                 rounded up to the next integer. If the denominator is zero,
+                 no value is emitted."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.PasswordSyncState" enum="PasswordSyncState"
