@@ -154,6 +154,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/tabs:constants",
     "//ios/chrome/browser/ui/tabs:coordinator",
     "//ios/chrome/browser/ui/tabs/requirements",
+    "//ios/chrome/browser/ui/text_fragments",
     "//ios/chrome/browser/ui/text_zoom",
     "//ios/chrome/browser/ui/text_zoom:text_zoom_ui",
     "//ios/chrome/browser/ui/thumb_strip",

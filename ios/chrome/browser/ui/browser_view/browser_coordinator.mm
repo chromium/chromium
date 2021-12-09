@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
@@ -238,6 +239,8 @@
 @property(nonatomic, strong)
     EnterpriseSignoutCoordinator* enterpriseSignoutCoordinator;
 
+// The coordinator used for the Text Fragments feature.
+@property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
 @end
 
 @implementation BrowserCoordinator {
@@ -491,6 +494,11 @@
   [self.infobarModalOverlayContainerCoordinator start];
   self.viewController.infobarModalOverlayContainerViewController =
       self.infobarModalOverlayContainerCoordinator.viewController;
+
+  self.textFragmentsCoordinator = [[TextFragmentsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.textFragmentsCoordinator start];
 }
 
 // Stops child coordinators.
@@ -559,6 +567,9 @@
 
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
+
+  [self.textFragmentsCoordinator stop];
+  self.textFragmentsCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
