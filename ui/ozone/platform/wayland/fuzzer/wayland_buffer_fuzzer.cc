@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -139,6 +140,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::unique_ptr<ui::WaylandConnection> connection =
       std::make_unique<ui::WaylandConnection>();
   CHECK(connection->Initialize());
+
+  // See |use_dedicated_polling_thread| in WaylandEventWatcher.
+  connection->event_source()->UseSingleThreadedPollingForTesting();
 
   // Wait until everything is initialised.
   env.task_environment.RunUntilIdle();
