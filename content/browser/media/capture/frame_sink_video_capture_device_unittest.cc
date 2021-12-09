@@ -101,9 +101,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     receiver_.Bind(std::move(receiver));
   }
 
-  MOCK_METHOD2(SetFormat,
-               void(media::VideoPixelFormat format,
-                    const gfx::ColorSpace& color_space));
+  MOCK_METHOD1(SetFormat, void(media::VideoPixelFormat format));
   MOCK_METHOD1(SetMinCapturePeriod, void(base::TimeDelta min_period));
   MOCK_METHOD1(SetMinSizeChangePeriod, void(base::TimeDelta));
   MOCK_METHOD3(SetResolutionConstraints,
@@ -119,12 +117,16 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   MOCK_METHOD1(MockChangeTarget,
                void(const absl::optional<viz::VideoCaptureTarget>& target));
   void Start(
-      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer) final {
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer,
+      viz::mojom::BufferFormatPreference buffer_format_preference) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
     consumer_.Bind(std::move(consumer));
-    MockStart(consumer_.get());
+    MockStart(consumer_.get(), buffer_format_preference);
   }
-  MOCK_METHOD1(MockStart, void(viz::mojom::FrameSinkVideoConsumer* consumer));
+  MOCK_METHOD2(
+      MockStart,
+      void(viz::mojom::FrameSinkVideoConsumer* consumer,
+           viz::mojom::BufferFormatPreference buffer_format_preference));
   void Stop() final {
     DCHECK_NOT_ON_DEVICE_THREAD();
     consumer_.reset();
@@ -341,7 +343,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
   // capturer receives the correct mojo method calls.
   void AllocateAndStartSynchronouslyWithExpectations(
       std::unique_ptr<media::VideoFrameReceiver> receiver) {
-    EXPECT_CALL(capturer_, SetFormat(kFormat, _));
+    EXPECT_CALL(capturer_, SetFormat(kFormat));
     EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
     EXPECT_CALL(capturer_,
                 SetResolutionConstraints(kResolution, kResolution, _));
@@ -349,7 +351,9 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     EXPECT_CALL(
         capturer_,
         MockChangeTarget(absl::optional<viz::VideoCaptureTarget>(target)));
-    EXPECT_CALL(capturer_, MockStart(NotNull()));
+    EXPECT_CALL(
+        capturer_,
+        MockStart(NotNull(), viz::mojom::BufferFormatPreference::kDefault));
 
     EXPECT_FALSE(capturer_.is_bound());
     POST_DEVICE_METHOD_CALL(OnTargetChanged, target);
@@ -394,7 +398,8 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
            mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
                callbacks_remote) {
           device->OnFrameCaptured(
-              std::move(data),
+              media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
+                  std::move(data)),
               media::mojom::VideoFrameInfo::New(
                   kMinCapturePeriod * frame_number, media::VideoFrameMetadata(),
                   kFormat, kResolution, gfx::Rect(kResolution), kNotPremapped,
@@ -452,7 +457,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, CapturesAndDeliversFrames) {
 
   AllocateAndStartSynchronouslyWithExpectations(std::move(receiver_ptr));
   // From this point, there is no reason the capturer should be re-started.
-  EXPECT_CALL(capturer_, MockStart(_)).Times(0);
+  EXPECT_CALL(capturer_, MockStart(_, _)).Times(0);
 
   // Run 24 frames through the pipeline, one at a time. Then, run 24 more, two
   // at a time. Then, run 24 more, three at a time.
@@ -548,7 +553,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, SuspendsAndResumes) {
   // Simulate a client request that capture be suspended. The capturer should
   // receive a Stop() message.
   {
-    EXPECT_CALL(capturer_, MockStart(_)).Times(0);
+    EXPECT_CALL(capturer_, MockStart(_, _)).Times(0);
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(MaybeSuspend);
     WAIT_FOR_DEVICE_TASKS();
@@ -564,7 +569,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, SuspendsAndResumes) {
   // Simulate a client request that capture be resumed. The capturer should
   // receive a Start() message.
   {
-    EXPECT_CALL(capturer_, MockStart(NotNull()));
+    EXPECT_CALL(capturer_, MockStart(NotNull(), _));
     EXPECT_CALL(capturer_, MockStop()).Times(0);
     POST_DEVICE_METHOD_CALL0(Resume);
     WAIT_FOR_DEVICE_TASKS();
@@ -616,7 +621,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
     EXPECT_CALL(*receiver, OnStarted()).Times(0);
     EXPECT_CALL(*receiver, OnLog(StrNe("")));
     EXPECT_CALL(*receiver, OnError(_));
-    EXPECT_CALL(capturer_, MockStart(_)).Times(0);
+    EXPECT_CALL(capturer_, MockStart(_, _)).Times(0);
 
     POST_DEVICE_METHOD_CALL(AllocateAndStartWithReceiver, GetCaptureParams(),
                             std::move(receiver_ptr));

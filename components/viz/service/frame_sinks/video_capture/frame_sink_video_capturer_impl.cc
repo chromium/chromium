@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -138,8 +139,7 @@ void FrameSinkVideoCapturerImpl::OnTargetWillGoAway() {
   SetResolvedTarget(nullptr);
 }
 
-void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format,
-                                           const gfx::ColorSpace& color_space) {
+void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool format_changed = false;
@@ -150,21 +150,6 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format,
   } else {
     format_changed |= (pixel_format_ != format);
     pixel_format_ = format;
-  }
-
-  gfx::ColorSpace color_space_copy = color_space;
-  if (!color_space_copy.IsValid()) {
-    color_space_copy = kDefaultColorSpace;
-  }
-  // TODO(crbug/758057): Remove the color space argument from SetFormat(). This
-  // is already incorrect/misleading when PIXEL_FORMAT_ARGB is being used. The
-  // better strategy is for the consumer to always accept whatever it is given,
-  // and do the conversion downstream if absolutely necessary.
-  if (color_space_copy != gfx::ColorSpace::CreateREC709()) {
-    LOG(DFATAL) << "Unsupported color space: Only BT.709 is supported.";
-  } else {
-    format_changed |= (color_space_ != color_space);
-    color_space_ = color_space_copy;
   }
 
   if (format_changed) {
@@ -271,7 +256,8 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
 }
 
 void FrameSinkVideoCapturerImpl::Start(
-    mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) {
+    mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
+    mojom::BufferFormatPreference buffer_format_preference) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
 
@@ -279,6 +265,7 @@ void FrameSinkVideoCapturerImpl::Start(
     Stop();
 
   video_capture_started_ = true;
+  buffer_format_preference_ = buffer_format_preference;
 
   if (resolved_target_)
     resolved_target_->OnClientCaptureStarted();
@@ -316,6 +303,7 @@ void FrameSinkVideoCapturerImpl::Stop() {
     resolved_target_->OnClientCaptureStopped();
 
   video_capture_started_ = false;
+  buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;
 }
 
 void FrameSinkVideoCapturerImpl::RequestRefreshFrame() {
@@ -1001,6 +989,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
   auto handle = frame_pool_->CloneHandleForDelivery(*frame);
   DCHECK(handle);
   DCHECK(handle->is_read_only_shmem_region());
+  DCHECK(handle->get_read_only_shmem_region().IsValid());
 
   // Assemble frame layout, format, and metadata into a mojo struct to send to
   // the consumer.
@@ -1033,8 +1022,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
                     num_frames_in_flight_);
 
   // Send the frame to the consumer.
-  consumer_->OnFrameCaptured(std::move(handle->get_read_only_shmem_region()),
-                             std::move(info), content_rect,
+  consumer_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
                              std::move(callbacks));
 }
 

@@ -109,8 +109,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
       base::BindRepeating(&FrameSinkVideoCaptureDevice::CreateCapturer,
                           base::Unretained(this)));
 
-  capturer_->SetFormat(capture_params_.requested_format.pixel_format,
-                       gfx::ColorSpace::CreateREC709());
+  capturer_->SetFormat(capture_params_.requested_format.pixel_format);
   capturer_->SetMinCapturePeriod(
       base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
@@ -220,7 +219,7 @@ void FrameSinkVideoCaptureDevice::OnUtilizationReport(
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    media::mojom::VideoBufferHandlePtr data,
     media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -231,7 +230,7 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
       callbacks_remote(std::move(callbacks));
 
-  if (!receiver_ || !data.IsValid()) {
+  if (!receiver_ || !data) {
     callbacks_remote->Done();
     return;
   }
@@ -268,9 +267,7 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   // Pass the video frame to the VideoFrameReceiver. This is done by first
   // passing the shared memory buffer handle and then notifying it that a new
   // frame is ready to be read from the buffer.
-  receiver_->OnNewBuffer(
-      buffer_id,
-      media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(std::move(data)));
+  receiver_->OnNewBuffer(buffer_id, std::move(data));
   receiver_->OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer(
           buffer_id, buffer_id,
@@ -356,7 +353,7 @@ void FrameSinkVideoCaptureDevice::MaybeStartConsuming() {
     return;
   }
 
-  capturer_->Start(this);
+  capturer_->Start(this, viz::mojom::BufferFormatPreference::kDefault);
 }
 
 void FrameSinkVideoCaptureDevice::MaybeStopConsuming() {

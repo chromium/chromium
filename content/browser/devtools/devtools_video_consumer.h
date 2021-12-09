@@ -50,7 +50,7 @@ class CONTENT_EXPORT DevToolsVideoConsumer
   void SetMinCapturePeriod(base::TimeDelta min_capture_period);
   void SetMinAndMaxFrameSize(gfx::Size min_frame_size,
                              gfx::Size max_frame_size);
-  void SetFormat(media::VideoPixelFormat format, gfx::ColorSpace color_space);
+  void SetFormat(media::VideoPixelFormat format);
 
  private:
   friend class DevToolsVideoConsumerTest;
@@ -67,7 +67,7 @@ class CONTENT_EXPORT DevToolsVideoConsumer
 
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      ::media::mojom::VideoBufferHandlePtr data,
       ::media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -90,7 +90,6 @@ class CONTENT_EXPORT DevToolsVideoConsumer
   gfx::Size max_frame_size_;
   viz::FrameSinkId frame_sink_id_;
   media::VideoPixelFormat pixel_format_;
-  gfx::ColorSpace color_space_;
 
   // If |capturer_| is alive, then we are currently capturing.
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;

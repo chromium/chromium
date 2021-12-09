@@ -90,7 +90,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // FrameSinkVideoConsumer implementation.
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      media::mojom::VideoBufferHandlePtr data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>

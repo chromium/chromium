@@ -80,7 +80,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   ~ClientFrameSinkVideoCapturer() override;
 
   // See FrameSinkVideoCapturer for documentation.
-  void SetFormat(media::VideoPixelFormat format, gfx::ColorSpace color_space);
+  void SetFormat(media::VideoPixelFormat format);
   void SetMinCapturePeriod(base::TimeDelta min_capture_period);
   void SetMinSizeChangePeriod(base::TimeDelta min_period);
   void SetResolutionConstraints(const gfx::Size& min_size,
@@ -94,7 +94,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // Similar to FrameSinkVideoCapturer::Start, but takes in a pointer directly
   // to the FrameSinkVideoConsumer implementation class (as opposed to a
   // mojo::PendingRemote or a proxy object).
-  void Start(mojom::FrameSinkVideoConsumer* consumer);
+  void Start(mojom::FrameSinkVideoConsumer* consumer,
+             mojom::BufferFormatPreference buffer_format_preference);
 
   // Similar to Stop() but also resets the consumer immediately so no further
   // messages (even OnStopped()) will be delivered to the consumer.
@@ -105,13 +106,6 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::unique_ptr<Overlay> CreateOverlay(int32_t stacking_index);
 
  private:
-  struct Format {
-    Format(media::VideoPixelFormat pixel_format, gfx::ColorSpace color_space);
-
-    media::VideoPixelFormat pixel_format;
-    gfx::ColorSpace color_space;
-  };
-
   struct ResolutionConstraints {
     ResolutionConstraints(const gfx::Size& min_size,
                           const gfx::Size& max_size,
@@ -124,7 +118,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
   // mojom::FrameSinkVideoConsumer implementation.
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      media::mojom::VideoBufferHandlePtr data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -149,7 +143,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // corresponding method in mojom::FrameSinkVideoCapturer. The arguments are
   // saved so we can resend them if viz crashes and a new FrameSinkVideoCapturer
   // has to be created.
-  absl::optional<Format> format_;
+  absl::optional<media::VideoPixelFormat> format_;
   absl::optional<base::TimeDelta> min_capture_period_;
   absl::optional<base::TimeDelta> min_size_change_period_;
   absl::optional<ResolutionConstraints> resolution_constraints_;
@@ -158,6 +152,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;
+  // Buffer format preference of our consumer.
+  mojom::BufferFormatPreference buffer_format_preference_;
 
   raw_ptr<mojom::FrameSinkVideoConsumer> consumer_ = nullptr;
   EstablishConnectionCallback establish_connection_callback_;

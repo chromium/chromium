@@ -227,8 +227,7 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
     video_consumer_ = std::make_unique<DevToolsVideoConsumer>(
         base::BindRepeating(&PageHandler::OnFrameFromVideoConsumer,
                             weak_factory_.GetWeakPtr()));
-    video_consumer_->SetFormat(kScreencastPixelFormat,
-                               gfx::ColorSpace::CreateREC709());
+    video_consumer_->SetFormat(kScreencastPixelFormat);
   }
   DCHECK(emulation_handler_);
 }

@@ -55,7 +55,7 @@ interface FrameSinkVideoConsumer {
   // |content_rect| is the region of the frame that contains the captured
   // content, with the rest of the frame having been letterboxed to adhere to
   // resolution constraints.
-  OnFrameCaptured(mojo_base.mojom.ReadOnlySharedMemoryRegion data,
+  OnFrameCaptured(media.mojom.VideoBufferHandle data,
                   media.mojom.VideoFrameInfo info,
                   gfx.mojom.Rect content_rect,
                   pending_remote<FrameSinkVideoConsumerFrameCallbacks>
@@ -67,6 +67,14 @@ interface FrameSinkVideoConsumer {
   // Called to deliver a log message to the consumer.
   // Currently used to populate WebRTC native logs.
   OnLog(string message);
+};
+
+// Used to express the preference on the type of VideoBufferHandles that the
+// consumer would like to obtain from the capturer. By default, the video
+// buffers are returned via read only shared memory.
+enum BufferFormatPreference {
+  kDefault = 0,
+  kPreferGpuMemoryBuffer,
 };
 
 // Interface to an implementation that captures the frames of a
@@ -85,11 +93,10 @@ interface FrameSinkVideoConsumer {
 // again to resume capture; or the mojo binding can be dropped to auto-terminate
 // the capturer.
 interface FrameSinkVideoCapturer {
-  // Specifies the pixel format and color space to use.
+  // Specifies the pixel format to use.
   //
-  // Default, if never called: PIXEL_FORMAT_I420, COLOR_SPACE_HD_REC709
-  SetFormat(media.mojom.VideoPixelFormat format,
-            gfx.mojom.ColorSpace color_space);
+  // Default, if never called: PIXEL_FORMAT_I420.
+  SetFormat(media.mojom.VideoPixelFormat format);
 
   // Specifies the maximum rate of capture in terms of a minimum time period
   // (min_period = 1/max_frame_rate).
@@ -145,7 +152,12 @@ interface FrameSinkVideoCapturer {
   ChangeTarget(VideoCaptureTarget? target);
 
   // Starts emitting video frames to the given |consumer|.
-  Start(pending_remote<FrameSinkVideoConsumer> consumer);
+  // The caller can express if the |consumer| prefers to receive video buffers
+  // via read only shared memory or via GPU memory buffers by controlling
+  // |buffer_format_preference| parameter. If a consumer only supports read only
+  // shared memory, `BufferFormatPreference::kDefault` value should be used.
+  Start(pending_remote<FrameSinkVideoConsumer> consumer,
+        BufferFormatPreference buffer_format_preference);
 
   // Stops capturing "soon." Meaning, no new frame captures will be started, but
   // there may already be some in-flight for delivery. Wait for the "end of

@@ -107,8 +107,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void OnTargetWillGoAway();
 
   // mojom::FrameSinkVideoCapturer implementation:
-  void SetFormat(media::VideoPixelFormat format,
-                 const gfx::ColorSpace& color_space) final;
+  void SetFormat(media::VideoPixelFormat format) final;
   void SetMinCapturePeriod(base::TimeDelta min_capture_period) final;
   void SetMinSizeChangePeriod(base::TimeDelta min_period) final;
   void SetResolutionConstraints(const gfx::Size& min_size,
@@ -116,7 +115,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(const absl::optional<VideoCaptureTarget>& target) final;
-  void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
+  void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
+             mojom::BufferFormatPreference buffer_format_preference) final;
   void Stop() final;
   void RequestRefreshFrame() final;
   void CreateOverlay(int32_t stacking_index,
@@ -333,7 +333,6 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // Current image format.
   media::VideoPixelFormat pixel_format_ = kDefaultPixelFormat;
-  gfx::ColorSpace color_space_ = kDefaultColorSpace;
 
   // Models current content change/draw behavior and proposes when to capture
   // frames, and at what size and frame rate.
@@ -361,6 +360,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // True after Start() and false after Stop().
   bool video_capture_started_ = false;
+  // Our consumer-preferred VideoBufferHandle type. Valid only when
+  // |video_capture_started_| is true.
+  mojom::BufferFormatPreference buffer_format_preference_;
 
   // These are sequence counters used to ensure that the frames are being
   // delivered in the same order they are captured.

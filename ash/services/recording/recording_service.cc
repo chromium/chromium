@@ -286,7 +286,7 @@ void RecordingService::OnFrameSinkSizeChanged(
 }
 
 void RecordingService::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    media::mojom::VideoBufferHandlePtr data,
     media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -294,16 +294,22 @@ void RecordingService::OnFrameCaptured(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(encoder_muxer_);
 
+  CHECK(data->is_read_only_shmem_region());
+  base::ReadOnlySharedMemoryRegion& shmem_region =
+      data->get_read_only_shmem_region();
+
+  // The |data| parameter is not nullable and mojo type mapping for
+  // `base::ReadOnlySharedMemoryRegion` defines that nullable version of it is
+  // the same type, with null check being equivalent to IsValid() check. Given
+  // the above, we should never be able to receive a read only shmem region that
+  // is not valid - mojo will enforce it for us.
+  DCHECK(shmem_region.IsValid());
+
   // We ignore any subsequent frames after a failure.
   if (did_failure_occur_)
     return;
 
-  if (!data.IsValid()) {
-    DLOG(ERROR) << "Video frame shared memory is invalid.";
-    return;
-  }
-
-  base::ReadOnlySharedMemoryMapping mapping = data.Map();
+  base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Mapping of video frame shared memory failed.";
     return;
@@ -477,7 +483,8 @@ void RecordingService::ConnectAndStartVideoCapturer(
       &RecordingService::OnVideoCapturerDisconnected, base::Unretained(this)));
   current_video_capture_params_->InitializeVideoCapturer(
       video_capturer_remote_);
-  video_capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote());
+  video_capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote(),
+                                viz::mojom::BufferFormatPreference::kDefault);
 }
 
 void RecordingService::OnVideoCapturerDisconnected() {

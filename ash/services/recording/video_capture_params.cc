@@ -288,7 +288,7 @@ void VideoCaptureParams::InitializeVideoCapturer(
   capturer->SetAutoThrottlingEnabled(false);
   // TODO(afakhry): Discuss with //media/ team the implications of color space
   // conversions.
-  capturer->SetFormat(media::PIXEL_FORMAT_I420, kColorSpace);
+  capturer->SetFormat(media::PIXEL_FORMAT_I420);
   capturer->ChangeTarget(
       viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_));
 }

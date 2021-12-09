@@ -29,12 +29,11 @@ ClientFrameSinkVideoCapturer::~ClientFrameSinkVideoCapturer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format,
-                                             gfx::ColorSpace color_space) {
+void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  format_.emplace(format, color_space);
-  capturer_remote_->SetFormat(format, color_space);
+  format_.emplace(format);
+  capturer_remote_->SetFormat(format);
 }
 
 void ClientFrameSinkVideoCapturer::SetMinCapturePeriod(
@@ -80,11 +79,13 @@ void ClientFrameSinkVideoCapturer::ChangeTarget(
 }
 
 void ClientFrameSinkVideoCapturer::Start(
-    mojom::FrameSinkVideoConsumer* consumer) {
+    mojom::FrameSinkVideoConsumer* consumer,
+    mojom::BufferFormatPreference buffer_format_preference) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
 
   is_started_ = true;
+  buffer_format_preference_ = buffer_format_preference;
   consumer_ = consumer;
   StartInternal();
 }
@@ -93,6 +94,7 @@ void ClientFrameSinkVideoCapturer::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_started_ = false;
+  buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;
   capturer_remote_->Stop();
 }
 
@@ -132,11 +134,6 @@ ClientFrameSinkVideoCapturer::CreateOverlay(int32_t stacking_index) {
   return overlay;
 }
 
-ClientFrameSinkVideoCapturer::Format::Format(
-    media::VideoPixelFormat pixel_format,
-    gfx::ColorSpace color_space)
-    : pixel_format(pixel_format), color_space(color_space) {}
-
 ClientFrameSinkVideoCapturer::ResolutionConstraints::ResolutionConstraints(
     const gfx::Size& min_size,
     const gfx::Size& max_size,
@@ -146,7 +143,7 @@ ClientFrameSinkVideoCapturer::ResolutionConstraints::ResolutionConstraints(
       use_fixed_aspect_ratio(use_fixed_aspect_ratio) {}
 
 void ClientFrameSinkVideoCapturer::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    media::mojom::VideoBufferHandlePtr data,
     media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -179,7 +176,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
       base::BindOnce(&ClientFrameSinkVideoCapturer::OnConnectionError,
                      base::Unretained(this)));
   if (format_)
-    capturer_remote_->SetFormat(format_->pixel_format, format_->color_space);
+    capturer_remote_->SetFormat(*format_);
   if (min_capture_period_)
     capturer_remote_->SetMinCapturePeriod(*min_capture_period_);
   if (min_size_change_period_)
@@ -211,9 +208,12 @@ void ClientFrameSinkVideoCapturer::OnConnectionError() {
 }
 
 void ClientFrameSinkVideoCapturer::StartInternal() {
+  DCHECK(is_started_);
+
   if (consumer_receiver_.is_bound())
     consumer_receiver_.reset();
-  capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote());
+  capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote(),
+                          buffer_format_preference_);
 }
 
 void ClientFrameSinkVideoCapturer::OnOverlayDestroyed(Overlay* overlay) {

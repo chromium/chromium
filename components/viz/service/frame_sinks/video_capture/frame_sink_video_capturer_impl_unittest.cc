@@ -148,15 +148,25 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
 
  private:
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      media::mojom::VideoBufferHandlePtr data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& expected_content_rect,
       mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final {
-    ASSERT_TRUE(data.IsValid());
+    CHECK(data->is_read_only_shmem_region());
+    base::ReadOnlySharedMemoryRegion& shmem_region =
+        data->get_read_only_shmem_region();
+
+    // The |data| parameter is not nullable and mojo type mapping for
+    // `base::ReadOnlySharedMemoryRegion` defines that nullable version of it is
+    // the same type, with null check being equivalent to IsValid() check. Given
+    // the above, we should never be able to receive a read only shmem region
+    // that is not valid - mojo will enforce it for us.
+    DCHECK(shmem_region.IsValid());
+
     const auto required_bytes_to_hold_planes =
         static_cast<uint32_t>(info->coded_size.GetArea() * 3 / 2);
-    ASSERT_LE(required_bytes_to_hold_planes, data.GetSize());
+    ASSERT_LE(required_bytes_to_hold_planes, shmem_region.GetSize());
     ASSERT_TRUE(info);
 
     mojo::Remote<mojom::FrameSinkVideoConsumerFrameCallbacks> callbacks_remote(
@@ -165,7 +175,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
 
     // Map the shared memory buffer and re-constitute a VideoFrame instance
     // around it for analysis via TakeFrame().
-    base::ReadOnlySharedMemoryMapping mapping = data.Map();
+    base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     ASSERT_TRUE(mapping.IsValid());
     ASSERT_LE(
         media::VideoFrame::AllocationSize(info->pixel_format, info->coded_size),
@@ -480,12 +490,8 @@ class FrameSinkVideoCapturerTest : public testing::Test {
     // these tests, set a specific format and color space.
     ASSERT_EQ(FrameSinkVideoCapturerImpl::kDefaultPixelFormat,
               capturer_->pixel_format_);
-    ASSERT_EQ(FrameSinkVideoCapturerImpl::kDefaultColorSpace,
-              capturer_->color_space_);
-    capturer_->SetFormat(media::PIXEL_FORMAT_I420,
-                         gfx::ColorSpace::CreateREC709());
+    capturer_->SetFormat(media::PIXEL_FORMAT_I420);
     ASSERT_EQ(media::PIXEL_FORMAT_I420, capturer_->pixel_format_);
-    ASSERT_EQ(gfx::ColorSpace::CreateREC709(), capturer_->color_space_);
 
     // Set min capture period as small as possible so that the
     // media::VideoCapturerOracle used by the capturer will want to capture
@@ -500,8 +506,10 @@ class FrameSinkVideoCapturerTest : public testing::Test {
 
   void TearDown() override { task_runner_->ClearPendingTasks(); }
 
-  void StartCapture(MockConsumer* consumer) {
-    capturer_->Start(consumer->BindVideoConsumer());
+  void StartCapture(MockConsumer* consumer,
+                    mojom::BufferFormatPreference buffer_format_preference =
+                        mojom::BufferFormatPreference::kDefault) {
+    capturer_->Start(consumer->BindVideoConsumer(), buffer_format_preference);
     PropagateMojoTasks();
   }
 
