@@ -2385,7 +2385,7 @@ Try tapping the mic to ask me anything.
         Manually enable write-protect
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions to manually enable write-protect on the device.">
-        Enable write-protect to continue to the next screen.
+        Enable write-protect to continue to the next screen. Learn how to enable write-protect for this device by viewing the manufacturer's instructions.
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE" translateable="false" desc="Message to inform user hardware write protection has been enabled and RMA is ready to continue.">
         Hardware write protection enabled. Click 'Next' to continue.
