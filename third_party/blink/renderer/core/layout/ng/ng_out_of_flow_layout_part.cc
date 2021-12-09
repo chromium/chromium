@@ -1403,8 +1403,11 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
         fragmentainer_constraint_space, should_use_fixed_block_size);
   }
 
-  // TODO(layout-dev): Handle abortions caused by block fragmentation.
-  DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
+  if (layout_result->Status() != NGLayoutResult::kSuccess) {
+    DCHECK_EQ(layout_result->Status(),
+              NGLayoutResult::kOutOfFragmentainerSpace);
+    return layout_result;
+  }
 
   if (node_info.node.GetLayoutBox()->IsLayoutNGObject()) {
     To<LayoutBlock>(node_info.node.GetLayoutBox())
@@ -1601,6 +1604,15 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     HeapVector<NodeToLayout>* fragmented_descendants) {
   scoped_refptr<const NGLayoutResult> result =
       LayoutOOFNode(descendant, /* only_layout */ nullptr, fragmentainer_space);
+
+  if (result->Status() != NGLayoutResult::kSuccess) {
+    DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
+    // If we're out of space, continue layout in the next fragmentainer.
+    NodeToLayout fragmented_descendant = descendant;
+    fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
+    fragmented_descendants->emplace_back(fragmented_descendant);
+    return;
+  }
 
   // Apply the relative positioned offset now that fragmentation is complete.
   LogicalOffset oof_offset = result->OutOfFlowPositionedOffset();
