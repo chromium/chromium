@@ -149,7 +149,7 @@ const base::Feature kOnFocusSuggestionsContextualWeb{
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
     "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_android_only};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
     enabled_by_default_android_only};
