@@ -275,8 +275,10 @@ class Cache::BarrierCallbackForPutResponse final
   void Stop() {
     if (stopped_)
       return;
-    if (abort_controller_)
+    if (abort_controller_) {
+      ScriptState::Scope scope(resolver_->GetScriptState());
       abort_controller_->abort(resolver_->GetScriptState());
+    }
     blob_list_.clear();
     stopped_ = true;
   }
