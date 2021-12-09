@@ -1315,6 +1315,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/scrollbars/",
       "//third_party/blink/web_tests/scrollingcoordinator/",
       "//third_party/blink/web_tests/security/",
+      "//third_party/blink/web_tests/handwriting/",
       "//third_party/blink/web_tests/shadow-dom/",
       "//third_party/blink/web_tests/storage/",
       "//third_party/blink/web_tests/svg/",
