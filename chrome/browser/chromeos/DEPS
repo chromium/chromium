@@ -41,6 +41,11 @@ specific_include_rules = {
   "device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
+  # TODO(b/209791738): Remove chrome/browser/ui dependencies from
+  # chrome/browser/chromeos/arc.
+  "arc/icon_decode_request.cc": [
+    "+chrome/browser/ui/app_list/md_icon_normalizer.h",
+  ],
   "legacy_device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
