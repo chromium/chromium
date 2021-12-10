@@ -15,7 +15,4 @@ import 'chrome-untrusted://personalization/polymer/v3_0/paper-styles/color.js';
 import '../common/icons.js';
 import '../common/styles.js';
 import '../untrusted/untrusted_shared_vars_css.js';
-// Import load_time_data.js first because strings.js requires
-// window.load_time_data to be initialized.
-import '/load_time_data.js';
-import '/strings.js';
+import '/strings.m.js';

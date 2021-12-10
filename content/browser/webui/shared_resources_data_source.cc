@@ -153,6 +153,12 @@ WebUIDataSource* CreateUntrustedSharedResourcesDataSource() {
   source->AddResourcePaths(
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Expose a small subset of shared resources to chrome-untrusted://resources/
+  AddResources({IDR_WEBUI_JS_LOAD_TIME_DATA_M_JS}, kWebuiGeneratedResources,
+               kWebuiGeneratedResourcesSize, source);
+#endif
+
   return source;
 }
 

@@ -40,11 +40,6 @@ void AddStrings(content::WebUIDataSource* source) {
                                IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
   }
 
-  // Add load_time_data manually because it is not available at
-  // chrome-untrusted://resources/load_time_data.js. Specifically add
-  // load_time_data.js and not load_time_data.m.js because StringsJs will fail
-  // to import load_time_data.m.js at this unusual path.
-  source->AddResourcePath("load_time_data.js", IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
   source->UseStringsJs();
 }
 
@@ -98,7 +93,8 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
         "img-src 'self' data: https://*.googleusercontent.com;");
 
     source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::ScriptSrc, "script-src 'self';");
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src 'self' chrome-untrusted://resources;");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::StyleSrc,
