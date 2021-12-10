@@ -29,15 +29,22 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "net/base/mac/url_conversions.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForPageLoadTimeout;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsLink;
 using chrome_test_util::SignOutAccountsButton;
 using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::PrimarySignInButton;
@@ -93,7 +100,10 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
 }
 
 // Signs in the browser from the forced sign-in screen.
-void SigninBrowserFromForcedSigninScreen(FakeChromeIdentity* fakeIdentity) {
+void WaitForForcedSigninScreenAndSignin(FakeChromeIdentity* fakeIdentity) {
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+
   // Scroll to the "Continue as ..." button to go to the bottom of the screen.
   ScrollToElementAndAssertVisibility(
       GetContinueButtonWithIdentityMatcher(fakeIdentity));
@@ -148,6 +158,44 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
          forKey:kPolicyLoaderIOSConfigurationKey];
   [ChromeEarlGrey setIntegerValue:static_cast<int>(signinMode)
                 forLocalStatePref:prefs::kBrowserSigninPolicy];
+}
+
+// Simulates opening |URL| from another application.
+void SimulateExternalAppURLOpeningWithURL(NSURL* URL) {
+  [ChromeEarlGreyAppInterface simulateExternalAppURLOpeningWithURL:URL];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+// Waits until the loading of the page opened at |openedURL| is done.
+void WaitUntilPageLoadedWithURL(NSURL* openedURL) {
+  GURL openedGURL = net::GURLWithNSURL(openedURL);
+  GREYCondition* startedLoadingCondition = [GREYCondition
+      conditionWithName:@"Page has started loading"
+                  block:^{
+                    return openedGURL == [ChromeEarlGrey webStateVisibleURL];
+                  }];
+  BOOL pageStartedLoading =
+      [startedLoadingCondition waitWithTimeout:kWaitForPageLoadTimeout];
+  GREYAssertTrue(pageStartedLoading, @"Page did not start loading");
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+constexpr char kPageURL[] = "/test.html";
+
+// Response handler for |kPageURL| that servers a dummy test page.
+std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kPageURL) {
+    return nullptr;
+  }
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content("<html><head><title>Hello World</title></head>"
+                             "<body>Hello World!</body></html>");
+  return std::move(http_response);
 }
 
 }  // namespace
@@ -307,7 +355,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
   // Sign in account without enabling sync.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown.
   [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
@@ -335,7 +383,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
   // Sign in account without enabling sync.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown.
   [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
@@ -355,7 +403,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
   // Sign in account without enabling sync.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
@@ -375,7 +423,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
   // Sign in account without enabling sync.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Sign in and enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
@@ -402,7 +450,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
   // Sign in.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
@@ -442,7 +490,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Sign in account without enabling sync.
-  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Open turn on sync dialog.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -526,6 +574,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Disable the forced sign-in policy.
@@ -551,6 +600,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Disable the forced sign-in policy.
@@ -576,6 +626,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Disable the forced sign-in policy.
@@ -601,6 +652,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
@@ -629,6 +681,265 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Wait and verify that the forced sign-in screen is shown when the policy is
   // enabled and the browser is signed out.
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the forced sign-in prompt isn't shown when sign-in is done from
+// the regular sign-in prompt.
+- (void)testNoSignInScreenWhenSigninFromRegularSigninPrompt {
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open the regular sign-in prompt from settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+
+  // Enable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Sign-in from the regular prompt.
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  // Sync utilities require sync to be initialized in order to perform
+  // operations on the Sync server.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+
+  // Make sure the forced sign-in screen isn't shown because sign-in was
+  // already done.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that intents are handled after forced sign-in is done when the app is
+// opened.
+- (void)testHandlingIntentAfterForcedSignin {
+  // Serve the test page locally using the internal embedded server.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&PageHttpResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  NSURL* URLToOpen = net::NSURLWithGURL(self.testServer->GetURL(kPageURL));
+
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Trigger a open URL external intent while the app is opened.
+  SimulateExternalAppURLOpeningWithURL(URLToOpen);
+
+  // Make sure that the page loading of the intent hasn't started yet.
+  GREYAssertFalse([ChromeEarlGreyAppInterface isLoading],
+                  @"Page should not have been loaded yet");
+
+  // Sign in account without enabling sync.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
+
+  // Make sure the forced sign-in screen isn't shown because it should have
+  // been dismissed.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the intent was loaded (post sign-in prompt).
+  WaitUntilPageLoadedWithURL(URLToOpen);
+}
+
+// Tests that intents are only handled when sign-in is done regardless of the
+// type of sign-in prompt (regular or forced). This test chains the regular
+// sign-in prompt and the forced sign-in prompt.
+- (void)testHandlingIntentWhenSigninAfterSkippingRegularPrompt {
+  // Serve the test page locally using the internal embedded server.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&PageHttpResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  NSURL* URLToOpen = net::NSURLWithGURL(self.testServer->GetURL(kPageURL));
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open the regular sign-in prompt from settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+
+  // Enable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Simulate an external intent while the app is opened.
+  SimulateExternalAppURLOpeningWithURL(URLToOpen);
+
+  // Dismiss the regular sign-in prompt by skipping it.
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+
+  // Sign in account without enabling sync.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity);
+
+  // Make sure the forced sign-in screen isn't shown because it should have
+  // been dismissed.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the intent was loaded.
+  WaitUntilPageLoadedWithURL(URLToOpen);
+}
+
+// Tests that intents are handled when sign-in is done from the regular sign-in
+// prompt, where the forced sign-in prompt is skipped.
+- (void)testHandlingIntentWhenSigninFromRegularPrompt {
+  // Serve the test page locally using the internal embedded server.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&PageHttpResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  NSURL* URLToOpen = net::NSURLWithGURL(self.testServer->GetURL(kPageURL));
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open the regular sign-in prompt from settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+
+  // Enable the forced sign-in policy while the regular sign-in prompt is
+  // opened.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Simulate an external intent while the app is opened.
+  SimulateExternalAppURLOpeningWithURL(URLToOpen);
+
+  // Sign-in from the regular prompt.
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  // Sync utilities require sync to be initialized in order to perform
+  // operations on the Sync server.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+
+  // Make sure the forced sign-in screen isn't shown because the browser is
+  // already signed in.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the intent was loaded.
+  WaitUntilPageLoadedWithURL(URLToOpen);
+}
+
+// Tests that chaining the regular sign-in prompt and the forced sign-in screen
+// is done correctly when the forced sign-in policy is enabled and an external
+// intent is triggered while the advanced settings are shown. This test makes
+// sure that having the browser signed in isn't sufficient to start loading the
+// intent where the sign-in prompt should be manually dismissed first before
+// doing that. The account will be signed in temporarily when showing advanced
+// settings.
+- (void)testHandlingIntentWhenSigninAfterSyncSettingOnRegularPrompt {
+  // Serve the test page locally using the internal embedded server.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&PageHttpResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  NSURL* URLToOpen = net::NSURLWithGURL(self.testServer->GetURL(kPageURL));
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open the regular sign-in prompt from settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+
+  // Open advanced sync settings.
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(
+                         kManageSyncTableViewAccessibilityIdentifier)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Enable the forced sign-in policy while the advanced settings are opened.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Simulate an external intent while the advanced settings are opened.
+  SimulateExternalAppURLOpeningWithURL(URLToOpen);
+
+  // Verify that the advanced settings are still there. This verifies that the
+  // sign-in prompt isn't dismissed when the policy becomes active.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Dismiss advanced sync settings.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Dismiss the regular sign-in prompt by skipping it.
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+
+  // Sign in account without enabling sync.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity);
+
+  // Make sure the forced sign-in screen isn't shown because it should have
+  // been dismissed.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the intent was loaded.
+  WaitUntilPageLoadedWithURL(URLToOpen);
 }
 
 @end

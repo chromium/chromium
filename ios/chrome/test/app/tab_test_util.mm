@@ -82,6 +82,15 @@ NSURL* SimulateExternalAppURLOpening() {
   return url;
 }
 
+void SimulateExternalAppURLOpeningWithURL(NSURL* URL) {
+  TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
+  context.URL = URL;
+
+  UIApplication* application = UIApplication.sharedApplication;
+  UIScene* scene = application.connectedScenes.anyObject;
+  [scene.delegate scene:scene openURLContexts:[NSSet setWithObject:context]];
+}
+
 void SimulateAddAccountFromWeb() {
   id<ApplicationCommands, BrowserCommands> handler =
       chrome_test_util::HandlerForActiveBrowser();
