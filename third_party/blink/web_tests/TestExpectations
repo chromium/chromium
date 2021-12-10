@@ -2765,6 +2765,16 @@ crbug.com/626703 fast/animation/scroll-animations/scroll-timeline-snapshotting.h
 crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-quirks-mode.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/html/syntax/charset/without-inheritance.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-charset/speculative-script.tentative.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-masking/clip-path/clip-path-strokeBox-1b.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-masking/clip-path/clip-path-viewBox-1c.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-pseudo/first-letter-hi-001.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/nested-ruby-pairing-001.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-002.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-009.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
