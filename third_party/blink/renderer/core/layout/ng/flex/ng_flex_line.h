@@ -30,7 +30,6 @@ struct NGFlexLine {
   explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
 
   LayoutUnit line_cross_size;
-  // Note: This is only used by column flex containers.
   LayoutUnit item_offset_adjustment;
   Vector<NGFlexItem> line_items;
 };

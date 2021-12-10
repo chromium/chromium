@@ -101,13 +101,14 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   // Return the amount of block space available in the current fragmentainer
   // for the node being laid out by this algorithm.
-  LayoutUnit FragmentainerSpaceAvailable() const;
+  LayoutUnit FragmentainerSpaceAvailable(LayoutUnit block_offset) const;
 
   // Consume all remaining fragmentainer space. This happens when we decide to
   // break before a child.
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
-  void ConsumeRemainingFragmentainerSpace(NGFlexLine& flex_line);
+  void ConsumeRemainingFragmentainerSpace(LogicalOffset item_offset,
+                                          NGFlexItem* flex_item);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
