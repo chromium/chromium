@@ -146,15 +146,6 @@ static_library("sandbox") {
     sources += [
       "src/resolver_32.cc",
       "src/service_resolver_32.cc",
-      "src/sidestep/ia32_modrm_map.cpp",
-      "src/sidestep/ia32_opcode_map.cpp",
-      "src/sidestep/mini_disassembler.cpp",
-      "src/sidestep/mini_disassembler.h",
-      "src/sidestep/mini_disassembler_types.h",
-      "src/sidestep/preamble_patcher.h",
-      "src/sidestep/preamble_patcher_with_stub.cpp",
-      "src/sidestep_resolver.cc",
-      "src/sidestep_resolver.h",
     ]
   }
 

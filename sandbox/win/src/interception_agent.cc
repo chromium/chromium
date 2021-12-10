@@ -15,7 +15,6 @@
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/sidestep_resolver.h"
 
 namespace {
 
@@ -202,32 +201,12 @@ bool InterceptionAgent::PatchDll(const DllPatchInfo* dll_info,
 // This method is called from within the loader lock
 ResolverThunk* InterceptionAgent::GetResolver(InterceptionType type) {
   static EatResolverThunk* eat_resolver = nullptr;
-  static SidestepResolverThunk* sidestep_resolver = nullptr;
-  static SmartSidestepResolverThunk* smart_sidestep_resolver = nullptr;
 
   if (!eat_resolver)
     eat_resolver = new (NT_ALLOC) EatResolverThunk;
-
-#if !defined(_WIN64)
-  // Sidestep is not supported for x64.
-  if (!sidestep_resolver)
-    sidestep_resolver = new (NT_ALLOC) SidestepResolverThunk;
-
-  if (!smart_sidestep_resolver)
-    smart_sidestep_resolver = new (NT_ALLOC) SmartSidestepResolverThunk;
-#endif
-
-  switch (type) {
-    case INTERCEPTION_EAT:
-      return eat_resolver;
-    case INTERCEPTION_SIDESTEP:
-      return sidestep_resolver;
-    case INTERCEPTION_SMART_SIDESTEP:
-      return smart_sidestep_resolver;
-    default:
-      NOTREACHED_NT();
-  }
-
+  if (type == INTERCEPTION_EAT)
+    return eat_resolver;
+  NOTREACHED_NT();
   return nullptr;
 }
 

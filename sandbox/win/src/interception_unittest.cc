@@ -146,9 +146,6 @@ TEST(InterceptionManagerTest, BufferLayout1) {
                                       OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"kernel32.dll", "CreateFileEx",
                                       INTERCEPTION_EAT, function, OPEN_KEY_ID);
-  interceptions.AddToPatchedFunctions(L"kernel32.dll", "SomeFileEx",
-                                      INTERCEPTION_SMART_SIDESTEP, function,
-                                      OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"user32.dll", "FindWindow",
                                       INTERCEPTION_EAT, function, OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"kernel32.dll", "CreateMutex",
@@ -163,15 +160,10 @@ TEST(InterceptionManagerTest, BufferLayout1) {
   interceptions.AddToPatchedFunctions(L"ntdll.dll", "NtClose",
                                       INTERCEPTION_SERVICE_CALL, function,
                                       OPEN_KEY_ID);
-  interceptions.AddToPatchedFunctions(L"ntdll.dll", "NtOpenFile",
-                                      INTERCEPTION_SIDESTEP, function,
-                                      OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"some.dll", "Superfn", INTERCEPTION_EAT,
                                       function, OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"comctl.dll", "SaveAsDlg",
                                       INTERCEPTION_EAT, "a", OPEN_KEY_ID);
-  interceptions.AddToPatchedFunctions(L"comctl.dll", "SaveAsDlg",
-                                      INTERCEPTION_SIDESTEP, "ab", OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"comctl.dll", "SaveAsDlg",
                                       INTERCEPTION_EAT, "abc", OPEN_KEY_ID);
   interceptions.AddToPatchedFunctions(L"a.dll", "p", INTERCEPTION_EAT, function,
@@ -185,7 +177,7 @@ TEST(InterceptionManagerTest, BufferLayout1) {
                                       function, OPEN_KEY_ID);
 
   // Verify that all interceptions were added
-  ASSERT_EQ(18u, interceptions.interceptions_.size());
+  ASSERT_EQ(15u, interceptions.interceptions_.size());
 
   size_t buffer_size = interceptions.GetBufferSize();
   std::unique_ptr<BYTE[]> local_buffer(new BYTE[buffer_size]);
@@ -198,20 +190,20 @@ TEST(InterceptionManagerTest, BufferLayout1) {
   // another group with the interceptions belonging to dlls that will be "hot"
   // patched on the client. The second group lives on local_buffer, and the
   // first group remains on the list of interceptions (inside the object
-  // "interceptions"). There are 3 local interceptions (of ntdll); the
-  // other 15 have to be sent to the child to be performed "hot".
-  EXPECT_EQ(3u, interceptions.interceptions_.size());
+  // "interceptions"). There are 2 local interceptions (of ntdll); the
+  // other 13 have to be sent to the child to be performed "hot".
+  EXPECT_EQ(2u, interceptions.interceptions_.size());
 
   int num_dlls, num_functions, num_names;
   WalkBuffer(local_buffer.get(), buffer_size, &num_dlls, &num_functions,
              &num_names);
 
-  // The 15 interceptions on the buffer (to the child) should be grouped on 6
+  // The 13 interceptions on the buffer (to the child) should be grouped on 6
   // dlls. Only four interceptions are using an explicit name for the
   // interceptor function.
   EXPECT_EQ(6, num_dlls);
-  EXPECT_EQ(15, num_functions);
-  EXPECT_EQ(4, num_names);
+  EXPECT_EQ(13, num_functions);
+  EXPECT_EQ(3, num_names);
 }
 
 TEST(InterceptionManagerTest, BufferLayout2) {
@@ -233,11 +225,8 @@ TEST(InterceptionManagerTest, BufferLayout2) {
   interceptions.AddToPatchedFunctions(L"kernel32.dll", "CreateFileEx",
                                       INTERCEPTION_EAT, function, OPEN_FILE_ID);
   interceptions.AddToUnloadModules(L"some02.dll");
-  interceptions.AddToPatchedFunctions(L"kernel32.dll", "SomeFileEx",
-                                      INTERCEPTION_SMART_SIDESTEP, function,
-                                      OPEN_FILE_ID);
   // Verify that all interceptions were added
-  ASSERT_EQ(5u, interceptions.interceptions_.size());
+  ASSERT_EQ(4u, interceptions.interceptions_.size());
 
   size_t buffer_size = interceptions.GetBufferSize();
   std::unique_ptr<BYTE[]> local_buffer(new BYTE[buffer_size]);
@@ -256,7 +245,7 @@ TEST(InterceptionManagerTest, BufferLayout2) {
              &num_names);
 
   EXPECT_EQ(3, num_dlls);
-  EXPECT_EQ(4, num_functions);
+  EXPECT_EQ(3, num_functions);
   EXPECT_EQ(0, num_names);
 }
 

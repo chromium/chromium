@@ -185,10 +185,8 @@ enum InterceptionType {
   INTERCEPTION_INVALID = 0,
   INTERCEPTION_SERVICE_CALL,  // Trampoline of an NT native call
   INTERCEPTION_EAT,
-  INTERCEPTION_SIDESTEP,        // Preamble patch
-  INTERCEPTION_SMART_SIDESTEP,  // Preamble patch but bypass internal calls
-  INTERCEPTION_UNLOAD_MODULE,   // Unload the module (don't patch)
-  INTERCEPTION_LAST             // Placeholder for last item in the enumeration
+  INTERCEPTION_UNLOAD_MODULE,  // Unload the module (don't patch)
+  INTERCEPTION_LAST            // Placeholder for last item in the enumeration
 };
 
 }  // namespace sandbox
