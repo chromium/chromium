@@ -46,7 +46,11 @@ class DiscoverFeedProvider {
   virtual UIViewController* NewFeedViewController(Browser* browser);
   // Returns the Discover Feed ViewController with a custom
   // DiscoverFeedViewControllerConfiguration.
-  virtual UIViewController* NewFeedViewControllerWithConfiguration(
+  virtual UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
+      DiscoverFeedViewControllerConfiguration* configuration);
+  // Returns the Following Feed ViewController with a custom
+  // DiscoverFeedViewControllerConfiguration.
+  virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration);
   // Removes the Discover |feedViewController|. It should be called whenever
   // |feedViewController| will no longer be used.

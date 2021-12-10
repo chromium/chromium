@@ -22,7 +22,14 @@ UIViewController* DiscoverFeedProvider::NewFeedViewController(
   return nil;
 }
 
-UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
+UIViewController*
+DiscoverFeedProvider::NewDiscoverFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+
+UIViewController*
+DiscoverFeedProvider::NewFollowingFeedViewControllerWithConfiguration(
     DiscoverFeedViewControllerConfiguration* configuration) {
   return nil;
 }

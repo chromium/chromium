@@ -269,7 +269,12 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 
     // Requests a Discover feed here if the correct flags and prefs are enabled.
     if ([self shouldFeedBeVisible]) {
-      self.discoverFeedViewController = [self discoverFeed];
+      if (IsWebChannelsEnabled()) {
+        // TODO(crbug.com/1277504): Use unique property for Following feed.
+        self.discoverFeedViewController = [self followingFeed];
+      } else {
+        self.discoverFeedViewController = [self discoverFeed];
+      }
     }
   }
 
@@ -781,22 +786,41 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
 }
 
-// Creates, configures and returns a DiscoverFeed ViewController.
+// Creates, configures and returns a Discover feed view controller.
 - (UIViewController*)discoverFeed {
   if (tests_hook::DisableDiscoverFeed())
     return nil;
 
+  UIViewController* discoverFeed =
+      ios::GetChromeBrowserProvider()
+          .GetDiscoverFeedProvider()
+          ->NewDiscoverFeedViewControllerWithConfiguration(
+              [self feedViewControllerConfiguration]);
+  return discoverFeed;
+}
+
+// Creates, configures and returns a Following feed view controller.
+- (UIViewController*)followingFeed {
+  if (tests_hook::DisableDiscoverFeed())
+    return nil;
+
+  UIViewController* followingFeed =
+      ios::GetChromeBrowserProvider()
+          .GetDiscoverFeedProvider()
+          ->NewFollowingFeedViewControllerWithConfiguration(
+              [self feedViewControllerConfiguration]);
+  return followingFeed;
+}
+
+// Creates, configures and returns a feed view controller configuration.
+- (DiscoverFeedViewControllerConfiguration*)feedViewControllerConfiguration {
   DiscoverFeedViewControllerConfiguration* viewControllerConfig =
       [[DiscoverFeedViewControllerConfiguration alloc] init];
   viewControllerConfig.browser = self.browser;
   viewControllerConfig.scrollDelegate = self.ntpViewController;
   viewControllerConfig.previewDelegate = self;
 
-  UIViewController* discoverFeed =
-      ios::GetChromeBrowserProvider()
-          .GetDiscoverFeedProvider()
-          ->NewFeedViewControllerWithConfiguration(viewControllerConfig);
-  return discoverFeed;
+  return viewControllerConfig;
 }
 
 // Handles how the NTP should react when the default search engine setting is
