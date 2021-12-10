@@ -1352,7 +1352,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                               chunks.Build());
 
   const gfx::Rect actual_bounds =
-      layer->capture_bounds().bounds().find(kCropId.value())->second;
+      layer->capture_bounds()->bounds().find(kCropId.value())->second;
   EXPECT_EQ((gfx::Rect{50, 60, 100, 200}), actual_bounds);
 }
 
@@ -1373,7 +1373,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                               chunks.Build());
 
   const gfx::Rect actual_bounds =
-      layer->capture_bounds().bounds().find(kCropId.value())->second;
+      layer->capture_bounds()->bounds().find(kCropId.value())->second;
   EXPECT_EQ((gfx::Rect{40, 45, 100, 200}), actual_bounds);
 }
 
@@ -1384,9 +1384,7 @@ TEST_P(PaintChunksToCcLayerTest, UpdateLayerPropertiesRegionCaptureDataEmpty) {
                   gfx::Rect(10, 15, 20, 30));
   PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
                                               chunks.Build());
-
-  // The layer should have bounds still, but they should be empty.
-  EXPECT_TRUE(layer->capture_bounds().bounds().empty());
+  EXPECT_FALSE(layer->capture_bounds());
 }
 
 TEST_P(PaintChunksToCcLayerTest,
@@ -1406,7 +1404,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                               chunks.Build());
 
   const gfx::Rect actual_bounds =
-      layer->capture_bounds().bounds().find(kCropId.value())->second;
+      layer->capture_bounds()->bounds().find(kCropId.value())->second;
   EXPECT_TRUE(actual_bounds.IsEmpty());
 }
 

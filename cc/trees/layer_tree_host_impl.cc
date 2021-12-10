@@ -2286,7 +2286,10 @@ void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
 viz::RegionCaptureBounds LayerTreeHostImpl::CollectRegionCaptureBounds() {
   viz::RegionCaptureBounds bounds;
   for (const auto* layer : base::Reversed(*active_tree())) {
-    for (const auto& bounds_pair : layer->capture_bounds().bounds()) {
+    if (!layer->capture_bounds())
+      continue;
+
+    for (const auto& bounds_pair : layer->capture_bounds()->bounds()) {
       // Perform transformation from the coordinate system of this |layer|
       // to that of the root render surface.
       gfx::Rect bounds_in_screen_space = MathUtil::ProjectEnclosingClippedRect(

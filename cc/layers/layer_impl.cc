@@ -43,6 +43,15 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+namespace {
+
+template <typename T>
+std::unique_ptr<T> ClonePtr(const std::unique_ptr<T>& value) {
+  return value ? std::make_unique<T>(*value) : nullptr;
+}
+
+}  // namespace
+
 namespace cc {
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
@@ -352,9 +361,8 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
-void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
-  if (capture_bounds_ == bounds)
-    return;
+void LayerImpl::SetCaptureBounds(
+    std::unique_ptr<viz::RegionCaptureBounds> bounds) {
   capture_bounds_ = std::move(bounds);
 }
 
@@ -385,11 +393,8 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->hit_testable_ = hit_testable_;
   layer->non_fast_scrollable_region_ = non_fast_scrollable_region_;
   layer->touch_action_region_ = touch_action_region_;
-  layer->all_touch_action_regions_ =
-      all_touch_action_regions_
-          ? std::make_unique<Region>(*all_touch_action_regions_)
-          : nullptr;
-  layer->capture_bounds_ = capture_bounds_;
+  layer->all_touch_action_regions_ = ClonePtr(all_touch_action_regions_);
+  layer->capture_bounds_ = ClonePtr(capture_bounds_);
   layer->wheel_event_handler_region_ = wheel_event_handler_region_;
   layer->background_color_ = background_color_;
   layer->safe_opaque_background_color_ = safe_opaque_background_color_;

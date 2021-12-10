@@ -463,9 +463,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   }
 
   // Set or get the region that should be used for capture.
-  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
-  const viz::RegionCaptureBounds& capture_bounds() const {
-    return inputs_.capture_bounds;
+  void SetCaptureBounds(std::unique_ptr<viz::RegionCaptureBounds> bounds);
+  const viz::RegionCaptureBounds* capture_bounds() const {
+    return inputs_.capture_bounds.get();
   }
 
   // Set or get the set of blocking wheel rects of this layer. The
@@ -886,20 +886,17 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     // Hit testing depends on this bit.
     bool hit_testable : 1;
-
     bool contents_opaque : 1;
     bool contents_opaque_for_text : 1;
     bool is_drawable : 1;
-
     bool double_sided : 1;
-
-    SkColor background_color;
 
     // TODO(crbug.com/1264177): properties that are rarely set should be
     // moved to a separate sub-struct.
+    SkColor background_color;
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
-    viz::RegionCaptureBounds capture_bounds;
+    std::unique_ptr<viz::RegionCaptureBounds> capture_bounds;
     Region wheel_event_region;
 
     ElementId element_id;

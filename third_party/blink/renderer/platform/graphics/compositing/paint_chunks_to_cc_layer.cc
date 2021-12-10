@@ -965,7 +965,7 @@ static void UpdateRegionCaptureData(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
                                     const PaintChunkSubset& chunks) {
   const gfx::Vector2dF layer_offset = layer.offset_to_transform_parent();
-  viz::RegionCaptureBounds capture_bounds;
+  std::unique_ptr<viz::RegionCaptureBounds> capture_bounds;
   for (const PaintChunk& chunk : chunks) {
     if (!chunk.region_capture_data)
       continue;
@@ -979,7 +979,11 @@ static void UpdateRegionCaptureData(cc::Layer& layer,
         continue;
       }
       rect.Move(-layer_offset);
-      capture_bounds.Set(pair.first.value(), gfx::ToEnclosingRect(rect.Rect()));
+      if (!capture_bounds) {
+        capture_bounds = std::make_unique<viz::RegionCaptureBounds>();
+      }
+      capture_bounds->Set(pair.first.value(),
+                          gfx::ToEnclosingRect(rect.Rect()));
     }
     break;
   }

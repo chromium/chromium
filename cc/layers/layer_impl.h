@@ -273,9 +273,9 @@ class CC_EXPORT LayerImpl {
     return !touch_action_region_.IsEmpty();
   }
 
-  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
-  const viz::RegionCaptureBounds& capture_bounds() const {
-    return capture_bounds_;
+  void SetCaptureBounds(std::unique_ptr<viz::RegionCaptureBounds> bounds);
+  const viz::RegionCaptureBounds* capture_bounds() const {
+    return capture_bounds_.get();
   }
 
   // Set or get the region that contains wheel event handler.
@@ -511,7 +511,7 @@ class CC_EXPORT LayerImpl {
 
   // The bounds of elements marked for potential region capture, stored in
   // the coordinate space of this layer.
-  viz::RegionCaptureBounds capture_bounds_;
+  std::unique_ptr<viz::RegionCaptureBounds> capture_bounds_;
   Region wheel_event_handler_region_;
   SkColor background_color_;
   SkColor safe_opaque_background_color_;
