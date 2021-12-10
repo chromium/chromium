@@ -49574,6 +49574,8 @@ from previous Chrome versions.
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
   <int value="-1987881259" label="ArcRightClickLongPress:enabled"/>
+  <int value="-1987612795"
+      label="ImproveAccessibilityTreeUsingLocalML:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
@@ -50308,6 +50310,8 @@ from previous Chrome versions.
   <int value="-1468126425" label="ResourceLoadScheduler:disabled"/>
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>
+  <int value="-1467563695"
+      label="ImproveAccessibilityTreeUsingLocalML:disabled"/>
   <int value="-1467332609" label="tab-management-experiment-type-anise"/>
   <int value="-1466990325" label="CrosCompUpdates:enabled"/>
   <int value="-1466862366" label="TouchToFillAndroid:enabled"/>
@@ -53277,6 +53281,7 @@ from previous Chrome versions.
   <int value="731757746" label="ArcEnableDocumentsProviderInFilesApp:disabled"/>
   <int value="731775657" label="DownloadsAutoResumptionNative:disabled"/>
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
+  <int value="732434640" label="improve-accessibility-tree-using-local-ml"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>

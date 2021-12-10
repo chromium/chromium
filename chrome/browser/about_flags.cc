@@ -7656,6 +7656,14 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kPervasiveSystemAccentColor)},
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+    {"improve-accessibility-tree-using-local-ml",
+     flag_descriptions::kImproveAccessibilityTreeUsingLocalMLName,
+     flag_descriptions::kImproveAccessibilityTreeUsingLocalMLDescription,
+     kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kImproveAccessibilityTreeUsingLocalML)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

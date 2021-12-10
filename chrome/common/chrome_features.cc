@@ -592,6 +592,11 @@ const base::Feature kImmersiveFullscreen{"ImmersiveFullscreen",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+const base::Feature kImproveAccessibilityTreeUsingLocalML{
+    "ImproveAccessibilityTreeUsingLocalML", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables scraping of password-expiry information during SAML login flow, which
 // can lead to an in-session flow for changing SAML password if it has expired.

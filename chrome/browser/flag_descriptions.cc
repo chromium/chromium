@@ -5340,6 +5340,11 @@ const char kDynamicTcmallocDescription[] =
     "Allows tcmalloc to dynamically adjust tunables based on system resource "
     "utilization.";
 #endif  // BUILDFLAG(USE_TCMALLOC)
+const char kImproveAccessibilityTreeUsingLocalMLName[] =
+    "Enable improving accessibility tree using local machine learning library.";
+const char kImproveAccessibilityTreeUsingLocalMLDescription[] =
+    "Improves the accessibility tree by sending a screenshot of the current "
+    "webpage to a local machine learning library and getting annotations.";
 #endif  // #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
