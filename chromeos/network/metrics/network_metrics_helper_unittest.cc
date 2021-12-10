@@ -36,6 +36,14 @@ const char kVpnBuiltInConnectResultAllHistogram[] =
 const char kVpnThirdPartyConnectResultAllHistogram[] =
     "Network.VPN.TypeThirdParty.ConnectionResult.All";
 
+// LogAllConnectionResult() WiFi histograms.
+const char kWifiConnectResultAllHistogram[] =
+    "Network.WiFi.ConnectionResult.All";
+const char kWifiOpenConnectResultAllHistogram[] =
+    "Network.WiFi.SecurityOpen.ConnectionResult.All";
+const char kWifiPasswordProtectedConnectResultAllHistogram[] =
+    "Network.WiFi.SecurityPasswordProtected.ConnectionResult.All";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
 const char kTestName[] = "network_name";
@@ -157,6 +165,40 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
     shill_service_client_->RemoveService(kTestServicePath);
     base::RunLoop().RunUntilIdle();
   }
+}
+
+TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiOpen) {
+  shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                    shill::kTypeWifi, shill::kStateIdle,
+                                    /*visible=*/true);
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kSecurityClassProperty,
+                                            base::Value(shill::kSecurityNone));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                               shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultAllHistogram, 0);
+}
+
+TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiPasswordProtected) {
+  shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                    shill::kTypeWifi, shill::kStateIdle,
+                                    /*visible=*/true);
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kSecurityClassProperty,
+                                            base::Value(shill::kSecurityPsk));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                               shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultAllHistogram, 1);
 }
 
 }  // namespace chromeos

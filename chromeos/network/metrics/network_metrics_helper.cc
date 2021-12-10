@@ -9,6 +9,7 @@
 #include "chromeos/network/metrics/shill_connect_result.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
@@ -17,6 +18,10 @@ namespace {
 
 const char kNetworkMetricsPrefix[] = "Network.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
+
+const char kWifi[] = "WiFi";
+const char kWifiOpen[] = "WiFi.SecurityOpen";
+const char kWifiPasswordProtected[] = "WiFi.SecurityPasswordProtected";
 
 chromeos::NetworkStateHandler* GetNetworkStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
@@ -45,8 +50,16 @@ const std::vector<std::string> GetEthernetNetworkTypeHistograms(
 
 const std::vector<std::string> GetWifiNetworkTypeHistograms(
     const NetworkState* network_state) {
-  // TODO(b/207589664): Determine histogram variant names for Wifi.
-  return {};
+  std::vector<std::string> wifi_histograms{kWifi};
+
+  if (network_state->GetMojoSecurity() ==
+      network_config::mojom::SecurityType::kNone) {
+    wifi_histograms.emplace_back(kWifiOpen);
+  } else {
+    wifi_histograms.emplace_back(kWifiPasswordProtected);
+  }
+
+  return wifi_histograms;
 }
 
 const std::vector<std::string> GetTetherNetworkTypeHistograms(
