@@ -299,7 +299,7 @@
       'Mac Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
+      'Mac Builder Next': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
