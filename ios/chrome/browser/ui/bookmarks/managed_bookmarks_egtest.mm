@@ -342,7 +342,8 @@ void SearchBookmarksForText(NSString* search_text) {
 }
 
 // Tests that swiping is disabled on managed bookmark items on search results.
-- (void)testSwipeDisabledOnSearchResults {
+// TODO(crbug.com/1197279): Re-enable flaky test.
+- (void)DISABLED_testSwipeDisabledOnSearchResults {
   [BookmarkEarlGreyUI openBookmarks];
   SearchBookmarksForText(@"URL\n");
 
