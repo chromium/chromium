@@ -87,11 +87,6 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   SetCategory(Category::kSearchAndAssistant);
   set_id(kOmniboxAnswerSchema + match_.stripped_destination_url.spec());
 
-  // TODO(crbug.com/1226459): Replace OmniboxType with a boolean indicating
-  // whether the result is a calculation.
-  if (IsCalculatorResult())
-    SetOmniboxType(OmniboxType::kCalculatorAnswer);
-
   SetMetricsType(IsCalculatorResult() ? ash::OMNIBOX_CALCULATOR
                                       : ash::OMNIBOX_ANSWER);
 

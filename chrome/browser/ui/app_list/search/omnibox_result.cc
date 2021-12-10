@@ -257,7 +257,6 @@ void OmniboxResult::UpdateIcon() {
         match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
                                                weak_factory_.GetWeakPtr()));
     if (!icon.IsEmpty()) {
-      SetOmniboxType(OmniboxType::kFavicon);
       SetIcon(
           IconInfo(icon.AsImageSkia(), ash::SharedAppListConfig::instance()
                                            .search_list_favicon_dimension()));
@@ -365,7 +364,6 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
 void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.IsEmpty());
-  SetOmniboxType(OmniboxType::kFavicon);
   SetIcon(IconInfo(
       icon.AsImageSkia(),
       ash::SharedAppListConfig::instance().search_list_favicon_dimension()));

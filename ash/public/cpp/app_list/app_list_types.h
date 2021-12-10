@@ -317,16 +317,6 @@ enum SearchResultDisplayIndex {
   kUndefined,
 };
 
-// The rich entity subtype of Omnibox results.
-enum SearchResultOmniboxDisplayType {
-  kDefault,
-  kAnswer,
-  kCalculatorAnswer,
-  kRichImage,
-  kFavicon,
-  kOmniboxTypeMax,  // Do not use.
-};
-
 // Actions for search results. These map to the buttons beside some search
 // results, and do not include the launching of the result itself.
 // TODO(crbug.com/1263751): Currently these are only relevant to omnibox
@@ -472,10 +462,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // Which index in the UI container should the result be placed in.
   SearchResultDisplayIndex display_index = SearchResultDisplayIndex::kUndefined;
-
-  // The rich entity subtype of Omnibox results.
-  SearchResultOmniboxDisplayType omnibox_type =
-      SearchResultOmniboxDisplayType::kDefault;
 
   // A score to settle conflicts between two apps with the same requested
   // |display_index|.
