@@ -50,6 +50,8 @@
 
 using captured_sites_test_utils::CapturedSiteParams;
 using captured_sites_test_utils::GetCapturedSites;
+using captured_sites_test_utils::TestRecipeReplayer;
+using captured_sites_test_utils::WebPageReplayServerWrapper;
 
 namespace {
 
@@ -232,6 +234,11 @@ class AutofillCapturedSitesInteractiveTest
     AutofillUiTest::SetUpInProcessBrowserTestFixture();
   }
 
+  virtual void SetUpHostResolverRules(base::CommandLine* command_line) {
+    captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(
+        command_line);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the autofill show typed prediction feature. When active this
     // feature forces input elements on a form to display their autofill type
@@ -246,6 +253,7 @@ class AutofillCapturedSitesInteractiveTest
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
+    SetUpHostResolverRules(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }
@@ -361,4 +369,80 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillCapturedSitesInteractiveTest,
     testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
     captured_sites_test_utils::GetParamAsString());
+
+class AutofillCapturedSitesRefresh
+    : public AutofillCapturedSitesInteractiveTest {
+ protected:
+  void SetUpOnMainThread() override {
+    AutofillCapturedSitesInteractiveTest::SetUpOnMainThread();
+    web_page_replay_server_wrapper_ =
+        std::make_unique<captured_sites_test_utils::WebPageReplayServerWrapper>(
+            false, 8082, 8083);
+  }
+
+  void SetUpHostResolverRules(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        base::StringPrintf(
+            "MAP *:80 127.0.0.1:%d,"
+            "MAP *.googleapis.com:443 127.0.0.1:%d,"
+            "MAP *:443 127.0.0.1:%d,"
+            // Set to always exclude, allows cache_replayer overwrite
+            "EXCLUDE localhost",
+            TestRecipeReplayer::kHostHttpPort,
+            TestRecipeReplayer::kHostHttpsRecordPort,
+            TestRecipeReplayer::kHostHttpsPort));
+  }
+
+  void TearDownOnMainThread() override {
+    AutofillCapturedSitesInteractiveTest::TearDownOnMainThread();
+    EXPECT_TRUE(web_page_replay_server_wrapper_->Stop())
+        << "Cannot stop the local Web Page Replay server.";
+  }
+
+  WebPageReplayServerWrapper* web_page_replay_server_wrapper() {
+    return web_page_replay_server_wrapper_.get();
+  }
+
+ private:
+  std::unique_ptr<WebPageReplayServerWrapper> web_page_replay_server_wrapper_;
+};
+
+// This test is to be run periodically to capture updated Autofill Server
+// Predictions. It run the same AutofillCapturedSitesInteractiveTest test suite
+// but allows the queries the to Autofill Server to get through WPR and hit the
+// live server and captures the new responses in separate .wpr archive files in
+// the refresh/ subdirectory of chrome/test/data/autofill/captured_sites
+IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesRefresh, Recipe) {
+  VLOG(1) << "Recapturing Server Predictions for: " << GetParam().site_name;
+  web_page_replay_server_wrapper()->Start(GetParam().refresh_file_path);
+  bool test_completed = recipe_replayer()->ReplayTest(
+      GetParam().capture_file_path, GetParam().recipe_file_path,
+      captured_sites_test_utils::GetCommandFilePath());
+  if (!test_completed)
+    ADD_FAILURE() << "Full execution was unable to complete.";
+
+  std::vector<testing::AssertionResult> validation_failures =
+      recipe_replayer()->GetValidationFailures();
+  if (validation_failures.empty()) {
+    VLOG(1) << "No Change in Server Predictions for: " << GetParam().site_name;
+  } else {
+    LOG(INFO) << "There were " << validation_failures.size()
+              << " Validation Failure(s). This means Server Predictions "
+                 "respones have changed and likely need to be addressed.";
+    for (auto& validation_failure : validation_failures)
+      ADD_FAILURE() << validation_failure.message();
+  }
+}
+
+// This test is called with a dynamic list and will be empty during the Password
+// run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
+// crbug/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AutofillCapturedSitesRefresh);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillCapturedSitesRefresh,
+    testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
+    captured_sites_test_utils::GetParamAsString());
+
 }  // namespace autofill

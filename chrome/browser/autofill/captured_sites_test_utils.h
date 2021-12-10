@@ -66,6 +66,7 @@ struct CapturedSiteParams {
   bool is_disabled = false;
   base::FilePath capture_file_path;
   base::FilePath recipe_file_path;
+  base::FilePath refresh_file_path;
 
   CapturedSiteParams();
   ~CapturedSiteParams();
@@ -235,6 +236,8 @@ class TestRecipeReplayer {
  public:
   static const int kHostHttpPort = 8080;
   static const int kHostHttpsPort = 8081;
+  static const int kHostHttpRecordPort = 8082;
+  static const int kHostHttpsRecordPort = 8083;
 
   enum DomElementReadyState {
     kReadyStatePresent = 0,
@@ -263,6 +266,7 @@ class TestRecipeReplayer {
   const std::vector<testing::AssertionResult> GetValidationFailures() const;
 
   static void SetUpCommandLine(base::CommandLine* command_line);
+  static void SetUpHostResolverRules(base::CommandLine* command_line);
   static bool ScrollElementIntoView(const std::string& element_xpath,
                                     content::RenderFrameHost* frame);
   static bool PlaceFocusOnElement(const std::string& element_xpath,

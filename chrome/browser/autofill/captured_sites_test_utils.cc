@@ -301,9 +301,15 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     }
     // Check that a pair of .test and .wpr files exist - otherwise skip
     base::FilePath file_name = replay_files_dir_path;
-    if (!param.scenario_dir.empty())
+    base::FilePath refresh_file_path =
+        replay_files_dir_path.AppendASCII("refresh");
+    if (!param.scenario_dir.empty()) {
       file_name = file_name.AppendASCII(param.scenario_dir);
+      refresh_file_path = refresh_file_path.AppendASCII(param.scenario_dir);
+    }
     file_name = file_name.AppendASCII(param.site_name);
+    refresh_file_path =
+        refresh_file_path.AppendASCII(param.site_name).AddExtensionASCII("wpr");
 
     base::FilePath capture_file_path = file_name.AddExtensionASCII("wpr");
     if (!base::PathExists(capture_file_path)) {
@@ -319,6 +325,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     }
     param.capture_file_path = capture_file_path;
     param.recipe_file_path = recipe_file_path;
+    param.refresh_file_path = refresh_file_path;
     sites.push_back(param);
   }
   return sites;
@@ -742,7 +749,8 @@ bool TestRecipeReplayer::OverrideAutofillClock(
 }
 
 // static
-void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
+void TestRecipeReplayer::SetUpHostResolverRules(
+    base::CommandLine* command_line) {
   // Direct traffic to the Web Page Replay server.
   command_line->AppendSwitchASCII(
       network::switches::kHostResolverRules,
@@ -754,6 +762,10 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
           "EXCLUDE content-autofill.googleapis.com,"
           "EXCLUDE localhost",
           kHostHttpPort, kHostHttpsPort));
+}
+
+// static
+void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
