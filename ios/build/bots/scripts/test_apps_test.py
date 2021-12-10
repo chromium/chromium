@@ -118,6 +118,20 @@ class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
 
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch(
+      'test_apps.DeviceXCTestUnitTestsApp._xctest_path',
+      return_value=_XCTEST_PATH)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_arg_in_xctestrun_node(self, *args):
+    """Tests fill_xctestrun_node method."""
+    test_app = test_apps.DeviceXCTestUnitTestsApp(
+        _TEST_APP_PATH, repeat_count=20)
+    xctestrun_node = test_app.fill_xctestrun_node()
+    self.assertIn(
+        '--gtest_repeat=20',
+        xctestrun_node.get('TestTargetName', {}).get('CommandLineArguments'))
+
 
 class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
   """Tests to test methods of SimulatorXCTestUnitTestsApp."""
@@ -156,6 +170,20 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
     }
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch(
+      'test_apps.SimulatorXCTestUnitTestsApp._xctest_path',
+      return_value=_XCTEST_PATH)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_arg_in_xctestrun_node(self, *args):
+    """Tests fill_xctestrun_node method."""
+    test_app = test_apps.SimulatorXCTestUnitTestsApp(
+        _TEST_APP_PATH, repeat_count=20)
+    xctestrun_node = test_app.fill_xctestrun_node()
+    self.assertIn(
+        '--gtest_repeat=20',
+        xctestrun_node.get('TestTargetName', {}).get('CommandLineArguments'))
 
 
 class GTestsAppTest(test_runner_test.TestCase):
