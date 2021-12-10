@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -553,7 +549,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         Assert.assertNotNull(tosAndUmaFragment);
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
-        onView(withId(R.id.send_report_checkbox)).check(doesNotExist());
+        Assert.assertEquals(
+                "Uma checkbox should not be visible.", View.GONE, mUmaCheckBox.getVisibility());
         renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosandumadialog_nopolicy");
     }
 
@@ -574,7 +571,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         Assert.assertNotNull(tosAndUmaFragment);
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
-        onView(withId(R.id.send_report_checkbox)).check(doesNotExist());
+        Assert.assertEquals(
+                "Uma checkbox should not be visible.", View.GONE, mUmaCheckBox.getVisibility());
         renderWithPortraitAndLandscape(
                 tosAndUmaFragment, "fre_tosandumadialog_childaccount_nopolicy");
     }
