@@ -18,7 +18,7 @@
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
-#include "cc/trees/layer_tree_host.h"
+#include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
 
@@ -182,7 +182,7 @@ bool TextureLayer::Update() {
   return updated || !update_rect().IsEmpty();
 }
 
-bool TextureLayer::IsSnappedToPixelGridInTarget() {
+bool TextureLayer::IsSnappedToPixelGridInTarget() const {
   // Often layers are positioned with CSS to "50%", which can often leave them
   // with a fractional (N + 0.5) pixel position. This would leave them looking
   // fuzzy, so we request that TextureLayers are snapped to the pixel grid,
@@ -212,8 +212,10 @@ void TextureLayer::PushPropertiesTo(
     if (holder_ref_) {
       TransferableResourceHolder* holder = holder_ref_->holder();
       resource = holder->resource();
-      release_callback = holder->GetCallbackForImplThread(
-          layer_tree_host()->GetTaskRunnerProvider()->MainThreadTaskRunner());
+      release_callback =
+          holder->GetCallbackForImplThread(layer->layer_tree_impl()
+                                               ->task_runner_provider()
+                                               ->MainThreadTaskRunner());
     }
     texture_layer->SetTransferableResource(resource,
                                            std::move(release_callback));

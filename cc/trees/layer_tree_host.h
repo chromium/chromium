@@ -157,7 +157,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // The commit state for the frame being assembled by the compositor host.
   const CommitState* pending_commit_state() const {
-    DCHECK(task_runner_provider_->IsMainThread());
+    DCHECK(IsMainThread());
     return pending_commit_state_.get();
   }
 
@@ -165,7 +165,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // state is *not* snapshotted. Both the compositor and the host access a
   // single live version, so care must be taken to avoid collisions.
   const ThreadUnsafeCommitState& thread_unsafe_commit_state() const {
-    // TODO(szager): DCHECK(task_runner_provider_->IsMainThread());
+    DCHECK(IsMainThread());
     return thread_unsafe_commit_state_;
   }
   // This should only be used to get a reference to ThreadUnsafeCommitState for
@@ -185,9 +185,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // UIResourceLayers pushed to the LayerTree.
   UIResourceManager* GetUIResourceManager();
 
-  // Returns the TaskRunnerProvider used to access the main and compositor
-  // thread task runners.
+  // These methods are safe to call from either thread.
   TaskRunnerProvider* GetTaskRunnerProvider();
+  bool IsMainThread() const;
+  bool IsImplThread() const;
 
   // Returns the settings used by this host. These settings are constants given
   // at startup.
@@ -219,6 +220,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void ClearEventsMetrics();
 
   size_t saved_events_metrics_count_for_testing() const {
+    DCHECK(IsMainThread());
     return events_metrics_manager_.saved_events_metrics_count_for_testing();
   }
 
@@ -317,6 +319,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // though commits may be deferred also when the local_surface_id_from_parent()
   // is not valid.
   bool defer_main_frame_update() const {
+    DCHECK(IsMainThread());
     return defer_main_frame_update_count_;
   }
 
@@ -429,7 +432,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                                   EventListenerProperties event_properties);
   EventListenerProperties event_listener_properties(
       EventListenerClass event_class) const {
-    DCHECK(task_runner_provider_->IsMainThread());
+    DCHECK(IsMainThread());
     return pending_commit_state()
         ->event_listener_properties[static_cast<size_t>(event_class)];
   }
@@ -554,6 +557,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   bool HasCompositorDrivenScrollAnimationForTesting() const {
+    DCHECK(IsMainThread());
     return scroll_animation_.in_progress;
   }
 
@@ -601,14 +605,21 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   Layer* LayerById(int id);
 
   bool PaintContent(const LayerList& update_layer_list);
-  bool in_paint_layer_contents() const { return in_paint_layer_contents_; }
+  bool in_paint_layer_contents() const {
+    DCHECK(IsMainThread());
+    return in_paint_layer_contents_;
+  }
 
   bool in_commit() const {
+    DCHECK(IsMainThread());
     return commit_completion_event_ && !commit_completion_event_->IsSignaled();
   }
 
   void SetHasCopyRequest(bool has_copy_request);
-  bool has_copy_request() const { return has_copy_request_; }
+  bool has_copy_request() const {
+    DCHECK(IsMainThread());
+    return has_copy_request_;
+  }
 
   void AddSurfaceRange(const viz::SurfaceRange& surface_range);
   void RemoveSurfaceRange(const viz::SurfaceRange& surface_range);
@@ -627,8 +638,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Ensures a HUD layer exists if it is needed, and updates the HUD bounds and
   // position. If a HUD layer exists but is no longer needed, it is destroyed.
   void UpdateHudLayer(bool show_hud_info);
-  HeadsUpDisplayLayer* hud_layer() { return hud_layer_.get(); }
-  const HeadsUpDisplayLayer* hud_layer() const { return hud_layer_.get(); }
+  HeadsUpDisplayLayer* hud_layer() {
+    DCHECK(IsMainThread());
+    return hud_layer_.get();
+  }
+  const HeadsUpDisplayLayer* hud_layer() const {
+    DCHECK(IsMainThread());
+    return hud_layer_.get();
+  }
   bool is_hud_layer(const Layer*) const;
 
   virtual void SetNeedsFullTreeSync();
@@ -686,8 +703,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
       LayerTreeHostImplClient* client);
   void DidLoseLayerTreeFrameSink();
-  void DidCommitAndDrawFrame() { client_->DidCommitAndDrawFrame(); }
+  void DidCommitAndDrawFrame() {
+    DCHECK(IsMainThread());
+    client_->DidCommitAndDrawFrame();
+  }
   void DidReceiveCompositorFrameAck() {
+    DCHECK(IsMainThread());
     client_->DidReceiveCompositorFrameAck();
   }
   bool UpdateLayers();
@@ -706,18 +727,26 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyTransitionRequestsFinished(
       const std::vector<uint32_t>& sequence_ids);
 
-  LayerTreeHostClient* client() { return client_; }
+  LayerTreeHostClient* client() {
+    DCHECK(IsMainThread());
+    return client_;
+  }
   LayerTreeHostSchedulingClient* scheduling_client() {
+    DCHECK(IsMainThread());
     return scheduling_client_;
   }
 
   void CollectRenderingStats(RenderingStats* stats) const;
 
   RenderingStatsInstrumentation* rendering_stats_instrumentation() const {
+    DCHECK(IsMainThread());
     return rendering_stats_instrumentation_.get();
   }
 
-  Proxy* proxy() { return proxy_.get(); }
+  Proxy* proxy() {
+    DCHECK(IsMainThread());
+    return proxy_.get();
+  }
 
   bool IsSingleThreaded() const;
   bool IsThreaded() const;
@@ -761,6 +790,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       PaintWorkletInput::PropertyKey property_key,
       PaintWorkletInput::PropertyValue property_value) override {}
 
+  bool RunsOnCurrentThread() const override;
+
   void ScrollOffsetAnimationFinished() override {}
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
@@ -772,7 +803,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void RequestBeginMainFrameNotExpected(bool new_state);
 
-  float recording_scale_factor() const { return recording_scale_factor_; }
+  float recording_scale_factor() const {
+    DCHECK(IsMainThread());
+    return recording_scale_factor_;
+  }
 
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
@@ -822,15 +856,17 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // task_graph_runner() returns a valid value only until the LayerTreeHostImpl
   // is created in CreateLayerTreeHostImpl().
-  TaskGraphRunner* task_graph_runner() const { return task_graph_runner_; }
-
+  TaskGraphRunner* task_graph_runner() const {
+    DCHECK(IsMainThread());
+    return task_graph_runner_;
+  }
   CommitState* pending_commit_state() {
     DCHECK(task_runner_provider_->IsMainThread());
     return pending_commit_state_.get();
   }
   ThreadUnsafeCommitState& thread_unsafe_commit_state() {
-    // TODO(szager): DCHECK(task_runner_provider_->IsMainThread());
-    // TODO(szager): WaitForCommitCompletion();
+    DCHECK(IsMainThread());
+    WaitForCommitCompletion();
     return thread_unsafe_commit_state_;
   }
 
@@ -847,6 +883,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
  private:
   friend class LayerTreeHostSerializationTest;
+  friend class LayerTreeTest;
   friend class ScopedDeferMainFrameUpdate;
 
   // This is the number of consecutive frames in which we want the content to be

@@ -249,11 +249,11 @@ void ProxyImpl::MainFrameWillHappenOnImplForTesting(
   completion->Signal();
 }
 
-void ProxyImpl::RequestBeginMainFrameNotExpected(bool new_state) {
+void ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl(bool new_state) {
   DCHECK(IsImplThread());
   DCHECK(scheduler_);
-  TRACE_EVENT1("cc", "ProxyImpl::RequestBeginMainFrameNotExpected", "new_state",
-               new_state);
+  TRACE_EVENT1("cc", "ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl",
+               "new_state", new_state);
   scheduler_->SetMainThreadWantsBeginMainFrameNotExpected(new_state);
 }
 

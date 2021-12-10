@@ -682,7 +682,7 @@ void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
   DCHECK(IsMainThread());
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ProxyImpl::RequestBeginMainFrameNotExpected,
+      base::BindOnce(&ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl,
                      base::Unretained(proxy_impl_.get()), new_state));
 }
 

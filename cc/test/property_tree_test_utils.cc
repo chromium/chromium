@@ -520,10 +520,13 @@ gfx::Vector2dF ScrollDelta(const LayerImpl* layer) {
       layer->element_id());
 }
 
-gfx::PointF CurrentScrollOffset(const Layer* layer) {
-  auto result = GetPropertyTrees(layer)->scroll_tree.current_scroll_offset(
-      layer->element_id());
-  if (!layer->layer_tree_host()->IsUsingLayerLists())
+gfx::PointF CurrentScrollOffset(const Layer* layer,
+                                const PropertyTrees* property_trees) {
+  if (!property_trees && layer->IsAttached())
+    property_trees = layer->layer_tree_host()->property_trees();
+  auto result =
+      property_trees->scroll_tree.current_scroll_offset(layer->element_id());
+  if (!layer->IsUsingLayerLists())
     DCHECK_EQ(layer->scroll_offset(), result);
   return result;
 }

@@ -268,7 +268,6 @@ class LayerTreeHostImplTest : public testing::Test,
     did_request_impl_side_invalidation_ = true;
   }
   void NotifyImageDecodeRequestFinished() override {}
-  void RequestBeginMainFrameNotExpected(bool new_state) override {}
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
@@ -11681,11 +11680,12 @@ TEST_P(LayerTreeHostImplTestWithRenderer, ShutdownReleasesContext) {
   constexpr double refresh_rate = 60.0;
   viz::RendererSettings renderer_settings = viz::RendererSettings();
   renderer_settings.use_skia_renderer = renderer_type() == RENDERER_SKIA;
+  std::unique_ptr<TaskRunnerProvider> task_runner_provider =
+      TaskRunnerProvider::Create(base::ThreadTaskRunnerHandle::Get(), nullptr);
   auto layer_tree_frame_sink = std::make_unique<TestLayerTreeFrameSink>(
       context_provider, viz::TestContextProvider::CreateWorker(), nullptr,
-      renderer_settings, &debug_settings_,
-      base::ThreadTaskRunnerHandle::Get().get(), synchronous_composite,
-      disable_display_vsync, refresh_rate);
+      renderer_settings, &debug_settings_, task_runner_provider.get(),
+      synchronous_composite, disable_display_vsync, refresh_rate);
   layer_tree_frame_sink->SetClient(&test_client);
 
   CreateHostImpl(DefaultSettings(), std::move(layer_tree_frame_sink));

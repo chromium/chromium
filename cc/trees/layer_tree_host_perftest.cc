@@ -60,7 +60,7 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        ImplThreadTaskRunner(), synchronous_composite, disable_display_vsync,
+        task_runner_provider(), synchronous_composite, disable_display_vsync,
         refresh_rate);
   }
 

@@ -133,14 +133,25 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // The list of children of this layer.
   const LayerList& children() const { return inputs_.children; }
 
+  // These methods provide information from layer_tree_host_ in a way that is
+  // safe to query from either the main or impl thread.
   bool IsAttached() const { return layer_tree_host_; }
+  bool IsMainThread() const;
+  bool IsImplThread() const;
+  bool IsUsingLayerLists() const;
 
   // Gets the LayerTreeHost that this layer is attached to, or null if not.
   // A layer is attached to a LayerTreeHost if it or an ancestor layer is set as
   // the root layer of a LayerTreeHost (while noting only a layer without a
   // parent may be set as the root layer).
-  LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
-  const LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
+  LayerTreeHost* layer_tree_host() {
+    DCHECK(!IsAttached() || IsMainThread());
+    return layer_tree_host_;
+  }
+  const LayerTreeHost* layer_tree_host() const {
+    DCHECK(!IsAttached() || IsMainThread());
+    return layer_tree_host_;
+  }
 
   // This requests the layer and its subtree be rendered and given to the
   // callback. If the copy is unable to be produced (the layer is destroyed
@@ -224,7 +235,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   }
 
   // Returns the bounds which is clipped by the clip rect.
-  gfx::RectF EffectiveClipRect();
+  gfx::RectF EffectiveClipRect() const;
 
   // For layer tree mode only.
   // Set or get a layer that will mask the contents of this layer. The alpha
@@ -667,7 +678,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // grid in its rendering target. This ensures that the layer is not fuzzy
   // (unless it is being scaled). Layers may override this to return true, by
   // default layers are not snapped.
-  virtual bool IsSnappedToPixelGridInTarget();
+  virtual bool IsSnappedToPixelGridInTarget() const;
 
   // Internal method that is called when a Layer is attached to a LayerTreeHost.
   // This would happen when

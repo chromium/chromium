@@ -4932,6 +4932,12 @@ void LayerTreeHostImpl::OnCustomPropertyMutated(
                                                  std::move(property_value));
 }
 
+bool LayerTreeHostImpl::RunsOnCurrentThread() const {
+  // If there is no impl thread, then we assume the current thread is ok.
+  return !task_runner_provider_->HasImplThread() ||
+         task_runner_provider_->IsImplThread();
+}
+
 void LayerTreeHostImpl::SetElementBackdropFilterMutated(
     ElementId element_id,
     ElementListType list_type,

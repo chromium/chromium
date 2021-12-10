@@ -117,7 +117,7 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
   auto delegating_output_surface = std::make_unique<TestLayerTreeFrameSink>(
       compositor_context_provider, worker_context_provider,
       gpu_memory_buffer_manager(), test_settings, &debug_settings_,
-      ImplThreadTaskRunner(), synchronous_composite, disable_display_vsync,
+      task_runner_provider(), synchronous_composite, disable_display_vsync,
       refresh_rate);
   delegating_output_surface->SetEnlargePassTextureAmount(
       enlarge_texture_amount_);

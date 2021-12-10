@@ -10,6 +10,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/proxy_impl.h"
 #include "cc/trees/proxy_main.h"
+#include "cc/trees/single_thread_proxy.h"
 
 namespace cc {
 
@@ -471,14 +472,23 @@ class LayerTreeHostProxyTestImplFrameCausesAnimatePending
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     switch (host_impl->sync_tree()->source_frame_number()) {
       case 0: {
-        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        }
         host_impl->SetNeedsOneBeginImplFrame();
-        EXPECT_TRUE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_TRUE(proxy()->RequestedAnimatePending());
+        }
         PostSetNeedsCommitToMainThread();
         break;
       }
       case 1: {
-        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        }
         EndTest();
         break;
       }

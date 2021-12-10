@@ -162,6 +162,8 @@ class TestHostClient : public MutatorHostClient {
       PaintWorkletInput::PropertyKey property_key,
       PaintWorkletInput::PropertyValue property_value) override {}
 
+  bool RunsOnCurrentThread() const override;
+
   bool mutators_need_commit() const { return mutators_need_commit_; }
   void set_mutators_need_commit(bool need) { mutators_need_commit_ = need; }
 

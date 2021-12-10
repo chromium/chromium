@@ -162,8 +162,6 @@ class LayerTreeHostImplClient {
   // Called when a requested image decode completes.
   virtual void NotifyImageDecodeRequestFinished() = 0;
 
-  virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
-
   // Called when a presentation time is requested. |frame_token| identifies
   // the frame that was presented. |callbacks| holds both impl side and main
   // side callbacks to be called.
@@ -468,6 +466,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void OnCustomPropertyMutated(
       PaintWorkletInput::PropertyKey property_key,
       PaintWorkletInput::PropertyValue property_value) override;
+
+  bool RunsOnCurrentThread() const override;
 
   void ScrollOffsetAnimationFinished() override;
 
@@ -910,6 +910,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Virtual for testing.
   virtual bool AnimateLayers(base::TimeTicks monotonic_time,
                              bool is_active_tree);
+  void ImageDecodeFinished(int request_id, bool decode_succeeded);
 
   bool is_likely_to_require_a_draw() const {
     return is_likely_to_require_a_draw_;
@@ -1000,7 +1001,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
  private:
   void SetContextVisibility(bool is_visible);
-  void ImageDecodeFinished(int request_id, bool decode_succeeded);
 
   void ShowScrollbarsForImplScroll(ElementId element_id);
 

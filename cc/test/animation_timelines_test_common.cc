@@ -353,6 +353,10 @@ void TestHostClient::ExpectTransformPropertyMutated(ElementId element_id,
   EXPECT_EQ(transform_y, layer->transform_y());
 }
 
+bool TestHostClient::RunsOnCurrentThread() const {
+  return true;
+}
+
 TestLayer* TestHostClient::FindTestLayer(ElementId element_id,
                                          ElementListType list_type) const {
   const ElementIdToTestLayer& layers_in_tree =

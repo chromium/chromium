@@ -73,8 +73,14 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const;
 
   // Parent LayerTreeHost or LayerTreeHostImpl.
-  MutatorHostClient* mutator_host_client() { return mutator_host_client_; }
+  MutatorHostClient* mutator_host_client() {
+    DCHECK(!mutator_host_client_ ||
+           mutator_host_client_->RunsOnCurrentThread());
+    return mutator_host_client_;
+  }
   const MutatorHostClient* mutator_host_client() const {
+    DCHECK(!mutator_host_client_ ||
+           mutator_host_client_->RunsOnCurrentThread());
     return mutator_host_client_;
   }
 

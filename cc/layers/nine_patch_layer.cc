@@ -74,7 +74,7 @@ void NinePatchLayer::PushPropertiesTo(
   NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
 
   if (resource_id()) {
-    DCHECK(layer_tree_host());
+    DCHECK(IsAttached());
     layer_impl->SetLayout(image_aperture_, border_, layer_occlusion_,
                           fill_center_, nearest_neighbor_);
   }

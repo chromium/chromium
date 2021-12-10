@@ -227,7 +227,9 @@ const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer);
 
 gfx::PointF ScrollOffsetBase(const LayerImpl* layer);
 gfx::Vector2dF ScrollDelta(const LayerImpl* layer);
-gfx::PointF CurrentScrollOffset(const Layer* layer);
+gfx::PointF CurrentScrollOffset(const Layer* layer,
+                                const PropertyTrees* property_trees = nullptr);
+
 gfx::PointF CurrentScrollOffset(const LayerImpl* layer);
 gfx::PointF MaxScrollOffset(const LayerImpl* layer);
 

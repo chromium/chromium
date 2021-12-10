@@ -74,6 +74,8 @@ class MutatorHostClient {
   virtual void OnCustomPropertyMutated(
       PaintWorkletInput::PropertyKey property_key,
       PaintWorkletInput::PropertyValue property_value) = 0;
+
+  virtual bool RunsOnCurrentThread() const = 0;
 };
 
 }  // namespace cc

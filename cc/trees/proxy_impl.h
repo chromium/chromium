@@ -84,8 +84,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);
+  void RequestBeginMainFrameNotExpectedOnImpl(bool new_state);
 
-  void RequestBeginMainFrameNotExpected(bool new_state) override;
   void ClearHistory() override;
   size_t CommitDurationSampleCountForTesting() const override;
 

@@ -188,28 +188,29 @@ class LayerTreeHostScrollTestScrollMultipleRedraw
       : initial_scroll_(40, 10), scroll_amount_(-3, 17) {}
 
   void BeginTest() override {
-    scroll_layer_ = layer_tree_host()->OuterViewportScrollLayerForTesting();
-    SetScrollOffset(scroll_layer_.get(), initial_scroll_);
+    Layer* scroll_layer =
+        layer_tree_host()->OuterViewportScrollLayerForTesting();
+    scroll_layer_id_ = scroll_layer->id();
+    SetScrollOffset(scroll_layer, initial_scroll_);
     PostSetNeedsCommitToMainThread();
   }
 
-  void BeginCommitOnThread(LayerTreeHostImpl* impl) override {
+  void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
+    LayerImpl* layer_impl = impl->sync_tree()->LayerById(scroll_layer_id_);
     switch (impl->sync_tree()->source_frame_number()) {
       case 0:
-        EXPECT_POINTF_EQ(initial_scroll_,
-                         CurrentScrollOffset(scroll_layer_.get()));
+        EXPECT_POINTF_EQ(initial_scroll_, CurrentScrollOffset(layer_impl));
         break;
       case 1:
       case 2:
         EXPECT_POINTF_EQ(initial_scroll_ + scroll_amount_ + scroll_amount_,
-                         CurrentScrollOffset(scroll_layer_.get()));
+                         CurrentScrollOffset(layer_impl));
         break;
     }
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
-    LayerImpl* scroll_layer =
-        impl->active_tree()->LayerById(scroll_layer_->id());
+    LayerImpl* scroll_layer = impl->active_tree()->LayerById(scroll_layer_id_);
     if (impl->active_tree()->source_frame_number() == 0 &&
         impl->SourceAnimationFrameNumberForTesting() == 1) {
       // First draw after first commit.
@@ -226,15 +227,12 @@ class LayerTreeHostScrollTestScrollMultipleRedraw
       scroll_layer->ScrollBy(scroll_amount_);
       EXPECT_VECTOR2DF_EQ(scroll_amount_ + scroll_amount_,
                           ScrollDelta(scroll_layer));
-
-      EXPECT_POINTF_EQ(initial_scroll_,
-                       CurrentScrollOffset(scroll_layer_.get()));
       PostSetNeedsCommitToMainThread();
     } else if (impl->active_tree()->source_frame_number() == 1) {
       // Third or later draw after second commit.
       EXPECT_GE(impl->SourceAnimationFrameNumberForTesting(), 3u);
       EXPECT_POINTF_EQ(initial_scroll_ + scroll_amount_ + scroll_amount_,
-                       CurrentScrollOffset(scroll_layer_.get()));
+                       CurrentScrollOffset(scroll_layer));
       EndTest();
     }
   }
@@ -244,7 +242,7 @@ class LayerTreeHostScrollTestScrollMultipleRedraw
  private:
   gfx::PointF initial_scroll_;
   gfx::Vector2dF scroll_amount_;
-  scoped_refptr<Layer> scroll_layer_;
+  int scroll_layer_id_ = 0;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestScrollMultipleRedraw);

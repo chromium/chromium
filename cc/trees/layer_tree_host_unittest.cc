@@ -113,9 +113,9 @@ const char kCheckerboardAreaRatio[] = "CheckerboardedContentAreaRatio";
 const char kMissingTiles[] = "NumMissingTiles";
 
 bool LayerSubtreeHasCopyRequest(Layer* layer) {
-  LayerTreeHost* host = layer->layer_tree_host();
+  const LayerTreeHost* host = layer->layer_tree_host();
   int index = layer->effect_tree_index();
-  auto* node = host->property_trees()->effect_tree.Node(index);
+  const auto* node = host->property_trees()->effect_tree.Node(index);
   return node->subtree_has_copy_request;
 }
 
@@ -2068,7 +2068,9 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
 
   void WillCommit(const CommitState&) override {
     root_effect_tree_index_ =
-        layer_tree_host()->root_layer()->effect_tree_index();
+        const_cast<const LayerTreeHost*>(layer_tree_host())
+            ->root_layer()
+            ->effect_tree_index();
   }
 
   void DidCommit() override {
@@ -4345,7 +4347,7 @@ class OnDrawLayerTreeFrameSink : public TestLayerTreeFrameSink {
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
       const viz::DebugRendererSettings* const debug_settings,
-      base::SingleThreadTaskRunner* task_runner,
+      TaskRunnerProvider* task_runner_provider,
       bool synchronous_composite,
       double refresh_rate,
       base::RepeatingClosure invalidate_callback)
@@ -4354,7 +4356,7 @@ class OnDrawLayerTreeFrameSink : public TestLayerTreeFrameSink {
                                gpu_memory_buffer_manager,
                                renderer_settings,
                                debug_settings,
-                               task_runner,
+                               task_runner_provider,
                                synchronous_composite,
                                false /* disable_display_vsync */,
                                refresh_rate),
@@ -4394,7 +4396,7 @@ class LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor
     auto frame_sink = std::make_unique<OnDrawLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        ImplThreadTaskRunner(), false /* synchronous_composite */, refresh_rate,
+        task_runner_provider(), false /* synchronous_composite */, refresh_rate,
         std::move(on_draw_callback));
     layer_tree_frame_sink_ = frame_sink.get();
     return std::move(frame_sink);
@@ -4436,7 +4438,7 @@ class LayerTreeHostTestSynchronousCompositorActivateWithoutDraw
     auto frame_sink = std::make_unique<OnDrawLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        ImplThreadTaskRunner(),
+        task_runner_provider(),
         /*synchronous_composite=*/false, refresh_rate,
         /*invalidate_callback=*/base::DoNothing());
     return std::move(frame_sink);
@@ -7272,7 +7274,7 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        ImplThreadTaskRunner(), synchronous_composite, disable_display_vsync,
+        task_runner_provider(), synchronous_composite, disable_display_vsync,
         refresh_rate);
   }
 

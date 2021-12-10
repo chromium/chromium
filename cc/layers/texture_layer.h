@@ -154,7 +154,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool Update() override;
-  bool IsSnappedToPixelGridInTarget() override;
+  bool IsSnappedToPixelGridInTarget() const override;
   void PushPropertiesTo(LayerImpl* layer,
                         const CommitState& commit_state,
                         const ThreadUnsafeCommitState& unsafe_state) override;

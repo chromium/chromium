@@ -592,7 +592,7 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        ImplThreadTaskRunner(), synchronous_composite, disable_display_vsync,
+        task_runner_provider(), synchronous_composite, disable_display_vsync,
         refresh_rate);
   }
 
@@ -1394,7 +1394,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
         !layer_tree_host()->GetSettings().single_thread_proxy_scheduler;
     auto sink = std::make_unique<TestLayerTreeFrameSink>(
         nullptr, nullptr, gpu_memory_buffer_manager(), renderer_settings,
-        &debug_settings_, ImplThreadTaskRunner(), synchronous_composite,
+        &debug_settings_, task_runner_provider(), synchronous_composite,
         disable_display_vsync, refresh_rate);
     frame_sink_ = sink.get();
     num_frame_sinks_created_++;

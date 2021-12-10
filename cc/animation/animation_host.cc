@@ -258,27 +258,27 @@ void AnimationHost::UnregisterAnimationForElement(ElementId element_id,
 }
 
 void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
-  if (mutator_host_client_ == client)
+  if (mutator_host_client() == client)
     return;
 
   mutator_host_client_ = client;
-  if (mutator_host_client_ && needs_push_properties_)
-    mutator_host_client_->SetMutatorsNeedCommit();
+  if (mutator_host_client() && needs_push_properties_)
+    mutator_host_client()->SetMutatorsNeedCommit();
 }
 
 void AnimationHost::SetNeedsCommit() {
-  DCHECK(mutator_host_client_);
-  mutator_host_client_->SetMutatorsNeedCommit();
+  DCHECK(mutator_host_client());
+  mutator_host_client()->SetMutatorsNeedCommit();
   // TODO(loyso): Invalidate property trees only if really needed.
-  mutator_host_client_->SetMutatorsNeedRebuildPropertyTrees();
+  mutator_host_client()->SetMutatorsNeedRebuildPropertyTrees();
 }
 
 void AnimationHost::SetNeedsPushProperties() {
   if (needs_push_properties_)
     return;
   needs_push_properties_ = true;
-  if (mutator_host_client_)
-    mutator_host_client_->SetMutatorsNeedCommit();
+  if (mutator_host_client())
+    mutator_host_client()->SetMutatorsNeedCommit();
 }
 
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
@@ -412,8 +412,8 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
   auto on_done = base::BindOnce(
       [](base::WeakPtr<AnimationHost> animation_host, ElementListType tree_type,
          MutateStatus status) {
-        if (animation_host->mutator_host_client_) {
-          animation_host->mutator_host_client_
+        if (animation_host->mutator_host_client()) {
+          animation_host->mutator_host_client()
               ->NotifyAnimationWorkletStateChange(
                   ToAnimationWorkletMutationState(status), tree_type);
         }
@@ -425,7 +425,7 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
                      : MutateQueuingStrategy::kQueueHighPriority;
   if (mutator_->Mutate(std::move(state), queuing_strategy,
                        std::move(on_done))) {
-    mutator_host_client_->NotifyAnimationWorkletStateChange(
+    mutator_host_client()->NotifyAnimationWorkletStateChange(
         AnimationWorkletMutationState::STARTED, tree_type);
   }
   return;
