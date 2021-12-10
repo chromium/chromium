@@ -40,9 +40,6 @@ class WebContentsUserData : public base::SupportsUserData::Data {
   explicit WebContentsUserData(WebContents& web_contents)
       : web_contents_(&web_contents) {}
 
-  // TODO(crbug.com/1268914) : Remove this constructor.
-  WebContentsUserData() = default;
-
   // Creates an object of type T, and attaches it to the specified WebContents.
   // If an instance is already attached, does nothing.
   template <typename... Args>
@@ -75,18 +72,8 @@ class WebContentsUserData : public base::SupportsUserData::Data {
   // The returned `WebContents` is guaranteed to live as long as `this`
   // WebContentsUserData (due to how UserData works - WebContents
   // owns `this` UserData).
-  content::WebContents& GetWebContents() {
-    // TODO(crbug.com/1268914) : Remove when we can't call the default
-    // constructor.
-    CHECK(web_contents_);
-    return *web_contents_;
-  }
-  const content::WebContents& GetWebContents() const {
-    // TODO(crbug.com/1268914) : Remove when we can't call the default
-    // constructor.
-    CHECK(web_contents_);
-    return *web_contents_;
-  }
+  content::WebContents& GetWebContents() { return *web_contents_; }
+  const content::WebContents& GetWebContents() const { return *web_contents_; }
 
  private:
   // This is a pointer (rather than a reference) to ensure that go/miracleptr
