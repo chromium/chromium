@@ -161,6 +161,7 @@ generate_grd("build_grd") {
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
     "images/keyboard_shortcut.svg",
+    "images/keyboard_shortcut_dark.svg",
     "images/smart_privacy.svg",
     "images/switch_access_setup_guide_assign_select.svg",
     "images/switch_access_setup_guide_assign_next.svg",
