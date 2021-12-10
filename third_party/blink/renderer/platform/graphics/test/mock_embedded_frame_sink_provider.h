@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
@@ -94,6 +95,27 @@ class MockEmbeddedFrameSinkProvider
         },
         WTF::Unretained(receiver)));
   }
+
+  // Similar to above but allows for an override that binds multiple concurrent
+  // receivers.
+  std::unique_ptr<TestingPlatformSupport::ScopedOverrideMojoInterface>
+  CreateScopedOverrideMojoInterface(
+      mojo::ReceiverSet<mojom::blink::EmbeddedFrameSinkProvider>& receivers) {
+    using mojom::blink::EmbeddedFrameSinkProvider;
+
+    return std::make_unique<
+        TestingPlatformSupport::ScopedOverrideMojoInterface>(WTF::BindRepeating(
+        [](EmbeddedFrameSinkProvider* impl,
+           mojo::ReceiverSet<EmbeddedFrameSinkProvider>* receivers,
+           const char* interface_name, mojo::ScopedMessagePipeHandle pipe) {
+          if (strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))
+            return;
+          receivers->Add(impl, mojo::PendingReceiver<EmbeddedFrameSinkProvider>(
+                                   std::move(pipe)));
+        },
+        WTF::Unretained(this), WTF::Unretained(&receivers)));
+  }
+
   MockCompositorFrameSink& mock_compositor_frame_sink() const {
     return *mock_compositor_frame_sink_;
   }

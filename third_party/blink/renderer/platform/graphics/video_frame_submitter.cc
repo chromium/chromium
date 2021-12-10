@@ -46,7 +46,7 @@ namespace {
 // FrameSinkId. This is used to aggregate Viz communication and substantially
 // reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
 const base::Feature kUseVideoFrameSinkBundle{"UseVideoFrameSinkBundle",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
