@@ -498,6 +498,9 @@ ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
 
   if (ProfileShortcutManager::IsFeatureEnabled() && !user_data_dir_.empty())
     profile_shortcut_manager_ = ProfileShortcutManager::Create(this);
+
+  zombie_metrics_timer_.Start(FROM_HERE, base::Minutes(30), this,
+                              &ProfileManager::RecordZombieMetrics);
 }
 
 ProfileManager::~ProfileManager() {
@@ -1389,13 +1392,25 @@ bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
   return info->keep_alives[origin] > 0;
 }
 
-bool ProfileManager::HasZombieProfile() const {
+void ProfileManager::DisableProfileMetricsForTesting() {
+  zombie_metrics_timer_.Stop();
+}
+
+size_t ProfileManager::GetZombieProfileCount() const {
+  size_t zombie_count = 0;
   for (const base::FilePath& dir : ever_loaded_profiles_) {
     const ProfileInfo* info = GetProfileInfoByPath(dir);
     if (!info || GetTotalRefCount(info->keep_alives) == 0)
-      return true;
+      zombie_count++;
   }
-  return false;
+  return zombie_count;
+}
+
+void ProfileManager::RecordZombieMetrics() {
+  size_t zombie_count = GetZombieProfileCount();
+  base::UmaHistogramCounts100("Profile.LiveProfileCount",
+                              ever_loaded_profiles_.size() - zombie_count);
+  base::UmaHistogramCounts100("Profile.ZombieProfileCount", zombie_count);
 }
 
 void ProfileManager::AddKeepAlive(const Profile* profile,

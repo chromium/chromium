@@ -687,7 +687,7 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
                               pmd.os_dump().private_footprint_kb / kKiB);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (process_type == HistogramProcessType::kBrowser && profile_manager &&
-      profile_manager->HasZombieProfile()) {
+      profile_manager->GetZombieProfileCount() > 0) {
     // Measure impact of the DestroyProfileOnBrowserClose experiment.
     MEMORY_METRICS_HISTOGRAM_MB(
         GetPrivateFootprintHistogramName(process_type) + ".HasZombieProfile",
@@ -1117,7 +1117,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-    if (profile_manager && profile_manager->HasZombieProfile()) {
+    if (profile_manager && profile_manager->GetZombieProfileCount() > 0) {
       // Measure impact of the DestroyProfileOnBrowserClose experiment.
       UMA_HISTOGRAM_MEMORY_LARGE_MB(
           "Memory.Total.PrivateMemoryFootprint.HasZombieProfile",

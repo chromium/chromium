@@ -362,6 +362,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.LiveProfileCount" units="profiles"
+    expires_after="2022-04-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Number of Profiles that are currently loaded in memory, with a non-zero
+    refcount. Recorded 30 minutes after startup, and every 30 minutes
+    afterwards.
+
+    See also Profile.ZombieProfileCount, the number of Profiles with a refcount
+    of 0.
+  </summary>
+</histogram>
+
 <histogram name="Profile.Menu.ClickedActionableItem"
     enum="ProfileMenuActionableItem" expires_after="2022-06-30">
   <owner>droger@chromium.org</owner>
@@ -813,6 +827,30 @@ chromium-metrics-reviews@google.com.
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the web data database.</summary>
+</histogram>
+
+<histogram name="Profile.ZombieProfileCount" units="profiles"
+    expires_after="2022-04-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Number of Profiles that are in a &quot;zombie&quot; state. Recorded 30
+    minutes after startup, and every 30 minutes afterwards. A &quot;zombie&quot;
+    profile is one of 2 things, depending on the DestroyProfileOnBrowserClose
+    (DPoBC) variation:
+
+    If DPoBC is false: the Profile has a refcount of 0, but is still loaded in
+    memory.
+
+    If DPoBC is false: the Profile object was destroyed, and isn't loaded in
+    memory anymore.
+
+    When a Profile is destroyed but gets loaded from disk again, it stops being
+    a zombie.
+
+    See also Profile.LiveProfileCount, the number of profiles with a non-zero
+    refcount.
+  </summary>
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"

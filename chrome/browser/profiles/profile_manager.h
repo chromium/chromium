@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -286,8 +287,11 @@ class ProfileManager : public Profile::Delegate {
   bool HasKeepAliveForTesting(const Profile* profile,
                               ProfileKeepAliveOrigin origin);
 
-  // Returns true if there's at least one profile in a "zombie" state, which
-  // means either:
+  // Disables the periodic reporting of profile metrics, as this is causing
+  // tests to time out.
+  void DisableProfileMetricsForTesting();
+
+  // Returns the number of profiles in a "zombie" state, which means either:
   //
   //   - this profile was destroyed from memory,
   //   - this profile has a refcount of 0, meaning it's safe to destroy.
@@ -298,7 +302,7 @@ class ProfileManager : public Profile::Delegate {
   //
   // This is used for an A/B test, that measures the impact of the
   // DestroyProfileOnBrowserClose variation on memory usage.
-  bool HasZombieProfile() const;
+  size_t GetZombieProfileCount() const;
 
  protected:
   // Creates a new profile by calling into the profile's profile creation
@@ -386,8 +390,11 @@ class ProfileManager : public Profile::Delegate {
   void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
   void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
 
-  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a Profile*
-  // to be deleted from now on, even if it never had a visible browser window.
+  void RecordZombieMetrics();
+
+  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a
+  // Profile* to be deleted from now on, even if it never had a visible
+  // browser window.
   void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
 
   // Helper for RemoveKeepAlive() and ClearFirstBrowserWindowFlag(). If the
@@ -583,6 +590,10 @@ class ProfileManager : public Profile::Delegate {
   // point (or are currently loaded). This is used to measure memory savings
   // from DestroyProfileOnBrowserClose.
   std::set<base::FilePath> ever_loaded_profiles_;
+
+  // Runs a task every 30 minutes to record the number of zombie & non-zombie
+  // profiles in memory.
+  base::RepeatingTimer zombie_metrics_timer_;
 
   // Controls whether to initialize some services. Only disabled for testing.
   bool do_final_services_init_ = true;

@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_receiver.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader.h"
@@ -212,6 +213,7 @@ class IncidentReportingServiceTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     // Disable profile metrics reporting, otherwise the calls to
     // FastForwardUntilNoTasksRemain() never return.
+    profile_manager_.profile_manager()->DisableProfileMetricsForTesting();
     profile_manager_.profile_attributes_storage()
         ->DisableProfileMetricsForTesting();
   }
