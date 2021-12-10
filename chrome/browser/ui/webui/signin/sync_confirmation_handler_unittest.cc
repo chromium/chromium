@@ -226,7 +226,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
       "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());
@@ -236,7 +236,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIfPrimaryAccountReadyLater) {
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   // No callback called when there's no account image available.
@@ -254,7 +254,7 @@ TEST_F(SyncConfirmationHandlerTest,
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
   EXPECT_EQ(0U, web_ui()->call_data().size());
 
@@ -287,7 +287,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoManaged) {
       "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());

@@ -656,8 +656,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
   if (!app_page_names || !app_page_names->GetList().size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::ListValue* list = update.Get();
-    list->Set(0, std::make_unique<base::Value>(
-                     l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME)));
+    list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
     dictionary->SetKey("appPageNames", list->Clone());
   } else {
     dictionary->SetKey("appPageNames", app_page_names->Clone());
@@ -1108,8 +1107,7 @@ void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
   base::ListValue* list = update.Get();
-  list->Set(static_cast<size_t>(page_index),
-            std::make_unique<base::Value>(name));
+  list->GetList()[static_cast<size_t>(page_index)] = base::Value(name);
 }
 
 void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
