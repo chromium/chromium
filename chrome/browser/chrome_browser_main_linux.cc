@@ -64,9 +64,14 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
+#endif
 
+#if !defined(OS_CHROMEOS)
   // Set up crypt config. This should be kept in sync with the OSCrypt parts of
   // SystemNetworkContextManager::OnNetworkServiceCreated.
+  // Chrome OS does not need a crypt config as its user data directories are
+  // already encrypted and none of the true encryption backends used by desktop
+  // Linux are available on Chrome OS anyway.
   std::unique_ptr<os_crypt::Config> config(new os_crypt::Config());
   // Forward to os_crypt the flag to use a specific password store.
   config->store =

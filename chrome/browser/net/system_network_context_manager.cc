@@ -573,9 +573,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
