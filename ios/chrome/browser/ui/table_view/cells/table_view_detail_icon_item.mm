@@ -164,7 +164,7 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       // Text labels.
       [_textStackView.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kTableViewTrailingContentPadding],
+                         constant:-kTableViewHorizontalSpacing],
       _iconHiddenConstraint,
 
       // Leading constraint for |customSeparator|.
