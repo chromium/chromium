@@ -2101,10 +2101,11 @@ void MediaStreamManager::FinalizeRequestFailed(
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE: {
-      // Fail to change desktop capture source, keep everything unchanged and
+      // Fail to change capture source, keep everything unchanged and
       // bring the previous shared tab to the front.
       for (const auto& device : request->devices) {
-        if (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
+        if (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+            device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
           DesktopMediaID source = DesktopMediaID::Parse(device.id);
           DCHECK(source.type == DesktopMediaID::TYPE_WEB_CONTENTS);
           GetUIThreadTaskRunner({})->PostTask(
