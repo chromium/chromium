@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
-#include "components/content_capture/browser/content_capture_consumer.h"
+#include "components/content_capture/browser/content_capture_test_helper.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -33,125 +33,6 @@ static constexpr char16_t kMainFrameUrl2[] = u"http://foo.com/2.html";
 static constexpr char16_t kChildFrameUrl[] = u"http://foo.org/child.html";
 static constexpr char16_t kMainFrameSameDocument[] =
     u"http://foo.com/main.html#1";
-
-// Fake ContentCaptureSender to call ContentCaptureReceiver mojom interface.
-class FakeContentCaptureSender {
- public:
-  FakeContentCaptureSender() {}
-
-  void DidCaptureContent(const ContentCaptureData& captured_content,
-                         bool first_data) {
-    content_capture_receiver_->DidCaptureContent(captured_content, first_data);
-  }
-
-  void DidUpdateContent(const ContentCaptureData& captured_content) {
-    content_capture_receiver_->DidUpdateContent(captured_content);
-  }
-
-  void DidRemoveContent(const std::vector<int64_t>& data) {
-    content_capture_receiver_->DidRemoveContent(data);
-  }
-
-  mojo::PendingAssociatedReceiver<mojom::ContentCaptureReceiver>
-  GetPendingAssociatedReceiver() {
-    return content_capture_receiver_.BindNewEndpointAndPassDedicatedReceiver();
-  }
-
- private:
-  mojo::AssociatedRemote<mojom::ContentCaptureReceiver>
-      content_capture_receiver_;
-};
-
-class SessionRemovedTestHelper {
- public:
-  void DidRemoveSession(const ContentCaptureSession& data) {
-    removed_sessions_.push_back(data);
-  }
-
-  const std::vector<ContentCaptureSession>& removed_sessions() const {
-    return removed_sessions_;
-  }
-
-  void Reset() { removed_sessions_.clear(); }
-
- private:
-  std::vector<ContentCaptureSession> removed_sessions_;
-};
-
-// The helper class implements ContentCaptureConsumer and keeps the
-// result for verification.
-class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
- public:
-  explicit ContentCaptureConsumerHelper(
-      SessionRemovedTestHelper* session_removed_test_helper)
-      : session_removed_test_helper_(session_removed_test_helper) {}
-
-  void DidCaptureContent(const ContentCaptureSession& parent_session,
-                         const ContentCaptureFrame& data) override {
-    parent_session_ = parent_session;
-    captured_data_ = data;
-  }
-
-  void DidUpdateContent(const ContentCaptureSession& parent_session,
-                        const ContentCaptureFrame& data) override {
-    updated_parent_session_ = parent_session;
-    updated_data_ = data;
-  }
-
-  void DidRemoveContent(const ContentCaptureSession& session,
-                        const std::vector<int64_t>& ids) override {
-    session_ = session;
-    removed_ids_ = ids;
-  }
-
-  void DidRemoveSession(const ContentCaptureSession& data) override {
-    if (session_removed_test_helper_)
-      session_removed_test_helper_->DidRemoveSession(data);
-    removed_sessions_.push_back(data);
-  }
-
-  void DidUpdateTitle(const ContentCaptureFrame& main_frame) override {
-    updated_title_ = main_frame.title;
-  }
-
-  void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override {}
-
-  bool ShouldCapture(const GURL& url) override { return false; }
-
-  const ContentCaptureSession& parent_session() const {
-    return parent_session_;
-  }
-
-  const ContentCaptureSession& updated_parent_session() const {
-    return updated_parent_session_;
-  }
-
-  const ContentCaptureSession& session() const { return session_; }
-
-  const ContentCaptureFrame& captured_data() const { return captured_data_; }
-
-  const ContentCaptureFrame& updated_data() const { return updated_data_; }
-
-  const std::vector<ContentCaptureSession>& removed_sessions() const {
-    return removed_sessions_;
-  }
-
-  const std::vector<int64_t>& removed_ids() const { return removed_ids_; }
-  const std::u16string& updated_title() const { return updated_title_; }
-
-  void Reset() { removed_sessions_.clear(); }
-
- private:
-  ContentCaptureSession parent_session_;
-  ContentCaptureSession updated_parent_session_;
-  ContentCaptureSession session_;
-  ContentCaptureFrame captured_data_;
-  ContentCaptureFrame updated_data_;
-  std::vector<int64_t> removed_ids_;
-  std::vector<ContentCaptureSession> removed_sessions_;
-  raw_ptr<SessionRemovedTestHelper> session_removed_test_helper_;
-  std::u16string updated_title_;
-};
 
 }  // namespace
 

@@ -24,16 +24,23 @@ source_set("browser") {
   deps = []
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_capture_test_helper.cc",
+    "content_capture_test_helper.h",
+  ]
+
+  public_deps = [ ":browser" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "content_capture_receiver_test.cc" ]
 
   deps = [
-    ":browser",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
     "//content/test:test_support",
-    "//mojo/public/cpp/bindings",
-    "//testing/gtest",
   ]
 }
