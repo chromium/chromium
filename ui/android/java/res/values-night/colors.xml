@@ -28,12 +28,12 @@
     <color name="default_bg_color">@color/default_bg_color_baseline</color>
     <color name="default_bg_color_baseline">@color/default_bg_color_dark</color>
     <color name="default_bg_color_secondary">@color/default_bg_color_secondary_dark</color>
-    <color name="default_bg_color_elev_1">@color/default_bg_color_dark_elev_1</color>
-    <color name="default_bg_color_elev_2">@color/default_bg_color_dark_elev_2</color>
-    <color name="default_bg_color_elev_3">@color/default_bg_color_dark_elev_3</color>
-    <color name="default_bg_color_elev_4">@color/default_bg_color_dark_elev_4</color>
-    <color name="default_bg_color_elev_5">@color/default_bg_color_dark_elev_5</color>
-    <color name="default_bg_color_elev_6">@color/default_bg_color_dark_elev_6</color>
+    <color name="default_bg_color_elev_1_baseline">@color/default_bg_color_dark_elev_1</color>
+    <color name="default_bg_color_elev_2_baseline">@color/default_bg_color_dark_elev_2</color>
+    <color name="default_bg_color_elev_3_baseline">@color/default_bg_color_dark_elev_3</color>
+    <color name="default_bg_color_elev_4_baseline">@color/default_bg_color_dark_elev_4</color>
+    <color name="default_bg_color_elev_5_baseline">@color/default_bg_color_dark_elev_5</color>
+    <color name="default_bg_color_elev_6_baseline">@color/default_bg_color_dark_elev_6</color>
     <!-- Legacy elevation/surface colors kept around for tab switcher, which has
          a separate feature to control enabling baseline. This is most
          noticeable in the title background color for thumbnails, legacy will

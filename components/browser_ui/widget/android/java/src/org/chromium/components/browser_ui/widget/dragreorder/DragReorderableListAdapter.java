@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.R;
 
 import java.util.Collections;
@@ -171,7 +171,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         Resources resource = context.getResources();
         // Set the alpha to 90% when dragging which is 230/255
         mDraggedBackgroundColor = ColorUtils.setAlphaComponent(
-                ApiCompatibilityUtils.getColor(resource, R.color.default_bg_color_elev_1),
+                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1),
                 resource.getInteger(R.integer.list_item_dragged_alpha));
         mDraggedElevation = resource.getDimension(R.dimen.list_item_dragged_elevation);
     }

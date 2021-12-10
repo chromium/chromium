@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -26,6 +27,15 @@ public class SemanticColorUtils {
             @AttrRes int attrRes, @ColorRes int colorRes, Context context) {
         if (IS_FULL_DYNAMIC_COLORS) {
             return MaterialColors.getColor(context, attrRes, TAG);
+        } else {
+            return context.getResources().getColor(colorRes);
+        }
+    }
+
+    private static @ColorInt int resolveSurfaceColorElev(
+            @DimenRes int elevationDimen, @ColorRes int colorRes, Context context) {
+        if (IS_FULL_DYNAMIC_COLORS) {
+            return ChromeColors.getSurfaceColor(context, elevationDimen);
         } else {
             return context.getResources().getColor(colorRes);
         }
@@ -84,5 +94,16 @@ public class SemanticColorUtils {
     /** Returns the semantic color value that corresponds to progress_bar_foreground. */
     public static @ColorInt int getProgressBarForeground(Context context) {
         return getDefaultControlColorActive(context);
+    }
+
+    /** Returns the semantic color value that corresponds to default_bg_color_elev_2. */
+    public static @ColorInt int getDefaultBgColorElev2(Context context) {
+        return resolveSurfaceColorElev(
+                R.dimen.default_elevation_2, R.color.default_bg_color_elev_2_baseline, context);
+    }
+
+    /** Returns the semantic color value that corresponds to navigation_bubble_background_color. */
+    public static @ColorInt int getNavigationBubbleBackgroundColor(Context context) {
+        return getDefaultBgColorElev2(context);
     }
 }

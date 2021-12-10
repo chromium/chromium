@@ -67,7 +67,6 @@
     <color name="bookmark_widget_background">@color/default_bg_color_baseline</color>
 
     <!-- History Navigation UI colors -->
-    <color name="navigation_bubble_background_color">@color/default_bg_color_elev_2</color>
     <color name="navigation_bubble_arrow">@android:color/black</color>
 
     <!-- Scrollbar colors -->
@@ -81,7 +80,7 @@
     <color name="offline_indicator_back_online_color">@color/default_bg_color_blue</color>
 
     <!-- Material colorSurface  See See https://crbug.com/1186712 -->
-    <color name="material_color_surface">@color/default_bg_color_elev_4</color>
+    <color name="material_color_surface">@color/default_bg_color_elev_4_baseline</color>
 
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>

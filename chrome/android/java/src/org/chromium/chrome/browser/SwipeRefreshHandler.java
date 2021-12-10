@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -116,8 +117,8 @@ public class SwipeRefreshHandler
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(
-                R.color.default_bg_color_elev_2);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2));
         mSwipeRefreshLayout.setColorSchemeColors(
                 SemanticColorUtils.getDefaultControlColorActive(context));
         if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);

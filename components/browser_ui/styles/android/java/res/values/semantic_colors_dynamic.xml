@@ -6,6 +6,7 @@
     <!-- Full dynamic colors ?attr version. Use for development. -->
     <!--
     <macro name="default_bg_color">?attr/colorSurface</macro>
+    <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
     <macro name="default_control_color_active">?attr/colorPrimary</macro>
     <macro name="default_control_color_normal">?attr/colorOnSurfaceVariant</macro>
     <macro name="default_icon_color">?attr/colorOnSurface</macro>
@@ -18,6 +19,7 @@
 
     <!-- Temporarily holdback @color version. Use for checkin. -->
     <macro name="default_bg_color">@color/default_bg_color_baseline</macro>
+    <macro name="default_bg_color_elev_0">@color/default_bg_color_elev_0_baseline</macro>
     <macro name="default_control_color_active">@color/default_control_color_active_baseline</macro>
     <macro name="default_control_color_normal">@color/default_control_color_normal_baseline</macro>
     <macro name="default_icon_color">@color/default_icon_color_baseline</macro>
