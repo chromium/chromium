@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Лизгај</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
+<translation id="118437560755358292">Внесете лозинка или PIN за поголема безбедност</translation>
 <translation id="118532027333893379">Допрете каде било за да го снимите целиот екран</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
 <translation id="1190678134285018527">Уредот треба да се врати на претходната верзија</translation>
@@ -338,7 +339,7 @@
 <translation id="3307642347673023554">Се префрливте во режим на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> сепак ќе може да се најави подоцна.</translation>
 <translation id="3321628682574733415">Неточен код на родител</translation>
-<translation id="3340475855009870209">Се скенира преземање: <ph name="FILENAME" /></translation>
+<translation id="3339826665088060472">Снимање на екранот, алатки за правење слики од екранот и снимање на екранот</translation>
 <translation id="3341303451326249809">Направена е слика од екранот</translation>
 <translation id="334252345105450327">Направи слика од екранот</translation>
 <translation id="3351879221545518001">Во моментов емитувате екран.</translation>
@@ -395,6 +396,7 @@
 <translation id="3606978283550408104">Поврзан екран за брајово писмо.</translation>
 <translation id="3615926715408477684">Ако овозможите мобилен интернет, ќе се овозможи и Bluetooth</translation>
 <translation id="3616883743181209306">Менито е преместено во горниот десен агол на екранот.</translation>
+<translation id="3619536907358025872">Поставки за снимање на екранот</translation>
 <translation id="3621202678540785336">Внесување</translation>
 <translation id="3621712662352432595">Аудиопоставки</translation>
 <translation id="3626281679859535460">Осветленост</translation>
@@ -494,6 +496,7 @@
 <translation id="4269883910223712419">Администраторот на уредов има способност да:</translation>
 <translation id="4274537685965975248">Кратенката од тастатура Ctrl + Alt + Стрелка надолу се промени. За да го користите копчето End, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надесно.</translation>
 <translation id="4279490309300973883">Отсликување</translation>
+<translation id="4283888303416325161">Внесете лозинка за поголема безбедност</translation>
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="429402653707266969">Вклучи/исклучи локација на алатникот</translation>
 <translation id="4294319844246081198">Добро утро <ph name="GIVEN_NAME" />,</translation>
@@ -762,6 +765,7 @@
 <translation id="607652042414456612">Уреди со Bluetooth во близина можат да го откријат вашиот уред, а тој ќе се појави како „<ph name="NAME" />“ со адреса <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
 <translation id="6134259848159370930">Пребарувајте низ уредот, апликациите, поставките и на интернет.</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -873,6 +877,7 @@
 <translation id="6961840794482373852">Кратенката од тастатура Alt + Стрелка нагоре се промени. За да го користите копчето Page Up, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка нагоре.</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6972754398087986839">Започни</translation>
+<translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
 <translation id="7007983414944123363">Не може да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
@@ -1208,7 +1213,6 @@
 <translation id="938963181863597773">Што има во мојот календар?</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>
-<translation id="96080156868846968">Се скенира</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Пејзаж</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>

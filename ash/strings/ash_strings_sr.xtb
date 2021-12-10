@@ -871,6 +871,7 @@
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6972754398087986839">Започнимо</translation>
+<translation id="6979158407327259162">Google диск</translation>
 <translation id="6981982820502123353">Приступачност</translation>
 <translation id="698231206551913481">Све датотеке и локални подаци повезани са овим корисником ће бити трајно избрисани када уклоните овог корисника.</translation>
 <translation id="7007983414944123363">Верификација PIN-а или лозинке није успела. Пробајте поново.</translation>
@@ -1206,7 +1207,6 @@
 <translation id="938963181863597773">Шта је у календару?</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="951991426597076286">Одбиј</translation>
-<translation id="96080156868846968">Скенира се</translation>
 <translation id="974545358917229949">Приказују се резултати (<ph name="RESULT_COUNT" />) за: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозор <ph name="WINDOW_TITILE" /> је затворен.</translation>

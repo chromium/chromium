@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ponto de interrogação}one{# question marks}other{# pontos de interrogação}}</translation>
 <translation id="3505359110822747654">Redução dos menus do ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{acento circunflexo}one{# carets}other{# acentos circunflexos}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{marca branca}one{# marca(s) branca(s)}other{# marcas brancas}}</translation>
 <translation id="352577523970648069">Um campo de texto editável</translation>
 <translation id="3538907380453898475">lstdscrções</translation>
 <translation id="3549141990712742152">corte <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Caixa de verificação seguinte</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botão de opção desmarcado</translation>
 <translation id="5601172225407283979">Executar ação predefinida</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{marca quadrada}one{# marca(s) quadrada(s)}other{# marcas quadradas}}</translation>
 <translation id="5608798115546226984">Preenchimento automático inline</translation>
 <translation id="5616029807486814372">Aula seguinte</translation>
 <translation id="561939826962581046">hora</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Listas pendentes</translation>
 <translation id="8666733765751421568">Fim de <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Título 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{nível aninhado #}other{nível aninhado #}}</translation>
 <translation id="8693391540059827073">A minha estação favorita</translation>
 <translation id="8696284982970258155">Melão</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{traço vertical}one{# vertical pipes}other{# traços verticais}}</translation>

@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4588090240171750605">Pomakni se desno</translation>
 <translation id="4724120544754982507">Centar za obavijesti, nepročitanih obavijesti: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4746179598275229723">Proširenje je otkvačeno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Još mjesec dana}one{Još # mjesec}few{Još # mjeseca}other{Još # mjeseci}}</translation>
 <translation id="4888938634149558681">Uputi poziv</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}one{# sekunda}few{# sekunde}other{# sekundi}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Još 1 sekunda}one{Još # sekunda}few{Još # sekunde}other{Još # sekundi}}</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 sat}one{# sat}few{# sata}other{# sati}}</translation>
+<translation id="6007284015834422026">Proširenje je prikvačeno</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6117103120090651229">Središnji gumb</translation>
 <translation id="6129953537138746214">Razmak</translation>

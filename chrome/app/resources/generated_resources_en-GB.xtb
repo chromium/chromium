@@ -1698,6 +1698,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2707024448553392710">Component downloading</translation>
 <translation id="270921614578699633">Average Over</translation>
 <translation id="2709516037105925701">Auto-fill</translation>
+<translation id="2710014902399506864">Add a new phone</translation>
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2712173769900027643">Ask permission</translation>
@@ -2057,6 +2058,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3055590424724986000">With a provider of your choice</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3058517085907878899">Name device</translation>
+<translation id="3059195548603439580">Looking for system components? Visit</translation>
 <translation id="3060379269883947824">Enable Select to Speak</translation>
 <translation id="3060952009917586498">Change device language. Current language is <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">We were unable to establish a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
@@ -2716,6 +2718,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communicate with a USB device}other{Communicate with # USB devices}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Could not read offline demo mode policy.</translation>
+<translation id="3766115177661377251">Cast to a new display</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Ice-cream</translation>
 <translation id="3771290962915251154">This setting is disabled because parental controls are on</translation>
@@ -3506,6 +3509,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4590324241397107707">Database storage</translation>
 <translation id="4592891116925567110">Stylus drawing app</translation>
 <translation id="4593021220803146968">&amp;Go to <ph name="URL" /></translation>
+<translation id="4594577641390224176">Looking for the system about page? Visit</translation>
 <translation id="4595560905247879544">Apps and extensions can only be modified by the manager (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">You have certificates on file that identify these servers</translation>
 <translation id="4598556348158889687">Storage management</translation>
@@ -4891,6 +4895,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
+<translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>
 <translation id="6091761513005122595">Share mounted successfully.</translation>
@@ -4989,6 +4994,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6198102561359457428">Sign out then sign in again...</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6200047250927636406">Discard file</translation>
+<translation id="6200151268994853226">Manage extension</translation>
 <translation id="6201608810045805374">Remove this account?</translation>
 <translation id="6202304368170870640">You can use your PIN to sign in to or unlock your device.</translation>
 <translation id="6206311232642889873">Cop&amp;y Image</translation>
@@ -5276,6 +5282,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
 <translation id="6499143127267478107">Resolving host in proxy script...</translation>
+<translation id="6499764981457476645">No devices found nearby</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> wants to open this file:</translation>
 <translation id="6501957628055559556">All containers</translation>
 <translation id="650266656685499220">To create albums, go to Google Photos</translation>
@@ -5741,6 +5748,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
 <translation id="6979737339423435258">All time</translation>
 <translation id="6981553172137913845">To browse privately, click the dots icon menu to open an Incognito window</translation>
+<translation id="6981761993313539853">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6983507711977005608">Disconnect Instant Tethering network</translation>
 <translation id="6983783921975806247">Registered OID</translation>
@@ -6647,6 +6655,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7898725031477653577">Always translate</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Improved Chrome using page metrics</translation>
+<translation id="7903290522161827520">Looking for browser components? Visit</translation>
 <translation id="7903345046358933331">The page has become unresponsive. You can wait for it to become responsive or close it.</translation>
 <translation id="7903742244674067440">You have certificates on file that identify these certificate authorities</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
@@ -7021,6 +7030,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8271268254812352141">Get definitions, translations or unit conversions when you right-click or touch and hold text. Customise translation languages in <ph name="LINK_BEGIN" />website languages<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE" /> back to the child after account setup.</translation>
 <translation id="8272443605911821513">Manage your extensions by clicking Extensions in the "More tools" menu.</translation>
+<translation id="8272677921396592934">Use the camera to scan QR code</translation>
 <translation id="8274332263553132018">Cast file</translation>
 <translation id="8274921654076766238">Magnifier follows keyboard focus</translation>
 <translation id="8274924778568117936">Don’t turn off or close your <ph name="DEVICE_TYPE" /> until the update finishes. Your <ph name="DEVICE_TYPE" /> will restart after installation completes.</translation>
@@ -7698,6 +7708,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9004754973617721124">Clear site data and permissions for <ph name="SITE_NAME" />, all sites under it, and its installed app?</translation>
 <translation id="9004952710076978168">Received a notification for an unknown printer.</translation>
 <translation id="9008201768610948239">Ignore</translation>
+<translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> details page back button</translation>
 <translation id="9009369504041480176">Uploading (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>
 <translation id="9011163749350026987">Always show icon</translation>
@@ -7881,6 +7892,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="917510707618656279">Ask when a site wants to access HID devices</translation>
 <translation id="9176476835295860688">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth device connected</translation>
+<translation id="9178061802301856367">Delete sign-in data</translation>
 <translation id="9179524979050048593">Sign-in screen username</translation>
 <translation id="9180281769944411366">This process may take a few minutes. Starting the Linux container.</translation>
 <translation id="9180380851667544951">Site can share your screen</translation>

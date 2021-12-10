@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">Connectez-vous à ce site et à Chrome. Vous pourrez activer la synchronisation plus tard.</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4249068189593983585">Astuce Chrome : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
+<translation id="4267862249323750454">Les mots de passe sont enregistrés dans le <ph name="BEGIN_LINK" />Gestionnaire de mots de passe Google<ph name="END_LINK" /> afin que vous puissiez les utiliser sur tous vos appareils.</translation>
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4698415050768537821">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Autoriser la connexion à Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
+<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe Google uniquement sur cet appareil.</translation>
 <translation id="6427126399757991875">Votre organisation configure Chrome…</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>

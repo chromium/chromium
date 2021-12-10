@@ -35,6 +35,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1175572348579024023">Deslocar</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="118437560755358292">Introduzir palavra-passe ou PIN para uma maior segurança</translation>
 <translation id="118532027333893379">Toque em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
 <translation id="1190678134285018527">O dispositivo tem de voltar à versão anterior</translation>
@@ -338,6 +339,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3307642347673023554">Mudou para o modo de portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pode iniciar sessão mais tarde.</translation>
 <translation id="3321628682574733415">Código parental incorreto</translation>
+<translation id="3339826665088060472">Captura de ecrã, ferramentas para fazer capturas de ecrã e gravações de ecrã</translation>
 <translation id="3341303451326249809">Captura de ecrã efetuada</translation>
 <translation id="334252345105450327">Tira uma captura de ecrã</translation>
 <translation id="3351879221545518001">Está a transmitir atualmente o ecrã.</translation>
@@ -394,6 +396,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3606978283550408104">Visualização em braille ligada.</translation>
 <translation id="3615926715408477684">A ativação dos dados móveis ativa o Bluetooth</translation>
 <translation id="3616883743181209306">O menu foi movido para o canto superior direito do ecrã.</translation>
+<translation id="3619536907358025872">Definições da captura de ecrã</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Definições de Áudio</translation>
 <translation id="3626281679859535460">Brilho</translation>
@@ -492,6 +495,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
+<translation id="4283888303416325161">Introduzir palavra-passe para uma maior segurança</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="429402653707266969">Ativar/desativar a localização da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
@@ -760,6 +764,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="607652042414456612">O seu computador é detetável para os dispositivos Bluetooth nas proximidades e aparecerá como "<ph name="NAME" />" com o endereço <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Confirmar transferência de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
 <translation id="6134259848159370930">Pesquise no dispositivo, nas apps, nas definições e na Web.</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -871,6 +876,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Começar</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os ficheiros e dados locais associados a este utilizador são permanentemente eliminados assim que este utilizador é removido.</translation>
 <translation id="7007983414944123363">Não foi possível validar o seu PIN ou palavra-passe. Tente novamente.</translation>
@@ -1206,7 +1212,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="951991426597076286">Recusar</translation>
-<translation id="96080156868846968">A ser analisado…</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">A janela <ph name="WINDOW_TITILE" /> está fechada.</translation>

@@ -31,7 +31,7 @@
 <translation id="2478931088402984578">選取 [Chromium]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Chromium 比以前更簡便、安全而快速，讓您事半功倍</translation>
 <translation id="2590893390871230428">同步處理 Chromium 資料</translation>
-<translation id="259094968798709429">密碼已儲存至<ph name="BEGIN_LINK" />密碼管理員<ph name="END_LINK" />，你可以在任何裝置上使用。</translation>
+<translation id="259094968798709429">密碼已儲存至「<ph name="BEGIN_LINK" />密碼管理工具<ph name="END_LINK" />」，您可在任何裝置上使用。</translation>
 <translation id="2650312721222849884">如要在任何使用 Chromium 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="2684230048001240293">將 Chromium 設定為預設瀏覽器，即可在所有裝置上同步分頁、密碼和付款資料</translation>
 <translation id="2730884209570016437">由於另一個應用程式正在使用相機，因此 Chromium 暫時無法使用</translation>
@@ -45,7 +45,7 @@
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3946918322491238254">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
-<translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理員。</translation>
+<translation id="4043291146360695975">密碼只會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>

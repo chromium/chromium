@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4588090240171750605">Posuv doprava</translation>
 <translation id="4724120544754982507">Centrum oznámení – nepřečtená oznámení: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4746179598275229723">Rozšíření bylo uvolněno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zbývá 1 měsíc}few{zbývají # měsíce}many{zbývá # měsíce}other{zbývá # měsíců}}</translation>
 <translation id="4888938634149558681">Volat</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekundy}other{# sekund}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Zbývá 1 sekunda}few{Zbývají # sekundy}many{Zbývá # sekundy}other{Zbývá # sekund}}</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 hodina}few{# hodiny}many{# hodiny}other{# hodin}}</translation>
+<translation id="6007284015834422026">Rozšíření bylo připnuto</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6117103120090651229">Tlačítko vycentrování</translation>
 <translation id="6129953537138746214">Mezera</translation>

@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Сокриј ја лозинката</translation>
 <translation id="4588090240171750605">Лизгај надесно</translation>
 <translation id="4724120544754982507">Центар за известувања, <ph name="UNREAD_NOTIFICATION_COUNT" /> непрочитани известувања</translation>
+<translation id="4746179598275229723">Екстензијата е откачена</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Преостанува 1 месец}one{Преостанува # месец}other{Преостануваат # месеци}}</translation>
 <translation id="4888938634149558681">Јави се</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}other{# секунди}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Преостана 1 секунда}one{Преостана # секунда}other{Преостанаа # секунди}}</translation>
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 час}one{# час}other{# часа}}</translation>
+<translation id="6007284015834422026">Екстензијата е закачена</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6117103120090651229">Централно копче</translation>
 <translation id="6129953537138746214">Празно место</translation>

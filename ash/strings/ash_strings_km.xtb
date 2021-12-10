@@ -338,7 +338,6 @@
 <translation id="3307642347673023554">បានប្ដូរទៅ​មុខងារកុំព្យូទ័រយួរដៃ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> នៅតែអាចចូល​នៅពេល​ក្រោយបាន​ដដែល។</translation>
 <translation id="3321628682574733415">លេខកូដមាតាបិតា​មិនត្រឹមត្រូវទេ</translation>
-<translation id="3340475855009870209">កំពុងស្កេន​ការទាញយក <ph name="FILENAME" /></translation>
 <translation id="3341303451326249809">បាន​ថតរូបអេក្រង់</translation>
 <translation id="334252345105450327">ថតអេក្រង់</translation>
 <translation id="3351879221545518001">ឥឡូវនេះ អ្នកកំពុង​បញ្ជូន​អេក្រង់។</translation>
@@ -872,6 +871,7 @@
 <translation id="6961840794482373852">បានប្ដូរផ្លូវកាត់ក្ដារចុច Alt + ព្រួញឡើងលើ។ ដើម្បីប្រើគ្រាប់ចុច Page Up សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញឡើងលើ។</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6972754398087986839">ចាប់ផ្ដើម</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
 <translation id="698231206551913481">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលប្រើជាមួយអ្នកប្រើនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍ បន្ទាប់ពីអ្នកប្រើនេះត្រូវបានលុប។</translation>
 <translation id="7007983414944123363">មិនអាចផ្ទៀងផ្ទាត់កូដ PIN ឬពាក្យសម្ងាត់​របស់អ្នក​បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
@@ -1207,7 +1207,6 @@
 <translation id="938963181863597773">តើ​មានអ្វី​នៅលើ​ប្រតិទិន​របស់ខ្ញុំ?</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="951991426597076286">បដិសេធ</translation>
-<translation id="96080156868846968">កំពុង​ស្កេន</translation>
 <translation id="974545358917229949">កំពុង​បង្ហាញ​លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="98515147261107953">ផ្តេក</translation>
 <translation id="990277280839877440">បានបិទវិនដូ <ph name="WINDOW_TITILE" /> ។</translation>

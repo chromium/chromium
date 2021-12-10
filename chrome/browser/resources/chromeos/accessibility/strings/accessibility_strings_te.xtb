@@ -393,6 +393,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3497063866483065785">{COUNT,plural, =1{ప్రశ్నార్థక గుర్తు}other{# ప్రశ్నార్థక గుర్తులు}}</translation>
 <translation id="3505359110822747654">ChromeVox మెనూలను కుదించండి</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{హంసపాదు గుర్తు}other{# హంసపాదు గుర్తులు}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{తెలుపు రంగు బుల్లెట్}other{# తెలుపు రంగు బుల్లెట్‌లు}}</translation>
 <translation id="352577523970648069">సవరించగల వచన ఫీల్డ్</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />ని కత్తిరించండి.</translation>
@@ -676,6 +677,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5597170376237141345">తదుపరి చెక్‌బాక్స్</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, రేడియో బటన్ ఎంపిక తీసివేయబడింది</translation>
 <translation id="5601172225407283979">డిఫాల్ట్ చర్యను అమలు చేయండి</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{చతురస్ర బుల్లెట్}other{# చతురస్ర బుల్లెట్‌లు}}</translation>
 <translation id="5608798115546226984">స్వీయపూర్తి ఇన్‌లైన్</translation>
 <translation id="5616029807486814372">తర్వాతి పాఠం</translation>
 <translation id="561939826962581046">time</translation>
@@ -1099,6 +1101,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8659501358298941449">డ్రాప్-డౌన్ లిస్ట్‌లు</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ముగింపు</translation>
 <translation id="867187640362843212">శీర్షిక 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{నెస్ట్ చేయబడిన స్థాయి #}}</translation>
 <translation id="8693391540059827073">నాకు ఇష్టమైన సీజన్</translation>
 <translation id="8696284982970258155">హనీడ్యూ పండు రంగు</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{పైప్ గుర్తు}other{# నిలువు పైప్ గుర్తులు}}</translation>
