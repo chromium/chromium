@@ -25,6 +25,10 @@ OOPArcVideoAcceleratorFactory::OOPArcVideoAcceleratorFactory(
 
 OOPArcVideoAcceleratorFactory::~OOPArcVideoAcceleratorFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Reset |receiver_| now to ensure it doesn't use a partially destroyed
+  // *|this|.
+  receiver_.reset();
 }
 
 void OOPArcVideoAcceleratorFactory::CreateDecodeAccelerator(
