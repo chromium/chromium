@@ -31,8 +31,8 @@
 </div>
 <div id="button-container">
   <cr-button on-click="close">$i18n{close}</cr-button>
-  <cr-button id="castButton" class="action-button"
-    disabled="[[castButtonDisabled]]">
+  <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
+    disabled="[[castButtonDisabled(accessCode)]]">
     $i18n{cast}
   </cr-button>
   <cr-button id="backButton" on-click="switchToCodeInput"

@@ -12,9 +12,11 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
+
+import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {CodeInputElement} from './code_input/code_input.js';
+import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
 
 declare const chrome: any;
 
@@ -45,16 +47,16 @@ class AccessCodeCastElement extends PolymerElement {
   private listenerIds: Array<number>;
   private router: PageCallbackRouter;
 
-  codeLength: number;
-  castButtonDisabled: boolean;
+  private static readonly ACCESS_CODE_LENGTH = 6;
+  private accessCode: string;
+  private state: PageState;
 
   constructor() {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
 
-    this.codeLength = 6;
-    this.castButtonDisabled = true;
+    this.accessCode = '';
   }
 
   ready() {
@@ -86,7 +88,48 @@ class AccessCodeCastElement extends PolymerElement {
     this.setState(PageState.QR_INPUT);
   }
 
+  async addSinkAndCast() {
+    if (this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH) {
+      return;
+    }
+
+    const method = this.state === PageState.CODE_INPUT ? 
+      CastDiscoveryMethod.INPUT_ACCESS_CODE : CastDiscoveryMethod.QR_CODE;
+
+    const addResult = await this.addSink(method).catch(() => {
+      return AddSinkResultCode.UNKNOWN_ERROR;
+    });
+
+    if (addResult !== AddSinkResultCode.OK) {
+      this.showAddSinkError(addResult);
+      return;
+    }
+
+    const castResult = await this.cast().catch(() => {
+      return RouteRequestResultCode.UNKNOWN_ERROR;
+    });
+
+    if (castResult !== RouteRequestResultCode.OK) {
+      this.showCastError(castResult);
+      return;
+    }
+
+    this.close();
+  }
+
+  // Even though we can get this.accessCode directly, passing it triggers
+  // Polymer's data binding whenever this.accessCode updates.
+  castButtonDisabled(accessCode: string) {
+    return accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
+  }
+
+  setAccessCodeForTest(value: string) {
+    this.accessCode = value;
+  }
+
   private setState(state: PageState) {
+    this.state = state;
+
     this.$.codeInputView.hidden = state !== PageState.CODE_INPUT;
     this.$.castButton.hidden = state !== PageState.CODE_INPUT;
     this.$.qrInputView.hidden = state !== PageState.QR_INPUT;
@@ -99,8 +142,39 @@ class AccessCodeCastElement extends PolymerElement {
   }
 
   private handleCodeInput(e: any) {
-    this.castButtonDisabled = e.detail.value.length !== this.codeLength;
+    this.accessCode = e.detail.value;
   }
+
+  private async addSink(method: CastDiscoveryMethod):
+      Promise<AddSinkResultCode> {
+    const addSinkResult = await BrowserProxy.getInstance().handler
+        .addSink(this.accessCode, method);
+    return addSinkResult.resultCode as AddSinkResultCode;
+  }
+
+  private async cast(): Promise<RouteRequestResultCode> {
+    const castResult = await BrowserProxy.getInstance().handler.castToSink();
+    return castResult.resultCode as RouteRequestResultCode;
+  }
+
+  // TODO:(b/209720173): Implement this functions to handle errors
+  private showAddSinkError(resultCode: AddSinkResultCode) {
+    if (resultCode === AddSinkResultCode.INVALID_ACCESS_CODE) {
+      console.log('Incorrect access code');
+    } else {
+      console.log('Add sink error: ' + resultCode);
+    }
+  }
+
+  // TODO:(b/209720173): Implement this functions to handle errors
+  private showCastError(resultCode: RouteRequestResultCode) {
+    if (resultCode === RouteRequestResultCode.ROUTE_NOT_FOUND) {
+      console.log('Route not found');
+    } else {
+      console.log('Cast error: ' + resultCode);
+    }
+  }
+
 }
 
 customElements.define(AccessCodeCastElement.is, AccessCodeCastElement);
