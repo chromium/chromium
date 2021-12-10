@@ -267,8 +267,6 @@
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
-#include "ash/webui/telemetry_extension_ui/telemetry_extension_ui.h"
-#include "ash/webui/telemetry_extension_ui/url_constants.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #endif
 
@@ -978,11 +976,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == ash::kChromeUISampleSystemWebAppHost)
     return &NewWebUI<ash::SampleSystemWebAppUI>;
-  if (url.host_piece() == ash::kChromeUITelemetryExtensionHost) {
-    if (base::FeatureList::IsEnabled(ash::features::kTelemetryExtension)) {
-      return &NewWebUI<ash::TelemetryExtensionUI>;
-    }
-  }
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

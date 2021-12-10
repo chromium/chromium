@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
-#include "ash/webui/telemetry_extension_ui/telemetry_extension_untrusted_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -84,7 +83,6 @@ WebUIConfigList CreateConfigs() {
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
-  register_config(std::make_unique<ash::TelemetryExtensionUntrustedUIConfig>());
   register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

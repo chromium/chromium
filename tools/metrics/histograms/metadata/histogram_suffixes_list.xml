@@ -18026,7 +18026,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Scanning" label="Scanning"/>
   <suffix name="ShimlessRMA" label="Shimless RMA"/>
   <suffix name="ShortcutCustomization" label="ShortcutCustomization"/>
-  <suffix name="Telemetry" label="Telemetry"/>
+  <suffix name="Telemetry" label="Telemetry">
+    <obsolete>
+      Deprecated as of 2012-12-08.
+    </obsolete>
+  </suffix>
   <suffix name="Terminal" label="Terminal"/>
   <affected-histogram name="Webapp.InstallResult.System.Apps"/>
 </histogram_suffixes>

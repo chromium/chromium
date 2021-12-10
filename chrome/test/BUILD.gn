@@ -2415,7 +2415,6 @@ if (!is_android && !is_fuchsia) {
           deps += [
             "//ash/webui/demo_mode_app_ui:browser_tests_js",
             "//ash/webui/sample_system_web_app_ui:browser_tests_js",
-            "//ash/webui/telemetry_extension_ui/test:browser_tests_js",
           ]
         }
       }
@@ -3589,12 +3588,10 @@ if (!is_android && !is_fuchsia) {
         sources += [
           "../browser/ash/web_applications/demo_mode_app_integration_browsertest.cc",
           "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc",
-          "../browser/ash/web_applications/telemetry_extension_integration_browsertest.cc",
         ]
         deps += [
           "//ash/webui/demo_mode_app_ui",
           "//ash/webui/sample_system_web_app_ui",
-          "//ash/webui/telemetry_extension_ui",
         ]
       }
       if (use_dbus) {

@@ -266,10 +266,6 @@
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
-#include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom.h"  // nogncheck crbug.com/1125897
-#include "ash/webui/telemetry_extension_ui/telemetry_extension_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -991,16 +987,6 @@ void PopulateChromeWebUIFrameBinders(
   if (ash::features::IsDemoModeSWAEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::mojom::demo_mode::PageHandlerFactory, ash::DemoModeAppUI>(map);
-  }
-
-  if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::health::mojom::DiagnosticsService, ash::TelemetryExtensionUI>(map);
-    RegisterWebUIControllerInterfaceBinder<ash::health::mojom::ProbeService,
-                                           ash::TelemetryExtensionUI>(map);
-    RegisterWebUIControllerInterfaceBinder<
-        ash::health::mojom::SystemEventsService, ash::TelemetryExtensionUI>(
-        map);
   }
 #endif
 

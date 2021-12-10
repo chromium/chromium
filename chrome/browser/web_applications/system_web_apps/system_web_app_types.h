@@ -17,7 +17,7 @@ namespace web_app {
 // re-used.
 enum class SystemAppType {
   FILE_MANAGER = 1,
-  TELEMETRY = 2,
+  // TELEMETRY_DEPRECATED = 2,
 
   // A sample System Web App to illustrate SWA development best practices, and
   // various SWA platform features.

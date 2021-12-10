@@ -3528,17 +3528,13 @@ source_set("chromeos") {
       "//ash/webui/resources:demo_mode_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_untrusted_resources_grit",
-      "//ash/webui/resources:telemetry_extension_resources",
       "//ash/webui/sample_system_web_app_ui",
-      "//ash/webui/telemetry_extension_ui",
     ]
     sources += [
       "../ash/web_applications/demo_mode_web_app_info.cc",
       "../ash/web_applications/demo_mode_web_app_info.h",
       "../ash/web_applications/sample_system_web_app_info.cc",
       "../ash/web_applications/sample_system_web_app_info.h",
-      "../ash/web_applications/telemetry_extension_web_app_info.cc",
-      "../ash/web_applications/telemetry_extension_web_app_info.h",
     ]
   }
 
