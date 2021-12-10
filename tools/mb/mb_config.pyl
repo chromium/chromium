@@ -81,7 +81,7 @@
       'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols',
       'Deterministic Android (dbg)': 'android_debug_bot',
 
-      'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome',
+      'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-bfcache-rel': 'android_release_bot_minimal_symbols',
       'android-binary-size-generator': 'android_binary_size',
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
