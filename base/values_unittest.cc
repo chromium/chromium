@@ -2284,24 +2284,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_list.Get(6, nullptr));
   EXPECT_FALSE(main_list.Get(7, nullptr));
 
-  EXPECT_FALSE(main_list.GetString(0, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(1, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(2, static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(main_list.GetString(3, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(4, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(5, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(6, static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(7, static_cast<std::string*>(nullptr)));
-
-  EXPECT_FALSE(main_list.GetString(0, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(1, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(2, static_cast<std::u16string*>(nullptr)));
-  EXPECT_TRUE(main_list.GetString(3, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(4, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(5, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(6, static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_list.GetString(7, static_cast<std::u16string*>(nullptr)));
-
   EXPECT_FALSE(main_list.GetDictionary(0, nullptr));
   EXPECT_FALSE(main_list.GetDictionary(1, nullptr));
   EXPECT_FALSE(main_list.GetDictionary(2, nullptr));

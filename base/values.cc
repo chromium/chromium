@@ -1383,22 +1383,6 @@ bool ListValue::Get(size_t index, Value** out_value) {
   return as_const(*this).Get(index, const_cast<const Value**>(out_value));
 }
 
-bool ListValue::GetString(size_t index, std::string* out_value) const {
-  const Value* value;
-  if (!Get(index, &value))
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
-bool ListValue::GetString(size_t index, std::u16string* out_value) const {
-  const Value* value;
-  if (!Get(index, &value))
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
 bool ListValue::GetDictionary(size_t index,
                               const DictionaryValue** out_value) const {
   const Value* value;
