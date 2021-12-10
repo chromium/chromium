@@ -141,9 +141,7 @@ class InputMethod {
   // of IME popups is not supported.
   virtual bool IsCandidatePopupOpen() const = 0;
 
-  // Displays an on screen keyboard if enabled.
-  virtual void ShowVirtualKeyboardIfEnabled() = 0;
-
+  // Sets visibility of the virtual keyboard, if enabled already.
   virtual void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) = 0;
 
   // Management of the observer list.

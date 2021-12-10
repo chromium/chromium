@@ -76,7 +76,7 @@ void VirtualKeyboardControllerWin::ShowVirtualKeyboard() {
   if (auto* controller = input_method_->GetVirtualKeyboardController()) {
     if (!virtual_keyboard_shown_) {
       virtual_keyboard_shown_ = true;
-      input_method_->ShowVirtualKeyboardIfEnabled();
+      input_method_->SetVirtualKeyboardVisibilityIfEnabled(true);
     }
   }
 }

@@ -359,7 +359,7 @@ void ArcImeService::ShowVirtualKeyboardIfEnabled() {
 
   ui::InputMethod* const input_method = GetInputMethod();
   if (input_method && input_method->GetTextInputClient() == this) {
-    input_method->ShowVirtualKeyboardIfEnabled();
+    input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
   }
 }
 

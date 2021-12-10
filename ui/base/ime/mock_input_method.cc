@@ -105,10 +105,6 @@ bool MockInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-void MockInputMethod::ShowVirtualKeyboardIfEnabled() {
-  SetVirtualKeyboardVisibilityIfEnabled(true);
-}
-
 void MockInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);

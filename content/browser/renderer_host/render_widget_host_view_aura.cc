@@ -2661,7 +2661,7 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
 #if !defined(OS_WIN)
     if (state->show_ime_if_needed &&
         GetInputMethod()->GetTextInputClient() == this) {
-      GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+      GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
     }
 // TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
 // is serviced

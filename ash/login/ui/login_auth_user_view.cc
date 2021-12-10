@@ -1804,7 +1804,7 @@ void LoginAuthUserView::RequestFocusOnPasswordView() {
   // This way, the user does not have to type twice (on the user pod and
   // additionally on the textfield or user view).
   if (GetInputMethod() && !current_state.has_pinpad)
-    GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+    GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
 }
 
 void LoginAuthUserView::UpdateFocus() {

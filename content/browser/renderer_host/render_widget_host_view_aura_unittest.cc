@@ -6755,9 +6755,6 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
   size_t keyboard_controller_observer_count() const {
     return keyboard_controller_.observer_count();
   }
-  void ShowVirtualKeyboardIfEnabled() override {
-    keyboard_controller_.DisplayVirtualKeyboard();
-  }
   void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override {
     if (should_show) {
       keyboard_controller_.DisplayVirtualKeyboard();

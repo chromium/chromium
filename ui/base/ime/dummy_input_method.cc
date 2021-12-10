@@ -70,8 +70,6 @@ bool DummyInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-void DummyInputMethod::ShowVirtualKeyboardIfEnabled() {}
-
 void DummyInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
 }
 

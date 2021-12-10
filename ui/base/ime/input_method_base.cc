@@ -89,12 +89,6 @@ TextInputType InputMethodBase::GetTextInputType() const {
   return client ? client->GetTextInputType() : TEXT_INPUT_TYPE_NONE;
 }
 
-void InputMethodBase::ShowVirtualKeyboardIfEnabled() {
-  // TODO(crbug.com/1275410): Merge this into
-  // SetVirtualKeyboardVisibilityIfEnabled.
-  SetVirtualKeyboardVisibilityIfEnabled(true);
-}
-
 void InputMethodBase::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);

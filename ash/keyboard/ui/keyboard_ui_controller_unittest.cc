@@ -234,7 +234,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
     input_method->SetFocusedTextInputClient(client);
     if (client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE &&
         client->GetTextInputMode() != ui::TEXT_INPUT_MODE_NONE) {
-      input_method->ShowVirtualKeyboardIfEnabled();
+      input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
       ASSERT_TRUE(WaitUntilShown());
     }
   }

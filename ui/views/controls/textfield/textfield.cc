@@ -485,7 +485,7 @@ void Textfield::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
 void Textfield::ShowVirtualKeyboardIfEnabled() {
   // GetInputMethod() may return nullptr in tests.
   if (GetEnabled() && !GetReadOnly() && GetInputMethod())
-    GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+    GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
 }
 
 bool Textfield::IsIMEComposing() const {

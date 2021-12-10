@@ -94,7 +94,10 @@ class FakeInputMethod : public ui::DummyInputMethod {
 
   ui::TextInputClient* GetTextInputClient() const override { return client_; }
 
-  void ShowVirtualKeyboardIfEnabled() override { count_show_ime_if_needed_++; }
+  void SetVirtualKeyboardVisibilityIfEnabled(bool visible) override {
+    if (visible)
+      count_show_ime_if_needed_++;
+  }
 
   void CancelComposition(const ui::TextInputClient* client) override {
     if (client == client_)

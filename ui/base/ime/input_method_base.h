@@ -62,7 +62,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   // implementation.
   void OnTextInputTypeChanged(const TextInputClient* client) override;
   TextInputType GetTextInputType() const override;
-  void ShowVirtualKeyboardIfEnabled() override;
   void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override;
 
   void AddObserver(InputMethodObserver* observer) override;

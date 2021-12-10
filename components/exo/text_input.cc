@@ -62,10 +62,12 @@ void TextInput::ShowVirtualKeyboardIfEnabled() {
     pending_vk_visible_ = true;
     return;
   }
-  input_method_->ShowVirtualKeyboardIfEnabled();
+  input_method_->SetVirtualKeyboardVisibilityIfEnabled(true);
 }
 
 void TextInput::HideVirtualKeyboard() {
+  // TODO(crbug.com/1275410): Use
+  // InputMethod::SetVirtualKeyboardVisibilityIfEnabled() here, too.
   if (keyboard_ui_controller_)
     keyboard_ui_controller_->HideKeyboardByUser();
   pending_vk_visible_ = false;
@@ -422,7 +424,7 @@ void TextInput::AttachInputMethod() {
   }
 
   if (pending_vk_visible_) {
-    input_method_->ShowVirtualKeyboardIfEnabled();
+    input_method_->SetVirtualKeyboardVisibilityIfEnabled(true);
     pending_vk_visible_ = false;
   }
 }

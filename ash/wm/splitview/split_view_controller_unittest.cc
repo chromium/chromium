@@ -168,7 +168,7 @@ class TestTextInputClient : public ui::DummyTextInputClient {
     if (window_)
       window_->Focus();
 
-    ime->ShowVirtualKeyboardIfEnabled();
+    ime->SetVirtualKeyboardVisibilityIfEnabled(true);
     ASSERT_TRUE(keyboard::WaitUntilShown());
   }
 

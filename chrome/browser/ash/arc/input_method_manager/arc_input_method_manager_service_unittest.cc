@@ -1016,7 +1016,7 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
   mock_input_method.SetFocusedTextInputClient(&dummy_text_input_client);
 
   EXPECT_EQ(0, bridge()->show_virtual_keyboard_calls_count_);
-  mock_input_method.ShowVirtualKeyboardIfEnabled();
+  mock_input_method.SetVirtualKeyboardVisibilityIfEnabled(true);
   EXPECT_EQ(1, bridge()->show_virtual_keyboard_calls_count_);
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
   ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
