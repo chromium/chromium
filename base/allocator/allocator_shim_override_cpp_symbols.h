@@ -15,7 +15,6 @@
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
 #include "build/build_config.h"
 
 // std::align_val_t isn't available until C++17, but we want to override aligned
@@ -76,23 +75,10 @@ SHIM_CPP_SYMBOLS_EXPORT void operator delete(void* p) __THROW {
 }
 
 SHIM_CPP_SYMBOLS_EXPORT void* operator new[](size_t size) {
-#if defined(OS_APPLE)
-  // On macOS builds with Identical Code Folding (ICF), this gets merged with
-  // operator new() above, as the functions are identical. This then bumps into
-  // the framework.order check. Make sure this function is unique.
-  //
-  // TODO(lizeb): This function should not be exported at all, investigate why
-  // this is the case, and remove this hack.
-  NO_CODE_FOLDING();
-#endif  // defined(OS_APPLE)
   return ShimCppNew(size);
 }
 
 SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p) __THROW {
-#if defined(OS_APPLE)
-  // See comment above in operator new[]().
-  NO_CODE_FOLDING();
-#endif  // defined(OS_APPLE)
   ShimCppDelete(p);
 }
 

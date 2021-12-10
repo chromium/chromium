@@ -1442,6 +1442,7 @@ component("base") {
         "allocator/allocator_shim_override_mac_symbols.h",
         "allocator/early_zone_registration_mac.h",
       ]
+      configs += [ "//base/allocator:mac_no_default_new_delete_symbols" ]
     }
     if (is_chromeos || is_linux) {
       sources += [

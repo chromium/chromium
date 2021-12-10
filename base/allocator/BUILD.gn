@@ -355,3 +355,12 @@ config("wrap_malloc_symbols") {
     "-Wl,-wrap,vasprintf",
   ]
 }
+
+config("mac_no_default_new_delete_symbols") {
+  if (!is_component_build) {
+    # This is already set when we compile libc++, see
+    # buildtools/third_party/libc++/BUILD.gn. But it needs to be set here as well,
+    # since the shim defines the symbols, to prevent them being exported.
+    cflags = [ "-fvisibility-global-new-delete-hidden" ]
+  }
+}
