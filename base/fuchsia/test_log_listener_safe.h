@@ -8,6 +8,7 @@
 #include <fuchsia/logger/cpp/fidl_test_base.h>
 
 #include <lib/fidl/cpp/binding.h>
+#include <lib/zx/time.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,6 +22,10 @@ namespace base {
 
 // LogListenerSafe implementation that invokes a caller-supplied callback for
 // each received message.
+// Note that messages will be delivered in order of receipt from the system
+// logger, starting with any recent messages that the logging service had
+// cached, i.e. including messages that may pre-date this log-listener being
+// created.
 class TestLogListenerSafe final
     : public fuchsia::logger::testing::LogListenerSafe_TestBase {
  public:
@@ -49,6 +54,8 @@ class TestLogListenerSafe final
 
 // Helper that manages a TestLogListenerSafe to simplify running the message
 // loop until specific messages are received.
+// Messages received prior to ListenToLog() being called will be silently
+// ignored.
 class SimpleTestLogListener {
  public:
   SimpleTestLogListener();
@@ -70,6 +77,9 @@ class SimpleTestLogListener {
  private:
   // Pushes |message| to the |logged_messages_| queue, or to |on_log_message_|.
   void PushLoggedMessage(const fuchsia::logger::LogMessage& message);
+
+  // Used to ignore messages with timestamps prior to this listener's creation.
+  zx::time ignore_before_;
 
   TestLogListenerSafe listener_;
   fidl::Binding<fuchsia::logger::LogListenerSafe> binding_;
