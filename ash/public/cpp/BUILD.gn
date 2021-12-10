@@ -121,6 +121,8 @@ component("cpp") {
     "file_icon_util.h",
     "fps_counter.cc",
     "fps_counter.h",
+    "fwupd_download_client.cc",
+    "fwupd_download_client.h",
     "gesture_action_type.h",
     "holding_space/holding_space_client.h",
     "holding_space/holding_space_constants.h",

@@ -2117,6 +2117,8 @@ static_library("ui") {
       "ash/desks_templates/desks_templates_app_launch_handler.h",
       "ash/desks_templates/desks_templates_client.cc",
       "ash/desks_templates/desks_templates_client.h",
+      "ash/fwupd_download_client_impl.cc",
+      "ash/fwupd_download_client_impl.h",
       "ash/holding_space/holding_space_client_impl.cc",
       "ash/holding_space/holding_space_client_impl.h",
       "ash/holding_space/holding_space_downloads_delegate.cc",
