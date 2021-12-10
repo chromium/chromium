@@ -353,6 +353,8 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kPageDown;
     case ui::DomKey::PAGE_UP:
       return mojom::NamedDomKey::kPageUp;
+    case ui::DomKey::TAB:
+      return mojom::NamedDomKey::kTab;
     default:
       return absl::nullopt;
   }

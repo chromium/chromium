@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module chromeos.ime.mojom;
 
@@ -23,7 +23,7 @@ enum KeyEventType {
 // If a key is not listed here, then it means that the Chrome OS first-party
 // IMEs do not handle it and it is safe for the OS to handle the key itself.
 //
-// Next ordinal: 17
+// Next ordinal: 18
 [Stable, Extensible]
 enum NamedDomKey {
   [Default] kOther = 0,
@@ -45,6 +45,7 @@ enum NamedDomKey {
   [MinVersion=2] kArrowUp = 14,
   [MinVersion=2] kPageDown = 15,
   [MinVersion=2] kPageUp = 16,
+  [MinVersion=8] kTab = 17,
 };
 
 // Represents a key pressed by the user, taking into account aspects like
