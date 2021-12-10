@@ -176,7 +176,7 @@ group("polymer3_elements") {
     ":nearby_share_high_visibility_page_module",
     ":nearby_share_receive_dialog_module",
     ":nearby_share_subpage_module",
-    "../../controls:web_components",
+    "../..:web_components",
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
   ]
 }

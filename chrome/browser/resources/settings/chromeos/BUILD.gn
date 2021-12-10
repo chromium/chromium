@@ -805,10 +805,7 @@ group("polymer3_elements") {
     ":os_settings_icons_css_module",
 
     # Shared with browser settings
-    "..:web_components_local",
-    "../a11y_page:web_components",
-    "../people_page:web_components",
-    "../settings_page:web_components",
+    "..:web_components",
   ]
 }
 

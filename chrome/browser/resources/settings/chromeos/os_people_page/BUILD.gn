@@ -274,9 +274,7 @@ group("polymer3_elements") {
     ":user_list_module",
     ":users_add_user_dialog_module",
     ":users_page_module",
-    "../..:web_components_local",
-    "../../people_page:web_components",
-    "../../privacy_page:polymer3_elements",
+    "../..:web_components",
   ]
 }
 

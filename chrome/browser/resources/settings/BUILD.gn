@@ -218,7 +218,7 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":polymer3_elements" ]
+  deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
@@ -483,64 +483,181 @@ js_library("setting_id_param_util") {
   extra_deps = [ ":build_ts" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    # Sub-folder targets
-    "a11y_page:web_components",
-    "about_page:web_components",
-    "appearance_page:web_components",
-    "autofill_page:web_components",
-    "basic_page:web_components",
-    "clear_browsing_data_dialog:web_components",
-    "controls:web_components",
-    "downloads_page:web_components",
-    "on_startup_page:web_components",
-    "people_page:web_components",
-    "privacy_page:polymer3_elements",
-    "privacy_page/privacy_review:web_components",
-    "privacy_sandbox:web_components",
-    "reset_page:web_components",
-    "safety_check_page:web_components",
-    "search_engines_page:web_components",
-    "search_page:web_components",
-    "settings_main:web_components",
-    "settings_menu:web_components",
-    "settings_page:web_components",
-    "settings_ui:web_components",
-    "site_settings:web_components",
-    "site_settings_page:web_components",
-
-    # Local targets
-    ":web_components_local",
-  ]
-
-  if (!is_chromeos_ash) {
-    public_deps += [ "languages_page:web_components" ]
-  }
-
-  if (!is_chromeos) {
-    public_deps += [
-      "default_browser_page:web_components",
-      "system_page:web_components",
-    ]
-  }
-
-  if (is_win) {
-    public_deps += [
-      "chrome_cleanup_page:web_components",
-      "incompatible_applications_page:web_components",
-    ]
-  }
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [
     "icons.ts",
     "settings_vars_css.ts",
     "settings_page_css.ts",
     "settings_shared_css.ts",
     "site_favicon.ts",
+
+    # Subfolder files.
+    "a11y_page/a11y_page.ts",
+    "a11y_page/captions_subpage.ts",
+    "a11y_page/live_caption_section.ts",
+    "about_page/about_page.ts",
+    "appearance_page/appearance_fonts_page.ts",
+    "appearance_page/appearance_page.ts",
+    "appearance_page/home_url_input.ts",
+    "autofill_page/address_edit_dialog.ts",
+    "autofill_page/address_remove_confirmation_dialog.ts",
+    "autofill_page/autofill_page.ts",
+    "autofill_page/avatar_icon.ts",
+    "autofill_page/autofill_section.ts",
+    "autofill_page/passwords_list_handler.ts",
+    "autofill_page/credit_card_edit_dialog.ts",
+    "autofill_page/credit_card_list_entry.ts",
+    "autofill_page/password_check_edit_dialog.ts",
+    "autofill_page/password_check_edit_disclaimer_dialog.ts",
+    "autofill_page/password_check_list_item.ts",
+    "autofill_page/password_check.ts",
+    "autofill_page/password_edit_dialog.ts",
+    "autofill_page/password_remove_dialog.ts",
+    "autofill_page/password_list_item.ts",
+    "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
+    "autofill_page/password_move_to_account_dialog.ts",
+    "autofill_page/password_remove_confirmation_dialog.ts",
+    "autofill_page/passwords_export_dialog.ts",
+    "autofill_page/passwords_section.ts",
+    "autofill_page/passwords_device_section.ts",
+    "autofill_page/passwords_shared_css.ts",
+    "autofill_page/payments_list.ts",
+    "autofill_page/payments_section.ts",
+    "autofill_page/upi_id_list_entry.ts",
+    "basic_page/basic_page.ts",
+    "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
+    "clear_browsing_data_dialog/history_deletion_dialog.ts",
+    "clear_browsing_data_dialog/installed_app_checkbox.ts",
+    "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
+    "controls/controlled_button.ts",
+    "controls/controlled_radio_button.ts",
+    "controls/extension_controlled_indicator.ts",
+    "controls/settings_checkbox.ts",
+    "controls/settings_dropdown_menu.ts",
+    "controls/settings_radio_group.ts",
+    "controls/settings_slider.ts",
+    "controls/settings_textarea.ts",
+    "controls/settings_toggle_button.ts",
+    "downloads_page/downloads_page.ts",
+    "on_startup_page/on_startup_page.ts",
+    "on_startup_page/startup_url_dialog.ts",
+    "on_startup_page/startup_url_entry.ts",
+    "on_startup_page/startup_urls_page.ts",
+    "people_page/people_page.ts",
+    "people_page/signout_dialog.ts",
+    "people_page/sync_account_control.ts",
+    "people_page/sync_controls.ts",
+    "people_page/sync_encryption_options.ts",
+    "people_page/sync_page.ts",
+    "privacy_page/collapse_radio_button.ts",
+    "privacy_page/cookies_page.ts",
+    "privacy_page/disable_safebrowsing_dialog.ts",
+    "privacy_page/do_not_track_toggle.ts",
+    "privacy_page/personalization_options.ts",
+    "privacy_page/privacy_page.ts",
+    "privacy_page/privacy_review_promo.ts",
+    "privacy_page/secure_dns.ts",
+    "privacy_page/secure_dns_input.ts",
+    "privacy_page/security_keys_bio_enroll_dialog.ts",
+    "privacy_page/security_keys_credential_management_dialog.ts",
+    "privacy_page/security_keys_pin_field.ts",
+    "privacy_page/security_keys_reset_dialog.ts",
+    "privacy_page/security_keys_set_pin_dialog.ts",
+    "privacy_page/security_keys_subpage.ts",
+    "privacy_page/security_page.ts",
+    "privacy_page/privacy_review/privacy_review_clear_on_exit_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_completion_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_completion_link_row.ts",
+    "privacy_page/privacy_review/privacy_review_cookies_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_description_item.ts",
+    "privacy_page/privacy_review/privacy_review_fragment_shared_css.ts",
+    "privacy_page/privacy_review/privacy_review_history_sync_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_msbb_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_page.ts",
+    "privacy_page/privacy_review/privacy_review_safe_browsing_fragment.ts",
+    "privacy_page/privacy_review/privacy_review_welcome_fragment.ts",
+    "privacy_page/privacy_review/step_indicator.ts",
+    "privacy_sandbox/app.ts",
+    "reset_page/reset_page.ts",
+    "reset_page/reset_profile_banner.ts",
+    "reset_page/reset_profile_dialog.ts",
+    "safety_check_page/safety_check_child.ts",
+    "safety_check_page/safety_check_extensions_child.ts",
+    "safety_check_page/safety_check_page.ts",
+    "safety_check_page/safety_check_passwords_child.ts",
+    "safety_check_page/safety_check_safe_browsing_child.ts",
+    "safety_check_page/safety_check_updates_child.ts",
+    "search_page/search_page.ts",
+    "search_engines_page/omnibox_extension_entry.ts",
+    "search_engines_page/search_engine_dialog.ts",
+    "search_engines_page/search_engine_entry_css.ts",
+    "search_engines_page/search_engine_entry.ts",
+    "search_engines_page/search_engines_list.ts",
+    "search_engines_page/search_engines_page.ts",
+    "settings_main/settings_main.ts",
+    "settings_menu/settings_menu.ts",
+    "settings_page/settings_animated_pages.ts",
+    "settings_page/settings_section.ts",
+    "settings_page/settings_subpage.ts",
+    "settings_ui/settings_ui.ts",
+    "site_settings/add_site_dialog.ts",
+    "site_settings/all_sites.ts",
+    "site_settings/all_sites_icons.ts",
+    "site_settings/category_default_setting.ts",
+    "site_settings/category_setting_exceptions.ts",
+    "site_settings/chooser_exception_list.ts",
+    "site_settings/chooser_exception_list_entry.ts",
+    "site_settings/clear_storage_dialog_css.ts",
+    "site_settings/edit_exception_dialog.ts",
+    "site_settings/media_picker.ts",
+    "site_settings/pdf_documents.ts",
+    "site_settings/protocol_handlers.ts",
+    "site_settings/settings_category_default_radio_group.ts",
+    "site_settings/site_data.ts",
+    "site_settings/site_data_details_subpage.ts",
+    "site_settings/site_data_entry.ts",
+    "site_settings/site_details.ts",
+    "site_settings/site_details_permission.ts",
+    "site_settings/site_entry.ts",
+    "site_settings/site_list.ts",
+    "site_settings/site_list_entry.ts",
+    "site_settings/zoom_levels.ts",
+    "site_settings_page/recent_site_permissions.ts",
+    "site_settings_page/site_settings_list.ts",
+    "site_settings_page/site_settings_page.ts",
   ]
+
+  if (!is_chromeos_ash) {
+    js_files += [
+      "people_page/import_data_dialog.ts",
+      "people_page/manage_profile.ts",
+      "languages_page/add_languages_dialog.ts",
+      "languages_page/edit_dictionary_page.ts",
+      "languages_page/languages_page.ts",
+      "languages_page/languages_subpage.ts",
+    ]
+  }
+
+  if (!is_chromeos) {
+    js_files += [
+      "default_browser_page/default_browser_page.ts",
+      "system_page/system_page.ts",
+    ]
+  }
+
+  if (is_win) {
+    js_files += [
+      "safety_check_page/safety_check_chrome_cleaner_child.ts",
+      "chrome_cleanup_page/chrome_cleanup_page.ts",
+      "chrome_cleanup_page/items_to_remove_list.ts",
+      "incompatible_applications_page/incompatible_application_item.ts",
+      "incompatible_applications_page/incompatible_applications_page.ts",
+    ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    js_files += [ "controls/password_prompt_dialog.ts" ]
+  }
 }
 
 ts_library("build_ts") {
