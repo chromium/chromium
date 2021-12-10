@@ -475,17 +475,18 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
 
   content::WebContents* web_contents = GetSenderWebContents();
   size_t drop_index;
-  if (params->index)
+  if (params->index) {
     drop_index = static_cast<size_t>(*params->index);
-  else
+    CHECK(drop_index >= 0 && drop_index <= drop_parent->children().size());
+  } else {
     drop_index = drop_parent->children().size();
+  }
 
   BookmarkManagerPrivateDragEventRouter* router =
       BookmarkManagerPrivateDragEventRouter::FromWebContents(web_contents);
 
-  DCHECK(router);
   const BookmarkNodeData* drag_data = router->GetBookmarkNodeData();
-  DCHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
+  CHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
   const bool copy = false;
   chrome::DropBookmarks(
       GetProfile(), *drag_data, drop_parent, drop_index, copy);
