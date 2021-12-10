@@ -295,7 +295,8 @@ chromium-metrics-reviews@google.com.
       variants="PrefetchProxyCanaryCheckerClient"/>
 </histogram>
 
-<histogram name="PrefetchProxy.CanaryChecker.CacheLookupResult"
+<histogram
+    name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
     enum="CanaryCheckLookupResult" expires_after="M104">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
@@ -305,6 +306,8 @@ chromium-metrics-reviews@google.com.
     Cache misses or cached failures result in filter probing the origin before
     the prefetched response can be used.
   </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
 </histogram>
 
 <histogram
