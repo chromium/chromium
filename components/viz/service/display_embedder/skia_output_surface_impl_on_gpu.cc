@@ -488,9 +488,14 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
   SwapBuffersInternal(std::move(frame));
 }
 
-void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(int n) {
+void SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers(size_t n) {
   MakeCurrent(/*need_framebuffer=*/false);
-  for (int i = 0; i < n; ++i) {
+  output_device_->AllocateFrameBuffers(n);
+}
+
+void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(size_t n) {
+  MakeCurrent(/*need_framebuffer=*/false);
+  for (size_t i = 0; i < n; ++i) {
     output_device_->ReleaseOneFrameBuffer();
   }
 }

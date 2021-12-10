@@ -279,7 +279,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     explicit FrameBufferDamageTracker(size_t number_of_buffers);
     ~FrameBufferDamageTracker();
 
-    void ReallocatedFrameBuffers(const gfx::Size& frame_buffer_size);
+    void FrameBuffersChanged(const gfx::Size& frame_buffer_size);
     void SwappedWithDamage(const gfx::Rect& damage);
     void SkippedSwapWithDamage(const gfx::Rect& damage);
     gfx::Rect GetCurrentFrameBufferDamage() const;
@@ -401,6 +401,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   int consecutive_frames_with_extra_buffer_ = 0;
   // Delayed task to drop frame buffers when idle.
   base::OneShotTimer idle_drop_frame_buffer_timer_;
+  // Pre-allocate up to this number of buffers on begin frame start.
+  int num_preallocate_frame_buffer_ = 1;
   // For accessing tile shared image backings from compositor thread.
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       representation_factory_;

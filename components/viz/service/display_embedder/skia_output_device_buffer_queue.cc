@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/skia_output_device_buffer_queue.h"
 
+#include <iterator>
 #include <memory>
 #include <set>
 #include <utility>
@@ -725,17 +726,10 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 
   if (allocate_frame_buffer) {
     DCHECK(!current_image_);
-    std::vector<std::unique_ptr<OutputPresenter::Image>> images =
-        presenter_->AllocateImages(color_space_, image_size_, 1u);
-    if (images.size() != 1u) {
-      LOG(ERROR) << "AllocateImages failed " << images.size();
-      return nullptr;
-    }
-    current_image_ = images[0].get();
-    images_.push_back(std::move(images[0]));
-  } else {
-    if (!current_image_)
-      current_image_ = GetNextImage();
+    AllocateFrameBuffers(1u);
+  }
+  if (!current_image_) {
+    current_image_ = GetNextImage();
   }
 
   if (!current_image_->sk_surface())
@@ -747,6 +741,20 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 void SkiaOutputDeviceBufferQueue::EndPaint() {
   DCHECK(current_image_);
   current_image_->EndWriteSkia();
+}
+
+void SkiaOutputDeviceBufferQueue::AllocateFrameBuffers(size_t n) {
+  std::vector<std::unique_ptr<OutputPresenter::Image>> new_images =
+      presenter_->AllocateImages(color_space_, image_size_, n);
+  if (new_images.size() != n) {
+    LOG(FATAL) << "AllocateImages failed " << new_images.size() << " " << n;
+    return;
+  }
+  for (auto& image : new_images) {
+    available_images_.push_front(image.get());
+  }
+  images_.insert(images_.end(), std::make_move_iterator(new_images.begin()),
+                 std::make_move_iterator(new_images.end()));
 }
 
 void SkiaOutputDeviceBufferQueue::ReleaseOneFrameBuffer() {

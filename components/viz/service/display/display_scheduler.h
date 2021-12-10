@@ -63,8 +63,10 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
  protected:
   class BeginFrameObserver;
+  class BeginFrameRequestObserverImpl;
 
   bool OnBeginFrame(const BeginFrameArgs& args);
+  void BeginFrameRequestedChanged(bool requested);
   int MaxPendingSwaps() const;
 
   base::TimeTicks current_frame_display_time() const {
@@ -114,6 +116,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
       base::flat_set<base::PlatformThreadId> thread_ids);
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
+  std::unique_ptr<BeginFrameSourceObserver> begin_frame_state_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
   raw_ptr<base::SingleThreadTaskRunner> task_runner_;
 
