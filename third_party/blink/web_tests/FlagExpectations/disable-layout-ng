@@ -1079,6 +1079,7 @@ crbug.com/1035582 fast/hidpi/scrollbar-appearance-increase-device-scale-factor.h
 crbug.com/1035582 paint/invalidation/overflow/float-overflow-right.html [ Failure ]
 crbug.com/1035582 virtual/prefer_compositing_to_lcd_text/scrollbars/listbox-scrollbar-combinations.html [ Failure ]
 crbug.com/1035582 virtual/scalefactor150/fast/hidpi/static/calendar-picker-appearance.html [ Failure ]
+crbug.com/1035582 http/tests/devtools/sources/debugger-breakpoints/disable-breakpoints.js [ Failure Timeout ]
 crbug.com/1035582 paint/invalidation/forms/checkbox-focus-by-mouse-then-keydown.html [ Failure ]
 crbug.com/1035582 paint/invalidation/forms/radio-focus-by-mouse-then-keydown.html [ Failure ]
 crbug.com/1035582 editing/input/linux_rtl_composition_underline.html [ Failure ]
