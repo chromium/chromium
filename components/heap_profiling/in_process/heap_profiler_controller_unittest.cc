@@ -47,8 +47,16 @@ class HeapProfilerControllerTester {
       version_info::Channel channel,
       base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>
           receiver_callback,
+      base::test::TaskEnvironment& task_environment,
       const HeapProfilerReportingConfig& feature_config =
           HeapProfilerReportingConfig()) {
+    // Initializing ScopedFeatureList can race with unrelated
+    // FeatureList checks on other threads: https://crbug.com/846380.
+    // Make sure there are no tasks in progress first.
+    // TODO(https://crbug.com/1275502): Remove this once ScopedFeatureList
+    // hit automatically.
+    task_environment.RunUntilIdle();
+
     if (feature_config.enabled) {
       feature_list_.InitAndEnableFeatureWithParameters(
           HeapProfilerController::kHeapProfilerReporting,
@@ -131,7 +139,8 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
 TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
   HeapProfilerControllerTester tester(version_info::Channel::STABLE,
-                                      base::BindRepeating(&ExpectNoSamples));
+                                      base::BindRepeating(&ExpectNoSamples),
+                                      task_environment_);
   tester.controller().Start();
   // Advance several days to be sure the sample isn't scheduled right on the
   // boundary of the fast-forward.
@@ -140,15 +149,7 @@ TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
 #if !defined(OS_ANDROID)
-
-// See crbug.com/1276033
-#if defined(OS_APPLE)
-#define MAYBE_ProfileCollectionsScheduler DISABLED_ProfileCollectionsScheduler
-#else
-#define MAYBE_ProfileCollectionsScheduler ProfileCollectionsScheduler
-#endif
-
-TEST_F(HeapProfilerControllerTest, MAYBE_ProfileCollectionsScheduler) {
+TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   constexpr int kSnapshotsToCollect = 3;
 
   std::atomic<int> profile_count{0};
@@ -174,8 +175,9 @@ TEST_F(HeapProfilerControllerTest, MAYBE_ProfileCollectionsScheduler) {
     ++profile_count;
   };
 
-  HeapProfilerControllerTester tester(
-      version_info::Channel::STABLE, base::BindLambdaForTesting(check_profile));
+  HeapProfilerControllerTester tester(version_info::Channel::STABLE,
+                                      base::BindLambdaForTesting(check_profile),
+                                      task_environment_);
   tester.controller().Start();
 
   auto* sampler = base::PoissonAllocationSampler::Get();
@@ -203,7 +205,7 @@ TEST_F(HeapProfilerControllerTest, MAYBE_ProfileCollectionsScheduler) {
 TEST_F(HeapProfilerControllerTest, DisableFeature) {
   HeapProfilerControllerTester tester(
       version_info::Channel::STABLE, base::BindRepeating(&ExpectNoSamples),
-      HeapProfilerReportingConfig{.enabled = false});
+      task_environment_, HeapProfilerReportingConfig{.enabled = false});
   tester.controller().Start();
   tester.histogram_tester().ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled", false, 1);
@@ -220,7 +222,7 @@ TEST_F(HeapProfilerControllerTest, StableProbability) {
   {
     HeapProfilerControllerTester tester(version_info::Channel::STABLE,
                                         base::BindRepeating(&ExpectNoSamples),
-                                        feature_config);
+                                        task_environment_, feature_config);
     tester.controller().Start();
     tester.histogram_tester().ExpectUniqueSample(
         "HeapProfiling.InProcess.Enabled", false, 1);
@@ -235,7 +237,8 @@ TEST_F(HeapProfilerControllerTest, StableProbability) {
     };
     HeapProfilerControllerTester tester(
         version_info::Channel::CANARY,
-        base::BindLambdaForTesting(watch_for_sample), feature_config);
+        base::BindLambdaForTesting(watch_for_sample), task_environment_,
+        feature_config);
     tester.controller().Start();
     tester.histogram_tester().ExpectUniqueSample(
         "HeapProfiling.InProcess.Enabled", true, 1);
@@ -263,7 +266,8 @@ TEST_F(HeapProfilerControllerTest, MAYBE_NonStableProbability) {
     };
     HeapProfilerControllerTester tester(
         version_info::Channel::STABLE,
-        base::BindLambdaForTesting(watch_for_sample), feature_config);
+        base::BindLambdaForTesting(watch_for_sample), task_environment_,
+        feature_config);
     tester.controller().Start();
     tester.histogram_tester().ExpectUniqueSample(
         "HeapProfiling.InProcess.Enabled", true, 1);
@@ -275,7 +279,7 @@ TEST_F(HeapProfilerControllerTest, MAYBE_NonStableProbability) {
   {
     HeapProfilerControllerTester tester(version_info::Channel::CANARY,
                                         base::BindRepeating(&ExpectNoSamples),
-                                        feature_config);
+                                        task_environment_, feature_config);
     tester.controller().Start();
     tester.histogram_tester().ExpectUniqueSample(
         "HeapProfiling.InProcess.Enabled", false, 1);
