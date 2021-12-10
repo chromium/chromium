@@ -16,11 +16,14 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Controls the bookmarks save-flow. */
@@ -86,6 +89,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER, (v) -> {
             RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
             BookmarkUtils.startFolderSelectActivity(mContext, mBookmarkId);
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
             mCloseRunnable.run();
         });
 

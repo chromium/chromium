@@ -18,11 +18,16 @@ import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,17 +53,22 @@ public class BookmarkSaveFlowCoordinator {
 
     private boolean mClosedViaRunnable;
 
+    private UserEducationHelper mUserEducationHelper;
+
     /**
      * @param context The {@link Context} associated with this cooridnator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
      * @param subscriptionsManager Allows un/subscribing for product updates, used for
      *         price-tracking.
+     * @param userEducationHelper A means of triggering IPH.
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull SubscriptionsManager subscriptionsManager) {
+            @NonNull SubscriptionsManager subscriptionsManager,
+            @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
+        mUserEducationHelper = userEducationHelper;
         mBookmarkModel = new BookmarkModel();
         mDestroyChecker = new DestroyChecker();
 
@@ -98,7 +108,8 @@ public class BookmarkSaveFlowCoordinator {
             @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        boolean shown =
+                mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
 
         AccessibilityManager am =
@@ -106,6 +117,36 @@ public class BookmarkSaveFlowCoordinator {
         if (!am.isTouchExplorationEnabled()) {
             setupAutodismiss();
         }
+
+        if (ShoppingFeatures.isShoppingListEnabled()
+                && PowerBookmarkUtils.isBookmarkPriceTracked(mBookmarkModel, bookmarkId)) {
+            if (shown) {
+                showShoppingSaveFlowIPH();
+            } else {
+                mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetContentChanged(BottomSheetContent newContent) {
+                        if (newContent == mBottomSheetContent) showShoppingSaveFlowIPH();
+
+                        mBottomSheetController.removeObserver(this);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Show the IPH for the save flow that tells a user that they can organize their products from
+     * the bookmarks surface.
+     */
+    private void showShoppingSaveFlowIPH() {
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mBookmarkSaveFlowView.getResources(),
+                        FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
+                        R.string.iph_shopping_list_save_flow, R.string.iph_shopping_list_save_flow)
+                        .setAnchorView(
+                                mBookmarkSaveFlowView.findViewById(R.id.bookmark_select_folder))
+                        .build());
     }
 
     private void close() {

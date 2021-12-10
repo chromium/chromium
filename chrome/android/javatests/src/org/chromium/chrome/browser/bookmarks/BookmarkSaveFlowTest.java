@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -73,6 +74,9 @@ public class BookmarkSaveFlowTest {
     @Mock
     SubscriptionsManager mSubscriptionsManager;
 
+    @Mock
+    private UserEducationHelper mUserEducationHelper;
+
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
@@ -91,7 +95,7 @@ public class BookmarkSaveFlowTest {
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
             mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
-                    cta, mBottomSheetController, mSubscriptionsManager);
+                    cta, mBottomSheetController, mSubscriptionsManager, mUserEducationHelper);
             mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
