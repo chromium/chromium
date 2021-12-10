@@ -26,6 +26,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 
+#if defined(OS_WIN)
+#include "printing/printed_page_win.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -170,8 +174,8 @@ void PrintBackendServiceManager::FetchCapabilities(
                remote_id, saved_callback_id, std::move(callback));
 
   if (!sandboxed_service_remote_for_test_) {
-    // TODO(1227561)  Remove local call for driver info, don't want any
-    // residual accesses left into the printer drivers from the browser
+    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+    // any residual accesses left into the printer drivers from the browser
     // process.
     base::ScopedAllowBlocking allow_blocking;
     scoped_refptr<PrintBackend> print_backend =
@@ -231,8 +235,8 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
       remote_id, saved_callback_id, std::move(callback));
 
   if (!sandboxed_service_remote_for_test_) {
-    // TODO(1227561)  Remove local call for driver info, don't want any
-    // residual accesses left into the printer drivers from the browser
+    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+    // any residual accesses left into the printer drivers from the browser
     // process.
     base::ScopedAllowBlocking allow_blocking;
     scoped_refptr<PrintBackend> print_backend =
@@ -268,8 +272,8 @@ void PrintBackendServiceManager::UpdatePrintSettings(
                remote_id, saved_callback_id, std::move(callback));
 
   if (!sandboxed_service_remote_for_test_) {
-    // TODO(1227561)  Remove local call for driver info, don't want any
-    // residual accesses left into the printer drivers from the browser
+    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+    // any residual accesses left into the printer drivers from the browser
     // process.
     base::ScopedAllowBlocking allow_blocking;
     scoped_refptr<PrintBackend> print_backend =
@@ -308,8 +312,8 @@ void PrintBackendServiceManager::StartPrinting(
                saved_callback_id, std::move(callback));
 
   if (!sandboxed_service_remote_for_test_) {
-    // TODO(1227561)  Remove local call for driver info, don't want any
-    // residual accesses left into the printer drivers from the browser
+    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+    // any residual accesses left into the printer drivers from the browser
     // process.
     base::ScopedAllowBlocking allow_blocking;
     scoped_refptr<PrintBackend> print_backend =
@@ -326,6 +330,54 @@ void PrintBackendServiceManager::StartPrinting(
                      base::Unretained(this), is_sandboxed, remote_id,
                      saved_callback_id));
 }
+
+#if defined(OS_WIN)
+void PrintBackendServiceManager::RenderPrintedPage(
+    const std::string& printer_name,
+    int document_cookie,
+    const PrintedPage& page,
+    mojom::MetafileDataType page_data_type,
+    base::ReadOnlySharedMemoryRegion serialized_page_data,
+    mojom::PrintBackendService::RenderPrintedPageCallback callback) {
+  // Need to be able to run the callback either after a successful return from
+  // the service or after the remote was disconnected, so save it here for
+  // either eventuality.
+  // Get a callback ID to represent this command.
+  auto saved_callback_id = base::UnguessableToken::Create();
+
+  // Note that `GetService()` will set state internally if this is sandboxed.
+  std::string remote_id = GetRemoteIdForPrinterName(printer_name);
+  bool is_sandboxed;
+  auto& service = GetService(printer_name, &is_sandboxed);
+
+  SaveCallback(GetRemoteSavedRenderPrintedPageCallbacks(is_sandboxed),
+               remote_id, saved_callback_id, std::move(callback));
+
+  if (!sandboxed_service_remote_for_test_) {
+    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+    // any residual accesses left into the printer drivers from the browser
+    // process.
+    base::ScopedAllowBlocking allow_blocking;
+    scoped_refptr<PrintBackend> print_backend =
+        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+        print_backend->GetPrinterDriverInfo(printer_name));
+  }
+
+  // Page numbers are 0-based for the printing context.
+  const uint32_t page_index = page.page_number() - 1;
+
+  DVLOG(1) << "Sending RenderPrintedPage on remote `" << remote_id
+           << "`, saved callback ID of " << saved_callback_id;
+  service->RenderPrintedPage(
+      document_cookie, page_index, page_data_type,
+      std::move(serialized_page_data), page.page_size(),
+      page.page_content_rect(), page.shrink_factor(),
+      base::BindOnce(&PrintBackendServiceManager::RenderPrintedPageDone,
+                     base::Unretained(this), is_sandboxed, remote_id,
+                     saved_callback_id));
+}
+#endif  // defined(OS_WIN)
 
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
@@ -551,6 +603,10 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacksResult(GetRemoteSavedStartPrintingCallbacks(sandboxed),
                           remote_id, mojom::ResultCode::kFailed);
+#if defined(OS_WIN)
+  RunSavedCallbacksResult(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
+                          remote_id, mojom::ResultCode::kFailed);
+#endif
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -597,6 +653,15 @@ PrintBackendServiceManager::GetRemoteSavedStartPrintingCallbacks(
   return sandboxed ? sandboxed_saved_start_printing_callbacks_
                    : unsandboxed_saved_start_printing_callbacks_;
 }
+
+#if defined(OS_WIN)
+PrintBackendServiceManager::RemoteSavedRenderPrintedPageCallbacks&
+PrintBackendServiceManager::GetRemoteSavedRenderPrintedPageCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_render_printed_page_callbacks_
+                   : unsandboxed_saved_render_printed_page_callbacks_;
+}
+#endif
 
 template <class T, class X>
 void PrintBackendServiceManager::SaveCallback(
@@ -700,6 +765,20 @@ void PrintBackendServiceManager::StartPrintingDone(
   ServiceCallbackDone(GetRemoteSavedStartPrintingCallbacks(sandboxed),
                       remote_id, saved_callback_id, result);
 }
+
+#if defined(OS_WIN)
+void PrintBackendServiceManager::RenderPrintedPageDone(
+    bool sandboxed,
+    const std::string& remote_id,
+    const base::UnguessableToken& saved_callback_id,
+    mojom::ResultCode result) {
+  DVLOG(1) << "RenderPrintedPage completed for remote `" << remote_id
+           << "` saved callback ID " << saved_callback_id;
+
+  ServiceCallbackDone(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
+                      remote_id, saved_callback_id, result);
+}
+#endif
 
 template <class T>
 void PrintBackendServiceManager::RunSavedCallbacksStructResult(

@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -28,6 +29,8 @@ class ScopedPrinterInfo;
 }
 
 namespace printing {
+
+class PrintedPage;
 
 class PrintBackendServiceManager {
  public:
@@ -68,6 +71,15 @@ class PrintBackendServiceManager {
       mojom::PrintTargetType target_type,
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback);
+#if defined(OS_WIN)
+  void RenderPrintedPage(
+      const std::string& printer_name,
+      int document_cookie,
+      const PrintedPage& page,
+      mojom::MetafileDataType page_data_type,
+      base::ReadOnlySharedMemoryRegion serialized_page_data,
+      mojom::PrintBackendService::RenderPrintedPageCallback callback);
+#endif
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -132,6 +144,10 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
+#if defined(OS_WIN)
+  using RemoteSavedRenderPrintedPageCallbacks =
+      RemoteSavedCallbacks<mojom::ResultCode>;
+#endif
 
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
@@ -175,6 +191,10 @@ class PrintBackendServiceManager {
   GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
   RemoteSavedStartPrintingCallbacks& GetRemoteSavedStartPrintingCallbacks(
       bool sandboxed);
+#if defined(OS_WIN)
+  RemoteSavedRenderPrintedPageCallbacks&
+  GetRemoteSavedRenderPrintedPageCallbacks(bool sandboxed);
+#endif
 
   // Helper function to save outstanding callbacks.
   template <class T, class X>
@@ -218,6 +238,12 @@ class PrintBackendServiceManager {
                          const std::string& remote_id,
                          const base::UnguessableToken& saved_callback_id,
                          mojom::ResultCode result);
+#if defined(OS_WIN)
+  void RenderPrintedPageDone(bool sandboxed,
+                             const std::string& remote_id,
+                             const base::UnguessableToken& saved_callback_id,
+                             mojom::ResultCode result);
+#endif
 
   // Helper functions to run outstanding callbacks when a remote has become
   // disconnected.
@@ -273,6 +299,12 @@ class PrintBackendServiceManager {
       unsandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedStartPrintingCallbacks sandboxed_saved_start_printing_callbacks_;
   RemoteSavedStartPrintingCallbacks unsandboxed_saved_start_printing_callbacks_;
+#if defined(OS_WIN)
+  RemoteSavedRenderPrintedPageCallbacks
+      sandboxed_saved_render_printed_page_callbacks_;
+  RemoteSavedRenderPrintedPageCallbacks
+      unsandboxed_saved_render_printed_page_callbacks_;
+#endif
 
   // Set of printer drivers which require elevated permissions to operate.
   // It is expected that most print drivers will succeed with the preconfigured
