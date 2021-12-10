@@ -4006,6 +4006,15 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
         errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
         self.assertEqual(0, len(errors))
 
+    def testDeletedFile(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/BUILD.gn', []),
+            MockFile('ash/foo/BUILD.gn', [], action='D'),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(1, len(errors))
+
     def testDoesNotErrorWithAssertion(self):
         input_api = MockInputApi()
         input_api.files = [

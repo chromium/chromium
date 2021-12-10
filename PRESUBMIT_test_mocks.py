@@ -81,7 +81,7 @@ class MockInputApi(object):
   def CreateMockFileInPath(self, f_list):
     self.os_path.exists = lambda x: x in f_list
 
-  def AffectedFiles(self, file_filter=None, include_deletes=False):
+  def AffectedFiles(self, file_filter=None, include_deletes=True):
     for file in self.files:
       if file_filter and not file_filter(file):
         continue
@@ -265,4 +265,3 @@ class MockChange(object):
 
   def GitFootersFromDescription(self):
     return self.footers
-
