@@ -85,6 +85,9 @@
   CNContactViewController* contactViewController =
       [CNContactViewController viewControllerForUnknownContact:contact];
 
+  contactViewController.allowsEditing = YES;
+  contactViewController.contactStore = [[CNContactStore alloc] init];
+
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
