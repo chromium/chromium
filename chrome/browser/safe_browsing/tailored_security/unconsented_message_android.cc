@@ -118,6 +118,7 @@ TailoredSecurityUnconsentedModalAndroid::
     icon_ = gfx::ImageSkiaOperations::CreateIconWithBadge(final_avatar_image,
                                                           badge);
     message_->SetIcon(*icon_.bitmap());
+    message_->EnableLargeIcon(true);
     message_->DisableIconTint();
   }
 
