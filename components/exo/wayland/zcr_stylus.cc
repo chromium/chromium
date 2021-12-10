@@ -83,7 +83,7 @@ class WaylandPointerStylusDelegate : public PointerStylusDelegate {
     if (pointer_ != nullptr)
       pointer_->SetStylusDelegate(nullptr);
   }
-  void OnPointerDestroying(Pointer* pointer_) override { pointer_ = nullptr; }
+  void OnPointerDestroying(Pointer* pointer) override { pointer_ = nullptr; }
   void OnPointerToolChange(ui::EventPointerType type) override {
     uint wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE;
     if (type == ui::EventPointerType::kTouch)
