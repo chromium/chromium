@@ -138,10 +138,6 @@ void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
   NOTREACHED();
 }
 
-void SkiaOutputDevice::AllocateFrameBuffers(size_t n) {
-  NOTREACHED();
-}
-
 void SkiaOutputDevice::ReleaseOneFrameBuffer() {
   NOTREACHED();
 }

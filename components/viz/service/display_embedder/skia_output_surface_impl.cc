@@ -103,7 +103,7 @@ SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBufferDamageTracker(
 SkiaOutputSurfaceImpl::FrameBufferDamageTracker::~FrameBufferDamageTracker() =
     default;
 
-void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBuffersChanged(
+void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::ReallocatedFrameBuffers(
     const gfx::Size& frame_buffer_size) {
   frame_buffer_size_ = frame_buffer_size;
   damage_between_frames_.clear();
@@ -126,7 +126,7 @@ void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::SkippedSwapWithDamage(
     damage_between_frames_.back().Union(damage);
     cached_current_damage_.reset();
   } else {
-    // First frame after `FrameBuffersChanged already has full damage.
+    // First frame after `ReallocatedFrameBuffers already has full damage.
     // So no need to keep track of it with another entry, which would violate
     // the condition the deque size is at most `number_of_buffers_ - 1`.
   }
@@ -142,7 +142,7 @@ SkiaOutputSurfaceImpl::FrameBufferDamageTracker::GetCurrentFrameBufferDamage()
 
 gfx::Rect SkiaOutputSurfaceImpl::FrameBufferDamageTracker::
     ComputeCurrentFrameBufferDamage() const {
-  // First few frames after `FrameBuffersChanged`.
+  // First few frames after `ReallocatedFrameBuffers`.
   if (damage_between_frames_.size() < number_of_buffers_ - 1) {
     return gfx::Rect(frame_buffer_size_);
   }
@@ -296,7 +296,7 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = gfx::Rect(size);
   } else if (frame_buffer_damage_tracker_) {
-    frame_buffer_damage_tracker_->FrameBuffersChanged(size);
+    frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size);
   }
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
@@ -1010,7 +1010,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
       gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     client_->SetNeedsRedrawRect(gfx::Rect(size_));
     if (frame_buffer_damage_tracker_)
-      frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
+      frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size_);
   }
 
   pending_swaps_.pop_front();
@@ -1244,24 +1244,8 @@ void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
   if (!capabilities_.use_dynamic_frame_buffer_allocation)
     return;
   idle_drop_frame_buffer_timer_.Stop();
-  if (observing) {
-    if (size_.IsEmpty())
-      return;
-
-    int num_new_buffers =
-        num_preallocate_frame_buffer_ - num_allocated_buffers_;
-    num_preallocate_frame_buffer_ = 0;
-    if (num_new_buffers <= 0)
-      return;
-    num_allocated_buffers_ += num_new_buffers;
-    if (frame_buffer_damage_tracker_)
-      frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
-    gpu_task_scheduler_->ScheduleOrRetainGpuTask(
-        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers,
-                       base::Unretained(impl_on_gpu_.get()), num_new_buffers),
-        {});
+  if (observing)
     return;
-  }
 
   if (num_allocated_buffers_ <= 1)
     return;
@@ -1274,8 +1258,6 @@ void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
             int available_buffers_lower_bound =
                 self->AvailableBuffersLowerBound();
             if (available_buffers_lower_bound > 0) {
-              self->num_preallocate_frame_buffer_ =
-                  self->num_allocated_buffers_;
               self->num_allocated_buffers_ -= available_buffers_lower_bound;
               self->gpu_task_scheduler_->ScheduleOrRetainGpuTask(
                   base::BindOnce(
