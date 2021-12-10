@@ -2422,7 +2422,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_FIRMWARE_WAIT_FOR_USB" translateable="false" desc="The prompt to insert a thumb drive with the recovery image for this device.">
       Insert your thumb drive with the downloaded recovery image.
       </message>
-      <message name="IDS_SHIMLESS_RMA_FIRMWARE_NOT_FOUND" translateable="false" desc="The message when a thumb drive is detected but it does not conatin a valid recovery image for this device.">
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_FILE_NOT_FOUND" translateable="false" desc="The message when a thumb drive is detected but it does not conatin a valid recovery image for this device.">
       Recovery image not found. Insert your thumb drive with the downloaded recovery image.
       </message>
       <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATING" translateable="false" desc="The message when the firmware is being installed.">

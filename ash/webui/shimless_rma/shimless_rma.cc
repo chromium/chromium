@@ -251,7 +251,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Firmware reimaging page
       {"firmwareUpdatePageTitleText", IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_TITLE},
       {"firmwareUpdateWaitForUsbText", IDS_SHIMLESS_RMA_FIRMWARE_WAIT_FOR_USB},
-      {"firmwareUpdateFileNotFoundText", IDS_SHIMLESS_RMA_FIRMWARE_NOT_FOUND},
+      {"firmwareUpdateFileNotFoundText",
+       IDS_SHIMLESS_RMA_FIRMWARE_FILE_NOT_FOUND},
       {"firmwareUpdatingText", IDS_SHIMLESS_RMA_FIRMWARE_UPDATING},
       {"firmwareUpdateRebootText", IDS_SHIMLESS_RMA_FIRMWARE_REBOOT},
       {"firmwareUpdateCompleteText", IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE},

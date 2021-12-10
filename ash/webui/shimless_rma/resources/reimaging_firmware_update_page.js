@@ -59,7 +59,7 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
       /** @protected */
       statusString_: {
         type: String,
-        computed: 'getStatusString_(status_)',
+        computed: 'computeStatusString_(status_)',
       },
     };
   }
@@ -84,7 +84,7 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
    * @protected
    * @return {string}
    */
-  getStatusString_() {
+  computeStatusString_() {
     // kDownloading state is not used in V1.
     if (!this.status_ || this.status_ == UpdateRoFirmwareStatus.kDownloading) {
       return '';
