@@ -59,11 +59,6 @@
 - (void)dismissEntryAtIndexPath:(NSIndexPath*)indexPath;
 // Removes the |section|.
 - (void)dismissSection:(NSInteger)section;
-// Adds the |suggestions| to the collection and its model in the section
-// corresponding to |sectionInfo|.
-- (void)addSuggestions:
-            (NSArray<CollectionViewItem<SuggestedContent>*>*)suggestions
-         toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo;
 
 @end
 

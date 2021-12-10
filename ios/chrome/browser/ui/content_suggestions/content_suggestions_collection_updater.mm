@@ -166,74 +166,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
 
 #pragma mark - ContentSuggestionsDataSink
 
-- (void)dataAvailableForSection:
-            (ContentSuggestionsSectionInformation*)sectionInfo
-                    forceReload:(BOOL)forceReload {
-  SectionIdentifier sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
-  CSCollectionViewModel* model =
-      self.collectionViewController.collectionViewModel;
-
-  if (forceReload && [model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-    NSInteger numberOfItems = [model numberOfItemsInSection:section];
-    NSMutableArray<NSIndexPath*>* indexesToDelete = [NSMutableArray array];
-    for (NSInteger i = 0; i < numberOfItems; i++) {
-      [indexesToDelete
-          addObject:[NSIndexPath indexPathForItem:i inSection:section]];
-    }
-
-    UICollectionView* collection = self.collectionViewController.collectionView;
-    // Delete all the items manually to avoid adding an empty item.
-    [collection performBatchUpdates:^{
-      [self.collectionViewController collectionView:collection
-                        willDeleteItemsAtIndexPaths:indexesToDelete];
-      [collection deleteItemsAtIndexPaths:indexesToDelete];
-    }
-                         completion:nil];
-  }
-
-  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    NSArray<CSCollectionViewItem*>* items =
-        [model itemsInSectionWithIdentifier:sectionIdentifier];
-    if (items.count > 0 && items[0].type != ItemTypeEmpty) {
-      // Do not dismiss the presented items.
-      return;
-    }
-  }
-
-  [self.collectionViewController
-      addSuggestions:[self.dataSource itemsForSectionInfo:sectionInfo]
-       toSectionInfo:sectionInfo];
-}
-
-- (void)clearSuggestion:(ContentSuggestionIdentifier*)suggestionIdentifier {
-  SectionIdentifier sectionIdentifier =
-      SectionIdentifierForInfo(suggestionIdentifier.sectionInfo);
-  if (![self.collectionViewController.collectionViewModel
-          hasSectionForSectionIdentifier:sectionIdentifier]) {
-    return;
-  }
-
-  NSArray<CSCollectionViewItem*>* itemsInSection =
-      [self.collectionViewController.collectionViewModel
-          itemsInSectionWithIdentifier:sectionIdentifier];
-
-  CSCollectionViewItem* correspondingItem = nil;
-  for (CSCollectionViewItem* item in itemsInSection) {
-    if (item.suggestionIdentifier == suggestionIdentifier) {
-      correspondingItem = item;
-      break;
-    }
-  }
-
-  if (!correspondingItem)
-    return;
-
-  NSIndexPath* indexPath = [self.collectionViewController.collectionViewModel
-      indexPathForItem:correspondingItem];
-  [self.collectionViewController dismissEntryAtIndexPath:indexPath];
-}
-
 - (void)reloadAllData {
   [self resetModels];
 
@@ -292,63 +224,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
   [self.collectionViewController dismissSection:section];
 }
 
-- (void)reloadSection:(ContentSuggestionsSectionInformation*)sectionInfo {
-  CSCollectionViewModel* model =
-      self.collectionViewController.collectionViewModel;
-  SectionIdentifier sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
-
-  if (![model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    [self.collectionViewController
-        addSuggestions:[self.dataSource itemsForSectionInfo:sectionInfo]
-         toSectionInfo:sectionInfo];
-    return;
-  }
-
-  NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-
-  // Reset collection model data for |sectionIdentifier|
-  [self.collectionViewController.collectionViewModel
-                     setFooter:nil
-      forSectionWithIdentifier:sectionIdentifier];
-  [self.collectionViewController.collectionViewModel
-                     setHeader:nil
-      forSectionWithIdentifier:sectionIdentifier];
-  [self.sectionIdentifiersFromContentSuggestions
-      removeObject:@(sectionIdentifier)];
-
-  // Update the section and the other ones.
-  auto addSectionBlock = ^{
-    [self.collectionViewController.collectionViewModel
-        removeSectionWithIdentifier:sectionIdentifier];
-    [self.collectionViewController.collectionView
-        deleteSections:[NSIndexSet indexSetWithIndex:section]];
-
-    NSIndexSet* addedSections =
-        [self addSectionsForSectionInfoToModel:@[ sectionInfo ]];
-    [self.collectionViewController.collectionView insertSections:addedSections];
-
-    NSArray<NSIndexPath*>* addedItems = [self
-        addSuggestionsToModel:[self.dataSource itemsForSectionInfo:sectionInfo]
-              withSectionInfo:sectionInfo];
-    [self.collectionViewController.collectionView
-        insertItemsAtIndexPaths:addedItems];
-  };
-  [UIView animateWithDuration:0
-                   animations:^{
-                     [self.collectionViewController.collectionView
-                         performBatchUpdates:addSectionBlock
-                                  completion:nil];
-                   }];
-
-  // Make sure the section is still in the model and that the index is correct.
-  if (![model hasSectionForSectionIdentifier:sectionIdentifier])
-    return;
-  section = [model sectionForSectionIdentifier:sectionIdentifier];
-
-  [self.collectionViewController.collectionView
-      reloadSections:[NSIndexSet indexSetWithIndex:section]];
-}
-
 - (void)itemHasChanged:(CollectionViewItem<SuggestedContent>*)item {
   if (![self.collectionViewController.collectionViewModel hasItem:item]) {
     return;
@@ -369,26 +244,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
 - (ContentSuggestionType)contentSuggestionTypeForItem:
     (CollectionViewItem*)item {
   return ContentSuggestionTypeForItemType(item.type);
-}
-
-- (NSIndexPath*)removeEmptySuggestionsForSectionInfo:
-    (ContentSuggestionsSectionInformation*)sectionInfo {
-  CSCollectionViewModel* model =
-      self.collectionViewController.collectionViewModel;
-  NSInteger sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
-
-  if (![model hasSectionForSectionIdentifier:sectionIdentifier])
-    return nil;
-
-  NSArray<CSCollectionViewItem*>* existingItems =
-      [model itemsInSectionWithIdentifier:sectionIdentifier];
-  if (existingItems.count == 1 && existingItems[0].type == ItemTypeEmpty) {
-    [model removeItemWithType:ItemTypeEmpty
-        fromSectionWithIdentifier:sectionIdentifier];
-    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-    return [NSIndexPath indexPathForItem:0 inSection:section];
-  }
-  return nil;
 }
 
 - (NSArray<NSIndexPath*>*)

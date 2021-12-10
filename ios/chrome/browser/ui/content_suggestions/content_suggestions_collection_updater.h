@@ -50,11 +50,6 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
 - (NSIndexSet*)addSectionsForSectionInfoToModel:
     (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo;
 
-// Removes the empty item in the section corresponding to |sectionInfo| from the
-// model and returns its index path. Returns nil if there is no empty item.
-- (NSIndexPath*)removeEmptySuggestionsForSectionInfo:
-    (ContentSuggestionsSectionInformation*)sectionInfo;
-
 // Adds the |suggestions| to the model in the section corresponding to
 // |sectionInfo| and returns their index paths. The caller must ensure the
 // corresponding section has been added to the model.

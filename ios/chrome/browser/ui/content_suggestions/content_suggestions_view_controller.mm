@@ -120,28 +120,6 @@ const CGFloat kCardBorderRadius = 11;
       }];
 }
 
-- (void)addSuggestions:(NSArray<CSCollectionViewItem*>*)suggestions
-         toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo {
-  void (^batchUpdates)(void) = ^{
-    NSIndexSet* addedSections = [self.collectionUpdater
-        addSectionsForSectionInfoToModel:@[ sectionInfo ]];
-    [self.collectionView insertSections:addedSections];
-
-    NSIndexPath* removedItem = [self.collectionUpdater
-        removeEmptySuggestionsForSectionInfo:sectionInfo];
-    if (removedItem) {
-      [self.collectionView deleteItemsAtIndexPaths:@[ removedItem ]];
-    }
-
-    NSArray<NSIndexPath*>* addedItems =
-        [self.collectionUpdater addSuggestionsToModel:suggestions
-                                      withSectionInfo:sectionInfo];
-    [self.collectionView insertItemsAtIndexPaths:addedItems];
-  };
-
-  [self.collectionView performBatchUpdates:batchUpdates completion:nil];
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -163,14 +141,6 @@ const CGFloat kCardBorderRadius = 11;
 
   ApplyVisualConstraints(@[ @"V:|[collection]|", @"H:|[collection]|" ],
                          @{@"collection" : self.collectionView});
-
-    UILongPressGestureRecognizer* longPressRecognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(handleLongPress:)];
-    longPressRecognizer.delegate = self;
-    [self.collectionView addGestureRecognizer:longPressRecognizer];
-
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -299,14 +269,6 @@ const CGFloat kCardBorderRadius = 11;
     if ([self.collectionUpdater isMostVisitedSection:section]) {
       parentInset.bottom = kMostVisitedBottomMargin;
     }
-  } else if (self.styler.cellStyle == MDCCollectionViewCellStyleCard) {
-    CGFloat collectionWidth = collectionView.bounds.size.width;
-    CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
-        collectionWidth, self.traitCollection);
-    CGFloat margin =
-        MAX(0, (collectionView.frame.size.width - maxCardWidth) / 2);
-    parentInset.left = margin;
-    parentInset.right = margin;
   }
   return parentInset;
 }
@@ -427,34 +389,6 @@ const CGFloat kCardBorderRadius = 11;
 }
 
 #pragma mark - Private
-
-- (void)handleLongPress:(UILongPressGestureRecognizer*)gestureRecognizer {
-  if (self.editor.editing ||
-      gestureRecognizer.state != UIGestureRecognizerStateBegan) {
-    return;
-  }
-
-  CGPoint touchLocation =
-      [gestureRecognizer locationOfTouch:0 inView:self.collectionView];
-  NSIndexPath* touchedItemIndexPath =
-      [self.collectionView indexPathForItemAtPoint:touchLocation];
-  if (!touchedItemIndexPath ||
-      ![self.collectionViewModel hasItemAtIndexPath:touchedItemIndexPath]) {
-    // Make sure there is an item at this position.
-    return;
-  }
-  CollectionViewItem* touchedItem =
-      [self.collectionViewModel itemAtIndexPath:touchedItemIndexPath];
-
-  ContentSuggestionType type =
-      [self.collectionUpdater contentSuggestionTypeForItem:touchedItem];
-  switch (type) {
-    case ContentSuggestionTypeMostVisited:
-      break;
-    default:
-      break;
-  }
-}
 
 // Checks if the |section| is empty and add an empty element if it is the case.
 // Must be called from inside a performBatchUpdates: block.
