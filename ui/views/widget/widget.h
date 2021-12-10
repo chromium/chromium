@@ -595,6 +595,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Default behavior is to animate both show and hide.
   void SetVisibilityAnimationTransition(VisibilityTransition transition);
 
+  // Whether calling RunMoveLoop() is supported for the widget.
+  bool IsMoveLoopSupported() const;
+
   // Starts a nested run loop that moves the window. This can be used to
   // start a window move operation from a mouse or touch event. This returns
   // when the move completes. |drag_offset| is the offset from the top left

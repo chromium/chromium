@@ -192,6 +192,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   bool IsMouseButtonDown() const override;
   void ClearNativeFocus() override;
   gfx::Rect GetWorkAreaBoundsInScreen() const override;
+  bool IsMoveLoopSupported() const override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,

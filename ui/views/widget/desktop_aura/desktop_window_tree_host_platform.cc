@@ -583,6 +583,10 @@ void DesktopWindowTreeHostPlatform::ClearNativeFocus() {
   }
 }
 
+bool DesktopWindowTreeHostPlatform::IsMoveLoopSupported() const {
+  return platform_window()->IsClientControlledWindowMovementSupported();
+}
+
 Widget::MoveLoopResult DesktopWindowTreeHostPlatform::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     Widget::MoveLoopSource source,

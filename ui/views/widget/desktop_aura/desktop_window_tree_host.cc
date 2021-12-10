@@ -12,6 +12,10 @@
 
 namespace views {
 
+bool DesktopWindowTreeHost::IsMoveLoopSupported() const {
+  return true;
+}
+
 void DesktopWindowTreeHost::SetBoundsInDIP(const gfx::Rect& bounds) {
 #if defined(OS_WIN)
   // The window parameter is intentionally passed as nullptr on Windows because

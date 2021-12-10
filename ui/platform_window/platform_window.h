@@ -181,6 +181,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // to a more reasonable (10px) area.  If |region_px| is nullptr, then any
   // existing region will be reset.
   virtual void SetInputRegion(const gfx::Rect* region_px);
+
+  // Whether the platform supports client-controlled window movement. Under
+  // Wayland, for example, this returns false, unless the required protocol
+  // extension is supported by the compositor.
+  virtual bool IsClientControlledWindowMovementSupported() const;
 };
 
 }  // namespace ui

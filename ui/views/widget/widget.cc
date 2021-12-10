@@ -631,6 +631,10 @@ void Widget::SetVisibilityAnimationTransition(VisibilityTransition transition) {
   native_widget_->SetVisibilityAnimationTransition(transition);
 }
 
+bool Widget::IsMoveLoopSupported() const {
+  return native_widget_->IsMoveLoopSupported();
+}
+
 Widget::MoveLoopResult Widget::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     MoveLoopSource source,

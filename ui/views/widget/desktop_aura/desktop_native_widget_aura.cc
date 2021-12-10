@@ -51,6 +51,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_position_client.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_aura.h"
@@ -1040,6 +1041,12 @@ gfx::Rect DesktopNativeWidgetAura::GetWorkAreaBoundsInScreen() const {
   return desktop_window_tree_host_
              ? desktop_window_tree_host_->GetWorkAreaBoundsInScreen()
              : gfx::Rect();
+}
+
+bool DesktopNativeWidgetAura::IsMoveLoopSupported() const {
+  return desktop_window_tree_host_
+             ? desktop_window_tree_host_->IsMoveLoopSupported()
+             : true;
 }
 
 Widget::MoveLoopResult DesktopNativeWidgetAura::RunMoveLoop(

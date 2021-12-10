@@ -93,6 +93,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool IsVisibleOnAllWorkspaces() const override;
   bool SetWindowTitle(const std::u16string& title) override;
   void ClearNativeFocus() override;
+  bool IsMoveLoopSupported() const override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,
