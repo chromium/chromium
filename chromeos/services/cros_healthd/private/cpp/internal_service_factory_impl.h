@@ -5,8 +5,10 @@
 #ifndef CHROMEOS_SERVICES_CROS_HEALTHD_PRIVATE_CPP_INTERNAL_SERVICE_FACTORY_IMPL_H_
 #define CHROMEOS_SERVICES_CROS_HEALTHD_PRIVATE_CPP_INTERNAL_SERVICE_FACTORY_IMPL_H_
 
+#include "base/synchronization/lock.h"
 #include "chromeos/services/cros_healthd/private/cpp/internal_service_factory.h"
 #include "chromeos/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 namespace cros_healthd {
@@ -37,6 +39,19 @@ class InternalServiceFactoryImpl
 
  protected:
   ~InternalServiceFactoryImpl() override;
+
+ private:
+  // The receiver set to handle connections.
+  mojo::ReceiverSet<mojom::CrosHealthdInternalServiceFactory> receiver_set_;
+  // Lock for access from main thread and mojo thread.
+  base::Lock lock_;
+  // Repeating callbacks that binds a mojo::PendingRemote and returns it.
+  BindNetworkHealthServiceCallback bind_network_health_callback_;
+  BindNetworkDiagnosticsRoutinesCallback bind_network_diag_callback_;
+  // Vectors to keep the pending receivers before the callbacks are ready.
+  std::vector<NetworkHealthServiceReceiver> pending_network_health_receivers_;
+  std::vector<NetworkDiagnosticsRoutinesReceiver>
+      pending_network_diag_receivers_;
 };
 
 }  // namespace internal

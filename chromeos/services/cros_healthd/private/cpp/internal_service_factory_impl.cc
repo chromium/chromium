@@ -13,19 +13,51 @@ InternalServiceFactoryImpl::InternalServiceFactoryImpl() = default;
 InternalServiceFactoryImpl::~InternalServiceFactoryImpl() = default;
 
 void InternalServiceFactoryImpl::SetBindNetworkHealthServiceCallback(
-    BindNetworkHealthServiceCallback callback) {}
+    BindNetworkHealthServiceCallback callback) {
+  DCHECK(!callback.is_null());
+  base::AutoLock lock(lock_);
+  bind_network_health_callback_ = std::move(callback);
+  for (auto& receiver : pending_network_health_receivers_) {
+    bind_network_health_callback_.Run(std::move(receiver));
+  }
+  pending_network_health_receivers_.clear();
+}
 
 void InternalServiceFactoryImpl::SetBindNetworkDiagnosticsRoutinesCallback(
-    BindNetworkDiagnosticsRoutinesCallback callback) {}
+    BindNetworkDiagnosticsRoutinesCallback callback) {
+  DCHECK(!callback.is_null());
+  base::AutoLock lock(lock_);
+  bind_network_diag_callback_ = std::move(callback);
+  for (auto& receiver : pending_network_diag_receivers_) {
+    bind_network_diag_callback_.Run(std::move(receiver));
+  }
+  pending_network_diag_receivers_.clear();
+}
 
 void InternalServiceFactoryImpl::BindReceiver(
-    mojo::PendingReceiver<mojom::CrosHealthdInternalServiceFactory> receiver) {}
+    mojo::PendingReceiver<mojom::CrosHealthdInternalServiceFactory> receiver) {
+  receiver_set_.Add(/*impl=*/this, std::move(receiver));
+}
 
 void InternalServiceFactoryImpl::GetNetworkHealthService(
-    NetworkHealthServiceReceiver receiver) {}
+    NetworkHealthServiceReceiver receiver) {
+  base::AutoLock lock(lock_);
+  if (bind_network_health_callback_.is_null()) {
+    pending_network_health_receivers_.push_back(std::move(receiver));
+    return;
+  }
+  bind_network_health_callback_.Run(std::move(receiver));
+}
 
 void InternalServiceFactoryImpl::GetNetworkDiagnosticsRoutines(
-    NetworkDiagnosticsRoutinesReceiver receiver) {}
+    NetworkDiagnosticsRoutinesReceiver receiver) {
+  base::AutoLock lock(lock_);
+  if (bind_network_diag_callback_.is_null()) {
+    pending_network_diag_receivers_.push_back(std::move(receiver));
+    return;
+  }
+  bind_network_diag_callback_.Run(std::move(receiver));
+}
 
 }  // namespace internal
 }  // namespace cros_healthd
