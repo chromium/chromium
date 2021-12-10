@@ -124,8 +124,8 @@ void FastPairGattServiceClientImpl::OnGattConnection(
     std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
-    QP_LOG(WARNING) << "Error creating GATT connection to device at address:["
-                    << device_address_ << "].";
+    QP_LOG(WARNING) << "Error creating GATT connection to device due to error: "
+                    << error_code.value();
     NotifyInitializedError(PairFailure::kCreateGattConnection);
   } else {
     QP_LOG(VERBOSE)
