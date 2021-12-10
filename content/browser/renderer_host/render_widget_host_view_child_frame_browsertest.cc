@@ -48,8 +48,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
-
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPortals);
   }
 
   void SetUpOnMainThread() override {
@@ -129,7 +127,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{blink::features::kPortals};
   viz::FrameSinkId expected_frame_sink_id_;
 };
 
