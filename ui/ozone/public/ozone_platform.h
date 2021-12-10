@@ -132,10 +132,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Linux only: determines if Skia can fall back to the X11 output device.
     bool skia_can_fall_back_to_x11 = false;
 
-    // Wayland only: determines whether BufferQueue needs a background image to
-    // be stacked below an AcceleratedWidget to make a widget opaque.
-    bool needs_background_image = false;
-
     // Wayland only: determines whether windows which are not top level ones
     // should be given parents explicitly.
     bool set_parent_for_non_top_level_windows = false;
@@ -195,6 +191,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether solid color overlays can be delegated
     // without a backing image via a wayland protocol.
     bool supports_non_backed_solid_color_buffers = false;
+
+    // Wayland only: determines whether BufferQueue needs a background image to
+    // be stacked below an AcceleratedWidget to make a widget opaque.
+    bool needs_background_image = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

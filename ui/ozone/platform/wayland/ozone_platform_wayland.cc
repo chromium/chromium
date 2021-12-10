@@ -271,13 +271,6 @@ class OzonePlatformWayland : public OzonePlatform,
       properties->set_parent_for_non_top_level_windows = true;
       properties->app_modal_dialogs_use_event_blocker = true;
 
-      // Primary planes can be transluscent due to underlay strategy. As a
-      // result Wayland server draws contents occluded by an accelerated widget.
-      // To prevent this, an opaque background image is stacked below the
-      // accelerated widget to occlude contents below.
-      properties->needs_background_image =
-          ui::IsWaylandOverlayDelegationEnabled();
-
       // By design, clients are disallowed to manipulate global screen
       // coordinates, instead only surface-local ones are supported.
       // Non-toplevel surfaces, for example, must be positioned relative to
@@ -315,6 +308,12 @@ class OzonePlatformWayland : public OzonePlatform,
           ui::IsWaylandOverlayDelegationEnabled() &&
           connection_->buffer_manager_host()
               ->SupportsNonBackedSolidColorBuffers();
+      // Primary planes can be transluscent due to underlay strategy. As a
+      // result Wayland server draws contents occluded by an accelerated widget.
+      // To prevent this, an opaque background image is stacked below the
+      // accelerated widget to occlude contents below.
+      properties.needs_background_image =
+          ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
     } else if (buffer_manager_) {
       DCHECK(has_initialized_gpu());
       // These properties are set when the GetPlatformRuntimeProperties is
@@ -322,6 +321,10 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_non_backed_solid_color_buffers =
           ui::IsWaylandOverlayDelegationEnabled() &&
           buffer_manager_->supports_non_backed_solid_color_buffers();
+      // See the comment above.
+      properties.needs_background_image =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_viewporter();
     }
     return properties;
   }

@@ -1510,7 +1510,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
       if (gl_surface_->IsSurfaceless()) {
 #if defined(USE_OZONE)
         bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                          ->GetPlatformProperties()
+                                          ->GetPlatformRuntimeProperties()
                                           .needs_background_image;
         bool supports_non_backed_solid_color_images =
             ui::OzonePlatform::GetInstance()
@@ -1590,7 +1590,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 
 #if defined(USE_OZONE)
   bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                    ->GetPlatformProperties()
+                                    ->GetPlatformRuntimeProperties()
                                     .needs_background_image;
   bool supports_non_backed_solid_color_images =
       ui::OzonePlatform::GetInstance()
