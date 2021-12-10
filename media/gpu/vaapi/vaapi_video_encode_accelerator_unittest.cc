@@ -26,7 +26,6 @@
 
 using base::test::RunClosure;
 using ::testing::_;
-using ::testing::Eq;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -168,9 +167,8 @@ class MockVaapiWrapper : public VaapiWrapper {
                scoped_refptr<VASurface>(scoped_refptr<gfx::NativePixmap>,
                                         bool));
   MOCK_METHOD2(GetEncodedChunkSize, uint64_t(VABufferID, VASurfaceID));
-  MOCK_METHOD5(
-      DownloadFromVABuffer,
-      bool(VABufferID, absl::optional<VASurfaceID>, uint8_t*, size_t, size_t*));
+  MOCK_METHOD5(DownloadFromVABuffer,
+               bool(VABufferID, VASurfaceID, uint8_t*, size_t, size_t*));
   MOCK_METHOD3(UploadVideoFrameToSurface,
                bool(const VideoFrame&, VASurfaceID, const gfx::Size&));
   MOCK_METHOD1(ExecuteAndDestroyPendingBuffers, bool(VASurfaceID));
@@ -429,7 +427,7 @@ class VaapiVideoEncodeAcceleratorTest
               return metadata;
             }));
     EXPECT_CALL(*mock_vaapi_wrapper_,
-                DownloadFromVABuffer(kCodedBufferId, Eq(absl::nullopt), _,
+                DownloadFromVABuffer(kCodedBufferId, kInputSurfaceId, _,
                                      output_buffer_size_, _))
         .WillOnce(WithArgs<4>([](size_t* coded_data_size) {
           *coded_data_size = kEncodedChunkSize;
@@ -628,9 +626,9 @@ class VaapiVideoEncodeAcceleratorTest
     for (size_t i = 0; i < num_spatial_layers; ++i) {
       const VABufferID kCodedBufferId = kCodedBufferIds[i];
       const uint64_t kEncodedChunkSize = kEncodedChunkSizes[i];
-      EXPECT_CALL(*mock_vaapi_wrapper_,
-                  DownloadFromVABuffer(kCodedBufferId, Eq(absl::nullopt), _,
-                                       output_buffer_size_, _))
+      EXPECT_CALL(
+          *mock_vaapi_wrapper_,
+          DownloadFromVABuffer(kCodedBufferId, _, _, output_buffer_size_, _))
           .WillOnce(WithArgs<4>([kEncodedChunkSize](size_t* coded_data_size) {
             *coded_data_size = kEncodedChunkSize;
             return true;

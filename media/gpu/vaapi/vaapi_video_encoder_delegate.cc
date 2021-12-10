@@ -44,7 +44,8 @@ VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
     const BitstreamBufferMetadata& metadata) && {
-  return std::make_unique<EncodeResult>(std::move(coded_buffer_), metadata);
+  return std::make_unique<EncodeResult>(input_surface_,
+                                        std::move(coded_buffer_), metadata);
 }
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
@@ -71,11 +72,18 @@ VaapiVideoEncoderDelegate::EncodeJob::picture() const {
 }
 
 VaapiVideoEncoderDelegate::EncodeResult::EncodeResult(
+    scoped_refptr<VASurface> surface,
     std::unique_ptr<ScopedVABuffer> coded_buffer,
     const BitstreamBufferMetadata& metadata)
-    : coded_buffer_(std::move(coded_buffer)), metadata_(metadata) {}
+    : surface_(std::move(surface)),
+      coded_buffer_(std::move(coded_buffer)),
+      metadata_(metadata) {}
 
 VaapiVideoEncoderDelegate::EncodeResult::~EncodeResult() = default;
+
+VASurfaceID VaapiVideoEncoderDelegate::EncodeResult::input_surface_id() const {
+  return surface_->id();
+}
 
 VABufferID VaapiVideoEncoderDelegate::EncodeResult::coded_buffer_id() const {
   return coded_buffer_->id();

@@ -69,14 +69,18 @@ class VaapiVideoEncoderDelegate {
   // calling VaapiWrapper::DownloadFromVABuffer().
   class EncodeResult {
    public:
-    EncodeResult(std::unique_ptr<ScopedVABuffer> coded_buffer,
+    EncodeResult(scoped_refptr<VASurface> surface,
+                 std::unique_ptr<ScopedVABuffer> coded_buffer,
                  const BitstreamBufferMetadata& metadata);
     ~EncodeResult();
 
+    VASurfaceID input_surface_id() const;
     VABufferID coded_buffer_id() const;
+
     const BitstreamBufferMetadata& metadata() const;
 
    private:
+    const scoped_refptr<VASurface> surface_;
     const std::unique_ptr<ScopedVABuffer> coded_buffer_;
     const BitstreamBufferMetadata metadata_;
   };
