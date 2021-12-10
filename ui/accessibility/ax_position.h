@@ -4324,7 +4324,7 @@ class AXPosition {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 0.
       static const base::NoDestructor<std::vector<int32_t>>
-          embedded_word_starts({0});
+          embedded_word_starts{{0}};
       return *embedded_word_starts;
     }
 
@@ -4353,8 +4353,8 @@ class AXPosition {
     if (IsEmptyObjectReplacedByCharacter()) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 1.
-      static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends(
-          {1});
+      static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{
+          {1}};
       return *embedded_word_ends;
     }
 
