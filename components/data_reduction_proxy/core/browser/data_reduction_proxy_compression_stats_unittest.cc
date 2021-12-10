@@ -163,8 +163,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
         compression_stats_->GetList(prefs::kDailyHttpReceivedContentLength);
 
     for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-      original_daily_content_length_list->Set(
-          i, std::make_unique<base::Value>(base::NumberToString(i)));
+      original_daily_content_length_list->GetList()[i] =
+          base::Value(base::NumberToString(i));
     }
 
     received_daily_content_length_list->ClearList();

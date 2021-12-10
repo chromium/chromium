@@ -81,8 +81,7 @@ void AddInt64ToListPref(size_t index,
                         int64_t length,
                         base::ListValue* list_update) {
   int64_t value = GetInt64PrefValue(*list_update, index) + length;
-  list_update->Set(index,
-                   std::make_unique<base::Value>(base::NumberToString(value)));
+  list_update->GetList()[index] = base::Value(base::NumberToString(value));
 }
 
 void RecordSavingsClearedMetric(DataReductionProxySavingsClearedReason reason) {

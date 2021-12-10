@@ -198,8 +198,8 @@ void GeoLanguageProvider::SetGeoLanguages(
   languages_ = languages;
 
   base::ListValue cache_list;
-  for (size_t i = 0; i < languages_.size(); ++i) {
-    cache_list.Set(i, std::make_unique<base::Value>(languages_[i]));
+  for (const std::string& language : languages_) {
+    cache_list.Append(language);
   }
   prefs_->Set(kCachedGeoLanguagesPref, cache_list);
 }
