@@ -6,20 +6,9 @@ import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 
 const channel = new MessageChannel();
 
+const sizer = document.querySelector('#sizer');
 const plugin =
     /** @type {!HTMLEmbedElement} */ (document.querySelector('embed'));
-plugin.addEventListener('message', e => channel.port1.postMessage(e.data));
-channel.port1.onmessage = e => {
-  if (e.data.type === 'loadArray') {
-    if (plugin.src.startsWith('blob:')) {
-      URL.revokeObjectURL(plugin.src);
-    }
-    plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
-    plugin.setAttribute('has-edits', '');
-  } else {
-    plugin.postMessage(e.data);
-  }
-};
 
 const srcUrl = new URL(plugin.getAttribute('src'));
 let parentOrigin = srcUrl.origin;
@@ -27,6 +16,23 @@ if (parentOrigin === 'chrome-untrusted://print') {
   // Within Print Preview, the source origin differs from the parent origin.
   parentOrigin = 'chrome://print';
 }
+
+plugin.addEventListener('message', e => channel.port1.postMessage(e.data));
+channel.port1.onmessage = e => {
+  switch (e.data.type) {
+    case 'loadArray':
+      if (plugin.src.startsWith('blob:')) {
+        URL.revokeObjectURL(plugin.src);
+      }
+      plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
+      plugin.setAttribute('has-edits', '');
+      break;
+
+    default:
+      plugin.postMessage(e.data);
+      break;
+  }
+};
 window.parent.postMessage(
     {type: 'connect', token: srcUrl.href}, parentOrigin, [channel.port2]);
 

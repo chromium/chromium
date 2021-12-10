@@ -51,9 +51,16 @@ html {
   margin: 0;
   width: 100%;
 }
+
+embed {
+  left: 0;
+  position: fixed;
+  top: 0;
+}
 </style>
+<div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
-  background-color="$4" javascript="$5"$6>
+    background-color="$4" javascript="$5"$6>
 <script type="module">
 $3
 </script>
