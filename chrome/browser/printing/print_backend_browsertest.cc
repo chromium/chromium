@@ -12,13 +12,19 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
@@ -35,6 +42,10 @@
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_WIN)
+#include "printing/emf_win.h"
+#endif
 
 namespace printing {
 
@@ -69,6 +80,27 @@ constexpr int32_t kCopiesMax = 123;
 constexpr int kPrintSettingsCopies = 42;
 constexpr int kPrintSettingsDefaultDpi = 300;
 constexpr int kPrintSettingsOverrideDpi = 150;
+
+// TODO(crbug.com/809738)  `LoadMetafileDataFromFile()` can be used for other
+// platforms once support is added for `RenderPrintedDocument()`.
+#if defined(OS_WIN)
+bool LoadMetafileDataFromFile(const std::string& file_name,
+                              Metafile& metafile) {
+  base::FilePath data_file;
+  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &data_file))
+    return false;
+
+  data_file =
+      data_file.Append(FILE_PATH_LITERAL("printing")).AppendASCII(file_name);
+  std::string data;
+  {
+    base::ScopedAllowBlockingForTesting allow_block;
+    if (!base::ReadFileToString(data_file, &data))
+      return false;
+  }
+  return metafile.InitFromData(base::as_bytes(base::make_span(data)));
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -165,8 +197,8 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
-  void OnDidStartPrinting(mojom::ResultCode& capture_result,
-                          mojom::ResultCode result) {
+  void CaptureResult(mojom::ResultCode& capture_result,
+                     mojom::ResultCode result) {
     capture_result = result;
     CheckForQuit();
   }
@@ -463,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
   GetPrintBackendService()->StartPrinting(
       /*document_cookie=*/1, u"document name",
       mojom::PrintTargetType::kDirectToDevice, print_settings,
-      base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
+      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                      base::Unretained(this), std::ref(result)));
   WaitUntilCallbackReceived();
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
@@ -485,10 +517,53 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
   GetPrintBackendService()->StartPrinting(
       /*document_cookie=*/1, u"document name",
       mojom::PrintTargetType::kDirectToDevice, print_settings,
-      base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
+      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                      base::Unretained(this), std::ref(result)));
   WaitUntilCallbackReceived();
   EXPECT_EQ(result, mojom::ResultCode::kFailed);
 }
+
+#if defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  mojom::ResultCode result;
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(
+      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->StartPrinting(
+      /*document_cookie=*/1, u"document name",
+      mojom::PrintTargetType::kDirectToDevice, print_settings,
+      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                     base::Unretained(this), std::ref(result)));
+  WaitUntilCallbackReceived();
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+
+  auto metafile = std::make_unique<Emf>();
+  ASSERT_TRUE(LoadMetafileDataFromFile("embedded_images_ps_level3.emf",
+                                       *metafile.get()));
+  base::MappedReadOnlyRegion region_mapping =
+      metafile->GetDataAsSharedMemoryRegion();
+  ASSERT_TRUE(region_mapping.IsValid());
+
+  GetPrintBackendService()->RenderPrintedPage(
+      /*document_cookie=*/1,
+      /*page_index=*/0, metafile->GetDataType(),
+      std::move(region_mapping.region),
+      /*page_size=*/gfx::Size(200, 200),
+      /*page_content_rect=*/gfx::Rect(0, 0, 200, 200),
+      /*shrink_factor=*/1.0f,
+      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                     base::Unretained(this), std::ref(result)));
+  WaitUntilCallbackReceived();
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace printing

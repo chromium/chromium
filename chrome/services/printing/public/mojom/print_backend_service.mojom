@@ -4,12 +4,14 @@
 
 module printing.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "printing/backend/mojom/print_backend.mojom";
 import "printing/mojom/print.mojom";
 import "printing/mojom/printing_context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // The default printer name, or the `ResultCode` if there was an error when
 // trying to retrieve this data.
@@ -125,5 +127,16 @@ interface PrintBackendService {
                 mojo_base.mojom.String16 document_name,
                 PrintTargetType target_type,
                 PrintSettings settings)
+    => (ResultCode result_code);
+
+  // Render the indicated page as part of print job for `document_cookie`.
+  [EnableIf=is_win]
+  RenderPrintedPage(int32 document_cookie,
+                    uint32 page_index,
+                    MetafileDataType page_data_type,
+                    mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_page,
+                    gfx.mojom.Size page_size,
+                    gfx.mojom.Rect page_content_rect,
+                    float shrink_factor)
     => (ResultCode result_code);
 };
