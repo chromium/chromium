@@ -128,8 +128,6 @@ target(link_target_type, "renderer") {
     "service_worker/controller_service_worker_connector.h",
     "service_worker/embedded_worker_instance_client_impl.cc",
     "service_worker/embedded_worker_instance_client_impl.h",
-    "service_worker/navigation_preload_request.cc",
-    "service_worker/navigation_preload_request.h",
     "service_worker/service_worker_context_client.cc",
     "service_worker/service_worker_context_client.h",
     "service_worker/service_worker_fetch_context_impl.cc",

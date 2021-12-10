@@ -22,6 +22,8 @@ blink_modules_sources("service_worker") {
     "message_from_service_worker.h",
     "navigation_preload_manager.cc",
     "navigation_preload_manager.h",
+    "navigation_preload_request.cc",
+    "navigation_preload_request.h",
     "navigator_service_worker.cc",
     "navigator_service_worker.h",
     "respond_with_observer.cc",

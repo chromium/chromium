@@ -2,23 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/service_worker/navigation_preload_request.h"
+#include "third_party/blink/renderer/modules/service_worker/navigation_preload_request.h"
 
 #include <utility>
 
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 
-namespace content {
+namespace blink {
+
+// static
+std::unique_ptr<WebNavigationPreloadRequest>
+WebNavigationPreloadRequest::Create(
+    WebServiceWorkerContextClient* owner,
+    int fetch_event_id,
+    const WebURL& url,
+    mojo::PendingReceiver<network::mojom::URLLoaderClient>
+        preload_url_loader_client_receiver) {
+  return std::make_unique<NavigationPreloadRequest>(
+      owner, fetch_event_id, url,
+      std::move(preload_url_loader_client_receiver));
+}
 
 NavigationPreloadRequest::NavigationPreloadRequest(
-    blink::WebServiceWorkerContextClient* owner,
+    WebServiceWorkerContextClient* owner,
     int fetch_event_id,
-    const blink::WebURL& url,
+    const WebURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         preload_url_loader_client_receiver)
     : owner_(owner),
@@ -34,12 +47,11 @@ void NavigationPreloadRequest::OnReceiveEarlyHints(
 void NavigationPreloadRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!response_);
-  response_ = std::make_unique<blink::WebURLResponse>();
+  response_ = std::make_unique<WebURLResponse>();
   // TODO(horo): Set report_security_info to true when DevTools is attached.
   const bool report_security_info = false;
-  blink::WebURLLoader::PopulateURLResponse(
-      url_, *response_head, response_.get(), report_security_info,
-      -1 /* request_id */);
+  WebURLLoader::PopulateURLResponse(url_, *response_head, response_.get(),
+                                    report_security_info, -1 /* request_id */);
   MaybeReportResponseToOwner();
 }
 
@@ -50,10 +62,10 @@ void NavigationPreloadRequest::OnReceiveRedirect(
   DCHECK(net::HttpResponseHeaders::IsRedirectResponseCode(
       response_head->headers->response_code()));
 
-  response_ = std::make_unique<blink::WebURLResponse>();
-  blink::WebURLLoader::PopulateURLResponse(
-      url_, *response_head, response_.get(), false /* report_security_info */,
-      -1 /* request_id */);
+  response_ = std::make_unique<WebURLResponse>();
+  WebURLLoader::PopulateURLResponse(url_, *response_head, response_.get(),
+                                    false /* report_security_info */,
+                                    -1 /* request_id */);
   owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
                                       mojo::ScopedDataPipeConsumerHandle());
   // This will delete |this|.
@@ -86,16 +98,15 @@ void NavigationPreloadRequest::OnStartLoadingResponseBody(
 void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK) {
-    blink::WebString message;
-    blink::WebServiceWorkerError::Mode error_mode =
-        blink::WebServiceWorkerError::Mode::kNone;
+    WebString message;
+    WebServiceWorkerError::Mode error_mode = WebServiceWorkerError::Mode::kNone;
     if (status.error_code == net::ERR_ABORTED) {
       message =
           "The service worker navigation preload request was cancelled "
           "before 'preloadResponse' settled. If you intend to use "
           "'preloadResponse', use waitUntil() or respondWith() to wait for "
           "the promise to settle.";
-      error_mode = blink::WebServiceWorkerError::Mode::kShownInConsole;
+      error_mode = WebServiceWorkerError::Mode::kShownInConsole;
     } else {
       message =
           "The service worker navigation preload request failed due to a "
@@ -130,13 +141,13 @@ void NavigationPreloadRequest::MaybeReportResponseToOwner() {
 }
 
 void NavigationPreloadRequest::ReportErrorToOwner(
-    const blink::WebString& message,
-    blink::WebServiceWorkerError::Mode error_mode) {
+    const WebString& message,
+    WebServiceWorkerError::Mode error_mode) {
   // This will delete |this|.
   owner_->OnNavigationPreloadError(
       fetch_event_id_,
-      std::make_unique<blink::WebServiceWorkerError>(
-          blink::mojom::ServiceWorkerErrorType::kNetwork, message, error_mode));
+      std::make_unique<WebServiceWorkerError>(
+          mojom::blink::ServiceWorkerErrorType::kNetwork, message, error_mode));
 }
 
-}  // namespace content
+}  // namespace blink

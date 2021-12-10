@@ -1629,6 +1629,18 @@ _CONFIG = [
             'base::SingleSampleMetricsFactory',
         ],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/service_worker/navigation_preload_request.cc',
+            'third_party/blink/renderer/modules/service_worker/navigation_preload_request.h',
+        ],
+        'allowed': [
+            'net::ERR_.+',
+            'net::HttpResponseHeaders',
+            'net::OK',
+            'net::RedirectInfo',
+        ],
+    },
 ]
 
 

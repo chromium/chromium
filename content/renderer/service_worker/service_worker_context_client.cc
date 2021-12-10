@@ -30,7 +30,6 @@
 #include "content/public/renderer/worker_thread.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
-#include "content/renderer/service_worker/navigation_preload_request.h"
 #include "content/renderer/service_worker/service_worker_fetch_context_impl.h"
 #include "content/renderer/service_worker/service_worker_type_converters.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/web/modules/service_worker/web_navigation_preload_request.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 
@@ -81,7 +81,8 @@ struct ServiceWorkerContextClient::WorkerContextData {
   ~WorkerContextData() { DCHECK(thread_checker.CalledOnValidThread()); }
 
   // Inflight navigation preload requests.
-  base::IDMap<std::unique_ptr<NavigationPreloadRequest>> preload_requests;
+  base::IDMap<std::unique_ptr<blink::WebNavigationPreloadRequest>>
+      preload_requests;
 
   base::ThreadChecker thread_checker;
   base::WeakPtrFactory<ServiceWorkerContextClient> weak_factory;
@@ -406,7 +407,7 @@ void ServiceWorkerContextClient::OnNavigationPreloadError(
     int fetch_event_id,
     std::unique_ptr<blink::WebServiceWorkerError> error) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
-  // |context_| owns NavigationPreloadRequest which calls this.
+  // |context_| owns WebNavigationPreloadRequest which calls this.
   DCHECK(context_);
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerContextClient::OnNavigationPreloadError",
@@ -424,7 +425,7 @@ void ServiceWorkerContextClient::OnNavigationPreloadComplete(
     int64_t encoded_body_length,
     int64_t decoded_body_length) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
-  // |context_| owns NavigationPreloadRequest which calls this.
+  // |context_| owns WebNavigationPreloadRequest which calls this.
   DCHECK(context_);
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
@@ -480,7 +481,7 @@ void ServiceWorkerContextClient::SetupNavigationPreload(
         preload_url_loader_client_receiver) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(context_);
-  auto preload_request = std::make_unique<NavigationPreloadRequest>(
+  auto preload_request = blink::WebNavigationPreloadRequest::Create(
       this, fetch_event_id, url, std::move(preload_url_loader_client_receiver));
   context_->preload_requests.AddWithID(std::move(preload_request),
                                        fetch_event_id);
