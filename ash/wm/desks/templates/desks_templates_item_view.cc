@@ -15,7 +15,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/label_textfield.h"
+#include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
@@ -305,9 +305,9 @@ void DesksTemplatesItemView::ContentsChanged(
   // names to have an unbounded length. Therefore we trim if needed at
   // `kMaxLength` UTF-16 boundary. Note that we don't care about code point
   // boundaries in this case.
-  if (new_contents.size() > LabelTextfield::kMaxLength) {
+  if (new_contents.size() > DesksTextfield::kMaxLength) {
     std::u16string trimmed_new_contents = new_contents;
-    trimmed_new_contents.resize(LabelTextfield::kMaxLength);
+    trimmed_new_contents.resize(DesksTextfield::kMaxLength);
     name_view_->SetText(trimmed_new_contents);
   }
 

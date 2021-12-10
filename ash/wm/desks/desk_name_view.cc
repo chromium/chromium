@@ -55,11 +55,11 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
 }
 
 void DeskNameView::OnViewHighlighted() {
-  LabelTextfield::OnViewHighlighted();
+  DesksTextfield::OnViewHighlighted();
   mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
 }
 
-BEGIN_METADATA(DeskNameView, LabelTextfield)
+BEGIN_METADATA(DeskNameView, DesksTextfield)
 END_METADATA
 
 }  // namespace ash

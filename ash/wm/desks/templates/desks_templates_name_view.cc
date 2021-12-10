@@ -47,7 +47,7 @@ DesksTemplatesNameView::DesksTemplatesNameView() {
   // elements. This will be done by refactoring `WmHighlightItemBorder` to
   // adjust the border, which we update here.
   auto border = std::make_unique<WmHighlightItemBorder>(
-      LabelTextfield::kLabelTextfieldBorderRadius);
+      DesksTextfield::kDesksTextfieldBorderRadius);
   border_ptr_ = border.get();
 
   views::Builder<DesksTemplatesNameView>(this)
@@ -90,7 +90,7 @@ void DesksTemplatesNameView::SetTextAndElideIfNeeded(
   full_text_ = text;
 }
 
-BEGIN_METADATA(DesksTemplatesNameView, LabelTextfield)
+BEGIN_METADATA(DesksTemplatesNameView, DesksTextfield)
 END_METADATA
 
 }  // namespace ash

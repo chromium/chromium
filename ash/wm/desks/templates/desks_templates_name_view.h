@@ -5,14 +5,14 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
 
-#include "ash/wm/desks/label_textfield.h"
+#include "ash/wm/desks/desks_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Defines a textfield styled to normally look like a label. Allows modifying
 // the name of its corresponding template.
-class DesksTemplatesNameView : public LabelTextfield {
+class DesksTemplatesNameView : public DesksTextfield {
  public:
   METADATA_HEADER(DesksTemplatesNameView);
 
@@ -26,14 +26,14 @@ class DesksTemplatesNameView : public LabelTextfield {
   // grid widget.
   static void CommitChanges(views::Widget* widget);
 
-  // LabelTextfield:
+  // DesksTextfield:
   void SetTextAndElideIfNeeded(const std::u16string& text) override;
 
  private:
   friend class DesksTemplatesNameViewTestApi;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, LabelTextfield)
+BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, DesksTextfield)
 END_VIEW_BUILDER
 
 }  // namespace ash

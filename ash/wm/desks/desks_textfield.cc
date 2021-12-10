@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/label_textfield.h"
+#include "ash/wm/desks/desks_textfield.h"
 
 #include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -18,18 +18,18 @@ namespace ash {
 
 namespace {
 
-constexpr int kLabelTextfieldMinHeight = 24;
-constexpr int kLabelTextfieldHorizontalPadding = 6;
+constexpr int kDesksTextfieldMinHeight = 24;
+constexpr int kDesksTextfieldHorizontalPadding = 6;
 
 }  // namespace
 
-LabelTextfield::LabelTextfield() {
+DesksTextfield::DesksTextfield() {
   auto border = std::make_unique<WmHighlightItemBorder>(
-      kLabelTextfieldBorderRadius,
-      gfx::Insets(0, kLabelTextfieldHorizontalPadding));
+      kDesksTextfieldBorderRadius,
+      gfx::Insets(0, kDesksTextfieldHorizontalPadding));
   border_ptr_ = border.get();
 
-  views::Builder<LabelTextfield>(this)
+  views::Builder<DesksTextfield>(this)
       .SetBorder(std::move(border))
       .SetCursorEnabled(true)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
@@ -40,13 +40,13 @@ LabelTextfield::LabelTextfield() {
       .BuildChildren();
 }
 
-LabelTextfield::~LabelTextfield() = default;
+DesksTextfield::~DesksTextfield() = default;
 
 // static
-constexpr size_t LabelTextfield::kLabelTextfieldBorderRadius;
-constexpr size_t LabelTextfield::kMaxLength;
+constexpr size_t DesksTextfield::kDesksTextfieldBorderRadius;
+constexpr size_t DesksTextfield::kMaxLength;
 
-void LabelTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
+void DesksTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
   // Use the potential max size of this to calculate elision, not its current
   // size to avoid eliding names that don't need to be.
   SetText(
@@ -56,12 +56,12 @@ void LabelTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
   full_text_ = text;
 }
 
-void LabelTextfield::UpdateViewAppearance() {
+void DesksTextfield::UpdateViewAppearance() {
   background()->SetNativeControlColor(GetBackgroundColor());
   UpdateBorderState();
 }
 
-gfx::Size LabelTextfield::CalculatePreferredSize() const {
+gfx::Size DesksTextfield::CalculatePreferredSize() const {
   const std::u16string& text = GetText();
   int width = 0;
   int height = 0;
@@ -70,11 +70,11 @@ gfx::Size LabelTextfield::CalculatePreferredSize() const {
   gfx::Size size{width + GetCaretBounds().width(), height};
   const auto insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
-  size.SetToMax(gfx::Size(0, kLabelTextfieldMinHeight));
+  size.SetToMax(gfx::Size(0, kDesksTextfieldMinHeight));
   return size;
 }
 
-bool LabelTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
+bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // The default behavior of the tab key is that it moves the focus to the next
   // available view.
   // We want that to be handled by OverviewHighlightController as part of moving
@@ -82,23 +82,23 @@ bool LabelTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return event.key_code() == ui::VKEY_TAB;
 }
 
-void LabelTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
   node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
 }
 
-void LabelTextfield::OnMouseEntered(const ui::MouseEvent& event) {
+void DesksTextfield::OnMouseEntered(const ui::MouseEvent& event) {
   UpdateViewAppearance();
 }
 
-void LabelTextfield::OnMouseExited(const ui::MouseEvent& event) {
+void DesksTextfield::OnMouseExited(const ui::MouseEvent& event) {
   UpdateViewAppearance();
 }
 
-void LabelTextfield::OnThemeChanged() {
+void DesksTextfield::OnThemeChanged() {
   Textfield::OnThemeChanged();
   SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), kLabelTextfieldBorderRadius));
+      GetBackgroundColor(), kDesksTextfieldBorderRadius));
   AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -111,36 +111,36 @@ void LabelTextfield::OnThemeChanged() {
   UpdateBorderState();
 }
 
-gfx::NativeCursor LabelTextfield::GetCursor(const ui::MouseEvent& event) {
+gfx::NativeCursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
   return views::GetNativeIBeamCursor();
 }
 
-views::View* LabelTextfield::GetView() {
+views::View* DesksTextfield::GetView() {
   return this;
 }
 
-void LabelTextfield::MaybeActivateHighlightedView() {
+void DesksTextfield::MaybeActivateHighlightedView() {
   RequestFocus();
 }
 
-void LabelTextfield::MaybeCloseHighlightedView() {}
+void DesksTextfield::MaybeCloseHighlightedView() {}
 
-void LabelTextfield::MaybeSwapHighlightedView(bool right) {}
+void DesksTextfield::MaybeSwapHighlightedView(bool right) {}
 
-void LabelTextfield::OnViewHighlighted() {
+void DesksTextfield::OnViewHighlighted() {
   UpdateBorderState();
 }
 
-void LabelTextfield::OnViewUnhighlighted() {
+void DesksTextfield::OnViewUnhighlighted() {
   UpdateBorderState();
 }
 
-void LabelTextfield::UpdateBorderState() {
+void DesksTextfield::UpdateBorderState() {
   border_ptr_->SetFocused(IsViewHighlighted() || HasFocus());
   SchedulePaint();
 }
 
-SkColor LabelTextfield::GetBackgroundColor() const {
+SkColor DesksTextfield::GetBackgroundColor() const {
   return HasFocus() || IsMouseHovered()
              ? AshColorProvider::Get()->GetControlsLayerColor(
                    AshColorProvider::ControlsLayerType::
@@ -148,7 +148,7 @@ SkColor LabelTextfield::GetBackgroundColor() const {
              : SK_ColorTRANSPARENT;
 }
 
-BEGIN_METADATA(LabelTextfield, views::Textfield)
+BEGIN_METADATA(DesksTextfield, views::Textfield)
 END_METADATA
 
 }  // namespace ash
