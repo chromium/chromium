@@ -121,7 +121,7 @@ editing/style/query-typing-style.html
 editing/style/stylewithcss-without-selection.html
 editing/undo/5738768.html
 editing/undo/orphaned-selection-crash-bug32823-3.html
-external/wpt/bluetooth/idl/idl-NavigatorBluetooth.html
+external/wpt/bluetooth/idl/idl-NavigatorBluetooth.window.html
 external/wpt/bluetooth/requestDevice/canonicalizeFilter/no-arguments.https.html
 external/wpt/content-security-policy/connect-src/connect-src-beacon-blocked.sub.html
 external/wpt/content-security-policy/font-src/font-match-allowed.sub.html

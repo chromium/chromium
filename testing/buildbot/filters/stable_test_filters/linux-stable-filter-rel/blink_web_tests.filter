@@ -4747,9 +4747,9 @@
 -external/wpt/beacon/headers/header-referrer-unsafe-url.https.html
 -external/wpt/beacon/idlharness.any.html
 -external/wpt/bluetooth/getDevices/no-granted-devices.https.window.html
--external/wpt/bluetooth/idl/idl-BluetoothUUID.html
--external/wpt/bluetooth/idl/idl-NavigatorBluetooth.html
--external/wpt/bluetooth/idl/idl-NavigatorBluetooth.https.html
+-external/wpt/bluetooth/idl/idl-BluetoothUUID.window.html
+-external/wpt/bluetooth/idl/idl-NavigatorBluetooth.window.html
+-external/wpt/bluetooth/idl/idl-NavigatorBluetooth.https.window.html
 -external/wpt/bluetooth/idl/idlharness.tentative.https.window.html
 -external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.window.html
 -external/wpt/client-hints/accept-ch-answers.sub.https.html
@@ -51883,9 +51883,9 @@
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/adapter/adapter-powered-off-getAvailability.https.window.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/adapter/adapter-removed-getAvailability.https.window.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/getDevices/no-granted-devices.https.window.html
--virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-Bluetooth.https.html
--virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-BluetoothUUID.html
--virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-NavigatorBluetooth.html
+-virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-Bluetooth.https.window.html
+-virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-BluetoothUUID.window.html
+-virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-NavigatorBluetooth.window.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idlharness.tentative.https.window.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.window.html
 -virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/idl/idl-BluetoothGATTRemoteServer.https.html
