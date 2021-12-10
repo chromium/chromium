@@ -26,9 +26,8 @@ class WebCryptoImpl;
 class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
  public:
   BlinkPlatformImpl();
-  BlinkPlatformImpl(
-      scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
-      base::PlatformThreadId io_thread_id);
+  explicit BlinkPlatformImpl(
+      scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner);
   ~BlinkPlatformImpl() override;
 
   // blink::Platform implementation.
@@ -51,13 +50,11 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   blink::ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker()
       override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
-  base::PlatformThreadId GetIOThreadId() const override;
   std::unique_ptr<NestedMessageLoopRunner> CreateNestedMessageLoopRunner()
       const override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
-  base::PlatformThreadId io_thread_id_;
   const scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_proxy_;
   webcrypto::WebCryptoImpl web_crypto_;

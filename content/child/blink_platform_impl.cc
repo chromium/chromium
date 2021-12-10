@@ -137,14 +137,11 @@ class ThreadSafeBrowserInterfaceBrokerProxyImpl
 
 // TODO(skyostil): Ensure that we always have an active task runner when
 // constructing the platform.
-BlinkPlatformImpl::BlinkPlatformImpl()
-    : BlinkPlatformImpl(nullptr, base::kInvalidThreadId) {}
+BlinkPlatformImpl::BlinkPlatformImpl() : BlinkPlatformImpl(nullptr) {}
 
 BlinkPlatformImpl::BlinkPlatformImpl(
-    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
-    base::PlatformThreadId io_thread_id)
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner)
     : io_thread_task_runner_(std::move(io_thread_task_runner)),
-      io_thread_id_(io_thread_id),
       browser_interface_broker_proxy_(
           base::MakeRefCounted<ThreadSafeBrowserInterfaceBrokerProxyImpl>()) {}
 
@@ -269,10 +266,6 @@ bool BlinkPlatformImpl::IsLowEndDevice() {
 scoped_refptr<base::SingleThreadTaskRunner> BlinkPlatformImpl::GetIOTaskRunner()
     const {
   return io_thread_task_runner_;
-}
-
-base::PlatformThreadId BlinkPlatformImpl::GetIOThreadId() const {
-  return io_thread_id_;
 }
 
 std::unique_ptr<blink::Platform::NestedMessageLoopRunner>

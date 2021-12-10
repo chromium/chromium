@@ -169,13 +169,9 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
 
 RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
     blink::scheduler::WebThreadScheduler* main_thread_scheduler)
-    : BlinkPlatformImpl(
-          RenderThreadImpl::current()
-              ? RenderThreadImpl::current()->GetIOTaskRunner()
-              : nullptr,
-          RenderThreadImpl::current()
-              ? RenderThreadImpl::current()->GetIOPlatformThreadId()
-              : base::kInvalidThreadId),
+    : BlinkPlatformImpl(RenderThreadImpl::current()
+                            ? RenderThreadImpl::current()->GetIOTaskRunner()
+                            : nullptr),
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
       main_thread_scheduler_(main_thread_scheduler) {
@@ -1110,6 +1106,12 @@ void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
     const blink::WebURL& url,
     blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
   GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
+}
+
+base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
+  return RenderThreadImpl::current()
+             ? RenderThreadImpl::current()->GetIOPlatformThreadId()
+             : base::kInvalidThreadId;
 }
 
 }  // namespace content
