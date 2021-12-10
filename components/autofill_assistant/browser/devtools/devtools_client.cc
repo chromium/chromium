@@ -277,16 +277,11 @@ void DevtoolsClient::DispatchEventTask(
 void DevtoolsClient::FillReplyStatusFromErrorDict(
     ReplyStatus* status,
     const base::DictionaryValue& error_dict) {
-  const base::Value* code;
-  if (error_dict.Get("code", &code) && code->is_int()) {
-    status->error_code = code->GetInt();
-  } else {
-    status->error_code = -1;  // unknown error code
-  }
+  status->error_code = error_dict.FindIntKey("code").value_or(-1);
 
-  const base::Value* message;
-  if (error_dict.Get("message", &message) && message->is_string()) {
-    status->error_message = message->GetString();
+  const std::string* message = error_dict.FindStringKey("message");
+  if (message) {
+    status->error_message = *message;
   } else {
     status->error_message = "unknown";
   }
