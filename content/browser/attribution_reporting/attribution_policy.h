@@ -40,12 +40,12 @@ class CONTENT_EXPORT AttributionPolicy {
                             StorableSource::SourceType source_type) const
       WARN_UNUSED_RESULT;
 
-  virtual uint64_t SanitizeSourceEventId(uint64_t source_event_id) const
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const
       WARN_UNUSED_RESULT;
 
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
-  virtual base::Time GetExpiryTimeForImpression(
+  base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
       StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
@@ -61,12 +61,12 @@ class CONTENT_EXPORT AttributionPolicy {
   // Returns `absl::nullopt` to indicate that no more attempts should be made.
   // Otherwise, the return value must be positive. `failed_send_attempts` is
   // guaranteed to be positive.
-  virtual absl::optional<base::TimeDelta> GetFailedReportDelay(
+  absl::optional<base::TimeDelta> GetFailedReportDelay(
       int failed_send_attempts) const WARN_UNUSED_RESULT;
 
   // Selects how to handle the given impression; may involve RNG or other
   // dynamic criteria.
-  virtual StorableSource::AttributionLogic GetAttributionLogicForImpression(
+  StorableSource::AttributionLogic GetAttributionLogicForImpression(
       StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
  protected:
