@@ -34,6 +34,15 @@ extern const char kBorealisAppIdRegex[];
 extern const char kAllowedScheme[];
 // Base64-encoded allow list of URLs that can be handled by Borealis apps.
 extern const base::StringPiece kURLAllowlist[];
+// Error string to replace Proton version info in the event that a GameID
+// parsed with /usr/bin/get_proton_version.py in the Borealis VM does not
+// match the GameID expected based on extraction with kBorealisAppIdRegex.
+extern const char kProtonVersionGameMismatch[];
+
+struct ProtonVersionInfo {
+  std::string proton = "";
+  std::string slr = "";
+};
 
 // Shows the Borealis installer (borealis_installer_view).
 void ShowBorealisInstallerView(Profile* profile);
@@ -62,6 +71,14 @@ void FeedbackFormUrl(Profile* const profile,
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.
 bool IsExternalURLAllowed(const GURL& url);
+
+// Executes /usr/bin/get_proton_version.py in the borealis VM, which outputs
+// the Proton version information of any recent Proton game session.
+bool GetProtonVersionInfo(const std::string& owner_id, std::string* output);
+
+// Parses the output returned by GetProtonVersionInfo.
+ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
+                                         const std::string& output);
 
 }  // namespace borealis
 

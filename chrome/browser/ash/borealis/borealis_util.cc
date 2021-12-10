@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -31,6 +32,7 @@ const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
 // TODO(b/174282035): Potentially update regex when other strings
 // are updated.
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
+const char kProtonVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 
 namespace {
 
@@ -59,73 +61,6 @@ static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
 static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
 static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 
-struct ProtonVersionInfo {
-  std::string proton = "";
-  std::string slr = "";
-};
-
-ProtonVersionInfo GetProtonVersionInfo(absl::optional<int> game_id,
-                                       const std::string& owner_id) {
-  std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
-                                      "--vm_name=borealis", "--",
-                                      "/usr/bin/get_proton_version.py"};
-  std::string output;
-  if (!base::GetAppOutput(command, &output)) {
-    // Re-run with stderr capture. It is not done initially since
-    // GetAppOutputAndError intermixes stdout and stderr and stderr commonly
-    // includes informational messages about Linux game sessions that would
-    // complicate the parsing of `output`.
-    base::GetAppOutputAndError(command, &output);
-    LOG(WARNING) << "Failed to run get_proton_version.py:";
-    LOG(WARNING) << output;
-    return {};
-  }
-
-  // Expected stdout of get_proton_version.py:
-  // Game: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
-  // Game: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
-  // ...
-
-  // Only grab the first line, which is for the last game played.
-  output = output.substr(0, output.find("\n"));
-
-  ProtonVersionInfo version_info;
-  std::string parsed_game_id;
-  base::StringPairs tokenized_info;
-  base::SplitStringIntoKeyValuePairs(output, ':', ',', &tokenized_info);
-  for (const auto& key_val_pair : tokenized_info) {
-    const std::string& key = key_val_pair.first;
-    const std::string& val = key_val_pair.second;
-
-    if (key.compare("GameID") == 0) {
-      parsed_game_id = val;
-    } else if (key.compare("Proton") == 0) {
-      version_info.proton = val;
-    } else if (key.compare("SLR") == 0) {
-      version_info.slr = val;
-    }
-  }
-
-  // If the app id is known and doesn't match, return the version "UNKNOWN"
-  if (game_id.has_value() && !parsed_game_id.empty() &&
-      parsed_game_id.compare(base::StringPrintf("%d", game_id.value())) != 0) {
-    LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
-                 << parsed_game_id;
-    constexpr char kVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
-    version_info.proton = kVersionGameMismatch;
-    version_info.slr = kVersionGameMismatch;
-  } else {
-    if (version_info.proton.empty()) {
-      LOG(WARNING) << "Found an unexpected empty Proton version.";
-    }
-    if (version_info.slr.empty()) {
-      LOG(WARNING) << "Found an unexpected empty SLR version.";
-    }
-  }
-
-  return version_info;
-}
-
 GURL GetSysInfoForUrlAsync(GURL url,
                            absl::optional<int> game_id,
                            std::string owner_id) {
@@ -140,7 +75,14 @@ GURL GetSysInfoForUrlAsync(GURL url,
   url = net::AppendQueryParameter(url, kPlatformVersionKey,
                                   base::SysInfo::OperatingSystemVersion());
 
-  ProtonVersionInfo version_info = GetProtonVersionInfo(game_id, owner_id);
+  borealis::ProtonVersionInfo version_info = {};
+  std::string output;
+  if (borealis::GetProtonVersionInfo(owner_id, &output)) {
+    version_info = borealis::ParseProtonVersionInfo(game_id, output);
+  } else {
+    LOG(WARNING) << "Failed to run get_proton_version.py:";
+    LOG(WARNING) << output;
+  }
   if (!version_info.proton.empty()) {
     url =
         net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
@@ -240,4 +182,69 @@ bool IsExternalURLAllowed(const GURL& url) {
   }
   return false;
 }
+
+bool GetProtonVersionInfo(const std::string& owner_id, std::string* output) {
+  std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
+                                      "--vm_name=borealis", "--",
+                                      "/usr/bin/get_proton_version.py"};
+  bool success = base::GetAppOutput(command, output);
+  if (!success) {
+    // Re-run with stderr capture. It is not done initially since
+    // GetAppOutputAndError intermixes stdout and stderr and stderr commonly
+    // includes informational messages about Linux game sessions that would
+    // complicate the parsing of `output`.
+    base::GetAppOutputAndError(command, output);
+  }
+  return success;
+}
+
+ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
+                                         const std::string& output) {
+  // Expected stdout of get_proton_version.py:
+  // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
+  // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
+  // ...
+
+  // Only grab the first line, which is for the last game played.
+  std::string raw_info = output.substr(0, output.find("\n"));
+
+  ProtonVersionInfo version_info;
+  std::string parsed_game_id;
+  base::StringPairs tokenized_info;
+  base::SplitStringIntoKeyValuePairs(raw_info, ':', ',', &tokenized_info);
+  for (const auto& key_val_pair : tokenized_info) {
+    std::string key;
+    TrimWhitespaceASCII(key_val_pair.first, base::TRIM_ALL, &key);
+
+    std::string val;
+    TrimWhitespaceASCII(key_val_pair.second, base::TRIM_ALL, &val);
+
+    if (key == "GameID") {
+      parsed_game_id = val;
+    } else if (key == "Proton") {
+      version_info.proton = val;
+    } else if (key == "SLR") {
+      version_info.slr = val;
+    }
+  }
+
+  // If the app id is known and doesn't match, return the version "UNKNOWN"
+  if (game_id.has_value() && !parsed_game_id.empty() &&
+      parsed_game_id != base::NumberToString(game_id.value())) {
+    LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
+                 << parsed_game_id;
+    version_info.proton = kProtonVersionGameMismatch;
+    version_info.slr = kProtonVersionGameMismatch;
+  } else if (!parsed_game_id.empty()) {
+    if (version_info.proton.empty()) {
+      LOG(WARNING) << "Found an unexpected empty Proton version.";
+    }
+    if (version_info.slr.empty()) {
+      LOG(WARNING) << "Found an unexpected empty SLR version.";
+    }
+  }
+
+  return version_info;
+}
+
 }  // namespace borealis
