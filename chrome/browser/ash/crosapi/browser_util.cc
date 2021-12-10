@@ -241,6 +241,10 @@ const base::Feature kLacrosGooglePolicyRollout{
 const base::Feature kLacrosProfileMigrationForAnyUser{
     "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Emergency switch to turn off profile migration via Finch.
+const base::Feature kLacrosProfileMigrationForceOff{
+    "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const Channel kLacrosDefaultChannel = Channel::DEV;
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
@@ -351,6 +355,14 @@ bool IsLacrosEnabled(Channel channel) {
 }
 
 bool IsProfileMigrationEnabled(const AccountId& account_id) {
+  // Emergency switch to turn off profile migration. Turn this on via Finch in
+  // case profile migration needs to be turned off after launch.
+  if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff)) {
+    LOG(WARNING)
+        << "Profile migration is turned off by kLacrosProfileMigrationForceOff";
+    return false;
+  }
+
   //  Currently we turn on profile migration only for Googlers.
   //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
   //  non-googler accounts.

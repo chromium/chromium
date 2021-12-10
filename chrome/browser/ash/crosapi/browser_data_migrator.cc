@@ -127,10 +127,6 @@ const base::Feature kLacrosProfileMigrationUseDeprecatedLacrosDataPaths{
     "LacrosProfileMigrationUseDeprecatedLacrosDataPaths",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Emergency switch to turn off profile migration via Finch.
-const base::Feature kLacrosProfileMigrationForceOff{
-    "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Ensures that each path in UDD appears in one of `kNoCopyPaths`,
 // `kAshDataPaths` or `kLacrosDataPaths`.
 constexpr bool HasNoOverlapBetweenPathsSets() {
@@ -283,11 +279,6 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     RestartToMigrate(account_id, user_id_hash);
     return;
   }
-
-  // Emergency switch to turn off profile migration. Turn this on via Finch in
-  // case profile migration needs to be turned off after launch.
-  if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff))
-    return;
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
