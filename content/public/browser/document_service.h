@@ -24,14 +24,14 @@ enum class DocumentServiceDestructionReason : int {
   kEndOfDocumentLifetime,
 };
 
-// Helper to provide the safe equivalent of the mojo::MakeStrongReceiver<T>(...)
-// pattern for document-scoped Mojo interface implementations. Use of this
-// helper prevents logic bugs when Mojo IPCs for `Interface` race against Mojo
-// IPCs for navigation. One example of a past bug caused by this race is
+// Provides a safe alternative to mojo::MakeSelfOwnedReceiver<T>(...) for
+// document-scoped Mojo interface implementations. Use of this helper prevents
+// logic bugs when Mojo IPCs for `Interface` race against Mojo IPCs for
+// navigation. One example of a past bug caused by this IPC race is
 // https://crbug.com/769189, where an interface implementation performed a
 // permission check using the wrong origin.
 //
-// Like C++ implementations owned by mojo::MakeStrongReceiver<T>(...), a
+// Like C++ implementations owned by mojo::MakeSelfOwnedReceiver<T>(...), a
 // subclass of DocumentService<Interface> will delete itself when the
 // corresponding message pipe is disconnected by setting a disconnect handler on
 // the mojo::Receiver<T>.
