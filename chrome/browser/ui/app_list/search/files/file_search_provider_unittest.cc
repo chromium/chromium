@@ -160,4 +160,34 @@ TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
                                    Title("file.png")));
 }
 
+TEST_F(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
+  // Make two identically named files with different access times.
+  const base::Time time = base::Time::Now();
+  const base::Time earlier_time = time - base::Minutes(5);
+  CreateDirectory("dir");
+  WriteFile("dir/file");
+  WriteFile("file");
+  TouchFile(Path("dir/file"), time, time);
+  TouchFile(Path("file"), earlier_time, time);
+
+  // Match them perfectly, so both score 1.0.
+  provider_->Start(u"file");
+  Wait();
+
+  ASSERT_EQ(provider_->results().size(), 2u);
+
+  // Sort the results by descending relevance.
+  std::vector<ChromeSearchResult*> results;
+  for (const auto& result : provider_->results()) {
+    results.push_back(result.get());
+  }
+  std::sort(results.begin(), results.end(),
+            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              return a->relevance() > b->relevance();
+            });
+  // The scores should be properly in order and not exceed 1.0.
+  EXPECT_GT(results[0]->relevance(), results[1]->relevance());
+  EXPECT_LE(results[0]->relevance(), 1.0);
+}
+
 }  // namespace app_list

@@ -137,13 +137,15 @@ void FileSearchProvider::OnSearchComplete(
               return a.last_accessed < b.last_accessed;
             });
 
-  constexpr float kScoreEps = 1.0e-5f;
+  constexpr double kScoreEps = 1.0e-5;
   SearchProvider::Results results;
   for (int i = 0; i < paths.size(); ++i) {
-    // Add increasing score boosts for more recently accessed files.
     double relevance =
         FileResult::CalculateRelevance(last_tokenized_query_, paths[i].path);
-    relevance += i * kScoreEps;
+    // Slightly penalize scores for less recently accessed files, but don't let
+    // the relevance go below zero.
+    relevance = std::max(0.0, relevance - (paths.size() - i) * kScoreEps);
+    DCHECK((relevance >= 0.0) && (relevance <= 1.0));
     results.emplace_back(MakeResult(paths[i], relevance));
   }
 
