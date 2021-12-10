@@ -180,7 +180,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   V4L2RequestsQueue* requests_queue_;
 
   // Map of enqueuing timestamps to wall clock, for histogramming purposes.
-  base::small_map<std::map<int64_t, base::TimeTicks>> encoding_timestamps_;
+  base::small_map<std::map<int64_t, base::TimeTicks>> enqueuing_timestamps_;
 
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{

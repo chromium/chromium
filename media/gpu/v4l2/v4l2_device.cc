@@ -101,7 +101,7 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   constexpr char kTracingCategory[] = "media,gpu";
   constexpr char kQueueBuffer[] = "V4L2 Queue Buffer";
   constexpr char kDequeueBuffer[] = "V4L2 Dequeue Buffer";
-  constexpr char kVideoProcessing[] = "V4L2 Video Processing";
+  constexpr char kVideoDecoding[] = "V4L2 Video Decoding";
 
   bool tracing_enabled = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTracingCategory, &tracing_enabled);
@@ -117,12 +117,12 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
     return;
 
   if (start && v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kVideoProcessing,
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kVideoDecoding,
                                       TRACE_ID_LOCAL(timestamp), "timestamp",
                                       timestamp);
   } else if (!start &&
              v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(kTracingCategory, kVideoProcessing,
+    TRACE_EVENT_NESTABLE_ASYNC_END1(kTracingCategory, kVideoDecoding,
                                     TRACE_ID_LOCAL(timestamp), "timestamp",
                                     timestamp);
   }
