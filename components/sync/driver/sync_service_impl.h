@@ -183,6 +183,7 @@ class SyncServiceImpl : public SyncService,
   void ReconfigureDataTypesDueToCrypto() override;
   void EncryptionBootstrapTokenChanged(
       const std::string& bootstrap_token) override;
+  std::string GetEncryptionBootstrapToken() override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(

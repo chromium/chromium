@@ -37,6 +37,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void ReconfigureDataTypesDueToCrypto() = 0;
     virtual void EncryptionBootstrapTokenChanged(
         const std::string& bootstrap_token) = 0;
+    virtual std::string GetEncryptionBootstrapToken() = 0;
   };
 
   // |delegate| must not be null and must outlive this object.
@@ -144,6 +145,16 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Completion callback function for
   // TrustedVaultClient::GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegradedCompleted(bool is_recoverability_degraded);
+
+  // Attempts decryption of |cached_pending_keys| with a |nigori| and, if
+  // successful, resolves the kPassphraseRequired state and populates the
+  // |nigori| to engine. Returns true if successful.
+  bool SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori);
+
+  // Similar to SetDecryptionPassphrase(), but uses bootstrap token instead of
+  // user provided passphrase. Resolves the kPassphraseRequired state on
+  // successful attempt.
+  void MaybeSetDecryptionKeyFromBootstrapToken();
 
   const raw_ptr<Delegate> delegate_;
 

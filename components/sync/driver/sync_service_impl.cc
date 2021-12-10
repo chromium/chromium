@@ -479,7 +479,6 @@ void SyncServiceImpl::StartUpSlowEngineComponents() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
-  params.encryption_bootstrap_token = sync_prefs_.GetEncryptionBootstrapToken();
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();
@@ -987,6 +986,11 @@ void SyncServiceImpl::EncryptionBootstrapTokenChanged(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);
+}
+
+std::string SyncServiceImpl::GetEncryptionBootstrapToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_prefs_.GetEncryptionBootstrapToken();
 }
 
 bool SyncServiceImpl::IsSetupInProgress() const {
