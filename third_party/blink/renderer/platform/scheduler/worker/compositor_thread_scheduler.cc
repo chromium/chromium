@@ -65,7 +65,7 @@ CompositorThreadScheduler::IdleTaskRunner() {
   // which runs them after the current frame has been drawn before the next
   // vsync. https://crbug.com/609532
   return base::MakeRefCounted<SingleThreadIdleTaskRunner>(
-      helper()->DefaultTaskRunner(), this);
+      helper()->DefaultTaskRunner(), helper()->ControlTaskRunner(), this);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

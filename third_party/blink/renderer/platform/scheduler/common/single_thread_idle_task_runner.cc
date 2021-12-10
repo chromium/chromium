@@ -14,8 +14,10 @@ namespace scheduler {
 
 SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> control_task_runner,
     Delegate* delegate)
-    : idle_priority_task_runner_(idle_priority_task_runner),
+    : idle_priority_task_runner_(std::move(idle_priority_task_runner)),
+      control_task_runner_(std::move(control_task_runner)),
       delegate_(delegate),
       blame_context_(nullptr) {
   weak_scheduler_ptr_ = weak_factory_.GetWeakPtr();
@@ -38,14 +40,31 @@ void SingleThreadIdleTaskRunner::PostIdleTask(const base::Location& from_here,
       from_here, base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,
                                 weak_scheduler_ptr_, std::move(idle_task)));
 }
-
 void SingleThreadIdleTaskRunner::PostDelayedIdleTask(
     const base::Location& from_here,
     const base::TimeDelta delay,
     IdleTask idle_task) {
-  base::TimeTicks first_run_time = delegate_->NowTicks() + delay;
+  base::TimeTicks delayed_run_time = delegate_->NowTicks() + delay;
+  if (RunsTasksInCurrentSequence()) {
+    PostDelayedIdleTaskOnAssociatedThread(from_here, delayed_run_time,
+                                          std::move(idle_task));
+  } else {
+    control_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SingleThreadIdleTaskRunner::PostDelayedIdleTaskOnAssociatedThread,
+            weak_scheduler_ptr_, from_here, delayed_run_time,
+            std::move(idle_task)));
+  }
+}
+
+void SingleThreadIdleTaskRunner::PostDelayedIdleTaskOnAssociatedThread(
+    const base::Location& from_here,
+    const base::TimeTicks delayed_run_time,
+    IdleTask idle_task) {
+  DCHECK(RunsTasksInCurrentSequence());
   delayed_idle_tasks_.emplace(
-      first_run_time,
+      delayed_run_time,
       std::make_pair(
           from_here,
           base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,

@@ -43,7 +43,7 @@ IdleHelper::IdleHelper(
   idle_task_runner_ = base::MakeRefCounted<SingleThreadIdleTaskRunner>(
       idle_queue_->CreateTaskRunner(
           static_cast<int>(TaskType::kMainThreadTaskQueueIdle)),
-      this);
+      helper_->ControlTaskRunner(), this);
 
   // This fence will block any idle tasks from running.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
@@ -70,7 +70,6 @@ IdleHelper::Delegate::Delegate() = default;
 IdleHelper::Delegate::~Delegate() = default;
 
 scoped_refptr<SingleThreadIdleTaskRunner> IdleHelper::IdleTaskRunner() {
-  helper_->CheckOnValidThread();
   return idle_task_runner_;
 }
 

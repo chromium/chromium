@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -53,11 +55,11 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
     DCHECK(RuntimeEnabledFeatures::V8IdleTasksEnabled());
     scheduler_->PostIdleTask(
         FROM_HERE,
-        WTF::Bind(
+        ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
             [](std::unique_ptr<v8::IdleTask> task, base::TimeTicks deadline) {
               task->Run(deadline.since_origin().InSecondsF());
             },
-            std::move(task)));
+            std::move(task))));
   }
 
  private:
