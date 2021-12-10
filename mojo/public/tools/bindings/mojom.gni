@@ -626,13 +626,14 @@ template("mojom") {
   build_metadata_filename = "$target_gen_dir/$target_name.build_metadata"
   build_metadata = {
   }
-  build_metadata.sources = rebase_path(sources_list)
+  build_metadata.sources = rebase_path(sources_list, target_gen_dir)
   build_metadata.deps = []
   foreach(dep, all_deps) {
     dep_target_gen_dir = get_label_info(dep, "target_gen_dir")
     dep_name = get_label_info(dep, "name")
     build_metadata.deps +=
-        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata") ]
+        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata",
+                      target_gen_dir) ]
   }
   write_file(build_metadata_filename, build_metadata, "json")
 
