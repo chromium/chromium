@@ -136,6 +136,19 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runCpuPrimeSearchRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runCpuPrimeSearchRoutine(
+              {
+                length_seconds: 120
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runCpuPrimeSearchRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runCpuStressRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runCpuStressRoutine(

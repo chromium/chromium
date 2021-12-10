@@ -261,6 +261,30 @@ void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
       params->request.length_seconds, std::move(cb));
 }
 
+// OsDiagnosticsRunCpuPrimeSearchRoutineFunction -------------------------------
+
+OsDiagnosticsRunCpuPrimeSearchRoutineFunction::
+    OsDiagnosticsRunCpuPrimeSearchRoutineFunction() = default;
+OsDiagnosticsRunCpuPrimeSearchRoutineFunction::
+    ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() = default;
+
+void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunCpuPrimeSearchRoutine::Params> params(
+      api::os_diagnostics::RunCpuPrimeSearchRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  // TODO(b/173425436): Remove max_num from prime search routine.
+  remote_diagnostics_service_->RunPrimeSearchRoutine(
+      params->request.length_seconds, /*max_num=*/0, std::move(cb));
+}
+
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
 
 OsDiagnosticsRunCpuStressRoutineFunction::

@@ -206,6 +206,25 @@ class OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunCpuPrimeSearchRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuPrimeSearchRoutine",
+                             OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE)
+
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction();
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction(
+      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction& operator=(
+      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunCpuStressRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:
