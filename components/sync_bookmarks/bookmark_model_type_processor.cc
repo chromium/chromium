@@ -35,6 +35,7 @@
 #include "components/sync_bookmarks/bookmark_model_observer_impl.h"
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/undo/bookmark_undo_utils.h"
 
@@ -181,6 +182,9 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   syncer::LogUpdatesReceivedByProcessorHistogram(
       syncer::BOOKMARKS,
       /*is_initial_sync=*/!bookmark_tracker_, updates.size());
+
+  // Clients before M94 did not populate the parent GUID in specifics.
+  PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(model_type_state, std::move(updates));

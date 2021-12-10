@@ -450,6 +450,10 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     AdaptTitleForBookmark(update_entity, &data.specifics,
                           specifics_were_encrypted);
     AdaptGuidForBookmark(update_entity, &data.specifics);
+    // Note that the parent GUID in specifics cannot be adapted/populated here,
+    // because the logic requires access to tracked entities. Hence, it is
+    // done by BookmarkModelTypeProcessor, with logic implemented in
+    // components/sync_bookmarks/parent_guid_preprocessing.cc.
   } else if (model_type == AUTOFILL_WALLET_DATA ||
              model_type == AUTOFILL_WALLET_OFFER) {
     AdaptClientTagForFullUpdateData(model_type, &data);
