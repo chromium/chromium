@@ -329,6 +329,16 @@ BluetoothLocalGattService* BluetoothAdapterMac::GetGattService(
   return nullptr;
 }
 
+BluetoothAdapter::DeviceList BluetoothAdapterMac::GetDevices() {
+  LazyInitialize();
+  return BluetoothAdapter::GetDevices();
+}
+
+BluetoothAdapter::ConstDeviceList BluetoothAdapterMac::GetDevices() const {
+  const_cast<BluetoothAdapterMac*>(this)->LazyInitialize();
+  return BluetoothAdapter::GetDevices();
+}
+
 void BluetoothAdapterMac::ClassicDeviceFound(IOBluetoothDevice* device) {
   ClassicDeviceAdded(device);
 }

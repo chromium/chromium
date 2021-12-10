@@ -97,6 +97,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
       AdvertisementErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+  DeviceList GetDevices() override;
+  ConstDeviceList GetDevices() const override;
 
   // BluetoothDiscoveryManagerMac::Observer overrides:
   void ClassicDeviceFound(IOBluetoothDevice* device) override;
