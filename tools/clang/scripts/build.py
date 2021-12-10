@@ -1107,10 +1107,6 @@ def main():
           '--unwindlib=none',
       ]
 
-      if target_arch == 'aarch64':
-        # Use PAC/BTI instructions for AArch64
-        cflags += [ '-mbranch-protection=standard' ]
-
       android_args = base_cmake_args + [
         '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
         '-DCMAKE_CXX_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang++'),
