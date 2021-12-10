@@ -27,6 +27,18 @@ UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
   return nil;
 }
 
+UIViewController*
+DiscoverFeedProvider::NewDiscoverFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+
+UIViewController*
+DiscoverFeedProvider::NewFollowingFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+
 void DiscoverFeedProvider::RemoveFeedViewController(
     UIViewController* feedViewController) {}
 

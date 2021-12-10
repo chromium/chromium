@@ -43,10 +43,21 @@ class DiscoverFeedProvider {
   // Returns true if the Discover Feed is enabled.
   virtual bool IsDiscoverFeedEnabled();
   // Returns the Discover Feed ViewController.
+  // TODO(crbug.com/1200303): Remove this now that refactored NTP has launched.
   virtual UIViewController* NewFeedViewController(Browser* browser);
   // Returns the Discover Feed ViewController with a custom
   // DiscoverFeedViewControllerConfiguration.
+  // TODO(crbug.com/1277974): Deprecated, use
+  // NewDiscoverFeedViewControllerWithConfiguration instead.
   virtual UIViewController* NewFeedViewControllerWithConfiguration(
+      DiscoverFeedViewControllerConfiguration* configuration);
+  // Returns the Discover Feed ViewController with a custom
+  // DiscoverFeedViewControllerConfiguration.
+  virtual UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
+      DiscoverFeedViewControllerConfiguration* configuration);
+  // Returns the Following Feed ViewController with a custom
+  // DiscoverFeedViewControllerConfiguration.
+  virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration);
   // Removes the Discover |feedViewController|. It should be called whenever
   // |feedViewController| will no longer be used.
