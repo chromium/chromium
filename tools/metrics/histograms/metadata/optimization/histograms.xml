@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
   <variant name="PageTopicsV2" summary="Page topics v2"/>
   <variant name="PageVisibility" summary="Page visibility"/>
   <variant name="PainfulPageLoad" summary="Painful page load"/>
+  <variant name="SegmentationChromeLowUserEngagement"
+      summary="Segmentation: Low user engagement with Chrome"/>
   <variant name="SegmentationChromeStartAndroid"
       summary="Chrome Start Android"/>
   <variant name="SegmentationDummyFeature" summary="Dummy feature"/>

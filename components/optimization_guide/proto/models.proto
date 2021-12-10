@@ -267,6 +267,8 @@ enum OptimizationTarget {
   // Target for determining topics present on a page.
   // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
   OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
+  // Target for segmentation: Determine users with low engagement with chrome.
+  OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
 }
 
 // The types of models that can be evaluated.
