@@ -271,6 +271,106 @@ Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
   }
 }
 
+void Vp9Decoder::SetupFrameParams(
+    const Vp9FrameHeader& frame_hdr,
+    struct v4l2_ctrl_vp9_frame_decode_params* v4l2_frame_params) {
+  conditionally_set_flag(*v4l2_frame_params,
+                         frame_hdr.frame_type == Vp9FrameHeader::KEYFRAME,
+                         V4L2_VP9_FRAME_FLAG_KEY_FRAME);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.show_frame,
+                         V4L2_VP9_FRAME_FLAG_SHOW_FRAME);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.error_resilient_mode,
+                         V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.intra_only,
+                         V4L2_VP9_FRAME_FLAG_INTRA_ONLY);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.allow_high_precision_mv,
+                         V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.refresh_frame_context,
+                         V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX);
+  conditionally_set_flag(*v4l2_frame_params,
+                         frame_hdr.frame_parallel_decoding_mode,
+                         V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.subsampling_x,
+                         V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.subsampling_y,
+                         V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING);
+  conditionally_set_flag(*v4l2_frame_params, frame_hdr.color_range,
+                         V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING);
+
+  v4l2_frame_params->compressed_header_size = frame_hdr.header_size_in_bytes;
+  v4l2_frame_params->uncompressed_header_size =
+      frame_hdr.uncompressed_header_size;
+  v4l2_frame_params->profile = frame_hdr.profile;
+  // As per the VP9 specification:
+  switch (frame_hdr.reset_frame_context) {
+    // "0 or 1 implies don’t reset."
+    case 0:
+    case 1:
+      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
+      break;
+    // "2 resets just the context specified in the frame header."
+    case 2:
+      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_SPEC;
+      break;
+    // "3 reset all contexts."
+    case 3:
+      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_ALL;
+      break;
+    default:
+      LOG(FATAL) << "Invalid reset frame context value!";
+      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
+      break;
+  }
+  v4l2_frame_params->frame_context_idx =
+      frame_hdr.frame_context_idx_to_save_probs;
+  v4l2_frame_params->bit_depth = frame_hdr.bit_depth;
+  v4l2_frame_params->interpolation_filter = frame_hdr.interpolation_filter;
+  v4l2_frame_params->tile_cols_log2 = frame_hdr.tile_cols_log2;
+  v4l2_frame_params->tile_rows_log2 = frame_hdr.tile_rows_log2;
+  v4l2_frame_params->tx_mode = frame_hdr.compressed_header.tx_mode;
+  v4l2_frame_params->reference_mode =
+      frame_hdr.compressed_header.reference_mode;
+  static_assert(VP9_FRAME_LAST + (V4L2_REF_ID_CNT - 1) <
+                    std::extent<decltype(frame_hdr.ref_frame_sign_bias)>::value,
+                "array sizes are incompatible");
+  for (size_t i = 0; i < V4L2_REF_ID_CNT; i++) {
+    v4l2_frame_params->ref_frame_sign_biases |=
+        (frame_hdr.ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
+  }
+  v4l2_frame_params->frame_width_minus_1 = frame_hdr.frame_width - 1;
+  v4l2_frame_params->frame_height_minus_1 = frame_hdr.frame_height - 1;
+  v4l2_frame_params->render_width_minus_1 = frame_hdr.render_width - 1;
+  v4l2_frame_params->render_height_minus_1 = frame_hdr.render_height - 1;
+
+  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
+  for (size_t i = 0; i < base::size(frame_hdr.ref_frame_idx); ++i) {
+    const auto idx = frame_hdr.ref_frame_idx[i];
+
+    LOG_ASSERT(idx < kVp9NumRefFrames) << "Invalid reference frame index.\n";
+
+    static_assert(
+        std::extent<decltype(frame_hdr.ref_frame_idx)>::value ==
+            std::extent<decltype(v4l2_frame_params->refs)>::value,
+        "The number of reference frames in |Vp9FrameHeader| does not match "
+        "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
+
+    v4l2_frame_params->refs[i] =
+        ref_frames_[idx] ? ref_frames_[idx]->reference_id() : kInvalidSurface;
+  }
+  // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
+  FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
+                                &v4l2_frame_params->quant);
+  FillV4L2VP9ProbsParams(frame_hdr.frame_context, &v4l2_frame_params->probs);
+
+  const Vp9Parser::Context& context = vp9_parser_->context();
+  const Vp9LoopFilterParams& lf_params = context.loop_filter();
+  const Vp9SegmentationParams& segm_params = context.segmentation();
+
+  FillV4L2VP9LoopFilterParams(lf_params, &v4l2_frame_params->lf);
+  FillV4L2VP9SegmentationParams(segm_params, &v4l2_frame_params->seg);
+}
+
 Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   gfx::Size size;
   Vp9FrameHeader frame_hdr{};
@@ -295,100 +395,7 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   struct v4l2_ctrl_vp9_frame_decode_params v4l2_frame_params;
   memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
 
-  conditionally_set_flag(v4l2_frame_params,
-                         frame_hdr.frame_type == Vp9FrameHeader::KEYFRAME,
-                         V4L2_VP9_FRAME_FLAG_KEY_FRAME);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.show_frame,
-                         V4L2_VP9_FRAME_FLAG_SHOW_FRAME);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.error_resilient_mode,
-                         V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.intra_only,
-                         V4L2_VP9_FRAME_FLAG_INTRA_ONLY);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.allow_high_precision_mv,
-                         V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.refresh_frame_context,
-                         V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX);
-  conditionally_set_flag(v4l2_frame_params,
-                         frame_hdr.frame_parallel_decoding_mode,
-                         V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.subsampling_x,
-                         V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.subsampling_y,
-                         V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING);
-  conditionally_set_flag(v4l2_frame_params, frame_hdr.color_range,
-                         V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING);
-
-  v4l2_frame_params.compressed_header_size = frame_hdr.header_size_in_bytes;
-  v4l2_frame_params.uncompressed_header_size =
-      frame_hdr.uncompressed_header_size;
-  v4l2_frame_params.profile = frame_hdr.profile;
-  // As per the VP9 specification:
-  switch (frame_hdr.reset_frame_context) {
-    // "0 or 1 implies don’t reset."
-    case 0:
-    case 1:
-      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
-      break;
-    // "2 resets just the context specified in the frame header."
-    case 2:
-      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_SPEC;
-      break;
-    // "3 reset all contexts."
-    case 3:
-      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_ALL;
-      break;
-    default:
-      LOG(FATAL) << "Invalid reset frame context value!";
-      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
-      break;
-  }
-  v4l2_frame_params.frame_context_idx =
-      frame_hdr.frame_context_idx_to_save_probs;
-  v4l2_frame_params.bit_depth = frame_hdr.bit_depth;
-  v4l2_frame_params.interpolation_filter = frame_hdr.interpolation_filter;
-  v4l2_frame_params.tile_cols_log2 = frame_hdr.tile_cols_log2;
-  v4l2_frame_params.tile_rows_log2 = frame_hdr.tile_rows_log2;
-  v4l2_frame_params.tx_mode = frame_hdr.compressed_header.tx_mode;
-  v4l2_frame_params.reference_mode = frame_hdr.compressed_header.reference_mode;
-  static_assert(VP9_FRAME_LAST + (V4L2_REF_ID_CNT - 1) <
-                    std::extent<decltype(frame_hdr.ref_frame_sign_bias)>::value,
-                "array sizes are incompatible");
-  for (size_t i = 0; i < V4L2_REF_ID_CNT; i++) {
-    v4l2_frame_params.ref_frame_sign_biases |=
-        (frame_hdr.ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
-  }
-  v4l2_frame_params.frame_width_minus_1 = frame_hdr.frame_width - 1;
-  v4l2_frame_params.frame_height_minus_1 = frame_hdr.frame_height - 1;
-  v4l2_frame_params.render_width_minus_1 = frame_hdr.render_width - 1;
-  v4l2_frame_params.render_height_minus_1 = frame_hdr.render_height - 1;
-
-  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
-
-  for (size_t i = 0; i < base::size(frame_hdr.ref_frame_idx); ++i) {
-    const auto idx = frame_hdr.ref_frame_idx[i];
-
-    LOG_ASSERT(idx < kVp9NumRefFrames) << "Invalid reference frame index.\n";
-
-    static_assert(
-        base::size(frame_hdr.ref_frame_idx) ==
-            base::size(v4l2_frame_params.refs),
-        "The number of reference frames in |Vp9FrameHeader| does not match "
-        "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
-
-    v4l2_frame_params.refs[i] =
-        ref_frames_[idx] ? ref_frames_[idx]->reference_id() : kInvalidSurface;
-  }
-  // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
-  FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
-                                &v4l2_frame_params.quant);
-  FillV4L2VP9ProbsParams(frame_hdr.frame_context, &v4l2_frame_params.probs);
-
-  const Vp9Parser::Context& context = vp9_parser_->context();
-  const Vp9LoopFilterParams& lf_params = context.loop_filter();
-  const Vp9SegmentationParams& segm_params = context.segmentation();
-
-  FillV4L2VP9LoopFilterParams(lf_params, &v4l2_frame_params.lf);
-  FillV4L2VP9SegmentationParams(segm_params, &v4l2_frame_params.seg);
+  SetupFrameParams(frame_hdr, &v4l2_frame_params);
 
   if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, v4l2_frame_params))
     LOG(ERROR) << "VIDIOC_S_EXT_CTRLS failed.";
