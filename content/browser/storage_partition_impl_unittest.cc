@@ -2028,10 +2028,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                           .SetExpiry(base::Days(2))
                                           .Build());
     attribution_manager->HandleTrigger(
-        StorableTrigger(123, net::SchemefulSite(conv), reporter,
-                        /*event_source_trigger_data=*/0,
-                        /*priority=*/0,
-                        /*dedup_key=*/absl::nullopt));
+        TriggerBuilder()
+            .SetConversionDestination(net::SchemefulSite(conv))
+            .SetReportingOrigin(reporter)
+            .Build());
   }
 
   EXPECT_EQ(5u, GetAttributionsToReportForTesting(attribution_manager,
