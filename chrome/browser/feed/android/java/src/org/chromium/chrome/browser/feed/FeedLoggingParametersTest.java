@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.SmallTest;
+
+import com.google.protobuf.ByteString;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,52 +24,49 @@ import org.chromium.components.feed.proto.FeedUiProto;
 public final class FeedLoggingParametersTest {
     @Test
     @SmallTest
-    public void testEquality() {
-        FeedLoggingParameters allNull = new FeedLoggingParameters(null, null, false, false);
+    public void testFields() {
+        FeedLoggingParameters params = new FeedLoggingParameters(/*clientInstanceId=*/"instance-id",
+                /*accountName=*/"account", /*loggingEnabled=*/false,
+                /*viewActionsEnabled=*/true, /*rootEventId=*/new byte[] {5});
 
-        assertFalse(allNull.loggingParametersEquals(null));
-
-        // Null and empty string are considered equivalent.
-        assertTrue(
-                new FeedLoggingParameters("", "", false, false).loggingParametersEquals(allNull));
-        assertTrue(
-                allNull.loggingParametersEquals(new FeedLoggingParameters("", "", false, false)));
-        assertFalse(new FeedLoggingParameters(null, null, false, true)
-                            .loggingParametersEquals(allNull));
-        assertFalse(new FeedLoggingParameters(null, null, true, false)
-                            .loggingParametersEquals(allNull));
-        assertFalse(new FeedLoggingParameters(null, "a", false, false)
-                            .loggingParametersEquals(allNull));
-        assertFalse(new FeedLoggingParameters("a", null, false, false)
-                            .loggingParametersEquals(allNull));
-
-        assertTrue(
-                new FeedLoggingParameters("a", "b", true, true)
-                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", true, true)));
-        assertFalse(
-                new FeedLoggingParameters("a", "b", true, true)
-                        .loggingParametersEquals(new FeedLoggingParameters("x", "b", true, true)));
-        assertFalse(
-                new FeedLoggingParameters("a", "b", true, true)
-                        .loggingParametersEquals(new FeedLoggingParameters("a", "x", true, true)));
-        assertFalse(
-                new FeedLoggingParameters("a", "b", true, true)
-                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", false, true)));
-        assertFalse(
-                new FeedLoggingParameters("a", "b", true, true)
-                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", true, false)));
+        assertEquals(params.clientInstanceId(), "instance-id");
+        assertEquals(params.accountName(), "account");
+        assertEquals(params.loggingEnabled(), false);
+        assertEquals(params.viewActionsEnabled(), true);
+        assertArrayEquals(params.rootEventId(), new byte[] {5});
     }
 
     @Test
     @SmallTest
     public void testFromProto() {
+        FeedUiProto.LoggingParameters proto =
+                FeedUiProto.LoggingParameters.newBuilder()
+                        .setEmail("account")
+                        .setClientInstanceId("instance-id")
+                        .setLoggingEnabled(false)
+                        .setViewActionsEnabled(true)
+                        .setRootEventId(ByteString.copyFrom(new byte[] {5}))
+                        .build();
+        FeedLoggingParameters parsed = new FeedLoggingParameters(proto);
+        assertEquals(parsed.clientInstanceId(), "instance-id");
+        assertEquals(parsed.accountName(), "account");
+        assertEquals(parsed.loggingEnabled(), false);
+        assertEquals(parsed.viewActionsEnabled(), true);
+        assertArrayEquals(parsed.rootEventId(), new byte[] {5});
+        assertEquals(proto, FeedLoggingParameters.convertToProto(parsed));
+    }
+
+    @Test
+    @SmallTest
+    public void testFromProto_noRootEventId() {
         FeedUiProto.LoggingParameters proto = FeedUiProto.LoggingParameters.newBuilder()
                                                       .setEmail("user@foo.com")
                                                       .setClientInstanceId("cid")
                                                       .setLoggingEnabled(true)
                                                       .setViewActionsEnabled(false)
                                                       .build();
-        assertTrue(new FeedLoggingParameters(proto).loggingParametersEquals(
-                new FeedLoggingParameters("cid", "user@foo.com", true, false)));
+        FeedLoggingParameters parsed = new FeedLoggingParameters(proto);
+        assertArrayEquals(parsed.rootEventId(), new byte[] {});
+        assertEquals(proto, FeedLoggingParameters.convertToProto(parsed));
     }
 }

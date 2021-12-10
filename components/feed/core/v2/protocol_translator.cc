@@ -322,6 +322,14 @@ RefreshResponseData TranslateWireResponse(
 
   const auto& chrome_response_metadata =
       response_metadata.chrome_feed_response_metadata();
+  // Note that we're storing the raw proto bytes for the root event ID because
+  // we want to retain any unknown fields. This value is ignored in next-page
+  // responses. Because time_usec is a required field, we can only serialize
+  // this message if it is set.
+  if (response_metadata.event_id().has_time_usec()) {
+    result->stream_data.set_root_event_id(
+        response_metadata.event_id().SerializeAsString());
+  }
   result->stream_data.set_signed_in(was_signed_in_request);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());

@@ -62,6 +62,8 @@ message StreamData {
   string stream_id = 10;
   // List of unique IDs representing content contained in the stream.
   repeated int64 content_ids = 11;
+  // Root EventID provided by the server.
+  bytes root_event_id = 12;
 
   reserved 3, 5;
 }

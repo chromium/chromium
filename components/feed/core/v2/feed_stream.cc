@@ -334,6 +334,10 @@ LoggingParameters FeedStream::GetLoggingParameters(
   LoggingParameters logging_params;
   logging_params.client_instance_id = GetClientInstanceId();
   logging_params.logging_enabled = IsActivityLoggingEnabled(stream_type);
+  Stream& stream = GetStream(stream_type);
+  if (stream.model) {
+    logging_params.root_event_id = stream.model->GetRootEventId();
+  }
   logging_params.view_actions_enabled = CanLogViews();
   // We provide account name even if logging is disabled, so that account name
   // can be verified for action uploads.

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/json/string_escape.h"
@@ -144,6 +145,10 @@ void StreamModel::Update(
       } else {
         MergeSharedStateIds(stream_data_, update_request->stream_data);
       }
+      // Never allow overwriting the root event ID.
+      update_request->stream_data.set_root_event_id(
+          stream_data_.root_event_id());
+
       // Note: We might be overwriting some shared-states unnecessarily.
       StoreUpdate store_update;
       store_update.stream_type = stream_type_;
@@ -156,7 +161,6 @@ void StreamModel::Update(
     }
   }
 
-  // Update non-tree data.
   stream_data_ = update_request->stream_data;
 
   if (has_clear_all) {
@@ -307,9 +311,18 @@ ContentStats StreamModel::GetContentStats() const {
   return stats;
 }
 
+const std::string& StreamModel::GetRootEventId() const {
+  return stream_data_.root_event_id();
+}
+
 std::string StreamModel::DumpStateForTesting() {
   std::stringstream ss;
   ss << "StreamModel{\n";
+  {
+    std::string base64_root_id;
+    base::Base64Encode(GetRootEventId(), &base64_root_id);
+    ss << "root_event_id=" << base64_root_id << "'\n";
+  }
   ss << "next_page_token='" << GetNextPageToken() << "'\n";
   for (auto& entry : shared_states_) {
     ss << "shared_state[" << entry.first

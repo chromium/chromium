@@ -60,9 +60,9 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
     private int mItemMovedNewIndex;
     private String mObservedChanges = "";
     private final FeedLoggingParameters mLoggingParametersA = new FeedLoggingParameters(
-            "instance-id", "A", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true);
+            "instance-id", "A", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
     private final FeedLoggingParameters mLoggingParametersB = new FeedLoggingParameters(
-            "instance-id", "B", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true);
+            "instance-id", "B", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
 
     @Before
     public void setUp() {
@@ -247,8 +247,8 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
                 (LoggingParameters) mManager.getContextValues(0).get(LoggingParameters.KEY);
         LoggingParameters parameters2 =
                 (LoggingParameters) mManager.getContextValues(1).get(LoggingParameters.KEY);
-        assertTrue(parameters1.loggingParametersEquals(mLoggingParametersA));
-        assertTrue(parameters2.loggingParametersEquals(mLoggingParametersB));
+        assertEquals(parameters1, mLoggingParametersA);
+        assertEquals(parameters2, mLoggingParametersB);
     }
 
     @Test

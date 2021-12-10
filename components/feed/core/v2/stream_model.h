@@ -162,6 +162,8 @@ class StreamModel {
 
   ContentStats GetContentStats() const;
 
+  const std::string& GetRootEventId() const;
+
  private:
   struct SharedState {
     // Whether the data has been changed since the last call to |OnUiUpdate()|.

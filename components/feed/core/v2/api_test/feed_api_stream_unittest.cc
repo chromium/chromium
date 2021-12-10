@@ -149,6 +149,10 @@ TEST_F(FeedApiTest, SurfaceReceivesInitialContent) {
   ASSERT_EQ(1, initial_state.new_shared_states().size());
   EXPECT_EQ("ss:0",
             initial_state.new_shared_states()[0].xsurface_shared_state());
+
+  EXPECT_TRUE(initial_state.logging_parameters().logging_enabled());
+  EXPECT_EQ(MakeRootEventId(),
+            initial_state.logging_parameters().root_event_id());
 }
 
 TEST_F(FeedApiTest, SurfaceReceivesInitialContentLoadedAfterAttach) {
@@ -1204,6 +1208,10 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
+  // The root ID should not change for next-page content.
+  EXPECT_EQ(
+      MakeRootEventId(),
+      stream_->GetLoggingParameters(surface.GetStreamType()).root_event_id);
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
