@@ -38,7 +38,8 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                  const wtf_size_t column_auto_repetitions,
                                  const wtf_size_t row_auto_repetitions,
                                  const wtf_size_t column_start_offset,
-                                 const wtf_size_t row_start_offset)
+                                 const wtf_size_t row_start_offset,
+                                 const bool has_grid_parent)
     : grid_style_(grid_style),
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
@@ -57,6 +58,7 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
           row_auto_repetitions),
       column_auto_repetitions_(column_auto_repetitions),
       row_auto_repetitions_(row_auto_repetitions),
+      has_grid_parent_(has_grid_parent),
       column_start_offset_(column_start_offset),
       row_start_offset_(row_start_offset) {}
 
@@ -145,11 +147,13 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
 
     GridArea position;
     position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
-        grid_style_, item_style, kForColumns, column_auto_repeat_track_count_);
+        grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
+        has_grid_parent_);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
-        grid_style_, item_style, kForRows, row_auto_repeat_track_count_);
+        grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
+        has_grid_parent_);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
     // When we have negative indices that go beyond the start of the explicit

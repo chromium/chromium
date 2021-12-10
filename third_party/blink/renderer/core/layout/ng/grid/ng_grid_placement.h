@@ -26,7 +26,8 @@ class CORE_EXPORT NGGridPlacement {
                   const wtf_size_t column_auto_repetitions,
                   const wtf_size_t row_auto_repetitions,
                   const wtf_size_t column_start_offset = 0,
-                  const wtf_size_t row_start_offset = 0);
+                  const wtf_size_t row_start_offset = 0,
+                  const bool has_grid_parent = false);
 
   NGGridPlacement(const ComputedStyle& grid_style,
                   const NGGridPlacementData& placement_data)
@@ -184,6 +185,7 @@ class CORE_EXPORT NGGridPlacement {
   const wtf_size_t row_auto_repeat_track_count_;
   const wtf_size_t column_auto_repetitions_;
   const wtf_size_t row_auto_repetitions_;
+  const bool has_grid_parent_;
 
   wtf_size_t minor_max_end_line_;
   wtf_size_t column_start_offset_;

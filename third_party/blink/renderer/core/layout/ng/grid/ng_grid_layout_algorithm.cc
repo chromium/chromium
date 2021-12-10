@@ -330,12 +330,13 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
   const auto& container_style = Style();
+  const auto& node = Node();
 
   // Measure items.
   GridItems grid_items;
-  NGGridPlacement grid_placement(container_style,
-                                 ComputeAutomaticRepetitions(kForColumns),
-                                 ComputeAutomaticRepetitions(kForRows));
+  NGGridPlacement grid_placement(
+      container_style, ComputeAutomaticRepetitions(kForColumns),
+      ComputeAutomaticRepetitions(kForRows), node.IsParentNGGrid());
   ConstructAndAppendGridItems(&grid_items, &grid_placement);
 
   // Build block track collections.
@@ -428,7 +429,6 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
   // For scrollable overflow purposes grid is unique in that the "inflow-bounds"
   // are the size of the grid, and *not* where the inflow grid-items are placed.
   // Explicitly set the inflow-bounds to the grid size.
-  const auto& node = Node();
   if (node.IsScrollContainer()) {
     LogicalRect inflow_bounds;
     inflow_bounds.offset = {grid_geometry.column_geometry.sets.front().offset,
@@ -1134,13 +1134,14 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
-    if (grid_items->IsEmpty() && Node().HasLineIfEmpty()) {
+    const auto& node = Node();
+    if (grid_items->IsEmpty() && node.HasLineIfEmpty()) {
       *intrinsic_block_size = std::max(
           *intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
-                                     Node().EmptyLineBlockSize(BreakToken()));
+                                     node.EmptyLineBlockSize(BreakToken()));
     }
 
-    *intrinsic_block_size = ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+    *intrinsic_block_size = ClampIntrinsicBlockSize(ConstraintSpace(), node,
                                                     BorderScrollbarPadding(),
                                                     *intrinsic_block_size);
   }

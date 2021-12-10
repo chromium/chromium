@@ -106,6 +106,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
     return box_->ContainingBlock()->IsLayoutNGGrid();
   }
 
+  bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }
+
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes
   // or nodes consisting purely of block-level, floats, and/or out-of-flow

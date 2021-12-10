@@ -29,7 +29,8 @@ class NamedLineCollection {
                       const String& named_line,
                       GridTrackSizingDirection,
                       wtf_size_t last_line,
-                      wtf_size_t auto_repeat_tracks_count);
+                      wtf_size_t auto_repeat_tracks_count,
+                      bool has_grid_parent = false);
 
   bool HasNamedLines();
   wtf_size_t FirstPosition();
@@ -73,7 +74,8 @@ class GridPositionsResolver {
       const ComputedStyle&,
       const ComputedStyle&,
       GridTrackSizingDirection,
-      wtf_size_t auto_repeat_tracks_count);
+      wtf_size_t auto_repeat_tracks_count,
+      bool has_grid_parent = false);
 };
 
 }  // namespace blink
