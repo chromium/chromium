@@ -1815,6 +1815,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppListSearchOmniboxResultOpenType"
     enum="AppListOmniboxResult" expires_after="2021-12-31">
+  <obsolete>
+    Removed December 2021.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>

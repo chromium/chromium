@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
@@ -30,6 +31,12 @@ bool IsDriveUrl(const GURL& url) {
   // Returns true if the |url| points to a Drive Web host.
   const std::string& host = url.host();
   return host == "drive.google.com" || host == "docs.google.com";
+}
+
+// Returns true if the match is an answer, including calculator answers.
+bool IsAnswer(const AutocompleteMatch& match) {
+  return match.answer.has_value() ||
+         match.type == AutocompleteMatchType::CALCULATOR;
 }
 
 int ProviderTypes() {
@@ -103,9 +110,15 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       continue;
     }
 
-    auto result = std::make_unique<OmniboxResult>(
-        profile_, list_controller_, controller_.get(), &favicon_cache_, match,
-        is_zero_state_input_);
+    std::unique_ptr<ChromeSearchResult> result;
+    if (!is_zero_state_input_ && IsAnswer(match)) {
+      result = std::make_unique<OmniboxAnswerResult>(profile_, list_controller_,
+                                                     controller_.get(), match);
+    } else {
+      result = std::make_unique<OmniboxResult>(
+          profile_, list_controller_, controller_.get(), &favicon_cache_, match,
+          is_zero_state_input_);
+    }
     new_results.emplace_back(std::move(result));
   }
 
