@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
@@ -373,11 +374,13 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
           candidate.Node(), container_style,
           default_writing_direction_.GetWritingMode());
 
+      NGGridPlacement grid_placement(
+          container_style,
+          To<LayoutNGGrid>(container_object)->CachedPlacementData());
+
       return {default_writing_direction_,
               NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-                  container_style,
-                  To<LayoutNGGrid>(container_object)->CachedPlacementData(),
-                  container_builder_->GridLayoutData(),
+                  grid_placement, container_builder_->GridLayoutData(),
                   container_builder_->Borders(),
                   container_builder_->InitialBorderBoxSize(),
                   container_builder_->FragmentsTotalBlockSize(), &grid_item)};
