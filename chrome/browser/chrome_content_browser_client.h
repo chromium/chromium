@@ -777,6 +777,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
     kForceEnabled = 2,
   };
 
+  bool ShouldDisableOriginAgentClusterDefault(
+      content::BrowserContext* browser_context) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

@@ -29047,6 +29047,52 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
       '''
     },
+    {
+      'name': 'OriginAgentClusterDefaultEnabled',
+      'owners': [
+        'vogelheim@chromium.org',
+        'chrome-security-owp-team@google.com'
+      ],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'example_value': False,
+      'default': True,
+      'items': [
+        {
+          'value': True,
+          'caption': 'By default, documents may be put in origin-keyed agent clusters. document.domain is not settable for such documents.'
+        },
+        {
+          'value': False,
+          'caption': 'By default, documents are put in site-keyed agent clusters. document.domain remains settable.'
+        }
+      ],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+      },
+      'id': 933,
+      'supported_on': ['chrome.*:101-', 'chrome_os:101-'],
+      'tags': [],
+      'caption': '''Allows origin-keyed agent clustering by default.''',
+      'desc': '''This policy allows origin-keyed agent clustering by default.
+
+      The Origin-Agent-Cluster: HTTP header controls whether a document is
+      isolated in an origin-keyed agent cluster, or in a site-keyed agent
+      cluster. This has security implications since an origin-keyed agent
+      cluster allows isolating documents by origin. The developer-visible
+      consequence of this is that the document.domain accessor can no longer
+      be set.
+
+      The default behaviour - when no Origin-Agent-Cluster: header has been set
+      - changes in M101 from site-keyed to origin-keyed. If this policy
+      is enabled or not set, the browser will follow this new default from that
+      version on. If this policy is disabled this change is reversed and
+      documents will wihotu Origin-Agent-Csluter: header will be assigned to
+      site-keyed agent clusters. As a consquence, the document.domain accessor
+      remains settable by default. This matches the legacy behaviour.
+      '''
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -30020,6 +30066,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 932,
+  'highest_id_currently_used': 933,
   'highest_atomic_group_id_currently_used': 41
 }

@@ -3385,4 +3385,12 @@ const char kPrivacyGuideViewed[] = "privacy_guide.viewed";
 const char kCorsNonWildcardRequestHeadersSupport[] =
     "cors_non_wildcard_request_headers_support";
 
+// A boolean indicating whether documents are allowed to be assigned to
+// origin-keyed agent clusters by default (i.e., when the Origin-Agent-Cluster
+// header is absent). When true, Chromium may enable this behavior based on
+// feature settings. When false, site-keyed agent clusters will continue to be
+// used by default.
+const char kOriginAgentClusterDefaultEnabled[] =
+    "origin_agent_cluster_default_enabled";
+
 }  // namespace prefs

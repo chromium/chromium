@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,6 +21,19 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace content {
+
+namespace {
+
+class MockContentBrowserClient : public ContentBrowserClient {
+ public:
+  bool ShouldDisableOriginAgentClusterDefault(BrowserContext*) override {
+    return should_disable_origin_agent_cluster_default_;
+  }
+
+  bool should_disable_origin_agent_cluster_default_ = false;
+};
+
+}  // anonymous namespace
 
 // Test the effect of the OriginAgentCluster: header on document.domain
 // settability and how it (doesn't) affect process assignment.
@@ -61,6 +76,12 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(server());
     ASSERT_TRUE(server()->Start());
+    original_browser_client_ = SetBrowserClientForTesting(&browser_client_);
+  }
+
+  void TearDownOnMainThread() override {
+    SetBrowserClientForTesting(original_browser_client_);
+    original_browser_client_ = nullptr;
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -108,6 +129,16 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     return !console.messages().size();
   }
 
+  // Simulate setting the OriginAgentClusterDefaultEnabled enterprise policy.
+  void SetEnterprisePolicy(bool value) {
+    // Note that the enterprise policy has different 'polarity', and true
+    // means Chromium picks the default and false is legacy behaviour, while
+    // ContentBrowserClientShould::DisableOriginAgentClusterDefault is a
+    // disable switch, meaning that false means Chromium picks the default
+    // and true is legacy behaviour.
+    browser_client_.should_disable_origin_agent_cluster_default_ = !value;
+  }
+
  private:
   std::string SetDocumentDomainTo(std::string to) const {
     // Assign document.domain and check whether it changed.
@@ -153,6 +184,9 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   // The setup of server_ emulates that of embedded_test_server_.
   net::EmbeddedTestServer server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
+
+  MockContentBrowserClient browser_client_;
+  ContentBrowserClient* original_browser_client_ = nullptr;
 
   const bool origin_cluster_default_enabled_;
   const bool origin_cluster_absent_warning_;
@@ -346,5 +380,59 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterWarningBrowserTest,
                        WarningMessage_Malformed) {
   EXPECT_TRUE(
       CanDocumentDomainMessage("a.domain.test", "domain.test", kMalformed));
+}
+
+// Policy: Ensure that the legacy behaviour remains if the appropriate
+// enterprise policy is set.
+//
+// (The case without policy is adequately covered by the tests above, since
+// none of them modify the policy.)
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetTrue_Default) {
+  SetEnterprisePolicy(false);
+  EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kUnset));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetFalse_Default) {
+  SetEnterprisePolicy(true);
+  EXPECT_FALSE(CanDocumentDomain("a.domain.test", "domain.test", kUnset));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetTrue_Enabled) {
+  SetEnterprisePolicy(false);
+  EXPECT_FALSE(CanDocumentDomain("a.domain.test", "domain.test", kSetTrue));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetFalse_Enabled) {
+  SetEnterprisePolicy(true);
+  EXPECT_FALSE(CanDocumentDomain("a.domain.test", "domain.test", kSetTrue));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetTrue_Disabled) {
+  SetEnterprisePolicy(false);
+  EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kSetFalse));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetFalse_Disabled) {
+  SetEnterprisePolicy(true);
+  EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kSetFalse));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetTrue_Malformed) {
+  SetEnterprisePolicy(false);
+  EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kMalformed));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       Policy_SetFalse_Malformed) {
+  SetEnterprisePolicy(true);
+  EXPECT_FALSE(CanDocumentDomain("a.domain.test", "domain.test", kMalformed));
 }
 }  // namespace content

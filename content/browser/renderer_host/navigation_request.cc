@@ -2683,8 +2683,15 @@ bool NavigationRequest::IsIsolationImplied() {
   if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
     return false;
 
+  // Do not default-isolate if the feature is not enabled.
   if (!base::FeatureList::IsEnabled(
           blink::features::kOriginAgentClusterDefaultEnabled)) {
+    return false;
+  }
+
+  // Do not default-isolate if the enterprise policy forbids it.
+  if (GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
     return false;
   }
 

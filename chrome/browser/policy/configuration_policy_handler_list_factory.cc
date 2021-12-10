@@ -1559,6 +1559,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserAgentReduction,
     prefs::kUserAgentReduction,
     base::Value::Type::INTEGER},
+  { key::kOriginAgentClusterDefaultEnabled,
+    prefs::kOriginAgentClusterDefaultEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

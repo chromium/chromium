@@ -2173,6 +2173,20 @@ class CONTENT_EXPORT ContentBrowserClient {
   // been flushed, or immediately if background attributions are not supported
   // by the embedder.
   virtual void FlushBackgroundAttributions(base::OnceClosure callback);
+
+  // Determines whether to assign documents to origin-keyed agent clusters by
+  // default. That is, it controls the behaviour when the Origin-Agent-Cluster
+  // header is absent.
+  //
+  // If the embedder returns true, this prevents the use of origin-keyed agent
+  // clusters by default (i.e., when the Origin-Agent-Cluster header is absent).
+  // If the embedder returns false, then the decision is based on
+  // blink::features::kOriginAgentClusterDefaultEnabled instead.
+  //
+  // Note that this is inverted from the corresponding enterprise policy
+  // (kOriginAgentClusterDefaultEnabled).
+  virtual bool ShouldDisableOriginAgentClusterDefault(
+      BrowserContext* browser_context);
 };
 
 }  // namespace content

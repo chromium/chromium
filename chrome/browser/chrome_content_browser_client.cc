@@ -1322,6 +1322,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kUserAgentReduction,
       UserAgentReductionEnterprisePolicyState::kDefault);
+  registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
 }
 
 // static
@@ -6382,4 +6383,15 @@ ChromeContentBrowserClient::GetUserAgentReductionEnterprisePolicyState(
   }
 
   return UserAgentReductionEnterprisePolicyState::kDefault;
+}
+
+bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
+    content::BrowserContext* browser_context) {
+  // The enterprise policy for kOriginAgentClusterDefaultEnabled defaults to
+  // true to defer to Chromium's decision. If it is set to false, it should
+  // override Chromium's decision and use site-keyed agent clusters by default
+  // instead.
+  return !Profile::FromBrowserContext(browser_context)
+              ->GetPrefs()
+              ->GetBoolean(prefs::kOriginAgentClusterDefaultEnabled);
 }

@@ -1296,4 +1296,8 @@ void ContentBrowserClient::FlushBackgroundAttributions(
   std::move(callback).Run();
 }
 
+bool ContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
+    BrowserContext* browser_context) {
+  return false;
+}
 }  // namespace content

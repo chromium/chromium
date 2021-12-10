@@ -1203,6 +1203,7 @@ extern const char kPrivacyGuideViewed[];
 
 extern const char kCorsNonWildcardRequestHeadersSupport[];
 
+extern const char kOriginAgentClusterDefaultEnabled[];
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
