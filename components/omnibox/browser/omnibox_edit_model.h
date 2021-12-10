@@ -407,9 +407,6 @@ class OmniboxEditModel {
   // Used for testing purposes only.
   std::u16string GetUserTextForTesting() const { return user_text_; }
 
-  // Name of the histogram tracking cut or copy omnibox commands.
-  static const char kCutOrCopyAllTextHistogram[];
-
   // Just forwards the call to the OmniboxView referred within.
   void SetAccessibilityLabel(const AutocompleteMatch& match);
 
@@ -492,8 +489,6 @@ class OmniboxEditModel {
       int* label_prefix_length = nullptr);
 
   // Invoked any time the result set of the controller changes.
-  // TODO(orinj): This method seems like a good candidate for removal; it is
-  // preserved here only to prevent possible behavior change while refactoring.
   void OnPopupResultChanged();
 
   // Lookup the bitmap for |result_index|. Returns nullptr if not found.
