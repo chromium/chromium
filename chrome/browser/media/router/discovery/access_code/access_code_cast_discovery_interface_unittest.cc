@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -45,31 +46,6 @@ using ::testing::Return;
 
 namespace {
 
-DiscoveryDevice BuildDiscoveryDeviceProto(const char* display_name,
-                                          const char* sink_id) {
-  DiscoveryDevice discovery_proto;
-  discovery_proto.set_display_name(display_name);
-  discovery_proto.set_id(sink_id);
-
-  chrome_browser_media::proto::DeviceCapabilities device_capabilities_proto;
-  device_capabilities_proto.set_video_out(true);
-  device_capabilities_proto.set_video_in(true);
-  device_capabilities_proto.set_audio_out(true);
-  device_capabilities_proto.set_audio_in(true);
-  device_capabilities_proto.set_dev_mode(true);
-
-  chrome_browser_media::proto::NetworkInfo network_info_proto;
-  network_info_proto.set_host_name("GoogleNet");
-  network_info_proto.set_port(":666");
-  network_info_proto.set_ip_v4_address("11:11");
-  network_info_proto.set_ip_v6_address("22:22");
-
-  *discovery_proto.mutable_device_capabilities() = device_capabilities_proto;
-  *discovery_proto.mutable_network_info() = network_info_proto;
-
-  return discovery_proto;
-}
-
 const char kMockPostData[] = "mock_post_data";
 int64_t kMockTimeoutMs = 1000000;
 const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
@@ -96,9 +72,9 @@ const char kEndpointResponseSuccess[] =
         },
         "networkInfo": {
           "hostName": "GoogleNet",
-          "port": ":666",
-          "ipV4Address": "11:11",
-          "ipV6Address": "22:22"
+          "port": "666",
+          "ipV4Address": "192.0.2.146",
+          "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
         }
       }
     })";
@@ -116,7 +92,7 @@ const char kEndpointResponseFieldsMissing[] =
         },
         "networkInfo": {
           "hostName": "GoogleNet",
-          "port": ":666",
+          "port": "666",
         }
       }
     })";
@@ -135,9 +111,9 @@ const char kEndpointResponseWrongDataTypes[] =
         },
         "networkInfo": {
           "hostName": "GoogleNet",
-          "port": ":666",
-          "ipV4Address": "11:11",
-          "ipV6Address": "22:22"
+          "port": "666",
+          "ipV4Address": "192.0.2.146",
+          "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
         }
       }
     })";
@@ -316,7 +292,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerResponseSucess) {
   MockDiscoveryDeviceCallback mock_callback;
 
   DiscoveryDevice discovery_device_proto =
-      BuildDiscoveryDeviceProto("test_device", "1234");
+      media_router::BuildDiscoveryDeviceProto();
 
   EXPECT_CALL(mock_callback,
               Run(DiscoveryDeviceProtoEquals(discovery_device_proto),

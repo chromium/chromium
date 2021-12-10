@@ -6,6 +6,10 @@
 
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+
+using ::media_router::CreateAccessCodeMediaSink;
 
 AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
@@ -35,21 +39,41 @@ void AccessCodeCastHandler::AddSink(
 
 void AccessCodeCastHandler::OnAccessCodeValidated(
     absl::optional<DiscoveryDevice> discovery_device,
-    access_code_cast::mojom::AddSinkResultCode result_code) {
-  if (discovery_device.has_value() &&
-      result_code == access_code_cast::mojom::AddSinkResultCode::OK) {
-    CreateSink(std::move(add_sink_callback_));
-  } else {
+    AddSinkResultCode result_code) {
+  if (result_code != AddSinkResultCode::OK) {
     std::move(add_sink_callback_).Run(result_code);
+    return;
   }
+  if (!discovery_device.has_value()) {
+    std::move(add_sink_callback_).Run(AddSinkResultCode::EMPTY_RESPONSE);
+    return;
+  }
+  std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+      creation_result = CreateAccessCodeMediaSink(discovery_device.value());
+
+  if (!creation_result.first.has_value() ||
+      creation_result.second != CreateCastMediaSinkResult::kOk) {
+    std::move(add_sink_callback_).Run(AddSinkResultCode::SINK_CREATION_ERROR);
+    return;
+  }
+  std::move(add_sink_callback_)
+      .Run(AccessCodeCastHandler::AddSinkToMediaRouter(
+          creation_result.first.value()));
 }
-void AccessCodeCastHandler::CreateSink(AddSinkCallback callback) {
-  // TODO (b/205184100): Complete implementation of creating a media sink after
-  // validation
+
+void AccessCodeCastHandler::SetSinkCallbackForTesting(
+    AddSinkCallback callback) {
+  add_sink_callback_ = std::move(callback);
+}
+
+AddSinkResultCode AccessCodeCastHandler::AddSinkToMediaRouter(
+    MediaSinkInternal media_sink) {
+  // TODO (b/201430609): Complete addition to media_router.
   NOTIMPLEMENTED();
+  return AddSinkResultCode::OK;
 }
 
 void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
-  // TODO (b/204572061): Complete casting implementation
+  // TODO (b/204572061): Complete casting implementation.
   NOTIMPLEMENTED();
 }

@@ -54,6 +54,8 @@ class AccessCodeCastDiscoveryInterface {
   // validate given |access_code| with the discovery server. The status
   // of this attempt will be stored in the |callback| -- either returning an
   // error or the actual DiscoveryDevice found on the discovery server.
+  // |absl::optional<DiscoveryDevice>| will always have a value if an
+  // AddSinkResultCode::OK is returned.
   void ValidateDiscoveryAccessCode(DiscoveryDeviceCallback callback);
 
  private:

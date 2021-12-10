@@ -8,12 +8,17 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
+#include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+using ::access_code_cast::mojom::AddSinkResultCode;
 using ::media_router::AccessCodeCastDiscoveryInterface;
+using ::media_router::CreateCastMediaSinkResult;
+using ::media_router::MediaSinkInternal;
 
 class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler {
  public:
@@ -33,8 +38,16 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler {
   // access_code_cast::mojom::PageHandler overrides:
   void CastToSink(CastToSinkCallback callback) override;
 
+  void SetSinkCallbackForTesting(AddSinkCallback callback);
+
  private:
-  void CreateSink(AddSinkCallback callback);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
+                           DiscoveryDeviceMissingWithOk);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
+                           ValidDiscoveryDeviceAndCode);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, InvalidDiscoveryDevice);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, NonOKResultCode);
+  AddSinkResultCode AddSinkToMediaRouter(MediaSinkInternal media_sink);
 
   void OnAccessCodeValidated(
       absl::optional<DiscoveryDevice> discovery_device,

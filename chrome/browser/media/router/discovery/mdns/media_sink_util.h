@@ -30,6 +30,8 @@ enum CreateCastMediaSinkResult {
   kMissingFriendlyName,
   kMissingOrInvalidIPAddress,
   kMissingOrInvalidPort,
+  kMissingDeviceCapabilities,
+  kMissingNetworkInfo
 };
 
 // Creates a MediaSinkInternal from |service| and assigns the result to

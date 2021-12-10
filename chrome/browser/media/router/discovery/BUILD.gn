@@ -40,6 +40,10 @@ static_library("discovery") {
   sources = [
     "access_code/access_code_cast_discovery_interface.cc",
     "access_code/access_code_cast_discovery_interface.h",
+    "access_code/access_code_media_sink_util.cc",
+    "access_code/access_code_media_sink_util.h",
+    "access_code/access_code_test_util.cc",
+    "access_code/access_code_test_util.h",
     "dial/device_description_fetcher.cc",
     "dial/device_description_fetcher.h",
     "dial/device_description_service.cc",
