@@ -14,7 +14,8 @@ RuntimeManagerImpl* RuntimeManagerImpl::GetForWebContents(
   return RuntimeManagerImpl::FromWebContents(contents);
 }
 
-RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents) {}
+RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents)
+    : content::WebContentsUserData<RuntimeManagerImpl>(*web_contents) {}
 
 RuntimeManagerImpl::~RuntimeManagerImpl() = default;
 
