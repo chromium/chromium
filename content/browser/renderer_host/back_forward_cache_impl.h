@@ -310,19 +310,44 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
 
-  // Helper for recursively checking each child's usage of blocklisted features.
-  // See CanStorePageNow() and CanPotentiallyStorePageLater().
-  void CheckDynamicBlocklistedFeaturesOnSubtree(
-      BackForwardCacheCanStoreDocumentResult* result,
+  // Populates the reasons that are only relevant for main documents such as
+  // browser settings, the main document's URL & HTTP status, etc.
+  void PopulateReasonsForMainDocument(
+      BackForwardCacheCanStoreDocumentResult& result,
       RenderFrameHostImpl* render_frame_host);
 
-  void CanStoreRenderFrameHostLater(
-      BackForwardCacheCanStoreDocumentResult* result,
-      RenderFrameHostImpl* render_frame_host);
+  // Populates `result` with the blocking reasons for this document. If
+  // "include_non_sticky" is true, it includes non-sticky reasons.
+  void PopulateReasonsForDocument(
+      BackForwardCacheCanStoreDocumentResult& result,
+      RenderFrameHostImpl* rfh,
+      bool include_non_sticky);
 
-  // Update the result to include CacheControlNoStore reasons if the flag is on.
+  // Calls `PopulateReasonsForDocument` recursively on `rfh` and its
+  // descendants.
+  void PopulateReasonsForDocumentAndDescendants(
+      BackForwardCacheCanStoreDocumentResult& result,
+      RenderFrameHostImpl* rfh,
+      bool include_non_sticky);
+
+  // Populates the sticky reasons for `rfh` without recursing into subframes.
+  // Sticky features can't be unregistered and remain active for the rest of the
+  // lifetime of the page.
+  void PopulateStickyReasonsForDocument(
+      BackForwardCacheCanStoreDocumentResult& result,
+      RenderFrameHostImpl* rfh);
+
+  // Populates the non-sticky reasons for `rfh` without recursing into
+  // subframes. Non-sticky reasons mean the reasons that may be resolved later
+  // such as when the page releases blocking resources in pagehide.
+  void PopulateNonStickyReasonsForDocument(
+      BackForwardCacheCanStoreDocumentResult& result,
+      RenderFrameHostImpl* rfh);
+
+  // Updates the result to include CacheControlNoStore reasons if the flag is
+  // on.
   void UpdateCanStoreToIncludeCacheControlNoStore(
-      BackForwardCacheCanStoreDocumentResult* result,
+      BackForwardCacheCanStoreDocumentResult& result,
       RenderFrameHostImpl* render_frame_host);
 
   // Return the matching entry which has |page|.
