@@ -826,6 +826,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5854512288214985237">Nu sunt trimise statistici sau rapoarte de blocare la Google</translation>
 <translation id="5855546874025048181">Rafinează: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">A apărut o eroare. Nu s-a putut actualiza Urmărește prețul.</translation>
+<translation id="5859968346865909126">O poți activa sau dezactiva din setări</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5862731021271217234">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea</translation>
@@ -1100,6 +1101,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7359002509206457351">Acces la metodele de plată</translation>
 <translation id="7375125077091615385">Tip:</translation>
 <translation id="7376560087009844242">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune când folosești Atinge pentru a căuta. Poți accesa oricând<ph name="BEGIN_LINK" />setările<ph name="END_LINK" /> pentru a schimba această setare.</translation>
+<translation id="7379900596734708416">Tema întunecată pentru site-uri este disponibilă</translation>
 <translation id="7386842512861524348">Conexiunea site-ului este sigură dacă Chrome nu anunță contrariul.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Adresă URL</translation>

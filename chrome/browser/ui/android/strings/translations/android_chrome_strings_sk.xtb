@@ -826,6 +826,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5854512288214985237">Googlu sa neodosielajú žiadne štatistiky ani prehľady zrútení</translation>
 <translation id="5855546874025048181">Spresniť: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Vyskytol sa problém. Nepodarilo sa aktualizovať o nastavenie Sledovať cenu.</translation>
+<translation id="5859968346865909126">Môžete ho zapnúť alebo vypnúť v nastaveniach.</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
 <translation id="5862731021271217234">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu</translation>
@@ -1100,6 +1101,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7359002509206457351">Poskytnúť prístup k spôsobom platby</translation>
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Ak zahrniete viac textu stránky, môžu sa vám zobraziť lepšie výsledky pri používaní vyhľadávania klepnutím. Môžete to kedykoľvek zmeniť v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
+<translation id="7379900596734708416">Pre weby je k dispozícii tmavý motív</translation>
 <translation id="7386842512861524348">Pripojenie daného webu je zabezpečené, pokiaľ vás Chrome neupozorní.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Webová adresa</translation>

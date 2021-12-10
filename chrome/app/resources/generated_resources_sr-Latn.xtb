@@ -1682,6 +1682,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2707024448553392710">Preuzimanje komponente</translation>
 <translation id="270921614578699633">Prosek preko</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
+<translation id="2710014902399506864">Dodajte novi telefon</translation>
 <translation id="2710101514844343743">Podaci o korišćenju i dijagnostički podaci</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712173769900027643">Zatraži dozvolu</translation>
@@ -2041,6 +2042,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3055590424724986000">Pomoću dobavljača usluge po svom izboru</translation>
 <translation id="3058498974290601450">Možete da uključite sinhronizaciju u podešavanjima u bilo kom trenutku</translation>
 <translation id="3058517085907878899">Dajte naziv uređaju</translation>
+<translation id="3059195548603439580">Tražite komponente sistema? Posetite</translation>
 <translation id="3060379269883947824">Omogući uslugu Izaberite za govor</translation>
 <translation id="3060952009917586498">Promenite jezik uređaja. Aktuelni jezik je <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nismo uspeli da uspostavimo vezu sa telefonom. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
@@ -2700,6 +2702,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komunikacija sa USB uređajem}one{Komunikacija sa # USB uređajem}few{Komunikacija sa # USB uređaja}other{Komunikacija sa # USB uređaja}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}one{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}few{Šalju se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}other{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Čitanje oflajn smernica za režim demonstracije nije uspelo.</translation>
+<translation id="3766115177661377251">Prebacujte na novi ekran</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Sladoled</translation>
 <translation id="3771290962915251154">Ovo podešavanje je onemogućeno zato što je uključen roditeljski nadzor</translation>
@@ -3489,6 +3492,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4590324241397107707">Skladištenje baze podataka</translation>
 <translation id="4592891116925567110">Aplikacija za crtanje pomoću pisaljke</translation>
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>
+<translation id="4594577641390224176">Tražite stranicu sa osnovnim podacima o sistemu? Posetite</translation>
 <translation id="4595560905247879544">Aplikacije i dodatke može da menja samo menadžer (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Imate sačuvane sertifikate koji identifikuju ove servere</translation>
 <translation id="4598556348158889687">Upravljanje memorijskim prostorom</translation>
@@ -4874,6 +4878,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6085886413119427067">Određuje kako da se poveže sa veb-sajtovima preko bezbedne veze</translation>
 <translation id="6086004606538989567">Nalog koji ste verifikovali nije ovlašćen za pristup ovom uređaju.</translation>
 <translation id="6086846494333236931">Instalirao je administrator</translation>
+<translation id="6087746524533454243">Tražite stranicu sa osnovnim podacima o pregledaču? Posetite</translation>
 <translation id="6087960857463881712">Zadovoljno lice</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na listu za čitanje, kliknite na ikonu obeleživača</translation>
 <translation id="6091761513005122595">Deljena datoteka je učitana.</translation>
@@ -4972,6 +4977,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6198102561359457428">Odjavi me, pa me ponovo prijavi...</translation>
 <translation id="6198252989419008588">Promeni PIN</translation>
 <translation id="6200047250927636406">Odbaci fajl</translation>
+<translation id="6200151268994853226">Upravljajte dodatkom</translation>
 <translation id="6201608810045805374">Želite da uklonite ovaj nalog?</translation>
 <translation id="6202304368170870640">Možete da koristite PIN za prijavljivanje na uređaj ili za otključavanje uređaja.</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliku</translation>
@@ -5259,6 +5265,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6497789971060331894">Obrnuto pomeranje mišem</translation>
 <translation id="6498249116389603658">&amp;Svi vaši jezici</translation>
 <translation id="6499143127267478107">Rešavanje hosta u skripti proksija...</translation>
+<translation id="6499764981457476645">Nije pronađen nijedan uređaj u blizini</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> želi da otvori ovaj fajl:</translation>
 <translation id="6501957628055559556">Svi kontejneri</translation>
 <translation id="650266656685499220">Da biste napravili albume, idite u Google slike</translation>
@@ -5724,6 +5731,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6979440798594660689">Isključen (podrazumevano)</translation>
 <translation id="6979737339423435258">Oduvek</translation>
 <translation id="6981553172137913845">Da biste pregledali privatno, kliknite na ikonu menija sa tačkama da biste otvorili prozor bez arhiviranja</translation>
+<translation id="6981761993313539853">Proverite da li je Bluetooth uređaj u režimu uparivanja i u blizini. Uparujte samo sa uređajima u koje imate poverenja. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6983507711977005608">Prekini vezu sa mrežom za trenutno privezivanje</translation>
 <translation id="6983783921975806247">Registrovani OID</translation>
@@ -6629,6 +6637,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7898725031477653577">Uvek prevodi</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Poboljšani Chrome pomoću pokazatelja stranice</translation>
+<translation id="7903290522161827520">Tražite komponente pregledača? Posetite</translation>
 <translation id="7903345046358933331">Stranica je prestala da se odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
 <translation id="7903742244674067440">Imate sačuvane sertifikate koji identifikuju ove autoritete za izdavanje sertifikata</translation>
 <translation id="7903925330883316394">Pomoćni proces: <ph name="UTILITY_TYPE" /></translation>
@@ -7003,6 +7012,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8271268254812352141">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite. Prilagodite jezike za prevod u <ph name="LINK_BEGIN" />Jezicima za veb-sajtove<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Roditelji, sledećih nekoliko koraka su za vas. Možete da vratite <ph name="DEVICE_TYPE" /> detetu posle otvaranja naloga.</translation>
 <translation id="8272443605911821513">Upravljajte dodacima klikom na Dodaci u meniju „Još alatki“.</translation>
+<translation id="8272677921396592934">Skeniraj QR kôd pomoću kamere</translation>
 <translation id="8274332263553132018">Prebacite datoteku</translation>
 <translation id="8274921654076766238">Lupa prati fokus tastature</translation>
 <translation id="8274924778568117936">Ne isključujte i ne zatvarajte <ph name="DEVICE_TYPE" /> dok se ažuriranje ne završi. <ph name="DEVICE_TYPE" /> će se ponovo pokrenuti kada se instalacija završi.</translation>
@@ -7682,6 +7692,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9004754973617721124">Želite da obrišete podatke o sajtovima i dozvole za sajt <ph name="SITE_NAME" />, sve podređene sajtove i njegovu instaliranu aplikaciju?</translation>
 <translation id="9004952710076978168">Primljeno je obaveštenje za nepoznati štampač.</translation>
 <translation id="9008201768610948239">Ignoriši</translation>
+<translation id="9008201858626224558">Dugme Nazad na stranici sa detaljima <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Otpremanje (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Da li ste želeli da promenite ovu stranicu?</translation>
 <translation id="9011163749350026987">Uvek prikazuj ikonu</translation>
@@ -7865,6 +7876,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="917510707618656279">Pitaj kada sajt želi da pristupa Bluetooth uređajima</translation>
 <translation id="9176476835295860688">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To će pomoći u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To <ph name="BEGIN_LINK1" />podešavanje<ph name="END_LINK1" /> primenjuje vlasnik. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaje je povezan</translation>
+<translation id="9178061802301856367">Izbrišite podatke za prijavljivanje</translation>
 <translation id="9179524979050048593">Korisničko ime na ekranu za prijavljivanje</translation>
 <translation id="9180281769944411366">Ovo može da potraje par minuta. Pokreće se Linux kontejner.</translation>
 <translation id="9180380851667544951">Sajt može da deli ekran</translation>

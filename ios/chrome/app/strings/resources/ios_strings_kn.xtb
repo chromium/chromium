@@ -168,6 +168,7 @@
 <translation id="2584132361465095047">ಖಾತೆ ಸೇರಿಸಿ...</translation>
 <translation id="2600682495497606169">ಸೈಟ್ ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="2625189173221582860">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="2626236249646841566">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2647269890314209800">ಬಳಕೆಯಲ್ಲಿರುವ ಕುಕೀಗಳು</translation>
 <translation id="2648803196158606475">ಓದಿರುವುದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
@@ -363,6 +364,7 @@
 <translation id="4508750114462689118">ಸೈನ್-ಇನ್ ಪ್ರೋಮೋ ಮುಚ್ಚಿ</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4536418791685807335">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4540780316273593836">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ</translation>
 <translation id="457386861538956877">ಇನ್ನಷ್ಟು...</translation>
 <translation id="4592368184551360546">ಕೀಬೋರ್ಡ್</translation>
 <translation id="461440297010471931">Google ಮೂಲಕ ಹುಡುಕಲಾಗುತ್ತದೆ</translation>
@@ -478,6 +480,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ಈಗ 1 Chrome ವಿಂಡೋವನ್ನು ತೋರಿಸುತ್ತಿದೆ}one{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}other{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}}</translation>
+<translation id="5704908597376970822">ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="5706552126692816153">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="5711039611392265845">ಗೌಪ್ಯತೆ, ಸುರಕ್ಷತೆ ಮತ್ತು ಡೇಟಾ ಸಂಗ್ರಹಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಮತ್ತು Google ಸೇವೆಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="5724941645893276623">ವೆಬ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು, ಹೊಸ ಟ್ಯಾಬ್ ಒಂದನ್ನು ಸೇರಿಸಿ</translation>

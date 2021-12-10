@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">พื้นที่ฝึกปฏิบัติ: รายการแบบเลื่อนลง</translation>
 <translation id="1195238899008218998">คำแถลงท้ายเล่ม</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
+<translation id="1198865190323699001">ท่าทางแตะสัมผัส</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1206619573307042055">ตัวอักษรวิ่ง</translation>
 <translation id="1207086294218137981">ไม่มีส่วนหัวระดับ 4 ถัดไป</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{เครื่องหมายคำถาม}other{# เครื่องหมายคำถาม}}</translation>
 <translation id="3505359110822747654">ยุบเมนู ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{เครื่องหมาย caret}other{# เครื่องหมาย caret}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{สัญลักษณ์หัวข้อย่อยสีขาว}other{สัญลักษณ์หัวข้อย่อยสีขาว # ข้อ}}</translation>
 <translation id="352577523970648069">ช่องข้อความที่แก้ไขได้</translation>
 <translation id="3538907380453898475">รายการคำอธิบาย</translation>
 <translation id="3549141990712742152">ตัด <ph name="TEXT" /></translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">ช่องทำเครื่องหมายถัดไป</translation>
 <translation id="5598905979683743333">ปุ่มตัวเลือก <ph name="NAME" /> ที่ไม่ได้เลือกไว้</translation>
 <translation id="5601172225407283979">ดำเนินการการทำงานเริ่มต้น</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{สัญลักษณ์หัวข้อย่อยจัตุรัส}other{สัญลักษณ์หัวข้อย่อยจัตุรัส # ข้อ}}</translation>
 <translation id="5608798115546226984">การเติมข้อความอัตโนมัติแบบในบรรทัด</translation>
 <translation id="5616029807486814372">บทเรียนถัดไป</translation>
 <translation id="561939826962581046">เวลา</translation>
@@ -1096,6 +1099,7 @@
 <translation id="8659501358298941449">รายการแบบเลื่อนลง</translation>
 <translation id="8666733765751421568">สิ้นสุด<ph name="TYPE" /></translation>
 <translation id="867187640362843212">ส่วนหัวระดับ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ฝังไว้ที่ระดับ #}}</translation>
 <translation id="8693391540059827073">ฤดูกาลโปรดของฉัน</translation>
 <translation id="8696284982970258155">สีเขียวฮันนีดิว</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{เครื่องหมายขีดตั้ง}other{# เครื่องหมายขีดตั้ง}}</translation>

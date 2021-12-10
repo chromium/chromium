@@ -177,6 +177,7 @@
 <translation id="1472675084647422956">បង្ហាញ​ច្រើនទៀត</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">កំពុងរកមើល​កំណែ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​ឬ? ចូលមើល</translation>
 <translation id="1476595624592550506">ប្ដូរ​ពាក្យ​សម្ងាត់​របស់​អ្នក</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1484290072879560759">ជ្រើសរើសអាសយដ្ឋាន​ដឹក​ជញ្ជូន</translation>
@@ -1890,6 +1891,7 @@
 <translation id="7118618213916969306">ស្វែងរក URL ឃ្លីបបត, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">បិទផ្ទាំង ឬកម្មវិធីផ្សេងទៀត</translation>
 <translation id="7129409597930077180">មិនអាចដឹកជញ្ជូនតាមប្រៃសណីយ៍ទៅអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
+<translation id="7132939140423847331">អ្នកគ្រប់គ្រង​របស់អ្នក​បានហាមឃាត់​មិនឱ្យ​ចម្លងទិន្នន័យនេះ។</translation>
 <translation id="7135130955892390533">បង្ហាញ​ស្ថានភាព</translation>
 <translation id="7138472120740807366">មធ្យោបាយដឹកជញ្ជូនផ្ទាល់</translation>
 <translation id="7139724024395191329">អារ៉ាប់រួម</translation>
@@ -2450,6 +2452,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "tab" រួចចុច "Enter" ដើម្បីមើលប្រវត្តិរុករក​តាមអ៊ីនធឺណិត​របស់អ្នកនៅក្នុង Chrome</translation>
 <translation id="8987927404178983737">ខែ</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">កំពុង​រកមើល​កំណែប្រព័ន្ធឬ? ចូលមើល</translation>
 <translation id="899688752321268742"><ph name="URL" /> ចង់ដឹងអំពីពេលវេលាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះយ៉ាងសកម្ម</translation>
 <translation id="8996941253935762404">គេហទំព័រខាងមុខផ្ទុកកម្មវិធីបង្កគ្រោះថ្នាក់</translation>
 <translation id="8997023839087525404">ម៉ាស៊ីនមេបាននាំមកជូននូវវិញ្ញាបនបត្រមួយដែលមិនបានបង្ហាញជាសាធារណៈទេដោយប្រើ គោលការណ៍តម្លាភាពវិញ្ញាបនបត្រ។ វាជាលក្ខខណ្ឌតម្រូវឲ្យមានសម្រាប់វិញ្ញាបនបត្រមួយចំនួន ដើម្បីធ្វើឲ្យប្រាកដថាពួកវាគួរឲ្យទុកចិត្ត និងដើម្បីការពារប្រឆាំងអ្នកវាយប្រហារ។</translation>

@@ -168,6 +168,8 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2584132361465095047">Dodaj nalog…</translation>
 <translation id="2600682495497606169">Obriši kolačiće za sajt</translation>
 <translation id="2625189173221582860">Lozinka je kopirana</translation>
+<translation id="2626236249646841566">Proverite vezu i probajte ponovo da se prijavite.</translation>
+<translation id="2637313651144986786">Pretražite kartice…</translation>
 <translation id="2647269890314209800">Kolačići u upotrebi</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -363,6 +365,7 @@ Pratite korake u nastavku:</translation>
 <translation id="4508750114462689118">Zatvori promociju za prijavljivanje</translation>
 <translation id="4526249700380860531">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
+<translation id="4540780316273593836">Nešto nije u redu</translation>
 <translation id="457386861538956877">Još...</translation>
 <translation id="4592368184551360546">Tastatura</translation>
 <translation id="461440297010471931">Pretražujete pomoću Google-a</translation>
@@ -478,6 +481,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Sada se prikazuje 1 Chrome prozor}one{Sada se prikazuje {count} Chrome prozor}few{Sada se prikazuju {count} Chrome prozora}other{Sada se prikazuje {count} Chrome prozora}}</translation>
+<translation id="5704908597376970822">Prijavljivanje nije uspelo.</translation>
 <translation id="5706552126692816153">Poslednja aktivnost: pre 1 dan</translation>
 <translation id="5711039611392265845">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Sinhronizacija i Google usluge<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Da biste privatno pregledali veb, dodajte novu karticu</translation>

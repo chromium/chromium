@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{znak pitanja}one{# znak pitanja}few{# znaka pitanja}other{# znakova pitanja}}</translation>
 <translation id="3505359110822747654">Skupi ChromeVox menije</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{karet}one{# karet}few{# kareta}other{# kareta}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{beli znak za nabrajanje}one{# beli znak za nabrajanje}few{# bela znaka za nabrajanje}other{# belih znakova za nabrajanje}}</translation>
 <translation id="352577523970648069">Izmenljivo polje za tekst</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">Iseci <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Sledeće polje za potvrdu</translation>
 <translation id="5598905979683743333">Nije izabrano dugme za izbor <ph name="NAME" /></translation>
 <translation id="5601172225407283979">Obavljanje podrazumevane radnje</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratić}one{# kvadratić}few{# kvadratića}other{# kvadratića}}</translation>
 <translation id="5608798115546226984">Automatsko dovršavanje umetnutog teksta</translation>
 <translation id="5616029807486814372">Sledeća lekcija</translation>
 <translation id="561939826962581046">vreme</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Padajuće liste</translation>
 <translation id="8666733765751421568">Kraj stavke <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Zaglavlje 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{#. ugnežđeni nivo}few{#. ugnežđeni nivo}other{#. ugnežđeni nivo}}</translation>
 <translation id="8693391540059827073">Moje omiljeno godišnje doba</translation>
 <translation id="8696284982970258155">Bleda otvorenozelena</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{uspravna crta}one{# uspravna crta}few{# uspravne crte}other{# uspravnih crta}}</translation>

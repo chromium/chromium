@@ -404,6 +404,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresas}one{# adresas}few{# adresai}many{# adreso}other{# adresų}}</translation>
 <translation id="2187317261103489799">Aptikti (numatytoji parinktis)</translation>
 <translation id="2188375229972301266">Kelios skylės apačioje</translation>
+<translation id="2188852899391513400">Slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Siekiant užtikrinti paskyrų saugumą, „Google“ slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar ir patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="2202020181578195191">Įveskite tinkamus galiojimo laiko pabaigos metus</translation>
 <translation id="22081806969704220">3 dėklas</translation>
 <translation id="2212735316055980242">Politika nerasta</translation>
@@ -899,6 +900,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3827112369919217609">Absoliutus</translation>
 <translation id="3827475930221174051">Pagrįsta veikla, susijusia su „<ph name="SEARCH_TERM" />“</translation>
 <translation id="3828924085048779000">Neleidžiama naudoti tuščios slaptafrazės.</translation>
+<translation id="3831065134033923230">Išsaugotų slaptažodžių patikrinimas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> įdiegta papildomų funkcijų plėtinių. Naudojant plėtinius galima pasiekti kai kuriuos jūsų duomenis.</translation>
 <translation id="3832522519263485449">Kelios skylės kairėje</translation>
 <translation id="3835233591525155343">Įrenginio naudojimas</translation>
@@ -1098,6 +1100,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="443673843213245140">Įgaliotojo serverio naudojimas neleidžiamas, bet nurodyta aiški įgaliotojo serverio konfigūracija.</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="4451135742916150903">Gali būti prašoma prisijungti prie HID įrenginių</translation>
+<translation id="4452328064229197696">Slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Siekiant užtikrinti paskyrų saugumą, „Google“ slaptažodžių tvarkytuvė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="4455222631300069614">Pakeiskite slaptažodį dabar</translation>
 <translation id="4460315069258617173">Leidžiama, kol uždarysite šios svetainės skirtukus</translation>
 <translation id="4464826014807964867">Svetainės, kuriose yra informacijos iš jūsų organizacijos</translation>
@@ -1587,6 +1590,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6051221802930200923">Šiuo metu negalite apsilankyti <ph name="SITE" />, nes svetainėje naudojamas sertifikatų prisegimas. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
 <translation id="6051898664905071243">Puslapių skaičius:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. „Google“ slaptažodžių tvarkytuvė rekomenduoja pakeisti šį slaptažodį dabar.</translation>
 <translation id="6055888660316801977">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta</translation>
 <translation id="6058977677006700226">Naudojate korteles visuose įrenginiuose?</translation>
 <translation id="6059925163896151826">USB įrenginiai</translation>

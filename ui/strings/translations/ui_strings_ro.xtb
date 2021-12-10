@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4588090240171750605">Derulează spre dreapta</translation>
 <translation id="4724120544754982507">Centrul de notificări, <ph name="UNREAD_NOTIFICATION_COUNT" /> notificări necitite</translation>
+<translation id="4746179598275229723">Fixarea extensiei a fost anulată</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 lună rămasă}few{# luni rămase}other{# de luni rămase}}</translation>
 <translation id="4888938634149558681">Apelează</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{o secundă}few{# secunde}other{# de secunde}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{O secundă rămasă}few{# secunde rămase}other{# de secunde rămase}}</translation>
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{o oră}few{# ore}other{# de ore}}</translation>
+<translation id="6007284015834422026">Extensia a fost fixată</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6117103120090651229">Buton din mijloc</translation>
 <translation id="6129953537138746214">Spațiu</translation>

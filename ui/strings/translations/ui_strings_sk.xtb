@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4588090240171750605">Rolovať doprava</translation>
 <translation id="4724120544754982507">Centrum upozornení – počet neprečítaných upozornení: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4746179598275229723">Rozšírenie bolo odopnuté</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zostáva 1 mesiac}few{zostávajú # mesiace}many{zostáva # mesiaca}other{zostáva # mesiacov}}</translation>
 <translation id="4888938634149558681">Volať</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekundy}other{# sekúnd}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Zostáva 1 sekunda}few{Zostávajú # sekundy}many{Zostáva # sekundy}other{Zostáva # sekúnd}}</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 hodina}few{# hodiny}many{# hodiny}other{# hodín}}</translation>
+<translation id="6007284015834422026">Rozšírenie bolo pripnuté</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6117103120090651229">Stredné tlačidlo</translation>
 <translation id="6129953537138746214">Medzera</translation>

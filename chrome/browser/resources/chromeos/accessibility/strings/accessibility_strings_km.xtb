@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{សញ្ញាសួរ}other{# សញ្ញាសួរ}}</translation>
 <translation id="3505359110822747654">ការបង្រួមម៉ឺនុយ ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ការ៉ាត់}other{# ការ៉ាត់}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ចំណុចមូលពណ៌ស}other{ចំណុចមូលពណ៌ស #}}</translation>
 <translation id="352577523970648069">ប្រអប់បំពេញដែលអាចកែសម្រួលបាន</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">កាត់ <ph name="TEXT" /> ។</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">ប្រអប់ធីកបន្ទាប់</translation>
 <translation id="5598905979683743333"><ph name="NAME" /> ប៊ូតុងវិទ្យុត្រូវបានដកការជ្រើសរើស</translation>
 <translation id="5601172225407283979">ប្រតិបត្តិការសកម្មភាពលំនាំដើម</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ចំណុច​បួនជ្រុង}other{ចំណុច​បួនជ្រុង #}}</translation>
 <translation id="5608798115546226984">ការបំពេញស្វ័យប្រវត្តិក្នុងជួរ</translation>
 <translation id="5616029807486814372">មេរៀន​បន្ទាប់</translation>
 <translation id="561939826962581046">ម៉ោង</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">បញ្ជី​ធ្លាក់ចុះ</translation>
 <translation id="8666733765751421568">ផ្នែកបញ្ចប់ <ph name="TYPE" /></translation>
 <translation id="867187640362843212">ផ្នែកក្បាល 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{បានដាក់ក្នុងកម្រិត #}}</translation>
 <translation id="8693391540059827073">រដូវកាល​ដែលខ្ញុំ​ចូលចិត្ត</translation>
 <translation id="8696284982970258155">សំបក​ត្រសក់ស្រូវ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{បំពង់}other{# បំពង់ឈរ}}</translation>

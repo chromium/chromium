@@ -35,6 +35,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1175572348579024023">Pomeraj</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
+<translation id="118437560755358292">Unesite lozinku ili PIN radi dodatne bezbednosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gde da biste snimili ceo ekran</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
 <translation id="1190678134285018527">Uređaj mora da se vrati na prethodnu verziju</translation>
@@ -338,6 +339,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3307642347673023554">Prešli ste u režim laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> će i dalje moći da se prijavi kasnije.</translation>
 <translation id="3321628682574733415">Netačan kôd roditelja</translation>
+<translation id="3339826665088060472">Snimanje ekrana, alatke za pravljenje snimaka i video snimaka ekrana</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
 <translation id="334252345105450327">Napravi snimak ekrana</translation>
 <translation id="3351879221545518001">Trenutno prebacujete ekran.</translation>
@@ -394,6 +396,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3606978283550408104">Povezan je ekran sa Brajevom azbukom.</translation>
 <translation id="3615926715408477684">Ako omogućite mobilne podatke, omogućavate Bluetooth</translation>
 <translation id="3616883743181209306">Meni je premešten u gornji desni ugao ekrana.</translation>
+<translation id="3619536907358025872">Podešavanja snimanja ekrana</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621712662352432595">Podešavanja zvuka</translation>
 <translation id="3626281679859535460">Osvetljenost</translation>
@@ -492,6 +495,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Tasterska prečica Ctrl + Alt + strelica nadole je promenjena. Da biste koristili taster End, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nadesno</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
+<translation id="4283888303416325161">Unesite lozinku radi dodatne bezbednosti</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="429402653707266969">Uključi/isključi lokaciju</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
@@ -760,6 +764,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="607652042414456612">Obližnji Bluetooth uređaji mogu da otkriju računar i on će se prikazivati kao „<ph name="NAME" />“ sa adresom <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Potvrdite preuzimanje fajla <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
 <translation id="6134259848159370930">Pretražujte uređaj, aplikacije, podešavanja i veb.</translation>
 <translation id="6137566720514957455">Otvara nalog za uklanjanje za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>

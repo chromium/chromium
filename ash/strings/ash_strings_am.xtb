@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="118437560755358292">ለበለጠ ደህንነት የይለፍ ቃል ወይም ፒን ያስገቡ</translation>
 <translation id="118532027333893379">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ መታ ያድርጉ</translation>
 <translation id="1190609913194133056">የማሳወቂያ ማዕከል</translation>
 <translation id="1190678134285018527">መሣሪያው ወደ ቀዳሚው ስሪት መመለስ አለበት</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">ወደ የላፕቶፕ ሁነታ ተቀይሯል</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> አሁንም በኋላ በመለያ መግባት ይችላሉ።</translation>
 <translation id="3321628682574733415">ትክክል ያልሆነ የወላጅ ኮድ</translation>
+<translation id="3339826665088060472">የማያ ገጽ ቀረጻ፣ ቅጽበታዊ ገጽ እይታዎችን እና የማያ ቅጂዎችን ለማንሳት የሚረዱ መሳሪያዎች</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገጽ እይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገጽ እይታ ያንሱ</translation>
 <translation id="3351879221545518001">አሁን ላይ ማያ ገጽን cast እያደረጉ ነው።</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">የብሬይል ማሳያ ተገናኝቷል።</translation>
 <translation id="3615926715408477684">የተንቀሳቃሽ ስልክ ውሂብን ማንቃት ብሉቱዝን ያነቃል</translation>
 <translation id="3616883743181209306">ምናሌ ወደ ማያ ገጹ የላይኛው ቀኝ ጥግ ተወስዷል።</translation>
+<translation id="3619536907358025872">የማያ ገጽ ቀረጻ ቅንብሮች</translation>
 <translation id="3621202678540785336">ግብዓት</translation>
 <translation id="3621712662352432595">የድምጽ ቅንብሮች</translation>
 <translation id="3626281679859535460">ብሩህነት</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">የዚህ መሣሪያ የሚከተሉትን የማድረግ ችሎታ አለው፦</translation>
 <translation id="4274537685965975248">የCtrl + Alt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የመጨረሻውን ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የቀኝ ቀስት ይጫኑ።</translation>
 <translation id="4279490309300973883">በማንጸባረቅ ላይ</translation>
+<translation id="4283888303416325161">ለበለጠ ደህንነት የይለፍ ቃል ያስገቡ</translation>
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="429402653707266969">የመሣሪያ አሞሌ አካባቢን ቀያይር</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
@@ -760,6 +764,7 @@
 <translation id="607652042414456612">ኮምፒውተርዎ አቅራቢያ ባሉ የብሉቱዝ መሣሪያዎች ሊገኝ የሚችል ነው፣ እና በ<ph name="ADDRESS" /> አድራሻ እንደ «<ph name="NAME" />» ሆኖ ይታያል</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" /> ማውረድን ያረጋግጡ</translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
 <translation id="6134259848159370930">የእርስዎን መሣሪያ፣ መተግበሪያዎች፣ ቅንብሮች እና ድር ይፈልጉ።</translation>
 <translation id="6137566720514957455">ለ<ph name="USER_EMAIL_ADDRESS" /> የአስወግድ መገናኛን ክፈት</translation>

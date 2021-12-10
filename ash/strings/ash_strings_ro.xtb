@@ -35,6 +35,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1175572348579024023">Derulează</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
+<translation id="118437560755358292">Introdu parola sau codul PIN pentru mai multă siguranță</translation>
 <translation id="118532027333893379">Atinge oriunde pentru a captura ecranul complet</translation>
 <translation id="1190609913194133056">Centrul pentru notificări</translation>
 <translation id="1190678134285018527">Trebuie să revii la versiunea anterioară a dispozitivului</translation>
@@ -338,6 +339,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3307642347673023554">S-a comutat la modul laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
+<translation id="3339826665088060472">Captură de ecran, instrumente pentru realizarea capturilor de ecran și a înregistrărilor ecranului</translation>
 <translation id="3341303451326249809">Captură de ecran realizată</translation>
 <translation id="334252345105450327">Fă o captură de ecran</translation>
 <translation id="3351879221545518001">În prezent proiectezi ecranul.</translation>
@@ -394,6 +396,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3606978283550408104">Afișajul Braille este conectat.</translation>
 <translation id="3615926715408477684">Dacă activezi datele mobile, se va activa Bluetooth</translation>
 <translation id="3616883743181209306">Meniul a fost mutat în colțul din dreapta sus al ecranului.</translation>
+<translation id="3619536907358025872">Setări pentru capturile de ecran</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3621712662352432595">Setări audio</translation>
 <translation id="3626281679859535460">Luminozitate</translation>
@@ -492,6 +495,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4269883910223712419">Administratorul acestui dispozitiv poate:</translation>
 <translation id="4274537685965975248">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în jos s-a schimbat. Pentru a folosi tasta End, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre dreapta.</translation>
 <translation id="4279490309300973883">Oglindire</translation>
+<translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="429402653707266969">Activează / dezactivează locația barei de instrumente</translation>
 <translation id="4294319844246081198">Bună dimineața, <ph name="GIVEN_NAME" />!</translation>
@@ -760,6 +764,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="607652042414456612">Computerul poate fi detectat de dispozitivele Bluetooth din apropiere și va apărea ca „<ph name="NAME" />” cu adresa <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
 <translation id="6134259848159370930">Caută pe dispozitiv, în aplicații, în setări și pe web.</translation>
 <translation id="6137566720514957455">Deschide fereastra de dialog Elimină pentru <ph name="USER_EMAIL_ADDRESS" /></translation>

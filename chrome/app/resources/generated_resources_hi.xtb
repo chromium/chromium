@@ -1699,6 +1699,7 @@
 <translation id="2707024448553392710">घटक डाउनलोड करना</translation>
 <translation id="270921614578699633">औसत से ज़्यादा</translation>
 <translation id="2709516037105925701">ऑटोमैटिक भरना</translation>
+<translation id="2710014902399506864">कोई नया फ़ोन नंबर जोड़ें</translation>
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
 <translation id="271033894570825754">नया</translation>
 <translation id="2712173769900027643">अनुमति मांगें</translation>
@@ -2057,6 +2058,7 @@
 <translation id="3055590424724986000">सेवा देने वाली आपकी पसंद की कंपनी से</translation>
 <translation id="3058498974290601450">आप सेटिंग में किसी भी समय सिंक चालू कर सकते हैं</translation>
 <translation id="3058517085907878899">डिवाइस का नाम रखें</translation>
+<translation id="3059195548603439580">सिस्टम कॉम्पोनेंट वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="3060379269883947824">'चुनें और सुनें' सुविधा चालू करें</translation>
 <translation id="3060952009917586498">डिवाइस की भाषा बदलें. मौजूदा भाषा <ph name="LANGUAGE" /> है.</translation>
 <translation id="3060987956645097882">हम आपके फ़ोन से कनेक्ट नहीं कर पाए. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
@@ -2716,6 +2718,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{किसी USB डिवाइस से संचार करें}one{# USB डिवाइस से संचार करें}other{# USB डिवाइस से संचार करें}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजा जा रहा है}one{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजा जा रहा है}other{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजे जा रहे हैं}}</translation>
 <translation id="3765246971671567135">ऑफ़लाइन डेमो मोड नीति पढ़ी नहीं जा सकी.</translation>
+<translation id="3766115177661377251">किसी नए डिसप्ले पर कास्ट करें</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> हर्ट्ज़</translation>
 <translation id="377050016711188788">आइसक्रीम</translation>
 <translation id="3771290962915251154">यह सेटिंग बंद है, क्योंकि 'माता-पिता के नियंत्रण में' सुविधा चालू है</translation>
@@ -3505,6 +3508,7 @@
 <translation id="4590324241397107707">डेटाबेस मेमोरी</translation>
 <translation id="4592891116925567110">स्टाइलस की मदद से ड्रॉ करने के लिए ऐप्लिकेशन</translation>
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>
+<translation id="4594577641390224176">सिस्टम की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="4595560905247879544">ऐप्स और एक्सटेंशन केवल मैनेजर (<ph name="CUSTODIAN_NAME" />) के द्वारा बदले जा सकते हैं.</translation>
 <translation id="4596295440756783523">इन सर्वर की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
@@ -4890,6 +4894,7 @@
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="6086004606538989567">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है.</translation>
 <translation id="6086846494333236931">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
+<translation id="6087746524533454243">ब्राउज़र की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="6087960857463881712">बढ़िया चेहरा</translation>
 <translation id="608912389580139775">इस पेज को अपनी रीडिंग लिस्ट में जोड़ने के लिए, बुकमार्क आइकॉन पर क्लिक करें</translation>
 <translation id="6091761513005122595">शेयर माउंट करना सफल रहा.</translation>
@@ -4988,6 +4993,7 @@
 <translation id="6198102561359457428">साइन आउट करें और फिर से साइन इन करें...</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
 <translation id="6200047250927636406">फ़ाइल खारिज करें</translation>
+<translation id="6200151268994853226">एक्सटेंशन मैनेज करें</translation>
 <translation id="6201608810045805374">क्या आपको यह खाता हटाना है?</translation>
 <translation id="6202304368170870640">आप अपने डिवाइस में साइन इन करने या उसे अनलॉक करने के लिए अपने पिन का इस्तेमाल कर सकते हैं.</translation>
 <translation id="6206311232642889873">इमेज को कॉपी करें</translation>
@@ -5275,6 +5281,7 @@
 <translation id="6497789971060331894">माउस से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="6498249116389603658">&amp;आपकी सभी भाषाएं</translation>
 <translation id="6499143127267478107">प्रॉक्‍सी स्‍क्रिप्‍ट में होस्‍ट का समाधान किया जा रहा है...</translation>
+<translation id="6499764981457476645">आस-पास कोई डिवाइस नहीं मिला</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> इस फ़ाइल को खोलना चाहता है:</translation>
 <translation id="6501957628055559556">सभी कंटेनर</translation>
 <translation id="650266656685499220">एल्बम तैयार करने के लिए, Google Photos पर जाएं</translation>
@@ -5740,6 +5747,7 @@
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6979737339423435258">हमेशा</translation>
 <translation id="6981553172137913845">निजी रूप से ब्राउज़ करने के लिए, डॉट आइकॉन वाले मेन्यू पर क्लिक करके गुप्त विंडो खोलें</translation>
+<translation id="6981761993313539853">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">सुलभता</translation>
 <translation id="6983507711977005608">इंस्टैंट टेदरिंग नेटवर्क को डिसकनेक्ट करें</translation>
 <translation id="6983783921975806247">पंजीकृत OID</translation>
@@ -6645,6 +6653,7 @@
 <translation id="7898725031477653577">हमेशा अनुवाद करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7901914889562552258">पेज मेट्रिक का इस्तेमाल करके, Chrome को बेहतर बनाया गया</translation>
+<translation id="7903290522161827520">ब्राउज़र कॉम्पोनेंट वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="7903345046358933331">पेज कोई प्रतिसाद नहीं दे रहा है. आप उसके प्रतिसाद देने तक प्रतीक्षा कर सकते हैं या उसे बंद कर सकते हैं.</translation>
 <translation id="7903742244674067440">इन प्रमाणपत्र प्राधिकारियों की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="7903925330883316394">उपयोगिता: <ph name="UTILITY_TYPE" /></translation>
@@ -7019,6 +7028,7 @@
 <translation id="8271268254812352141">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर दायां क्लिक करें. अनुवाद करने के लिए, <ph name="LINK_BEGIN" />वेबसाइट की भाषाओं<ph name="LINK_END" /> में अपनी पसंदीदा भाषाएं सेट करें.</translation>
 <translation id="8271379370373330993">अगले कुछ कदम माता-पिता के लिए हैं. आप खाता सेट अप करने के बाद <ph name="DEVICE_TYPE" /> वापस बच्चे को दे सकते हैं.</translation>
 <translation id="8272443605911821513">मेन्यू में "ज़्यादा टूल" एक्सटेंशन पर क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
+<translation id="8272677921396592934">क्यूआर कोड स्कैन करने के लिए कैमरा इस्तेमाल करें</translation>
 <translation id="8274332263553132018">फ़ाइल कास्ट करें</translation>
 <translation id="8274921654076766238">फ़ुल-स्क्रीन पर कॉन्टेंट को बड़ा दिखाने की सुविधा से, स्क्रीन को कीबोर्ड के फ़ोकस के हिसाब से बदलना</translation>
 <translation id="8274924778568117936">अपडेट पूरा होने तक अपना <ph name="DEVICE_TYPE" /> बंद न करें. इंस्टॉल हो जाने के बाद आपका <ph name="DEVICE_TYPE" /> रीस्टार्ट होगा.</translation>
@@ -7697,6 +7707,7 @@
 <translation id="9004754973617721124">क्या आप <ph name="SITE_NAME" /> के तहत आने वाली सभी साइटों, और इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटाना चाहते हैं?</translation>
 <translation id="9004952710076978168">एक ऐसे प्रिंटर के लिए सूचना मिली जिसकी जानकारी नहीं है.</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>
+<translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> की जानकारी वाले पेज का 'वापस जाएं' बटन</translation>
 <translation id="9009369504041480176">अपलोड हो रहा है (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">क्या आपका मतलब इस पेज को बदलने से है?</translation>
 <translation id="9011163749350026987">आइकॉन हमेशा दिखाएं</translation>
@@ -7880,6 +7891,7 @@
 <translation id="917510707618656279">जब कोई साइट ब्लूटूथ डिवाइस ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="9176476835295860688">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. यह <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> डिवाइस के मालिक ने लागू की है. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ब्लूटूथ डिवाइस कनेक्ट है</translation>
+<translation id="9178061802301856367">साइन इन करने का डेटा मिटाएं</translation>
 <translation id="9179524979050048593">साइन-इन स्क्रीन पर दिया गया उपयोगकर्ता नाम</translation>
 <translation id="9180281769944411366">इस प्रोसेस में कुछ मिनट लग सकते हैं. Linux कंटेनर शुरू किया जा रहा है.</translation>
 <translation id="9180380851667544951">साइट आपकी स्क्रीन शेयर कर सकती है</translation>

@@ -1697,6 +1697,7 @@
 <translation id="2707024448553392710">正在下載組件</translation>
 <translation id="270921614578699633">平均取樣數：</translation>
 <translation id="2709516037105925701">自動填入</translation>
+<translation id="2710014902399506864">新增手機</translation>
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2712173769900027643">要求權限</translation>
@@ -2056,6 +2057,7 @@
 <translation id="3055590424724986000">用你揀嘅供應商</translation>
 <translation id="3058498974290601450">您可隨時在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">幫裝置改名</translation>
+<translation id="3059195548603439580">要查看系統元件嗎？請前往</translation>
 <translation id="3060379269883947824">啟用「選取以朗讀」</translation>
 <translation id="3060952009917586498">改裝置語言。目前嘅語言係<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我們無法與您的手機建立連線。請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
@@ -2715,6 +2717,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
+<translation id="3766115177661377251">投放到新螢幕</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">雪糕</translation>
 <translation id="3771290962915251154">已啟用家長監控設定，因此這項設定已停用</translation>
@@ -3505,6 +3508,7 @@
 <translation id="4590324241397107707">數據庫儲存空間</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" /> (&amp;G)</translation>
+<translation id="4594577641390224176">要查看系統的「關於」頁面嗎？請前往</translation>
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 才能修改應用程式和擴充程式。</translation>
 <translation id="4596295440756783523">您的檔案具備可以識別這些伺服器的憑證</translation>
 <translation id="4598556348158889687">管理儲存空間</translation>
@@ -4891,6 +4895,7 @@
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="6086004606538989567">您已驗證的帳戶無權存取此裝置。</translation>
 <translation id="6086846494333236931">已由管理員安裝</translation>
+<translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
 <translation id="608912389580139775">如要將網頁加入您的閱讀清單，請按一下「書籤」圖示</translation>
 <translation id="6091761513005122595">已成功連接共用裝置。</translation>
@@ -4989,6 +4994,7 @@
 <translation id="6198102561359457428">登出然後再次登入…</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
+<translation id="6200151268994853226">管理擴充功能</translation>
 <translation id="6201608810045805374">要移除此帳戶嗎？</translation>
 <translation id="6202304368170870640">您可使用 PIN 登入或解鎖裝置。</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
@@ -5276,6 +5282,7 @@
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機…</translation>
+<translation id="6499764981457476645">找不到附近的裝置</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 要求開啟以下檔案：</translation>
 <translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如要建立相簿，請前往「Google 相片」</translation>
@@ -5741,6 +5748,7 @@
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6981553172137913845">如要私密瀏覽，請按一下三點圖示選單，然後開啟無痕式視窗</translation>
+<translation id="6981761993313539853">請確認你的藍牙裝置放在附近，且處於配對模式。只配對你信任的裝置。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="6983507711977005608">解除連接「即時網絡共享」網絡</translation>
 <translation id="6983783921975806247">已註冊的 OID</translation>
@@ -6647,6 +6655,7 @@
 <translation id="7898725031477653577">永遠翻譯</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">根據網頁數據改善 Chrome</translation>
+<translation id="7903290522161827520">要查看瀏覽器元件嗎？請前往</translation>
 <translation id="7903345046358933331">網頁沒有回應。您可以等待網頁回應或關閉網頁。</translation>
 <translation id="7903742244674067440">您的檔案具備可以識別這些憑證授權的憑證</translation>
 <translation id="7903925330883316394">程式：<ph name="UTILITY_TYPE" /></translation>
@@ -7021,6 +7030,7 @@
 <translation id="8271268254812352141">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果。請在<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />中自訂翻譯語言。</translation>
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。您可在帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給子女。</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
+<translation id="8272677921396592934">使用相機掃描 QR 圖碼</translation>
 <translation id="8274332263553132018">投放檔案</translation>
 <translation id="8274921654076766238">放大鏡追蹤鍵盤焦點</translation>
 <translation id="8274924778568117936">在更新完成前，請勿關閉 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 將會在安裝完成後重新啟動。</translation>
@@ -7698,6 +7708,7 @@
 <translation id="9004754973617721124">要清除 <ph name="SITE_NAME" />、當中所有網站，以及網站已安裝的應用程式的網站資料和權限嗎？</translation>
 <translation id="9004952710076978168">收到不明打印機的通知。</translation>
 <translation id="9008201768610948239">略過</translation>
+<translation id="9008201858626224558">「<ph name="SUBPAGE_TITLE" />」詳細資料頁面返回按鈕</translation>
 <translation id="9009369504041480176">上載中 (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009708085379296446">您要變更此頁面嗎？</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
@@ -7881,6 +7892,7 @@
 <translation id="917510707618656279">在網站要求存取藍牙裝置時詢問您</translation>
 <translation id="9176476835295860688">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料將有助改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已連接藍牙裝置</translation>
+<translation id="9178061802301856367">刪除登入資料</translation>
 <translation id="9179524979050048593">登入畫面使用者名稱</translation>
 <translation id="9180281769944411366">此程序可能需時幾分鐘。正在啟動 Linux 容器。</translation>
 <translation id="9180380851667544951">網站可以分享您的螢幕畫面</translation>

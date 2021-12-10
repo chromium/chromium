@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">要查看瀏覽器版本嗎？請前往</translation>
 <translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484290072879560759">選擇付運地址</translation>
@@ -1876,6 +1877,7 @@
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
+<translation id="7132939140423847331">管理員已禁止複製這個資料。</translation>
 <translation id="7135130955892390533">顯示狀態</translation>
 <translation id="7138472120740807366">送貨方式</translation>
 <translation id="7139724024395191329">酋長國</translation>
@@ -2434,6 +2436,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以睇您嘅 Chrome 瀏覽記錄</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">要查看系統版本嗎？請前往</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想知道您是否正在使用此裝置</translation>
 <translation id="8996941253935762404">您將前往內含有害程式的網站</translation>
 <translation id="8997023839087525404">伺服器的憑證並未根據憑證透明度政策向公眾披露。部分憑證必須符合此規定，以確保憑證可信，並讓使用者免受攻擊。</translation>

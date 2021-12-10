@@ -168,6 +168,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2584132361465095047">Dodajanje računa ...</translation>
 <translation id="2600682495497606169">Brisanje piškotkov spletnega mesta</translation>
 <translation id="2625189173221582860">Geslo kopirano</translation>
+<translation id="2626236249646841566">Preverite povezavo in se poskusite znova prijaviti.</translation>
 <translation id="2647269890314209800">Piškotki v uporabi</translation>
 <translation id="2648803196158606475">Izbriši prebrano</translation>
 <translation id="2653659639078652383">Pošlji</translation>
@@ -363,6 +364,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
 <translation id="4526249700380860531">Dostopajte do shranjenih gesel in jih upravljajte na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
+<translation id="4540780316273593836">Prišlo je do napake</translation>
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4592368184551360546">Tipkovnica</translation>
 <translation id="461440297010471931">Iskanje z Googlom</translation>
@@ -478,6 +480,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Različica <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Prikaz 1 Chromovega okna}one{Prikaz {count} Chromovega okna}two{Prikaz {count} Chromovih oken}few{Prikaz {count} Chromovih oken}other{Prikaz {count} Chromovih oken}}</translation>
+<translation id="5704908597376970822">Prijava ni mogoča.</translation>
 <translation id="5706552126692816153">Aktivna pred 1 dnevom</translation>
 <translation id="5711039611392265845">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelek <ph name="BEGIN_LINK" />Sinhronizacija in Googlove storitve<ph name="END_LINK" /></translation>
 <translation id="5724941645893276623">Če želite zasebno brskati po spletu, dodajte nov zavihek</translation>

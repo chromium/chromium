@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">หากต้องการดูเวอร์ชันของเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="1476595624592550506">เปลี่ยนรหัสผ่าน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
 <translation id="1484290072879560759">เลือกที่อยู่สำหรับจัดส่ง</translation>
@@ -1876,6 +1877,7 @@
 <translation id="7118618213916969306">ค้นหา URL ในคลิปบอร์ด <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ปิดแท็บหรือโปรแกรมอื่นๆ</translation>
 <translation id="7129409597930077180">ไม่สามารถจัดส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
+<translation id="7132939140423847331">ผู้ดูแลระบบของคุณห้ามไม่ให้คัดลอกข้อมูลนี้</translation>
 <translation id="7135130955892390533">แสดงสถานะ</translation>
 <translation id="7138472120740807366">วิธีการนำส่งสินค้า</translation>
 <translation id="7139724024395191329">เอมิเรต</translation>
@@ -2435,6 +2437,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดูประวัติการท่องเว็บใน Chrome</translation>
 <translation id="8987927404178983737">เดือน</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">หากต้องการดูเวอร์ชันของระบบ โปรดไปที่</translation>
 <translation id="899688752321268742"><ph name="URL" /> ต้องการทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="8996941253935762404">ไซต์ที่จะเปิดมีโปรแกรมที่เป็นอันตราย</translation>
 <translation id="8997023839087525404">เซิร์ฟเวอร์แสดงใบรับรองที่ไม่มีการเปิดเผยต่อสาธารณะโดยใช้นโยบายความโปร่งใสของใบรับรอง ซึ่งเป็นข้อกำหนดสำหรับใบรับรองบางรายการ เพื่อยืนยันว่าเชื่อถือได้และป้องกันการจู่โจม</translation>

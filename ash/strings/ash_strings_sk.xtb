@@ -35,6 +35,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1175572348579024023">Posúvanie</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
+<translation id="118437560755358292">Zadajte heslo alebo PIN, zvýšite tým zabezpečenie</translation>
 <translation id="118532027333893379">Klepnutím na ľubovoľné miesto nasnímate celú obrazovku</translation>
 <translation id="1190609913194133056">Centrum upozornení</translation>
 <translation id="1190678134285018527">V zariadení sa musíte vrátiť na predchádzajúcu verziu</translation>
@@ -338,6 +339,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3307642347673023554">Prepnuté na režim laptopu</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sa bude môcť stále prihlásiť neskôr.</translation>
 <translation id="3321628682574733415">Nesprávny kód rodiča</translation>
+<translation id="3339826665088060472">Záznam obrazovky, nástroje na vytváranie snímok obrazovky a jej zaznamenávanie</translation>
 <translation id="3341303451326249809">Snímka obrazovky bola zaznamenaná</translation>
 <translation id="334252345105450327">Vytvoriť snímku obrazovky</translation>
 <translation id="3351879221545518001">Momentálne prenášate obrazovku.</translation>
@@ -394,6 +396,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3606978283550408104">Bola pripojená Braillova obrazovka.</translation>
 <translation id="3615926715408477684">Zapnutím mobilných dát aktivujete Bluetooth</translation>
 <translation id="3616883743181209306">Ponuka bola presunutá do pravého horného rohu obrazovky.</translation>
+<translation id="3619536907358025872">Nastavenia záznamu obrazovky</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3621712662352432595">Nastavenia zvuku</translation>
 <translation id="3626281679859535460">Jas</translation>
@@ -492,6 +495,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4269883910223712419">Správca tohto zariadenia môže:</translation>
 <translation id="4274537685965975248">Klávesová skratka Ctrl + Alt + šípka nadol bola zmenená. Ak chcete použiť kláves End, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doprava.</translation>
 <translation id="4279490309300973883">Zrkadlenie</translation>
+<translation id="4283888303416325161">Zadajte heslo, zvýšite tým zabezpečenie</translation>
 <translation id="4285498937028063278">Odopnúť</translation>
 <translation id="429402653707266969">Prepínač umiestnenia panela s nástrojmi</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
@@ -760,6 +764,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="607652042414456612">Váš počítač je viditeľný pre zariadenia Bluetooth v blízkosti a zobrazí sa ako <ph name="NAME" /> s adresou <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
 <translation id="6134259848159370930">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete.</translation>
 <translation id="6137566720514957455">Otvoriť dialógové okno na odstránenie účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
