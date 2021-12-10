@@ -491,8 +491,8 @@ TEST_F(FullStreamUIPolicyTest, LogWithArguments) {
   extension_service_->AddExtension(extension.get());
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Set(0, std::make_unique<base::Value>("hello"));
-  args->Set(1, std::make_unique<base::Value>("world"));
+  args->Append("hello");
+  args->Append("world");
   scoped_refptr<Action> action = new Action(extension->id(),
                                             base::Time::Now(),
                                             Action::ACTION_API_CALL,

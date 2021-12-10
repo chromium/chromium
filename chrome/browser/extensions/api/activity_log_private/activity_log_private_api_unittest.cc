@@ -29,8 +29,8 @@ typedef testing::Test ActivityLogApiUnitTest;
 
 TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Set(0, std::make_unique<base::Value>("hello"));
-  args->Set(1, std::make_unique<base::Value>("world"));
+  args->Append("hello");
+  args->Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,
                                           base::Time::Now(),
                                           Action::ACTION_API_CALL,
@@ -47,8 +47,8 @@ TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
 
 TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Set(0, std::make_unique<base::Value>("hello"));
-  args->Set(1, std::make_unique<base::Value>("world"));
+  args->Append("hello");
+  args->Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,
                                base::Time::Now(),
                                Action::ACTION_DOM_ACCESS,

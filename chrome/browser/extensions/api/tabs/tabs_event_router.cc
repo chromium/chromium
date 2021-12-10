@@ -65,8 +65,8 @@ bool WillDispatchTabUpdatedEvent(
       changed_properties->SetKey(property, value->Clone());
   }
 
-  event->event_args->Set(1, std::move(changed_properties));
-  event->event_args->Set(2, std::move(tab_value));
+  event->event_args->Append(std::move(changed_properties));
+  event->event_args->Append(std::move(tab_value));
   return true;
 }
 
