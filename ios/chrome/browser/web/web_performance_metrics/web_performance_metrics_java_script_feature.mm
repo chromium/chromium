@@ -6,7 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
@@ -95,11 +95,11 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstContentfulPaint(
     double value,
     bool is_main_frame) {
   if (is_main_frame) {
-    UMA_HISTOGRAM_TIMES("IOS.Frame.FirstContentfulPaint.MainFrame",
-                        base::Milliseconds(value));
+    UmaHistogramTimes("IOS.Frame.FirstContentfulPaint.MainFrame",
+                      base::Milliseconds(value));
   } else {
-    UMA_HISTOGRAM_TIMES("IOS.Frame.FirstContentfulPaint.SubFrame",
-                        base::Milliseconds(value));
+    UmaHistogramTimes("IOS.Frame.FirstContentfulPaint.SubFrame",
+                      base::Milliseconds(value));
   }
 }
 
@@ -129,8 +129,8 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
         web_performance_metrics::CalculateAggregateFirstContentfulPaint(
             aggregate, frame);
 
-    UMA_HISTOGRAM_TIMES("PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
-                        aggregate_first_contentful_paint);
+    UmaHistogramTimes("PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
+                      aggregate_first_contentful_paint);
   } else if (aggregate == std::numeric_limits<double>::max()) {
     tab_helper->SetAggregateAbsoluteFirstContentfulPaint(
         web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
@@ -152,17 +152,17 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
 
   if (is_main_frame) {
     if (!loaded_from_cache) {
-      UMA_HISTOGRAM_TIMES("IOS.Frame.FirstInputDelay.MainFrame", delta);
+      UmaHistogramTimes("IOS.Frame.FirstInputDelay.MainFrame", delta);
     } else if (loaded_from_cache && page_show_reliably_supported) {
-      UMA_HISTOGRAM_TIMES(
+      UmaHistogramTimes(
           "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore",
           delta);
     }
   } else {
     if (!loaded_from_cache) {
-      UMA_HISTOGRAM_TIMES("IOS.Frame.FirstInputDelay.SubFrame", delta);
+      UmaHistogramTimes("IOS.Frame.FirstInputDelay.SubFrame", delta);
     } else if (loaded_from_cache && page_show_reliably_supported) {
-      UMA_HISTOGRAM_TIMES(
+      UmaHistogramTimes(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore",
           delta);
     }
@@ -186,11 +186,11 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
   if (!first_input_delay_has_been_logged) {
     base::TimeDelta delta = base::Milliseconds(first_input_delay);
     if (loaded_from_cache) {
-      UMA_HISTOGRAM_TIMES("PageLoad.InteractiveTiming.FirstInputDelay."
-                          "AfterBackForwardCacheRestore",
-                          delta);
+      UmaHistogramTimes("PageLoad.InteractiveTiming.FirstInputDelay."
+                        "AfterBackForwardCacheRestore",
+                        delta);
     } else {
-      UMA_HISTOGRAM_TIMES("PageLoad.InteractiveTiming.FirstInputDelay4", delta);
+      UmaHistogramTimes("PageLoad.InteractiveTiming.FirstInputDelay4", delta);
     }
     tab_helper->SetFirstInputDelayLoggingStatus(true);
   }
