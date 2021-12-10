@@ -92,6 +92,10 @@ constexpr int kArcBugReportBackupTimeMetricBuckets = 50;
 constexpr const char kArcBugReportBackupTimeMetric[] =
     "Login.ArcBugReportBackupTime";
 
+constexpr int kLogdConfigSizeSmall = 256;   // kBytes
+constexpr int kLogdConfigSizeMed = 512;     // kBytes
+constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
+
 // The owner ID that ARCVM is started with for mini-ARCVM. On UpgradeArc,
 // the owner ID is set to the logged-in user.
 constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
@@ -275,6 +279,26 @@ std::vector<std::string> GenerateKernelCmdline(
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_OFF:
       result.push_back("androidboot.play_store_auto_update=0");
       break;
+  }
+
+  // Set logcat size, only if configured to one of the few supported sizes.
+  if (base::FeatureList::IsEnabled(kLogdConfig)) {
+    auto logd_config_size = kLogdConfigSize.Get();
+    switch (logd_config_size) {
+      case kLogdConfigSizeSmall:
+        result.push_back("androidboot.arcvm.logd.size=256K");
+        break;
+      case kLogdConfigSizeMed:
+        result.push_back("androidboot.arcvm.logd.size=512K");
+        break;
+      case kLogdConfigSizeLarge:
+        result.push_back("androidboot.arcvm.logd.size=1M");
+        break;
+      default:
+        VLOG(1) << "WARNING: Invalid logd size ignored: [" << logd_config_size
+                << "]";
+        break;
+    }
   }
 
   if (base::FeatureList::IsEnabled(arc::kUseDalvikMemoryProfile)) {

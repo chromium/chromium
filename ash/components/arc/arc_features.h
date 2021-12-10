@@ -24,6 +24,8 @@ extern const base::Feature kEnableUsap;
 extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kGuestZram;
 extern const base::FeatureParam<int> kGuestZramSize;
+extern const base::Feature kLogdConfig;
+extern const base::FeatureParam<int> kLogdConfigSize;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
 extern const base::Feature kMouseWheelSmoothScroll;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
