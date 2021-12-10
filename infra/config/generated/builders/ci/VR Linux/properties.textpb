@@ -1,4 +1,9 @@
 {
+  "$build/chromium_tests": {
+    "project_trigger_overrides": {
+      "chromium": "chromium-m98"
+    }
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
@@ -12,5 +17,8 @@
     ]
   },
   "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

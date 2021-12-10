@@ -1,4 +1,9 @@
 {
+  "$build/chromium_tests": {
+    "project_trigger_overrides": {
+      "chromium": "chromium-m98"
+    }
+  },
   "$build/goma": {
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
@@ -12,5 +17,8 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
