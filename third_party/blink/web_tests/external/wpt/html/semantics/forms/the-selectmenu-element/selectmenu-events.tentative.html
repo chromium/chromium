@@ -25,6 +25,17 @@
   <option>three</option>
 </selectmenu>
 
+<selectmenu id="selectMenu2">
+  <option>one</option>
+  <option>two</option>
+  <option>three</option>
+</selectmenu>
+
+<selectmenu id="selectMenu3">
+  <option>same</option>
+  <option>same</option>
+</selectmenu>
+
 <script>
 
   function clickOn(element) {
@@ -96,4 +107,68 @@
     await clickOn(selectMenuButton);
     return Promise.all([selectMenuButtonPromise, selectMenuPromise]);
   }, "Listbox controller code should not run if the click event is preventDefaulted.");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu2");
+    let input_event_count = 0;
+    let change_event_count = 0;
+
+    selectMenu.addEventListener("input", (e) => {
+      assert_true(e.composed, "input event should be composed");
+      assert_equals(input_event_count, 0, "input event should not fire twice");
+      assert_equals(change_event_count, 0, "input event should not fire before change");
+      input_event_count++;
+    });
+    selectMenu.addEventListener("change", (e) => {
+      assert_false(e.composed, "change event should not be composed");
+      assert_equals(input_event_count, 1, "change event should fire after input");
+      assert_equals(change_event_count, 0, "change event should not fire twice");
+      change_event_count++;
+    });
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open);
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.Enter);
+    assert_false(selectMenu.open);
+    assert_equals(selectMenu.value, "one");
+    assert_equals(input_event_count, 0, "input event shouldn't fire if value wasn't changed");
+    assert_equals(change_event_count, 0, "change event shouldn't fire if value wasn't changed");
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open);
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.ArrowDown);
+    assert_equals(input_event_count, 0, "input event shouldn't fire until popup is closed");
+    assert_equals(change_event_count, 0, "change event shouldn't fire until popup is closed");
+
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.Enter);
+    assert_equals(selectMenu.value, "two");
+    assert_equals(input_event_count, 1, "input event should have fired");
+    assert_equals(change_event_count, 1, "change event should have fired");
+  }, "<selectmenu> should fire input and change events when new option is selected");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu3");
+    let input_event_count = 0;
+    let change_event_count = 0;
+
+    selectMenu.addEventListener("input", (e) => {
+      assert_true(e.composed, "input event should be composed");
+      assert_equals(input_event_count, 0, "input event should not fire twice");
+      assert_equals(change_event_count, 0, "input event should not fire before change");
+      input_event_count++;
+    });
+    selectMenu.addEventListener("change", (e) => {
+      assert_false(e.composed, "change event should not be composed");
+      assert_equals(input_event_count, 1, "change event should fire after input");
+      assert_equals(change_event_count, 0, "change event should not fire twice");
+      change_event_count++;
+    });
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open);
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.ArrowDown);
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.Enter);
+    assert_equals(input_event_count, 1, "input event should have fired");
+    assert_equals(change_event_count, 1, "change event should have fired");
+  }, "<selectmenu> should fire input and change events even when new selected option has the same value as the old");
 </script>

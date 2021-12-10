@@ -340,6 +340,7 @@ void HTMLSelectMenuElement::OpenListbox() {
     if (SelectedOption()) {
       SelectedOption()->focus();
     }
+    selected_option_when_listbox_opened_ = SelectedOption();
   }
 }
 
@@ -349,6 +350,8 @@ void HTMLSelectMenuElement::CloseListbox() {
       button_part_->focus();
     }
     listbox_part_->hide();
+
+    DispatchInputChangeEventsIfNeeded();
   }
 }
 
@@ -633,6 +636,15 @@ void HTMLSelectMenuElement::ResetOptionParts() {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       OptionPartInserted(DynamicTo<HTMLOptionElement>(node));
     }
+  }
+}
+
+void HTMLSelectMenuElement::DispatchInputChangeEventsIfNeeded() {
+  if (SelectedOption() != selected_option_when_listbox_opened_) {
+    Event* input_event = Event::CreateBubble(event_type_names::kInput);
+    input_event->SetComposed(true);
+    DispatchScopedEvent(*input_event);
+    DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
   }
 }
 
@@ -939,6 +951,7 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_slot_);
   visitor->Trace(listbox_slot_);
   visitor->Trace(selected_option_);
+  visitor->Trace(selected_option_when_listbox_opened_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 
