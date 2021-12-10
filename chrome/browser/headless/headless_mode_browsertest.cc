@@ -123,14 +123,10 @@ class MockChromeProcessSingleton : public ChromeProcessSingleton {
   }
 };
 
-// This test currently fails on ChromeOS, see https://crbug.com/1278540
-#if defined(OS_CHROMEOS)
-#define MAYBE_ChromeProcessSingletonExists DISABLED_ChromeProcessSingletonExists
-#else
-#define MAYBE_ChromeProcessSingletonExists ChromeProcessSingletonExists
-#endif
+// This test currently fails on ChromeOS and Mac, see https://crbug.com/1278540
+// and https://crbug.com/1278603
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
-                       MAYBE_ChromeProcessSingletonExists) {
+                       DISABLED_ChromeProcessSingletonExists) {
   // Pass the user data dir to the child process which will try
   // to create a mock ChromeProcessSingleton in it that is
   // expected to fail.
