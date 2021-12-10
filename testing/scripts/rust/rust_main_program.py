@@ -5,35 +5,65 @@
 compatible with the requirements of the `main_program` module.
 """
 
+import argparse
 import os
 import re
 import subprocess
 import sys
 
-import test_results
-import main_program
+sys.path.append(os.path.dirname(__file__))
 import exe_util
+import main_program
+import test_results
 
 
-def _scrape_test_list(output):
+def _format_test_name(test_executable_name, test_case_name):
+    assert "/" not in test_executable_name
+    assert "/" not in test_case_name
+    return "{}/{}".format(test_executable_name, test_case_name)
+
+
+def _split_test_name(test_name):
+    assert "/" in test_name
+    test_executable_name, test_case_name = test_name.split("/", 1)
+    return test_executable_name, test_case_name
+
+
+def _scrape_test_list(output, test_executable_name):
     """Scrapes stdout from running a Rust test executable with
     --list and --format=terse.
+
+    Args:
+        output: A string with the full stdout of a Rust test executable.
+        test_executable_name: A string.  Used as a prefix in "full" test names
+          in the returned results.
 
     Returns:
         A list of strings - a list of all test names.
     """
     TEST_SUFFIX = ': test'
-    tests = [
+    test_case_names = [
         line[:-len(TEST_SUFFIX)] for line in output.splitlines()
         if line.endswith(TEST_SUFFIX)
     ]
-    return tests
+    test_names = [
+        _format_test_name(test_executable_name, test_case_name)
+        for test_case_name in test_case_names
+    ]
+    return test_names
 
 
-def _scrape_test_results(output, list_of_expected_test_names):
+def _scrape_test_results(output, test_executable_name,
+                         list_of_expected_test_case_names):
     """Scrapes stdout from running a Rust test executable with
     --test --format=pretty.
 
+    Args:
+        output: A string with the full stdout of a Rust test executable.
+        test_executable_name: A string.  Used as a prefix in "full" test names
+          in the returned TestResult objects.
+        list_of_expected_test_case_names: A list of strings - expected test case
+          names (from the perspective of a single executable / with no prefix).
     Returns:
         A list of test_results.TestResult objects.
     """
@@ -44,15 +74,27 @@ def _scrape_test_results(output, list_of_expected_test_names):
         if not match:
             continue
 
-        test_name = match.group(1)
-        if test_name not in list_of_expected_test_names:
+        test_case_name = match.group(1)
+        if test_case_name not in list_of_expected_test_case_names:
             continue
 
         actual_test_result = match.group(2)
         if actual_test_result == 'ok':
             actual_test_result = 'PASS'
 
+        test_name = _format_test_name(test_executable_name, test_case_name)
         results.append(test_results.TestResult(test_name, actual_test_result))
+    return results
+
+
+def _get_exe_specific_tests(expected_test_executable_name, list_of_test_names):
+    results = []
+    for test_name in list_of_test_names:
+        actual_test_executable_name, test_case_name = _split_test_name(
+            test_name)
+        if actual_test_executable_name != expected_test_executable_name:
+            continue
+        results.append(test_case_name)
     return results
 
 
@@ -61,6 +103,8 @@ class _TestExecutableWrapper:
         if not os.path.isfile(path_to_test_executable):
             raise ValueError('No such file: ' + path_to_test_executable)
         self._path_to_test_executable = path_to_test_executable
+        self._name_of_test_executable, _ = os.path.splitext(
+            os.path.basename(path_to_test_executable))
 
     def list_all_tests(self):
         """Returns:
@@ -68,10 +112,11 @@ class _TestExecutableWrapper:
         """
         args = [self._path_to_test_executable, '--list', '--format=terse']
         output = subprocess.check_output(args, text=True)
-        return _scrape_test_list(output)
+        return _scrape_test_list(output, self._name_of_test_executable)
 
     def run_tests(self, list_of_tests_to_run):
-        """Runs tests listed in `list_of_tests_to_run`.
+        """Runs tests listed in `list_of_tests_to_run`.  Ignores tests for other
+        test executables.
 
         Args:
             list_of_tests_to_run: A list of strings (a list of test names).
@@ -89,18 +134,35 @@ class _TestExecutableWrapper:
             self._path_to_test_executable, '--test', '--format=pretty',
             '--exact'
         ]
+        list_of_tests_to_run = _get_exe_specific_tests(
+            self._name_of_test_executable, list_of_tests_to_run)
         args.extend(list_of_tests_to_run)
         output = exe_util.run_and_tee_output(args)
-        return _scrape_test_results(output, list_of_tests_to_run)
+        return _scrape_test_results(output, self._name_of_test_executable,
+                                    list_of_tests_to_run)
 
 
-def main(test_executable_path):
-    """Runs Rust tests from the given executable file.  Uses cmdline arguments
-    and environment variables to figure out 1) which subset of tests to run, 2)
-    where to save the JSON file with test results.
+def _parse_args(args):
+    description = 'Wrapper for running Rust unit tests with support for ' \
+                  'Chromium test filters, sharding, and test output.'
+    parser = argparse.ArgumentParser(description=description)
+    main_program.add_cmdline_args(parser)
 
-    Args:
-        test_executable_path: A string with the filepath to the test executable.
-    """
-    main_program.main(_TestExecutableWrapper(test_executable_path),
-                      sys.argv[1:], os.environ)
+    parser.add_argument('--rust-test-executable',
+                        action='append',
+                        dest='rust_test_executables',
+                        default=[],
+                        help='Paths to one or more executables to wrap.',
+                        metavar='FILEPATH',
+                        required=True)
+
+    return parser.parse_args(args=args)
+
+
+if __name__ == '__main__':
+    parsed_args = _parse_args(sys.argv[1:])
+    rust_tests_wrappers = [
+        _TestExecutableWrapper(path)
+        for path in parsed_args.rust_test_executables
+    ]
+    main_program.main(rust_tests_wrappers, parsed_args, os.environ)

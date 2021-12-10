@@ -89,13 +89,42 @@ that `.gni` file.
 
 # Unit tests
 
-Rust supports unit tests within the primary source code files.
-With either approach, you'll get a bonus `gn` target created called
-`<your target name>_rs_unittests` which is an executable containing any Rust
-unit tests in your code.
+Rust supports unit tests within the primary source code files (e.g. see
+[an example here](https://doc.rust-lang.org/rust-by-example/testing/unit_testing.html)).
+With most of the templates above you'll get a bonus `gn` target called
+`<your target name>_unittests` (for pure-Rust targets like `cargo_crate`,
+`executable`, or `rust_source_set`) or `<your target name>_rs_unittests` (for
+mixed C++/Rust targets like (`mixed_component`, `mixed_executable`, or
+`mixed_source_set`).  This bonus target builds:
+- An `out/Default/<bonus target name>` executable containing Rust unit tests
+  from your code
+- An `out/Default/bin/run_<bonus target name>` script that enables running
+  the tests on Chromium bots.
 
-At present, there is no automatic integration of such unit tests into our
-existing test infrastructure, but this is something we're working on.
+To manually configure running Rust unit tests on bots, please follow the pattern
+from https://crrev.com/c/3322199:
+- Define a new isolate in `//testing/buildbot/gn_isolate_map.pyl`:
+    - Set `label` to the bonus target's name
+    - Set `type` to `generated_script`
+    - There are no restrictions on the name of the new isolate,
+      but typically it will have the same name as the bonus target.
+- Define a new test step, or extend an existing test step in
+  `//testing/buildbot/test_suites.pyl` (adding an entry referring to
+  the new isolate above).  Note that the tests grouped under the test
+  step need to have uniform kind (e.g. cannot mix GTest and Rust tests).
+- Ensure that `//testing/buildbot/waterfalls.pyl` asks to run the test step
+  on specific bots.  The test step needs to be listed under the
+  `isolated_scripts` key (rather than under `gtest_tests` key).
+- Run `//testing/buildbot/generate_buildbot_json.py`.
+
+Future work:
+- At present, there is no way to group multiple Rust test executables
+  (e.g. all Rust unittests from a single top-level directory
+  into a single test suite.  This is something we're working on.
+- At present, there is no automatic integration of such unit tests into our
+  existing test infrastructure, but this is something we're working on.
+- At present, the bot integration only supports reporting whether the tests
+  passed or failed, and doesn't capture results or output of individual tests.
 
 # Third party dependencies
 

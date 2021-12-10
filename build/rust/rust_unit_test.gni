@@ -6,9 +6,9 @@ import("//build/config/rust.gni")
 
 # Defines a Rust unit test.
 #
-# At present this is simply an executable; future iterations of this template
-# may do something smarter with the test code in order to contribute it to
-# test suites.
+# This generates an executable + a script that can be run on Chromium bots.
+# Future iterations of this template may do something smarter with the test
+# code in order to automatically contribute it to test steps on the bots.
 #
 # Parameters
 #
@@ -38,6 +38,12 @@ import("//build/config/rust.gni")
 # import loop).
 
 template("rust_unit_test") {
+  assert(build_rust_unit_tests)
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
+  } else {
+    _crate_name = target_name
+  }
   if (defined(invoker.crate_root)) {
     _crate_root = invoker.crate_root
   } else {
@@ -67,11 +73,49 @@ template("rust_unit_test") {
   # TODO(crbug.com/1256930) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
+  _original_target_name = target_name
+  _exe_target_name = target_name + "_exe"
+  _script_target_name = target_name + "_wrapper_script"
+  group(target_name) {
+    testonly = true
+    deps = [
+      ":$_exe_target_name",
+      ":$_script_target_name",
+    ]
+  }
+
+  # Note that the location/filename of the wrapper script has to follow the
+  # requirements of "generated_script" as outlined in the doc comment at the
+  # top of //testing/buildbot/gn_isolate_map.pyl
+  _script_filepath = "$root_out_dir/bin/run_${_original_target_name}"
+
+  # TODO(https://crbug.com/1271215): Also generate: bin/run_${target_name}.bat
+  # on Windows: if (is_win) { ... }.
+  action(_script_target_name) {
+    testonly = true
+    script = "//testing/scripts/rust/generate_bash_script.py"
+    outputs = [ _script_filepath ]
+    data = [ _script_filepath ]
+    data_deps = [
+      ":$_exe_target_name",
+      "//testing/scripts/rust",
+    ]
+    args = [
+      "--rust-test-executable",
+      _crate_name,
+      "--exe-dir",
+      rebase_path(root_out_dir, root_build_dir),
+      "--script-path",
+      rebase_path(_script_filepath, root_build_dir),
+    ]
+  }
+
   # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
   # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source sets.
   # This is important in cases where Rust tests may depend upon C/C++
   # dependencies.
-  executable(target_name) {
+  executable(_exe_target_name) {
+    testonly = true
     forward_variables_from(invoker,
                            "*",
                            [
@@ -83,6 +127,7 @@ template("rust_unit_test") {
                              "crate_name",
                              "crate_root",
                            ])
+
     rustflags = [
       "--cfg",
       "feature=\"test\"",
@@ -91,6 +136,7 @@ template("rust_unit_test") {
     rustflags += _rustflags
     configs = []
     configs = _configs
+    crate_name = _crate_name
     crate_root = _crate_root
   }
 }

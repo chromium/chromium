@@ -199,7 +199,7 @@ template("mixed_target") {
           if (defined(invoker.rs_unit_test_target)) {
             _unit_test_target = invoker.rs_unit_test_target
           }
-          visibility += [ ":${_unit_test_target}" ]
+          visibility += [ ":${_unit_test_target}_exe" ]
         }
       }
     }

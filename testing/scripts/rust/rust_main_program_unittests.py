@@ -4,27 +4,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
+from pyfakefs import fake_filesystem_unittest
+import tempfile
 import unittest
 
 from test_results import TestResult
 
+from rust_main_program import _get_exe_specific_tests
 from rust_main_program import _scrape_test_list
 from rust_main_program import _scrape_test_results
+from rust_main_program import _parse_args
+from rust_main_program import _TestExecutableWrapper
 
 
-class ScrapingTestLists(unittest.TestCase):
-    def test_basics(self):
+class Tests(fake_filesystem_unittest.TestCase):
+    def test_scrape_test_list(self):
         test_input = """
 test_foo: test
 test_bar: test
         """.strip()
-        actual_results = _scrape_test_list(test_input)
-        expected_results = ['test_foo', 'test_bar']
+        actual_results = _scrape_test_list(test_input, 'test_exe_name')
+        expected_results = ['test_exe_name/test_foo', 'test_exe_name/test_bar']
         self.assertEqual(actual_results, expected_results)
 
-
-class ScrapingTestResults(unittest.TestCase):
-    def test_basics(self):
+    def test_scrape_test_results(self):
         test_input = """
 running 3 tests
 test test_foo ... ok
@@ -46,14 +50,40 @@ failures:
 test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
         """.strip()
         list_of_expected_test_names = ['test_foo', 'test_bar', 'test_foobar']
-        actual_results = _scrape_test_results(test_input,
+        actual_results = _scrape_test_results(test_input, 'test_exe_name',
                                               list_of_expected_test_names)
         expected_results = [
-            TestResult('test_foo', 'PASS'),
-            TestResult('test_bar', 'PASS'),
-            TestResult('test_foobar', 'FAILED')
+            TestResult('test_exe_name/test_foo', 'PASS'),
+            TestResult('test_exe_name/test_bar', 'PASS'),
+            TestResult('test_exe_name/test_foobar', 'FAILED')
         ]
         self.assertEqual(actual_results, expected_results)
+
+    def test_parse_args(self):
+        args = _parse_args(['--rust-test-executable=foo'])
+        self.assertEqual(['foo'], args.rust_test_executables)
+
+        args = _parse_args(
+            ['--rust-test-executable=foo', '--rust-test-executable=bar'])
+        self.assertEqual(['foo', 'bar'], args.rust_test_executables)
+
+    def test_get_exe_specific_tests(self):
+        result = _get_exe_specific_tests(
+            "exe_name", ["exe_name/foo1", "exe_name/foo2", "other_exe/foo3"])
+        self.assertEqual(['foo1', 'foo2'], result)
+
+    def test_executable_wrapper_basic_construction(self):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            exe_filename = 'foo-bar.exe'
+            exe_path = os.path.join(tmpdirname, exe_filename)
+            with open(exe_path, 'w'):
+                pass
+            t = _TestExecutableWrapper(exe_path)
+            self.assertEqual('foo-bar', t._name_of_test_executable)
+
+    def test_executable_wrapper_missing_file(self):
+        with self.assertRaises(ValueError):
+            _TestExecutableWrapper('no-such-file.exe')
 
 
 if __name__ == '__main__':

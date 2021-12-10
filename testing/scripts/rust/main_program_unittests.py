@@ -45,17 +45,18 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
             ]
             fake_executable_wrapper = FakeTestExecutableWrapper(
                 test_list, test_results)
-            cmdline_args = [
-                '--isolated-outdir={0:s}'.format(tmpdirname),
-                '--isolated-script-test-output=test.out'
-            ]
+            parser = argparse.ArgumentParser()
+            main_program.add_cmdline_args(parser)
+            output_file = os.path.join(tmpdirname, 'test.out')
+            args = parser.parse_args(
+                args=['--isolated-script-test-output={}'.format(output_file)])
             fake_env = {'GTEST_SHARD_INDEX': 0, 'GTEST_TOTAL_SHARDS': 1}
 
             # Run code under test.
-            main_program.main(fake_executable_wrapper, cmdline_args, fake_env)
+            main_program.main([fake_executable_wrapper], args, fake_env)
+
             # Verify results.
-            expected_output_file = os.path.join(tmpdirname, 'test.out')
-            with open(expected_output_file) as f:
+            with open(output_file) as f:
                 actual_json_output = json.load(f)
                 del actual_json_output['seconds_since_epoch']
             # yapf: disable
@@ -64,19 +65,19 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
                 'path_delimiter': '/',
                 #'seconds_since_epoch': 1635974313.8388052,
                 'version': 3,
-                'tests': [
-                    {'test_foo': {
+                'tests': {
+                    'test_foo': {
                         'expected': 'PASS',
                         'actual': 'PASS'
-                    }},
-                    {'test_bar': {
+                    },
+                    'test_bar': {
                         'expected': 'PASS',
                         'actual': 'PASS'
-                    }},
-                    {'test_foobar': {
+                    },
+                    'test_foobar': {
                         'expected': 'PASS',
                         'actual': 'FAILED'
-                    }}],
+                    }},
                 'num_failures_by_type': {
                     'PASS': 2,
                     'FAILED': 1

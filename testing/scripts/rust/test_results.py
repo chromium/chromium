@@ -75,8 +75,8 @@ def add_cmdline_args(argparse_parser):
                                  dest='outdir',
                                  help=outdir_help,
                                  metavar='DIRPATH',
-                                 required=True,
                                  type=_validate_output_directory)
+
     outfile_help = 'If this argument is provided, then test results in the ' \
                    'JSON Test Results Format will be written here. See also ' \
                    '//docs/testing/json_test_results_format.md'
@@ -86,22 +86,31 @@ def add_cmdline_args(argparse_parser):
                                  help=outfile_help,
                                  metavar='FILENAME')
 
+    argparse_parser.add_argument('--isolated-script-test-perf-output',
+                                 dest='ignored_perf_output',
+                                 default=None,
+                                 help='Deprecated and ignored.',
+                                 metavar='IGNORED')
+
 
 def _build_json_data(list_of_test_results, seconds_since_epoch):
     num_failures_by_type = {}
-    tests = []
+    tests = {}
     for res in list_of_test_results:
         old_count = num_failures_by_type.get(res.actual_test_result, 0)
         num_failures_by_type[res.actual_test_result] = old_count + 1
 
-        # TODO(lukasza): Consider creating a deeper test tree, broken down by
-        # test suites, etc. (based on 'path_delimiter' in test names).
-        tests.append({
-            res.test_name: {
-                'expected': res.expected_test_result,
-                'actual': res.actual_test_result,
-            }
-        })
+        path = res.test_name.split('/')
+        group = tests
+        for group_name in path[:-1]:
+            if not group_name in group:
+                group[group_name] = {}
+            group = group[group_name]
+
+        group[path[-1]] = {
+            'expected': res.expected_test_result,
+            'actual': res.actual_test_result,
+        }
 
     return {
         'interrupted': False,
@@ -125,14 +134,12 @@ def print_test_results(argparse_parsed_args, list_of_test_results,
         testing_start_time_as_seconds_since_epoch: A number from an earlier
           `time.time()` call.
     """
-    assert (argparse_parsed_args.outdir)
     if argparse_parsed_args.test_output is None:
         return
 
     json_data = _build_json_data(list_of_test_results,
                                  testing_start_time_as_seconds_since_epoch)
 
-    output_file_path = os.path.join(argparse_parsed_args.outdir,
-                                    argparse_parsed_args.test_output)
-    with open(output_file_path, mode='w', encoding='utf-8') as f:
+    filepath = argparse_parsed_args.test_output
+    with open(filepath, mode='w', encoding='utf-8') as f:
         json.dump(json_data, f, indent=2)
