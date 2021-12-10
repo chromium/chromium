@@ -618,19 +618,33 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   );
 
-  // BackupRefPtr_Effective and PCScan_Effective records whether or not
+  // BackupRefPtr_Effective and PCScan_Effective record whether or not
   // BackupRefPtr and/or PCScan are enabled. The experiments aren't independent,
   // so having a synthetic Finch will help look only at cases where one isn't
   // affected by the other.
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Whether PartitionAllocBackupRefPtr is enabled (as determined by
+  // FeatureList::IsEnabled).
   bool brp_finch_enabled = false;
   ALLOW_UNUSED_LOCAL(brp_finch_enabled);
+  // Whether PartitionAllocBackupRefPtr is set up for the default behavior. The
+  // default behavior is when either the Finch flag is disabled, or is enabled
+  // in brp-mode=disabled (these two options are equivalent).
+  bool brp_nondefault_behavior = false;
+  ALLOW_UNUSED_LOCAL(brp_nondefault_behavior);
+  // Whether PartitionAllocBackupRefPtr is set up to enable BRP protection. It
+  // requires the Finch flag to be enabled and brp-mode!=disabled*. Some modes,
+  // e.g. disabled-but-3-way-split, do something (hence can't be considered the
+  // default behavior), but don't enable BRP protection.
   bool brp_truly_enabled = false;
   ALLOW_UNUSED_LOCAL(brp_truly_enabled);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocBackupRefPtr))
     brp_finch_enabled = true;
+  if (brp_finch_enabled && base::features::kBackupRefPtrModeParam.Get() !=
+                               base::features::BackupRefPtrMode::kDisabled)
+    brp_nondefault_behavior = true;
   if (brp_finch_enabled && base::features::kBackupRefPtrModeParam.Get() ==
                                base::features::BackupRefPtrMode::kEnabled)
     brp_truly_enabled = true;
@@ -698,23 +712,35 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       "BackupRefPtr_Effective", brp_group_name);
 
   std::string pcscan_group_name;
+  std::string pcscan_group_name_fallback;
 #if defined(PA_ALLOW_PCSCAN)
   if (brp_truly_enabled) {
-    // If BRP is enabled, just ignore the population. Check brp_truly_enabled,
-    // not brp_finch_enabled, because there are certain modes where BRP is
-    // actually disabled.
+    // If BRP protection is enabled, just ignore the population. Check
+    // brp_truly_enabled, not brp_finch_enabled, because there are certain modes
+    // where BRP protection is actually disabled.
     pcscan_group_name = "Ignore_BRPIsOn";
   } else {
     pcscan_group_name = (pcscan_enabled ? "Enabled" : "Disabled");
+  }
+  // In case we are incorrect that PCScan is independent of partition-split
+  // modes, create a fallback trial that only takes into account the BRP Finch
+  // settings that preserve the default behavior.
+  if (brp_nondefault_behavior) {
+    pcscan_group_name_fallback = "Ignore_BRPIsOn";
+  } else {
+    pcscan_group_name_fallback = (pcscan_enabled ? "Enabled" : "Disabled");
   }
 #else
   // On certain platforms, PCScan is not supported and permanently disabled.
   // Don't lump it into "Disabled", so that belonging to "Enabled"/"Disabled" is
   // fully controlled by Finch and thus have identical population sizes.
   pcscan_group_name = "Unavailable";
+  pcscan_group_name_fallback = "Unavailable";
 #endif  // defined(PA_ALLOW_PCSCAN)
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("PCScan_Effective",
                                                             pcscan_group_name);
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "PCScan_Effective_Fallback", pcscan_group_name_fallback);
 
   // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
   // which simply compiles in the BackupRefPtr support, but keeps it disabled at
