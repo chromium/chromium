@@ -969,11 +969,14 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
+    if (!endpoint->task_runner()->RunsTasksInCurrentSequence() &&
+        !proxy_task_runner_->RunsTasksInCurrentSequence()) {
+      return;
+    }
+
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
     TRACE_EVENT0("mojom", client->interface_name());
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
-           proxy_task_runner_->RunsTasksInCurrentSequence());
 
     // Sync messages should never make their way to this method.
     DCHECK(!message.has_flag(mojo::Message::kFlagIsSync));
@@ -1003,11 +1006,14 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
+    if (!endpoint->task_runner()->RunsTasksInCurrentSequence() &&
+        !proxy_task_runner_->RunsTasksInCurrentSequence()) {
+      return;
+    }
+
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
     TRACE_EVENT0("mojom", client->interface_name());
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
-           proxy_task_runner_->RunsTasksInCurrentSequence());
     MessageWrapper message_wrapper = endpoint->PopSyncMessage(message_id);
 
     // The message must have already been dequeued by the endpoint waking up
