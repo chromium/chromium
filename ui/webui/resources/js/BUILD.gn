@@ -41,6 +41,8 @@ group("preprocess") {
   }
 }
 
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
 preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"

@@ -34,7 +34,9 @@ generate_grd("build_grdp") {
 group("preprocess") {
   public_deps = [
     ":preprocess_generated",
+    ":preprocess_generated_ts",
     ":preprocess_src",
+    ":preprocess_src_ts",
   ]
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
@@ -49,11 +51,8 @@ preprocess_if_expr("preprocess_src") {
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "cr_auto_img/cr_auto_img.js",
-    "cr_container_shadow_mixin.ts",
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
-    "find_shortcut_mixin.ts",
-    "mouse_hoverable_mixin.ts",
   ]
 
   if (is_chromeos_ash) {
@@ -62,6 +61,18 @@ preprocess_if_expr("preprocess_src") {
       "chromeos/cr_picture/png.js",
     ]
   }
+}
+
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "./"
+  out_folder = preprocess_folder
+  in_files = [
+    "cr_container_shadow_mixin.ts",
+    "find_shortcut_mixin.ts",
+    "mouse_hoverable_mixin.ts",
+  ]
 }
 
 preprocess_if_expr("preprocess_polymer2") {
@@ -131,11 +142,10 @@ preprocess_if_expr("preprocess_polymer2") {
 preprocess_if_expr("preprocess_generated") {
   deps = [ ":polymer3_elements" ]
   in_folder = target_gen_dir
-  out_folder = "$preprocess_folder"
+  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "action_link_css.m.js",
-    "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_actionable_row_style.m.js",
     "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.m.js",
@@ -155,7 +165,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr_link_row/cr_link_row.js",
     "cr_lottie/cr_lottie.m.js",
     "cr_menu_selector/cr_menu_selector.js",
-    "cr_nav_menu_item_style.ts",
     "cr_page_host_style_css.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.js",
@@ -178,15 +187,10 @@ preprocess_if_expr("preprocess_generated") {
     "hidden_style_css.m.js",
     "icons.m.js",
     "md_select_css.m.js",
-    "mwb_element_shared_style.js",
-    "mwb_shared_icons.js",
-    "mwb_shared_style.js",
-    "mwb_shared_vars.js",
     "policy/cr_policy_indicator_behavior.m.js",
     "policy/cr_policy_indicator.m.js",
     "policy/cr_policy_pref_indicator.m.js",
     "policy/cr_tooltip_icon.m.js",
-    "search_highlight_style_css.js",
     "shared_style_css.m.js",
     "shared_vars_css.m.js",
   ]
@@ -204,6 +208,23 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/cr_picture/icons.js",
     ]
   }
+}
+
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_generated_ts") {
+  deps = [ ":polymer3_elements" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  in_files = [
+    "cr_a11y_announcer/cr_a11y_announcer.ts",
+    "cr_nav_menu_item_style.ts",
+    "mwb_element_shared_style.ts",
+    "mwb_shared_icons.ts",
+    "mwb_shared_style.ts",
+    "mwb_shared_vars.ts",
+    "search_highlight_style_css.ts",
+  ]
 }
 
 group("closure_compile") {
@@ -432,10 +453,10 @@ html_to_js("web_components") {
   js_files = [
     "cr_nav_menu_item_style.ts",
     "cr_page_host_style_css.js",
-    "mwb_shared_icons.js",
-    "mwb_element_shared_style.js",
-    "mwb_shared_style.js",
-    "mwb_shared_vars.js",
-    "search_highlight_style_css.js",
+    "mwb_shared_icons.ts",
+    "mwb_element_shared_style.ts",
+    "mwb_shared_style.ts",
+    "mwb_shared_vars.ts",
+    "search_highlight_style_css.ts",
   ]
 }
