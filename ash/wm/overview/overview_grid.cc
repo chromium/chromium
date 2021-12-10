@@ -40,6 +40,7 @@
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/drop_target_view.h"
@@ -113,6 +114,13 @@ constexpr int kTabletLayoutRow = 2;
 constexpr int kMinimumItemsForNewLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
+
+// The threshold for expanding desks bar while dragging the window. When the
+// length between the center point of the window being dragged and the center
+// point of the `zero_state_new_desk_button_` is smaller than
+// `kExpandDesksBarThreshold`, desks bar will be transformed from zero state to
+// expanded state to help user dropping the dragged window on the new desk.
+constexpr int kExpandDesksBarThreshold = 130;
 
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
@@ -1468,10 +1476,25 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
       DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
 }
 
-void OverviewGrid::MaybeExpandDesksBarView() {
+void OverviewGrid::MaybeExpandDesksBarView(const gfx::PointF& screen_location) {
   if (desks_bar_view_ && desks_bar_view_->IsZeroState()) {
-    desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
-                                        /*expanding_bar_view=*/true);
+    if ((gfx::ToRoundedPoint(screen_location) -
+         desks_bar_view_->zero_state_new_desk_button()
+             ->GetBoundsInScreen()
+             .CenterPoint())
+            .LengthSquared() <=
+        kExpandDesksBarThreshold * kExpandDesksBarThreshold) {
+      desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
+                                          /*expanding_bar_view=*/true);
+    }
+  }
+}
+
+void OverviewGrid::MaybeShrinkDesksBarView() {
+  if (desks_bar_view_ && !desks_bar_view_->IsZeroState() &&
+      !IsShowingDesksTemplatesGrid() &&
+      desks_bar_view_->mini_views().size() == 1) {
+    desks_bar_view_->SwitchToZeroState();
   }
 }
 

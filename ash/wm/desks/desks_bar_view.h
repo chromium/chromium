@@ -206,6 +206,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
 
+  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
+  void SwitchToZeroState();
+
  private:
   friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
@@ -252,9 +255,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
   void OnDesksTemplatesButtonPressed();
-
-  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
-  void SwitchToZeroState();
 
   // Scrollview callbacks.
   void OnContentsScrolled();

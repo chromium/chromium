@@ -295,10 +295,15 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       const gfx::Point& screen_location,
       OverviewItem* drag_item);
 
-  // Updates |desks_bar_views| from zero state to expanded state. Called when a
-  // normal drag starts to enable user dragging a window and dropping it to the
-  // new desk.
-  void MaybeExpandDesksBarView();
+  // Transforms `desks_bar_view_` from zero state to expanded state. Called when
+  // a normal drag starts to enable user dragging a window and dropping it to
+  // the new desk. `screen_location` is the center point of the window being
+  // dragged.
+  void MaybeExpandDesksBarView(const gfx::PointF& screen_location);
+
+  // Transforms `desks_bar_view_` from expanded state to zero state. Called when
+  // a normal drag is completed.
+  void MaybeShrinkDesksBarView();
 
   // Prepares the |scroll_offset_min_| as a limit for |scroll_offset| from
   // scrolling or positioning windows too far offscreen.
@@ -311,7 +316,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   void EndScroll();
 
-  // Calculate the width of an item based on |height|. The width tries to keep
+  // Calculates the width of an item based on |height|. The width tries to keep
   // the same aspect ratio as the original window, but may be modified if the
   // bounds of the window are considered extreme, or if the window is in
   // splitview or entering splitview.
@@ -373,7 +378,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   size_t size() const { return window_list_.size(); }
 
   // Returns the root window in which the grid displays the windows.
-  const aura::Window* root_window() const { return root_window_; }
+  aura::Window* root_window() { return root_window_; }
 
   OverviewSession* overview_session() { return overview_session_; }
 

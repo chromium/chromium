@@ -104,6 +104,9 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -6564,14 +6567,31 @@ TEST_F(DragWindowToNewDeskTest, DragWindowAtZeroState) {
   EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
   EXPECT_FALSE(desks_bar_view->expanded_state_new_desk_button()->GetVisible());
 
-  auto* overview_session = overview_controller->overview_session();
-  auto* overview_item1 = overview_session->GetOverviewItemForWindow(win1.get());
+  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
   auto* event_generator = GetEventGenerator();
 
-  // Start dragging |overview_item1| without dropping it. This will lead
-  // |desks_bar_view| changing from zero state to expanded state.
+  // Start dragging `overview_item1` without dropping it. Make sure the square
+  // length between `overview_item1` and `zero_state_new_desk_button` is longer
+  // than `kExpandDesksBarThreshold`. Verify that the desks bar is still at zero
+  // state in this use case.
+  DragItemToPoint(
+      overview_item1,
+      gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint() +
+                          gfx::Vector2d(100, -100)),
+      event_generator,
+      /*by_touch_gestures=*/false, /*drop=*/false);
+  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
+  EXPECT_FALSE(desks_bar_view->expanded_state_new_desk_button()->GetVisible());
+
+  // Now keep dragging `overview_item1` and make it close enough to the center
+  // point of `zero_state_new_desk_button`. Verify that desks bar is transformed
+  // to the expanded state in this use case.
+  const gfx::Point new_desk_button_center_point =
+      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
   DragItemToPoint(overview_item1,
-                  zero_state_new_desk_button->GetBoundsInScreen().CenterPoint(),
+                  gfx::Point(new_desk_button_center_point.x() + 10,
+                             new_desk_button_center_point.y() + 10),
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
   EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
@@ -6584,13 +6604,73 @@ TEST_F(DragWindowToNewDeskTest, DragWindowAtZeroState) {
   EXPECT_EQ(2u, desks_bar_view->mini_views().size());
   EXPECT_EQ(2u, controller->desks().size());
   EXPECT_TRUE(base::Contains(controller->desks()[1]->windows(), win1.get()));
-  // The active desk should still be the first desk, even though a new desk is
-  // created.
+  // The active desk should still be the first desk, even though a new desk
+  // is created.
   EXPECT_EQ(DesksController::Get()->active_desk(),
             controller->desks()[0].get());
   // |overview_grid| should have size equals to 0 now, since |overview_item1|
   // havs been moved to a new desk.
   EXPECT_EQ(0u, overview_grid->size());
+}
+
+// Tests that dragging a window at zero state, when the window being dragged is
+// close enough to the new desk button, desks bar should be transformed to
+// expanded state. In the end, if the window is not dropped on the new desk,
+// desk bar will be transformed back to zero state once the drag is completed.
+TEST_F(DragWindowToNewDeskTest,
+       DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
+  auto* controller = DesksController::Get();
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+
+  ASSERT_EQ(1u, controller->desks().size());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  // Make sure the desks bar is at zero state in the beginning.
+  auto* zero_state_default_desk_button =
+      desks_bar_view->zero_state_default_desk_button();
+  auto* zero_state_new_desk_button =
+      desks_bar_view->zero_state_new_desk_button();
+  auto* expanded_state_new_desk_button =
+      desks_bar_view->expanded_state_new_desk_button();
+  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
+  EXPECT_FALSE(expanded_state_new_desk_button->GetVisible());
+
+  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
+  auto* event_generator = GetEventGenerator();
+
+  // Drag `overview_item1` and make it close enough to the center point of
+  // `zero_state_new_desk_button`. Verify that desks bar is transformed to the
+  // expanded state in this use case.
+  const gfx::Point new_desk_button_center_point =
+      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+  DragItemToPoint(overview_item1,
+                  gfx::Point(new_desk_button_center_point.x() + 10,
+                             new_desk_button_center_point.y() + 10),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
+  EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
+  EXPECT_TRUE(expanded_state_new_desk_button->GetVisible());
+
+  // Now keep dragging `overview_item1` and make it not able to be dropped on
+  // the new desk, then drop it. Check that `overview_item1` is dropped back to
+  // the existing desk, there's no new desk created, and desks bar is
+  // transformed back to the zero state.
+  const gfx::Point expanded_new_desk_button_center_point =
+      expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+  DragItemToPoint(overview_item1,
+                  gfx::Point(expanded_new_desk_button_center_point.x() + 200,
+                             expanded_new_desk_button_center_point.y() + 200),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
+  EXPECT_EQ(1u, controller->desks().size());
+  EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
 }
 
 // Tests that dragging and dropping window to new desk while desks bar view is

@@ -457,7 +457,11 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   gfx::Point point_in_view = screen_location;
   ConvertPointFromScreen(this, &point_in_view);
-  return HitTestPoint(point_in_view);
+  // `this` doesn't have access to its widget until it's added to the view's
+  // hierarchy, however this function could be triggered during the constructor
+  // of `DeskMiniView` when it's not added to the view's hierarchy yet. Thus we
+  // need to check whether the widget if accessible here.
+  return GetWidget() && HitTestPoint(point_in_view);
 }
 
 void DeskMiniView::OnCloseButtonPressed() {
