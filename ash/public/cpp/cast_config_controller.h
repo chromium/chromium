@@ -90,6 +90,11 @@ class ASH_PUBLIC_EXPORT CastConfigController {
   // to the cast sink.
   virtual bool HasActiveRoute() const = 0;
 
+  // Returns true if access code casting is enabled for this user. This is
+  // important because if it is enabled, the cast icon may need to be shown even
+  // if there are no currently available sinks.
+  virtual bool AccessCodeCastingEnabled() const = 0;
+
   // Request fresh data from the backend. When the data is available, all
   // registered observers will get called.
   virtual void RequestDeviceRefresh() = 0;

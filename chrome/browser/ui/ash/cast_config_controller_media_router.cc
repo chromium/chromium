@@ -10,11 +10,13 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -192,6 +194,13 @@ bool CastConfigControllerMediaRouter::HasActiveRoute() const {
   }
 
   return false;
+}
+
+bool CastConfigControllerMediaRouter::AccessCodeCastingEnabled() const {
+  Profile* profile = GetProfile();
+  return base::FeatureList::IsEnabled(::features::kAccessCodeCastUI) &&
+         profile &&
+         media_router::GetAccessCodeCastEnabledPref(profile->GetPrefs());
 }
 
 void CastConfigControllerMediaRouter::RequestDeviceRefresh() {

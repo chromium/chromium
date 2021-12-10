@@ -9,19 +9,30 @@
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/account_id/account_id.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/test/test_helper.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
+using chromeos::ProfileHelper;
 using testing::_;
+using user_manager::UserManager;
 
 namespace {
 
@@ -208,4 +219,83 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
       no_routes, std::vector<media_router::MediaRoute::Id>());
   content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(IsCastingNotificationVisible());
+}
+
+class SystemTrayTrayCastAccessCodeChromeOSTest : public ash::LoginManagerTest {
+ public:
+  SystemTrayTrayCastAccessCodeChromeOSTest() : LoginManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kAccessCodeCastUI);
+
+    // Use consumer emails to avoid having to fake a policy fetch.
+    login_mixin_.AppendRegularUsers(2);
+    account_id1_ = login_mixin_.users()[0].account_id;
+    account_id2_ = login_mixin_.users()[1].account_id;
+  }
+
+  SystemTrayTrayCastAccessCodeChromeOSTest(
+      const SystemTrayTrayCastAccessCodeChromeOSTest&) = delete;
+  SystemTrayTrayCastAccessCodeChromeOSTest& operator=(
+      const SystemTrayTrayCastAccessCodeChromeOSTest&) = delete;
+
+  ~SystemTrayTrayCastAccessCodeChromeOSTest() override = default;
+
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
+    tray_test_api_ = ash::SystemTrayTestApi::Create();
+  }
+
+ protected:
+  void SetupUserProfile(const AccountId& account_id, bool allow_access_code) {
+    const user_manager::User* user = UserManager::Get()->FindUser(account_id);
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+    profile->GetPrefs()->SetBoolean(media_router::prefs::kAccessCodeCastEnabled,
+                                    allow_access_code);
+    content::RunAllTasksUntilIdle();
+  }
+
+  void ShowBubble() { tray_test_api_->ShowBubble(); }
+
+  void CloseBubble() { tray_test_api_->CloseBubble(); }
+
+  bool IsViewDrawn(int view_id) {
+    return tray_test_api_->IsBubbleViewVisible(view_id, /* open_tray */ false);
+  }
+
+  void ClickView(int view_id) { tray_test_api_->ClickBubbleView(view_id); }
+
+  bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_CAST_MAIN_VIEW); }
+
+  AccountId account_id1_;
+  AccountId account_id2_;
+
+ private:
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+                       PolicyOffNoSinksNoVisibleTray) {
+  // Login a user that does not have access code casting enabled
+  LoginUser(account_id1_);
+  SetupUserProfile(account_id1_, /* allow_access_code */ false);
+
+  ShowBubble();
+
+  // Since there are no sinks and this user does not have access code casting
+  // enabled, the tray should not be visible.
+  EXPECT_FALSE(IsTrayVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+                       PolicyOnNoSinksVisibleTray) {
+  // Login a user that does not have access code casting enabled
+  LoginUser(account_id2_);
+  SetupUserProfile(account_id2_, /* allow_access_code */ true);
+
+  ShowBubble();
+
+  // Even though there are no sinks, since this user does have access code
+  // casting enabled, the tray should not be visible.
+  EXPECT_TRUE(IsTrayVisible());
 }

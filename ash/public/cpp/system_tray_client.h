@@ -134,6 +134,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // effect.
   virtual void SetLocaleAndExit(const std::string& locale_iso_code) = 0;
 
+  // Shows the access code casting dialog.
+  virtual void ShowAccessCodeCastingDialog() = 0;
+
  protected:
   SystemTrayClient() {}
 };

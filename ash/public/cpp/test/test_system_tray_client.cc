@@ -99,4 +99,6 @@ void TestSystemTrayClient::RequestRestartForUpdate() {}
 void TestSystemTrayClient::SetLocaleAndExit(
     const std::string& locale_iso_code) {}
 
+void TestSystemTrayClient::ShowAccessCodeCastingDialog() {}
+
 }  // namespace ash

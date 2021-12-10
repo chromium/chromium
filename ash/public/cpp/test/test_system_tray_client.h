@@ -58,6 +58,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowMultiDeviceSetup() override;
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
+  void ShowAccessCodeCastingDialog() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;

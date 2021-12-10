@@ -94,6 +94,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowMultiDeviceSetup() override;
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
+  void ShowAccessCodeCastingDialog() override;
 
  protected:
   // Used by mocks in tests.
