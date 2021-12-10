@@ -190,7 +190,8 @@ void AppWindowShelfItemController::ItemSelected(
   // lacros PWAs. Revisit when there is a way to differentiate the two.
   if (app_id() == extension_misc::kLacrosAppId &&
       ShouldLaunchNewLacrosWindow(*event, filtered_windows)) {
-    crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
+    crosapi::BrowserManager::Get()->NewWindow(
+        /*incognito=*/false, /*should_trigger_session_restore=*/true);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }

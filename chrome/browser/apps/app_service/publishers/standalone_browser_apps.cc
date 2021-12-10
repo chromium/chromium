@@ -174,7 +174,8 @@ void StandaloneBrowserApps::Launch(const std::string& app_id,
                                    apps::mojom::LaunchSource launch_source,
                                    apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
-  crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
+  crosapi::BrowserManager::Get()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/true);
 }
 
 void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,

@@ -129,13 +129,15 @@ void BrowserServiceLacros::REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) {
 }
 
 void BrowserServiceLacros::NewWindow(bool incognito,
+                                     bool should_trigger_session_restore,
                                      NewWindowCallback callback) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
   chrome::NewEmptyWindow(
       incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-                : profile);
+                : profile,
+      should_trigger_session_restore);
   std::move(callback).Run();
 }
 

@@ -133,7 +133,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       if (app_type_ == apps::mojom::AppType::kCrostini) {
         ShelfContextMenu::ExecuteCommand(ash::MENU_OPEN_NEW, event_flags);
       } else if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
+        crosapi::BrowserManager::Get()->NewWindow(
+            /*incongnito=*/false, /*should_trigger_session_restore=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(
             /*incognito=*/false,
@@ -145,7 +146,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::MENU_NEW_INCOGNITO_WINDOW:
       if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/true);
+        crosapi::BrowserManager::Get()->NewWindow(
+            /*incognito=*/true, /*should_trigger_session_restore=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(
             /*incognito=*/true,

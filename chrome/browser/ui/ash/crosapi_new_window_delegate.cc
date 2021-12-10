@@ -86,7 +86,8 @@ void CrosapiNewWindowDelegate::NewTab() {
 
 void CrosapiNewWindowDelegate::NewWindow(bool incognito,
                                          bool should_trigger_session_restore) {
-  crosapi::BrowserManager::Get()->NewWindow(incognito);
+  crosapi::BrowserManager::Get()->NewWindow(incognito,
+                                            should_trigger_session_restore);
 }
 
 void CrosapiNewWindowDelegate::NewWindowForDetachingTab(

@@ -97,7 +97,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // class, so there's no way for callers to handle such error cases properly.
   // This design often leads the flakiness behavior of the product and testing,
   // so should be avoided.
-  void NewWindow(bool incognito);
+  // If `should_trigger_session_restore` is true, a new window opening should be
+  // treated like the start of a new session (with potential session restore,
+  // startup URLs, etc). Otherwise, don't restore the session and instead open a
+  // new window with the default blank tab.
+  void NewWindow(bool incognito, bool should_trigger_session_restore);
 
   // Returns true if crosapi interface supports NewWindowForDetachingTab API.
   bool NewWindowForDetachingTabSupported() const;

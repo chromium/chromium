@@ -190,7 +190,8 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
             base::FilePath("/run/imageloader-lacros-dogfood-dev/97.0.4676/"),
             browser_util::LacrosSelection::kStateful);
       });
-  fake_browser_manager_->NewWindow(false);
+  fake_browser_manager_->NewWindow(/*incongnito=*/false,
+                                   /*should_trigger_session_restore=*/false);
 }
 
 }  // namespace crosapi

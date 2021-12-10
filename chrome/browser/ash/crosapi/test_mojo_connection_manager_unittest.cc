@@ -67,7 +67,9 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     NOTIMPLEMENTED();
   }
 
-  void NewWindow(bool incognito, NewWindowCallback callback) override {}
+  void NewWindow(bool incognito,
+                 bool should_trigger_session_restore,
+                 NewWindowCallback callback) override {}
   void NewWindowForDetachingTab(
       const std::u16string& tab_id,
       const std::u16string& group_id,

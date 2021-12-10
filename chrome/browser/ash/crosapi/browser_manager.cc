@@ -334,13 +334,24 @@ bool BrowserManager::IsRunningOrWillRun() const {
          state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
 }
 
-void BrowserManager::NewWindow(bool incognito) {
-  // Chrome OS uses different user model where clicking the chrome icon always
-  // opens a new tab page, and it doesn't matter whether lacros is launching
-  // for the first time or not.
+void BrowserManager::NewWindow(bool incognito,
+                               bool should_trigger_session_restore) {
+  // If `should_trigger_session_restore` is set to true the new lacros window
+  // should be treated like the start of a new session. Ensure this is the case
+  // by deferring to the browser startup preferences. Otherwise we open the
+  // window with the default NTP.
+  // Incognito's default behavior is to open to a NTP regardless of session
+  // restore settings so the same browser action is used regardless of the value
+  // of `should_trigger_session_restore`.
+  constexpr mojom::InitialBrowserAction kBrowserActions[2][2] = {
+      {mojom::InitialBrowserAction::kOpenNewTabPageWindow,
+       mojom::InitialBrowserAction::kUseStartupPreference},
+      {mojom::InitialBrowserAction::kOpenIncognitoWindow,
+       mojom::InitialBrowserAction::kOpenIncognitoWindow}};
+
   auto result = MaybeStart(browser_util::InitialBrowserAction(
-      incognito ? mojom::InitialBrowserAction::kOpenIncognitoWindow
-                : mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+      kBrowserActions[incognito][should_trigger_session_restore]));
+
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -348,7 +359,8 @@ void BrowserManager::NewWindow(bool incognito) {
     LOG(ERROR) << "BrowserService was disconnected";
     return;
   }
-  browser_service_->service->NewWindow(incognito, base::DoNothing());
+  browser_service_->service->NewWindow(
+      incognito, should_trigger_session_restore, base::DoNothing());
 }
 
 bool BrowserManager::NewWindowForDetachingTabSupported() const {

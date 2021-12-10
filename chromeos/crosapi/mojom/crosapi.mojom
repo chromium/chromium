@@ -92,7 +92,7 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 61
+// Next version: 62
 // Next method id: 65
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
@@ -868,8 +868,13 @@ interface BrowserService {
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
-  // This is designed to be equivalent of CTRL+N (or CTRL+SHIFT+N) behavior.
-  NewWindow@1([MinVersion=10] bool incognito) => ();
+  // If `should_trigger_session_restore` is true, a new window opening should be
+  // treated like the start of a new session (with potential session restore,
+  // startup URLs, etc). Otherwise, don't restore the session and instead open a
+  // new window with the default blank tab.
+  NewWindow@1(
+    [MinVersion=10] bool incognito,
+    [MinVersion=61] bool should_trigger_session_restore) => ();
 
   // Opens a new fullscreen window in the browser with, currently, the last
   // used profile. The only tab will be navigated to the given `url` once the

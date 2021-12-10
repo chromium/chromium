@@ -92,7 +92,8 @@ void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
 
   WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
 
-  crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
+  crosapi::BrowserManager::Get()->NewWindow(
+      /*incongnito=*/false, /*should_trigger_session_restore=*/false);
 
   LacrosStartedObserver observer;
   crosapi::BrowserManager::Get()->AddObserver(&observer);
