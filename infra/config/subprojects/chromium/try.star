@@ -1374,19 +1374,6 @@ try_.chromium_linux_orchestrator_pair(
 )
 
 try_.chromium_linux_builder(
-    name = "linux-rel-reclient",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    reclient_jobs = 150,
-    goma_backend = None,
-    reclient_instance = "rbe-chromium-gvisor-shadow",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.chromium_linux_builder(
     name = "linux-wayland-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,

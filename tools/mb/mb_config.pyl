@@ -1041,7 +1041,6 @@
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-rel-orchestrator': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
-      'linux-rel-reclient': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-rel-rts': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-stable-filter-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-stable-filter-combined-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
@@ -2458,11 +2457,6 @@
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
       'linux_wayland', 'ozone_headless',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials': [
@@ -3927,11 +3921,6 @@
     },
 
     'release_trybot_minimal_symbols_reclient': {
-      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
-                 'blink_disable_generated_code_formatting'],
-    },
-
-    'release_trybot_reclient': {
       'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
                  'blink_disable_generated_code_formatting'],
     },

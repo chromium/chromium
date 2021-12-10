@@ -470,9 +470,6 @@ as required builders.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
-* [linux-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/linux-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-reclient""))
-  * Experiment percentage: 10.0
-
 * [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-rts""))
   * Experiment percentage: 5.0
 
