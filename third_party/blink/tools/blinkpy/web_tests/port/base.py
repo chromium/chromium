@@ -537,6 +537,7 @@ class Port(object):
                     return False
                 return True
             except OSError as e:
+                _log.error('while trying to run: ' + httpd_path)
                 _log.error('httpd launch error: ' + repr(e))
         _log.error('No httpd found. Cannot run http tests.')
         return False
