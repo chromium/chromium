@@ -488,9 +488,13 @@ bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
 }
 
 // WebPageReplayServerWrapper -------------------------------------------------
-WebPageReplayServerWrapper::WebPageReplayServerWrapper(int host_http_port,
-                                                       int host_https_port)
-    : host_http_port_(host_http_port), host_https_port_(host_https_port) {}
+WebPageReplayServerWrapper::WebPageReplayServerWrapper(
+    const bool start_as_replay,
+    int host_http_port,
+    int host_https_port)
+    : host_http_port_(host_http_port),
+      host_https_port_(host_https_port),
+      start_as_replay_(start_as_replay) {}
 
 WebPageReplayServerWrapper::~WebPageReplayServerWrapper() = default;
 
@@ -505,11 +509,13 @@ bool WebPageReplayServerWrapper::Start(
 
   args.push_back(base::StringPrintf("--http_port=%d", host_http_port_));
   args.push_back(base::StringPrintf("--https_port=%d", host_https_port_));
-  args.push_back("--serve_response_in_chronological_sequence");
-  // Start WPR in quiet mode, removing the extra verbose ServeHTTP interactions
-  // that are for the the overwhelming majority unhelpful, but for extra
-  // debugging of a test case, this might make sense to comment out.
-  args.push_back("--quiet_mode");
+  if (start_as_replay_) {
+    args.push_back("--serve_response_in_chronological_sequence");
+    // Start WPR in quiet mode, removing the extra verbose ServeHTTP
+    // interactions that are for the the overwhelming majority unhelpful, but
+    // for extra debugging of a test case, this might make sense to comment out.
+    args.push_back("--quiet_mode");
+  }
   args.push_back(base::StringPrintf(
       "--inject_scripts=%s,%s",
       FilePathToUTF8(src_dir.AppendASCII("third_party")
@@ -529,7 +535,7 @@ bool WebPageReplayServerWrapper::Start(
   // Specify the capture file.
   args.push_back(base::StringPrintf(
       "%s", FilePathToUTF8(capture_file_path.value()).c_str()));
-  if (!RunWebPageReplayCmd("replay", args, &web_page_replay_server_))
+  if (!RunWebPageReplayCmd(args))
     return false;
 
   // Sleep 5 seconds to wait for the web page replay server to start.
@@ -550,9 +556,28 @@ bool WebPageReplayServerWrapper::Start(
 
 bool WebPageReplayServerWrapper::Stop() {
   if (web_page_replay_server_.IsValid()) {
-    if (!web_page_replay_server_.Terminate(0, true)) {
-      ADD_FAILURE() << "Failed to terminate the WPR replay server!";
-      return false;
+    bool did_terminate = false;
+    if (!start_as_replay_) {
+#if defined(OS_POSIX)
+      // For Replay sessions, we can terminate the WPR process immediately as
+      // we don't Record sessions, we want to try and send a SIGINT to close and
+      // write the WPR archive file gracefully. If that fails, we will Terminate
+      // via Process::Terminate which will send SIGTERM and then SIGKILL.
+      did_terminate = kill(web_page_replay_server_.Handle(), SIGINT) == 0;
+      if (!did_terminate) {
+        ADD_FAILURE() << "Failed to close a recording WPR server cleanly!";
+      }
+#else
+      ADD_FAILURE()
+          << "Clean termination of recrording WPR server is only supported on "
+             "OS_POSIX. New archive may not be saved properly.";
+#endif
+    }
+    if (start_as_replay_ || !did_terminate) {
+      if (!web_page_replay_server_.Terminate(0, true)) {
+        ADD_FAILURE() << "Failed to terminate the WPR replay server!";
+        return false;
+      }
     }
   }
 
@@ -561,25 +586,22 @@ bool WebPageReplayServerWrapper::Stop() {
 }
 
 bool WebPageReplayServerWrapper::RunWebPageReplayCmdAndWaitForExit(
-    const std::string& cmd,
     const std::vector<std::string>& args,
     const base::TimeDelta& timeout) {
-  base::Process process;
   int exit_code;
 
-  if (RunWebPageReplayCmd(cmd, args, &process) && process.IsValid() &&
-      process.WaitForExitWithTimeout(timeout, &exit_code) && exit_code == 0) {
+  if (RunWebPageReplayCmd(args) && web_page_replay_server_.IsValid() &&
+      web_page_replay_server_.WaitForExitWithTimeout(timeout, &exit_code) &&
+      exit_code == 0) {
     return true;
   }
 
-  ADD_FAILURE() << "Failed to run WPR command: '" << cmd << "'!";
+  ADD_FAILURE() << "Failed to run WPR command: '" << cmd_name() << "'!";
   return false;
 }
 
 bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
-    const std::string& cmd,
-    const std::vector<std::string>& args,
-    base::Process* process) {
+    const std::vector<std::string>& args) {
   // Allow the function to block. Otherwise the subsequent call to
   // base::PathExists will fail. base::PathExists must be called from
   // a scope that allows blocking.
@@ -615,11 +637,11 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
           .AppendASCII("x86_64")
           .AppendASCII("wpr");
 #else
-#error Plaform is not supported.
+#error Platform is not supported.
 #endif
   base::CommandLine full_command(
       web_page_replay_binary_dir.Append(wpr_executable_binary));
-  full_command.AppendArg(cmd);
+  full_command.AppendArg(cmd_name());
 
   // Ask web page replay to use the custom certificate and key files used to
   // make the web page captures.
@@ -655,7 +677,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 
   LOG(INFO) << full_command.GetArgumentsString();
 
-  *process = base::LaunchProcess(full_command, options);
+  web_page_replay_server_ = base::LaunchProcess(full_command, options);
   return true;
 }
 
@@ -746,7 +768,7 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
 void TestRecipeReplayer::Setup() {
   CleanupSiteData();
   web_page_replay_server_wrapper_ =
-      std::make_unique<WebPageReplayServerWrapper>();
+      std::make_unique<WebPageReplayServerWrapper>(true);
 
   // Bypass permission dialogs.
   permissions::PermissionRequestManager::FromWebContents(GetWebContents())

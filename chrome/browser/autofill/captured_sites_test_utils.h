@@ -142,7 +142,8 @@ class IFrameWaiter : public content::WebContentsObserver {
 // and running the WebPageReplay Server instance.
 class WebPageReplayServerWrapper {
  public:
-  explicit WebPageReplayServerWrapper(int hostHttpPort = 8080,
+  explicit WebPageReplayServerWrapper(const bool start_as_replay,
+                                      int hostHttpPort = 8080,
                                       int hostHttpsPort = 8081);
 
   WebPageReplayServerWrapper(const WebPageReplayServerWrapper&) = delete;
@@ -156,18 +157,17 @@ class WebPageReplayServerWrapper {
 
  private:
   bool RunWebPageReplayCmdAndWaitForExit(
-      const std::string& cmd,
       const std::vector<std::string>& args,
       const base::TimeDelta& timeout = base::Seconds(5));
-  bool RunWebPageReplayCmd(const std::string& cmd,
-                           const std::vector<std::string>& args,
-                           base::Process* process);
+  bool RunWebPageReplayCmd(const std::vector<std::string>& args);
 
+  std::string cmd_name() { return start_as_replay_ ? "replay" : "record"; }
   // The Web Page Replay server that serves the captured sites.
   base::Process web_page_replay_server_;
 
   int host_http_port_;
   int host_https_port_;
+  bool start_as_replay_;
 };
 
 // TestRecipeReplayChromeFeatureActionExecutor
