@@ -29,17 +29,19 @@ class MediaEngineNotifyImpl
 
   using ErrorCB = base::RepeatingCallback<void(PipelineStatus, HRESULT)>;
   using EndedCB = base::RepeatingClosure;
-  using BufferingStateChangedCB =
-      base::RepeatingCallback<void(BufferingState, BufferingStateChangeReason)>;
-  using VideoNaturalSizeChangedCB = base::RepeatingClosure;
+  using FormatChangeCB = base::RepeatingClosure;
+  using LoadedDataCB = base::RepeatingClosure;
+  using PlayingCB = base::RepeatingClosure;
+  using WaitingCB = base::RepeatingClosure;
   using TimeUpdateCB = base::RepeatingClosure;
 
-  HRESULT RuntimeClassInitialize(
-      ErrorCB error_cb,
-      EndedCB ended_cb,
-      BufferingStateChangedCB buffering_state_changed_cb,
-      VideoNaturalSizeChangedCB video_natural_size_changed_cb,
-      TimeUpdateCB time_update_cb);
+  HRESULT RuntimeClassInitialize(ErrorCB error_cb,
+                                 EndedCB ended_cb,
+                                 FormatChangeCB format_change_cb,
+                                 LoadedDataCB loaded_data_cb,
+                                 PlayingCB playing_cb,
+                                 WaitingCB waiting_cb,
+                                 TimeUpdateCB time_update_cb);
 
   // IMFMediaEngineNotify implementation.
   IFACEMETHODIMP EventNotify(DWORD event_code,
@@ -54,8 +56,10 @@ class MediaEngineNotifyImpl
   // e.g. using BindToCurrentLoop().
   ErrorCB error_cb_;
   EndedCB ended_cb_;
-  BufferingStateChangedCB buffering_state_changed_cb_;
-  VideoNaturalSizeChangedCB video_natural_size_changed_cb_;
+  FormatChangeCB format_change_cb_;
+  LoadedDataCB loaded_data_cb_;
+  PlayingCB playing_cb_;
+  WaitingCB waiting_cb_;
   TimeUpdateCB time_update_cb_;
 
   // EventNotify is invoked from MF threadpool thread where the callbacks are

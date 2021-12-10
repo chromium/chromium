@@ -82,20 +82,26 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Callbacks for `mf_media_engine_notify_`.
   void OnPlaybackError(PipelineStatus status, HRESULT hr);
   void OnPlaybackEnded();
-  void OnBufferingStateChange(BufferingState state,
-                              BufferingStateChangeReason reason);
-  void OnVideoNaturalSizeChange();
+  void OnFormatChange();
+  void OnLoadedData();
+  void OnPlaying();
+  void OnWaiting();
   void OnTimeUpdate();
 
   // Callback for `content_protection_manager_`.
-  void OnWaiting(WaitingReason reason);
+  void OnProtectionManagerWaiting(WaitingReason reason);
 
   void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
+  void OnBufferingStateChange(BufferingState state,
+                              BufferingStateChangeReason reason);
 
   HRESULT SetDCompModeInternal();
   HRESULT GetDCompSurfaceInternal(HANDLE* surface_handle);
   HRESULT SetSourceOnMediaEngine();
   HRESULT UpdateVideoStream(const gfx::Rect& rect);
+  HRESULT PauseInternal();
+
+  void OnVideoNaturalSizeChange();
 
   // Renderer methods are running in the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
