@@ -260,11 +260,9 @@ void NaClHostMessageFilter::LaunchNaClContinuationOnUIThread(
   base::PlatformFile nexe_file =
       IPC::PlatformFileForTransitToPlatformFile(launch_params.nexe_file);
 
-  // TODO(b/200965779): Remove nonsfi_mode parameters from NaClProcessHost.
   NaClProcessHost* host = new NaClProcessHost(
       GURL(launch_params.manifest_url), base::File(nexe_file), nexe_token,
       prefetched_resource_files, permissions, launch_params.permission_bits,
-      launch_params.uses_nonsfi_mode, /*nonsfi_mode_allowed=*/false,
       off_the_record_, launch_params.process_type, profile_directory_);
   GURL manifest_url(launch_params.manifest_url);
   base::FilePath manifest_path;

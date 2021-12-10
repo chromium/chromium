@@ -216,8 +216,6 @@ NaClProcessHost::NaClProcessHost(
     const std::vector<NaClResourcePrefetchResult>& prefetched_resource_files,
     ppapi::PpapiPermissions permissions,
     uint32_t permission_bits,
-    bool uses_nonsfi_mode,
-    bool nonsfi_mode_allowed,
     bool off_the_record,
     NaClAppProcessType process_type,
     const base::FilePath& profile_directory)
@@ -233,8 +231,6 @@ NaClProcessHost::NaClProcessHost(
 #if defined(OS_WIN)
       debug_exception_handler_requested_(false),
 #endif
-      uses_nonsfi_mode_(uses_nonsfi_mode),
-      nonsfi_mode_allowed_(nonsfi_mode_allowed),
       enable_debug_stub_(false),
       enable_crash_throttling_(false),
       off_the_record_(off_the_record),
@@ -387,14 +383,6 @@ void NaClProcessHost::Launch(
     return;
   }
 
-  if (uses_nonsfi_mode_) {
-    SendErrorToRenderer(
-        "NaCl non-SFI mode is not available for this platform"
-        " and NaCl module.");
-    delete this;
-    return;
-  }
-
   // Launch the process
   if (!LaunchSelLdr()) {
     delete this;
@@ -529,9 +517,7 @@ bool NaClProcessHost::LaunchSelLdr() {
   CopyNaClCommandLineArguments(cmd_line.get());
 
   cmd_line->AppendSwitchASCII(switches::kProcessType,
-                              (uses_nonsfi_mode_ ?
-                               switches::kNaClLoaderNonSfiProcess :
-                               switches::kNaClLoaderProcess));
+                              switches::kNaClLoaderProcess);
   if (NaClBrowser::GetDelegate()->DialogsAreSuppressed())
     cmd_line->AppendSwitch(switches::kNoErrorDialogs);
 
@@ -557,14 +543,6 @@ bool NaClProcessHost::LaunchSelLdr() {
 }
 
 bool NaClProcessHost::OnMessageReceived(const IPC::Message& msg) {
-  if (uses_nonsfi_mode_) {
-    // IPC messages relating to NaCl's validation cache must not be exposed
-    // in Non-SFI Mode, otherwise a Non-SFI nexe could use SetKnownToValidate
-    // to create a hole in the SFI sandbox.
-    // In Non-SFI mode, no message is expected.
-    return false;
-  }
-
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(NaClProcessHost, msg)
     IPC_MESSAGE_HANDLER(NaClProcessMsg_QueryKnownToValidate,
@@ -612,7 +590,7 @@ void NaClProcessHost::ReplyToRenderer(
   // Hereafter, we always send an IPC message with handles created above
   // which, on Windows, are not closable in this process.
   std::string error_message;
-  if (!uses_nonsfi_mode_ && !crash_info_shmem_region.IsValid()) {
+  if (!crash_info_shmem_region.IsValid()) {
     // On error, we do not send "IPC::ChannelHandle"s to the renderer process.
     // Note that some other FDs/handles still get sent to the renderer, but
     // will be closed there.
@@ -725,7 +703,6 @@ net::SocketDescriptor NaClProcessHost::GetDebugStubSocketHandle() {
 
 #if defined(OS_WIN)
 void NaClProcessHost::OnDebugStubPortSelected(uint16_t debug_stub_port) {
-  CHECK(!uses_nonsfi_mode_);
   SetDebugStubPort(debug_stub_port);
 }
 #endif
@@ -738,37 +715,29 @@ bool NaClProcessHost::StartNaClExecution() {
   params.process_type = process_type_;
   bool enable_nacl_debug = enable_debug_stub_ &&
       NaClBrowser::GetDelegate()->URLMatchesDebugPatterns(manifest_url_);
-  if (uses_nonsfi_mode_) {
-    // Currently, non-SFI mode is supported only on Linux.
-    if (enable_nacl_debug) {
-      LOG(WARNING) << "nonsfi nacl plugin running in "
-                   << process_->GetData().GetProcess().Pid();
-    }
-  } else {
-    params.validation_cache_enabled = nacl_browser->ValidationCacheIsEnabled();
-    params.validation_cache_key = nacl_browser->GetValidationCacheKey();
-    params.version = NaClBrowser::GetDelegate()->GetVersionString();
-    params.enable_debug_stub = enable_nacl_debug;
+  params.validation_cache_enabled = nacl_browser->ValidationCacheIsEnabled();
+  params.validation_cache_key = nacl_browser->GetValidationCacheKey();
+  params.version = NaClBrowser::GetDelegate()->GetVersionString();
+  params.enable_debug_stub = enable_nacl_debug;
 
-    const base::File& irt_file = nacl_browser->IrtFile();
-    CHECK(irt_file.IsValid());
-    // Send over the IRT file handle.  We don't close our own copy!
-    params.irt_handle = IPC::GetPlatformFileForTransit(
-        irt_file.GetPlatformFile(), false);
-    if (params.irt_handle == IPC::InvalidPlatformFileForTransit()) {
-      return false;
-    }
+  const base::File& irt_file = nacl_browser->IrtFile();
+  CHECK(irt_file.IsValid());
+  // Send over the IRT file handle.  We don't close our own copy!
+  params.irt_handle =
+      IPC::GetPlatformFileForTransit(irt_file.GetPlatformFile(), false);
+  if (params.irt_handle == IPC::InvalidPlatformFileForTransit()) {
+    return false;
+  }
 
 #if defined(OS_POSIX)
-    if (params.enable_debug_stub) {
-      net::SocketDescriptor server_bound_socket = GetDebugStubSocketHandle();
-      if (server_bound_socket != net::kInvalidSocket) {
-        params.debug_stub_server_bound_socket = IPC::GetPlatformFileForTransit(
-            server_bound_socket, true);
-      }
+  if (params.enable_debug_stub) {
+    net::SocketDescriptor server_bound_socket = GetDebugStubSocketHandle();
+    if (server_bound_socket != net::kInvalidSocket) {
+      params.debug_stub_server_bound_socket =
+          IPC::GetPlatformFileForTransit(server_bound_socket, true);
     }
-#endif
   }
+#endif
 
   // Create a shared memory region that the renderer and the plugin share to
   // report crash information.
@@ -780,44 +749,33 @@ bool NaClProcessHost::StartNaClExecution() {
   }
 
   // Pass the pre-opened resource files to the loader. We do not have to reopen
-  // resource files here even for SFI mode because the descriptors are not from
-  // a renderer.
+  // resource files here because the descriptors are not from a renderer.
   for (size_t i = 0; i < prefetched_resource_files_.size(); ++i) {
-    process_->Send(new NaClProcessMsg_AddPrefetchedResource(
-        NaClResourcePrefetchResult(
+    process_->Send(
+        new NaClProcessMsg_AddPrefetchedResource(NaClResourcePrefetchResult(
             prefetched_resource_files_[i].file,
-            // For the same reason as the comment below, always use an empty
-            // base::FilePath for non-SFI mode.
-            (uses_nonsfi_mode_ ? base::FilePath() :
-             prefetched_resource_files_[i].file_path_metadata),
+            prefetched_resource_files_[i].file_path_metadata,
             prefetched_resource_files_[i].file_key)));
   }
   prefetched_resource_files_.clear();
 
   base::FilePath file_path;
-  if (uses_nonsfi_mode_) {
-    // Don't retrieve the file path when using nonsfi mode; there's no
-    // validation caching in that case, so it's unnecessary work, and would
-    // expose the file path to the plugin.
-  } else {
-    if (NaClBrowser::GetInstance()->GetFilePath(nexe_token_.lo,
-                                                nexe_token_.hi,
-                                                &file_path)) {
-      // We have to reopen the file in the browser process; we don't want a
-      // compromised renderer to pass an arbitrary fd that could get loaded
-      // into the plugin process.
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE,
-          // USER_BLOCKING because it is on the critical path of displaying the
-          // official virtual keyboard on Chrome OS. https://crbug.com/976542
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-          base::BindOnce(OpenNaClReadExecImpl, file_path,
-                         true /* is_executable */),
-          base::BindOnce(&NaClProcessHost::StartNaClFileResolved,
-                         weak_factory_.GetWeakPtr(), std::move(params),
-                         file_path));
-      return true;
-    }
+  if (NaClBrowser::GetInstance()->GetFilePath(nexe_token_.lo, nexe_token_.hi,
+                                              &file_path)) {
+    // We have to reopen the file in the browser process; we don't want a
+    // compromised renderer to pass an arbitrary fd that could get loaded
+    // into the plugin process.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        // USER_BLOCKING because it is on the critical path of displaying the
+        // official virtual keyboard on Chrome OS. https://crbug.com/976542
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(OpenNaClReadExecImpl, file_path,
+                       true /* is_executable */),
+        base::BindOnce(&NaClProcessHost::StartNaClFileResolved,
+                       weak_factory_.GetWeakPtr(), std::move(params),
+                       file_path));
+    return true;
   }
 
   StartNaClFileResolved(std::move(params), base::FilePath(), base::File());
@@ -840,41 +798,6 @@ void NaClProcessHost::StartNaClFileResolved(
   } else {
     params.nexe_file = IPC::TakePlatformFileForTransit(std::move(nexe_file_));
   }
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // In Non-SFI mode, create socket pairs for IPC channels here, unlike in
-  // SFI-mode, in which those channels are created in nacl_listener.cc.
-  // This is for security hardening. We can then prohibit the socketpair()
-  // system call in nacl_helper and nacl_helper_nonsfi.
-  if (uses_nonsfi_mode_) {
-    mojo::MessagePipe ppapi_browser_channel;
-    mojo::MessagePipe ppapi_renderer_channel;
-    mojo::MessagePipe trusted_service_channel;
-    mojo::MessagePipe manifest_service_channel;
-
-    if (!StartPPAPIProxy(std::move(ppapi_browser_channel.handle1))) {
-      SendErrorToRenderer("Failed to start browser PPAPI proxy.");
-      return;
-    }
-
-    // On success, send back a success message to the renderer process,
-    // and transfer the channel handles for the NaCl loader process to
-    // |params|. Also send an invalid shared memory region as nonsfi_mode
-    // does not use the region.
-    ReplyToRenderer(std::move(ppapi_renderer_channel.handle1),
-                    std::move(trusted_service_channel.handle1),
-                    std::move(manifest_service_channel.handle1),
-                    base::ReadOnlySharedMemoryRegion());
-    params.ppapi_browser_channel_handle =
-        ppapi_browser_channel.handle0.release();
-    params.ppapi_renderer_channel_handle =
-        ppapi_renderer_channel.handle0.release();
-    params.trusted_service_channel_handle =
-        trusted_service_channel.handle0.release();
-    params.manifest_service_channel_handle =
-        manifest_service_channel.handle0.release();
-  }
-#endif
 
   process_->Send(new NaClProcessMsg_Start(std::move(params)));
 }
@@ -991,13 +914,11 @@ bool NaClProcessHost::StartWithLaunchedProcess() {
 
 void NaClProcessHost::OnQueryKnownToValidate(const std::string& signature,
                                              bool* result) {
-  CHECK(!uses_nonsfi_mode_);
   NaClBrowser* nacl_browser = NaClBrowser::GetInstance();
   *result = nacl_browser->QueryKnownToValidate(signature, off_the_record_);
 }
 
 void NaClProcessHost::OnSetKnownToValidate(const std::string& signature) {
-  CHECK(!uses_nonsfi_mode_);
   NaClBrowser::GetInstance()->SetKnownToValidate(
       signature, off_the_record_);
 }
@@ -1027,7 +948,6 @@ void NaClProcessHost::OnResolveFileToken(uint64_t file_token_lo,
   //
   // TODO(ncbray): track behavior with UMA. If entries are getting evicted or
   // bogus keys are getting queried, this would be good to know.
-  CHECK(!uses_nonsfi_mode_);
   base::FilePath file_path;
   if (!NaClBrowser::GetInstance()->GetFilePath(
         file_token_lo, file_token_hi, &file_path)) {
@@ -1073,7 +993,6 @@ void NaClProcessHost::FileResolved(
 #if defined(OS_WIN)
 void NaClProcessHost::OnAttachDebugExceptionHandler(const std::string& info,
                                                     IPC::Message* reply_msg) {
-  CHECK(!uses_nonsfi_mode_);
   if (!AttachDebugExceptionHandler(info, reply_msg)) {
     // Send failure message.
     NaClProcessMsg_AttachDebugExceptionHandler::WriteReplyParams(reply_msg,
