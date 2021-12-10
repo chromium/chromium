@@ -197,6 +197,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<WaylandSurface> icon_surface_;
   std::unique_ptr<WaylandShmBuffer> shm_buffer_;
   const SkBitmap* icon_bitmap_ = nullptr;
+  gfx::Point icon_offset_;
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
 

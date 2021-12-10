@@ -140,6 +140,11 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       // Corresponds to actual scale factor of the origin surface.
       icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
       icon_surface_->ApplyPendingState();
+
+      auto icon_offset = data.provider().GetDragImageOffset();
+      icon_offset_ =
+          gfx::ScaleToRoundedPoint({icon_offset.x(), icon_offset.y()},
+                                   1.0f / origin_window->window_scale());
     } else {
       LOG(ERROR) << "Failed to create drag icon surface.";
       icon_surface_.reset();
@@ -184,7 +189,8 @@ void WaylandDataDragController::DrawIcon() {
   }
   wl::DrawBitmap(*icon_bitmap_, shm_buffer_.get());
   auto* const surface = icon_surface_->surface();
-  wl_surface_attach(surface, shm_buffer_->get(), 0, 0);
+  wl_surface_attach(surface, shm_buffer_->get(), icon_offset_.x(),
+                    icon_offset_.y());
   wl_surface_damage(surface, 0, 0, size.width(), size.height());
   wl_surface_commit(surface);
 }
