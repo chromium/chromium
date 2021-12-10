@@ -191,13 +191,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     api->glReleaseTexturesANGLEFn(1, &texture, &layout_);
   }
 
-  void SharedImageRepresentationGLTextureRelease(bool have_context) override {
-    if (!have_context) {
-      passthrough_texture_->MarkContextLost();
-    }
-    passthrough_texture_.reset();
-    image_.reset();
-  }
+  void SharedImageRepresentationGLTextureRelease(bool have_context) override {}
 
  private:
   class SkiaRepresentation;
