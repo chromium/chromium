@@ -176,6 +176,12 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps first shows instructions when auto-fill is off,
 // then shows the caption label after auto-fill is turned on.
 - (void)testTurnOnPasswordsInOtherApps {
+  // Rewrites passwordInAppsViewController.useShortInstruction property.
+  EarlGreyScopedBlockSwizzler longInstruction(
+      @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
+        return NO;
+      });
+
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
   OpensPasswordsInOtherApps();
 
@@ -192,6 +198,12 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps first shows instructions when auto-fill is on,
 // then shows the caption label after auto-fill is turned off.
 - (void)testTurnOffPasswordsInOtherApps {
+  // Rewrites passwordInAppsViewController.useShortInstruction property.
+  EarlGreyScopedBlockSwizzler longInstruction(
+      @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
+        return NO;
+      });
+
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
   OpensPasswordsInOtherApps();
 
@@ -243,7 +255,6 @@ void OpensPasswordsInOtherApps() {
   OpensPasswordsInOtherApps();
 
   [self checkThatCommonElementsAreVisible];
-  [self checkThatTurnOnInstructionsAreVisible];
   [self checkThatTurnOffInstructionsAreNotVisible];
   [[EarlGrey
       selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
