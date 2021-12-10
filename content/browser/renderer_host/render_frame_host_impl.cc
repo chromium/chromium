@@ -3528,17 +3528,6 @@ void RenderFrameHostImpl::DidNavigate(
     // owner element which contains child's required document policy, so there
     // is no need to store required document policy in proxies.
   }
-
-  if (!was_within_same_document) {
-    // Dispatch a notification when a main frame non-same-document navigation
-    // changes the current Page in the FrameTree. We do this here to
-    // ensure that this navigation has updated all relevant properties of
-    // RenderFrameHost / Page (e.g. RenderFrameHost::GetLastCommittedURL).
-    FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-    if (is_main_frame()) {
-      frame_tree_node->frame_tree()->delegate()->NotifyPageChanged(GetPage());
-    }
-  }
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {

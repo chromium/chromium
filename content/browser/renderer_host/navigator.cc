@@ -406,9 +406,7 @@ NavigatorDelegate* Navigator::GetDelegate() {
 void Navigator::DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
                                      const GURL& url,
                                      int error_code) {
-  if (delegate_) {
-    delegate_->DidFailLoadWithError(render_frame_host, url, error_code);
-  }
+  delegate_->DidFailLoadWithError(render_frame_host, url, error_code);
 }
 
 bool Navigator::StartHistoryNavigationInNewSubframe(
@@ -456,11 +454,9 @@ void Navigator::DidNavigate(
   }
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {
-    if (delegate_) {
-      // Run tasks that must execute just before the commit.
-      delegate_->DidNavigateMainFramePreCommit(frame_tree_node,
-                                               was_within_same_document);
-    }
+    // Run tasks that must execute just before the commit.
+    delegate_->DidNavigateMainFramePreCommit(frame_tree_node,
+                                             was_within_same_document);
   }
 
   // DidNavigateFrame() must be called before replicating the new origin and
@@ -515,7 +511,7 @@ void Navigator::DidNavigate(
   // TODO(nasko): Verify the correctness of the above comment, since some of the
   // code doesn't exist anymore. Also, move this code in the
   // PageTransitionIsMainFrame code block above.
-  if (ui::PageTransitionIsMainFrame(params.transition) && delegate_) {
+  if (ui::PageTransitionIsMainFrame(params.transition)) {
     render_frame_host->GetPage().SetContentsMimeType(params.contents_mime_type);
   }
 
@@ -583,12 +579,30 @@ void Navigator::DidNavigate(
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include
   // the actual URL navigated to and isn't sent for AUTO_SUBFRAME navigations.
-  if (delegate_) {
-    DCHECK_EQ(!render_frame_host->GetParent(),
-              did_navigate ? details.is_main_frame : false);
-    navigation_request->DidCommitNavigation(
-        params, did_navigate, details.did_replace_entry,
-        details.previous_main_frame_url, details.type);
+  DCHECK(delegate_);
+  DCHECK_EQ(!render_frame_host->GetParent(),
+            did_navigate ? details.is_main_frame : false);
+  navigation_request->DidCommitNavigation(
+      params, did_navigate, details.did_replace_entry,
+      details.previous_main_frame_url, details.type);
+
+  // Dispatch PrimaryPageChanged notification when a main frame
+  // non-same-document navigation changes the current Page in the FrameTree.
+  //
+  // We do this here to ensure that this navigation has updated all relevant
+  // properties of RenderFrameHost / Page / Navigation Controller / Navigation
+  // Request (e.g. `RenderFrameHost::GetLastCommittedURL`,
+  // `NavigationRequest::GetHttpStatusCode`) before notifying the observers.
+  // TODO(crbug.com/1275933): Don't dispatch PrimaryPageChanged for initial
+  // empty document navigations.
+  if (!was_within_same_document && render_frame_host->is_main_frame()) {
+    navigation_request->frame_tree_node()
+        ->frame_tree()
+        ->delegate()
+        ->NotifyPageChanged(render_frame_host->GetPage());
+
+    // Finally reset the `navigation_request` after navigation commit and all
+    // NavigationRequest usages.
     navigation_request.reset();
   }
 
@@ -614,13 +628,10 @@ void Navigator::DidNavigate(
   frame_tree->ResetHasAccessedInitialMainDocument();
 
   // Run post-commit tasks.
-  if (delegate_) {
-    if (details.is_main_frame) {
-      delegate_->DidNavigateMainFramePostCommit(render_frame_host, details);
-    }
+  if (details.is_main_frame)
+    delegate_->DidNavigateMainFramePostCommit(render_frame_host, details);
 
-    delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
-  }
+  delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
 }
 
 void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
@@ -770,8 +781,7 @@ void Navigator::RequestOpenURL(
   params.href_translate = href_translate;
   params.impression = impression;
 
-  if (delegate_)
-    delegate_->OpenURL(params);
+  delegate_->OpenURL(params);
 }
 
 void Navigator::NavigateFromFrameProxy(
@@ -930,7 +940,6 @@ void Navigator::OnBeginNavigation(
       GetNavigationEntryForRendererInitiatedNavigation(*common_params,
                                                        frame_tree_node);
   const bool override_user_agent =
-      delegate_ &&
       delegate_->ShouldOverrideUserAgentForRendererInitiatedNavigation();
   if (navigation_entry)
     navigation_entry->SetIsOverridingUserAgent(override_user_agent);
@@ -1247,8 +1256,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
       common_params.navigation_type));
 
   controller_.SetPendingEntry(std::move(entry));
-  if (delegate_)
-    delegate_->NotifyChangedNavigationState(content::INVALIDATE_TYPE_URL);
+  delegate_->NotifyChangedNavigationState(content::INVALIDATE_TYPE_URL);
 
   return controller_.GetPendingEntry();
 }
