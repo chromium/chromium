@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'Matches a filter if all present members match.';
 let matching_services = [health_thermometer.uuid];
 let matching_name = 'Health Thermometer';
 let matching_namePrefix = 'Health';
-let matching_manufacturerData = [{ companyIdentifier: 0x0001 }];
+let matching_manufacturerData = [{companyIdentifier: 0x0001}];
 
 let test_specs = [
   {
@@ -25,17 +23,10 @@ let test_specs = [
       name: matching_name,
     }]
   },
-  {
-    filters: [{
-      services: matching_services,
-      namePrefix: matching_namePrefix
-    }]
-  },
-  {
-    filters: [{
-      services: matching_services,
-      manufacturerData: matching_manufacturerData
-    }]
+  {filters: [{services: matching_services, namePrefix: matching_namePrefix}]}, {
+    filters: [
+      {services: matching_services, manufacturerData: matching_manufacturerData}
+    ]
   },
   {
     filters: [{
@@ -44,15 +35,11 @@ let test_specs = [
     optionalServices: matching_services
   },
   {
-    filters: [{
-      namePrefix: matching_namePrefix
-    }],
+    filters: [{namePrefix: matching_namePrefix}],
     optionalServices: matching_services
   },
   {
-    filters: [{
-      manufacturerData: matching_manufacturerData
-    }],
+    filters: [{manufacturerData: matching_manufacturerData}],
     optionalServices: matching_services
   },
   {
@@ -89,4 +76,3 @@ bluetooth_test(
       return test_promises;
     }),
     test_desc);
-</script>

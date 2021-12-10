@@ -5150,8 +5150,8 @@
 -external/wpt/bluetooth/idl/idl-NavigatorBluetooth.html
 -external/wpt/bluetooth/idl/idl-NavigatorBluetooth.https.html
 -external/wpt/bluetooth/idl/idlharness.tentative.https.window.html
--external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.html
--external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.html
+-external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.window.html
+-external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.window.html
 -external/wpt/client-hints/accept-ch-answers.sub.https.html
 -external/wpt/client-hints/accept-ch-cache-revalidation.https.html
 -external/wpt/client-hints/accept-ch-malformed-header.https.html
@@ -55836,7 +55836,7 @@
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-NavigatorBluetooth.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idl-NavigatorBluetooth.https.html
 -virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/idl/idlharness.tentative.https.window.html
--virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.html
+-virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/not-processing-user-gesture.https.window.html
 -virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/idl/idl-BluetoothGATTRemoteServer.https.html
 -virtual/webid/wpt_internal/webid/insecure-context.html
 -virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCIceCandidate-constructor.html

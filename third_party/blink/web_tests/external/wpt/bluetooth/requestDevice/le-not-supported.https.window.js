@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'Reject with NotFoundError if Bluetooth is not supported.';
 const expected =
@@ -17,4 +15,3 @@ bluetooth_test(
             requestDeviceWithTrustedClick({acceptAllDevices: true}), expected,
             'Bluetooth Low Energy is not supported.')),
     test_desc);
-</script>

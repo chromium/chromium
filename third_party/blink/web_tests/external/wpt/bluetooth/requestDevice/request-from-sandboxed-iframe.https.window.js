@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<body>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'Request device from a unique origin. ' +
     'Should reject with SecurityError.';
@@ -36,5 +33,3 @@ bluetooth_test(
                       }
                     })),
     test_desc);
-</script>
-</body>

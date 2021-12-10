@@ -6283,7 +6283,7 @@ crbug.com/1227092 [ Win ] virtual/scroll-unification/fast/events/selection-autos
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
 
 # Depends on fixing WPT cross-origin iframe click flake in crbug.com/1066891.
-crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.html [ Failure Pass ]
+crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 
 # Cross-origin WebAssembly module sharing is getting deprecated.
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Skip ]
