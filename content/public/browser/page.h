@@ -32,7 +32,9 @@ namespace content {
 // 3) Main RenderFrameHost is re-created after crash.
 
 // Page is deleted in the following cases:
-// 1) Main RenderFrameHost is deleted.
+// 1) Main RenderFrameHost is deleted. Note that this might be different from
+//    when the navigation commits, see the comment in
+//    RenderFrameHost::LifecycleState::kPendingDeletion for more details.
 // 2) A cross-document non-bfcached navigation is committed in the same
 //    RenderFrameHost.
 // 3) Before main RenderFrameHost is re-created after crash.

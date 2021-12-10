@@ -688,7 +688,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
     // After a cross-document navigation, the old documents are going to run
     // unload handlers in the background and will be deleted thereafter e.g.
     // after a DidFinishNavigation in the same frame for a different
-    // RenderFrameHost, up until RenderFrameDeleted.
+    // RenderFrameHost, up until RenderFrameDeleted. Use
+    // RenderFrameHostWrapper::WaitUntilRenderFrameDelete() to wait until
+    // RenderFrameHost is deleted in tests.
     kPendingDeletion,
   };
 
