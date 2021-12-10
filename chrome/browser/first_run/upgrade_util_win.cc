@@ -80,9 +80,10 @@ bool InvokeGoogleUpdateForRename() {
   ULONG_PTR process_handle;
   {
     TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename LaunchCmdElevated");
-    hr = ipl->LaunchCmdElevated(install_static::GetAppGuid(),
-                                google_update::kRegRenameCmdField,
-                                ::GetCurrentProcessId(), &process_handle);
+    HRESULT hr = ipl->LaunchCmdElevated(
+        install_static::GetAppGuid(),
+        google_update::kRegRenameCmdField,
+        ::GetCurrentProcessId(), &process_handle);
     if (FAILED(hr)) {
       TRACE_EVENT0("startup",
                    "InvokeGoogleUpdateForRename LaunchCmdElevated failed");
