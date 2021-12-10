@@ -281,8 +281,6 @@ static_library("extensions") {
     "api/passwords_private/passwords_private_event_router_factory.h",
     "api/passwords_private/passwords_private_utils.cc",
     "api/passwords_private/passwords_private_utils.h",
-    "api/passwords_private/test_passwords_private_delegate.cc",
-    "api/passwords_private/test_passwords_private_delegate.h",
     "api/permissions/permissions_api.cc",
     "api/permissions/permissions_api.h",
     "api/permissions/permissions_api_helpers.cc",
@@ -1347,6 +1345,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "api/passwords_private/test_passwords_private_delegate.cc",
+    "api/passwords_private/test_passwords_private_delegate.h",
     "external_testing_loader.cc",
     "external_testing_loader.h",
     "menu_manager_test_observer.cc",
@@ -1356,6 +1356,7 @@ static_library("test_support") {
   deps = [
     ":extensions",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//extensions/browser:test_support",
   ]
