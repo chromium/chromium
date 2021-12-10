@@ -173,9 +173,9 @@ class Manifest final {
   const base::Value* FindKey(base::StringPiece path) const;
   const base::Value* FindPath(base::StringPiece path) const;
   absl::optional<bool> FindBoolPath(base::StringPiece path) const;
+  absl::optional<int> FindIntPath(base::StringPiece path) const;
   // TODO(crbug/1187061): Update these methods to use non-deprecated
   // base::Value methods.
-  bool GetInteger(const std::string& path, int* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
   bool GetString(const std::string& path, std::u16string* out_value) const;
   // Deprecated: Use the GetDictionary() overload that accepts a base::Value

@@ -800,15 +800,15 @@ bool Extension::LoadDescription(std::u16string* error) {
 bool Extension::LoadManifestVersion(std::u16string* error) {
   // Get the original value out of the dictionary so that we can validate it
   // more strictly.
-  bool key_exists =
-      manifest_->available_values().HasKey(keys::kManifestVersion);
-  if (key_exists) {
-    int manifest_version = 1;
-    if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version)) {
+  bool key_exists = false;
+  if (const base::Value* version_value =
+          manifest_->available_values().FindKey(keys::kManifestVersion)) {
+    if (!version_value->is_int()) {
       *error = InvalidManifestVersionError(
           errors::kInvalidManifestVersionUnsupported, is_platform_app());
       return false;
     }
+    key_exists = true;
   }
 
   manifest_version_ = manifest_->manifest_version();
