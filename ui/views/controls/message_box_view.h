@@ -12,8 +12,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,7 +30,7 @@ class Textfield;
 // This class displays the contents of a message box. It is intended for use
 // within a constrained window, and has options for a message, prompt, OK
 // and Cancel buttons.
-class VIEWS_EXPORT MessageBoxView : public View {
+class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
  public:
   METADATA_HEADER(MessageBoxView);
 
@@ -121,6 +124,17 @@ class VIEWS_EXPORT MessageBoxView : public View {
   int message_width_ = 0;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MessageBoxView, BoxLayoutView)
+VIEW_BUILDER_PROPERTY(const std::u16string&, CheckBoxLabel)
+VIEW_BUILDER_PROPERTY(bool, CheckBoxSelected)
+VIEW_BUILDER_METHOD(SetLink, const std::u16string&, Link::ClickedCallback)
+VIEW_BUILDER_PROPERTY(int, InterRowVerticalSpacing)
+VIEW_BUILDER_PROPERTY(int, MessageWidth)
+VIEW_BUILDER_PROPERTY(const std::u16string&, PromptField)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::MessageBoxView)
 
 #endif  // UI_VIEWS_CONTROLS_MESSAGE_BOX_VIEW_H_
