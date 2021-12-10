@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -122,7 +123,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   static void AddFastHorizontalGlyphToBloberizer(void* context,
                                                  unsigned,
                                                  Glyph,
-                                                 FloatSize glyph_offset,
+                                                 gfx::Vector2dF glyph_offset,
                                                  float advance,
                                                  bool is_horizontal,
                                                  CanvasRotationInVertical,
@@ -137,7 +138,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   static void AddGlyphToBloberizer(void* context,
                                    unsigned character_index,
                                    Glyph,
-                                   FloatSize glyph_offset,
+                                   gfx::Vector2dF glyph_offset,
                                    float advance,
                                    bool is_horizontal,
                                    CanvasRotationInVertical,

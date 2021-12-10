@@ -149,7 +149,7 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
 void CollectCharIndex(void* context,
                       unsigned char_index,
                       Glyph,
-                      FloatSize,
+                      gfx::Vector2dF,
                       float,
                       bool,
                       CanvasRotationInVertical,

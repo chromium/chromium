@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -706,7 +707,7 @@ template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
 void ShapeResultView::ComputePartInkBounds(
     const ShapeResultView::RunInfoPart& part,
     float run_advance,
-    FloatRect* ink_bounds) const {
+    gfx::RectF* ink_bounds) const {
   // Get glyph bounds from Skia. It's a lot faster if we give it list of glyph
   // IDs rather than calling it for each glyph.
   // TODO(kojii): MacOS does not benefit from batching the Skia request due to
@@ -729,9 +730,10 @@ void ShapeResultView::ComputePartInkBounds(
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = part.GlyphAt(j);
 #if defined(OS_MAC)
-    FloatRect glyph_bounds = current_font_data.BoundsForGlyph(glyph_data.glyph);
+    gfx::RectF glyph_bounds =
+        current_font_data.BoundsForGlyph(glyph_data.glyph);
 #else
-    FloatRect glyph_bounds(bounds_list[j]);
+    gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
     bounds.Unite<is_horizontal_run>(glyph_bounds, *glyph_offsets);
     bounds.origin += glyph_data.advance;
@@ -743,8 +745,8 @@ void ShapeResultView::ComputePartInkBounds(
   ink_bounds->Union(bounds.bounds);
 }
 
-FloatRect ShapeResultView::ComputeInkBounds() const {
-  FloatRect ink_bounds;
+gfx::RectF ShapeResultView::ComputeInkBounds() const {
+  gfx::RectF ink_bounds;
 
   float run_advance = 0.0f;
   for (const auto& part : Parts()) {

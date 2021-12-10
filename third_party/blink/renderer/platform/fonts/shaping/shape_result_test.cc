@@ -297,7 +297,7 @@ TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   HarfBuzzShaper shaper(string);
   auto result = shaper.Shape(&font, TextDirection::kLtr);
   EXPECT_FALSE(HasNonZeroGlyphOffsets(*result));
-  EXPECT_FALSE(result->ComputeInkBounds().IsZero());
+  EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
 
 // TDOO(yosin): We should use a font including U+0A81 or other code point
@@ -308,7 +308,7 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   HarfBuzzShaper shaper(string);
   auto result = shaper.Shape(&font, TextDirection::kLtr);
   ASSERT_TRUE(HasNonZeroGlyphOffsets(*result));
-  EXPECT_FALSE(result->ComputeInkBounds().IsZero());
+  EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
 
 }  // namespace blink

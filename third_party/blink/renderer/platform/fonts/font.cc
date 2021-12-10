@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -365,11 +365,11 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
-FloatRect Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
+gfx::RectF Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
   // No need to compute bounds if using custom fonts that are in the process
   // of loading as it won't be painted.
   if (ShouldSkipDrawing())
-    return FloatRect();
+    return gfx::RectF();
 
   // NOTE(eae): We could use the SkTextBlob::bounds API [1] however by default
   // it returns conservative bounds (rather than tight bounds) which are
@@ -382,7 +382,7 @@ FloatRect Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
 
 float Font::Width(const TextRun& run,
                   HashSet<const SimpleFontData*>* fallback_fonts,
-                  FloatRect* glyph_bounds) const {
+                  gfx::RectF* glyph_bounds) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
   return shaper.Width(run, fallback_fonts, glyph_bounds);

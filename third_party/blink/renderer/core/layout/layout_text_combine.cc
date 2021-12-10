@@ -80,7 +80,7 @@ float LayoutTextCombine::Width(unsigned from,
                                LayoutUnit x_position,
                                TextDirection direction,
                                HashSet<const SimpleFontData*>* fallback_fonts,
-                               FloatRect* glyph_bounds,
+                               gfx::RectF* glyph_bounds,
                                float) const {
   NOT_DESTROYED();
   if (!length)

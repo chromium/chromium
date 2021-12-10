@@ -750,7 +750,7 @@ ALWAYS_INLINE float TextWidth(
     float x_pos,
     bool collapse_white_space,
     HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-    FloatRect* glyph_bounds = nullptr) {
+    gfx::RectF* glyph_bounds = nullptr) {
   if ((!from && len == text.TextLength()) || text.StyleRef().HasTextCombine()) {
     return text.Width(from, len, font, LayoutUnit(x_pos),
                       text.StyleRef().Direction(), fallback_fonts,

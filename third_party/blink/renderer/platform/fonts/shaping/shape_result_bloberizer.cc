@@ -277,7 +277,7 @@ class GlyphCallbackContext {
     void* context,
     unsigned character_index,
     Glyph glyph,
-    FloatSize glyph_offset,
+    gfx::Vector2dF glyph_offset,
     float advance,
     bool is_horizontal,
     CanvasRotationInVertical rotation,
@@ -291,25 +291,25 @@ class GlyphCallbackContext {
     return;
   gfx::Vector2dF start_offset =
       is_horizontal ? gfx::Vector2dF(advance, 0) : gfx::Vector2dF(0, advance);
-  bloberizer->Add(glyph, font_data, rotation,
-                  start_offset + ToGfxVector2dF(glyph_offset), character_index);
+  bloberizer->Add(glyph, font_data, rotation, start_offset + glyph_offset,
+                  character_index);
 }
 
 /*static*/ void ShapeResultBloberizer::AddFastHorizontalGlyphToBloberizer(
     void* context,
     unsigned character_index,
     Glyph glyph,
-    FloatSize glyph_offset,
+    gfx::Vector2dF glyph_offset,
     float advance,
     bool is_horizontal,
     CanvasRotationInVertical canvas_rotation,
     const SimpleFontData* font_data) {
   ShapeResultBloberizer* bloberizer =
       static_cast<ShapeResultBloberizer*>(context);
-  DCHECK(!glyph_offset.height());
+  DCHECK(!glyph_offset.y());
   DCHECK(is_horizontal);
-  bloberizer->Add(glyph, font_data, canvas_rotation,
-                  advance + glyph_offset.width(), character_index);
+  bloberizer->Add(glyph, font_data, canvas_rotation, advance + glyph_offset.x(),
+                  character_index);
 }
 
 float ShapeResultBloberizer::FillGlyphsForResult(const ShapeResult* result,
@@ -385,7 +385,7 @@ class ClusterStarts {
   static void Accumulate(void* context,
                          unsigned character_index,
                          Glyph,
-                         FloatSize,
+                         gfx::Vector2dF,
                          float,
                          bool,
                          CanvasRotationInVertical,

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -1138,7 +1139,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     run->glyph_data_.SetOffsetAt(i, offset);
 
     total_advance += advance;
-    has_vertical_offsets |= (offset.height() != 0);
+    has_vertical_offsets |= (offset.y() != 0);
   }
 
   run->width_ = std::max(0.0f, total_advance);
@@ -1594,7 +1595,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
         GlyphOffset glyph_offset(
             0, -assembly_parameters.stretch_size + part.full_advance);
         run->glyph_data_.SetOffsetAt(glyph_index, glyph_offset);
-        result->has_vertical_offsets_ |= (glyph_offset.height() != 0);
+        result->has_vertical_offsets_ |= (glyph_offset.y() != 0);
       }
       part_index++;
     }
@@ -1933,7 +1934,7 @@ float ShapeResult::IndividualCharacterRanges(Vector<CharacterRange>* ranges,
 template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
 void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
                                       float run_advance,
-                                      FloatRect* ink_bounds) const {
+                                      gfx::RectF* ink_bounds) const {
   // Get glyph bounds from Skia. It's a lot faster if we give it list of glyph
   // IDs rather than calling it for each glyph.
   // TODO(kojii): MacOS does not benefit from batching the Skia request due to
@@ -1956,9 +1957,10 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
 #if defined(OS_MAC)
-    FloatRect glyph_bounds = current_font_data.BoundsForGlyph(glyph_data.glyph);
+    gfx::RectF glyph_bounds =
+        current_font_data.BoundsForGlyph(glyph_data.glyph);
 #else
-    FloatRect glyph_bounds(bounds_list[j]);
+    gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
     bounds.Unite<is_horizontal_run>(glyph_bounds, *glyph_offsets);
     ++glyph_offsets;
@@ -1970,8 +1972,8 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
   ink_bounds->Union(bounds.bounds);
 }
 
-FloatRect ShapeResult::ComputeInkBounds() const {
-  FloatRect ink_bounds;
+gfx::RectF ShapeResult::ComputeInkBounds() const {
+  gfx::RectF ink_bounds;
   float run_advance = 0.0f;
   for (const auto& run : runs_) {
     if (run->glyph_data_.HasNonZeroOffsets()) {

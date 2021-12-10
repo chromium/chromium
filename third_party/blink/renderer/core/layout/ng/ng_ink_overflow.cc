@@ -429,7 +429,7 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const Font& scaled_font,
     const PhysicalSize& size) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
-  const FloatRect text_ink_bounds = scaled_font.TextInkBounds(text_info);
+  const gfx::RectF text_ink_bounds = scaled_font.TextInkBounds(text_info);
   LayoutRect ink_overflow = EnclosingLayoutRect(text_ink_bounds);
 
   // Make the origin at the logical top of this fragment.

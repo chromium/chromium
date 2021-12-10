@@ -361,8 +361,7 @@ gfx::RectF NGFragmentItem::ObjectBoundingBox(
     const NGFragmentItems& items) const {
   DCHECK_EQ(Type(), kSvgText);
   const Font scaled_font = ScaledFont();
-  gfx::RectF ink_bounds =
-      ToGfxRectF(scaled_font.TextInkBounds(TextPaintInfo(items)));
+  gfx::RectF ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
   if (const auto* font_data = scaled_font.PrimaryFont())
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
   ink_bounds.Scale(SvgFragmentData()->length_adjust_scale, 1.0f);
@@ -383,7 +382,7 @@ gfx::RectF NGFragmentItem::ObjectBoundingBox(
 FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
   DCHECK_EQ(Type(), kSvgText);
   FloatQuad quad = BuildSvgTransformForBoundingBox().MapQuad(
-      FloatRect(SvgFragmentData()->rect));
+      FloatQuad(SvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
   quad.Scale(1 / scaling_factor, 1 / scaling_factor);
   return quad;

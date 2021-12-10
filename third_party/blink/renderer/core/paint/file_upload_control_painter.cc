@@ -47,7 +47,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
                            : 0;
     LayoutUnit button_and_spacing_width(
         button_width + LayoutFileUploadControl::kAfterButtonSpacing);
-    FloatRect text_bounds;
+    gfx::RectF text_bounds;
     float text_width = font.Width(text_run, nullptr, &text_bounds);
     LayoutUnit text_x;
     if (layout_file_upload_control_.StyleRef().IsLeftToRightDirection())

@@ -98,7 +98,7 @@ struct PLATFORM_EXPORT ShapeResultTestGlyphInfo {
 void PLATFORM_EXPORT AddGlyphInfo(void* context,
                                   unsigned character_index,
                                   Glyph,
-                                  FloatSize glyph_offset,
+                                  gfx::Vector2dF glyph_offset,
                                   float advance,
                                   bool is_horizontal,
                                   CanvasRotationInVertical,

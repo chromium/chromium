@@ -71,7 +71,7 @@ Vector<unsigned> ShapeResultTestInfo::CharacterIndexesForTesting() const {
 void AddGlyphInfo(void* context,
                   unsigned character_index,
                   Glyph glyph,
-                  FloatSize glyph_offset,
+                  gfx::Vector2dF glyph_offset,
                   float advance,
                   bool is_horizontal,
                   CanvasRotationInVertical rotation,

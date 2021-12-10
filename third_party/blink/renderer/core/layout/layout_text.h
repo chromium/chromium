@@ -192,7 +192,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                       LayoutUnit x_pos,
                       TextDirection,
                       HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-                      FloatRect* glyph_bounds = nullptr,
+                      gfx::RectF* glyph_bounds = nullptr,
                       float expansion = 0) const;
   virtual float Width(unsigned from,
                       unsigned len,
@@ -200,7 +200,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                       TextDirection,
                       bool first_line = false,
                       HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-                      FloatRect* glyph_bounds = nullptr,
+                      gfx::RectF* glyph_bounds = nullptr,
                       float expansion = 0) const;
 
   float MinLogicalWidth() const;
@@ -487,7 +487,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void ComputePreferredLogicalWidths(
       float lead_width,
       HashSet<const SimpleFontData*>& fallback_fonts,
-      FloatRect& glyph_bounds);
+      gfx::RectF& glyph_bounds);
 
   // Make length() private so that callers that have a LayoutText*
   // will use the more efficient textLength() instead, while
@@ -523,7 +523,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                       float text_width_so_far,
                       TextDirection,
                       HashSet<const SimpleFontData*>* fallback_fonts,
-                      FloatRect* glyph_bounds_accumulation,
+                      gfx::RectF* glyph_bounds_accumulation,
                       float expansion = 0) const;
 
   void ApplyTextTransform();

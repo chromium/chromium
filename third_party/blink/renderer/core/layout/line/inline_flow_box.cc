@@ -1212,7 +1212,7 @@ static void ComputeGlyphOverflow(
     const LineLayoutText& layout_text,
     GlyphOverflowAndFallbackFontsMap& text_box_data_map) {
   HashSet<const SimpleFontData*> fallback_fonts;
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
   GlyphOverflow glyph_overflow;
   float measured_width = layout_text.Width(
       text->Start(), text->Len(), LayoutUnit(), text->Direction(), false,

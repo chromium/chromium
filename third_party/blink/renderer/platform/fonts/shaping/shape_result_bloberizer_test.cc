@@ -631,7 +631,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   TextRun text_run(kStr, base::make_span(kStr).size());
 
   CachingWordShaper shaper(font);
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
   ASSERT_GT(shaper.Width(text_run, nullptr, &glyph_bounds), 0);
 
   TextRunPaintInfo run_info(text_run);

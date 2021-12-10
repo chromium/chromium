@@ -46,6 +46,7 @@
 
 namespace gfx {
 class PointF;
+class RectF;
 }
 
 namespace cc {
@@ -56,7 +57,6 @@ class PaintFlags;
 namespace blink {
 
 struct CharacterRange;
-class FloatRect;
 class FontSelector;
 class ShapeCache;
 class TextRun;
@@ -132,7 +132,7 @@ class PLATFORM_EXPORT Font {
                          float device_scale_factor,
                          const cc::PaintFlags&) const;
 
-  FloatRect TextInkBounds(const NGTextFragmentPaintInfo&) const;
+  gfx::RectF TextInkBounds(const NGTextFragmentPaintInfo&) const;
 
   struct TextIntercept {
     float begin_, end_;
@@ -160,7 +160,7 @@ class PLATFORM_EXPORT Font {
   // origin.
   float Width(const TextRun&,
               HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-              FloatRect* glyph_bounds = nullptr) const;
+              gfx::RectF* glyph_bounds = nullptr) const;
 
   int OffsetForPosition(const TextRun&,
                         float position,

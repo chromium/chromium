@@ -553,7 +553,7 @@ static inline void SetLogicalWidthForTextRun(
     hyphen_width = LayoutUnit(layout_text.HyphenWidth(font, run->Direction()));
 
   float measured_width = 0;
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
 
   bool kerning_is_enabled =
       font.GetFontDescription().GetTypesettingFeatures() & kKerning;
@@ -594,7 +594,7 @@ static inline void SetLogicalWidthForTextRun(
             layout_text.CharacterAt(word_measurement.start_offset) == ' ')
           measured_width += layout_text.StyleRef().WordSpacing();
       } else {
-        FloatRect word_glyph_bounds = word_measurement.glyph_bounds;
+        gfx::RectF word_glyph_bounds = word_measurement.glyph_bounds;
         word_glyph_bounds.Offset(measured_width, 0);
         glyph_bounds.Union(word_glyph_bounds);
         measured_width += word_measurement.width;
