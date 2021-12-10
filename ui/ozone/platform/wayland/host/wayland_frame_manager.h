@@ -156,6 +156,10 @@ class WaylandFrameManager {
                       const gfx::PresentationFeedback& feedback,
                       bool discarded = false);
 
+  // Verifies the number of submitted frames and discards pending presentation
+  // feedbacks if the number is too big.
+  void VerifyNumberOfSubmittedFrames();
+
   WaylandWindow* const window_;
 
   // When RecordFrame() is called, a Frame is pushed to |pending_frames_|. See

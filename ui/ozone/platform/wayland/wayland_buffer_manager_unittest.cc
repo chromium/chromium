@@ -19,6 +19,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -2111,6 +2112,101 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
       }
     }
   }
+}
+
+// Verifies that there are no more than certain number of submitted frames that
+// wait presentation feedbacks. If the number of pending frames hit the
+// threshold, the feedbacks are marked as failed and discarded. See the comments
+// below in the test.
+TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
+  auto* mock_wp_presentation = server_.EnsureWpPresentation();
+  ASSERT_TRUE(mock_wp_presentation);
+
+  // 2 buffers are enough.
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
+  window_->SetBounds(bounds);
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
+                                               false /* fail */);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // There will be 235 frames/commits.
+  constexpr uint32_t kNumberOfCommits = 235u;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_wp_presentation, Feedback(_, _, _, _))
+      .Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
+  // The presentation feedbacks should fail after first 20 commits (that's the
+  // threshold that WaylandFrameManager maintains). Next, the presentation
+  // feedbacks will fail every consequent 17 commits as 3 frames out of 20
+  // previous frames that WaylandFrameManager stores are always preserved in
+  // case if the client restores the behavior (which is very unlikely).
+  uint32_t expect_presentation_failure_on_commit_seq = 20u;
+  // Chooses the next buffer id that should be committed.
+  uint32_t next_buffer_id_commit = 0;
+  // Specifies the expected number of failing feedbacks if the client
+  // misbehaves.
+  constexpr uint32_t kExpectedFailedFeedbacks = 17u;
+  for (auto commit_seq = 1u; commit_seq <= kNumberOfCommits; commit_seq++) {
+    // All the other expectations must come in order.
+    if (next_buffer_id_commit == kBufferId1)
+      next_buffer_id_commit = kBufferId2;
+    else
+      next_buffer_id_commit = kBufferId1;
+
+    EXPECT_CALL(mock_surface_gpu, OnSubmission(next_buffer_id_commit,
+                                               gfx::SwapResult::SWAP_ACK, _))
+        .Times(1);
+
+    if (commit_seq % expect_presentation_failure_on_commit_seq == 0) {
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(_, gfx::PresentationFeedback::Failure()))
+          .Times(kExpectedFailedFeedbacks);
+      // See comment near |expect_presentation_failure_on_commit_seq|.
+      expect_presentation_failure_on_commit_seq += kExpectedFailedFeedbacks;
+    } else {
+      // The client misbehaves and doesn't send presentation feedbacks. The
+      // frame manager doesn't mark the feedbacks as failed until the threshold
+      // is hit.
+      EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
+    }
+
+    buffer_manager_gpu_->CommitBuffer(widget, next_buffer_id_commit, bounds,
+                                      kDefaultScale, bounds);
+
+    Sync();
+
+    if (auto* buffer = mock_surface->prev_attached_buffer())
+      mock_surface->ReleaseBuffer(buffer);
+
+    wl_resource_destroy(mock_wp_presentation->ReleasePresentationCallback());
+
+    mock_surface->SendFrameCallback();
+
+    Sync();
+
+    testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+  }
+
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

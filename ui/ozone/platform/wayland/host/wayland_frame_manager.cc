@@ -18,6 +18,8 @@ namespace ui {
 
 namespace {
 
+constexpr uint32_t kMaxNumberOfFrames = 20u;
+
 uint32_t GetPresentationKindFlags(uint32_t flags) {
   // Wayland spec has different meaning of VSync. In Chromium, VSync means to
   // update the begin frame vsync timing based on presentation feedback.
@@ -208,8 +210,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   if (!empty_frame)
     submitted_frames_.push_back(std::move(frame));
 
-  // This queue should be small - if not it's likely a bug.
-  DCHECK_LE(submitted_frames_.size(), 25u);
+  VerifyNumberOfSubmittedFrames();
+
   MaybeProcessSubmittedFrames();
 }
 
@@ -382,6 +384,31 @@ void WaylandFrameManager::OnPresentation(
   MaybeProcessSubmittedFrames();
 }
 
+void WaylandFrameManager::VerifyNumberOfSubmittedFrames() {
+  static constexpr uint32_t kLastThreeFrames = 3u;
+
+  // This queue should be small - if not it's likely a bug.
+  //
+  // Ideally this should be a DCHECK, but if the feedbacks are never sent (a bug
+  // in the server, everything crashes).
+  if (submitted_frames_.size() >= kMaxNumberOfFrames) {
+    LOG(ERROR)
+        << "The server has buggy presentation feedback. Discarding all "
+           "presentation feedback requests in all frames except the last "
+        << kLastThreeFrames << ".";
+    // Leave three last frames in case if the server restores its behavior
+    // (unlikely).
+    for (auto it = submitted_frames_.begin();
+         it < (submitted_frames_.end() - kLastThreeFrames); it++) {
+      if (!(*it)->submission_acked || !(*it)->pending_feedback)
+        break;
+      DCHECK(!(*it)->feedback.has_value());
+      (*it)->feedback = gfx::PresentationFeedback::Failure();
+      (*it)->pending_feedback.reset();
+    }
+  }
+}
+
 void WaylandFrameManager::OnExplicitBufferRelease(
     WaylandSurface* surface,
     struct wl_buffer* wl_buffer,
@@ -455,8 +482,6 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
                              gfx::GpuFenceHandle());
   }
 
-  CHECK_LT(submitted_frames_.size(), 25u);
-
   // Buffers may be released out of order, but we need to provide the
   // guarantee that OnSubmission will be called in order of buffer submission.
   for (auto iter = submitted_frames_.begin();
@@ -504,6 +529,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
     DCHECK(submitted_frames_.front()->submission_acked);
     submitted_frames_.pop_front();
   }
+
+  DCHECK_LE(submitted_frames_.size(), kMaxNumberOfFrames);
 }
 
 void WaylandFrameManager::ProcessOldSubmittedFrame(
