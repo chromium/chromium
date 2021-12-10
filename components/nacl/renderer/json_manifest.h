@@ -26,7 +26,6 @@ class JsonManifest {
 
   JsonManifest(const std::string& manifest_base_url,
                const std::string& sandbox_isa,
-               bool nonsfi_enabled,
                bool pnacl_debug);
   ~JsonManifest();
 
@@ -38,7 +37,6 @@ class JsonManifest {
   // manifest file.
   bool GetProgramURL(std::string* full_url,
                      PP_PNaClOptions* pnacl_options,
-                     bool* uses_nonsfi_mode,
                      ErrorInfo* error_info) const;
 
   // Gets all the keys and their URLs in the "files" section that are
@@ -64,12 +62,10 @@ class JsonManifest {
                                const std::string& parent_key,
                                std::string* url,
                                PP_PNaClOptions* pnacl_options,
-                               bool* uses_nonsfi_mode,
                                ErrorInfo* error_info) const;
 
   std::string manifest_base_url_;
   std::string sandbox_isa_;
-  bool nonsfi_enabled_;
   bool pnacl_debug_;
 
   // The dictionary of manifest information parsed in Init().

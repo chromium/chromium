@@ -28,7 +28,6 @@
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "components/nacl/common/nacl_nonsfi_util.h"
 #include "components/nacl/common/nacl_paths.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/nacl/loader/nacl_helper_linux.h"
@@ -152,8 +151,9 @@ void NaClForkDelegate::Init(const int sandboxdesc,
                             const bool enable_layer1_sandbox) {
   VLOG(1) << "NaClForkDelegate::Init()";
 
-  // Only launch the non-SFI helper process if non-SFI mode is enabled.
-  if (nonsfi_mode_ && !IsNonSFIModeEnabled()) {
+  // non-SFI mode is no longer supported.
+  // TODO(b/200965779): Clean up the code.
+  if (nonsfi_mode_) {
     return;
   }
 

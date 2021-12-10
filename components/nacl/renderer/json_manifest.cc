@@ -27,11 +27,8 @@ const char kFilesKey[] = "files";
 
 // ISA Dictionary keys
 const char kX8632Key[] = "x86-32";
-const char kX8632NonSFIKey[] = "x86-32-nonsfi";
 const char kX8664Key[] = "x86-64";
-const char kX8664NonSFIKey[] = "x86-64-nonsfi";
 const char kArmKey[] = "arm";
-const char kArmNonSFIKey[] = "arm-nonsfi";
 const char kPortableKey[] = "portable";
 
 // Url Resolution keys
@@ -90,11 +87,6 @@ const char kOptLevelKey[] = "optlevel";
 //     }
 //   }
 // }
-
-// Returns the key for the architecture in non-SFI mode.
-std::string GetNonSFIKey(const std::string& sandbox_isa) {
-  return sandbox_isa + "-nonsfi";
-}
 
 // Looks up |property_name| in the vector |valid_names| with length
 // |valid_name_count|.  Returns true if |property_name| is found.
@@ -266,7 +258,6 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
                           const std::string& parent_key,
                           const std::string& sandbox_isa,
                           bool must_find_matching_entry,
-                          bool nonsfi_enabled,
                           JsonManifest::ErrorInfo* error_info) {
   const base::DictionaryValue* dictionary = nullptr;
   if (!parent_dictionary.GetDictionaryWithoutPathExpansion(parent_key,
@@ -289,17 +280,11 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
   } else {
     // The known values for NaCl ISA dictionaries in the manifest.
     static const char* kNaClManifestISAProperties[] = {
-      kX8632Key,
-      kX8632NonSFIKey,
-      kX8664Key,
-      kX8664NonSFIKey,
-      kArmKey,
-      kArmNonSFIKey,
-      // "portable" is here to allow checking that, if present, it can
-      // only refer to an URL, such as for a data file, and not to
-      // "pnacl-translate", which would cause the creation of a nexe.
-      kPortableKey
-    };
+        kX8632Key, kX8664Key, kArmKey,
+        // "portable" is here to allow checking that, if present, it can
+        // only refer to an URL, such as for a data file, and not to
+        // "pnacl-translate", which would cause the creation of a nexe.
+        kPortableKey};
     isaProperties = kNaClManifestISAProperties;
     isaPropertiesLength = base::size(kNaClManifestISAProperties);
   }
@@ -360,11 +345,9 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
     // TODO(elijahtaylor) add ISA resolver here if we expand ISAs to include
     // micro-architectures that can resolve to multiple valid sandboxes.
     bool has_isa = dictionary->HasKey(sandbox_isa);
-    bool has_nonsfi_isa =
-        nonsfi_enabled && dictionary->HasKey(GetNonSFIKey(sandbox_isa));
     bool has_portable = dictionary->HasKey(kPortableKey);
 
-    if (!has_isa && !has_nonsfi_isa && !has_portable) {
+    if (!has_isa && !has_portable) {
       error_info->error = PP_NACL_ERROR_MANIFEST_PROGRAM_MISSING_ARCH;
       error_info->string = "manifest: no version of " + parent_key +
           " given for current arch and no portable version found.";
@@ -397,12 +380,10 @@ void GrabUrlAndPnaclOptions(const base::DictionaryValue& url_spec,
 
 JsonManifest::JsonManifest(const std::string& manifest_base_url,
                            const std::string& sandbox_isa,
-                           bool nonsfi_enabled,
                            bool pnacl_debug)
     : manifest_base_url_(manifest_base_url),
       sandbox_isa_(sandbox_isa),
-      nonsfi_enabled_(nonsfi_enabled),
-      pnacl_debug_(pnacl_debug) { }
+      pnacl_debug_(pnacl_debug) {}
 
 JsonManifest::~JsonManifest() {}
 
@@ -438,17 +419,15 @@ bool JsonManifest::Init(const std::string& manifest_json_data,
 
 bool JsonManifest::GetProgramURL(std::string* full_url,
                                  PP_PNaClOptions* pnacl_options,
-                                 bool* uses_nonsfi_mode,
                                  ErrorInfo* error_info) const {
   if (!full_url)
     return false;
   CHECK(pnacl_options);
-  CHECK(uses_nonsfi_mode);
   CHECK(error_info);
 
   std::string nexe_url;
   if (!GetURLFromISADictionary(*dictionary_, kProgramKey, &nexe_url,
-                               pnacl_options, uses_nonsfi_mode, error_info)) {
+                               pnacl_options, error_info)) {
     return false;
   }
 
@@ -534,7 +513,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // There must be a matching (portable or sandbox_isa_) entry for program for
   // NaCl.
   if (!IsValidISADictionary(*dictionary_, kProgramKey, sandbox_isa_, true,
-                            nonsfi_enabled_, error_info)) {
+                            error_info)) {
     return false;
   }
 
@@ -543,7 +522,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // for NaCl.
   if (dictionary_->HasKey(kInterpreterKey)) {
     if (!IsValidISADictionary(*dictionary_, kInterpreterKey, sandbox_isa_, true,
-                              nonsfi_enabled_, error_info)) {
+                              error_info)) {
       return false;
     }
   }
@@ -564,7 +543,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
          it.Advance()) {
       const std::string& file_name = it.key();
       if (!IsValidISADictionary(*files_dictionary, file_name, sandbox_isa_,
-                                false, nonsfi_enabled_, error_info)) {
+                                false, error_info)) {
         return false;
       }
     }
@@ -582,10 +561,9 @@ bool JsonManifest::GetKeyUrl(const base::DictionaryValue& dictionary,
     return false;
   }
   std::string relative_url;
-  bool uses_nonsfi_mode;
   ErrorInfo ignored_error_info;
   if (!GetURLFromISADictionary(dictionary, key, &relative_url, pnacl_options,
-                               &uses_nonsfi_mode, &ignored_error_info))
+                               &ignored_error_info))
     return false;
 
   // The contents of the manifest are resolved relative to the manifest URL.
@@ -604,7 +582,6 @@ bool JsonManifest::GetURLFromISADictionary(
     const std::string& parent_key,
     std::string* url,
     PP_PNaClOptions* pnacl_options,
-    bool* uses_nonsfi_mode,
     ErrorInfo* error_info) const {
   DCHECK(url && pnacl_options && error_info);
 
@@ -621,7 +598,7 @@ bool JsonManifest::GetURLFromISADictionary(
   // a matching entry (sandbox_isa_ or portable) for NaCl.
   ErrorInfo ignored_error_info;
   if (!IsValidISADictionary(parent_dictionary, parent_key, sandbox_isa_, true,
-                            nonsfi_enabled_, &ignored_error_info)) {
+                            &ignored_error_info)) {
     error_info->error = PP_NACL_ERROR_MANIFEST_RESOLVE_URL;
     error_info->string = "architecture " + sandbox_isa_ +
                          " is not found for file " + parent_key;
@@ -629,18 +606,12 @@ bool JsonManifest::GetURLFromISADictionary(
   }
 
   // The call to IsValidISADictionary() above guarantees that either
-  // sandbox_isa_, its nonsfi mode, or kPortableKey is present in the
-  // dictionary.
-  *uses_nonsfi_mode = false;
+  // sandbox_isa_ or kPortableKey is present in the dictionary.
   std::string chosen_isa;
   if (sandbox_isa_ == kPortableKey) {
     chosen_isa = kPortableKey;
   } else {
-    std::string nonsfi_isa = GetNonSFIKey(sandbox_isa_);
-    if (nonsfi_enabled_ && dictionary->HasKey(nonsfi_isa)) {
-      chosen_isa = nonsfi_isa;
-      *uses_nonsfi_mode = true;
-    } else if (dictionary->HasKey(sandbox_isa_)) {
+    if (dictionary->HasKey(sandbox_isa_)) {
       chosen_isa = sandbox_isa_;
     } else if (dictionary->HasKey(kPortableKey)) {
       chosen_isa = kPortableKey;

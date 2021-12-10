@@ -62,8 +62,6 @@ if (enable_nacl) {
     sources = [
       "nacl_host_messages.cc",
       "nacl_host_messages.h",
-      "nacl_nonsfi_util.cc",
-      "nacl_nonsfi_util.h",
       "pnacl_types.cc",
       "pnacl_types.h",
     ]

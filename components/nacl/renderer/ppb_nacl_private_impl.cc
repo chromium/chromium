@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_host_messages.h"
 #include "components/nacl/common/nacl_messages.h"
-#include "components/nacl/common/nacl_nonsfi_util.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/nacl/common/nacl_types.h"
 #include "components/nacl/renderer/file_downloader.h"
@@ -247,12 +246,8 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
             &nacl_plugin_instance->nexe_load_manager;
         std::string full_url;
         PP_PNaClOptions pnacl_options;
-        bool uses_nonsfi_mode;
         JsonManifest::ErrorInfo error_info;
-        if (manifest->GetProgramURL(&full_url,
-                                    &pnacl_options,
-                                    &uses_nonsfi_mode,
-                                    &error_info)) {
+        if (manifest->GetProgramURL(&full_url, &pnacl_options, &error_info)) {
           int64_t exe_size = nacl_plugin_instance->pexe_size;
           if (exe_size == 0)
             exe_size = load_manager->nexe_size();
@@ -1085,7 +1080,7 @@ bool CreateJsonManifest(PP_Instance instance,
     isa_type = GetSandboxArch();
 
   std::unique_ptr<nacl::JsonManifest> j(new nacl::JsonManifest(
-      manifest_url.c_str(), isa_type, IsNonSFIModeEnabled(),
+      manifest_url.c_str(), isa_type,
       PP_ToBool(NaClDebugEnabledForURL(manifest_url.c_str()))));
   JsonManifest::ErrorInfo error_info;
   if (j->Init(manifest_data.c_str(), &error_info)) {
@@ -1133,13 +1128,11 @@ PP_Bool PPBNaClPrivate::GetManifestProgramURL(PP_Instance instance,
   if (manifest == NULL)
     return PP_FALSE;
 
-  bool uses_nonsfi_mode;
   std::string full_url;
   JsonManifest::ErrorInfo error_info;
-  if (manifest->GetProgramURL(&full_url, pnacl_options, &uses_nonsfi_mode,
-                              &error_info)) {
+  if (manifest->GetProgramURL(&full_url, pnacl_options, &error_info)) {
     *pp_full_url = ppapi::StringVar::StringToPPVar(full_url);
-    *pp_uses_nonsfi_mode = PP_FromBool(uses_nonsfi_mode);
+    *pp_uses_nonsfi_mode = PP_FALSE;
     if (ShouldUseSubzero(pnacl_options)) {
       pnacl_options->use_subzero = PP_TRUE;
       // Subzero -O2 is closer to LLC -O0, so indicate -O2.
