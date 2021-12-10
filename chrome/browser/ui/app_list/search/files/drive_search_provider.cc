@@ -135,7 +135,8 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
       FileResult::CalculateRelevance(last_tokenized_query_, reparented_path);
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveSearch, last_query_, relevance, type,
+      ash::AppListSearchResultType::kDriveSearch,
+      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_);
 }
 

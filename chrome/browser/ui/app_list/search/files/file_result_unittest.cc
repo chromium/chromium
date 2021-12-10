@@ -35,7 +35,8 @@ TEST_F(FileResultTest, CheckMetadata) {
   FileResult result("zero_state_file://",
                     base::FilePath("/my/test/MIXED_case_FILE.Pdf"),
                     ash::AppListSearchResultType::kZeroStateFile,
-                    ash::SearchResultDisplayType::kList, 0.2f, profile_.get());
+                    ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+                    FileResult::Type::kFile, profile_.get());
   EXPECT_EQ(base::UTF16ToUTF8(result.title()),
             std::string("MIXED_case_FILE.Pdf"));
   EXPECT_EQ(result.id(), "zero_state_file:///my/test/MIXED_case_FILE.Pdf");
@@ -48,10 +49,12 @@ TEST_F(FileResultTest, HostedExtensionsIgnored) {
   FileResult result_1("zero_state_file://", base::FilePath("my/Document.gdoc"),
                       ash::AppListSearchResultType::kZeroStateFile,
                       ash::SearchResultDisplayType::kList, 0.2f,
+                      std::u16string(), FileResult::Type::kFile,
                       profile_.get());
   FileResult result_2("zero_state_file://", base::FilePath("my/Map.gmaps"),
                       ash::AppListSearchResultType::kZeroStateFile,
                       ash::SearchResultDisplayType::kList, 0.2f,
+                      std::u16string(), FileResult::Type::kFile,
                       profile_.get());
 
   EXPECT_EQ(base::UTF16ToUTF8(result_1.title()), std::string("Document"));

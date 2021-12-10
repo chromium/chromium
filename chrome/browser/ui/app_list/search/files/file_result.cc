@@ -87,12 +87,22 @@ FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
                        ResultType result_type,
                        DisplayType display_type,
+                       float relevance,
+                       const std::u16string& query,
                        Type type,
                        Profile* profile)
     : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
   SetCategory(Category::kFiles);
+  SetDisplayType(display_type);
+
+  set_relevance(relevance);
+  if (display_type == DisplayType::kList) {
+    // Chip and list results overlap, and only list results are fully launched.
+    // So we only log metrics for list results.
+    LogRelevance(result_type, relevance);
+  }
 
   SetResultType(result_type);
   switch (result_type) {
@@ -114,92 +124,42 @@ FileResult::FileResult(const std::string& schema,
       NOTREACHED();
   }
 
-  SetDisplayType(display_type);
+  SetTitle(base::UTF8ToUTF16(
+      StripHostedFileExtensions(filepath.BaseName().value())));
+  SetTitleTags(CalculateTags(query, title()));
 
   // Set the details to the display name of the Files app.
   std::u16string sanitized_name = base::CollapseWhitespace(
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);
-  SetTitle(base::UTF8ToUTF16(
-      StripHostedFileExtensions(filepath.BaseName().value())));
-}
-
-FileResult::FileResult(const std::string& schema,
-                       const base::FilePath& filepath,
-                       ResultType result_type,
-                       DisplayType display_type,
-                       const float relevance,
-                       Profile* profile)
-    : FileResult(schema,
-                 filepath,
-                 result_type,
-                 display_type,
-                 Type::kFile,
-                 profile) {
-  set_relevance(relevance);
-  if (display_type == DisplayType::kList) {
-    // Chip and list results overlap, and only list results are fully launched.
-    // So we only log metrics for list results.
-    LogRelevance(result_type, relevance);
-  }
 
   // Launcher search results UI is light by default, so use icons for light
   // background if dark/light mode feature is not enabled.
   const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
-  switch (display_type) {
-    case DisplayType::kChip:
-      SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
-      break;
-    case DisplayType::kContinue:
-      // For Continue Section, if dark/light mode is disabled, we should use
-      // dark background as default.
-      if (!ash::features::IsDarkLightModeEnabled())
-        SetChipIcon(ash::GetIconForPath(filepath, /*dark_background=*/true));
-      else
-        SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
-      break;
-    case DisplayType::kList:
-      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-FileResult::FileResult(const std::string& schema,
-                       const base::FilePath& filepath,
-                       ResultType result_type,
-                       const std::u16string& query,
-                       const float relevance,
-                       Type type,
-                       Profile* profile)
-    : FileResult(schema,
-                 filepath,
-                 result_type,
-                 DisplayType::kList,
-                 type,
-                 profile) {
-  set_relevance(relevance);
-  LogRelevance(result_type, relevance);
-
-  SetTitleTags(CalculateTags(query, title()));
-
-  // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled.
-  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
-                               ash::ColorProvider::Get()->IsDarkModeEnabled();
-  switch (type) {
-    case Type::kFile:
-      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
-      break;
-    case Type::kDirectory:
-      SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
-      break;
-    case Type::kSharedDirectory:
-      SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
-      break;
+  if (display_type == DisplayType::kChip) {
+    SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
+  } else if (display_type == DisplayType::kContinue) {
+    // For Continue Section, if dark/light mode is disabled, we should use dark
+    // background as default.
+    const bool dark_continue_background =
+        ash::features::IsDarkLightModeEnabled()
+            ? ash::ColorProvider::Get()->IsDarkModeEnabled()
+            : true;
+    SetChipIcon(ash::GetChipIconForPath(filepath, dark_continue_background));
+  } else {
+    switch (type) {
+      case Type::kFile:
+        SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
+        break;
+      case Type::kDirectory:
+        SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
+        break;
+      case Type::kSharedDirectory:
+        SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
+        break;
+    }
   }
 }
 

@@ -133,7 +133,7 @@ void ZeroStateFileProvider::SetSearchResults(
     auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
-        profile_);
+        std::u16string(), FileResult::Type::kFile, profile_);
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
     // enabled. We should implement new thumbnail logic for Continue results if
     // necessary.
@@ -147,11 +147,11 @@ void ZeroStateFileProvider::SetSearchResults(
     // launched.
     if (app_list_features::IsSuggestedLocalFilesEnabled() &&
         IsSuggestedContentEnabled(profile_)) {
-      new_results.emplace_back(
-          std::make_unique<FileResult>(kFileChipSchema, filepath_score.first,
-                                       ash::AppListSearchResultType::kFileChip,
-                                       ash::SearchResultDisplayType::kChip,
-                                       filepath_score.second, profile_));
+      new_results.emplace_back(std::make_unique<FileResult>(
+          kFileChipSchema, filepath_score.first,
+          ash::AppListSearchResultType::kFileChip,
+          ash::SearchResultDisplayType::kChip, filepath_score.second,
+          std::u16string(), FileResult::Type::kFile, profile_));
     }
   }
 
@@ -186,7 +186,8 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
         base::FilePath(FILE_PATH_LITERAL(
             base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
         ash::AppListSearchResultType::kFileChip,
-        ash::SearchResultDisplayType::kContinue, 0.1f, profile_));
+        ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
+        FileResult::Type::kFile, profile_));
   }
 }
 

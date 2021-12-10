@@ -297,7 +297,7 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
   return std::make_unique<FileResult>(
       kListSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
-      relevance, profile_);
+      relevance, std::u16string(), FileResult::Type::kFile, profile_);
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
@@ -306,7 +306,8 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
   return std::make_unique<FileResult>(
       kChipSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kDriveChip,
-      ash::SearchResultDisplayType::kChip, relevance, profile_);
+      ash::SearchResultDisplayType::kChip, relevance, std::u16string(),
+      FileResult::Type::kFile, profile_);
 }
 
 void ZeroStateDriveProvider::MaybeLogHypotheticalQuery() {

@@ -26,19 +26,12 @@ class FileResult : public ChromeSearchResult {
  public:
   enum class Type { kFile, kDirectory, kSharedDirectory };
 
-  // Constructor for zero state results.
   FileResult(const std::string& schema,
              const base::FilePath& filepath,
              ResultType result_type,
              DisplayType display_type,
              float relevance,
-             Profile* profile);
-  // Constructor for search results.
-  FileResult(const std::string& schema,
-             const base::FilePath& filepath,
-             ResultType result_type,
              const std::u16string& query,
-             float relevance,
              Type type,
              Profile* profile);
   ~FileResult() override;
@@ -61,13 +54,6 @@ class FileResult : public ChromeSearchResult {
   void RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader);
 
  private:
-  FileResult(const std::string& schema,
-             const base::FilePath& filepath,
-             ResultType result_type,
-             DisplayType display_type,
-             Type type,
-             Profile* profile);
-
   // Callback for the result of MaybeRequestThumbnail's call to the
   // ThumbnailLoader.
   void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);

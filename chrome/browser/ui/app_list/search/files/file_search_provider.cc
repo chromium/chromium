@@ -159,7 +159,8 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
                                       : FileResult::Type::kFile;
   auto result = std::make_unique<FileResult>(
       kFileSearchSchema, path.path, ash::AppListSearchResultType::kFileSearch,
-      last_query_, relevance, type, profile_);
+      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
+      profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;
 }
