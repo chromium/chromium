@@ -54,7 +54,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int frontend_id) override;
+                           int frontend_id,
+                           const std::string& backend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
                            int frontend_id,
                            const std::string& backend_id,

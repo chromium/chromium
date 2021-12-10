@@ -40,10 +40,13 @@
   //  - 0x2060 - WORD-JOINER (makes string undivisible).
   constexpr char16_t separator[] = {0x2060, 0x0020, 0};
   const std::u16string digits = creditCard.LastFourDigits();
-  NSString* obfuscatedNumber = base::SysUTF16ToNSString(
-      autofill::kMidlineEllipsis4Dots + std::u16string(separator) +
-      autofill::kMidlineEllipsis4Dots + std::u16string(separator) +
-      autofill::kMidlineEllipsis4Dots + std::u16string(separator) + digits);
+  NSString* obfuscatedNumber =
+      base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(4) +
+                               std::u16string(separator) +
+                               autofill::CreditCard::GetMidlineEllipsisDots(4) +
+                               std::u16string(separator) +
+                               autofill::CreditCard::GetMidlineEllipsisDots(4) +
+                               std::u16string(separator) + digits);
 
   // Use 2 digits year.
   NSString* expirationYear =

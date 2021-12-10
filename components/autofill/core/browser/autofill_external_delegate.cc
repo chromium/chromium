@@ -231,16 +231,23 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
   manager_->DidSuppressPopup(query_form_, query_field_);
 }
 
-void AutofillExternalDelegate::DidSelectSuggestion(const std::u16string& value,
-                                                   int frontend_id) {
+void AutofillExternalDelegate::DidSelectSuggestion(
+    const std::u16string& value,
+    int frontend_id,
+    const std::string& backend_id) {
   ClearPreviewedForm();
 
-  // Only preview the data if it is a profile.
-  if (frontend_id > 0)
+  // Only preview the data if it is a profile or a virtual card.
+  if (frontend_id > 0) {
     FillAutofillFormData(frontend_id, true);
-  else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+  } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                  value);
+  } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kPreview, backend_id, query_id_,
+        query_form_, query_field_);
+  }
 }
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
@@ -288,8 +295,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // There can be multiple virtual credit cards that all rely on
     // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
     // the backend_id identifies the actually chosen credit card.
-    manager_->FillVirtualCardInformation(backend_id, query_id_, query_form_,
-                                         query_field_);
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, backend_id, query_id_,
+        query_form_, query_field_);
   } else {
     if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(

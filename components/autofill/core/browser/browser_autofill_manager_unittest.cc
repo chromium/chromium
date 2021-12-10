@@ -532,6 +532,21 @@ class BrowserAutofillManagerTest : public testing::Test {
     FillAutofillFormData(input_query_id, input_form, input_field, unique_id);
   }
 
+  void PreviewVirtualCardDataAndSaveResults(
+      mojom::RendererFormDataAction action,
+      const std::string& guid,
+      int input_query_id,
+      const FormData& input_form,
+      const FormFieldData& input_field,
+      int* response_query_id,
+      FormData* response_data) {
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
+        .WillOnce((DoAll(testing::SaveArg<0>(response_query_id),
+                         testing::SaveArg<2>(response_data))));
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        action, guid, input_query_id, input_form, input_field);
+  }
+
   int MakeFrontendID(const std::string& cc_sid,
                      const std::string& profile_sid) const {
     return browser_autofill_manager_->MakeFrontendID(cc_sid, profile_sid);
@@ -4236,7 +4251,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_VirtualCard) {
   personal_data_.ClearCreditCards();
   CreditCard masked_server_card;
-  test::SetCreditCardInfo(&masked_server_card, "Lorem Ispum",
+  test::SetCreditCardInfo(&masked_server_card, "Lorem Ipsum",
                           "5555555555554444",  // Mastercard
                           "10", test::NextYear().c_str(), "1");
   masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
@@ -4250,8 +4265,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
-  browser_autofill_manager_->FillVirtualCardInformation(
-      masked_server_card.guid(), kDefaultPageID, form, form.fields[1]);
+  browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+      mojom::RendererFormDataAction::kFill, masked_server_card.guid(),
+      kDefaultPageID, form, form.fields[1]);
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
@@ -4264,6 +4280,42 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_EQ(request_details->card.number(), u"5555555555554444");
   EXPECT_EQ(request_details->last_committed_url_origin.value(),
             GURL("https://example.test/"));
+}
+
+TEST_P(BrowserAutofillManagerStructuredProfileTest,
+       PreviewCreditCardForm_VirtualCard) {
+  personal_data_.ClearCreditCards();
+  CreditCard virtual_card = test::GetVirtualCard();
+  personal_data_.AddServerCreditCard(virtual_card);
+  // Set up our form data.
+  FormData form;
+  CreateTestCreditCardFormData(&form, true, false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  int response_page_id = 0;
+  FormData response_data;
+  PreviewVirtualCardDataAndSaveResults(
+      mojom::RendererFormDataAction::kPreview, virtual_card.guid(),
+      kDefaultPageID, form, form.fields[1], &response_page_id, &response_data);
+
+  std::u16string expected_cardholder_name = u"Lorem Ipsum";
+  // Virtual card number using obfuscated dots only: Virtual card Mastercard
+  // ••••4444
+  std::u16string expected_card_number =
+      u"Virtual card Mastercard  " + virtual_card.ObfuscatedLastFourDigits();
+  // Virtual card expiration month using obfuscated dots: ••
+  std::u16string expected_exp_month = CreditCard::GetMidlineEllipsisDots(2);
+  // Virtual card expiration year using obfuscated dots: ••••
+  std::u16string expected_exp_year = CreditCard::GetMidlineEllipsisDots(4);
+  // Virtual card cvc using obfuscated dots: •••
+  std::u16string expected_cvc = CreditCard::GetMidlineEllipsisDots(3);
+
+  EXPECT_EQ(response_data.fields[0].value, expected_cardholder_name);
+  EXPECT_EQ(response_data.fields[1].value, expected_card_number);
+  EXPECT_EQ(response_data.fields[2].value, expected_exp_month);
+  EXPECT_EQ(response_data.fields[3].value, expected_exp_year);
+  EXPECT_EQ(response_data.fields[4].value, expected_cvc);
 }
 
 // Test that non-focusable field is ignored while inferring boundaries between

@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -557,6 +558,16 @@ CreditCard GetFullServerCard() {
   test::SetCreditCardInfo(&credit_card, "Full Carter",
                           "4111111111111111" /* Visa */, NextMonth().c_str(),
                           NextYear().c_str(), "1");
+  return credit_card;
+}
+
+CreditCard GetVirtualCard() {
+  CreditCard credit_card;
+  test::SetCreditCardInfo(&credit_card, "Lorem Ipsum",
+                          "5555555555554444",  // Mastercard
+                          "10", test::NextYear().c_str(), "1");
+  credit_card.set_record_type(CreditCard::RecordType::VIRTUAL_CARD);
+  CreditCardTestApi(&credit_card).set_network_for_virtual_card(kMasterCard);
   return credit_card;
 }
 

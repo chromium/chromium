@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -45,6 +46,10 @@ using ::i18n::addressinput::NullStorage;
 using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
+
+std::u16string kMidlineEllipsis2Dots = CreditCard::GetMidlineEllipsisDots(2);
+std::u16string kMidlineEllipsis3Dots = CreditCard::GetMidlineEllipsisDots(3);
+std::u16string kMidlineEllipsis4Dots = CreditCard::GetMidlineEllipsisDots(4);
 
 const std::vector<const char*> NotNumericMonthsContentsNoPlaceholder() {
   const std::vector<const char*> result = {"Jan", "Feb", "Mar", "Apr",
@@ -2019,6 +2024,215 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
   filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"BY", field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_EXP_MONTH);
+
+  // A month with two digits should return two dots.
+  CreditCard card = test::GetVirtualCard();
+  card.SetExpirationDateFromString(u"12/2017");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
+
+  // A month with one digit should still return two dots.
+  card.SetExpirationDateFromString(u"03/2019");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualYear) {
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_EXP_4_DIGIT_YEAR);
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetExpirationDateFromString(u"12/2017");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
+
+  field.set_heuristic_type(CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedYear) {
+  // Test reducing 4 digit year to 2 digits.
+  AutofillField field;
+  field.max_length = 2;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_EXP_4_DIGIT_YEAR);
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetExpirationDateFromString(u"12/2017");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualDate) {
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  field.max_length = 7;
+
+  // A date that has a year containing four digits should return two dots for
+  // month and four dots for year.
+  CreditCard card = test::GetVirtualCard();
+  card.SetExpirationDateFromString(u"12/2017");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  std::u16string slash = u"/";
+  std::u16string expected =
+      kMidlineEllipsis2Dots + slash + kMidlineEllipsis4Dots;
+  EXPECT_EQ(expected, field.value);
+
+  // A date that has a year containing two digits should return two dots for
+  // month and two for year.
+  field.set_heuristic_type(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+  field.max_length = 5;
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis2Dots;
+  EXPECT_EQ(expected, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
+  // Test reducing dates to various max length field values.
+  AutofillField field;
+  field.form_control_type = "text";
+  field.max_length = 4;
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetExpirationDateFromString(u"12/2017");
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  // Expected: MMYY = ••••. Unlikely case
+  std::u16string expected = kMidlineEllipsis4Dots;
+  EXPECT_EQ(expected, field.value);
+
+  field.max_length = 5;
+  std::u16string slash = u"/";
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  // Expected: MM/YY = ••/••.
+  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis2Dots;
+  EXPECT_EQ(expected, field.value);
+
+  field.max_length = 6;
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  // Expected: MMYYYY = ••••••.
+  expected = kMidlineEllipsis2Dots + std::u16string() + kMidlineEllipsis4Dots;
+  EXPECT_EQ(expected, field.value);
+
+  field.max_length = 7;
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  // Expected: MM/YYYY = ••/••••.
+  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis4Dots;
+  EXPECT_EQ(expected, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_VERIFICATION_CODE);
+
+  CreditCard card = test::GetVirtualCard();
+  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis3Dots, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
+  const char kAmericanExpressCard[] = "americanExpressCC";
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_VERIFICATION_CODE);
+
+  CreditCard card = test::GetVirtualCard();
+  CreditCardTestApi(&card).set_network_for_virtual_card(kAmericanExpressCard);
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
+  AutofillField field;
+  field.set_heuristic_type(CREDIT_CARD_NUMBER);
+  field.set_credit_card_number_offset(50);
+  field.form_control_type = "text";
+  const char kMasterCard[] = "masterCardCC";
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetNumber(u"5454545454545454");
+  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &card, &field,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+
+  // Virtual card Mastercard ••••5454‬
+  std::u16string expected =
+      u"Virtual card Mastercard  "
+      u"\x202A\x2022\x2060\x2006\x2060\x2022\x2060\x2006\x2060\x2022\x2060"
+      u"\x2006\x2060\x2022\x2060\x2006\x2060"
+      u"5454\x202C";
+
+  EXPECT_EQ(expected, field.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewVirtualCardholderName) {
+  std::u16string name = u"Jone Doe";
+
+  AutofillField field;
+  field.form_control_type = "text";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  field.set_heuristic_type(CREDIT_CARD_NAME_FULL);
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetRawInfoWithVerificationStatus(
+      CREDIT_CARD_NAME_FULL, name,
+      structured_address::VerificationStatus::kFormatted);
+  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview,
+                       /*failure_to_fill*/ nullptr);
+  EXPECT_EQ(name, field.value);
 }
 
 }  // namespace autofill

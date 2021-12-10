@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "url/gurl.h"
 
@@ -21,8 +22,7 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A midline horizontal ellipsis (U+22EF).
-extern const char16_t kMidlineEllipsis4Dots[];
-extern const char16_t kMidlineEllipsis2Dots[];
+extern const char16_t kMidlineEllipsisDot[];
 
 namespace internal {
 
@@ -111,6 +111,9 @@ class CreditCard : public AutofillDataModel {
   // Returns whether the nickname is valid. Note that empty nicknames are valid
   // because they are not required.
   static bool IsNicknameValid(const std::u16string& nickname);
+
+  // Returns string of dots for hidden card information.
+  static std::u16string GetMidlineEllipsisDots(size_t num_dots);
 
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
@@ -356,6 +359,8 @@ class CreditCard : public AutofillDataModel {
   }
 
  private:
+  friend class CreditCardTestApi;
+
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationDateFromString);
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
 

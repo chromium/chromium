@@ -471,7 +471,8 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
 
   if (selected_line_) {
     delegate_->DidSelectSuggestion(suggestions_[*selected_line_].value,
-                                   suggestions_[*selected_line_].frontend_id);
+                                   suggestions_[*selected_line_].frontend_id,
+                                   suggestions_[*selected_line_].backend_id);
   } else {
     delegate_->ClearPreviewedForm();
   }

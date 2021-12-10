@@ -49,14 +49,7 @@ using structured_address::VerificationStatus;
 //  - \u2022 - Bullet.
 //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
 //  - \u2060 - WORD-JOINER (makes obfuscated string undivisible).
-constexpr char16_t kMidlineEllipsis4Dots[] =
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060";
-constexpr char16_t kMidlineEllipsis2Dots[] =
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060";
+constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
 constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
 namespace {
@@ -141,11 +134,9 @@ namespace internal {
 
 std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
                                                 int obfuscation_length) {
-  DCHECK(obfuscation_length == 2 || obfuscation_length == 4);
   std::u16string obfuscated_string =
-      std::u16string(obfuscation_length == 2 ? kMidlineEllipsis2Dots
-                                             : kMidlineEllipsis4Dots) +
-      digits;
+      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
+  obfuscated_string.append(digits);
   base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
   return obfuscated_string;
 }
@@ -364,6 +355,18 @@ bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
   }
 
   return true;
+}
+
+// static
+std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
+  DCHECK(num_dots > 0);
+  std::u16string dots;
+  dots.reserve(sizeof(kMidlineEllipsisDot) * num_dots);
+
+  for (size_t i = 0; i < num_dots; i++) {
+    dots.append(kMidlineEllipsisDot);
+  }
+  return dots;
 }
 
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {

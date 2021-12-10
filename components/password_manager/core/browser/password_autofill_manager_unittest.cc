@@ -1227,8 +1227,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   // Check that preview of the empty username works.
   EXPECT_CALL(*client.mock_driver(),
               PreviewSuggestion(std::u16string(), test_password_));
-  password_autofill_manager_->DidSelectSuggestion(no_username_string,
-                                                  0 /*not used*/);
+  password_autofill_manager_->DidSelectSuggestion(
+      no_username_string, 0 /*not used*/, std::string() /*not used*/);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that fill of the empty username works.
@@ -1831,7 +1831,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_CALL(*client.mock_driver(),
               PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
   password_autofill_manager_->DidSelectSuggestion(
-      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
+      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
+      std::string() /*not used*/);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.

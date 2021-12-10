@@ -93,7 +93,8 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis4Dots + digits + base::i18n::kPopDirectionalFormatting;
+      CreditCard::GetMidlineEllipsisDots(4) + digits +
+      base::i18n::kPopDirectionalFormatting;
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
                           digits, /*obfuscation_length=*/4));
 }
@@ -1861,7 +1862,8 @@ TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis2Dots + digits + base::i18n::kPopDirectionalFormatting;
+      CreditCard::GetMidlineEllipsisDots(2) + digits +
+      base::i18n::kPopDirectionalFormatting;
 
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
                           digits, /*obfuscation_length=*/2));

@@ -154,10 +154,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
-  virtual void FillVirtualCardInformation(const std::string& guid,
-                                          int query_id,
-                                          const FormData& form,
-                                          const FormFieldData& field);
+  virtual void FillOrPreviewVirtualCardInformation(
+      mojom::RendererFormDataAction action,
+      const std::string& guid,
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field);
 
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.

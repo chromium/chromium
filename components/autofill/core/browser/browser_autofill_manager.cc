@@ -1068,7 +1068,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   }
 
   FillOrPreviewDataModelForm(action, query_id, form, field, &credit_card_,
-                             /*cvc=*/nullptr, form_structure, autofill_field);
+                             /*optional_cvc=*/nullptr, form_structure,
+                             autofill_field);
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -1141,7 +1142,8 @@ void BrowserAutofillManager::FillProfileForm(
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
 
-void BrowserAutofillManager::FillVirtualCardInformation(
+void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
+    mojom::RendererFormDataAction action,
     const std::string& guid,
     int query_id,
     const FormData& form,
@@ -1155,8 +1157,7 @@ void BrowserAutofillManager::FillVirtualCardInformation(
   if (credit_card) {
     CreditCard copy = *credit_card;
     copy.set_record_type(CreditCard::VIRTUAL_CARD);
-    FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill, query_id,
-                                form, field, &copy);
+    FillOrPreviewCreditCardForm(action, query_id, form, field, &copy);
   }
 }
 

@@ -5562,8 +5562,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
-    browser_autofill_manager_->FillVirtualCardInformation(guid, kDefaultPageID,
-                                                          form, form.fields[2]);
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields[2]);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
     histogram_tester.ExpectBucketCount(
@@ -5588,12 +5589,14 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // Simulating selecting a virtual card multiple times.
     base::HistogramTester histogram_tester;
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
-    browser_autofill_manager_->FillVirtualCardInformation(guid, kDefaultPageID,
-                                                          form, form.fields[2]);
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields[2]);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
-    browser_autofill_manager_->FillVirtualCardInformation(guid, kDefaultPageID,
-                                                          form, form.fields[2]);
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields[2]);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
     histogram_tester.ExpectBucketCount(
@@ -5671,8 +5674,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // based on the enrolled masked card.
     base::HistogramTester histogram_tester;
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
-    browser_autofill_manager_->FillVirtualCardInformation(
-        guid, kDefaultPageID, form, form.fields.front());
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields.front());
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
     histogram_tester.ExpectBucketCount(
@@ -6662,8 +6666,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     browser_autofill_manager_->OnAskForValuesToFill(
         0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
-    browser_autofill_manager_->FillVirtualCardInformation(
-        guid, kDefaultPageID, form, form.fields.front());
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields.front());
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
     browser_autofill_manager_->OnFormSubmitted(
@@ -7120,8 +7125,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     browser_autofill_manager_->OnAskForValuesToFill(
         0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
-    browser_autofill_manager_->FillVirtualCardInformation(
-        guid, kDefaultPageID, form, form.fields.front());
+    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
+        form.fields.front());
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                     "6011000990139424");
     browser_autofill_manager_->OnFormSubmitted(
