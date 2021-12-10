@@ -35,6 +35,8 @@ class AshNotificationExpandButton;
 class ASH_EXPORT AshNotificationView
     : public message_center::NotificationViewBase {
  public:
+  static const char kViewClassName[];
+
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
@@ -64,6 +66,7 @@ class ASH_EXPORT AshNotificationView
       const std::vector<const message_center::Notification*>& notifications)
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
+  const char* GetClassName() const override;
 
   // message_center::NotificationViewBase:
   void UpdateViewForExpandedState(bool expanded) override;

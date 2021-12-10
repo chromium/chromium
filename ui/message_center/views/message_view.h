@@ -142,7 +142,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnGestureEvent(ui::GestureEvent* event) override;
   void RemovedFromWidget() override;
   void AddedToWidget() override;
-  const char* GetClassName() const final;
+  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // views::SlideOutControllerDelegate:

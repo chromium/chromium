@@ -245,6 +245,9 @@ void AshNotificationView::NotificationTitleRow::
   }
 }
 
+// static
+const char AshNotificationView::kViewClassName[] = "AshNotificationView";
+
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
@@ -576,6 +579,10 @@ void AshNotificationView::RemoveGroupNotification(
   left_content_->SetVisible(total_grouped_notifications_ == 0);
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
   PreferredSizeChanged();
+}
+
+const char* AshNotificationView::GetClassName() const {
+  return kViewClassName;
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
