@@ -70,7 +70,7 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
-    if self.allow_software_compositing:
+    if self.allow_software_compositing or self.NeedsSoftwareCompositing():
       logging.warning('Allowing software compositing. Some of the reported '
                       'metrics will have unreliable values.')
     else:

@@ -189,3 +189,13 @@ class PerfBenchmark(benchmark.Benchmark):
     if possible_browser.target_os == 'android':
       return possible_browser.platform.IsSvelte()
     return False
+
+  @staticmethod
+  def NeedsSoftwareCompositing():
+    # We have to run with software compositing under xvfb or
+    # chrome remote desktop.
+    if 'CHROME_REMOTE_DESKTOP_SESSION' in os.environ:
+      return True
+    if 'XVFB_DISPLAY' in os.environ:
+      return True
+    return False
