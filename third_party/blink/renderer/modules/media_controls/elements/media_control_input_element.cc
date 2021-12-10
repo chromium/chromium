@@ -120,11 +120,12 @@ void MediaControlInputElement::UpdateOverflowSubtitleElement(String text) {
     overflow_menu_subtitle_ =
         MakeGarbageCollected<HTMLSpanElement>(GetDocument());
     overflow_menu_subtitle_->setInnerText(text, ASSERT_NO_EXCEPTION);
-    overflow_menu_subtitle_->setAttribute("class", kOverflowSubtitleCSSClass);
+    overflow_menu_subtitle_->setAttribute(
+        "class", AtomicString(kOverflowSubtitleCSSClass));
 
     overflow_menu_container_->ParserAppendChild(overflow_menu_subtitle_);
     overflow_menu_container_->setAttribute(
-        "class", kOverflowContainerWithSubtitleCSSClass);
+        "class", AtomicString(kOverflowContainerWithSubtitleCSSClass));
   }
   UpdateOverflowLabelAriaLabel(text);
 }

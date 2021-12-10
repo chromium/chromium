@@ -4220,7 +4220,25 @@ bool Element::ParseAttributeName(QualifiedName& out,
 
 void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
-                             const V8TrustedString* trusted_string,
+                             String value,
+                             ExceptionState& exception_state) {
+  QualifiedName parsed_name = g_any_name;
+  if (!ParseAttributeName(parsed_name, namespace_uri, qualified_name,
+                          exception_state))
+    return;
+
+  AtomicString trusted_value(TrustedTypesCheckFor(
+      ExpectedTrustedTypeForAttribute(parsed_name), std::move(value),
+      GetExecutionContext(), exception_state));
+  if (exception_state.HadException())
+    return;
+
+  setAttribute(parsed_name, trusted_value);
+}
+
+void Element::setAttributeNS(const AtomicString& namespace_uri,
+                             const AtomicString& qualified_name,
+                             const V8TrustedType* trusted_string,
                              ExceptionState& exception_state) {
   QualifiedName parsed_name = g_any_name;
   if (!ParseAttributeName(parsed_name, namespace_uri, qualified_name,

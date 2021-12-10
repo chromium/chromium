@@ -141,7 +141,7 @@ void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
 
 void Element::SetAttributeHinted(AtomicString local_name,
                                  WTF::AtomicStringTable::WeakResult hint,
-                                 const AtomicString& value,
+                                 String value,
                                  ExceptionState& exception_state) {
   if (!Document::IsValidName(local_name)) {
     exception_state.ThrowDOMException(
@@ -168,7 +168,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
 void Element::SetAttributeHinted(AtomicString local_name,
                                  WTF::AtomicStringTable::WeakResult hint,
-                                 const V8TrustedString* trusted_string,
+                                 const V8TrustedType* trusted_string,
                                  ExceptionState& exception_state) {
   if (!Document::IsValidName(local_name)) {
     exception_state.ThrowDOMException(

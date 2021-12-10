@@ -28,7 +28,7 @@ enum class SpecificTrustedType {
 // will call String& versions below to do the heavy lifting.
 CORE_EXPORT String
 TrustedTypesCheckFor(SpecificTrustedType type,
-                     const V8TrustedString* trusted,
+                     const V8TrustedType* trusted,
                      const ExecutionContext* execution_context,
                      ExceptionState& exception_state) WARN_UNUSED_RESULT;
 CORE_EXPORT String

@@ -1155,7 +1155,7 @@ void MediaControlsImpl::BeginScrubbing(bool is_touch_event) {
   if (scrubbing_message_ && is_touch_event) {
     scrubbing_message_->SetIsWanted(true);
     if (scrubbing_message_->DoesFit())
-      panel_->setAttribute("class", kScrubbingMessageCSSClass);
+      panel_->setAttribute("class", AtomicString(kScrubbingMessageCSSClass));
   }
 
   is_scrubbing_ = true;

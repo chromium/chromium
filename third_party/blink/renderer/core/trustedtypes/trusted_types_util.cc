@@ -10,9 +10,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml_trustedscript_trustedscripturl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedhtml_trustedscript_trustedscripturl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -465,7 +465,7 @@ String TrustedTypesCheckForScriptURL(String script_url,
 }
 
 String TrustedTypesCheckFor(SpecificTrustedType type,
-                            const V8TrustedString* trusted,
+                            const V8TrustedType* trusted,
                             const ExecutionContext* execution_context,
                             ExceptionState& exception_state) {
   DCHECK(trusted);
@@ -474,18 +474,15 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
   String value;
   bool does_type_match = false;
   switch (trusted->GetContentType()) {
-    case V8TrustedString::ContentType::kString:
-      value = trusted->GetAsString();
-      break;
-    case V8TrustedString::ContentType::kTrustedHTML:
+    case V8TrustedType::ContentType::kTrustedHTML:
       value = trusted->GetAsTrustedHTML()->toString();
       does_type_match = type == SpecificTrustedType::kHTML;
       break;
-    case V8TrustedString::ContentType::kTrustedScript:
+    case V8TrustedType::ContentType::kTrustedScript:
       value = trusted->GetAsTrustedScript()->toString();
       does_type_match = type == SpecificTrustedType::kScript;
       break;
-    case V8TrustedString::ContentType::kTrustedScriptURL:
+    case V8TrustedType::ContentType::kTrustedScriptURL:
       value = trusted->GetAsTrustedScriptURL()->toString();
       does_type_match = type == SpecificTrustedType::kScriptURL;
       break;
