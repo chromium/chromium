@@ -1340,10 +1340,7 @@
 
   <!-- Privacy Review -->
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">
-    Privacy and security review
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
-    Review the most important privacy and security controls in one place
+    Privacy guide
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_TITLE" desc="Title of a card in the settings page that promotes the privacy review feature.">
     Privacy review

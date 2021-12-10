@@ -123,6 +123,9 @@
   </message>
 
   <!-- Privacy Review -->
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
+    Customize some of Chrome’s most important privacy choices
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
     When you close all Chrome windows, cookies and site data are automatically cleared
   </message>
