@@ -600,10 +600,8 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   // Check for |converted_from_user_script| first, since it affects the type
   // returned by GetType(). This is needed to determine if the manifest version
   // is valid.
-  if (manifest_->FindKey(keys::kConvertedFromUserScript)) {
-    manifest_->GetBoolean(keys::kConvertedFromUserScript,
-                          &converted_from_user_script_);
-  }
+  converted_from_user_script_ =
+      manifest_->FindBoolPath(keys::kConvertedFromUserScript).value_or(false);
 
   // Important to load manifest version first because many other features
   // depend on its value.
@@ -691,17 +689,20 @@ bool Extension::LoadAppFeatures(std::u16string* error) {
                   errors::kInvalidWebURLs, errors::kInvalidWebURL, error)) {
     return false;
   }
-  if (manifest_->FindKey(keys::kDisplayInLauncher) &&
-      !manifest_->GetBoolean(keys::kDisplayInLauncher, &display_in_launcher_)) {
-    *error = errors::kInvalidDisplayInLauncher;
-    return false;
+  if (const base::Value* temp = manifest_->FindKey(keys::kDisplayInLauncher)) {
+    if (!temp->is_bool()) {
+      *error = errors::kInvalidDisplayInLauncher;
+      return false;
+    }
+    display_in_launcher_ = temp->GetBool();
   }
-  if (manifest_->FindKey(keys::kDisplayInNewTabPage)) {
-    if (!manifest_->GetBoolean(keys::kDisplayInNewTabPage,
-                               &display_in_new_tab_page_)) {
+  if (const base::Value* temp =
+          manifest_->FindKey(keys::kDisplayInNewTabPage)) {
+    if (!temp->is_bool()) {
       *error = errors::kInvalidDisplayInNewTabPage;
       return false;
     }
+    display_in_new_tab_page_ = temp->GetBool();
   } else {
     // Inherit default from display_in_launcher property.
     display_in_new_tab_page_ = display_in_launcher_;

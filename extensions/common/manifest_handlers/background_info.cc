@@ -423,10 +423,8 @@ bool BackgroundManifestHandler::Validate(
   if (extension->is_platform_app()) {
     const std::string manifest_key =
         std::string(keys::kPlatformAppBackground) + ".persistent";
-    bool is_persistent = false;
     // Validate that packaged apps do not use a persistent background page.
-    if (extension->manifest()->GetBoolean(manifest_key, &is_persistent) &&
-        is_persistent) {
+    if (extension->manifest()->FindBoolPath(manifest_key).value_or(false)) {
       warnings->push_back(
           InstallWarning(errors::kInvalidBackgroundPersistentInPlatformApp));
     }

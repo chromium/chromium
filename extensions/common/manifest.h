@@ -168,13 +168,13 @@ class Manifest final {
     return type_ == TYPE_CHROMEOS_SYSTEM_EXTENSION;
   }
 
-  // These access the wrapped manifest value, returning nullptr when the
+  // These access the wrapped manifest value, returning nullptr/nullopt when the
   // property does not exist or if the manifest type can't access it.
   const base::Value* FindKey(base::StringPiece path) const;
   const base::Value* FindPath(base::StringPiece path) const;
+  absl::optional<bool> FindBoolPath(base::StringPiece path) const;
   // TODO(crbug/1187061): Update these methods to use non-deprecated
   // base::Value methods.
-  bool GetBoolean(const std::string& path, bool* out_value) const;
   bool GetInteger(const std::string& path, int* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
   bool GetString(const std::string& path, std::u16string* out_value) const;

@@ -53,13 +53,8 @@ bool ignore_kiosk_app_data_load_failures_for_testing = false;
 
 // Returns true for valid kiosk app manifest.
 bool IsValidKioskAppManifest(const extensions::Manifest& manifest) {
-  bool kiosk_enabled;
-  if (manifest.GetBoolean(extensions::manifest_keys::kKioskEnabled,
-                          &kiosk_enabled)) {
-    return kiosk_enabled;
-  }
-
-  return false;
+  return manifest.FindBoolPath(extensions::manifest_keys::kKioskEnabled)
+      .value_or(false);
 }
 
 std::string ValueToString(const base::Value& value) {
