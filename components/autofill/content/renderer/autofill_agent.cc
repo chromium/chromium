@@ -97,9 +97,9 @@ using GenerationShowing = PasswordAutofillAgent::GenerationShowing;
 
 namespace {
 
-// Time to wait, in ms, o ensure that only a single select change will be acted
-// upon, instead of multiple in close succession (debounce time).
-size_t kWaitTimeForSelectOptionsChangesMs = 50;
+// Time to wait in ms to ensure that only a single select or datalist change
+// will be acted upon, instead of multiple in close succession (debounce time).
+size_t kWaitTimeForOptionsChangesMs = 50;
 
 // Helper function to return EXTRACT_DATALIST if kAutofillExtractAllDatalist is
 // enabled, otherwise EXTRACT_NONE is returned.
@@ -482,7 +482,25 @@ void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
   ShowSuggestions(element, options);
 }
 
+// Notifies the AutofillDriver about changes in the <datalist> options in
+// batches.
+//
+// A batch ends if no event occurred for `kWaitTimeForOptionsChangesMs`
+// milliseconds. For a given batch, the AutofillDriver is informed only about
+// the last field. That is, if within one batch the options of different
+// fields changed, all but one of these events will be lost.
 void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
+  if (datalist_option_change_batch_timer_.IsRunning())
+    datalist_option_change_batch_timer_.AbandonAndStop();
+
+  datalist_option_change_batch_timer_.Start(
+      FROM_HERE, base::Milliseconds(kWaitTimeForOptionsChangesMs),
+      base::BindRepeating(&AutofillAgent::BatchDataListOptionChange,
+                          weak_ptr_factory_.GetWeakPtr(), element));
+}
+
+void AutofillAgent::BatchDataListOptionChange(
+    const blink::WebFormControlElement& element) {
   DCHECK(IsOwnedByFrame(element, render_frame()));
 
   if (!is_popup_possibly_visible_ || !element.Focused())
@@ -1032,23 +1050,37 @@ void AutofillAgent::SelectControlDidChange(
   form_tracker_.SelectControlDidChange(element);
 }
 
+// Notifies the AutofillDriver about changes in the <select> options in batches.
+//
+// A batch ends if no event occurred for `kWaitTimeForOptionsChangesMs`
+// milliseconds. For a given batch, the AutofillDriver is informed only about
+// the last FormData. That is, if within one batch the options of different
+// forms changed, all but one of these events will be lost.
 void AutofillAgent::SelectFieldOptionsChanged(
     const blink::WebFormControlElement& element) {
   if (!was_last_action_fill_ || element_.IsNull())
     return;
 
-  // Since a change of a select options often come in batches, use a timer
-  // to wait for other changes. Stop the timer if it was already running. It
-  // will be started again for this change.
-  if (on_select_update_timer_.IsRunning())
-    on_select_update_timer_.AbandonAndStop();
+  if (select_option_change_batch_timer_.IsRunning())
+    select_option_change_batch_timer_.AbandonAndStop();
 
-  // Start the timer to notify the driver that the select field was updated
-  // after the options have finished changing,
-  on_select_update_timer_.Start(
-      FROM_HERE, base::Milliseconds(kWaitTimeForSelectOptionsChangesMs),
-      base::BindRepeating(&AutofillAgent::SelectWasUpdated,
+  select_option_change_batch_timer_.Start(
+      FROM_HERE, base::Milliseconds(kWaitTimeForOptionsChangesMs),
+      base::BindRepeating(&AutofillAgent::BatchSelectOptionChange,
                           weak_ptr_factory_.GetWeakPtr(), element));
+}
+
+void AutofillAgent::BatchSelectOptionChange(
+    const blink::WebFormControlElement& element) {
+  // Look for the form and field associated with the select element. If they are
+  // found, notify the driver that the form was modified dynamically.
+  FormData form;
+  FormFieldData field;
+  if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
+                                            &form, &field) &&
+      !field.options.empty()) {
+    GetAutofillDriver().SelectFieldOptionsDidChange(form);
+  }
 }
 
 bool AutofillAgent::ShouldSuppressKeyboard(
@@ -1069,19 +1101,6 @@ void AutofillAgent::PasswordFieldReset(const WebInputElement& element) {
   DCHECK(IsOwnedByFrame(element, render_frame()));
 
   password_autofill_agent_->InformAboutFieldClearing(element);
-}
-
-void AutofillAgent::SelectWasUpdated(
-    const blink::WebFormControlElement& element) {
-  // Look for the form and field associated with the select element. If they are
-  // found, notify the driver that the the form was modified dynamically.
-  FormData form;
-  FormFieldData field;
-  if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
-                                            &form, &field) &&
-      !field.options.empty()) {
-    GetAutofillDriver().SelectFieldOptionsDidChange(form);
-  }
 }
 
 bool AutofillAgent::IsPrerendering() const {
