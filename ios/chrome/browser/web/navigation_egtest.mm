@@ -611,4 +611,56 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testEdgeSwipe {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kSimpleFileBasedTestURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/history.html")];
+
+  // Edge swipes don't work with EG, use XCUI directly.
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  // Swiping back from WKWebView to WKWebView or to NTP seems fine with an edge
+  // of zero.
+  CGFloat leftEdge = 0;
+  XCUICoordinate* leftEdgeCoord =
+      [app coordinateWithNormalizedOffset:CGVectorMake(leftEdge, 0.5)];
+  XCUICoordinate* swipeRight =
+      [leftEdgeCoord coordinateWithOffset:CGVectorMake(600, 0.5)];
+
+  // Swipe back twice.
+  [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Verify the NTP is visible.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Swiping forward on a WKWebView works with an edge of one, but swiping
+  // forward from the NTP seems to fail with one, so use 0.99.
+  CGFloat rightEdgeNTP = 0.99;
+  CGFloat rightEdge = 1;
+  XCUICoordinate* rightEdgeCoordFromNTP =
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdgeNTP, 0.5)];
+  XCUICoordinate* swipeLeftFromNTP =
+      [rightEdgeCoordFromNTP coordinateWithOffset:CGVectorMake(-600, 0.5)];
+
+  // Swiping forward twice and verify each page.
+  [rightEdgeCoordFromNTP pressForDuration:0.1f
+                     thenDragToCoordinate:swipeLeftFromNTP];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+
+  XCUICoordinate* rightEdgeCoord =
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdge, 0.5)];
+  XCUICoordinate* swipeLeft =
+      [rightEdgeCoord coordinateWithOffset:CGVectorMake(-600, 0.5)];
+  [rightEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeLeft];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForWebStateContainingText:"onload"];
+}
+
 @end
