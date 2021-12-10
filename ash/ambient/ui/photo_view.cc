@@ -56,7 +56,10 @@ void PhotoView::OnImageAdded() {
     return;
   }
 
-  UpdateImage(delegate_->GetAmbientBackendModel()->GetNextImage());
+  PhotoWithDetails next_image;
+  delegate_->GetAmbientBackendModel()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr, &next_image);
+  UpdateImage(next_image);
 }
 
 void PhotoView::Init() {
@@ -83,8 +86,10 @@ void PhotoView::Init() {
   // |AmbientBackendModelObserver::OnImagesReady| has been called.
   // |AmbientBackendModel| has two images ready and views should be constructed
   // for each one.
-  UpdateImage(model->GetCurrentImage());
-  UpdateImage(model->GetNextImage());
+  PhotoWithDetails current_image, next_image;
+  model->GetCurrentAndNextImages(&current_image, &next_image);
+  UpdateImage(current_image);
+  UpdateImage(next_image);
 }
 
 void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
@@ -137,7 +142,10 @@ void PhotoView::StartTransitionAnimation() {
 }
 
 void PhotoView::OnImplicitAnimationsCompleted() {
-  UpdateImage(delegate_->GetAmbientBackendModel()->GetNextImage());
+  PhotoWithDetails next_image;
+  delegate_->GetAmbientBackendModel()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr, &next_image);
+  UpdateImage(next_image);
   delegate_->OnPhotoTransitionAnimationCompleted();
 }
 

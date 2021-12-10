@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
@@ -127,7 +128,8 @@ base::FilePath GetCacheRootPath() {
 AmbientPhotoController::AmbientPhotoController(
     AmbientClient& ambient_client,
     AmbientAccessTokenController& access_token_controller)
-    : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
+    : ambient_backend_model_(kAmbientSlideshowPhotoConfig),
+      fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
       photo_cache_(AmbientPhotoCache::Create(
           GetCacheRootPath().Append(

@@ -18,23 +18,8 @@ namespace ash {
 // The Lottie animation file has image assets embedded in it; the location and
 // number of assets varies from file to file and depends on the animation theme
 // (built by a motion designer).
-class ASH_EXPORT AmbientAnimationPhotoConfig : public AmbientPhotoConfig {
- public:
-  explicit AmbientAnimationPhotoConfig(
-      const cc::SkottieResourceMetadataMap& skottie_resource_metadata);
-  AmbientAnimationPhotoConfig(const AmbientAnimationPhotoConfig&) = delete;
-  AmbientAnimationPhotoConfig& operator=(const AmbientAnimationPhotoConfig&) =
-      delete;
-  ~AmbientAnimationPhotoConfig() override;
-
-  // AmbientPhotoConfig implementation:
-  int GetNumAssets() const override;
-  int GetNumSetsOfAssetsToBuffer() const override;
-  int GetNumAssetsInTopic(const PhotoWithDetails& decoded_topic) const override;
-
- private:
-  const int num_dynamic_assets_;
-};
+ASH_EXPORT AmbientPhotoConfig CreateAmbientAnimationPhotoConfig(
+    const cc::SkottieResourceMetadataMap& skottie_resource_metadata);
 
 }  // namespace ash
 

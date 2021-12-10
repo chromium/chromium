@@ -127,18 +127,25 @@ TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadTopics) {
 
 // Test that image is downloaded when starting screen update.
 TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadImages) {
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Stop to refresh images.
   photo_controller()->StopScreenUpdate();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 }
 
@@ -151,18 +158,24 @@ TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
-  image1 = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image1);
   EXPECT_FALSE(image1.IsNull());
   EXPECT_TRUE(image2.IsNull());
 
   FastForwardToNextImage();
-  image2 = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image2);
   EXPECT_FALSE(image2.IsNull());
   EXPECT_FALSE(image1.photo.BackedBySameObjectAs(image2.photo));
   EXPECT_TRUE(image3.IsNull());
 
   FastForwardToNextImage();
-  image3 = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image3);
   EXPECT_FALSE(image3.IsNull());
   EXPECT_FALSE(image1.photo.BackedBySameObjectAs(image3.photo));
   EXPECT_FALSE(image2.photo.BackedBySameObjectAs(image3.photo));
@@ -177,8 +190,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldSetDetailsCorrectly) {
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
-  PhotoWithDetails image =
-      photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Fake details defined in fake_ambient_backend_controller_impl.cc.
@@ -212,7 +227,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 
   EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Stop to refresh images.
@@ -221,7 +239,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 
   EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 }
 
@@ -230,7 +250,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -241,7 +264,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   Init();
   FetchImage();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -251,7 +276,10 @@ TEST_F(AmbientPhotoControllerTest,
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // The initial file name to be read is 0. Save a file with index 99 to check
@@ -263,7 +291,9 @@ TEST_F(AmbientPhotoControllerTest,
   Init();
   FetchImage();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -274,7 +304,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache, which is empty.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -287,7 +320,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -296,7 +331,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -308,7 +346,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   Init();
   FetchImage();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
   EXPECT_EQ(image.details, details);
 }
@@ -321,7 +361,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
   // Downloading succeed and save the data to disk.
   // First decoding should fail. Will read from cache, and then succeed.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -330,13 +373,18 @@ TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed and refresh image.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 }
 
