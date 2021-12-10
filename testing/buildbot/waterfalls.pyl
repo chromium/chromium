@@ -3326,7 +3326,7 @@
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'mac_10.13',
+          'mac_11_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
