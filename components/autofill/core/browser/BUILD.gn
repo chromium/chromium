@@ -25,11 +25,9 @@ action("default_regex_patterns_cc") {
   visibility = [ ":*" ]
   sources = [ "pattern_provider/resources/regex_patterns.json" ]
   script = "pattern_provider/transpile_default_regex_patterns.py"
-  args = [
-    rebase_path("pattern_provider/resources/regex_patterns.json"),
-    rebase_path("$target_gen_dir/pattern_provider/default_regex_patterns.cc"),
-  ]
   outputs = [ "$target_gen_dir/pattern_provider/default_regex_patterns.cc" ]
+  args = rebase_path(sources, root_build_dir) +
+         rebase_path(outputs, root_build_dir)
 }
 
 static_library("browser") {
