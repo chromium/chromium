@@ -703,14 +703,6 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
 
   auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
   if (layout_box && layout_box->HasSelfPaintingLayer()) {
-    if (layout_box->Layer()->ChildNeedsCompositingInputsUpdate() &&
-        layout_box->Layer()->Parent()) {
-      // Note that if the layer's child needs compositing inputs update, then
-      // that layer itself also needs compositing inputs update. In order to
-      // propagate the dirty bit, we need to mark this layer's _parent_ as a
-      // needing an update.
-      layout_box->Layer()->Parent()->SetNeedsCompositingInputsUpdate();
-    }
     if (needs_compositing_requirements_update_)
       layout_box->Layer()->SetNeedsCompositingRequirementsUpdate();
     needs_compositing_requirements_update_ = false;
@@ -769,15 +761,12 @@ bool DisplayLockContext::IsElementDirtyForLayout() const {
 
 bool DisplayLockContext::IsElementDirtyForPrePaint() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
-    auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
     return PrePaintTreeWalk::ObjectRequiresPrePaint(*layout_object) ||
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
            needs_blocking_wheel_event_handler_update_ ||
-           needs_compositing_requirements_update_ ||
-           (layout_box && layout_box->HasSelfPaintingLayer() &&
-            layout_box->Layer()->ChildNeedsCompositingInputsUpdate());
+           needs_compositing_requirements_update_;
   }
   return false;
 }

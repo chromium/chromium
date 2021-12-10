@@ -25,11 +25,6 @@ void CompositingInputsRoot::Update(PaintLayer* new_root_layer) {
   if (!common_ancestor)
     common_ancestor = const_cast<PaintLayer*>(root_layer_->Root());
 
-  root_layer_->SetChildNeedsCompositingInputsUpdateUpToAncestor(
-      common_ancestor);
-  new_root_layer->SetChildNeedsCompositingInputsUpdateUpToAncestor(
-      common_ancestor);
-
   root_layer_ = common_ancestor;
 }
 

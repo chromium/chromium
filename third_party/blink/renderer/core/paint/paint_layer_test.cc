@@ -2133,42 +2133,6 @@ TEST_P(PaintLayerTest, FragmentedHitTest) {
   EXPECT_EQ(target, GetDocument().ElementFromPoint(280, 30));
 }
 
-TEST_P(PaintLayerTest, SquashingOffsets) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      * { margin: 0 }
-    </style>
-    <div id=target
-        style='width: 200px; height: 200px; position: relative; will-change: transform'></div>
-    <div id=squashed
-        style='width: 200px; height: 200px; top: -200px; position: relative;'></div>
-    <div style='width: 10px; height: 3000px'></div>
-  )HTML");
-
-  auto* squashed = GetPaintLayerByElementId("squashed");
-  EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
-  PhysicalOffset point;
-  PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-      squashed->GetLayoutObject(), point);
-  EXPECT_EQ(PhysicalOffset(), point);
-
-  EXPECT_EQ(PhysicalOffset(), squashed->ComputeOffsetFromAncestor(
-                                  squashed->TransformAncestorOrRoot()));
-
-  GetDocument().View()->LayoutViewport()->ScrollBy(
-      ScrollOffset(0, 25), mojom::blink::ScrollType::kUser);
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-      squashed->GetLayoutObject(), point);
-  EXPECT_EQ(PhysicalOffset(), point);
-
-  EXPECT_EQ(PhysicalOffset(), squashed->ComputeOffsetFromAncestor(
-                                  squashed->TransformAncestorOrRoot()));
-}
-
 TEST_P(PaintLayerTest, HitTestWithIgnoreClipping) {
   SetBodyInnerHTML("<div id='hit' style='width: 90px; height: 9000px;'></div>");
 
@@ -2548,17 +2512,12 @@ TEST_P(PaintLayerTest,
     </div>
   )HTML");
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
   EXPECT_FALSE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
   EXPECT_FALSE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());
 
   StyleDifference diff;
   diff.SetHasAlphaChanged();
   target->StyleDidChange(diff, target->GetLayoutObject().Style());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
-  else
-    EXPECT_TRUE(target->NeedsCompositingInputsUpdate());
   EXPECT_TRUE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
   // See the TODO in PaintLayer::SetNeedsCompositingInputsUpdate().
   EXPECT_TRUE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());

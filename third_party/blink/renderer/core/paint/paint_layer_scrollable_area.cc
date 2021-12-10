@@ -522,10 +522,6 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // Update the positions of our child layers (if needed as only fixed layers
   // should be impacted by a scroll).
   if (!frame_view->IsInPerformLayout()) {
-    if (!Layer()->IsRootLayer()) {
-      Layer()->SetNeedsCompositingInputsUpdate(false);
-    }
-
     // Update regions, scrolling may change the clip of a particular region.
     frame_view->UpdateDocumentAnnotatedRegions();
 
@@ -2452,10 +2448,6 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   // PaintPropertyTreeBuilder::updateScrollAndScrollTranslation).
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 
-  // ScrollsOverflow() is an input into UpdateNeedsCompositedScrolling, which
-  // is computed during the compositing inputs update.
-  layer_->SetNeedsCompositingInputsUpdate(false);
-
   // Scroll hit test data depend on whether the box scrolls overflow.
   // They are painted in the background phase
   // (see: BoxPainter::PaintBoxDecorationBackground).
@@ -2499,8 +2491,6 @@ void PaintLayerScrollableArea::UpdateCompositingLayersAfterScroll() {
           Layer()->SetNeedsCompositingInputsUpdate();
       }
     }
-  } else {
-    Layer()->SetNeedsCompositingInputsUpdate(false);
   }
 }
 

@@ -121,7 +121,7 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #if DCHECK_IS_ON()
   bool is_destroyed;
 #endif
-  Member<void*> members1[6];
+  Member<void*> members1[5];
   LayoutUnit layout_units[4];
   gfx::Size size;
   CullRect previous_cull_rect;
@@ -192,10 +192,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_position_update_(!IsRootLayer()),
 #endif
       has3d_transformed_descendant_(false),
-      needs_ancestor_dependent_compositing_inputs_update_(
-          !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()),
-      child_needs_compositing_inputs_update_(
-          !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()),
       has_compositing_descendant_(false),
       should_isolate_composited_descendants_(false),
       lost_grouped_mapping_(false),
@@ -349,8 +345,7 @@ void PaintLayer::UpdateLayerPositionRecursive(
   UpdateAncestorScrollContainerLayer(enclosing_scroller);
   if (enclosing_scroller &&
       GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
-      (NeedsCompositingInputsUpdate() ||
-       GetLayoutObject().NeedsPaintPropertyUpdate())) {
+      GetLayoutObject().NeedsPaintPropertyUpdate()) {
     if (enclosing_scroller != previous_enclosing_scroller) {
       // Old ancestor scroller should no longer have these constraints.
       DCHECK(!previous_enclosing_scroller ||
@@ -505,10 +500,8 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
 
   UpdateTransformationMatrix();
 
-  if (had3d_transform != Has3DTransform()) {
-    SetNeedsCompositingInputsUpdateInternal();
+  if (had3d_transform != Has3DTransform())
     MarkAncestorChainForFlagsUpdate();
-  }
 
   if (LocalFrameView* frame_view = GetLayoutObject().GetDocument().View())
     frame_view->SetNeedsUpdateGeometries();
@@ -599,11 +592,6 @@ void PaintLayer::ClearPaginationRecursive() {
     rare_data_->enclosing_pagination_layer = nullptr;
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->ClearPaginationRecursive();
-}
-
-const PaintLayer& PaintLayer::TransformAncestorOrRoot() const {
-  return TransformAncestor() ? *TransformAncestor()
-                             : *GetLayoutObject().View()->Layer();
 }
 
 void PaintLayer::MapPointInPaintInvalidationContainerToBacking(
@@ -743,10 +731,8 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       PhysicalRect old_visual_rect =
           PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
       GetLayoutObject().RecalcVisualOverflow();
-      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
-        SetNeedsCompositingInputsUpdateInternal();
+      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect())
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
-      }
     }
     needs_visual_overflow_recalc_ = false;
   }
@@ -783,11 +769,10 @@ void PaintLayer::UpdateDescendantDependentFlags() {
   }
 
   if (HasVisibleContent() != previously_has_visible_content) {
-    SetNeedsCompositingInputsUpdateInternal();
-    // We need to tell layout_object_ to recheck its rect because we
-    // pretend that invisible LayoutObjects have 0x0 rects. Changing
-    // visibility therefore changes our rect and we need to visit
-    // this LayoutObject during the PrePaintTreeWalk.
+    // We need to tell layout_object_ to recheck its rect because we pretend
+    // that invisible LayoutObjects have 0x0 rects. Changing visibility
+    // therefore changes our rect and we need to visit this LayoutObject during
+    // the PrePaintTreeWalk.
     layout_object_->SetShouldCheckForPaintInvalidation();
   }
 
@@ -1123,8 +1108,6 @@ const PaintLayer* PaintLayer::EnclosingCompositedScrollingLayerUnderPagination(
 }
 
 void PaintLayer::SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags) {
-  SetNeedsCompositingInputsUpdateInternal();
-
   // TODO(chrishtr): These are a bit of a heavy hammer, because not all
   // things which require compositing inputs update require a descendant-
   // dependent flags update. Reduce call sites after CAP launch allows
@@ -1157,16 +1140,6 @@ void PaintLayer::SetNeedsVisualOverflowRecalc() {
   MarkAncestorChainForFlagsUpdate();
 }
 
-void PaintLayer::SetChildNeedsCompositingInputsUpdateUpToAncestor(
-    PaintLayer* ancestor) {
-  DCHECK(ancestor);
-
-  for (auto* layer = this; layer && layer != ancestor; layer = layer->Parent())
-    layer->child_needs_compositing_inputs_update_ = true;
-
-  ancestor->child_needs_compositing_inputs_update_ = true;
-}
-
 const gfx::Rect PaintLayer::ClippedAbsoluteBoundingBox() const {
   PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
   GetLayoutObject().MapToVisualRectInAncestorSpace(
@@ -1177,93 +1150,6 @@ const gfx::Rect PaintLayer::UnclippedAbsoluteBoundingBox() const {
   return ToEnclosingRect(GetLayoutObject().LocalToAbsoluteRect(
       LocalBoundingBoxForCompositingOverlapTest(),
       kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
-}
-
-void PaintLayer::SetNeedsCompositingInputsUpdateInternal() {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  needs_ancestor_dependent_compositing_inputs_update_ = true;
-
-  // We might call this function on a locked element. Now, locked elements might
-  // have a persistent dirty child bit, meaning that the below loop won't mark
-  // the breakcrumb bit further up the chain (since this element appears to
-  // already have a breadcrumb). However, since the element itself needs an
-  // ancestor dependent update, we need to force the propagation at least one
-  // level to the parent. This ensures that the real dirty bit
-  // (|needs_ancestor_dependent_compositing_inputs_update_|) can be discovered
-  // by the compositing update walk.
-  bool child_flag_may_persist_after_update =
-      GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
-
-  PaintLayer* initial_layer = child_needs_compositing_inputs_update_ &&
-                                      child_flag_may_persist_after_update
-                                  ? Parent()
-                                  : this;
-
-  PaintLayer* last_ancestor = nullptr;
-  for (PaintLayer* current = initial_layer;
-       current && !current->child_needs_compositing_inputs_update_;
-       current = current->Parent()) {
-    last_ancestor = current;
-    current->child_needs_compositing_inputs_update_ = true;
-    if (Compositor() &&
-        (current != initial_layer ||
-         !current->GetLayoutObject().IsStickyPositioned()) &&
-        current->GetLayoutObject().ShouldApplyStrictContainment())
-      break;
-  }
-
-  if (Compositor()) {
-    Compositor()->SetNeedsCompositingUpdate(
-        kCompositingUpdateAfterCompositingInputChange);
-
-    if (last_ancestor)
-      Compositor()->UpdateCompositingInputsRoot(last_ancestor);
-  }
-}
-
-void PaintLayer::UpdateAncestorDependentCompositingInputs(
-    const PaintLayer* opacity_ancestor,
-    const PaintLayer* transform_ancestor,
-    const PaintLayer* filter_ancestor,
-    const PaintLayer* clip_path_ancestor,
-    const PaintLayer* mask_ancestor,
-    const PaintLayer* ancestor_scrolling_layer,
-    const PaintLayer* nearest_fixed_position_layer,
-    const PaintLayer* scroll_parent,
-    const PaintLayer* clip_parent,
-    const PaintLayer* nearest_contained_layout_layer,
-    const LayoutBoxModelObject* clipping_container) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  if (!ancestor_dependent_compositing_inputs_) {
-    ancestor_dependent_compositing_inputs_ =
-        MakeGarbageCollected<AncestorDependentCompositingInputs>();
-  }
-  ancestor_dependent_compositing_inputs_->opacity_ancestor = opacity_ancestor;
-  ancestor_dependent_compositing_inputs_->transform_ancestor =
-      transform_ancestor;
-  ancestor_dependent_compositing_inputs_->filter_ancestor = filter_ancestor;
-  ancestor_dependent_compositing_inputs_->clip_path_ancestor =
-      clip_path_ancestor;
-  ancestor_dependent_compositing_inputs_->mask_ancestor = mask_ancestor;
-  ancestor_dependent_compositing_inputs_->ancestor_scrolling_layer =
-      ancestor_scrolling_layer;
-  ancestor_dependent_compositing_inputs_->nearest_fixed_position_layer =
-      nearest_fixed_position_layer;
-  ancestor_dependent_compositing_inputs_->scroll_parent = scroll_parent;
-  ancestor_dependent_compositing_inputs_->clip_parent = clip_parent;
-  ancestor_dependent_compositing_inputs_->nearest_contained_layout_layer =
-      nearest_contained_layout_layer;
-  ancestor_dependent_compositing_inputs_->clipping_container =
-      clipping_container;
-  needs_ancestor_dependent_compositing_inputs_update_ = false;
-}
-
-void PaintLayer::ClearChildNeedsCompositingInputsUpdate() {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK(!NeedsCompositingInputsUpdate());
-  child_needs_compositing_inputs_update_ = false;
 }
 
 bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
@@ -3829,26 +3715,10 @@ void PaintLayer::Trace(Visitor* visitor) const {
   visitor->Trace(first_);
   visitor->Trace(last_);
   visitor->Trace(ancestor_scroll_container_layer_);
-  visitor->Trace(ancestor_dependent_compositing_inputs_);
   visitor->Trace(scrollable_area_);
   visitor->Trace(stacking_node_);
   visitor->Trace(rare_data_);
   DisplayItemClient::Trace(visitor);
-}
-
-void PaintLayer::AncestorDependentCompositingInputs::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(opacity_ancestor);
-  visitor->Trace(transform_ancestor);
-  visitor->Trace(filter_ancestor);
-  visitor->Trace(clip_path_ancestor);
-  visitor->Trace(mask_ancestor);
-  visitor->Trace(ancestor_scrolling_layer);
-  visitor->Trace(nearest_fixed_position_layer);
-  visitor->Trace(scroll_parent);
-  visitor->Trace(clip_parent);
-  visitor->Trace(nearest_contained_layout_layer);
-  visitor->Trace(clipping_container);
 }
 
 }  // namespace blink

@@ -496,8 +496,7 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
   if (compositing_container && compositing_container->Transform()) {
     common_transform_ancestor = compositing_container;
   } else if (compositing_container) {
-    common_transform_ancestor =
-        &compositing_container->TransformAncestorOrRoot();
+    common_transform_ancestor = nullptr;
   } else {
     common_transform_ancestor = owning_layer_->Root();
   }
@@ -1371,10 +1370,6 @@ GraphicsLayer* CompositedLayerMapping::SquashingLayer(
 #if DCHECK_IS_ON()
   AssertInSquashedLayersVector(squashed_layer);
 #endif
-  if (MayBeSquashedIntoScrollingContents(squashed_layer)) {
-    DCHECK(ScrollingContentsLayer());
-    return ScrollingContentsLayer();
-  }
   DCHECK(NonScrollingSquashingLayer());
   return NonScrollingSquashingLayer();
 }
@@ -1797,11 +1792,6 @@ bool CompositedLayerMapping::UpdateSquashingLayerAssignment(
     PaintLayer& squashed_layer,
     wtf_size_t next_squashed_layer_in_non_scrolling_squashing_layer_index,
     wtf_size_t next_squashed_layer_in_scrolling_contents_index) {
-  if (MayBeSquashedIntoScrollingContents(squashed_layer)) {
-    return UpdateSquashingLayerAssignmentInternal(
-        squashed_layers_in_scrolling_contents_, squashed_layer,
-        next_squashed_layer_in_scrolling_contents_index);
-  }
   return UpdateSquashingLayerAssignmentInternal(
       non_scrolling_squashed_layers_, squashed_layer,
       next_squashed_layer_in_non_scrolling_squashing_layer_index);
@@ -1844,8 +1834,6 @@ void CompositedLayerMapping::AssertInSquashedLayersVector(
     const PaintLayer& squashed_layer) const {
   auto* in = &non_scrolling_squashed_layers_;
   auto* out = &squashed_layers_in_scrolling_contents_;
-  if (MayBeSquashedIntoScrollingContents(squashed_layer))
-    std::swap(in, out);
   DCHECK(LayerInSquashedLayersVector(*in, squashed_layer));
   DCHECK(!LayerInSquashedLayersVector(*out, squashed_layer));
 }

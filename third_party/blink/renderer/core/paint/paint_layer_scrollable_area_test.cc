@@ -661,8 +661,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollDoesNotInvalidate) {
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 }
 
-TEST_P(PaintLayerScrollableAreaTest,
-       ScrollWithStickyNeedsCompositingInputsUpdate) {
+TEST_P(PaintLayerScrollableAreaTest, ScrollWithStickyNeedsCompositingUpdate) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -686,11 +685,13 @@ TEST_P(PaintLayerScrollableAreaTest,
   auto* scrollable_area = GetLayoutView().GetScrollableArea();
   EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
-  // Changing the scroll offset requires a compositing inputs update to rerun
-  // overlap testing.
+  // Changing the scroll offset requires a compositing update to rerun overlap
+  // testing.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
                                    mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(
+      GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
 }
@@ -720,12 +721,11 @@ TEST_P(PaintLayerScrollableAreaTest,
   auto* scrollable_area = GetLayoutView().GetScrollableArea();
   EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
-  // Changing the scroll offset should not require compositing inputs update
-  // even though fixed-pos content is present as fixed bounds is already
-  // expanded to include all possible scroll offsets.
+  // Changing the scroll offset should not require a compositing update even
+  // though fixed-pos content is present as fixed bounds is already expanded to
+  // include all possible scroll offsets.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
                                    mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(
       GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());

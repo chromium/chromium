@@ -22,10 +22,6 @@ class CompositingInputsUpdater {
 
   void Update();
 
-#if DCHECK_IS_ON()
-  static void AssertNeedsCompositingInputsUpdateBitsCleared(PaintLayer*);
-#endif
-
   // Combine all reasons for compositing a layer into a single boolean value
   bool LayerOrDescendantShouldBeComposited(PaintLayer*);
 
@@ -77,8 +73,6 @@ class CompositingInputsUpdater {
   void UpdateSelfAndDescendantsRecursively(PaintLayer*,
                                            UpdateType,
                                            AncestorInfo);
-  void UpdateAncestorDependentCompositingInputs(PaintLayer*,
-                                                const AncestorInfo&);
   // This is a recursive method to update AncestorInfo
   // starting from the root layer down to the compositing_inputs_root_.
   void ApplyAncestorInfoToSelfAndAncestorsRecursively(PaintLayer*,

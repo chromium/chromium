@@ -19,12 +19,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-static const LayoutBoxModelObject* ClippingContainerFromClipChainParent(
-    const PaintLayer* clip_chain_parent) {
-  return clip_chain_parent->GetLayoutObject().HasClipRelatedProperty()
-             ? &clip_chain_parent->GetLayoutObject()
-             : clip_chain_parent->ClippingContainer();
-}
 
 CompositingInputsUpdater::CompositingInputsUpdater(
     PaintLayer* root_layer,
@@ -131,8 +125,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   bool recursion_blocked_by_display_lock =
       layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
 
-  bool should_recurse = (layer->ChildNeedsCompositingInputsUpdate() ||
-                         update_type == kForceUpdate);
+  bool should_recurse = update_type == kForceUpdate;
 
   layer->SetDescendantHasDirectOrScrollingCompositingReason(false);
   bool descendant_has_direct_compositing_reason = false;
@@ -162,12 +155,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
       layer->DescendantHasDirectOrScrollingCompositingReason() &&
       !layer->NeedsCompositedScrolling())
     layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(true);
-
-  // If display lock blocked this recursion, then keep the dirty bit around
-  // since it is a breadcrumb that will allow us to recurse later when we unlock
-  // the element.
-  if (!recursion_blocked_by_display_lock)
-    layer->ClearChildNeedsCompositingInputsUpdate();
 
   compositor->ClearCompositingInputsRoot();
 }
@@ -205,20 +192,6 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
   PaintLayer* enclosing_squashing_composited_layer =
       info.enclosing_squashing_composited_layer;
 
-  if (layer->NeedsCompositingInputsUpdate()) {
-    if (enclosing_stacking_composited_layer) {
-      enclosing_stacking_composited_layer->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-    }
-
-    if (enclosing_squashing_composited_layer) {
-      enclosing_squashing_composited_layer->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-    }
-
-    update_type = kForceUpdate;
-  }
-
   switch (layer->GetCompositingState()) {
     case kNotComposited:
       break;
@@ -230,21 +203,6 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
       enclosing_squashing_composited_layer =
           &layer->GroupedMapping()->OwningLayer();
       break;
-  }
-
-  // invalidate again after the switch, in case
-  // enclosing_stacking_composited_layer or
-  // enclosing_squashing_composited_layer was previously null.
-  if (layer->NeedsCompositingInputsUpdate()) {
-    if (enclosing_stacking_composited_layer) {
-      enclosing_stacking_composited_layer->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-    }
-
-    if (enclosing_squashing_composited_layer) {
-      enclosing_squashing_composited_layer->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-    }
   }
 
   if (style.GetPosition() == EPosition::kAbsolute) {
@@ -259,9 +217,6 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
 
   if (layout_object.ShouldApplyLayoutContainment())
     info.nearest_contained_layout_layer = layer;
-
-  if (update_type == kForceUpdate)
-    UpdateAncestorDependentCompositingInputs(layer, info);
 
   info.enclosing_stacking_composited_layer =
       enclosing_stacking_composited_layer;
@@ -312,18 +267,8 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
 
   if (layout_object.IsStackingContext()) {
     info.escape_clip_to = nullptr;
-    const LayoutBoxModelObject* clipping_container =
-        ClippingContainerFromClipChainParent(layer);
-    info.escape_clip_to_for_absolute =
-        ClippingContainerFromClipChainParent(
-            info.clip_chain_parent_for_absolute) != clipping_container
-            ? info.clip_chain_parent_for_absolute
-            : nullptr;
-    info.escape_clip_to_for_fixed =
-        ClippingContainerFromClipChainParent(
-            info.clip_chain_parent_for_fixed) != clipping_container
-            ? info.clip_chain_parent_for_fixed
-            : nullptr;
+    info.escape_clip_to_for_absolute = nullptr;
+    info.escape_clip_to_for_fixed = nullptr;
     // Workaround crbug.com/817175
     // We can't escape clip to a layer that paints after us, because in SPv1
     // cc needs to reverse engineer clip tree from the layer tree, and we
@@ -349,81 +294,5 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
   if (layout_object.IsStickyPositioned())
     info.is_under_position_sticky = true;
 }
-
-void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
-    PaintLayer* layer,
-    const AncestorInfo& info) {
-  if (layer->IsRootLayer()) {
-    layer->UpdateAncestorDependentCompositingInputs(
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr);
-    return;
-  }
-
-  LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
-
-  const PaintLayer* parent = layer->Parent();
-  const PaintLayer* opacity_ancestor =
-      parent->IsTransparent() ? parent : parent->OpacityAncestor();
-  const PaintLayer* transform_ancestor =
-      parent->Transform() ? parent : parent->TransformAncestor();
-  const PaintLayer* filter_ancestor =
-      parent->HasFilterInducingProperty() ? parent : parent->FilterAncestor();
-  const PaintLayer* clip_path_ancestor = parent->GetLayoutObject().HasClipPath()
-                                             ? parent
-                                             : parent->ClipPathAncestor();
-  const PaintLayer* mask_ancestor =
-      parent->GetLayoutObject().HasMask() ? parent : parent->MaskAncestor();
-
-  EPosition position = layout_object.StyleRef().GetPosition();
-  const PaintLayer* nearest_fixed_position_layer =
-      position == EPosition::kFixed ? layer
-                                    : parent->NearestFixedPositionLayer();
-
-  PaintLayer* clip_chain_parent = layer->Parent();
-  if (position == EPosition::kAbsolute)
-    clip_chain_parent = info.clip_chain_parent_for_absolute;
-  else if (position == EPosition::kFixed)
-    clip_chain_parent = info.clip_chain_parent_for_fixed;
-  const LayoutBoxModelObject* clipping_container =
-      ClippingContainerFromClipChainParent(clip_chain_parent);
-  const PaintLayer* clip_parent = info.escape_clip_to;
-
-  const PaintLayer* ancestor_scrolling_layer = info.scrolling_ancestor;
-  const PaintLayer* scroll_parent =
-      (info.needs_reparent_scroll && layout_object.IsStacked())
-          ? info.scrolling_ancestor
-          : nullptr;
-
-  const PaintLayer* nearest_contained_layout_layer =
-      info.nearest_contained_layout_layer;
-
-  layer->UpdateAncestorDependentCompositingInputs(
-      opacity_ancestor, transform_ancestor, filter_ancestor, clip_path_ancestor,
-      mask_ancestor, ancestor_scrolling_layer, nearest_fixed_position_layer,
-      scroll_parent, clip_parent, nearest_contained_layout_layer,
-      clipping_container);
-}
-
-#if DCHECK_IS_ON()
-
-void CompositingInputsUpdater::AssertNeedsCompositingInputsUpdateBitsCleared(
-    PaintLayer* layer) {
-  bool recursion_blocked_by_display_lock =
-      layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
-
-  DCHECK(recursion_blocked_by_display_lock ||
-         !layer->ChildNeedsCompositingInputsUpdate());
-  DCHECK(!layer->NeedsCompositingInputsUpdate());
-
-  if (recursion_blocked_by_display_lock)
-    return;
-
-  for (PaintLayer* child = layer->FirstChild(); child;
-       child = child->NextSibling())
-    AssertNeedsCompositingInputsUpdateBitsCleared(child);
-}
-
-#endif
 
 }  // namespace blink

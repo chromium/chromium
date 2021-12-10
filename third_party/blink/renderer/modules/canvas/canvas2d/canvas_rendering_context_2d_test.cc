@@ -1455,12 +1455,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // If enabled, hibernation should cause compositing update.
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-              layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             !CanvasElement().ResourceProvider());
 
@@ -1468,7 +1463,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // DCHECK. Update all other lifecycle phases.
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
 
   // Wake up again, which should request a compositing update synchronously.
   GetDocument().GetPage()->SetVisibilityState(
@@ -1476,12 +1470,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       /*is_initial_state=*/false);
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-              layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -1502,7 +1491,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   PaintLayer* layer = CanvasElement().GetLayoutBoxModelObject()->Layer();
   EXPECT_TRUE(layer);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
 
   // The resource provider gets lazily created. Force it to be dropped.
   canvas_element_->ReplaceResourceProvider(nullptr);
@@ -1513,8 +1501,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       /*is_initial_state=*/false);
   blink::test::RunPendingTasks();  // Run hibernation task.
 
-  // Never hibernate a canvas with no resource provider
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
+  // Never hibernate a canvas with no resource provider.
+  EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {

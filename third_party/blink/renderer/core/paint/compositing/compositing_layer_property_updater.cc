@@ -176,7 +176,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
     // state of all squashed layers, so we should use its clip state. This skips
     // any control clips on the squashing layer's object which should not apply
     // on squashed layers.
-    const auto* clipping_container = paint_layer->ClippingContainer();
+    const LayoutBoxModelObject* clipping_container = nullptr;
     state.SetClip(
         clipping_container
             ? clipping_container->FirstFragment().ContentsProperties().Clip()

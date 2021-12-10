@@ -158,11 +158,6 @@ void PaintLayerCompositor::UpdateInputsIfNeededRecursiveInternal(
   }
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kCompositingInputsClean);
-
-#if DCHECK_IS_ON()
-  CompositingInputsUpdater::AssertNeedsCompositingInputsUpdateBitsCleared(
-      RootLayer());
-#endif
 }
 
 void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursive(

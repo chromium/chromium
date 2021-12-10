@@ -747,47 +747,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
            CompositingReason::kComboAllDirectStyleDeterminedReasons;
   }
 
-  class CORE_EXPORT AncestorDependentCompositingInputs final
-      : public GarbageCollected<AncestorDependentCompositingInputs> {
-   public:
-    AncestorDependentCompositingInputs() = default;
-    void Trace(Visitor*) const;
-
-    Member<const PaintLayer> opacity_ancestor = nullptr;
-    Member<const PaintLayer> transform_ancestor = nullptr;
-    Member<const PaintLayer> filter_ancestor = nullptr;
-    Member<const PaintLayer> clip_path_ancestor = nullptr;
-    Member<const PaintLayer> mask_ancestor = nullptr;
-
-    // The first ancestor which can scroll. This is a subset of the
-    // ancestorOverflowLayer chain where the scrolling layer is visible and
-    // has a larger scroll content than its bounds.
-    Member<const PaintLayer> ancestor_scrolling_layer = nullptr;
-    Member<const PaintLayer> nearest_fixed_position_layer = nullptr;
-
-    // A scroll parent is a compositor concept. It's only needed in blink
-    // because we need to use it as a promotion trigger. A layer has a
-    // scroll parent if neither its compositor scrolling ancestor, nor any
-    // other layer scrolled by this ancestor, is a stacking ancestor of this
-    // layer. Layers with scroll parents must be scrolled with the main
-    // scrolling layer by the compositor.
-    Member<const PaintLayer> scroll_parent = nullptr;
-
-    // A clip parent is another compositor concept that has leaked into
-    // blink so that it may be used as a promotion trigger. Layers with clip
-    // parents escape the clip of a stacking tree ancestor. The compositor
-    // needs to know about clip parents in order to circumvent its normal
-    // clipping logic.
-    Member<const PaintLayer> clip_parent = nullptr;
-
-    // Nearest layer that has layout containment applied to its LayoutObject.
-    // Squashing is disallowed across contain layout boundaries to provide
-    // better isolation.
-    Member<const PaintLayer> nearest_contained_layout_layer = nullptr;
-
-    Member<const LayoutBoxModelObject> clipping_container;
-  };
-
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
   }
@@ -807,41 +766,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void ClearNeedsCheckRasterInvalidation() {
     needs_check_raster_invalidation_ = false;
   }
-
-  // This methods marks everything from this layer up to the |ancestor| argument
-  // (both included).
-  void SetChildNeedsCompositingInputsUpdateUpToAncestor(PaintLayer* ancestor);
-  // Use this internal method only for cases during the descendant-dependent
-  // tree walk.
-  bool ChildNeedsCompositingInputsUpdate() const {
-    return child_needs_compositing_inputs_update_;
-  }
-  bool NeedsCompositingInputsUpdate() const {
-    return needs_ancestor_dependent_compositing_inputs_update_;
-  }
-
   void UpdateAncestorScrollContainerLayer(
       const PaintLayer* ancestor_scroll_container_layer) {
     ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
-  }
-  void UpdateAncestorDependentCompositingInputs(
-      const PaintLayer* opacity_ancestor,
-      const PaintLayer* transform_ancestor,
-      const PaintLayer* filter_ancestor,
-      const PaintLayer* clip_path_ancestor,
-      const PaintLayer* mask_ancestor,
-      const PaintLayer* ancestor_scrolling_layer,
-      const PaintLayer* nearest_fixed_position_layer,
-      const PaintLayer* scroll_parent,
-      const PaintLayer* clip_parent,
-      const PaintLayer* nearest_contained_layout_layer,
-      const LayoutBoxModelObject* clipping_container);
-  void ClearChildNeedsCompositingInputsUpdate();
-
-  const AncestorDependentCompositingInputs&
-  GetAncestorDependentCompositingInputs() const {
-    DCHECK(!needs_ancestor_dependent_compositing_inputs_update_);
-    return EnsureAncestorDependentCompositingInputs();
   }
 
   // These two do not include any applicable scroll offset of the
@@ -849,44 +776,21 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   const gfx::Rect ClippedAbsoluteBoundingBox() const;
   const gfx::Rect UnclippedAbsoluteBoundingBox() const;
 
-  const PaintLayer* OpacityAncestor() const {
-    return GetAncestorDependentCompositingInputs().opacity_ancestor;
-  }
-  const PaintLayer* TransformAncestor() const {
-    return GetAncestorDependentCompositingInputs().transform_ancestor;
-  }
-  const PaintLayer& TransformAncestorOrRoot() const;
-  const PaintLayer* FilterAncestor() const {
-    return GetAncestorDependentCompositingInputs().filter_ancestor;
-  }
-  const LayoutBoxModelObject* ClippingContainer() const {
-    return GetAncestorDependentCompositingInputs().clipping_container;
-  }
+  const PaintLayer* OpacityAncestor() const { return nullptr; }
+  const PaintLayer* TransformAncestor() const { return nullptr; }
+  const PaintLayer* FilterAncestor() const { return nullptr; }
+  const LayoutBoxModelObject* ClippingContainer() const { return nullptr; }
   const PaintLayer* AncestorScrollContainerLayer() const {
     return ancestor_scroll_container_layer_;
   }
-  const PaintLayer* AncestorScrollingLayer() const {
-    return GetAncestorDependentCompositingInputs().ancestor_scrolling_layer;
-  }
-  const PaintLayer* NearestFixedPositionLayer() const {
-    return GetAncestorDependentCompositingInputs().nearest_fixed_position_layer;
-  }
-  const PaintLayer* ScrollParent() const {
-    return GetAncestorDependentCompositingInputs().scroll_parent;
-  }
-  const PaintLayer* ClipParent() const {
-    return GetAncestorDependentCompositingInputs().clip_parent;
-  }
-  const PaintLayer* NearestContainedLayoutLayer() const {
-    return GetAncestorDependentCompositingInputs()
-        .nearest_contained_layout_layer;
-  }
-  const PaintLayer* ClipPathAncestor() const {
-    return GetAncestorDependentCompositingInputs().clip_path_ancestor;
-  }
-  const PaintLayer* MaskAncestor() const {
-    return GetAncestorDependentCompositingInputs().mask_ancestor;
-  }
+  const PaintLayer* AncestorScrollingLayer() const { return nullptr; }
+  const PaintLayer* NearestFixedPositionLayer() const { return nullptr; }
+  const PaintLayer* ScrollParent() const { return nullptr; }
+  const PaintLayer* ClipParent() const { return nullptr; }
+  const PaintLayer* NearestContainedLayoutLayer() const { return nullptr; }
+  const PaintLayer* ClipPathAncestor() const { return nullptr; }
+  const PaintLayer* MaskAncestor() const { return nullptr; }
+
   bool HasFixedPositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_fixed_position_descendant_;
@@ -1117,8 +1021,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalRect LocalBoundingBoxForCompositingOverlapTest() const;
   bool PaintsWithDirectReasonIntoOwnBacking(GlobalPaintFlags) const;
 
-  void SetNeedsCompositingInputsUpdateInternal();
-
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.
@@ -1271,15 +1173,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool ShouldApplyTransformToBoundingBox(const PaintLayer& composited_layer,
                                          unsigned options) const;
 
-  AncestorDependentCompositingInputs& EnsureAncestorDependentCompositingInputs()
-      const {
-    if (!ancestor_dependent_compositing_inputs_) {
-      ancestor_dependent_compositing_inputs_ =
-          MakeGarbageCollected<AncestorDependentCompositingInputs>();
-    }
-    return *ancestor_dependent_compositing_inputs_;
-  }
-
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
   PaintLayerStackingNode* StackingNode() const { return stacking_node_; }
@@ -1313,9 +1206,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Set on a stacking context layer that has 3D descendants anywhere
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
   unsigned has3d_transformed_descendant_ : 1;
-
-  unsigned needs_ancestor_dependent_compositing_inputs_update_ : 1;
-  unsigned child_needs_compositing_inputs_update_ : 1;
 
   // Used only while determining what layers should be composited. Applies to
   // the tree of z-order lists.
@@ -1416,9 +1306,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // |needs_descendant_dependent_flags_update_| is true. In other words, it is
   // accessed and used out of band with normal compositing inputs updating.
   Member<const PaintLayer> ancestor_scroll_container_layer_;
-
-  mutable Member<AncestorDependentCompositingInputs>
-      ancestor_dependent_compositing_inputs_;
 
   Member<PaintLayerScrollableArea> scrollable_area_;
 

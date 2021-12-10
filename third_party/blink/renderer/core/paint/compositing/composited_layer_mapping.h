@@ -147,10 +147,6 @@ class CORE_EXPORT CompositedLayerMapping final
 
   void PositionOverflowControlsLayers();
 
-  bool MayBeSquashedIntoScrollingContents(const PaintLayer& layer) const {
-    return layer.AncestorScrollingLayer() == owning_layer_;
-  }
-
   // Returns true if the assignment actually changed the assigned squashing
   // layer.
   bool UpdateSquashingLayerAssignment(
