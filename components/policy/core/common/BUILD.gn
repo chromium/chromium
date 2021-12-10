@@ -447,6 +447,7 @@ source_set("unit_tests") {
     "policy_bundle_unittest.cc",
     "policy_loader_command_line_unittest.cc",
     "policy_map_unittest.cc",
+    "policy_proto_decoders_unittest.cc",
     "policy_service_impl_unittest.cc",
     "policy_statistics_collector_unittest.cc",
     "remote_commands/remote_commands_queue_unittest.cc",
