@@ -572,21 +572,12 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
     return;
   mask_insets_ = new_insets;
 
-  SkColor color = GetColorProvider()->GetColor(
-      message_view_->is_active() ? ui::kColorNotificationBackgroundActive
-                                 : ui::kColorNotificationBackgroundInactive);
-
-  if (ash::features::IsNotificationsRefreshEnabled()) {
-    color = AshColorProvider::Get()->GetControlsLayerColor(
-        message_view_->is_active()
-            ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
-            : AshColorProvider::ControlsLayerType::
-                  kControlBackgroundColorInactive);
-  }
-
+  // The color of the mask, which is used only for corner-rounding, should be
+  // pure opaque white.
+  const SkColor mask_color = SK_ColorWHITE;
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
-          top_radius_, bottom_radius_, color);
+          top_radius_, bottom_radius_, mask_color);
   // Set insets to round visible notification corners. https://crbug.com/866777
   mask_painter->set_insets(new_insets);
 
