@@ -23,11 +23,14 @@ namespace gfx {
 class Point;
 }
 
-// Class to enable quick tab switching via horizontal 3 finger swipes.
+// Class to enable quick tab switching via horizontal X finger swipes (see
+// kFingerCount definition).
 class TabScrubberChromeOS : public ui::EventHandler,
                             public BrowserListObserver,
                             public TabStripObserver {
  public:
+  static constexpr int kFingerCount = 3;
+
   enum Direction { LEFT, RIGHT };
 
   TabScrubberChromeOS(const TabScrubberChromeOS&) = delete;
@@ -46,6 +49,9 @@ class TabScrubberChromeOS : public ui::EventHandler,
   bool IsActivationPending();
 
   void SetEnabled(bool enabled);
+
+  // Synthesize an ScrollEvent given a x offset (in DIPs).
+  void SynthesizedScrollEvent(float x_offset);
 
  private:
   friend class TabScrubberChromeOSTest;
@@ -81,6 +87,10 @@ class TabScrubberChromeOS : public ui::EventHandler,
   void UpdateHighlightedTab(Tab* new_tab, int new_index);
 
   bool GetEnabledForTesting() const { return enabled_; }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool MaybeDelegateHandlingToLacros(ui::ScrollEvent* event);
+#endif
 
   // Are we currently scrubbing?.
   bool scrubbing_ = false;

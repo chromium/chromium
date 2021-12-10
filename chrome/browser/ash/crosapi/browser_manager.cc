@@ -472,6 +472,26 @@ void BrowserManager::RestoreTab() {
   browser_service_->service->RestoreTab(base::DoNothing());
 }
 
+bool BrowserManager::HandleTabScrubbingSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kHandleTabScrubbingMinVersion;
+}
+
+void BrowserManager::HandleTabScrubbing(float x_offset) {
+  // If Lacros isn't running, bail out.
+  if (!IsRunning())
+    return;
+
+  if (!browser_service_.has_value())
+    return;
+
+  if (!HandleTabScrubbingSupported())
+    return;
+
+  browser_service_->service->HandleTabScrubbing(x_offset);
+}
+
 void BrowserManager::InitializeAndStart() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 

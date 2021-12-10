@@ -62,6 +62,8 @@ class TestControllerAsh : public mojom::TestController,
   void CloseAllBrowserWindows(CloseAllBrowserWindowsCallback callback) override;
   void RegisterStandaloneBrowserTestController(
       mojo::PendingRemote<mojom::StandaloneBrowserTestController>) override;
+  void TriggerTabScrubbing(float x_offset,
+                           TriggerTabScrubbingCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {

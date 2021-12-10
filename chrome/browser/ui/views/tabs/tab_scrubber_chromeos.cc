@@ -20,12 +20,16 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
 
 // static
@@ -75,6 +79,15 @@ void TabScrubberChromeOS::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
+void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset) {
+  ui::ScrollEvent event(ui::ET_SCROLL, gfx::PointF(), gfx::PointF(),
+                        ui::EventTimeForNow(),
+                        /*flags=*/0, x_offset,
+                        /*y_offset=*/0.f, /*x_offset_ordinal=*/0.f,
+                        /*y_offset_original=*/0.f, kFingerCount);
+  OnScrollEvent(&event);
+}
+
 TabScrubberChromeOS::TabScrubberChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::Shell::Get()->AddPreTargetHandler(this);
@@ -87,6 +100,16 @@ TabScrubberChromeOS::~TabScrubberChromeOS() {
 }
 
 void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1277946): Generalize the interception/handling of
+  // 3-finger swipes in Ash/ChromeOS.
+  bool delegated = MaybeDelegateHandlingToLacros(event);
+  if (delegated) {
+    event->StopPropagation();
+    return;
+  }
+#endif
+
   if (!enabled_)
     return;
 
@@ -97,7 +120,7 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  if (event->finger_count() != 3)
+  if (event->finger_count() != kFingerCount)
     return;
 
   Browser* browser = GetActiveBrowser();
@@ -339,3 +362,22 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
     highlighted_tab_ = -1;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
+    ui::ScrollEvent* event) {
+  auto* active_window =
+      ash::Shell::Get()->activation_client()->GetActiveWindow();
+  if (!active_window)
+    return false;
+
+  if (!crosapi::browser_util::IsLacrosWindow(active_window))
+    return false;
+
+  if (event->finger_count() != kFingerCount)
+    return false;
+
+  crosapi::BrowserManager::Get()->HandleTabScrubbing(event->x_offset());
+  return true;
+}
+#endif

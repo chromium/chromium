@@ -856,8 +856,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 15.
-// Next ID: 13
+// Next MinVersion: 16.
+// Next ID: 14
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -919,6 +919,13 @@ interface BrowserService {
   // Added in M91.
   [MinVersion=10]
   RestoreTab@8() => ();
+
+  // Signals Lacros that a multi-finger horizontal swipe has occurred in Ash.
+  // The browser usually responds by switching tabs
+  //
+  // |x_offset| is in DIP coordinates.
+  [MinVersion=15]
+  HandleTabScrubbing@13(float x_offset);
 
   // Returns the browser's feedback data used for generating feedback report in
   // a dictionary object, each entry representing a log entry in the feedback

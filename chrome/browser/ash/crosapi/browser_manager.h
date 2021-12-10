@@ -143,6 +143,14 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // See crosapi::mojom::BrowserService::RestoreTab for more details
   void RestoreTab();
 
+  // Returns true if crosapi interface supports HandleTabScrubbing API.
+  bool HandleTabScrubbingSupported() const;
+
+  // Triggers tab switching in Lacros via horizontal 3-finger swipes.
+  //
+  // |x_offset| is in DIP coordinates.
+  void HandleTabScrubbing(float x_offset);
+
   // Initialize resources and start Lacros. This class provides two approaches
   // to fulfill different requirements.
   // - For most sessions, Lacros will be started automatically once

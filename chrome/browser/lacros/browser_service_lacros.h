@@ -42,6 +42,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   void NewTab(NewTabCallback callback) override;
   void OpenUrl(const GURL& url, OpenUrlCallback callback) override;
   void RestoreTab(RestoreTabCallback callback) override;
+  void HandleTabScrubbing(float x_offset) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
   void GetHistograms(GetHistogramsCallback callback) override;
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;

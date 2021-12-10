@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -283,6 +284,10 @@ void BrowserServiceLacros::RestoreTab(RestoreTabCallback callback) {
   DCHECK(browser) << "No browser is found.";
   chrome::RestoreTab(browser);
   std::move(callback).Run();
+}
+
+void BrowserServiceLacros::HandleTabScrubbing(float x_offset) {
+  TabScrubberChromeOS::GetInstance()->SynthesizedScrollEvent(x_offset);
 }
 
 void BrowserServiceLacros::GetFeedbackData(GetFeedbackDataCallback callback) {

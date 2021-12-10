@@ -42,8 +42,8 @@ interface StandaloneBrowserTestController {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 10
-// Next method id: 17
+// Next version: 11
+// Next method id: 18
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the window. Assumes that the window exists and is
@@ -140,4 +140,8 @@ interface TestController {
   // send commands to lacros-chrome.
   [MinVersion=9] RegisterStandaloneBrowserTestController@16(
       pending_remote<StandaloneBrowserTestController> controller);
+
+  // Provides a mechanism for lacros to tell ash to perform tab scrubbing.
+  [MinVersion=10]
+  TriggerTabScrubbing@17(float x_offset) => (bool scrubbing);
 };
