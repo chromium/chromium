@@ -43,7 +43,15 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     return;
   }
 
+  // Initialize the `URLLoaderFactory` now, as later on the worklet may enter
+  // keep-alive phase and won't have access to the `RenderFrameHost`.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      frame_url_loader_factory;
+  render_frame_host().CreateNetworkServiceDefaultFactory(
+      frame_url_loader_factory.InitWithNewPipeAndPassReceiver());
+
   GetSharedStorageWorkletHost()->AddModuleOnWorklet(
+      std::move(frame_url_loader_factory),
       render_frame_host().GetLastCommittedOrigin(), script_source_url,
       std::move(callback));
 }
@@ -52,6 +60,11 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data) {
   GetSharedStorageWorkletHost()->RunOperationOnWorklet(name, serialized_data);
+}
+
+base::WeakPtr<SharedStorageDocumentServiceImpl>
+SharedStorageDocumentServiceImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(

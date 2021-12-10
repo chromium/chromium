@@ -12,13 +12,12 @@
 
 namespace content {
 
-class SharedStorageWorkletHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageWorkletDriver;
-class RenderFrameHost;
+class SharedStorageWorkletHost;
 
-// Manages the creation and destruction of worklet hosts. The manager is bound
-// to the StoragePartition.
+// Manages the creation and destruction of the `SharedStorageWorkletHost`. The
+// manager is bound to the StoragePartition.
 class CONTENT_EXPORT SharedStorageWorkletHostManager {
  public:
   SharedStorageWorkletHostManager();
@@ -33,24 +32,40 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
  protected:
   const std::map<SharedStorageDocumentServiceImpl*,
                  std::unique_ptr<SharedStorageWorkletHost>>&
-  GetWorkletHostsForTesting() {
-    return shared_storage_worklet_hosts_;
+  GetAttachedWorkletHostsForTesting() {
+    return attached_shared_storage_worklet_hosts_;
   }
+
+  const std::map<SharedStorageWorkletHost*,
+                 std::unique_ptr<SharedStorageWorkletHost>>&
+  GetKeepAliveWorkletHostsForTesting() {
+    return keep_alive_shared_storage_worklet_hosts_;
+  }
+
+  void OnWorkletKeepAliveFinished(SharedStorageWorkletHost*);
 
   // virtual for testing
   virtual std::unique_ptr<SharedStorageWorkletHost>
   CreateSharedStorageWorkletHost(
       std::unique_ptr<SharedStorageWorkletDriver> driver,
-      RenderFrameHost& render_frame_host);
+      SharedStorageDocumentServiceImpl& document_service);
 
  private:
-  // Those worklet hosts are created on demand when the
-  // `SharedStorageDocumentServiceImpl` requests it. They will be removed from
-  // the map when the corresponding document is destructed (where it will call
-  // `OnDocumentServiceDestroyed`).
+  // The hosts that are attached to the worklet's owner document. Those hosts
+  // are created on demand when the `SharedStorageDocumentServiceImpl` requests
+  // it. When the corresponding document is destructed (where it will call
+  // `OnDocumentServiceDestroyed`), those hosts will either be removed from this
+  // map entirely, or will be moved from this map to
+  // `keep_alive_shared_storage_worklet_hosts_`, depending on whether there are
+  // pending operations.
   std::map<SharedStorageDocumentServiceImpl*,
            std::unique_ptr<SharedStorageWorkletHost>>
-      shared_storage_worklet_hosts_;
+      attached_shared_storage_worklet_hosts_;
+
+  // The hosts that are detached from the worklet's owner document and have
+  // entered keep-alive phase.
+  std::map<SharedStorageWorkletHost*, std::unique_ptr<SharedStorageWorkletHost>>
+      keep_alive_shared_storage_worklet_hosts_;
 };
 
 }  // namespace content

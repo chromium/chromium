@@ -6,25 +6,36 @@
 
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/common/renderer.mojom.h"
 
 namespace content {
 
+namespace {
+
+constexpr base::TimeDelta kKeepAliveTimeout = base::Seconds(2);
+
+}  // namespace
+
 SharedStorageWorkletHost::SharedStorageWorkletHost(
     std::unique_ptr<SharedStorageWorkletDriver> driver,
-    RenderFrameHost& rfh)
+    SharedStorageDocumentServiceImpl& document_service)
     : driver_(std::move(driver)),
-      render_frame_host_(static_cast<RenderFrameHostImpl&>(rfh)) {}
+      document_service_(document_service.GetWeakPtr()) {}
 
 SharedStorageWorkletHost::~SharedStorageWorkletHost() = default;
 
 void SharedStorageWorkletHost::AddModuleOnWorklet(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        frame_url_loader_factory,
     const url::Origin& frame_origin,
     const GURL& script_source_url,
     blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
         callback) {
+  IncrementPendingOperationsCount();
+
   if (add_module_state_ == AddModuleState::kInitiated) {
     OnAddModuleOnWorkletFinished(
         std::move(callback), /*success=*/false,
@@ -40,11 +51,9 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
   url_loader_factory_proxy_ =
       std::make_unique<SharedStorageURLLoaderFactoryProxy>(
-          url_loader_factory.InitWithNewPipeAndPassReceiver(),
-          base::BindRepeating(
-              &SharedStorageWorkletHost::GetFrameURLLoaderFactory,
-              base::Unretained(this)),
-          frame_origin, script_source_url);
+          std::move(frame_url_loader_factory),
+          url_loader_factory.InitWithNewPipeAndPassReceiver(), frame_origin,
+          script_source_url);
 
   GetAndConnectToSharedStorageWorkletService()->AddModule(
       std::move(url_loader_factory), script_source_url,
@@ -55,6 +64,8 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 void SharedStorageWorkletHost::RunOperationOnWorklet(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data) {
+  IncrementPendingOperationsCount();
+
   if (add_module_state_ != AddModuleState::kInitiated) {
     OnRunOperationOnWorkletFinished(
         /*success=*/false,
@@ -67,6 +78,26 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, serialized_data,
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool SharedStorageWorkletHost::HasPendingOperations() {
+  return pending_operations_count_ > 0;
+}
+
+void SharedStorageWorkletHost::EnterKeepAliveOnDocumentDestroyed(
+    KeepAliveFinishedCallback callback) {
+  // At this point the `SharedStorageDocumentServiceImpl` is being destroyed, so
+  // `document_service_` is still valid. But it will be auto reset soon after.
+  DCHECK(document_service_);
+  DCHECK(HasPendingOperations());
+  DCHECK(keep_alive_finished_callback_.is_null());
+
+  keep_alive_finished_callback_ = std::move(callback);
+
+  keep_alive_timer_.Start(
+      FROM_HERE, GetKeepAliveTimeout(),
+      base::BindOnce(&SharedStorageWorkletHost::FinishKeepAlive,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -165,10 +196,16 @@ void SharedStorageWorkletHost::SharedStorageLength(
 }
 
 void SharedStorageWorkletHost::ConsoleLog(const std::string& message) {
+  if (!document_service_) {
+    DCHECK(IsInKeepAlivePhase());
+    return;
+  }
+
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
   devtools_instrumentation::LogWorkletMessage(
-      render_frame_host_, blink::mojom::ConsoleMessageLevel::kInfo, message);
+      static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host()),
+      blink::mojom::ConsoleMessageLevel::kInfo, message);
 }
 
 void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
@@ -177,27 +214,52 @@ void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
     bool success,
     const std::string& error_message) {
   std::move(callback).Run(success, error_message);
+
+  DecrementPendingOperationsCount();
 }
 
 void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
     bool success,
     const std::string& error_message) {
-  if (success)
-    return;
-
-  devtools_instrumentation::LogWorkletMessage(
-      render_frame_host_, blink::mojom::ConsoleMessageLevel::kError,
-      error_message);
-}
-
-network::mojom::URLLoaderFactory*
-SharedStorageWorkletHost::GetFrameURLLoaderFactory() {
-  if (!frame_url_loader_factory_) {
-    render_frame_host_.CreateNetworkServiceDefaultFactory(
-        frame_url_loader_factory_.BindNewPipeAndPassReceiver());
+  if (!success && document_service_) {
+    DCHECK(!IsInKeepAlivePhase());
+    devtools_instrumentation::LogWorkletMessage(
+        static_cast<RenderFrameHostImpl&>(
+            document_service_->render_frame_host()),
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
   }
 
-  return frame_url_loader_factory_.get();
+  DecrementPendingOperationsCount();
+}
+
+bool SharedStorageWorkletHost::IsInKeepAlivePhase() const {
+  return !!keep_alive_finished_callback_;
+}
+
+void SharedStorageWorkletHost::FinishKeepAlive() {
+  // This will remove this worklet host from the manager.
+  std::move(keep_alive_finished_callback_).Run(this);
+
+  // Do not add code after this. SharedStorageWorkletHost has been destroyed.
+}
+
+void SharedStorageWorkletHost::IncrementPendingOperationsCount() {
+  base::CheckedNumeric<uint32_t> count = pending_operations_count_;
+  pending_operations_count_ = (++count).ValueOrDie();
+}
+
+void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
+  base::CheckedNumeric<uint32_t> count = pending_operations_count_;
+  pending_operations_count_ = (--count).ValueOrDie();
+
+  if (!IsInKeepAlivePhase() || pending_operations_count_)
+    return;
+
+  FinishKeepAlive();
+}
+
+base::TimeDelta SharedStorageWorkletHost::GetKeepAliveTimeout() const {
+  return kKeepAliveTimeout;
 }
 
 shared_storage_worklet::mojom::SharedStorageWorkletService*

@@ -35,6 +35,8 @@ class SharedStorageDocumentServiceImpl final
       const std::string& name,
       const std::vector<uint8_t>& serialized_data) override;
 
+  base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
+
  private:
   friend class DocumentUserData;
 

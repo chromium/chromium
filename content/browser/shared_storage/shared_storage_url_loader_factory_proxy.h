@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -25,12 +26,10 @@ namespace content {
 class CONTENT_EXPORT SharedStorageURLLoaderFactoryProxy
     : public network::mojom::URLLoaderFactory {
  public:
-  using GetUrlLoaderFactoryCallback =
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
-
   SharedStorageURLLoaderFactoryProxy(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          frame_url_loader_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      GetUrlLoaderFactoryCallback get_url_loader_factory,
       const url::Origin& frame_origin,
       const GURL& script_url);
   SharedStorageURLLoaderFactoryProxy(
@@ -52,9 +51,9 @@ class CONTENT_EXPORT SharedStorageURLLoaderFactoryProxy
       override;
 
  private:
-  mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
+  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
 
-  const GetUrlLoaderFactoryCallback get_url_loader_factory_;
+  mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 
   const url::Origin frame_origin_;
 

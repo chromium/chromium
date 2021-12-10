@@ -31,12 +31,13 @@
 namespace content {
 
 SharedStorageURLLoaderFactoryProxy::SharedStorageURLLoaderFactoryProxy(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        frame_url_loader_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    GetUrlLoaderFactoryCallback get_url_loader_factory,
     const url::Origin& frame_origin,
     const GURL& script_url)
-    : receiver_(this, std::move(pending_receiver)),
-      get_url_loader_factory_(std::move(get_url_loader_factory)),
+    : frame_url_loader_factory_(std::move(frame_url_loader_factory)),
+      receiver_(this, std::move(pending_receiver)),
       frame_origin_(frame_origin),
       script_url_(script_url) {}
 
@@ -66,7 +67,9 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.request_initiator = frame_origin_;
   new_request.mode = network::mojom::RequestMode::kSameOrigin;
 
-  get_url_loader_factory_.Run()->CreateLoaderAndStart(
+  // TODO(crbug/1268616): create a new factory when the current one gets
+  // disconnected.
+  frame_url_loader_factory_->CreateLoaderAndStart(
       std::move(receiver), GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, new_request, std::move(client),
       traffic_annotation);

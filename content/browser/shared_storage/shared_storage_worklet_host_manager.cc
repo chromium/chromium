@@ -16,30 +16,48 @@ SharedStorageWorkletHostManager::~SharedStorageWorkletHostManager() = default;
 
 void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
     SharedStorageDocumentServiceImpl* document_service) {
-  // Note: `shared_storage_worklet_hosts_` will be populated when there's an
-  // actual worklet operation request, but the document service will call this
-  // method on destruction irrespectively, so it may not exist in map.
-  shared_storage_worklet_hosts_.erase(document_service);
+  // Note: `attached_shared_storage_worklet_hosts_` will be populated when
+  // there's an actual worklet operation request, but the
+  // `SharedStorageDocumentServiceImpl` will call this method on destruction
+  // irrespectively, so it may not exist in map.
+  auto it = attached_shared_storage_worklet_hosts_.find(document_service);
+  if (it == attached_shared_storage_worklet_hosts_.end())
+    return;
+
+  SharedStorageWorkletHost* worklet_host = it->second.get();
+  if (!worklet_host->HasPendingOperations()) {
+    attached_shared_storage_worklet_hosts_.erase(it);
+    return;
+  }
+
+  DCHECK(!keep_alive_shared_storage_worklet_hosts_.count(worklet_host));
+  keep_alive_shared_storage_worklet_hosts_.insert(
+      {worklet_host, std::move(it->second)});
+
+  attached_shared_storage_worklet_hosts_.erase(it);
+
+  worklet_host->EnterKeepAliveOnDocumentDestroyed(base::BindOnce(
+      &SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished,
+      base::Unretained(this)));
 }
 
 SharedStorageWorkletHost*
 SharedStorageWorkletHostManager::GetOrCreateSharedStorageWorkletHost(
     SharedStorageDocumentServiceImpl* document_service) {
-  auto it = shared_storage_worklet_hosts_.find(document_service);
-  if (it != shared_storage_worklet_hosts_.end())
+  auto it = attached_shared_storage_worklet_hosts_.find(document_service);
+  if (it != attached_shared_storage_worklet_hosts_.end())
     return it->second.get();
 
   auto driver = std::make_unique<SharedStorageRenderThreadWorkletDriver>(
-      static_cast<RenderFrameHostImpl&>(document_service->render_frame_host())
-          .GetAgentSchedulingGroup());
+      &(static_cast<RenderFrameHostImpl&>(document_service->render_frame_host())
+            .GetAgentSchedulingGroup()));
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
-      CreateSharedStorageWorkletHost(std::move(driver),
-                                     document_service->render_frame_host());
+      CreateSharedStorageWorkletHost(std::move(driver), *document_service);
 
   SharedStorageWorkletHost* worklet_host_ptr = worklet_host.get();
 
-  shared_storage_worklet_hosts_.insert(
+  attached_shared_storage_worklet_hosts_.insert(
       {document_service, std::move(worklet_host)});
   return worklet_host_ptr;
 }
@@ -47,9 +65,15 @@ SharedStorageWorkletHostManager::GetOrCreateSharedStorageWorkletHost(
 std::unique_ptr<SharedStorageWorkletHost>
 SharedStorageWorkletHostManager::CreateSharedStorageWorkletHost(
     std::unique_ptr<SharedStorageWorkletDriver> driver,
-    RenderFrameHost& render_frame_host) {
+    SharedStorageDocumentServiceImpl& document_service) {
   return std::make_unique<SharedStorageWorkletHost>(std::move(driver),
-                                                    render_frame_host);
+                                                    document_service);
+}
+
+void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(
+    SharedStorageWorkletHost* worklet_host) {
+  DCHECK(keep_alive_shared_storage_worklet_hosts_.count(worklet_host));
+  keep_alive_shared_storage_worklet_hosts_.erase(worklet_host);
 }
 
 }  // namespace content

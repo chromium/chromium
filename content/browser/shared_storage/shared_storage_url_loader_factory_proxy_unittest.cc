@@ -60,14 +60,14 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
            !remote_url_loader_factory_.is_connected());
 
     remote_url_loader_factory_.reset();
+
+    mojo::Remote<network::mojom::URLLoaderFactory> factory;
+    proxied_url_loader_factory_.Clone(factory.BindNewPipeAndPassReceiver());
+
     url_loader_factory_proxy_ =
         std::make_unique<SharedStorageURLLoaderFactoryProxy>(
+            factory.Unbind(),
             remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
-            base::BindRepeating(
-                [](network::mojom::URLLoaderFactory* factory) {
-                  return factory;
-                },
-                &proxied_url_loader_factory_),
             frame_origin_, GURL(kScriptUrl));
   }
 

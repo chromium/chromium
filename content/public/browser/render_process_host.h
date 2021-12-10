@@ -453,6 +453,18 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //    the renderer process to be alive. The ref count is incremented when
   //    a shared worker is created in the process, and decremented when
   //    it is terminated (it self-destructs when it no longer has clients).
+  //  - Shared Storage Worklet:
+  //    (https://github.com/pythagoraskitty/shared-storage)
+  //    While there are shared storage worklets who live in this process, they
+  //    wish the renderer process to be alive. The ref count is incremented when
+  //    a shared storage worklet is created in the process, and decremented when
+  //    it is terminated (after the document is destroyed, the worklet
+  //    will be destroyed when all pending operations have finished or a timeout
+  //    is reached). Note that this is only relevant for the implementation of
+  //    shared storage worklets that run in the renderer process. The actual
+  //    process that the shared storage worklets are going to use is determined
+  //    by the concrete implementation of
+  //    `SharedStorageRenderThreadWorkletDriver`.
   virtual void IncrementWorkerRefCount() = 0;
   virtual void DecrementWorkerRefCount() = 0;
 
