@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -35,8 +34,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -123,9 +122,9 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "https://crbug.com/1278039")
     @Feature("TabPersistentStore")
+    // TODO(https://crbug.com/1278039): remove @RequiresRestart workaround when culprit is found
+    @RequiresRestart("https://crbug.com/1278039")
     public void testNtpSaveBehavior() {
         when(mNormalTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
         when(mIncognitoTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
