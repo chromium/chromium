@@ -155,6 +155,10 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     if (key_pair_ && key_pair_->key()) {
       able_to_restore = persistence_delegate_->StoreKeyPair(
           key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
+    } else {
+      // If there was no old key we clear the registry.
+      able_to_restore = persistence_delegate_->StoreKeyPair(
+          BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>());
     }
 
     RotationStatus status =

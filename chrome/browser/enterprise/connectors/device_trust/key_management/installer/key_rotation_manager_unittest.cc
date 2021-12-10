@@ -201,6 +201,157 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
       "Enterprise.DeviceTrust.RotateSigningKey.Tries", 1, 1);
 }
 
+// Tests a failed key rotation flow when a TPM key provider is available
+// and no key previously existed and the network request permanetly failed.
+// Also, in this case the registry should be cleared.
+TEST_P(KeyRotationManagerTest,
+       RotateWithAdminRights_Tpm_WithoutKey_NetworkFails_ClearRegistry) {
+  base::HistogramTester histogram_tester;
+
+  // The factory creates instances backed by fake TPM keys.
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+
+  InSequence s;
+
+  // The mocked delegate is already set-up to return a working TPM key and
+  // provider. Force it to not return a key.
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
+      .WillOnce(Return(CreateEmptyKeyPair()));
+
+  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+      .WillOnce(Return(true));
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+
+  EXPECT_CALL(
+      *mock_persistence_delegate,
+      StoreKeyPair(BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()))
+      .WillOnce(Return(true));
+
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+
+  EXPECT_FALSE(
+      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+
+  //   Should expect one failed attempt to rotate a key on first try.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(),
+      KeyRotationManager::RotationStatus::FAILURE_CANNOT_UPLOAD_KEY, 1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceTrust.RotateSigningKey.Tries", 1, 1);
+}
+
+// Tests a failed key rotation flow when a TPM key provider is available
+// and no key previously existed and the network request transiently
+// failed max before really failing. Also, in this case the
+// registry should be cleared.
+TEST_P(
+    KeyRotationManagerTest,
+    RotateWithAdminRights_Tpm_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
+  base::HistogramTester histogram_tester;
+
+  // The factory creates instances backed by fake TPM keys.
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+
+  InSequence s;
+
+  // The mocked delegate is already set-up to return a working TPM key and
+  // provider. Force it to not return a key.
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
+      .WillOnce(Return(CreateEmptyKeyPair()));
+
+  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+      .WillOnce(Return(true));
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+      .WillRepeatedly(Return(CreateResponse(BPKUP::UNDEFINED)));
+
+  EXPECT_CALL(
+      *mock_persistence_delegate,
+      StoreKeyPair(BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()))
+      .WillOnce(Return(true));
+
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+
+  EXPECT_FALSE(
+      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+
+  // Should expect one failed attempt to rotate a key with max tries.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(),
+      KeyRotationManager::RotationStatus::
+          FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED,
+      1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceTrust.RotateSigningKey.Tries", 10, 1);
+}
+
+// Tests a failed key rotation flow when a TPM key provider is available
+// and no key previously existed, and the network request transiently failed
+// twice before really failing. In this case clearing the key registry fails.
+TEST_P(KeyRotationManagerTest,
+       RotateWithAdminRights_Tpm_WithoutKey_NetworkFails_ClearRegistryFails) {
+  base::HistogramTester histogram_tester;
+
+  // The factory creates instances backed by fake TPM keys.
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+
+  InSequence s;
+
+  // The mocked delegate is already set-up to return a working TPM key and
+  // provider. Force it to not return a key.
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
+      .WillOnce(Return(CreateEmptyKeyPair()));
+
+  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+      .WillOnce(Return(true));
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+      .WillOnce(Return(CreateResponse(BPKUP::UNDEFINED)))
+      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+
+  EXPECT_CALL(
+      *mock_persistence_delegate,
+      StoreKeyPair(BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()))
+      .WillOnce(Return(false));
+
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+
+  EXPECT_FALSE(
+      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+
+  // Should expect one failed attempt to rotate a key with two tries.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(),
+      KeyRotationManager::RotationStatus::
+          FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED,
+      1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceTrust.RotateSigningKey.Tries", 2, 1);
+}
+
 // Tests a success key rotation flow when a TPM key provider is not available
 // and a key previously existed.
 TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
