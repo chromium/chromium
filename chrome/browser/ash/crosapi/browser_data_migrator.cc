@@ -545,7 +545,9 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
          MigrationStep::kStarted);
   SetMigrationStep(g_browser_process->local_state(), MigrationStep::kEnded);
 
-  if (result.data_wipe == ResultValue::kSucceeded) {
+  if (result.data_wipe != ResultValue::kFailed) {
+    // kSkipped means that the directory did not exist so record the current
+    // version as the data version.
     crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                          user_id_hash,
                                          version_info::GetVersion());
