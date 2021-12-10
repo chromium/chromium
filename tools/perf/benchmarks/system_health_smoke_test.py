@@ -121,6 +121,7 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   # wider swath of coverage  than is usally intended. Instead, if a test is
   # failing, disable it by putting it into the _DISABLED_TESTS list above.
   @decorators.Disabled('chromeos')  # crbug.com/351114
+  @decorators.Disabled('mac')  # crbug.com/1277277
   def RunTest(self):
     class SinglePageBenchmark(benchmark_class):  # pylint: disable=no-init
       def CreateStorySet(self, options):

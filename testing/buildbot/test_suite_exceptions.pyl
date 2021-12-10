@@ -2853,6 +2853,9 @@
           '--jobs=1',
         ],
       },
+      'Mac11 Tests': {
+        'ci_only': True,
+      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--jobs=1',
@@ -2905,7 +2908,6 @@
       'Mac10.13 Tests',
       'Mac10.15 Tests',
       # TODO crbug.com/1277277
-      'Mac11 Tests',
       'Mac11 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
