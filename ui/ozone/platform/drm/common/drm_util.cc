@@ -25,7 +25,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -182,22 +181,34 @@ ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(int fd,
 
 display::PrivacyScreenState GetPrivacyScreenState(int fd,
                                                   drmModeConnector* connector) {
-  ScopedDrmPropertyPtr property;
-  int index = GetDrmProperty(fd, connector, "privacy-screen", &property);
-  if (index < 0)
-    return display::PrivacyScreenState::kNotSupported;
+  ScopedDrmPropertyPtr sw_property;
+  const int sw_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenSwStatePropertyName, &sw_property);
+  ScopedDrmPropertyPtr hw_property;
+  const int hw_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenHwStatePropertyName, &hw_property);
 
-  DCHECK_LT(connector->prop_values[index],
-            display::PrivacyScreenState::kPrivacyScreenStateLast);
-  if (connector->prop_values[index] >=
-      display::PrivacyScreenState::kPrivacyScreenStateLast) {
-    LOG(ERROR) << "Invalid privacy-screen property value: Expected < "
-               << display::PrivacyScreenState::kPrivacyScreenStateLast
-               << ", but got: " << connector->prop_values[index];
+  // Both privacy-screen properties (software- and hardware-state) must be
+  // present in order for the feature to be supported, but the hardware-state
+  // property indicates the true state of the privacy screen.
+  if (sw_index >= 0 && hw_index >= 0) {
+    const std::string hw_enum_value = GetNameForEnumValue(
+        hw_property.get(), connector->prop_values[hw_index]);
+    return GetPrivacyScreenStateFromEnumValue(hw_enum_value);
   }
 
-  return static_cast<display::PrivacyScreenState>(
-      connector->prop_values[index]);
+  // If the new privacy screen UAPI properties are missing, try to fetch the
+  // legacy privacy screen property.
+  ScopedDrmPropertyPtr legacy_property;
+  const int legacy_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenPropertyNameLegacy, &legacy_property);
+  if (legacy_index >= 0) {
+    const std::string legacy_enum_value = GetNameForEnumValue(
+        legacy_property.get(), connector->prop_values[legacy_index]);
+    return GetPrivacyScreenStateFromEnumValue(legacy_enum_value);
+  }
+
+  return display::PrivacyScreenState::kNotSupported;
 }
 
 std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
@@ -673,6 +684,18 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   }
 
   return path;
+}
+
+display::PrivacyScreenState GetPrivacyScreenStateFromEnumValue(
+    const std::string& enum_value) {
+  for (auto mapping : kPrivacyScreenStates) {
+    if (enum_value == mapping.drm_enum)
+      return mapping.internal_state;
+  }
+
+  NOTREACHED() << "Failed to match privacy screen property enum '" << enum_value
+               << "' to an internal type.";
+  return display::kNotSupported;
 }
 
 }  // namespace ui

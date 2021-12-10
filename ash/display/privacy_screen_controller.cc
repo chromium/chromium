@@ -164,7 +164,9 @@ void PrivacyScreenController::OnDisplayModeChanged(
   display::DisplaySnapshot* privacy_screen_display = GetSupportedDisplay();
   current_status_ =
       privacy_screen_display &&
-      privacy_screen_display->privacy_screen_state() == display::kEnabled;
+      (privacy_screen_display->privacy_screen_state() == display::kEnabled ||
+       privacy_screen_display->privacy_screen_state() ==
+           display::kEnabledLocked);
 
   InitFromUserPrefs();
   applying_login_screen_prefs_ = false;

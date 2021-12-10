@@ -23,37 +23,13 @@ namespace ui {
 
 namespace {
 
-const char kContentProtection[] = "Content Protection";
-const char kHdcpContentType[] = "HDCP Content Type";
-
-const char kPrivacyScreen[] = "privacy-screen";
-
-struct ContentProtectionMapping {
-  const char* name;
-  display::HDCPState state;
-};
-
-struct HdcpContentTypeMapping {
-  const char* name;
-  display::ContentProtectionMethod content_type;
-};
-
-const ContentProtectionMapping kContentProtectionStates[] = {
-    {"Undesired", display::HDCP_STATE_UNDESIRED},
-    {"Desired", display::HDCP_STATE_DESIRED},
-    {"Enabled", display::HDCP_STATE_ENABLED}};
-
-const HdcpContentTypeMapping kHdcpContentTypeStates[] = {
-    {"HDCP Type0", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0},
-    {"HDCP Type1", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1}};
-
 // Converts |state| to the DRM value associated with the it.
 uint32_t GetContentProtectionValue(drmModePropertyRes* property,
                                    display::HDCPState state) {
   std::string name;
-  for (size_t i = 0; i < base::size(kContentProtectionStates); ++i) {
-    if (kContentProtectionStates[i].state == state) {
-      name = kContentProtectionStates[i].name;
+  for (const auto& mapping : kContentProtectionStates) {
+    if (mapping.internal_state == state) {
+      name = mapping.drm_enum;
       break;
     }
   }
@@ -72,9 +48,9 @@ uint32_t GetHdcpContentTypeValue(
     drmModePropertyRes* property,
     display::ContentProtectionMethod content_type) {
   std::string name;
-  for (size_t i = 0; i < base::size(kHdcpContentTypeStates); ++i) {
-    if (kHdcpContentTypeStates[i].content_type == content_type) {
-      name = kHdcpContentTypeStates[i].name;
+  for (const auto& mapping : kHdcpContentTypeStates) {
+    if (mapping.internal_state == content_type) {
+      name = mapping.drm_enum;
       break;
     }
   }
@@ -128,6 +104,118 @@ void FillPowerFunctionValues(std::vector<display::GammaRampRGBEntry>* table,
 
 }  // namespace
 
+DrmDisplay::PrivacyScreenProperty::PrivacyScreenProperty(
+    const scoped_refptr<DrmDevice>& drm,
+    drmModeConnector* connector)
+    : drm_(drm), connector_(connector) {
+  privacy_screen_hw_state_ =
+      drm_->GetProperty(connector_, kPrivacyScreenHwStatePropertyName);
+  privacy_screen_sw_state_ =
+      drm_->GetProperty(connector_, kPrivacyScreenSwStatePropertyName);
+
+  if (!privacy_screen_hw_state_ || !privacy_screen_sw_state_) {
+    privacy_screen_hw_state_.reset();
+    privacy_screen_sw_state_.reset();
+
+    property_last_ = display::kPrivacyScreenLegacyStateLast;
+    privacy_screen_legacy_ =
+        drm_->GetProperty(connector_, kPrivacyScreenPropertyNameLegacy);
+  }
+}
+
+DrmDisplay::PrivacyScreenProperty::~PrivacyScreenProperty() = default;
+
+bool DrmDisplay::PrivacyScreenProperty::SetPrivacyScreenProperty(bool enabled) {
+  drmModePropertyRes* property = GetWritePrivacyScreenProperty();
+  if (!property) {
+    LOG(ERROR)
+        << "Privacy screen is not supported but an attempt to set it was made.";
+    return false;
+  }
+
+  const display::PrivacyScreenState state_to_set =
+      enabled ? display::kEnabled : display::kDisabled;
+  if (!drm_->SetProperty(connector_->connector_id, property->prop_id,
+                         state_to_set)) {
+    LOG(ERROR) << (enabled ? "Enabling" : "Disabling") << " property '"
+               << property->name << "' failed!";
+    return false;
+  }
+
+  return ValidateCurrentStateAgainst(enabled);
+}
+
+uint64_t DrmDisplay::PrivacyScreenProperty::GetStateValue(
+    drmModePropertyRes* property,
+    const display::PrivacyScreenState& state) const {
+  std::string name;
+  for (const auto& mapping : kPrivacyScreenStates) {
+    if (mapping.internal_state == state) {
+      name = mapping.drm_enum;
+      break;
+    }
+  }
+
+  for (int i = 0; i < property->count_enums; ++i) {
+    if (name == property->enums[i].name)
+      return property->enums[i].value;
+  }
+
+  NOTREACHED();
+  return 0;
+}
+
+display::PrivacyScreenState
+DrmDisplay::PrivacyScreenProperty::GetPrivacyScreenState() const {
+  drmModePropertyRes* property = GetReadPrivacyScreenProperty();
+  if (!property) {
+    LOG(ERROR) << "Privacy screen is not supported but an attempt to read its "
+                  "state was made.";
+    return display::kNotSupported;
+  }
+
+  ScopedDrmObjectPropertyPtr property_values(drm_->GetObjectProperties(
+      connector_->connector_id, DRM_MODE_OBJECT_CONNECTOR));
+  if (!property_values) {
+    PLOG(INFO) << "Properties no longer valid for connector "
+               << connector_->connector_id << ".";
+    return display::kNotSupported;
+  }
+
+  const std::string privacy_screen_state_name =
+      GetEnumNameForProperty(property_values.get(), property);
+  return GetPrivacyScreenStateFromEnumValue(privacy_screen_state_name);
+}
+
+bool DrmDisplay::PrivacyScreenProperty::ValidateCurrentStateAgainst(
+    bool enabled) const {
+  display::PrivacyScreenState current_state = GetPrivacyScreenState();
+
+  if (current_state == display::kNotSupported)
+    return false;
+
+  bool currently_on = false;
+  if (current_state == display::kEnabled ||
+      current_state == display::kEnabledLocked) {
+    currently_on = true;
+  }
+  return currently_on == enabled;
+}
+
+drmModePropertyRes*
+DrmDisplay::PrivacyScreenProperty::GetReadPrivacyScreenProperty() const {
+  if (privacy_screen_hw_state_ && privacy_screen_sw_state_)
+    return privacy_screen_hw_state_.get();
+  return privacy_screen_legacy_.get();
+}
+
+drmModePropertyRes*
+DrmDisplay::PrivacyScreenProperty::GetWritePrivacyScreenProperty() const {
+  if (privacy_screen_hw_state_ && privacy_screen_sw_state_)
+    return privacy_screen_sw_state_.get();
+  return privacy_screen_legacy_.get();
+}
+
 DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm)
     : drm_(drm), current_color_space_(gfx::ColorSpace::CreateSRGB()) {}
 
@@ -152,13 +240,13 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
                 << info->connector()->connector_id;
     return nullptr;
   }
-  privacy_screen_property_ =
-      drm_->GetProperty(connector_.get(), kPrivacyScreen);
 
   display_id_ = params->display_id();
   modes_ = GetDrmModeVector(info->connector());
   is_hdr_capable_ =
       params->bits_per_channel() > 8 && params->color_space().IsHDR();
+  privacy_screen_property_ =
+      std::make_unique<PrivacyScreenProperty>(drm(), connector_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   is_hdr_capable_ =
       is_hdr_capable_ &&
@@ -196,8 +284,8 @@ bool DrmDisplay::GetHDCPState(
       GetEnumNameForProperty(property_values.get(), hdcp_property.get());
   size_t i;
   for (i = 0; i < base::size(kContentProtectionStates); ++i) {
-    if (name == kContentProtectionStates[i].name) {
-      *state = kContentProtectionStates[i].state;
+    if (name == kContentProtectionStates[i].drm_enum) {
+      *state = kContentProtectionStates[i].internal_state;
       VLOG(3) << "HDCP state: " << *state << " (" << name << ")";
       break;
     }
@@ -226,8 +314,8 @@ bool DrmDisplay::GetHDCPState(
   name = GetEnumNameForProperty(property_values.get(),
                                 content_type_property.get());
   for (i = 0; i < base::size(kHdcpContentTypeStates); ++i) {
-    if (name == kHdcpContentTypeStates[i].name) {
-      *protection_method = kHdcpContentTypeStates[i].content_type;
+    if (name == kHdcpContentTypeStates[i].drm_enum) {
+      *protection_method = kHdcpContentTypeStates[i].internal_state;
       VLOG(3) << "Content Protection Method: " << *protection_method << " ("
               << name << ")";
       break;
@@ -306,18 +394,7 @@ void DrmDisplay::SetGammaCorrection(
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {
-  if (!privacy_screen_property_) {
-    LOG(ERROR) << "'" << kPrivacyScreen << "' property doesn't exist.";
-    return false;
-  }
-
-  if (!drm_->SetProperty(connector_->connector_id,
-                         privacy_screen_property_->prop_id, enabled)) {
-    LOG(ERROR) << (enabled ? "Enabling" : "Disabling") << " property '"
-               << kPrivacyScreen << "' failed!";
-    return false;
-  }
-  return true;
+  return privacy_screen_property_->SetPrivacyScreenProperty(enabled);
 }
 
 void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {

@@ -29,6 +29,35 @@ class HardwareDisplayControllerInfo;
 
 class DrmDisplay {
  public:
+  class PrivacyScreenProperty {
+   public:
+    explicit PrivacyScreenProperty(const scoped_refptr<DrmDevice>& drm,
+                                   drmModeConnector* connector);
+    PrivacyScreenProperty(const PrivacyScreenProperty&) = delete;
+    PrivacyScreenProperty& operator=(const PrivacyScreenProperty&) = delete;
+
+    ~PrivacyScreenProperty();
+
+    bool SetPrivacyScreenProperty(bool enabled);
+
+   private:
+    uint64_t GetStateValue(drmModePropertyRes* property,
+                           const display::PrivacyScreenState& state) const;
+    display::PrivacyScreenState GetPrivacyScreenState() const;
+    bool ValidateCurrentStateAgainst(bool enabled) const;
+    drmModePropertyRes* GetReadPrivacyScreenProperty() const;
+    drmModePropertyRes* GetWritePrivacyScreenProperty() const;
+
+    const scoped_refptr<DrmDevice> drm_;
+    drmModeConnector* connector_ = nullptr;  // not owned.
+
+    display::PrivacyScreenState property_last_ =
+        display::kPrivacyScreenStateLast;
+    ScopedDrmPropertyPtr privacy_screen_hw_state_;
+    ScopedDrmPropertyPtr privacy_screen_sw_state_;
+    ScopedDrmPropertyPtr privacy_screen_legacy_;
+  };
+
   explicit DrmDisplay(const scoped_refptr<DrmDevice>& drm);
 
   DrmDisplay(const DrmDisplay&) = delete;
@@ -74,7 +103,7 @@ class DrmDisplay {
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
   gfx::ColorSpace current_color_space_;
-  ScopedDrmPropertyPtr privacy_screen_property_;
+  std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
 };
 
 }  // namespace ui

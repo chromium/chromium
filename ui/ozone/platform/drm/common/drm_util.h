@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -33,6 +34,37 @@ constexpr int kMaxDrmCount = 256u;
 
 // It is safe to assume there will be no more than 256 connectors per DRM.
 constexpr int kMaxDrmConnectors = 256u;
+
+// DRM property names.
+const char kContentProtection[] = "Content Protection";
+const char kHdcpContentType[] = "HDCP Content Type";
+
+constexpr char kPrivacyScreenPropertyNameLegacy[] = "privacy-screen";
+constexpr char kPrivacyScreenHwStatePropertyName[] = "privacy-screen hw-state";
+constexpr char kPrivacyScreenSwStatePropertyName[] = "privacy-screen sw-state";
+
+// DRM property enum to internal type mappings.
+template <typename InternalType>
+struct DrmPropertyEnumToInternalTypeMapping {
+  const char* drm_enum;
+  const InternalType& internal_state;
+};
+
+const DrmPropertyEnumToInternalTypeMapping<display::ContentProtectionMethod>
+    kHdcpContentTypeStates[] = {
+        {"HDCP Type0", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0},
+        {"HDCP Type1", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1}};
+
+const DrmPropertyEnumToInternalTypeMapping<display::HDCPState>
+    kContentProtectionStates[] = {{"Undesired", display::HDCP_STATE_UNDESIRED},
+                                  {"Desired", display::HDCP_STATE_DESIRED},
+                                  {"Enabled", display::HDCP_STATE_ENABLED}};
+
+const DrmPropertyEnumToInternalTypeMapping<display::PrivacyScreenState>
+    kPrivacyScreenStates[] = {{"Disabled", display::kDisabled},
+                              {"Enabled", display::kEnabled},
+                              {"Disabled-locked", display::kDisabledLocked},
+                              {"Enabled-locked", display::kEnabledLocked}};
 
 // Representation of the information required to initialize and configure a
 // native display. |index| is the position of the connection and will be
@@ -117,6 +149,9 @@ bool ModeIsInterlaced(const drmModeModeInfo& mode);
 uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
+
+display::PrivacyScreenState GetPrivacyScreenStateFromEnumValue(
+    const std::string& enum_value);
 
 }  // namespace ui
 
