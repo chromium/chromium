@@ -48,14 +48,23 @@ ScopedKeyPersistenceDelegateFactory::~ScopedKeyPersistenceDelegateFactory() {
 
 std::unique_ptr<MockKeyPersistenceDelegate>
 ScopedKeyPersistenceDelegateFactory::CreateMockedTpmDelegate() {
+  return CreateMockedTpmDelegateWithLoadingSideEffect(do_nothing_);
+}
+
+std::unique_ptr<MockKeyPersistenceDelegate>
+ScopedKeyPersistenceDelegateFactory::
+    CreateMockedTpmDelegateWithLoadingSideEffect(
+        base::RepeatingClosure& side_effect) {
   if (tpm_wrapped_key_.empty()) {
     tpm_wrapped_key_ = GenerateTpmWrapped();
   }
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_TPM_KEY, tpm_wrapped_key_)));
+      .WillByDefault(testing::DoAll(
+          testing::Invoke([&side_effect]() { side_effect.Run(); }),
+          testing::Return(KeyPersistenceDelegate::KeyInfo(
+              BPKUR::CHROME_BROWSER_TPM_KEY, tpm_wrapped_key_))));
   ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
       .WillByDefault(testing::Invoke([]() {
         // This is mocked via crypto::ScopedMockUnexportableKeyProvider.

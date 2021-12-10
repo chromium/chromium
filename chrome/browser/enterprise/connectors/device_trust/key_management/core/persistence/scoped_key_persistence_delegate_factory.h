@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -33,6 +35,13 @@ class ScopedKeyPersistenceDelegateFactory
   // persistence delegate (with a provider and valid key).
   std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedTpmDelegate();
 
+  // Returns a mocked instance which is already setup to mimic a TPM-backed
+  // persistence delegate (with a provider and valid key). The mock will invoke
+  // `side_effect` before returning the key value in LoadKeyPair.
+  std::unique_ptr<MockKeyPersistenceDelegate>
+  CreateMockedTpmDelegateWithLoadingSideEffect(
+      base::RepeatingClosure& side_effect);
+
   // Returns a mocked instance which is already setup to mimic an EC-backed
   // persistence delegate (with a provider and valid key).
   std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedECDelegate();
@@ -54,6 +63,8 @@ class ScopedKeyPersistenceDelegateFactory
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   std::vector<uint8_t> tpm_wrapped_key_;
   std::vector<uint8_t> ec_wrapped_key_;
+
+  base::RepeatingClosure do_nothing_ = base::DoNothing();
 
   // Next instance to be returned by `CreateKeyPersistenceDelegate`. Typically
   // set by tests to mock a persistence delegate fetched statically.

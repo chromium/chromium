@@ -58,9 +58,9 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void StartKeyRotationInner(const std::string& nonce);
 
   // Invoked when the background key rotation tasks completes with a
-  // `result_status`. `had_nonce` represents whether the process was given a
-  // nonce parameter when started or not.
-  void OnKeyRotationFinished(bool had_nonce,
+  // `result_status`. `nonce` captures the parameter given to that process
+  // when it was started.
+  void OnKeyRotationFinished(const std::string& nonce,
                              KeyRotationCommand::Status result_status);
 
   // Adds `pending_request` to the list of pending client requests. Also calls
@@ -98,7 +98,14 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // Represents whether the last key rotation process was successful or not.
   bool key_rotation_succeeded_{false};
 
+  // Potentially holds the nonce value for a remote key rotation request.
+  // Whenever the key manager is done doing what it is currently doing, it will
+  // start a key rotation process with it.
+  absl::optional<std::string> pending_rotation_nonce_;
+
   // Runner for tasks needed to be run in the background.
+  // TODO(b/210108864): Add background tasks counter to allow DCHECKing that
+  // no tasks are running the background during key rotation.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Checker used to validate that non-background tasks should be

@@ -63,7 +63,26 @@ void DeviceTrustKeyManagerImpl::StartInitialization() {
 }
 
 void DeviceTrustKeyManagerImpl::StartKeyRotation(const std::string& nonce) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == InitializationState::kDefault) {
+    // Update the state right now to mark new client requests as pending.
+    state_ = InitializationState::kRotatingKey;
+
+    // Make sure to "drain" the background sequence from pending tasks before
+    // attempting to rotate the key. This is done by changing the state (no new
+    // incoming requests will be added to the background sequence), and then
+    // putting a DoNothing on the sequence and getting the task runner to reply
+    // with our callback on the UI Thread after that. This way, once the
+    // callback runs, it is running on the UI thread and also the background
+    // sequence is empty.
+    background_task_runner_->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(),
+        base::BindOnce(&DeviceTrustKeyManagerImpl::StartKeyRotationInner,
+                       weak_factory_.GetWeakPtr(), nonce));
+    return;
+  }
+
+  pending_rotation_nonce_ = nonce;
 }
 
 void DeviceTrustKeyManagerImpl::ExportPublicKeyAsync(
@@ -140,6 +159,18 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
   }
 
   state_ = InitializationState::kDefault;
+  LogKeyLoadingResult(GetLoadedKeyMetadata());
+
+  // Do this check after caching the previous key as failure to rotate will
+  // restore it in persistence.
+  if (pending_rotation_nonce_.has_value()) {
+    // In this edge case, a rotate key request came in at the same time
+    // as the key was being loaded. In this case, just start a rotate flow again
+    // using the pending nonce. The function can be called directly as the
+    // background sequence is guaranteed to be empty at this point.
+    StartKeyRotationInner(pending_rotation_nonce_.value());
+    return;
+  }
 
   if (!IsFullyInitialized() && create_on_fail) {
     // Key loading failed, so we can kick-off the key creation. This is
@@ -148,8 +179,6 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
     StartKeyRotationInner(/*nonce=*/std::string());
     return;
   }
-
-  LogKeyLoadingResult(GetLoadedKeyMetadata());
 
   // Respond to callbacks. If a key was loaded, these callbacks will be
   // successfully answered to. If a key was not loaded, then might as well
@@ -165,23 +194,50 @@ void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
 
   KeyRotationCommand::Callback rotation_finished_callback =
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationFinished,
-                     weak_factory_.GetWeakPtr(), !nonce.empty());
+                     weak_factory_.GetWeakPtr(), nonce);
 
   key_rotation_launcher_->LaunchKeyRotation(
       nonce, std::move(rotation_finished_callback));
 }
 
 void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
-    bool had_nonce,
+    const std::string& nonce,
     KeyRotationCommand::Status result_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  LogKeyRotationResult(/*had_nonce=*/!nonce.empty(), result_status);
+
   key_rotation_succeeded_ =
       result_status == KeyRotationCommand::Status::SUCCEEDED;
   state_ = InitializationState::kDefault;
 
-  LogKeyRotationResult(had_nonce, result_status);
+  if (pending_rotation_nonce_.has_value()) {
+    if (pending_rotation_nonce_.value() == nonce) {
+      // Key rotation using the nonce completed.
+      pending_rotation_nonce_.reset();
+    } else if (!key_rotation_succeeded_) {
+      // In this edge case, another rotate key request came in at the same time
+      // as the current request was being executed. In this case, just go
+      // through the rotate flow again using the new nonce. The function can be
+      // called directly as the background sequence is guaranteed to be empty at
+      // this point.
+      // This specific case is guarded behind the current rotation process
+      // having failed because, if it had succeeded, the LoadKey below would get
+      // invoked and would eventually start the rotation as well.
+      StartKeyRotation(pending_rotation_nonce_.value());
+      return;
+    }
+  }
 
   if (key_rotation_succeeded_) {
+    // In normal key creation/rotation flow, loading the key after having
+    // updated persistence is a pretty straightforward thing to do.
+    // In the event where `pending_rotation_nonce_` still has a value (meaning
+    // there was a concurrent rotate request), LoadKey will take care of that
+    // pending request in its own flow. This is better than kicking-off rotation
+    // directly from here in the case where the pending rotation request fails -
+    // then the manager would have already loaded the key that will remain
+    // persisted.
     LoadKey(/*create_on_fail=*/false);
     return;
   }
