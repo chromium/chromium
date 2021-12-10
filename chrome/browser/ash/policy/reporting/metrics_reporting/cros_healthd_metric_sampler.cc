@@ -122,10 +122,55 @@ void HandleCpuResult(MetricCallback callback,
   }
 }
 
-void OnHealthdInfoReceived(MetricCallback callback,
-                           cros_healthd::ProbeCategoryEnum probe_category,
-                           CrosHealthdMetricSampler::MetricType metric_type,
-                           cros_healthd::TelemetryInfoPtr result) {
+void HandleAudioResult(MetricCallback callback,
+                       CrosHealthdMetricSampler::MetricType metric_type,
+                       chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+  bool anything_reported = false;
+  MetricData metric_data;
+  auto* const audio_info_out =
+      metric_data.mutable_telemetry_data()->mutable_audio_telemetry();
+  const auto& audio_result = result->audio_result;
+
+  if (!audio_result.is_null()) {
+    switch (audio_result->which()) {
+      case chromeos::cros_healthd::mojom::AudioResult::Tag::ERROR: {
+        DVLOG(1) << "CrosHealthD: Error getting audio telemetry: "
+                 << audio_result->get_error()->msg;
+        break;
+      }
+
+      case chromeos::cros_healthd::mojom::AudioResult::Tag::AUDIO_INFO: {
+        const auto& audio_info = audio_result->get_audio_info();
+        if (audio_info.is_null()) {
+          DVLOG(1) << "CrosHealthD: No audio info received";
+          break;
+        }
+
+        if (metric_type == CrosHealthdMetricSampler::MetricType::kTelemetry) {
+          audio_info_out->set_output_mute(audio_info->output_mute);
+          audio_info_out->set_input_mute(audio_info->input_mute);
+          audio_info_out->set_output_volume(audio_info->output_volume);
+          audio_info_out->set_output_device_name(
+              audio_info->output_device_name);
+          audio_info_out->set_input_gain(audio_info->input_gain);
+          audio_info_out->set_input_device_name(audio_info->input_device_name);
+          anything_reported = true;
+        }
+        break;
+      }
+    }
+  }
+
+  if (anything_reported) {
+    std::move(callback).Run(metric_data);
+  }
+}
+
+void OnHealthdInfoReceived(
+    MetricCallback callback,
+    cros_healthd::ProbeCategoryEnum probe_category,
+    CrosHealthdMetricSampler::MetricType metric_type,
+    chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
   if (!result) {
     DVLOG(1) << "cros_healthd: null telemetry result";
     return;
@@ -138,6 +183,10 @@ void OnHealthdInfoReceived(MetricCallback callback,
     }
     case cros_healthd::ProbeCategoryEnum::kBus: {
       HandleBusResult(std::move(callback), metric_type, std::move(result));
+      break;
+    }
+    case cros_healthd::ProbeCategoryEnum::kAudio: {
+      HandleAudioResult(std::move(callback), metric_type, std::move(result));
       break;
     }
     default: {

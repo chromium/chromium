@@ -10,9 +10,11 @@
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/util/test_support_callbacks.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cros_healthd = chromeos::cros_healthd::mojom;
+using ::testing::Eq;
 
 struct TbtTestCase {
   std::string test_name;
@@ -57,6 +59,28 @@ cros_healthd::TelemetryInfoPtr CreateBusResult(
 
   telemetry_info->bus_result =
       cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
+  return telemetry_info;
+}
+
+cros_healthd::AudioInfoPtr CreateAudioInfo(
+    bool output_mute,
+    bool input_mute,
+    uint64_t output_volume,
+    const std::string& output_device_name,
+    uint32_t input_gain,
+    const std::string& input_device_name,
+    uint32_t underruns,
+    uint32_t severe_underruns) {
+  return cros_healthd::AudioInfo::New(
+      output_mute, input_mute, output_volume, output_device_name, input_gain,
+      input_device_name, underruns, severe_underruns);
+}
+
+cros_healthd::TelemetryInfoPtr CreateAudioResult(
+    cros_healthd::AudioInfoPtr audio_info) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->audio_result =
+      cros_healthd::AudioResult::NewAudioInfo(std::move(audio_info));
   return telemetry_info;
 }
 
@@ -134,7 +158,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
   EXPECT_TRUE(result.info_data().cpu_info().keylocker_info().supported());
 }
 
-TEST_F(CrosHealthdMetricSamplerTest, TestUnconfigured) {
+TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnconfigured) {
   MetricData result = CollectData(CreateCpuResult(CreateKeylockerInfo(false)),
                                   cros_healthd::ProbeCategoryEnum::kCpu,
                                   CrosHealthdMetricSampler::MetricType::kInfo);
@@ -177,6 +201,51 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
       CrosHealthdMetricSampler::MetricType::kInfo);
 
   ASSERT_FALSE(bus_data.has_info_data());
+
+  telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->audio_result =
+      cros_healthd::AudioResult::NewError(cros_healthd::ProbeError::New(
+          cros_healthd::ErrorType::kFileReadError, ""));
+  const auto& audio_data = CollectError(
+      std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kAudio,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  ASSERT_FALSE(audio_data.has_telemetry_data());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
+  MetricData result = CollectData(
+      CreateAudioResult(CreateAudioInfo(
+          /*output_mute=*/true,
+          /*input_mute=*/true, /*output_volume=*/25,
+          /*output_device_name=*/"airpods",
+          /*input_gain=*/50, /*input_device_name=*/"airpods", /*underruns=*/2,
+          /*severe_underruns=*/2)),
+      cros_healthd::ProbeCategoryEnum::kAudio,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
+  ASSERT_TRUE(result.telemetry_data().audio_telemetry().output_mute());
+  ASSERT_THAT(result.telemetry_data().audio_telemetry().output_volume(),
+              Eq(25));
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
+  MetricData result = CollectData(
+      CreateAudioResult(CreateAudioInfo(
+          /*output_mute=*/false,
+          /*input_mute=*/false, /*output_volume=*/0,
+          /*output_device_name=*/"",
+          /*input_gain=*/0, /*input_device_name=*/"", /*underruns=*/0,
+          /*severe_underruns=*/0)),
+      cros_healthd::ProbeCategoryEnum::kAudio,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
+  ASSERT_FALSE(result.telemetry_data().audio_telemetry().output_mute());
+  ASSERT_FALSE(result.telemetry_data().audio_telemetry().input_mute());
+  ASSERT_THAT(result.telemetry_data().audio_telemetry().output_volume(), Eq(0));
 }
 
 INSTANTIATE_TEST_SUITE_P(
