@@ -127,6 +127,7 @@ void SearchBoxView::OnTabletModeChanged(bool started) {
   // Search box accessible name may change depending on tablet mode state.
   UpdatePlaceholderTextAndAccessibleName();
   UpdateSearchBoxBorder();
+  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
 }
 
 void SearchBoxView::ResetForShow() {
@@ -434,7 +435,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
       gfx::Insets(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
   InvalidateLayout();
-  current_app_list_state_ = target_state;
+  UpdateBackground(target_state);
 }
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
