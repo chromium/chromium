@@ -578,43 +578,49 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await finishedPromise;
   });
 
-  test('Pair with a specific device by address, failure', async function() {
-    const deviceId1 = '123456';
-    await pairByDeviceAddress(/*address=*/ deviceId1);
+  // TODO(b/210128630) Fix flaky test. Closure compiler complains about using
+  // test.skip() here, see
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel/1058566/overview.
+  // test(
+  //     'Pair with a specific device by address, failure', async function() {
+  //       const deviceId1 = '123456';
+  //       await pairByDeviceAddress(/*address=*/ deviceId1);
 
-    const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
-    deviceHandler.completePairDevice(/*success=*/ false);
+  //       const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+  //       deviceHandler.completePairDevice(/*success=*/ false);
 
-    // Wait for the callback to finish (flushTasks() doesn't wait long enough
-    // here).
-    await waitAfterNextRender(bluetoothPairingUi);
+  //       // Wait for the callback to finish (flushTasks() doesn't wait long
+  //       // enough here).
+  //       await waitAfterNextRender(bluetoothPairingUi);
 
-    // On failure, the device selection page should be shown.
-    assertTrue(!!getDeviceSelectionPage());
-    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId1);
+  //       // On failure, the device selection page should be shown.
+  //       assertTrue(!!getDeviceSelectionPage());
+  //       assertEquals(getDeviceSelectionPage().failedPairingDeviceId,
+  //       deviceId1);
 
-    // There should no longer be a device-specific address to pair to.
-    assertFalse(!!bluetoothPairingUi.pairingDeviceAddress);
+  //       // There should no longer be a device-specific address to pair to.
+  //       assertFalse(!!bluetoothPairingUi.pairingDeviceAddress);
 
-    // Verify we can pair with another device.
-    const device2 = createDefaultBluetoothDevice(
-        /*id=*/ '34567',
-        /*publicName=*/ 'BeatsX',
-        /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
-        /*opt_nickname=*/ 'device1',
-        /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
-    bluetoothConfig.appendToDiscoveredDeviceList([device2.deviceProperties]);
-    await flushTasks();
+  //       // Verify we can pair with another device.
+  //       const device2 = createDefaultBluetoothDevice(
+  //           /*id=*/ '34567',
+  //           /*publicName=*/ 'BeatsX',
+  //           /*connectionState=*/
+  //           chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+  //           /*opt_nickname=*/ 'device1',
+  //           /*opt_audioCapability=*/
+  //           mojom.AudioOutputCapability.kCapableOfAudioOutput,
+  //           /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+  //       bluetoothConfig.appendToDiscoveredDeviceList(
+  //           [device2.deviceProperties]);
+  //       await flushTasks();
 
-    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
-    await selectDevice(device2.deviceProperties);
+  //       let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+  //       await selectDevice(device2.deviceProperties);
 
-    deviceHandler.completePairDevice(/*success=*/ true);
-    await finishedPromise;
-  });
+  //       deviceHandler.completePairDevice(/*success=*/ true);
+  //       await finishedPromise;
+  //     });
 
   test('Pair with a specific device by address with auth', async function() {
     await pairByDeviceAddress(/*address=*/ '123456');
