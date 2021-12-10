@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
+#include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
@@ -25,7 +26,6 @@ class FilePath;
 
 namespace content {
 
-class AggregatableReport;
 class StoragePartitionImpl;
 
 // UI thread class that manages the lifetime of the underlying storage. Owned by
@@ -39,7 +39,8 @@ class CONTENT_EXPORT AggregationServiceImpl
       bool run_in_memory,
       const base::FilePath& user_data_directory,
       const base::Clock* clock,
-      std::unique_ptr<AggregatableReportAssembler> assembler);
+      std::unique_ptr<AggregatableReportAssembler> assembler,
+      std::unique_ptr<AggregatableReportSender> sender);
 
   AggregationServiceImpl(bool run_in_memory,
                          const base::FilePath& user_data_directory,
@@ -54,25 +55,27 @@ class CONTENT_EXPORT AggregationServiceImpl
   // AggregationService:
   void AssembleReport(AggregatableReportRequest report_request,
                       AssemblyCallback callback) override;
+  void SendReport(const GURL& url,
+                  AggregatableReport report,
+                  SendCallback callback) override;
+  void SendReport(const GURL& url,
+                  const base::Value& contents,
+                  SendCallback callback) override;
 
   // AggregationServiceStorageContext:
   const base::SequenceBound<AggregationServiceKeyStorage>& GetKeyStorage()
       override;
 
  private:
-  AggregationServiceImpl(
-      bool run_in_memory,
-      const base::FilePath& user_data_directory,
-      const base::Clock* clock,
-      std::unique_ptr<AggregatableReportAssembler> assembler);
-
-  void OnAssembleReportComplete(
-      AssemblyCallback callback,
-      absl::optional<AggregatableReport> report,
-      AggregatableReportAssembler::AssemblyStatus status);
+  AggregationServiceImpl(bool run_in_memory,
+                         const base::FilePath& user_data_directory,
+                         const base::Clock* clock,
+                         std::unique_ptr<AggregatableReportAssembler> assembler,
+                         std::unique_ptr<AggregatableReportSender> sender);
 
   base::SequenceBound<AggregationServiceKeyStorage> key_storage_;
   std::unique_ptr<AggregatableReportAssembler> assembler_;
+  std::unique_ptr<AggregatableReportSender> sender_;
 };
 
 }  // namespace content

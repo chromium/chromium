@@ -9,18 +9,18 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/callback.h"
-#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/default_clock.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/storage_partition_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -49,7 +49,8 @@ AggregationServiceImpl::AggregationServiceImpl(
           user_data_directory,
           base::DefaultClock::GetInstance(),
           std::make_unique<AggregatableReportAssembler>(this,
-                                                        storage_partition)) {}
+                                                        storage_partition),
+          std::make_unique<AggregatableReportSender>(storage_partition)) {}
 
 AggregationServiceImpl::~AggregationServiceImpl() = default;
 
@@ -59,46 +60,49 @@ AggregationServiceImpl::CreateForTesting(
     bool run_in_memory,
     const base::FilePath& user_data_directory,
     const base::Clock* clock,
-    std::unique_ptr<AggregatableReportAssembler> assembler) {
-  return base::WrapUnique<AggregationServiceImpl>(new AggregationServiceImpl(
-      run_in_memory, user_data_directory, clock, std::move(assembler)));
+    std::unique_ptr<AggregatableReportAssembler> assembler,
+    std::unique_ptr<AggregatableReportSender> sender) {
+  return base::WrapUnique<AggregationServiceImpl>(
+      new AggregationServiceImpl(run_in_memory, user_data_directory, clock,
+                                 std::move(assembler), std::move(sender)));
 }
 
 AggregationServiceImpl::AggregationServiceImpl(
     bool run_in_memory,
     const base::FilePath& user_data_directory,
     const base::Clock* clock,
-    std::unique_ptr<AggregatableReportAssembler> assembler)
+    std::unique_ptr<AggregatableReportAssembler> assembler,
+    std::unique_ptr<AggregatableReportSender> sender)
     : key_storage_(base::SequenceBound<AggregationServiceStorageSql>(
           g_storage_task_runner.Get(),
           run_in_memory,
           user_data_directory,
           clock)),
-      assembler_(std::move(assembler)) {}
+      assembler_(std::move(assembler)),
+      sender_(std::move(sender)) {}
 
 void AggregationServiceImpl::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  // `assembler_` is owned by `this`, so `base::Unretained()` is safe.
-  assembler_->AssembleReport(
-      std::move(report_request),
-      base::BindOnce(&AggregationServiceImpl::OnAssembleReportComplete,
-                     base::Unretained(this), std::move(callback)));
+  assembler_->AssembleReport(std::move(report_request), std::move(callback));
+}
+
+void AggregationServiceImpl::SendReport(const GURL& url,
+                                        AggregatableReport report,
+                                        SendCallback callback) {
+  SendReport(url, base::Value(std::move(report).GetAsJson()),
+             std::move(callback));
+}
+
+void AggregationServiceImpl::SendReport(const GURL& url,
+                                        const base::Value& contents,
+                                        SendCallback callback) {
+  sender_->SendReport(url, contents, std::move(callback));
 }
 
 const base::SequenceBound<AggregationServiceKeyStorage>&
 AggregationServiceImpl::GetKeyStorage() {
   return key_storage_;
-}
-
-void AggregationServiceImpl::OnAssembleReportComplete(
-    AssemblyCallback callback,
-    absl::optional<AggregatableReport> report,
-    AggregatableReportAssembler::AssemblyStatus status) {
-  DCHECK_EQ(report.has_value(),
-            status == AggregatableReportAssembler::AssemblyStatus::kOk);
-
-  std::move(callback).Run(std::move(report), status);
 }
 
 }  // namespace content
