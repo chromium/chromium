@@ -57,9 +57,6 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
     OFFSCREENCANVASIMAGEOUTPUTDIR = '../offscreen'
     MISCOUTPUTDIR = './output'
     SPECOUTPUTDIR = '../'
-    HTMLCanvas_test = True
-    OffscreenCanvas_test = True
-
     SPECOUTPUTPATH = './' # relative to CANVASOUTPUTDIR
 
     def simpleEscapeJS(str):
@@ -189,33 +186,18 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             mapped_name += "-manual"
         return mapped_name
 
-    def expand_test_code(code, is_offscreencanvas):
+    def expand_test_code(code):
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m: expand_nonfinite(m.group(1), m.group(2), m.group(3)), code) # must come before '@assert throws'
 
-        if is_offscreencanvas:
-            code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
-                    r'_assertPixel(offscreenCanvas, \1, \2, "\1", "\2");',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
                     r'_assertPixel(canvas, \1, \2, "\1", "\2");',
                     code)
 
-        if is_offscreencanvas:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", 2);',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
                     r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", 2);',
                     code)
 
-        if is_offscreencanvas:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
-                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", \3);',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
                     r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", \3);',
                     code)
 
@@ -260,6 +242,8 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
     used_tests = {}
     for i in range(len(tests)):
         test = tests[i]
+        HTMLCanvas_test = True
+        OffscreenCanvas_test = True
         if test.get('canvasType', []):
             HTMLCanvas_test = False
             OffscreenCanvas_test = False
@@ -299,8 +283,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
         if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
             print("Probable incorrect pixel test in %s" % name)
 
-        code_canvas = expand_test_code(test['code'], False).strip()
-        code_offscreen = expand_test_code(test['code'], True).strip()
+        code_canvas = expand_test_code(test['code']).strip()
 
         expectation_html = ''
         if 'expected' in test and test['expected'] is not None:
@@ -413,7 +396,6 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
                 f = codecs.open('%s/%s%s.html' % (CANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3ccanvas'] % template_params)
             if OffscreenCanvas_test:
-                template_params['code'] = code_offscreen
                 f = codecs.open('%s/%s%s.html' % (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3coffscreencanvas'] % template_params)
 

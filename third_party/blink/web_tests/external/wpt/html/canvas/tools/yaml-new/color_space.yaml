@@ -221,8 +221,7 @@
   desc: Test if fillText can be used with a solid display-p3 color
   attributes: |
     {colorSpace: "display-p3"}
-  canvasType:
-    ['HTMLCanvas']
+  canvasType: ['HTMLCanvas']
   code: |
     deferTest();
 

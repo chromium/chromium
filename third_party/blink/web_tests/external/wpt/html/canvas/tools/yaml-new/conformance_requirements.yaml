@@ -1,18 +1,17 @@
-- name: 2d.type.delete
+- name: 2d.conformance.requirements.delete
   desc: window.CanvasRenderingContext2D is Configurable
   notes: &bindings Defined in "Web IDL" (draft)
   testing:
   - context.2d.type
+  canvasType: ['HTMLCanvas']
   code: |
     @assert window.CanvasRenderingContext2D !== undefined;
     @assert delete window.CanvasRenderingContext2D === true;
     @assert window.CanvasRenderingContext2D === undefined;
 
-- name: 2d.voidreturn
+- name: 2d.conformance.requirements.basics
   desc: void methods return undefined
   notes: *bindings
-  images:
-  - yellow.png
   code: |
     @assert ctx.save() === undefined;
     @assert ctx.restore() === undefined;
@@ -48,11 +47,10 @@
     if (ctx.putImageData) {
         @assert ctx.putImageData(ctx.getImageData(0, 0, 1, 1), 0, 0) === undefined;
     }
-    @assert ctx.drawImage(document.getElementById('yellow.png'), 0, 0, 1, 1, 0, 0, 0, 0) === undefined;
     @assert ctx.drawImage(canvas, 0, 0, 1, 1, 0, 0, 0, 0) === undefined;
     @assert ctx.createLinearGradient(0, 0, 0, 0).addColorStop(0, 'white') === undefined;
 
-- name: 2d.missingargs
+- name: 2d.conformance.requirements.missingargs
   desc: Missing arguments cause TypeError
   code: |
     @assert throws TypeError ctx.scale();
@@ -171,27 +169,12 @@
     @assert throws TypeError g.addColorStop(); @moz-todo
     @assert throws TypeError g.addColorStop(0); @moz-todo
 
-- name: 2d.coordinatespace
-  desc: Coordinate space goes from top-left to bottom-right
-  notes: This should not be upside down.
-  manual: We can't tell that getPixelData isn't using the wrong coordinate space too.
-  testing:
-  - 2d.coordinatespace
+
+- name: 2d.conformance.requirements.drawings
+  desc: void methods return undefined
+  images:
+  - yellow.png
+  canvasType: ['HTMLCanvas']
   code: |
-    ctx.fillStyle = '#00f';
-    ctx.fillRect(0, 0, 100, 50);
-    ctx.fillStyle = '#0ff';
-    ctx.fillRect(0, 0, 50, 25);
-    @assert pixel 25,12 == 0,255,255,255;
-    @assert pixel 75,12 == 0,0,255,255;
-    @assert pixel 25,37 == 0,0,255,255;
-    @assert pixel 75,37 == 0,0,255,255;
-  expected: |
-    size 100 50
-    cr.set_source_rgb(0, 0, 1)
-    cr.rectangle(0, 0, 100, 50)
-    cr.fill()
-    cr.set_source_rgb(0, 1, 1)
-    cr.rectangle(0, 0, 50, 25)
-    cr.fill()
+    @assert ctx.drawImage(document.getElementById('yellow.png'), 0, 0, 1, 1, 0, 0, 0, 0) === undefined;
 

@@ -1,10 +1,7 @@
 2d.transformation:                    "transformations"
 2d.color.space:                       'wide-gamut-canvas'
 2d.composite:                         "compositing"
-2d.coordinatespace:                   "conformance-requirements"
-2d.missingargs:                       "conformance-requirements"
-2d.type.delete:                       "conformance-requirements"
-2d.voidreturn:                        "conformance-requirements"
+2d.conformance.requirements:          "conformance-requirements"
 2d.drawImage:                         "drawing-images-to-the-canvas"
 2d.clearRect:                         "drawing-rectangles-to-the-canvas"
 2d.fillRect:                          "drawing-rectangles-to-the-canvas"
