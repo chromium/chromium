@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "chrome/browser/headless/headless_mode_util.h"
+
 ChromeProcessSingleton::ChromeProcessSingleton(
     const base::FilePath& user_data_dir,
     const ProcessSingleton::NotificationCallback& notification_callback)
@@ -20,6 +22,13 @@ ChromeProcessSingleton::~ChromeProcessSingleton() {
 
 ProcessSingleton::NotifyResult
     ChromeProcessSingleton::NotifyOtherProcessOrCreate() {
+  // In headless mode we don't want to hand off pages to an existing processes,
+  // so short circuit process singleton creation and bail out if we're not
+  // the only process using this user data dir.
+  if (headless::IsChromeNativeHeadless()) {
+    return process_singleton_.Create() ? ProcessSingleton::PROCESS_NONE
+                                       : ProcessSingleton::PROFILE_IN_USE;
+  }
   return process_singleton_.NotifyOtherProcessOrCreate();
 }
 

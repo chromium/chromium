@@ -8,13 +8,25 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/multiprocess_test.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_process_singleton.h"
+#include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/multiprocess_func_list.h"
 #include "ui/gfx/switches.h"
 
 #if defined(OS_LINUX)
@@ -23,6 +35,7 @@
 
 namespace {
 const char kChrome[] = "chrome";
+const int kErrorResultCode = -1;
 }  // namespace
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
@@ -64,3 +77,91 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserDesktopWindowHidden) {
   EXPECT_FALSE(browser()->window()->IsVisible());
 }
 #endif  // defined(OS_WIN)
+
+class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
+ public:
+  HeadlessModeBrowserTestWithUserDataDir() = default;
+
+  HeadlessModeBrowserTestWithUserDataDir(
+      const HeadlessModeBrowserTestWithUserDataDir&) = delete;
+  HeadlessModeBrowserTestWithUserDataDir& operator=(
+      const HeadlessModeBrowserTestWithUserDataDir&) = delete;
+
+  ~HeadlessModeBrowserTestWithUserDataDir() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+
+    command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir());
+  }
+
+  const base::FilePath& user_data_dir() const {
+    return user_data_dir_.GetPath();
+  }
+
+ private:
+  base::ScopedTempDir user_data_dir_;
+};
+
+class MockChromeProcessSingleton : public ChromeProcessSingleton {
+ public:
+  explicit MockChromeProcessSingleton(const base::FilePath& user_data_dir)
+      : ChromeProcessSingleton(
+            user_data_dir,
+            base::BindRepeating(
+                &MockChromeProcessSingleton::NotificationCallback,
+                base::Unretained(this))) {}
+
+ private:
+  bool NotificationCallback(const base::CommandLine& command_line,
+                            const base::FilePath& current_directory) {
+    NOTREACHED();
+    return true;
+  }
+};
+
+// This test currently fails on ChromeOS, see https://crbug.com/1278540
+#if defined(OS_CHROMEOS)
+#define MAYBE_ChromeProcessSingletonExists DISABLED_ChromeProcessSingletonExists
+#else
+#define MAYBE_ChromeProcessSingletonExists ChromeProcessSingletonExists
+#endif
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
+                       MAYBE_ChromeProcessSingletonExists) {
+  // Pass the user data dir to the child process which will try
+  // to create a mock ChromeProcessSingleton in it that is
+  // expected to fail.
+  base::CommandLine command_line(
+      base::GetMultiProcessTestChildBaseCommandLine());
+  command_line.AppendSwitchPath(switches::kUserDataDir, user_data_dir());
+
+  base::Process child_process =
+      base::SpawnMultiProcessTestChild("ChromeProcessSingletonChildProcessMain",
+                                       command_line, base::LaunchOptions());
+
+  int result = kErrorResultCode;
+  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
+      child_process, TestTimeouts::action_timeout(), &result));
+
+  EXPECT_EQ(static_cast<ProcessSingleton::NotifyResult>(result),
+            ProcessSingleton::PROFILE_IN_USE);
+}
+
+MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
+  content::BrowserTaskEnvironment task_environment;
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const base::FilePath user_data_dir =
+      command_line->GetSwitchValuePath(switches::kUserDataDir);
+  if (user_data_dir.empty())
+    return kErrorResultCode;
+
+  MockChromeProcessSingleton chrome_process_singleton(user_data_dir);
+  ProcessSingleton::NotifyResult notify_result =
+      chrome_process_singleton.NotifyOtherProcessOrCreate();
+
+  return static_cast<int>(notify_result);
+}
