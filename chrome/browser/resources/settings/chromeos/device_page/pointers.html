@@ -207,16 +207,13 @@
         </div>
       </template>
       <template is="dom-if" if="[[allowTouchpadHapticFeedback_]]">
-        <div class="settings-box" id="touchpadHapticFeedbackRow"
+        <div class="settings-box two-line" id="touchpadHapticFeedbackRow"
             on-click="onTouchpadHapticFeedbackRowClicked_">
           <div class="start settings-box-text">
-            <!--TODO(gavinwill): Add haptic feedback help link URL.-->
-            <localized-link
-                on-click="onLearnMoreLinkClicked_"
-                id="touchpadHapticFeedbackLabel"
-                localized-string="$i18n{touchpadHapticFeedbackLabel}"
-                link-url="#">
-            </localized-link>
+            <div>$i18n{touchpadHapticFeedbackTitle}</div>
+            <div class="secondary">
+              $i18n{touchpadHapticFeedbackSecondaryText}
+            </div>
           </div>
           <cr-toggle id="touchpadHapticFeedbackToggle"
               checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
