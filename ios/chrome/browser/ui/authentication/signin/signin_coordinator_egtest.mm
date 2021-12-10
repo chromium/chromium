@@ -472,7 +472,15 @@ void ExpectSyncConsentHistogram(
 
 // Verifies that the user is signed in when selecting "Yes I'm In", after the
 // advanced settings were swiped to dismiss.
-- (void)testSwipeDownInAdvancedSettings {
+// TODO(crbug.com/1277545): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSwipeDownInAdvancedSettings \
+  DISABLED_testSwipeDownInAdvancedSettings
+#else
+#define MAYBE_testSwipeDownInAdvancedSettings \
+  testSwipeDownInAdvancedSettings
+#endif
+- (void)MAYBE_testSwipeDownInAdvancedSettings {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:YES];
@@ -919,7 +927,15 @@ void ExpectSyncConsentHistogram(
 
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
+// TODO(crbug.com/1277545): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
+  DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn
+#else
+#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
+  testSyncOnWhenPassphraseIntroducedAfterSignIn
+#endif
+- (void)MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
