@@ -7429,7 +7429,7 @@ void WebContentsImpl::DocumentOnLoadCompleted(
     RenderFrameHostImpl* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DocumentOnLoadCompleted",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->is_main_frame());
+  DCHECK(render_frame_host->IsInPrimaryMainFrame());
   ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
 
   observers_.NotifyObservers(

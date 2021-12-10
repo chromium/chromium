@@ -359,11 +359,28 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void DocumentAvailableInMainFrame(
       RenderFrameHost* render_frame_host) {}
 
-  // This method is invoked once the onload handler of the main frame has
-  // completed. Since the WebContents could be hosting more than one main frame,
-  // the |render_frame_host| represents the frame where the event happened.
-  // Prefer using WebContents::IsDocumentOnLoadCompletedInMainFrame instead
-  // of saving this state in your component.
+  // This method is invoked once the onload handler of the primary main frame's
+  // current document (i.e., |render_frame_host|) has completed. This happens
+  // when the primary main document has finished running onload events after
+  // loading all content (images, scripts, etc). Prefer using
+  // WebContents::IsDocumentOnLoadCompletedInMainFrame instead of saving this
+  // state in your component.
+  //
+  // For prerendering we dispatch DocumentOnLoadCompletedInMainFrame on
+  // activation whereas for BackForwardCache restores we don't dispatch
+  // DocumentOnLoadCompletedInMainFrame.
+  //
+  // DocumentOnLoadCompletedInMainFrame is typically used by the embedders to
+  // perform actions on a loaded page, for example showing load completion
+  // bubbles, injecting scripts which take page snapshots. Note, however, that
+  // some web pages might still be loading (i.e. if they dynamically inject
+  // content).
+  //
+  // TODO(crbug.com/1257140): Rename DocumentOnLoadCompletedInMainFrame to
+  // DocumentOnLoadCompletedInPrimaryMainFrame to capture the new behavior.
+  // TODO(crbug.com/1271481): Remove RenderFrameHost* argument from
+  // DocumentOnLoadCompletedInMainFrame and directly rely on
+  // WebContents::GetPrimaryMainFrame().
   virtual void DocumentOnLoadCompletedInMainFrame(
       RenderFrameHost* render_frame_host) {}
 

@@ -5700,12 +5700,22 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
 
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::DocumentOnLoadCompleted() {
+  if (!is_main_frame()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
+    return;
+  }
+
   GetPage().set_is_on_load_completed_in_main_document(true);
 
-  // In case of prerendering, we dispatch DocumentOnLoadCompletedInMainFrame on
-  // activation. This is done to avoid notifying observers about a load event
-  // triggered from an inactive RenderFrameHost.
-  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+  // Don't dispatch DocumentOnLoadCompletedInMainFrame for non-primary main
+  // frames. As most of the observers are interested only in the onload
+  // completion of the current document in the primary main frame. Since the
+  // WebContents could be hosting more than one main frame (e.g., fenced frames,
+  // prerender pages or pending delete RFHs), return early for other cases. In
+  // case of prerendering, we dispatch DocumentOnLoadCompletedInMainFrame on
+  // activation.
+  if (!IsInPrimaryMainFrame())
     return;
 
   // This message is only sent for top-level frames.

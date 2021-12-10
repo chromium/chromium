@@ -590,9 +590,13 @@ class WebContents : public PageNavigator,
   // transitionWhile(). This being true implies that IsLoading() is also true.
   virtual bool ShouldShowLoadingUI() = 0;
 
-  // Returns whether the current main document has reached and finished
+  // Returns whether the current primary main document has reached and finished
   // executing its onload() handler. Corresponds to
-  // WebContentsObserver::DocumentOnLoadCompletedInMainFrame().
+  // WebContentsObserver::DocumentOnLoadCompletedInMainFrame() and see comments
+  // there for more details.
+  //
+  // TODO(crbug.com/1257140): Rename IsDocumentOnLoadCompletedInMainFrame to
+  // IsDocumentOnLoadCompletedInPrimaryMainFrame to capture the new behaviour.
   virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
 
   // Returns whether this WebContents is waiting for a first-response for the

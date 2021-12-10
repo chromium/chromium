@@ -229,6 +229,41 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CrossOriginMessagePost) {
                     })())"));
 }
 
+// Test that when the documents inside fenced frame tree are loading,
+// WebContentsObserver::DocumentOnLoadCompletedInMainFrame is not invoked for
+// fenced frames as it is only invoked for primary main frames.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       DocumentOnLoadCompletedInMainFrame) {
+  // Initialize a MockWebContentsObserver to ensure that
+  // DocumentAvailableInMainFrame is only invoked for primary main
+  // RenderFrameHosts.
+  testing::NiceMock<MockWebContentsObserver> web_contents_observer(
+      web_contents());
+
+  // Navigate to an initial primary page. This should result in invoking
+  // DocumentOnLoadCompletedInMainFrame once.
+  EXPECT_CALL(web_contents_observer,
+              DocumentOnLoadCompletedInMainFrame(primary_main_frame_host()))
+      .Times(1);
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "fencedframe.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  // Once the fenced frame complets loading, it shouldn't result in
+  // invoking DocumentOnLoadCompletedInMainFrame.
+  EXPECT_CALL(web_contents_observer,
+              DocumentOnLoadCompletedInMainFrame(testing::_))
+      .Times(0);
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper inner_fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+  FrameTreeNode* fenced_frame_root_node =
+      inner_fenced_frame_rfh->frame_tree_node();
+  EXPECT_FALSE(fenced_frame_root_node->IsLoading());
+}
+
 namespace {
 
 enum class FrameType {
