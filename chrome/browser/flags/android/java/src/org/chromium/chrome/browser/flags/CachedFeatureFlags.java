@@ -82,7 +82,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)
                     .put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true)
                     .put(ChromeFeatureList.INTEREST_FEED_V2, true)
-                    .put(ChromeFeatureList.THEME_REFACTOR_ANDROID, false)
+                    .put(ChromeFeatureList.THEME_REFACTOR_ANDROID, true)
                     .put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false)
                     .put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false)
                     .put(ChromeFeatureList.READ_LATER, false)

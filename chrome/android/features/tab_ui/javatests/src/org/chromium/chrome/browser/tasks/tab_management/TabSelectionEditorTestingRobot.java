@@ -68,7 +68,7 @@ public class TabSelectionEditorTestingRobot {
                 mSelectableTabGridView = selectableTabGridView;
 
                 return mSelectableTabGridView.isChecked() && actionButtonSelected()
-                        && mSelectableTabGridView.getForeground() != null;
+                        && TabUiTestHelper.isTabViewSelected(mSelectableTabGridView);
             }
 
             @Override

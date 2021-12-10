@@ -11,7 +11,6 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -302,6 +301,13 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, true);
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(holder));
+        model.set(TabProperties.IS_SELECTED, false);
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(holder));
+    }
+
+    private void tabListSelected(ViewGroup holder, PropertyModel model) {
+        model.set(TabProperties.IS_SELECTED, true);
         Assert.assertNotNull(holder.getForeground());
         model.set(TabProperties.IS_SELECTED, false);
         Assert.assertNull(holder.getForeground());
@@ -349,7 +355,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         Assert.assertEquals(0, actionButton.getBackground().getLevel());
         Assert.assertEquals(0, actionButton.getDrawable().getAlpha());
 
-        testGridSelected(mSelectableTabListView, mSelectableModel);
+        tabListSelected(mSelectableTabListView, mSelectableModel);
         mSelectableModel.set(TabProperties.IS_SELECTED, true);
         ImageView endButton = mSelectableTabListView.findViewById(R.id.end_button);
         Assert.assertEquals(1, endButton.getBackground().getLevel());
@@ -375,8 +381,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
 
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-        Drawable selectedDrawable = mTabGridView.getForeground();
-        Assert.assertNotNull(selectedDrawable);
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(mTabGridView));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGridModel.set(TabProperties.IS_SELECTED, false);
@@ -386,9 +391,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         CriteriaHelper.pollUiThread(
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-
-        selectedDrawable = mTabGridView.getForeground();
-        Assert.assertNull(selectedDrawable);
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(mTabGridView));
     }
 
     @Test

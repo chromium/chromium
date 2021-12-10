@@ -1121,6 +1121,7 @@ junit_binary("chrome_junit_tests") {
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",

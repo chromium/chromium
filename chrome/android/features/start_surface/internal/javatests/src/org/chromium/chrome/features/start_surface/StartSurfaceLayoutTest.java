@@ -1091,7 +1091,8 @@ public class StartSurfaceLayoutTest {
         @Override
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
-            float tabListPadding = TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
+            float tabListPadding =
+                    TabUiThemeProvider.getTabGridCardMarginForDialogAnimation(view.getContext());
             float messageCardMargin =
                     TabUiThemeProvider.getMessageCardMarginDimension(view.getContext());
 

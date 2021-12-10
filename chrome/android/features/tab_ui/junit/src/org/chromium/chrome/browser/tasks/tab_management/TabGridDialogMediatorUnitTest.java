@@ -83,6 +83,7 @@ import java.util.List;
 @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -185,6 +186,7 @@ public class TabGridDialogMediatorUnitTest {
             mTabSelectionEditorController = null;
         }
         mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
