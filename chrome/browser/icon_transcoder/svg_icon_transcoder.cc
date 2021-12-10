@@ -192,13 +192,15 @@ void SvgIconTranscoder::OnDownloadImage(base::FilePath png_path,
           [](base::FilePath png_path, IconContentCallback callback,
              std::string compressed) {
             if (!compressed.empty() && !png_path.empty()) {
-              base::ThreadPool::PostTask(
+              base::ThreadPool::PostTaskAndReply(
                   FROM_HERE,
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
                   base::BindOnce(&SaveIconOnFileThread, std::move(png_path),
-                                 compressed));
+                                 compressed),
+                  base::BindOnce(std::move(callback), compressed));
+            } else {
+              std::move(callback).Run(std::move(compressed));
             }
-            std::move(callback).Run(std::move(compressed));
           },
           std::move(png_path), std::move(callback)));
 }

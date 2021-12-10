@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -60,12 +61,14 @@ class SvgIconTranscoderTest : public InProcessBrowserTest {
     std::move(done_closure).Run();
   }
 
-  void ExpectSavedIcon(base::OnceClosure done_closure, base::FilePath path) {
-    EXPECT_TRUE(base::PathExists(path));
-    std::string saved_data;
-    EXPECT_TRUE(base::ReadFileToString(path, &saved_data));
-    EXPECT_EQ(saved_data, compressed_icon_data_);
-    std::move(done_closure).Run();
+  void ExpectSavedIcon(bool saved) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_EQ(base::PathExists(png_path()), saved);
+    if (saved) {
+      std::string saved_data;
+      ASSERT_TRUE(base::ReadFileToString(png_path(), &saved_data));
+      EXPECT_EQ(saved_data, compressed_icon_data_);
+    }
   }
 
   void WriteIconData(const base::FilePath& path,
@@ -100,6 +103,7 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromDataSuccessNoSave) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeSuccess,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromDataSuccessAndSave) {
@@ -109,6 +113,7 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromDataSuccessAndSave) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeSuccess,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(true);
 }
 
 IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromInvalid) {
@@ -118,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromInvalid) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeFailure,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromGarbage) {
@@ -127,6 +133,7 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromGarbage) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeFailure,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromFileSuccessNoSave) {
@@ -138,6 +145,7 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromFileSuccessNoSave) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeSuccess,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromFileSuccessAndSave) {
@@ -149,4 +157,5 @@ IN_PROC_BROWSER_TEST_F(SvgIconTranscoderTest, TranscodeFromFileSuccessAndSave) {
       base::BindOnce(&SvgIconTranscoderTest::ExpectTranscodeSuccess,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  ExpectSavedIcon(true);
 }

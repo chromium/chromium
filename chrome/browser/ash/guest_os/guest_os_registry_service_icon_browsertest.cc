@@ -6,9 +6,12 @@
 
 #include <stddef.h>
 
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,22 +52,40 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
     return service_.get();
   }
 
-  void ExpectNoIconLoaded(base::OnceClosure done_closure,
-                          apps::IconValuePtr icon) {
-    EXPECT_EQ(apps::IconType::kUnknown, icon->icon_type);
-    std::move(done_closure).Run();
+  void LoadIconAndValidateNoWait(const std::string& app_id,
+                                 bool expect_loaded,
+                                 base::OnceClosure done_closure) {
+    service()->LoadIcon(
+        app_id, apps::IconKey(), apps::IconType::kCompressed,
+        /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
+        /*fallback_resource_id=*/0,
+        base::BindOnce(
+            [](bool expect_loaded, base::OnceClosure done_closure,
+               apps::IconValuePtr icon) {
+              ASSERT_NE(nullptr, icon.get());
+              if (expect_loaded) {
+                EXPECT_FALSE(icon->is_placeholder_icon);
+                EXPECT_EQ(apps::IconType::kCompressed, icon->icon_type);
+                EXPECT_GT(icon->compressed.size(), 0);
+              } else {
+                EXPECT_EQ(apps::IconType::kUnknown, icon->icon_type);
+              }
+              std::move(done_closure).Run();
+            },
+            expect_loaded, std::move(done_closure)));
   }
 
-  void ExpectIconLoaded(base::OnceClosure done_closure,
-                        apps::IconValuePtr icon) {
-    ASSERT_NE(nullptr, icon.get());
-    EXPECT_FALSE(icon->is_placeholder_icon);
-    EXPECT_EQ(apps::IconType::kCompressed, icon->icon_type);
-    EXPECT_GT(icon->compressed.size(), 0);
-    std::move(done_closure).Run();
+  void LoadIconAndValidate(const std::string& app_id, bool expect_loaded) {
+    base::RunLoop run_loop;
+    LoadIconAndValidateNoWait(app_id, expect_loaded, run_loop.QuitClosure());
+    run_loop.Run();
+    if (expect_loaded) {
+      ExpectIconFiles(app_id);
+    }
   }
 
   void ExpectIconFiles(const std::string& app_id) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath icon_dir =
         browser()->profile()->GetPath().Append("crostini.icons").Append(app_id);
 
@@ -102,6 +123,15 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
     return app_id;
   }
 
+  void RemoveApps() {
+    ApplicationList crostini_list;
+    crostini_list.set_vm_type(
+        GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+    crostini_list.set_vm_name("termina");
+    crostini_list.set_container_name("penguin");
+    service()->UpdateApplicationList(crostini_list);
+  }
+
  protected:
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   static constexpr char kSvgData[] =
@@ -119,60 +149,53 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GuestOsRegistryServiceIconTest, LoadIconOnce) {
-  std::string app_id = AddApp();
-
-  base::RunLoop run_loop;
-
-  service()->LoadIcon(
-      app_id, apps::IconKey(), apps::IconType::kCompressed,
-      /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
-      /*fallback_resource_id=*/0,
-      base::BindOnce(&GuestOsRegistryServiceIconTest::ExpectIconLoaded,
-                     base::Unretained(this), run_loop.QuitClosure()));
-  run_loop.Run();
-
-  base::RunLoop file_run_loop;
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GuestOsRegistryServiceIconTest::ExpectIconFiles,
-                     base::Unretained(this),
-
-                     app_id),
-      file_run_loop.QuitClosure());
-  file_run_loop.Run();
+  LoadIconAndValidate(AddApp(), true);
 }
 
 IN_PROC_BROWSER_TEST_F(GuestOsRegistryServiceIconTest, LoadIconTwice) {
   std::string app_id = AddApp();
-
   base::RunLoop run_loop1, run_loop2;
-
-  service()->LoadIcon(
-      app_id, apps::IconKey(), apps::IconType::kCompressed,
-      /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
-      /*fallback_resource_id=*/0,
-      base::BindOnce(&GuestOsRegistryServiceIconTest::ExpectIconLoaded,
-                     base::Unretained(this), run_loop1.QuitClosure()));
-
-  service()->LoadIcon(
-      app_id, apps::IconKey(), apps::IconType::kCompressed,
-      /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
-      /*fallback_resource_id=*/0,
-      base::BindOnce(&GuestOsRegistryServiceIconTest::ExpectIconLoaded,
-                     base::Unretained(this), run_loop2.QuitClosure()));
-
+  LoadIconAndValidateNoWait(app_id, true, run_loop1.QuitClosure());
+  LoadIconAndValidateNoWait(app_id, true, run_loop2.QuitClosure());
   run_loop1.Run();
   run_loop2.Run();
+  ExpectIconFiles(app_id);
+}
 
-  base::RunLoop file_run_loop;
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GuestOsRegistryServiceIconTest::ExpectIconFiles,
-                     base::Unretained(this),
+IN_PROC_BROWSER_TEST_F(GuestOsRegistryServiceIconTest, AddRemoveAddAppIcon) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string app_id = crostini::CrostiniTestHelper::GenerateAppId(
+      kSvgAppName, "termina", "penguin");
+  base::FilePath icon_dir =
+      browser()->profile()->GetPath().Append("crostini.icons").Append(app_id);
 
-                     app_id),
-      file_run_loop.QuitClosure());
-  file_run_loop.Run();
+  // Initially, there's no app icon.
+  EXPECT_FALSE(base::PathExists(icon_dir));
+  LoadIconAndValidate(app_id, false);
+
+  // Add the app. There should be an icon.
+  AddApp();
+  LoadIconAndValidate(app_id, true);
+
+  // RemoveApps, and the icon should go away. We need a FilePathWatcher to know
+  // when RemoveApps has finished deleting icons since it is done async.
+  base::RunLoop remove_apps_loop;
+  base::FilePathWatcher watcher;
+  ASSERT_TRUE(watcher.Watch(
+      icon_dir, base::FilePathWatcher::Type::kNonRecursive,
+      base::BindLambdaForTesting([&](const base::FilePath& path, bool error) {
+        if (!base::PathExists(icon_dir)) {
+          remove_apps_loop.Quit();
+        }
+      })));
+  RemoveApps();
+  remove_apps_loop.Run();
+
+  LoadIconAndValidate(app_id, false);
+
+  // Add the app. Ensure 2nd fetch of icon from VM succeeds.
+  AddApp();
+  LoadIconAndValidate(app_id, true);
 }
 
 }  // namespace guest_os

@@ -284,7 +284,10 @@ class GuestOsRegistryService : public KeyedService {
       apps::LoadIconCallback callback);
 
   // Callback for when a saved container icon is svg and was transcoded.
-  void OnSvgIconTranscoded(std::string app_id, std::string icon_content);
+  void OnSvgIconTranscoded(std::string app_id,
+                           ui::ResourceScaleFactor scale_factor,
+                           std::string svg_icon_content,
+                           std::string png_icon_content);
 
   // Owned by the Profile.
   Profile* const profile_;
