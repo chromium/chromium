@@ -6,7 +6,10 @@
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_
 
 #include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 
 namespace chromeos {
@@ -46,8 +49,14 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   virtual void PerformDisconnect(const std::string& device_id) = 0;
   virtual void PerformForget(const std::string& device_id) = 0;
 
+  // Informs derived classes the current operation timed out.
+  virtual void HandleOperationTimeout() = 0;
+
  private:
   friend class DeviceOperationHandlerImplTest;
+
+  // Timeout after which an operation is considered to have failed.
+  static const base::TimeDelta kOperationTimeout;
 
   enum class Operation {
     kConnect,
@@ -82,9 +91,14 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   // Attempts to perform the operation at the front of the queue.
   void PerformNextOperation();
 
+  // Method invoked once |current_operation_timer_| expires indicating that
+  // |current_operation_| has timed out.
+  void OnOperationTimeout();
+
   bool IsBluetoothEnabled() const;
 
   absl::optional<PendingOperation> current_operation_;
+  base::OneShotTimer current_operation_timer_;
 
   base::queue<PendingOperation> queue_;
 
@@ -93,6 +107,8 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>
       adapter_state_controller_observation_{this};
+
+  base::WeakPtrFactory<DeviceOperationHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace bluetooth_config

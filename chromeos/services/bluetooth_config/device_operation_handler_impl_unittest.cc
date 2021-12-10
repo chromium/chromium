@@ -29,7 +29,10 @@ class DeviceOperationHandlerImplTest : public testing::Test {
  protected:
   using Operation = DeviceOperationHandler::Operation;
 
-  DeviceOperationHandlerImplTest() = default;
+  DeviceOperationHandlerImplTest()
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   DeviceOperationHandlerImplTest(const DeviceOperationHandlerImplTest&) =
       delete;
   DeviceOperationHandlerImplTest& operator=(
@@ -119,6 +122,10 @@ class DeviceOperationHandlerImplTest : public testing::Test {
     results_.emplace_back(device_id, operation, success);
   }
 
+  void FastForwardOperationTimeout() {
+    task_environment_.FastForwardBy(DeviceOperationHandler::kOperationTimeout);
+  }
+
   const std::vector<std::tuple<std::string, Operation, bool>>& results() {
     return results_;
   }
@@ -201,7 +208,7 @@ TEST_F(DeviceOperationHandlerImplTest,
   SetBluetoothSystemState(mojom::BluetoothSystemState::kDisabled);
   ConnectDevice(device_id);
   EXPECT_EQ(results()[0],
-            std::make_tuple(device_id, Operation::kConnect, false));
+            std::make_tuple(device_id, Operation::kConnect, /*success=*/false));
 
   // Connect should fail due to device not being found.
   SetBluetoothSystemState(mojom::BluetoothSystemState::kEnabled);
@@ -215,14 +222,14 @@ TEST_F(DeviceOperationHandlerImplTest,
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/false);
   EXPECT_EQ(results()[2],
-            std::make_tuple(device_id, Operation::kConnect, false));
+            std::make_tuple(device_id, Operation::kConnect, /*success=*/false));
 
   // Simulate BluetoothDevice::Connect() succeeding.
   ConnectDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/true);
   EXPECT_EQ(results()[3],
-            std::make_tuple(device_id, Operation::kConnect, true));
+            std::make_tuple(device_id, Operation::kConnect, /*success=*/true));
 }
 
 TEST_F(DeviceOperationHandlerImplTest, DisconnectNotFoundFailThenSucceed) {
@@ -230,23 +237,23 @@ TEST_F(DeviceOperationHandlerImplTest, DisconnectNotFoundFailThenSucceed) {
 
   // Disconnect should fail due to device not being found.
   DisconnectDevice(device_id);
-  EXPECT_EQ(results()[0],
-            std::make_tuple(device_id, Operation::kDisconnect, false));
+  EXPECT_EQ(results()[0], std::make_tuple(device_id, Operation::kDisconnect,
+                                          /*success=*/false));
 
   // Add the device and simulate BluetoothDevice::Disconnect() failing.
   AddDevice(&device_id);
   DisconnectDevice(device_id);
   EXPECT_TRUE(HasPendingDisconnectCallback());
   InvokePendingDisconnectCallback(/*success=*/false);
-  EXPECT_EQ(results()[1],
-            std::make_tuple(device_id, Operation::kDisconnect, false));
+  EXPECT_EQ(results()[1], std::make_tuple(device_id, Operation::kDisconnect,
+                                          /*success=*/false));
 
   // Simulate BluetoothDevice::Disconnect() succeeding.
   DisconnectDevice(device_id);
   EXPECT_TRUE(HasPendingDisconnectCallback());
   InvokePendingDisconnectCallback(/*success=*/true);
-  EXPECT_EQ(results()[2],
-            std::make_tuple(device_id, Operation::kDisconnect, true));
+  EXPECT_EQ(results()[2], std::make_tuple(device_id, Operation::kDisconnect,
+                                          /*success=*/true));
 }
 
 TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
@@ -255,7 +262,7 @@ TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
   // Forget should fail due to device not being found.
   ForgetDevice(device_id);
   EXPECT_EQ(results()[0],
-            std::make_tuple(device_id, Operation::kForget, false));
+            std::make_tuple(device_id, Operation::kForget, /*success=*/false));
 
   // Add and forget the device.
   AddDevice(&device_id);
@@ -264,15 +271,16 @@ TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
   // Forgetting a device will never fail, and the handler will immediately
   // notify that the operation finished successfully, so don't bother checking
   // for pending callbacks.
-  EXPECT_EQ(results()[1], std::make_tuple(device_id, Operation::kForget, true));
+  EXPECT_EQ(results()[1],
+            std::make_tuple(device_id, Operation::kForget, /*success=*/true));
 }
 
 TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
-  std::string device_id1;
+  std::string device_id1 = "device_id1";
   AddDevice(&device_id1);
-  std::string device_id2;
+  std::string device_id2 = "device_id2";
   AddDevice(&device_id2);
-  std::string device_id3;
+  std::string device_id3 = "device_id3";
   AddDevice(&device_id3);
 
   // Connect to the first device. BluetoothDevice::Connect() should be
@@ -287,8 +295,8 @@ TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
 
   // Invoke the first connect callback.
   InvokePendingConnectCallback(/*success=*/false);
-  EXPECT_EQ(results()[0],
-            std::make_tuple(device_id1, Operation::kConnect, false));
+  EXPECT_EQ(results()[0], std::make_tuple(device_id1, Operation::kConnect,
+                                          /*success=*/false));
 
   // Now the second operation's BluetoothDevice::Disconnect() should have been
   // called.
@@ -302,12 +310,90 @@ TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
 
   // Succeed with the disconnect call.
   InvokePendingDisconnectCallback(/*success=*/true);
-  EXPECT_EQ(results()[1],
-            std::make_tuple(device_id2, Operation::kDisconnect, true));
+  EXPECT_EQ(results()[1], std::make_tuple(device_id2, Operation::kDisconnect,
+                                          /*success=*/true));
 
   // The forget call should immediately fail due to Bluetooth being disabled.
   EXPECT_EQ(results()[2],
-            std::make_tuple(device_id3, Operation::kForget, false));
+            std::make_tuple(device_id3, Operation::kForget, /*success=*/false));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, OperationsTimeout) {
+  std::string device_id1 = "device_id1";
+  AddDevice(&device_id1);
+  std::string device_id2 = "device_id2";
+  AddDevice(&device_id2);
+
+  // Connect to the first device. BluetoothDevice::Connect() should be
+  // called.
+  ConnectDevice(device_id1);
+  EXPECT_TRUE(HasPendingConnectCallback());
+
+  // Queue disconnecting the second device.
+  DisconnectDevice(device_id2);
+  EXPECT_FALSE(HasPendingDisconnectCallback());
+
+  // Simulate connect timing out. The operation should finish with a failure
+  // result and the disconnect started.
+  FastForwardOperationTimeout();
+  EXPECT_EQ(results()[0], std::make_tuple(device_id1, Operation::kConnect,
+                                          /*success=*/false));
+  EXPECT_TRUE(HasPendingDisconnectCallback());
+
+  // Simulate disconnect timing out. The operation should finish with a failure
+  // result.
+  FastForwardOperationTimeout();
+  EXPECT_EQ(results()[1], std::make_tuple(device_id2, Operation::kDisconnect,
+                                          /*success=*/false));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, OperationCompletesBeforeTimeout) {
+  std::string device_id = "testid";
+  AddDevice(&device_id);
+
+  // Connect to device.
+  ConnectDevice(device_id);
+  EXPECT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/true);
+  EXPECT_EQ(results()[0], std::make_tuple(device_id, Operation::kConnect,
+                                          /*success=*/true));
+
+  // Fast forward to where the timer would timeout if it was still running. This
+  // will crash if the timer isn't cancelled after the operation finished.
+  FastForwardOperationTimeout();
+}
+
+TEST_F(DeviceOperationHandlerImplTest, OperationCompletesAfterTimeout) {
+  std::string device_id1 = "device_id1";
+  AddDevice(&device_id1);
+  std::string device_id2 = "device_id2";
+  AddDevice(&device_id2);
+
+  // Connect to the first device. BluetoothDevice::Connect() should be
+  // called.
+  ConnectDevice(device_id1);
+  EXPECT_TRUE(HasPendingConnectCallback());
+
+  // Queue disconnecting the second device.
+  DisconnectDevice(device_id2);
+  EXPECT_FALSE(HasPendingDisconnectCallback());
+
+  // Simulate connect timing out. The operation should finish with a failure
+  // result and the disconnect started.
+  FastForwardOperationTimeout();
+  EXPECT_EQ(results()[0], std::make_tuple(device_id1, Operation::kConnect,
+                                          /*success=*/false));
+  EXPECT_TRUE(HasPendingDisconnectCallback());
+
+  // Simulate the connect call now finishing after the timeout. This should not
+  // cause the current operation (disconnect) to finish with a result.
+  InvokePendingConnectCallback(/*success=*/true);
+  EXPECT_EQ(results().size(), 1u);
+
+  // Finish the disconnect operation.
+  InvokePendingDisconnectCallback(/*success=*/true);
+  EXPECT_EQ(results()[1], std::make_tuple(device_id2, Operation::kDisconnect,
+                                          /*success=*/true));
 }
 
 }  // namespace bluetooth_config

@@ -34,6 +34,10 @@ DeviceOperationHandler::PendingOperation::operator=(PendingOperation other) {
 
 DeviceOperationHandler::PendingOperation::~PendingOperation() = default;
 
+// static
+const base::TimeDelta DeviceOperationHandler::kOperationTimeout =
+    base::Seconds(5);
+
 DeviceOperationHandler::DeviceOperationHandler(
     AdapterStateController* adapter_state_controller)
     : adapter_state_controller_(adapter_state_controller) {
@@ -58,6 +62,7 @@ void DeviceOperationHandler::Forget(const std::string& device_id,
 }
 
 void DeviceOperationHandler::HandleFinishedOperation(bool success) {
+  current_operation_timer_.Stop();
   if (success) {
     BLUETOOTH_LOG(EVENT) << "Device with id: " << current_operation_->device_id
                          << " succeeded operation: "
@@ -128,6 +133,10 @@ void DeviceOperationHandler::PerformNextOperation() {
   BLUETOOTH_LOG(EVENT) << "Device with id: " << current_operation_->device_id
                        << " starting operation: "
                        << current_operation_->operation;
+  current_operation_timer_.Start(
+      FROM_HERE, kOperationTimeout,
+      base::BindOnce(&DeviceOperationHandler::OnOperationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   switch (current_operation_->operation) {
     case Operation::kConnect:
@@ -140,6 +149,13 @@ void DeviceOperationHandler::PerformNextOperation() {
       PerformForget(current_operation_->device_id);
       return;
   }
+}
+
+void DeviceOperationHandler::OnOperationTimeout() {
+  BLUETOOTH_LOG(ERROR) << "Operation for device with id: "
+                       << current_operation_->device_id << " timed out.";
+  HandleOperationTimeout();
+  HandleFinishedOperation(/*success=*/false);
 }
 
 bool DeviceOperationHandler::IsBluetoothEnabled() const {

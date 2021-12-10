@@ -45,9 +45,9 @@ void DeviceOperationHandlerImpl::PerformDisconnect(
   }
 
   device->Disconnect(
-      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+      base::BindOnce(&DeviceOperationHandlerImpl::HandleFinishedOperation,
                      weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
-      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+      base::BindOnce(&DeviceOperationHandlerImpl::HandleFinishedOperation,
                      weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
 }
 
@@ -74,6 +74,11 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
   HandleFinishedOperation(/*success=*/true);
 }
 
+void DeviceOperationHandlerImpl::HandleOperationTimeout() {
+  // Invalidate all BluetoothDevice callbacks for the current operation.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void DeviceOperationHandlerImpl::OnDeviceConnect(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
@@ -82,10 +87,6 @@ void DeviceOperationHandlerImpl::OnDeviceConnect(
   }
 
   HandleFinishedOperation(!error_code.has_value());
-}
-
-void DeviceOperationHandlerImpl::OnOperationFinished(bool success) {
-  HandleFinishedOperation(success);
 }
 
 device::BluetoothDevice* DeviceOperationHandlerImpl::FindDevice(
