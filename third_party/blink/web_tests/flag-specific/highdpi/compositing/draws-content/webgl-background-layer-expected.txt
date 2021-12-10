@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,11 +9,12 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-simple'",
       "bounds": [75, 75],
-      "contentsOpaque": true,
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-simple'",
+      "name": "LayoutHTMLCanvas CANVAS id='canvas-simple'",
       "bounds": [75, 75],
       "backgroundColor": "#008000",
       "transform": 1
@@ -26,43 +27,47 @@
       "transform": 2
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-padding'",
+      "name": "LayoutHTMLCanvas CANVAS id='canvas-padding'",
       "position": [7, 7],
       "bounds": [75, 75],
       "transform": 2
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-border'",
-      "bounds": [90, 90],
-      "contentsOpaque": true,
+      "position": [-1, 0],
+      "bounds": [91, 90],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 3
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-border'",
+      "name": "LayoutHTMLCanvas CANVAS id='canvas-border'",
       "position": [7, 8],
       "bounds": [75, 75],
       "transform": 3
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-image'",
-      "bounds": [75, 75],
-      "contentsOpaque": true,
+      "position": [-1, -1],
+      "bounds": [76, 76],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 4
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-image'",
+      "name": "LayoutHTMLCanvas CANVAS id='canvas-image'",
       "bounds": [75, 75],
       "transform": 4
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-transparent-background'",
       "bounds": [75, 75],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 5
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-transparent-background'",
+      "name": "LayoutHTMLCanvas CANVAS id='canvas-transparent-background'",
       "bounds": [75, 75],
       "backgroundColor": "#00FF0080",
       "transform": 5

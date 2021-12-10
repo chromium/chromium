@@ -1,8 +1,10 @@
 {
   "layers": [
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [1200, 900]
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
@@ -14,11 +16,13 @@
     {
       "name": "LayoutImage IMG class='accelerated blended'",
       "bounds": [240, 135],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow HTML (foreground) Layer",
-      "bounds": [1200, 900]
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [12, 12],
+      "bounds": [1176, 869]
     }
   ],
   "transforms": [

@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#402B3C"
@@ -14,10 +14,25 @@
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='layer-A')",
-      "position": [18, 10],
-      "bounds": [339, 270],
-      "transform": 1
+      "name": "LayoutNGBlockFlow (positioned) DIV id='layer-A'",
+      "position": [30, 30],
+      "bounds": [90, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#6AA6A6"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='layer-B'",
+      "position": [150, 150],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#F26835"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='layer-C'",
+      "position": [60, 60],
+      "bounds": [309, 39],
+      "contentsOpaque": true,
+      "backgroundColor": "#F2B263"
     }
   ],
   "transforms": [

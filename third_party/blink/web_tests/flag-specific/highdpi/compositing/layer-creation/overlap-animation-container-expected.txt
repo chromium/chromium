@@ -2,7 +2,7 @@ Before:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 1203],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,7 +17,8 @@ Before:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
       "position": [71, 345],
-      "bounds": [215, 678],
+      "bounds": [216, 678],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF"
     },
     {
@@ -28,17 +29,16 @@ Before:
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV class='box yellow')",
-      "position": [-77, 676],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",
+      "position": [27, 1038],
       "bounds": [150, 150],
-      "backgroundColor": "#FFFF00",
-      "transform": 3
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [
@@ -87,7 +87,7 @@ After:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 1203],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -114,16 +114,22 @@ After:
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg')",
-      "position": [-77, 132],
-      "bounds": [259, 694],
-      "transform": 3
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg'",
+      "position": [71, 494],
+      "bounds": [216, 514],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",
+      "position": [27, 1038],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
+    },
+    {
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [

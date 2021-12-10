@@ -2,7 +2,7 @@ CASE 1, original layer tree
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -15,11 +15,11 @@ CASE 1, original layer tree
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
-      "position": [120, 120],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "position": [195, 195],
       "bounds": [150, 150],
-      "backgroundColor": "#00FFFF",
-      "transform": 1
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -39,7 +39,7 @@ CASE 2, change color of "inner" to red
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -52,14 +52,14 @@ CASE 2, change color of "inner" to red
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
-      "position": [120, 120],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "position": [195, 195],
       "bounds": [150, 150],
+      "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
       "invalidations": [
         [15, 15, 75, 75]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [

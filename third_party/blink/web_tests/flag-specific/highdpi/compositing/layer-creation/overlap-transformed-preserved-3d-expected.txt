@@ -8,22 +8,10 @@ Before:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='center box-container'",
-      "position": [162, 162],
-      "contentsOpaque": true,
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='camera' class='rotate-3d-start'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
@@ -68,10 +56,9 @@ Before:
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
-        [0, 0, 1, -0.00333333333333333],
-        [0, 0, 0, 1]
-      ],
-      "origin": [237, 237]
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ]
     },
     {
       "id": 2,
@@ -79,10 +66,10 @@ Before:
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [162, 162, 0, 1]
+        [0, 0, 1, -0.00333333333333333],
+        [0, 0, 0, 1]
       ],
-      "flattenInheritedTransform": false
+      "origin": [75, 75]
     },
     {
       "id": 3,
@@ -217,22 +204,10 @@ After:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='center box-container'",
-      "position": [162, 162],
-      "contentsOpaque": true,
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='camera' class='rotate-3d-start rotate-3d-end'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
@@ -273,14 +248,16 @@ After:
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box top left'",
       "position": [12, 12],
-      "bounds": [150, 225],
+      "bounds": [150, 450],
       "contentsOpaque": true,
       "backgroundColor": "#808080"
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top right')",
-      "position": [12, 12],
-      "bounds": [450, 450]
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top right'",
+      "position": [312, 12],
+      "bounds": [150, 450],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
     }
   ],
   "transforms": [
@@ -289,10 +266,9 @@ After:
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
-        [0, 0, 1, -0.00333333333333333],
-        [0, 0, 0, 1]
-      ],
-      "origin": [237, 237]
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ]
     },
     {
       "id": 2,
@@ -300,10 +276,10 @@ After:
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [162, 162, 0, 1]
+        [0, 0, 1, -0.00333333333333333],
+        [0, 0, 0, 1]
       ],
-      "flattenInheritedTransform": false
+      "origin": [75, 75]
     },
     {
       "id": 3,

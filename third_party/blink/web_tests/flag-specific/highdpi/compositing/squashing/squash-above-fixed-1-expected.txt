@@ -6,7 +6,7 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 2100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -21,20 +21,13 @@ CASE 1, original layer tree:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
       "position": [0, 150],
-      "bounds": [300, 150],
-      "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan')",
-      "position": [0, 300],
-      "bounds": [300, 1650]
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [1178, 0],
-      "bounds": [22, 900],
+      "bounds": [300, 1950],
       "contentsOpaque": true
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [1178, 0],
+      "bounds": [22, 900]
     }
   ],
   "transforms": [
@@ -54,7 +47,7 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 2100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -70,22 +63,14 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
       "position": [0, 150],
-      "bounds": [300, 150],
+      "bounds": [300, 1950],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan')",
-      "position": [0, 300],
-      "bounds": [300, 1650],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [
@@ -114,7 +99,7 @@ CASE 3, scrolling y to 120, no repaints expected:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 2100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -130,22 +115,14 @@ CASE 3, scrolling y to 120, no repaints expected:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
       "position": [0, 150],
-      "bounds": [300, 150],
+      "bounds": [300, 1950],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan')",
-      "position": [0, 300],
-      "bounds": [300, 1650],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [
@@ -174,7 +151,7 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 2100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -190,22 +167,14 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
       "position": [0, 150],
-      "bounds": [300, 150],
+      "bounds": [300, 1950],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan')",
-      "position": [0, 300],
-      "bounds": [300, 1650],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [

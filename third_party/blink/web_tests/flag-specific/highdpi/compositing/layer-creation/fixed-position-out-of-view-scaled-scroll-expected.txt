@@ -2,7 +2,7 @@ Not scaled:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [6012, 6024],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -34,24 +34,7 @@ Not scaled:
       "bounds": [15, 15],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [15, 15],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [0, 900],
-      "bounds": [1200, 0]
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [1200, 0],
-      "bounds": [0, 900]
     }
   ],
   "transforms": [
@@ -83,7 +66,7 @@ Not scaled:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, -150, 0, 1]
+        [12, 1512, 0, 1]
       ]
     },
     {
@@ -93,21 +76,11 @@ Not scaled:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, 1512, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1500, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],
@@ -123,7 +96,7 @@ Scale=0.5:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [6012, 6024],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -155,24 +128,7 @@ Scale=0.5:
       "bounds": [15, 15],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [15, 15],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [0, 900],
-      "bounds": [1200, 0]
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [1200, 0],
-      "bounds": [0, 900]
     }
   ],
   "transforms": [
@@ -204,7 +160,7 @@ Scale=0.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, -150, 0, 1]
+        [12, 1512, 0, 1]
       ]
     },
     {
@@ -214,21 +170,11 @@ Scale=0.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, 1512, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1500, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],
@@ -244,7 +190,7 @@ Scale=1.5:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [6012, 6024],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -276,24 +222,7 @@ Scale=1.5:
       "bounds": [15, 15],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [15, 15],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [0, 900],
-      "bounds": [1200, 0]
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [1200, 0],
-      "bounds": [0, 900]
     }
   ],
   "transforms": [
@@ -325,7 +254,7 @@ Scale=1.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, -150, 0, 1]
+        [12, 1512, 0, 1]
       ]
     },
     {
@@ -335,21 +264,11 @@ Scale=1.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [12, 1512, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1500, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],

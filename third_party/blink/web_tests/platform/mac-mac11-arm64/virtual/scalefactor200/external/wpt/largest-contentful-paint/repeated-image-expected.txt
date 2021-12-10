@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Repeated image produces different timestamps.
+Harness: the test ran to completion.
+

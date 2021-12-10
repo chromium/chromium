@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS messageerror event must occur
+FAIL setting document.domain must not give sync access assert_throws_dom: function "() => {
+        frameWindow.document;
+      }" did not throw
+FAIL parent: originAgentCluster must equal true assert_equals: expected true but got false
+PASS child: originAgentCluster must equal false
+Harness: the test ran to completion.
+

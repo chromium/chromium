@@ -5,7 +5,7 @@ Case: No src, no poster
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -18,7 +18,7 @@ Case: Displaying poster
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -31,7 +31,7 @@ Case: Displaying movie
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 1160],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -39,24 +39,18 @@ Case: Displaying movie
     {
       "name": "LayoutVideo VIDEO",
       "bounds": [528, 432],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for LayoutVideo VIDEO",
-      "bounds": [528, 432],
       "transform": 1
     },
     {
       "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [528, 432],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [

@@ -4,7 +4,7 @@ Should be composited
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -22,11 +22,11 @@ Should be composited
       "transform": 3
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='test1 box')",
-      "position": [7, 22],
-      "bounds": [151, 151],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='test1 box'",
+      "position": [16, 32],
+      "bounds": [151, 150],
       "backgroundColor": "#FFA500",
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",

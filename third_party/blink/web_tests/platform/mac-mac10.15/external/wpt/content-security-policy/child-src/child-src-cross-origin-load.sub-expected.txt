@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Expecting logs: ["PASS IFrame #1 generated a load event.","PASS IFrame #2 generated a load event.","PASS IFrame #3 generated a load event.", "violated-directive=frame-src"]
+PASS Expecting alerts: ["PASS","PASS"]
+Harness: the test ran to completion.
+

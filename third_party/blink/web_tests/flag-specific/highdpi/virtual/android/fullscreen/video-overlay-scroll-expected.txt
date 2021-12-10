@@ -1,11 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutVideo (positioned) VIDEO id='video'",
-      "bounds": [1200, 900],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source use-default-poster'",
       "bounds": [1200, 900],
       "contentsOpaque": true,

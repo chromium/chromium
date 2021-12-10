@@ -296,7 +296,7 @@ crbug.com/784956 fast/history/frameset-repeated-name.html [ Failure Pass ]
 crbug.com/624233 virtual/gpu-rasterization/images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/757605 virtual/gpu-rasterization/images/jpeg-yuv-progressive-image.html [ Failure Pass ]
 crbug.com/1223284 [ Win7 ] virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Failure Pass ]
-crbug.com/1223284 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Failure Pass ]
+crbug.com/1223284 [ Mac ] virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Failure Pass ]
 
 ########## Bugs to fix ##########
 # This is a missing event and increasing the timeout or using run-after-layout-and-paint doesn't
@@ -2789,7 +2789,7 @@ crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Ti
 crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Crash Timeout ]
+crbug.com/626703 [ Mac ] wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
@@ -2886,6 +2886,7 @@ crbug.com/626703 [ Mac10.15 ] virtual/v8-off-thread-finalization/external/wpt/ht
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/characteristic/notifications/service-is-removed.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/characteristic/writeValue/write-succeeds.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/canonicalizeFilter/empty-services-member.https.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/canonicalizeFilter/max-length-name-unicode.https.html [ Crash ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/service/getCharacteristics/characteristics-found-with-uuid.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/service/getCharacteristics/gen-reconnect-during-with-uuid.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-disconnect-called-during-error-with-uuid.https.html [ Timeout ]
@@ -2930,6 +2931,7 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wp
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/matrix/svg-matrix-045.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-origin/svg-origin-relative-length-invalid-005.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-origin/svg-origin-length-001.html [ Crash ]
+crbug.com/626703 [ Mac11 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-origin/svg-origin-length-pt-001.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-scale-test.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/scale/svg-scale-001.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/inline-styles/svg-inline-styles-005.html [ Crash ]
@@ -3079,6 +3081,7 @@ crbug.com/626703 [ Mac11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/htm
 crbug.com/626703 [ Mac11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-same.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webauthn/createcredential-getpublickey.https.html [ Crash Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webauthn/credblob-not-supported.https.html [ Crash Skip Timeout ]
@@ -5295,6 +5298,7 @@ crbug.com/1058073 [ Mac10.14 ] accessibility/content-changed-notification-causes
 
 # Sheriff 2020-03-06
 crbug.com/1059262 http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
+crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
 crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
 
 # Sheriff 2020-03-08
@@ -6280,7 +6284,7 @@ crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failu
 
 # Sheriff 2021-06-29
 # Flaky on Mac11 Tests
-crbug.com/1197464 [ Mac ] virtual/scroll-unification/plugins/refcount-leaks.html [ Failure Pass ]
+crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
 
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
@@ -6617,7 +6621,6 @@ crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/annexb_decoding.https.a
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/temporal_svc.https.any.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Pass Timeout ]
@@ -6858,7 +6861,7 @@ crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-over
 crbug.com/1268518 [ Linux ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1268518 [ Mac10.12 ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass Timeout ]
-crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
+crbug.com/1267734 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
 
 # This test is flaky on all platforms
 crbug.com/1191846 virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
@@ -6895,8 +6898,8 @@ crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forwar
 crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 crbug.com/1272575 [ Mac ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
 
-# Flaky on mac 10.13
-crbug.com/1263709 [ Mac10.13 ] http/tests/devtools/elements/node-xpath.js [ Failure ]
+# Flaky on mac
+crbug.com/1263709 [ Mac ] http/tests/devtools/elements/node-xpath.js [ Failure ]
 
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
