@@ -1275,9 +1275,7 @@ absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     } else if (provisionally_saved_form_.has_value()) {
       return absl::make_optional(provisionally_saved_form_.value());
     }
-  } else if ((base::FeatureList::IsEnabled(
-                  features::kAutofillRecordMetricsOfUnownedForms) &&
-              formless_elements_were_autofilled_) ||
+  } else if (formless_elements_were_autofilled_ ||
              (formless_elements_user_edited_.size() != 0 &&
               !form_util::IsSomeControlElementVisible(
                   render_frame()->GetWebFrame(),
