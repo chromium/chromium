@@ -6765,7 +6765,7 @@ crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/jpeg-with-
 crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1259133 [ Mac10.14 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1259188 [ Mac10.14 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
-crbug.com/1259277 [ Debug Linux ] virtual/scroll-unification/fast/events/message-port-multi.html [ Failure Pass ]
+crbug.com/1259277 [ Linux ] virtual/scroll-unification/fast/events/message-port-multi.html [ Failure Pass ]
 
 # Sheriff 2021-10-13
 crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.html [ Failure Pass ]
@@ -6791,7 +6791,7 @@ crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-c
 crbug.com/1256763 [ Linux ] images/color-profile-background-image-cross-fade.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
-crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
+crbug.com/1259277 fast/events/message-port-multi.html [ Skip ]
 
 # Sheriff 2021-10-20
 crbug.com/1261770 crbug.com/1245166 [ Linux ] external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Failure Pass ]
