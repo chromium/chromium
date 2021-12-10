@@ -76,6 +76,40 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
+  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                              /*auto_open_in_window=*/true);
+
+  struct TestCases {
+    std::u16string input;
+    std::u16string expected_result;
+  } test_cases[] = {
+      {u"App Title", u"App Title"},
+      {u"http://example.com", u"example.com"},
+      {u"https://example.com", u"example.com"},
+  };
+
+  for (const TestCases& test_case : test_cases) {
+    auto app_info = std::make_unique<WebApplicationInfo>();
+    app_info->title = test_case.input;
+    app_info->start_url = GURL("https://example.com");
+
+    bool is_accepted = false;
+    std::u16string title;
+    auto callback = [&is_accepted, &title](
+                        bool result, std::unique_ptr<WebApplicationInfo> info) {
+      is_accepted = result;
+      title = info->title;
+    };
+
+    chrome::ShowWebAppInstallDialog(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        std::move(app_info), base::BindLambdaForTesting(callback));
+    EXPECT_TRUE(is_accepted) << test_case.input;
+    EXPECT_EQ(test_case.expected_result, title) << test_case.input;
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppConfirmViewBrowserTest,
                          ::testing::Values(false, true));
