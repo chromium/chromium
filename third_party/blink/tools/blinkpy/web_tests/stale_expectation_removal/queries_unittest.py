@@ -122,6 +122,30 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
                               queries.WebTestSplitQueryGenerator)
 
 
+@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+class QueryGeneratorImplUnittest(unittest.TestCase):
+    def testCi(self):
+        """Tests that CI builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'], 'ci')
+        self.assertEqual(len(q), 1)
+        expected_query = queries.CI_BQ_QUERY_TEMPLATE.format(
+            test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testTry(self):
+        """Tests  that try builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'], 'try')
+        self.assertEqual(len(q), 1)
+        expected_query = queries.TRY_BQ_QUERY_TEMPLATE.format(
+            test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testUnknownBuilderType(self):
+        """Tests that an exception is raised for unknown builder types."""
+        with self.assertRaises(RuntimeError):
+            queries.QueryGeneratorImpl(['tfc'], 'unknown')
+
+
 class StripPrefixFromTestIdUnittest(unittest.TestCase):
     def testUnknownPrefix(self):
         """Tests that an error is raised if an unknown prefix is found."""

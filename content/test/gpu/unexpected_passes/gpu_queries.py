@@ -12,20 +12,20 @@ from unexpected_passes_common import queries as queries_module
 # values = more parallelization overhead and more issues with rate limit errors.
 TARGET_RESULTS_PER_QUERY = 20000
 
-# This query gets us all results for tests that have had results with a
+# This query gets us all results for tests from CI that have had results with a
 # RetryOnFailure or Failure expectation in the past |@num_builds| builds on
 # |@builder_name| for the test |suite| (contained within |test_filter_clause|)
-# type we're looking at. Whether these are CI or try results depends on whether
-# |builder_type| is "ci" or "try".
-GPU_BQ_QUERY_TEMPLATE = """\
+# type we're looking at.
+GPU_CI_BQ_QUERY_TEMPLATE = """\
 WITH
   builds AS (
     SELECT
       DISTINCT exported.id build_inv_id,
       partition_time
-    FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+    FROM
+      `chrome-luci-data.chromium.gpu_ci_test_results` tr
     WHERE
-      exported.realm = "chromium:{builder_type}"
+      exported.realm = "chromium:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -48,7 +48,70 @@ WITH
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
     FROM
-      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr,
+      `chrome-luci-data.chromium.gpu_ci_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      {test_filter_clause}
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "RetryOnFailure" IN UNNEST(typ_expectations)
+"""
+
+# Same as GPU_CI_BQ_QUERY_TEMPLATE, but for tryjobs. Only data from builds that
+# were used for CL submission is considered.
+GPU_TRY_BQ_QUERY_TEMPLATE = """\
+WITH
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.gpu_try_test_results` tr,
+      submitted_builds sb
+    WHERE
+      exported.realm = "chromium:try"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+      AND exported.id = sb.id
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations
+    FROM
+      `chrome-luci-data.chromium.gpu_try_test_results` tr,
       builds b
     WHERE
       exported.id = build_inv_id
@@ -240,9 +303,14 @@ class GpuSplitQueryGenerator(queries_module.SplitQueryGenerator):
 
 def QueryGeneratorImpl(test_filter_clauses, builder_type):
   queries = []
+  query_template = None
+  if builder_type == 'ci':
+    query_template = GPU_CI_BQ_QUERY_TEMPLATE
+  elif builder_type == 'try':
+    query_template = GPU_TRY_BQ_QUERY_TEMPLATE
+  else:
+    raise RuntimeError('Unknown builder type %s' % builder_type)
   for tfc in test_filter_clauses:
-    queries.append(
-        GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type,
-                                     test_filter_clause=tfc))
+    queries.append(query_template.format(test_filter_clause=tfc))
 
   return queries

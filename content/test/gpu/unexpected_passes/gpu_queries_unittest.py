@@ -171,6 +171,29 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       self.assertIsInstance(test_filter, gpu_queries.GpuSplitQueryGenerator)
 
 
+class QueryGeneratorImplUnittest(unittest.TestCase):
+  def testCi(self):
+    """Tests that CI builders use the correct query."""
+    q = gpu_queries.QueryGeneratorImpl(['tfc'], 'ci')
+    self.assertEqual(len(q), 1)
+    expected_query = gpu_queries.GPU_CI_BQ_QUERY_TEMPLATE.format(
+        test_filter_clause='tfc')
+    self.assertEqual(q[0], expected_query)
+
+  def testTry(self):
+    """Tests that try builders use the correct query."""
+    q = gpu_queries.QueryGeneratorImpl(['tfc'], 'try')
+    self.assertEqual(len(q), 1)
+    expected_query = gpu_queries.GPU_TRY_BQ_QUERY_TEMPLATE.format(
+        test_filter_clause='tfc')
+    self.assertEqual(q[0], expected_query)
+
+  def testUnknownBuilderType(self):
+    """Tests that an exception is raised for unknown builder types."""
+    with self.assertRaises(RuntimeError):
+      gpu_queries.QueryGeneratorImpl(['tfc'], 'unknown')
+
+
 class GetSuiteFilterClauseUnittest(unittest.TestCase):
   def testNonWebGl(self):
     """Tests that no filter is returned for non-WebGL suites."""
