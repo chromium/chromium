@@ -91,10 +91,8 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
     base::ListValue* url_pref_list = update.Get();
     DCHECK(url_pref_list);
     url_pref_list->ClearList();
-    for (size_t i = 0; i < pref.urls.size(); ++i) {
-      url_pref_list->Set(static_cast<int>(i),
-                         std::make_unique<base::Value>(pref.urls[i].spec()));
-    }
+    for (GURL url : pref.urls)
+      url_pref_list->Append(url.spec());
   }
 }
 
