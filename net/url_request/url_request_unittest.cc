@@ -12008,7 +12008,12 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
   EXPECT_EQ(0, d.received_redirect_count());
 }
 
-TEST_F(URLRequestTestHTTP, HeadersCallbacks) {
+#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#define MAYBE_HeadersCallbacks DISABLED_HeadersCallbacks
+#else
+#define MAYBE_HeadersCallbacks HeadersCallbacks
+#endif
+TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
   ASSERT_TRUE(http_test_server()->Start());
   TestURLRequestContext context;
   GURL url(http_test_server()->GetURL("/cachetime"));
