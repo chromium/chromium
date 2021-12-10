@@ -31,8 +31,8 @@ namespace ash {
 class UnifiedMessageCenterView;
 class UnifiedSystemTrayModel;
 
-// It's enclosed. This class is used only from UnifiedMessageCenterView.
 // Manages list of notifications. The class doesn't know about the ScrollView
+// it's enclosed. This class is used only from UnifiedMessageCenterView.
 class ASH_EXPORT UnifiedMessageListView
     : public views::View,
       public message_center::MessageCenterObserver,
