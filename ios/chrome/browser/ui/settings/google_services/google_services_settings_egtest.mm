@@ -348,7 +348,15 @@ void DismissSignOut() {
 // Tests that disabling the "Allow Chrome sign-in" > "Clear Data" option blocks
 // the user from signing in to Chrome through the promo sign-in until it is
 // re-enabled.
-- (void)testToggleAllowChromeSigninWithPromoSigninClearData {
+// TODO(crbug.com/1277841): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData \
+  DISABLED_testToggleAllowChromeSigninWithPromoSigninClearData
+#else
+#define MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData \
+  testToggleAllowChromeSigninWithPromoSigninClearData
+#endif
+- (void)MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData {
   // User is signed-in and syncing.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
