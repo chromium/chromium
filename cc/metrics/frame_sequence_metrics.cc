@@ -16,6 +16,7 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/jank_metrics.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
 
@@ -174,6 +175,9 @@ void FrameSequenceMetrics::Merge(
   main_throughput_.Merge(metrics->main_throughput_);
   frames_checkerboarded_ += metrics->frames_checkerboarded_;
 
+  v2_.frames_expected += metrics->v2_.frames_expected;
+  v2_.frames_dropped += metrics->v2_.frames_dropped;
+
   if (jank_reporter_)
     jank_reporter_->Merge(std::move(metrics->jank_reporter_));
 
@@ -233,6 +237,31 @@ void FrameSequenceMetrics::ReportMetrics() {
       this, SmoothEffectDrivingThread::kMain, main_throughput_);
   const bool compositor_report = ThroughputData::CanReportHistogram(
       this, SmoothEffectDrivingThread::kCompositor, impl_throughput_);
+
+  if (v2_.frames_expected >= kMinFramesForThroughputMetric) {
+    const auto thread_type = GetEffectiveThread();
+    const bool is_animation = ShouldReportForAnimation(type(), thread_type);
+    const bool is_interaction =
+        ShouldReportForInteraction(type(), thread_type, thread_type);
+    int percent = v2_.frames_expected == 0
+                      ? 0
+                      : std::ceil(100. * v2_.frames_dropped /
+                                  static_cast<double>(v2_.frames_expected));
+
+    if (is_animation) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames2.AllAnimations", percent);
+    }
+    if (is_interaction) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames2.AllInteractions", percent);
+    }
+    if (is_animation || is_interaction) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames2.AllSequences", percent);
+    }
+    v2_ = {};
+  }
 
   absl::optional<int> impl_throughput_percent_dropped;
   absl::optional<int> impl_throughput_percent_missed;
@@ -613,6 +642,27 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks new_timestamp) {
       "cc,benchmark", trace_names[this->frame_count % 3],
       TRACE_ID_LOCAL(trace_id), new_timestamp);
   this->last_timestamp = new_timestamp;
+}
+
+void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
+                                          const FrameInfo& frame_info) {
+  switch (GetEffectiveThread()) {
+    case SmoothEffectDrivingThread::kCompositor:
+      if (frame_info.WasCompositorUpdateDropped()) {
+        ++v2_.frames_dropped;
+      }
+      ++v2_.frames_expected;
+      break;
+    case SmoothEffectDrivingThread::kMain:
+      if (frame_info.WasMainUpdateDropped()) {
+        ++v2_.frames_dropped;
+      }
+      ++v2_.frames_expected;
+      break;
+    case SmoothEffectDrivingThread::kUnknown:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace cc

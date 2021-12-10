@@ -469,6 +469,9 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   if (args.interval >= sliding_window_interval_)
     return;
 
+  if (sorted_frame_callback_)
+    sorted_frame_callback_->Run(args, frame_info);
+
   sliding_window_.push({args, frame_info});
   UpdateDroppedFrameCountInWindow(frame_info, 1);
 
@@ -627,6 +630,10 @@ void DroppedFrameCounter::OnFcpReceived() {
   DCHECK(!fcp_received_);
   fcp_received_ = true;
   time_fcp_received_ = base::TimeTicks::Now();
+}
+
+void DroppedFrameCounter::SetSortedFrameCallback(SortedFrameCallback callback) {
+  sorted_frame_callback_ = callback;
 }
 
 }  // namespace cc

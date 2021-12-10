@@ -466,6 +466,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetDroppedFrameCounter(
       &dropped_frame_counter_);
+  compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
+      &frame_trackers_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_ui = settings.is_layer_tree_for_ui;

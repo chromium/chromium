@@ -75,7 +75,16 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
     DCHECK_EQ(MainThreadResponse::kMissing, other.main_thread_response);
     DCHECK(ValidateFinalStateIsForMainThread(final_state));
 
-    main_update_was_dropped = final_state == FrameFinalState::kDropped;
+    // If the compositor-only update did not include any changes from the
+    // main-thread, then it did drop the main-thread update. Therefore, overall
+    // the main-thread update was dropped, even if the 'main thread update' is
+    // presented in a subsequent frame.
+    bool compositor_only_change_included_new_main =
+        other.final_state == FrameFinalState::kPresentedAll ||
+        other.final_state == FrameFinalState::kPresentedPartialNewMain;
+    main_update_was_dropped = final_state == FrameFinalState::kDropped ||
+                              !compositor_only_change_included_new_main;
+
     compositor_update_was_dropped =
         other.final_state == FrameFinalState::kDropped;
   } else {

@@ -120,6 +120,9 @@ class CC_EXPORT FrameSequenceTrackerCollection {
     custom_tracker_results_added_callback_ = std::move(callback);
   }
 
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
+
  private:
   friend class FrameSequenceTrackerTest;
 

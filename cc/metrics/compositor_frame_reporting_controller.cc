@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/dropped_frame_counter.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -734,6 +735,24 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
                          timestamp);
     reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
                              args.deadline);
+  }
+}
+
+void CompositorFrameReportingController::AddSortedFrame(
+    const viz::BeginFrameArgs& args,
+    const FrameInfo& frame_info) {
+  if (global_trackers_.frame_sequence_trackers) {
+    global_trackers_.frame_sequence_trackers->AddSortedFrame(args, frame_info);
+  }
+}
+
+void CompositorFrameReportingController::SetDroppedFrameCounter(
+    DroppedFrameCounter* counter) {
+  global_trackers_.dropped_frame_counter = counter;
+  if (counter) {
+    counter->SetSortedFrameCallback(
+        base::BindRepeating(&CompositorFrameReportingController::AddSortedFrame,
+                            base::Unretained(this)));
   }
 }
 

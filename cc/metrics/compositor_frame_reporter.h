@@ -31,12 +31,14 @@ struct FrameTimingDetails;
 }
 
 namespace cc {
+class FrameSequenceTrackerCollection;
 class DroppedFrameCounter;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
   DroppedFrameCounter* dropped_frame_counter = nullptr;
   LatencyUkmReporter* latency_ukm_reporter = nullptr;
+  FrameSequenceTrackerCollection* frame_sequence_trackers = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
