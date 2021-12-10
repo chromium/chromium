@@ -157,10 +157,13 @@ public class ModalDialogProperties {
     public static final ReadableBooleanPropertyKey DIALOG_WHEN_LARGE =
             new ReadableBooleanPropertyKey();
 
+    /** Whether the dialog should be focused for accessibility. */
+    public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
             FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
-            FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE};
+            FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
 }

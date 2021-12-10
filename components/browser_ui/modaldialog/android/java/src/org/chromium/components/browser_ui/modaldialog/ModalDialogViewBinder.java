@@ -75,6 +75,8 @@ public class ModalDialogViewBinder
             assert !(model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
                     && model.get(ModalDialogProperties.DIALOG_WHEN_LARGE))
                 : "Both FULLSCREEN_DIALOG and DIALOG_WHEN_LARGE cannot be set to true.";
+        } else if (ModalDialogProperties.FOCUS_DIALOG == propertyKey) {
+            // Intentionally left empty since this is a property for the dialog container.
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }
