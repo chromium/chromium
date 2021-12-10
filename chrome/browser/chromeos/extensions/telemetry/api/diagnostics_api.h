@@ -186,6 +186,26 @@ class OsDiagnosticsRunCpuCacheRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "os.diagnostics.runCpuFloatingPointAccuracyRoutine",
+      OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE)
+
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction();
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction(
+      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction& operator=(
+      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunCpuStressRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

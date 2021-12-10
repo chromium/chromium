@@ -58,6 +58,12 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out;
+    EXPECT_TRUE(
+        ConvertMojoRoutine(MojoRoutineType::kFloatingPointAccuracy, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_FLOATING_POINT_ACCURACY);
+  }
+  {
+    RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kCpuStress, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_STRESS);
   }
@@ -78,12 +84,6 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kAcPower, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(
-        ConvertMojoRoutine(MojoRoutineType::kFloatingPointAccuracy, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
   }
   {

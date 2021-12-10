@@ -44,6 +44,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kCpuCache:
       *out = RoutineType::ROUTINE_TYPE_CPU_CACHE;
       return true;
+    case MojoRoutineType::kFloatingPointAccuracy:
+      *out = RoutineType::ROUTINE_TYPE_CPU_FLOATING_POINT_ACCURACY;
+      return true;
     case MojoRoutineType::kCpuStress:
       *out = RoutineType::ROUTINE_TYPE_CPU_STRESS;
       return true;

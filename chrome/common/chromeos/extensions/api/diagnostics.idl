@@ -14,6 +14,7 @@ namespace os.diagnostics {
     battery_discharge,
     battery_health,
     cpu_cache,
+    cpu_floating_point_accuracy,
     cpu_stress,
     memory
   };
@@ -118,6 +119,10 @@ namespace os.diagnostics {
     // Starts CPU cache routine.
     [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
                                                       RunRoutineCallback callback);
+
+    // Starts CPU floating point accuracy routine.
+    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
+                                                                      RunRoutineCallback callback);
 
     // Starts CPU stress routine.
     [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
