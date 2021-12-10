@@ -712,14 +712,14 @@ void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
 void WallpaperControllerClientImpl::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
-  DCHECK(!images_info_fetcher_);
-  images_info_fetcher_ =
+  auto images_info_fetcher =
       std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
           collection_id);
-
-  images_info_fetcher_->Start(
+  auto* images_info_fetcher_ptr = images_info_fetcher.get();
+  images_info_fetcher_ptr->Start(
       base::BindOnce(&WallpaperControllerClientImpl::OnFetchImagesForCollection,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(images_info_fetcher)));
 }
 
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
@@ -766,11 +766,11 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
 
 void WallpaperControllerClientImpl::OnFetchImagesForCollection(
     FetchImagesForCollectionCallback callback,
+    std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher> fetcher,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
   std::move(callback).Run(success, std::move(images));
-  images_info_fetcher_.reset();
 }
 
 void WallpaperControllerClientImpl::ObserveVolumeManagerForAccountId(
