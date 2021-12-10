@@ -60,7 +60,6 @@ media::AudioParameters GetAudioParameters(
 
 bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
     const std::string& language) {
-  // kUseSodaForLiveCaption is used to track SODA availability on-device.
   if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
     return false;
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();

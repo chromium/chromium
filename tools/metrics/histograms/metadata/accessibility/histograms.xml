@@ -1033,6 +1033,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
     enum="BooleanEnabled" expires_after="2022-07-26">
+  <obsolete>
+    No longer recorded after 2021-12.
+  </obsolete>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

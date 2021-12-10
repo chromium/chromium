@@ -108,8 +108,7 @@ void MediaToolbarButtonView::Enable() {
 
   if (media::IsLiveCaptionFeatureEnabled()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
-    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
-        base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       feature_promo_controller_->MaybeShowPromo(
           feature_engagement::kIPHLiveCaptionFeature);
     } else {

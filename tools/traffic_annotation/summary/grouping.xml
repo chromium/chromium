@@ -129,7 +129,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="devtools_free_data_source"/>
       <traffic_annotation unique_id="download_internals_webui_source"/>
       <traffic_annotation unique_id="downloads_dom_handler"/>
-      <traffic_annotation unique_id="cloud_speech_recognition"/>
       <traffic_annotation unique_id="cast_socket"/>
       <traffic_annotation unique_id="dom_distiller"/>
       <traffic_annotation unique_id="download_manager_resume"/>

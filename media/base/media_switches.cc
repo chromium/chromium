@@ -549,11 +549,6 @@ const base::Feature kExternalClearKeyForTesting{
 const base::Feature kLiveCaption{"LiveCaption",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Use the Speech On-Device API (SODA) to power the Live Caption feature instead
-// of the Cloud-based Open Speech API.
-const base::Feature kUseSodaForLiveCaption{"UseSodaForLiveCaption",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether a "Share this tab instead" button should be shown for
 // getDisplayMedia captures. Note: This flag does not control if the "Share this
 // tab instead" button is shown for chrome.desktopCapture captures.
@@ -924,24 +919,20 @@ bool IsLiveCaptionFeatureEnabled() {
 #endif
 
 #if defined(OS_LINUX)
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    // Check if the CPU has the required instruction set to run the Speech
-    // On-Device API (SODA) library.
-    static bool has_sse41 = base::CPU().has_sse41();
-    if (!has_sse41)
-      return false;
-  }
+  // Check if the CPU has the required instruction set to run the Speech
+  // On-Device API (SODA) library.
+  static bool has_sse41 = base::CPU().has_sse41();
+  if (!has_sse41)
+    return false;
 #endif
 
 #if defined(OS_WIN) && defined(ARCH_CPU_ARM64)
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    // The Speech On-Device API (SODA) component does not support Windows on
-    // arm64.
-    return false;
-  }
-#endif
-
+  // The Speech On-Device API (SODA) component does not support Windows on
+  // arm64.
+  return false;
+#else
   return true;
+#endif
 }
 
 bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {

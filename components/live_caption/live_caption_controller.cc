@@ -68,9 +68,6 @@ void LiveCaptionController::Init() {
   if (!media::IsLiveCaptionFeatureEnabled())
     return;
 
-  base::UmaHistogramBoolean(
-      "Accessibility.LiveCaption.UseSodaForLiveCaption",
-      base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -124,11 +121,6 @@ bool LiveCaptionController::IsLiveCaptionEnabled() {
 
 void LiveCaptionController::StartLiveCaption() {
   DCHECK(enabled_);
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    CreateUI();
-    return;
-  }
-
   // The SodaInstaller determines whether SODA is already on the device and
   // whether or not to download. Once SODA is on the device and ready, the
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at

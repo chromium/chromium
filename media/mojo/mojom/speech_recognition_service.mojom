@@ -10,7 +10,6 @@ import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -53,19 +52,10 @@ interface SpeechRecognitionService {
   // Bind the context to a new instance of the speech recognition.
   BindContext(pending_receiver<SpeechRecognitionContext> context);
 
-  // Sets the URL loader factory used to create network requests.
-  SetUrlLoaderFactory(
-      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory);
-
   // Sets the file path to the Speech On-Device API (SODA) binary and
   // the config file for the language pack.
   SetSodaPath(mojo_base.mojom.FilePath binary_path,
       mojo_base.mojom.FilePath config_path);
-
-  // Binds the speech recognition service client used by the speech
-  // recognition service to send messages back to the client.
-  BindSpeechRecognitionServiceClient(
-      pending_remote<SpeechRecognitionServiceClient> client);
 };
 
 // The interface used to start and stop fetching audio from the microphone
@@ -79,14 +69,6 @@ interface AudioSourceFetcher {
 
   // Stops audio fetching.
   Stop();
-};
-
-// The interface used to send messages from the speech recognition service
-// back to the consumer of the service.
-interface SpeechRecognitionServiceClient {
-  // Executed when the network service crashes, prompting the client to
-  // reset the URL loader factory.
-  OnNetworkServiceDisconnect();
 };
 
 // The interface used to pass raw audio from the renderer to the speech

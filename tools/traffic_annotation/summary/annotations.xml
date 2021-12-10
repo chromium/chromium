@@ -51,7 +51,6 @@ Refer to README.md for content description and update process.
  <item id="cloud_print_backend" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="05177cb5" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc" />
  <item id="cloud_print_credential_update" added_in_milestone="66" content_hash_code="001200a0" os_list="linux,windows" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc" />
  <item id="cloud_print_proxy" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="056a8973" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy.cc" />
- <item id="cloud_speech_recognition" added_in_milestone="85" content_hash_code="06d9916b" os_list="linux,windows,chromeos" file_path="chrome/services/speech/cloud_speech_recognition_client.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
  <item id="content_suggestion_get_favicon" added_in_milestone="62" content_hash_code="0800f6e5" os_list="linux,windows,chromeos,android" file_path="components/ntp_snippets/content_suggestions_service.cc" />
  <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="06161a36" os_list="linux,windows,chromeos,android" file_path="content/browser/attribution_reporting/attribution_network_sender_impl.cc" />
@@ -265,7 +264,7 @@ Refer to README.md for content description and update process.
  <item id="test_partial" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="tethering_handler_socket" added_in_milestone="65" content_hash_code="000f0cb8" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/tethering_handler.cc" />
  <item id="translate_url_fetcher" added_in_milestone="62" content_hash_code="06363ba2" os_list="linux,windows,chromeos,android" file_path="components/translate/core/browser/translate_url_fetcher.cc" />
- <item id="trusted_vault_request" added_in_milestone="88" content_hash_code="0738dfaf" os_list="linux,windows,chromeos,android" file_path="components/sync/trusted_vault/trusted_vault_request.cc" />
+ <item id="trusted_vault_request" added_in_milestone="88" content_hash_code="0738dfaf" os_list="linux,windows,chromeos" file_path="components/sync/trusted_vault/trusted_vault_request.cc" />
  <item id="ui_devtools_server" added_in_milestone="66" content_hash_code="03bc45b7" os_list="linux,windows,chromeos,android" file_path="components/ui_devtools/devtools_server.cc" />
  <item id="undefined" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="unwanted_software_report" added_in_milestone="70" content_hash_code="0386a164" os_list="windows" file_path="chrome/chrome_cleaner/logging/reporter_logging_service.cc" />

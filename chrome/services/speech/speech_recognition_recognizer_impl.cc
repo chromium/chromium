@@ -163,8 +163,7 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
-    : enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
-      options_(std::move(options)),
+    : options_(std::move(options)),
       client_remote_(std::move(remote)),
       config_path_(config_path) {
   recognition_event_callback_ = media::BindToCurrentLoop(
@@ -180,7 +179,6 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       base::BindOnce(&SpeechRecognitionRecognizerImpl::OnClientHostDisconnected,
                      weak_factory_.GetWeakPtr()));
 
-  if (enable_soda_) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
     // here because it exists at a different location. Instead,
@@ -191,11 +189,6 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       OnSpeechRecognitionError();
     }
 #endif
-  } else {
-    cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
-        recognition_event_callback(),
-        std::move(speech_recognition_service_impl));
-  }
 }
 
 void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {
@@ -264,7 +257,6 @@ void SpeechRecognitionRecognizerImpl::
     return;
   }
 
-  if (enable_soda_) {
     CHECK(soda_client_);
     DCHECK(base::PathExists(config_path_));
     if (!soda_client_->IsInitialized() ||
@@ -274,23 +266,6 @@ void SpeechRecognitionRecognizerImpl::
 
     soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
                            buffer_size);
-  } else {
-    DCHECK(cloud_client_);
-    if (!cloud_client_->IsInitialized() ||
-        cloud_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
-      // Initialize the stream.
-      CloudSpeechConfig config;
-      config.sample_rate = sample_rate_;
-      config.channel_count = channel_count_;
-      // TODO(crbug.com/1161569): This should be chosen dynamically, probably
-      // via options_->language.
-      config.language_code = speech::kUsEnglishLocale;
-      cloud_client_->Initialize(config);
-    }
-
-    cloud_client_->AddAudio(base::span<const char>(
-        reinterpret_cast<char*>(buffer->data.data()), buffer_size));
-  }
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(

@@ -61,11 +61,8 @@ FeaturePromoSpecification::StringReplacements GetReplacementsForFeature(
 class FeaturePromoDialogTest : public DialogBrowserTest {
  public:
   FeaturePromoDialogTest() {
-    // TODO(crbug.com/1182859): Update this test to enable the
-    // kUseSodaForLiveCaption feature.
     scoped_feature_list_.InitWithFeatures(
-        {}, {media::kLiveCaption, media::kUseSodaForLiveCaption,
-             feature_engagement::kIPHLiveCaptionFeature});
+        {}, {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
 
     // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
     // screen and remove this.

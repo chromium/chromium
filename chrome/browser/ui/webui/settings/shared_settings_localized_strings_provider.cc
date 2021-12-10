@@ -125,8 +125,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE);
 
   const bool liveCaptionMultiLanguageEnabled =
-      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
-      base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
   const int live_caption_subtitle_message =
       liveCaptionMultiLanguageEnabled
           ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE

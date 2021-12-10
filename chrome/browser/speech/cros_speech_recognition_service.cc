@@ -51,12 +51,7 @@ CrosSpeechRecognitionService::~CrosSpeechRecognitionService() {}
 
 void CrosSpeechRecognitionService::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
-  if (enable_soda_) {
-    speech_recognition_contexts_.Add(this, std::move(receiver));
-  } else {
-    // If soda is not enabled, do the same thing as chrome.
-    ChromeSpeechRecognitionService::Create(std::move(receiver));
-  }
+  speech_recognition_contexts_.Add(this, std::move(receiver));
 }
 
 void CrosSpeechRecognitionService::BindRecognizer(

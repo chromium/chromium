@@ -37,10 +37,6 @@ inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
-bool ShouldUseWebSpeechFallback() {
-  return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
-}
-
 }  // namespace
 
 // static
@@ -67,8 +63,7 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   // has been informed that recognition is available.
   // TODO(crbug.com/1165437): Dynamically determine language code.
   DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-             GetLocale()) ||
-         ShouldUseWebSpeechFallback());
+      GetLocale()));
 
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;

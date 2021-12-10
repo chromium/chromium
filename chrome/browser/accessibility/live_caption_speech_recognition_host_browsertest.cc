@@ -30,8 +30,7 @@
 namespace {
 // Chrome OS requires an additional feature flag to enable Live Caption.
 std::vector<base::Feature> RequiredFeatureFlags() {
-  std::vector<base::Feature> features = {media::kLiveCaption,
-                                         media::kUseSodaForLiveCaption};
+  std::vector<base::Feature> features = {media::kLiveCaption};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   features.push_back(ash::features::kOnDeviceSpeechRecognition);
 #endif

@@ -52,9 +52,7 @@ static constexpr int kLiveCaptionImageWidthDip = 20;
 static constexpr int kLiveCaptionVerticalMarginDip = 16;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
-  // Live Caption multi language is only enabled when SODA is also enabled.
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) ||
-      !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return l10n_util::GetStringUTF16(
         IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY);
   }

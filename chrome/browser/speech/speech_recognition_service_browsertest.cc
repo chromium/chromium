@@ -127,8 +127,7 @@ class SpeechRecognitionServiceTest
       public media::mojom::SpeechRecognitionRecognizerClient {
  public:
   SpeechRecognitionServiceTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kUseSodaForLiveCaption}, {});
+    scoped_feature_list_.InitWithFeatures({media::kLiveCaption}, {});
   }
 
   SpeechRecognitionServiceTest(const SpeechRecognitionServiceTest&) = delete;

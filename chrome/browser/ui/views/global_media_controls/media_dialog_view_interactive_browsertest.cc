@@ -355,7 +355,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls, media::kLiveCaption,
          feature_engagement::kIPHLiveCaptionFeature,
-         media::kLiveCaptionMultiLanguage, media::kUseSodaForLiveCaption},
+         media::kLiveCaptionMultiLanguage},
         {});
 
     presentation_manager_ =

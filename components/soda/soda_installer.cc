@@ -81,10 +81,10 @@ void SodaInstaller::Init(PrefService* profile_prefs,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition) ||
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-#endif
       soda_installer_initialized_) {
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (soda_installer_initialized_) {
+#endif
     return;
   }
 

@@ -4893,8 +4893,7 @@
                     },
                     "enable_features": [
                         "IPH_LiveCaption",
-                        "LiveCaption",
-                        "UseSodaForLiveCaption"
+                        "LiveCaption"
                     ]
                 }
             ]
@@ -4909,8 +4908,7 @@
                 {
                     "name": "Enabled_2021_03_09",
                     "enable_features": [
-                        "LiveCaption",
-                        "UseSodaForLiveCaption"
+                        "LiveCaption"
                     ]
                 }
             ]

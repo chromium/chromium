@@ -186,7 +186,6 @@ MEDIA_EXPORT extern const base::Feature kUseDecoderStreamForWebRTC;
 MEDIA_EXPORT extern const base::Feature kUseFakeDeviceForMediaStream;
 MEDIA_EXPORT extern const base::Feature kUseMediaHistoryStore;
 MEDIA_EXPORT extern const base::Feature kUseR16Texture;
-MEDIA_EXPORT extern const base::Feature kUseSodaForLiveCaption;
 #if defined(OS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiVideoDecodeLinux;
 MEDIA_EXPORT extern const base::Feature kVaapiVideoEncodeLinux;
