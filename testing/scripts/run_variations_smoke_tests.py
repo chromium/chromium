@@ -45,8 +45,8 @@ _TEST_CASES = [
         # TODO(crbug.com/1234165): Make tests hermetic by using a test http
         # server or WPR.
         'url': 'https://chromium.org/',
-        'expected_id': 'sites-chrome-userheader-title',
-        'expected_text': 'The Chromium Projects',
+        'expected_id': 'chromium',
+        'expected_text': 'Chromium',
     },
 ]
 
