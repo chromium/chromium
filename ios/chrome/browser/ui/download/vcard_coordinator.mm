@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 
+#include <ContactsUI/ContactsUI.h>
+
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
@@ -20,6 +22,10 @@
   // needs to register the Mediator with a new WebState.
   std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
 }
+
+// NavigationController that contains a viewController used to display a
+// contact.
+@property(nonatomic, strong) UINavigationController* navigationViewController;
 
 @end
 
@@ -40,6 +46,8 @@
   // Reset this observer manually. We want this to go out of scope now, to
   // ensure it detaches before |browser| and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
+
+  self.navigationViewController = nil;
 }
 
 #pragma mark - DependencyInstalling methods
@@ -56,11 +64,45 @@
   }
 }
 
+#pragma mark - Private
+
+// Dismisses the the |navigationViewController|.
+- (void)dismissButtonTapped {
+  [self.baseViewController dismissViewControllerAnimated:true completion:nil];
+}
+
+// Retreives contact informations from |data| and presents it.
+- (void)presentContactVCardFromData:(NSData*)vcardData {
+  // TODO(crbug.com/1278657): Vcard download code only support the first
+  // contact.
+  CNContact* contact =
+      [[CNContactVCardSerialization contactsWithData:vcardData
+                                               error:nil] firstObject];
+  if (!contact) {
+    return;
+  }
+
+  CNContactViewController* contactViewController =
+      [CNContactViewController viewControllerForUnknownContact:contact];
+
+  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(dismissButtonTapped)];
+  contactViewController.navigationItem.leftBarButtonItem = dismissButton;
+
+  self.navigationViewController = [[UINavigationController alloc]
+      initWithRootViewController:contactViewController];
+  [self.baseViewController presentViewController:self.navigationViewController
+                                        animated:YES
+                                      completion:nil];
+}
+
 #pragma mark - VcardTabHelperDelegate
 
 - (void)openVcardFromData:(NSData*)vcardData {
   DCHECK(vcardData);
-  // TODO(crbug.com/1244002): Open Vcard with CNContactVCardSerialization.
+  [self presentContactVCardFromData:vcardData];
 }
 
 @end
