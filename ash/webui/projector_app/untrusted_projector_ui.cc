@@ -68,25 +68,25 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline';");
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc,
-      // Allows loading video file thumbnail.
-      "img-src 'self' https://*.googleusercontent.com;");
-  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.
       "media-src 'self' https://*.drive.google.com;");
   // Allow images to also handle data urls.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src blob: data: 'self' https://*.drive.google.com;");
+      "img-src blob: data: 'self' https://*.googleusercontent.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' https://www.googleapis.com "
       "https://drive.google.com;");
 
+  // TODO(b/210064058): COEP is conflicting with loading cross origin resources.
+  // Comment out COEP overrides for now until the issue is resolved. If we
+  // decided to create a separate origin for annotator, we need to also clean up
+  // the ink resources and WASM related policy overrides.
   // Allow use of SharedArrayBuffer (required by the wasm).
-  source->OverrideCrossOriginOpenerPolicy("same-origin");
-  source->OverrideCrossOriginEmbedderPolicy("require-corp");
+  // source->OverrideCrossOriginOpenerPolicy("same-origin");
+  // source->OverrideCrossOriginEmbedderPolicy("require-corp");
 
   // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
   // template is setting innerHTML.
