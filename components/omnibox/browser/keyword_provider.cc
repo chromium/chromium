@@ -211,9 +211,10 @@ std::u16string KeywordProvider::GetKeywordForText(
   }
 
   // Don't provide a keyword for inactive search engines (if the active search
-  // engine flag is enabled). Prepopulated engines should always work regardless
-  // of is_active.
+  // engine flag is enabled). Prepopulated engines and extensions controlled
+  // engines should always work regardless of is_active.
   if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
+      template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION &&
       template_url->prepopulate_id() == 0 &&
       template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
     return std::u16string();
