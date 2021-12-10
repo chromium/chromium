@@ -4703,6 +4703,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest, Load) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest,
+                       DeclarativeSendMessage) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest", {.page_url = "test_fenced_frames_send_message.html"}))
+      << message_;
+}
+
 INSTANTIATE_TEST_SUITE_P(ExtensionWebRequestApiFencedFrameTest,
                          ExtensionWebRequestApiFencedFrameTest,
                          testing::Bool());
