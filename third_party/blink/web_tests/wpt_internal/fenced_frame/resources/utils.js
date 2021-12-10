@@ -97,6 +97,9 @@ const KEYS = {
   "embed_no_coep"                               : "00000000-0000-0000-0000-000000000032",
 
   "hid.getDevice"                               : "00000000-0000-0000-0000-000000000033",
+
+  "ndef.write"                                  : "00000000-0000-0000-0000-000000000034",
+  "ndef.scan"                                   : "00000000-0000-0000-0000-000000000035",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
