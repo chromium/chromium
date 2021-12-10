@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL calling getGamepads() in a non-fully-active document assert_true: getGamepads should return an array expected true got false
+FAIL calling getGamepads() in a non-fully-active document assert_equals: No gamepads should be available expected 0 but got 4
 Harness: the test ran to completion.
 

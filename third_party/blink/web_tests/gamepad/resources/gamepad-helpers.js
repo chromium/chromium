@@ -41,8 +41,6 @@ function testGamepadStateAllDisconnected() {
     // slots with null.
     assert_equals(pads.length, MAX_GAMEPADS, 'pads.length');
     for (let i = 0; i < pads.length; ++i) {
-        // TODO(crbug.com/865642): Remove deprecated Gamepad.item method.
-        assert_equals(pads.item(i), null);
         assert_equals(pads[i], null);
     }
 }

@@ -1711,8 +1711,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_list.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_list.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation_coordinates.cc",

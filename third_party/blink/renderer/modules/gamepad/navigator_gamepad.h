@@ -45,7 +45,6 @@ namespace blink {
 
 class GamepadDispatcher;
 class GamepadHapticActuator;
-class GamepadList;
 class Navigator;
 
 class MODULES_EXPORT NavigatorGamepad final
@@ -63,8 +62,8 @@ class MODULES_EXPORT NavigatorGamepad final
   explicit NavigatorGamepad(Navigator&);
   ~NavigatorGamepad() override;
 
-  static GamepadList* getGamepads(Navigator&, ExceptionState&);
-  GamepadList* Gamepads();
+  static HeapVector<Member<Gamepad>> getGamepads(Navigator&, ExceptionState&);
+  HeapVector<Member<Gamepad>> Gamepads();
 
   void Trace(Visitor*) const override;
 
@@ -98,7 +97,7 @@ class MODULES_EXPORT NavigatorGamepad final
   // be nullptr if no data has been received yet. Do not overwrite this buffer
   // as it may have already been returned to the page. Instead, write to
   // |gamepads_back_| and swap buffers.
-  Member<GamepadList> gamepads_;
+  HeapVector<Member<Gamepad>> gamepads_;
 
   // True if the buffer referenced by |gamepads_| has been exposed to the page.
   // When the buffer is not exposed, prefer to reuse it.
@@ -106,7 +105,7 @@ class MODULES_EXPORT NavigatorGamepad final
 
   // A reference to the buffer for receiving new gamepad state. May be
   // overwritten.
-  Member<GamepadList> gamepads_back_;
+  HeapVector<Member<Gamepad>> gamepads_back_;
 
   HeapVector<Member<GamepadHapticActuator>> vibration_actuators_;
 
