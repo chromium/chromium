@@ -7,6 +7,9 @@
 #import <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <set>
+
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
@@ -52,27 +55,105 @@ absl::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
   return absl::nullopt;
 }
 
+bool IsPathValidForBundle(const base::FilePath& bundle_path,
+                          NSString* bundle_id) {
+  if (bundle_path.empty())
+    return false;
+
+  if (!base::DirectoryExists(bundle_path))
+    return false;
+
+  NSString* ns_bundle_path = base::SysUTF8ToNSString(bundle_path.value());
+  NSBundle* bundle = [NSBundle bundleWithPath:ns_bundle_path];
+  if (!bundle || ![bundle_id isEqualToString:[bundle bundleIdentifier]]) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
-bool FindBundleById(NSString* bundle_id, base::FilePath* out_bundle) {
-  // Prefer running instances to non-running instances found in the filesystem.
-  // https://crbug.com/1273666#c18
-  NSArray<NSRunningApplication*>* runningApplications =
-      [NSRunningApplication runningApplicationsWithBundleIdentifier:bundle_id];
-  if ([runningApplications count] > 0) {
-    NSRunningApplication* runningApplication =
-        [runningApplications objectAtIndex:0];
-    *out_bundle = base::mac::NSURLToFilePath([runningApplication bundleURL]);
-    DCHECK(!out_bundle->empty());
+bool FindChromeBundle(NSString* bundle_id,
+                      const base::CommandLine& command_line,
+                      base::FilePath* out_bundle) {
+  // If Chrome launched this app and provided a bundle path, use that.
+  if (command_line.HasSwitch(app_mode::kLaunchedByChromeBundlePath)) {
+    base::FilePath command_line_bundle_path =
+        command_line.GetSwitchValuePath(app_mode::kLaunchedByChromeBundlePath);
+    if (IsPathValidForBundle(command_line_bundle_path, bundle_id)) {
+      *out_bundle = command_line_bundle_path;
+      return true;
+    } else {
+      LOG(WARNING) << "Invalid command line bundle path: "
+                   << command_line_bundle_path;
+    }
+  }
+
+  // Retrieve the last-run Chrome bundle location.
+  base::FilePath last_run_bundle_path;
+  {
+    using base::mac::CFToNSCast;
+    using base::mac::CFCastStrict;
+    using base::mac::NSToCFCast;
+    NSString* cr_bundle_path_ns =
+        [CFToNSCast(CFCastStrict<CFStringRef>(CFPreferencesCopyAppValue(
+            NSToCFCast(app_mode::kLastRunAppBundlePathPrefsKey),
+            NSToCFCast(bundle_id)))) autorelease];
+    last_run_bundle_path = base::mac::NSStringToFilePath(cr_bundle_path_ns);
+  }
+
+  // Look up running instances of the specified bundle ID.
+  {
+    // Note that IsPathValidForBundle is guaranteed to be true for all elements
+    // in `running_bundle_paths` because runningApplicationsWithBundleIdentifier
+    // returned them.
+    std::set<base::FilePath> running_bundle_paths;
+    NSArray<NSRunningApplication*>* running_applications = [NSRunningApplication
+        runningApplicationsWithBundleIdentifier:bundle_id];
+    for (NSRunningApplication* running_application : running_applications) {
+      base::FilePath bundle_path =
+          base::mac::NSURLToFilePath([running_application bundleURL]);
+      DCHECK(!bundle_path.empty());
+      running_bundle_paths.insert(bundle_path);
+    }
+
+    // If the last-run instance is still running, then use that instance.
+    if (running_bundle_paths.count(last_run_bundle_path)) {
+      *out_bundle = last_run_bundle_path;
+      return true;
+    }
+
+    // Otherwise, select a running bundle path arbitrarily.
+    // TODO(https://crbug.com/1278425): This choice should not be made
+    // arbitrarily.
+    if (!running_bundle_paths.empty()) {
+      *out_bundle = *running_bundle_paths.begin();
+      return true;
+    }
+  }
+
+  // Next, use the last run bundle path, if it is valid.
+  if (IsPathValidForBundle(last_run_bundle_path, bundle_id)) {
+    *out_bundle = last_run_bundle_path;
     return true;
   }
 
-  NSWorkspace* ws = [NSWorkspace sharedWorkspace];
-  NSString *bundlePath = [ws absolutePathForAppBundleWithIdentifier:bundle_id];
-  if (!bundlePath)
-    return false;
-  *out_bundle = base::mac::NSStringToFilePath(bundlePath);
-  return true;
+  // Finally, search the filesystem for a bundle. If several copies of the
+  // bundle are present, this will select one arbitrarily.
+  {
+    // Note that IsPathValidForBundle is guaranteed to be true for
+    // `bundle_path` because absolutePathForAppBundleWithIdentifier returned
+    // it.
+    NSWorkspace* ws = [NSWorkspace sharedWorkspace];
+    NSString* bundle_path =
+        [ws absolutePathForAppBundleWithIdentifier:bundle_id];
+    if (bundle_path) {
+      *out_bundle = base::mac::NSStringToFilePath(bundle_path);
+      return true;
+    }
+  }
+  return false;
 }
 
 bool GetChromeBundleInfo(const base::FilePath& chrome_bundle,

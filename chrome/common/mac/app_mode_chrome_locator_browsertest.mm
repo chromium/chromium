@@ -31,18 +31,6 @@ void GetChromeBundlePath(base::FilePath* chrome_bundle) {
 
 }  // namespace
 
-TEST(ChromeLocatorTest, FindBundle) {
-  base::FilePath finder_bundle_path;
-  EXPECT_TRUE(
-      app_mode::FindBundleById(@"com.apple.finder", &finder_bundle_path));
-  EXPECT_TRUE(base::DirectoryExists(finder_bundle_path));
-}
-
-TEST(ChromeLocatorTest, FindNonExistentBundle) {
-  base::FilePath dummy;
-  EXPECT_FALSE(app_mode::FindBundleById(@"this.doesnt.exist", &dummy));
-}
-
 TEST(ChromeLocatorTest, GetNonExistentBundleInfo) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

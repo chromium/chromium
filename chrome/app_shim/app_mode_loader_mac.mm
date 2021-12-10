@@ -32,40 +32,27 @@ typedef int (*StartFun)(const app_mode::ChromeAppModeInfo*);
 
 int LoadFrameworkAndStart(int argc, char** argv) {
   using base::SysNSStringToUTF8;
-  using base::SysNSStringToUTF16;
-  using base::mac::CFToNSCast;
-  using base::mac::CFCastStrict;
-  using base::mac::NSToCFCast;
+  base::CommandLine command_line(argc, argv);
 
   @autoreleasepool {
     // Get the current main bundle, i.e., that of the app loader that's running.
     NSBundle* app_bundle = [NSBundle mainBundle];
     CHECK(app_bundle) << "couldn't get loader bundle";
 
-    // ** 1: Get path to outer Chrome bundle.
     // Get the bundle ID of the browser that created this app bundle.
     NSString* cr_bundle_id = base::mac::ObjCCast<NSString>(
         [app_bundle objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
     CHECK(cr_bundle_id) << "couldn't get browser bundle ID";
 
-    // First check if Chrome exists at the last known location.
+    // ** 1: Get path to outer Chrome bundle.
     base::FilePath cr_bundle_path;
-    NSString* cr_bundle_path_ns =
-        [CFToNSCast(CFCastStrict<CFStringRef>(CFPreferencesCopyAppValue(
-            NSToCFCast(app_mode::kLastRunAppBundlePathPrefsKey),
-            NSToCFCast(cr_bundle_id)))) autorelease];
-    cr_bundle_path = base::mac::NSStringToFilePath(cr_bundle_path_ns);
-    bool found_bundle =
-        !cr_bundle_path.empty() && base::DirectoryExists(cr_bundle_path);
-
-    if (!found_bundle) {
-      // If no such bundle path exists, try to search by bundle ID.
-      if (!app_mode::FindBundleById(cr_bundle_id, &cr_bundle_path)) {
-        // TODO(jeremy): Display UI to allow user to manually locate the Chrome
-        // bundle.
-        LOG(FATAL) << "Failed to locate bundle by identifier";
-      }
+    if (!app_mode::FindChromeBundle(cr_bundle_id, command_line,
+                                    &cr_bundle_path)) {
+      // TODO(https://crbug.com/944312): Display UI to inform the user of the
+      // reason for failure.
+      LOG(FATAL) << "Failed to locate browser bundle";
     }
+    CHECK(!cr_bundle_path.empty());
 
     // ** 2: Read the running Chrome version.
     // The user_data_dir for shims actually contains the app_data_path.
@@ -168,9 +155,9 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     }
 
     LOG(ERROR) << "Loading Chrome failed, launching Chrome with command line";
-    base::CommandLine command_line(executable_path);
+    base::CommandLine cr_command_line(executable_path);
     // The user_data_dir from the plist is actually the app data dir.
-    command_line.AppendSwitchPath(
+    cr_command_line.AppendSwitchPath(
         switches::kUserDataDir,
         plist_user_data_dir.DirName().DirName().DirName());
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -180,8 +167,8 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       // fix the problem, so don't try again.
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               app_mode::kLaunchedAfterRebuild)) {
-        command_line.AppendSwitchPath(app_mode::kAppShimError,
-                                      app_mode_bundle_path);
+        cr_command_line.AppendSwitchPath(app_mode::kAppShimError,
+                                         app_mode_bundle_path);
       }
     } else {
       // If the shim was launched directly (instead of by Chrome), first ask
@@ -189,15 +176,17 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       // error will occur and be handled above. This approach allows the app to
       // be started without blocking on fixing the shim and guarantees that the
       // profile is loaded when Chrome receives --app-shim-error.
-      command_line.AppendSwitchPath(switches::kProfileDirectory, profile_dir);
-      command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
+      cr_command_line.AppendSwitchPath(switches::kProfileDirectory,
+                                       profile_dir);
+      cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
     }
     // Launch the executable directly since base::mac::OpenApplicationWithPath
     // doesn't pass command line arguments if the application is already
     // running.
-    if (!base::LaunchProcess(command_line, base::LaunchOptions()).IsValid()) {
+    if (!base::LaunchProcess(cr_command_line, base::LaunchOptions())
+             .IsValid()) {
       LOG(ERROR) << "Could not launch Chrome: "
-                 << command_line.GetCommandLineString();
+                 << cr_command_line.GetCommandLineString();
       return 1;
     }
 

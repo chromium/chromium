@@ -456,6 +456,9 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
     command_line.AppendSwitchASCII(
         app_mode::kLaunchedByChromeProcessId,
         base::NumberToString(base::GetCurrentProcId()));
+    command_line.AppendSwitchPath(app_mode::kLaunchedByChromeBundlePath,
+                                  base::mac::MainBundlePath());
+
     if (launched_after_rebuild)
       command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
 

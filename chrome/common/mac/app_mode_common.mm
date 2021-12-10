@@ -14,6 +14,7 @@ const char kAppShimBootstrapNameFragment[] = "apps";
 const char kRunningChromeVersionSymlinkName[] = "RunningChromeVersion";
 
 const char kLaunchedByChromeProcessId[] = "launched-by-chrome-process-id";
+const char kLaunchedByChromeBundlePath[] = "launched-by-chrome-bundle-path";
 const char kLaunchedForTest[] = "launched-for-test";
 const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
 
