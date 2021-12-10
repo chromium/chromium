@@ -317,9 +317,9 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
     return true;
   }
   bool SetAutocorrectRange(const gfx::Range& range) override {
-    // TODO(crbug.com/1148157): This is a workaround to ensure that the range is
-    // valid in the text. Change this class to a proper fake so that the text
-    // contents can be queried accurately.
+    // TODO(crbug.com/1277388): This is a workaround to ensure that the range is
+    // valid in the text. Change to use FakeTextInputClient instead of
+    // DummyTextInputClient so that the text contents can be queried accurately.
     if (!inserted_text_.empty() || inserted_char_ != 0) {
       DummyTextInputClient::SetAutocorrectRange(range);
       return true;

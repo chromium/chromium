@@ -15,7 +15,7 @@
 namespace ui {
 
 // Dummy implementation of TextInputClient. All functions do nothing.
-// TODO(crbug.com/1148157): Replace this class with FakeTextInputClient.
+// TODO(crbug.com/1277388): Replace this class with FakeTextInputClient.
 class DummyTextInputClient : public TextInputClient {
  public:
   DummyTextInputClient();
