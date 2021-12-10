@@ -246,7 +246,12 @@ TEST_F(HeapProfilerControllerTest, StableProbability) {
 
 // Test that the "nonstable-probability" param can disable metrics uploading on
 // the canary channel.
-TEST_F(HeapProfilerControllerTest, NonStableProbability) {
+#if defined(OS_MAC) || defined(OS_IOS)
+#define MAYBE_NonStableProbability DISABLED_NonStableProbability
+#else
+#define MAYBE_NonStableProbability NonStableProbability
+#endif
+TEST_F(HeapProfilerControllerTest, MAYBE_NonStableProbability) {
   HeapProfilerReportingConfig feature_config{
       .enabled = true, .stable_probability = 1.0, .nonstable_probability = 0.0};
 
