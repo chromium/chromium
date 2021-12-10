@@ -1508,7 +1508,6 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failur
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
 # @container
-crbug.com/829028 external/wpt/css/css-contain/container-queries/inline-multicol-inside-container-crash.html [ Crash ]
 crbug.com/1273913 external/wpt/css/css-contain/container-queries/pseudo-elements-002.tentative.html [ Failure ]
 
 # CSS Scrollbars
