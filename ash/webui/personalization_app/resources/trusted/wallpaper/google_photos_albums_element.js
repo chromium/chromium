@@ -99,9 +99,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     // When iron-list items change while their parent element is hidden, the
     // iron-list will render incorrectly. Force relayout by invalidating the
     // iron-list when this element becomes visible.
-    afterNextRender(this, () => {
-      this.shadowRoot.querySelector('iron-list').fire('iron-resize');
-    });
+    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
   }
 }
 

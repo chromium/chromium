@@ -4,6 +4,7 @@
 
 import './google_photos_albums_element.js';
 import './google_photos_collection_element.js';
+import './google_photos_photos_element.js';
 import './google_photos_zero_state_element.js';
 import './local_images_element.js';
 import './wallpaper_grid_item_element.js';

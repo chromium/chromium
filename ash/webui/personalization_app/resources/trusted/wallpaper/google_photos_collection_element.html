@@ -26,39 +26,11 @@
   }
 
   #albumsContent,
-  #photosContent {
+  #photosContent,
+  #zeroState {
     flex: 1 1 auto;
     height: 100%;
     overflow: hidden;
-    width: 100%;
-  }
-
-  #photosContent iron-list {
-    height: 100%;
-    width: 100%;
-  }
-
-  .row {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .row:focus-visible {
-    outline: 0;
-  }
-
-  .photo {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.12);
-    display: flex;
-    justify-content: center;
-  }
-
-  #zeroState {
-    height: 100%;
     width: 100%;
   }
 </style>
@@ -76,26 +48,13 @@
     </div>
   </template>
   <template is="dom-if" if="[[!isPhotosEmpty_(photos_)]]">
-    <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
-      <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
-        <template>
-          <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
-            on-focus="onPhotosGridRowFocused_"
-            on-keydown="onPhotosGridRowKeyDown_">
-            <template is="dom-repeat" items="[[row]]" as="photo">
-              <wallpaper-grid-item>
-                <div class="photo" colindex$="[[index]]" tabindex="-1">
-                  [[photo]]
-                </div>
-              </wallpaper-grid-item>
-            </template>
-          </div>
-        </template>
-      </iron-list>
-    </div>
+    <google-photos-photos id="photosContent"
+      hidden$="[[!isPhotosTabVisible_(hidden, tab_)]]">
+    </google-photos-photos>
   </template>
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
-    <google-photos-albums id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
+    <google-photos-albums id="albumsContent"
+      hidden$="[[!isAlbumsTabVisible_(hidden, tab_)]]">
     </google-photos-albums>
   </template>
   <template is="dom-if" if="[[isPhotosEmpty_(photos_)]]">

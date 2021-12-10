@@ -15,7 +15,7 @@
     justify-content: center;
   }
 </style>
-<iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
+<iron-list id="grid" items="[[albums_]]" as="album" grid>
   <template>
       <wallpaper-grid-item>
         <template is="dom-if" if="[[album]]">

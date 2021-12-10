@@ -47,6 +47,7 @@ polymer_js_files = [
   "trusted/personalization_breadcrumb_element.ts",
   "trusted/wallpaper/google_photos_albums_element.js",
   "trusted/wallpaper/google_photos_collection_element.js",
+  "trusted/wallpaper/google_photos_photos_element.js",
   "trusted/wallpaper/google_photos_zero_state_element.js",
   "trusted/wallpaper/local_images_element.ts",
   "trusted/wallpaper/styles.ts",
