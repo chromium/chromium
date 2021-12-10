@@ -2640,6 +2640,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                                               GLuint shm_offset,
                                               GLuint pixels_offset,
                                               const volatile GLbyte* mailbox) {
+  TRACE_EVENT0("gpu", "RasterDecoderImpl::DoWritePixelsINTERNAL");
   if (src_sk_color_type > kLastEnum_SkColorType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "WritePixels",
                        "src_sk_color_type must be a valid SkColorType");
@@ -2819,6 +2820,7 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     GLuint color_space_offset,
     GLuint pixels_offset,
     const volatile GLbyte* mailbox) {
+  TRACE_EVENT0("gpu", "RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL");
   if (dst_sk_color_type > kLastEnum_SkColorType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "ReadbackImagePixels",
                        "dst_sk_color_type must be a valid SkColorType");
@@ -2981,6 +2983,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     GLuint v_offset,
     GLuint v_stride,
     const volatile GLbyte* mailbox) {
+  TRACE_EVENT0("gpu", "RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL");
   if (dst_width % 2 != 0 || dst_height % 2 != 0) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
                        "|dst_width| and |dst_height| must be divisible by 2");

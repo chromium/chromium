@@ -1260,6 +1260,7 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
                                        GLuint row_bytes,
                                        const SkImageInfo& src_info,
                                        const void* src_pixels) {
+  TRACE_EVENT0("gpu", "RasterImplementation::WritePixels");
   DCHECK_GE(row_bytes, src_info.minRowBytes());
 
   // Get the size of the SkColorSpace while maintaining 8-byte alignment.
@@ -1540,6 +1541,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
 
 void RasterImplementation::OnAsyncARGBReadbackDone(
     AsyncARGBReadbackRequest* finished_request) {
+  TRACE_EVENT0("gpu", "RasterImplementation::OnAsyncARGBReadbackDone");
   finished_request->done = true;
 
   // Only process requests in the order they were sent, regardless of when they
@@ -1593,6 +1595,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     GLuint dst_row_bytes,
     unsigned char* out,
     base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackARGBPixelsAsync");
   DCHECK(!!readback_done);
   // Note: It's possible the GL implementation supports other readback
   // types. However, as of this writing, no caller of this method will
@@ -1616,6 +1619,7 @@ void RasterImplementation::ReadbackImagePixels(
     int src_x,
     int src_y,
     void* dst_pixels) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
   ReadbackImagePixelsINTERNAL(
       source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
       base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
@@ -1636,6 +1640,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackYUVPixelsAsync");
   DCHECK(!!release_mailbox);
   DCHECK(!!readback_done);
 
@@ -1724,6 +1729,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
 
 void RasterImplementation::OnAsyncYUVReadbackDone(
     AsyncYUVReadbackRequest* finished_request) {
+  TRACE_EVENT0("gpu", "RasterImplementation::OnAsyncYUVReadbackDone");
   finished_request->done = true;
 
   while (!yuv_request_queue_.empty()) {
