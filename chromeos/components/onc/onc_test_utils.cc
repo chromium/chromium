@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_test_utils.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 
 #include <utility>
 
@@ -13,28 +13,44 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chromeos/test/chromeos_test_utils.h"
 
 namespace chromeos {
 namespace onc {
 namespace test_utils {
-
 namespace {
 
-// The name of the component directory to get the test data from.
-const char kNetworkComponentDirectory[] = "network";
+bool GetTestDataPath(const std::string& filename, base::FilePath* result_path) {
+  base::ScopedAllowBlockingForTesting allow_io;
+
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &path)) {
+    LOG(FATAL) << "Failed to get the path to root for " << filename;
+    return false;
+  }
+  path = path.Append(FILE_PATH_LITERAL("chromeos"));
+  path = path.Append(FILE_PATH_LITERAL("components"));
+  path = path.Append(FILE_PATH_LITERAL("test"));
+  path = path.Append(FILE_PATH_LITERAL("data"));
+  path = path.Append(FILE_PATH_LITERAL("onc"));
+  path = path.Append(FILE_PATH_LITERAL(filename));
+  if (!base::PathExists(path)) {  // We don't want to create this.
+    LOG(FATAL) << "The file doesn't exist: " << path;
+    return false;
+  }
+
+  *result_path = path;
+  return true;
+}
 
 }  // namespace
 
 std::string ReadTestData(const std::string& filename) {
   base::ScopedAllowBlockingForTesting allow_io;
   base::FilePath path;
-  if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
-                                             filename, &path)) {
-    LOG(FATAL) << "Unable to get test data path for "
-               << kNetworkComponentDirectory << "/" << filename;
+  if (!GetTestDataPath(filename, &path)) {
     return "";
   }
   std::string result;
@@ -45,8 +61,7 @@ std::string ReadTestData(const std::string& filename) {
 std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
   base::FilePath path;
   std::unique_ptr<base::Value> result;
-  if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
-                                             filename, &path)) {
+  if (!GetTestDataPath(filename, &path)) {
     LOG(FATAL) << "Unable to get test file path for: " << filename;
     return result;
   }

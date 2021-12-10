@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_mapper.h"
+#include "chromeos/components/onc/onc_mapper.h"
 
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 
 namespace chromeos {
 namespace onc {

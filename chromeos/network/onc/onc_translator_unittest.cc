@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_test_utils.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

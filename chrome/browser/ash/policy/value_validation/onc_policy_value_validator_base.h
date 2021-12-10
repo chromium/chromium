@@ -7,9 +7,9 @@
 
 #include "components/policy/core/common/cloud/policy_value_validator.h"
 
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
+#include "chromeos/components/onc/onc_validator.h"
 #include "components/onc/onc_constants.h"
 
 namespace policy {

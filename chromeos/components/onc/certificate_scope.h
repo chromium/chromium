@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_CERTIFICATE_SCOPE_H_
-#define CHROMEOS_NETWORK_ONC_CERTIFICATE_SCOPE_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_CERTIFICATE_SCOPE_H_
+#define CHROMEOS_COMPONENTS_ONC_CERTIFICATE_SCOPE_H_
 
 #include <string>
 
@@ -18,7 +18,7 @@ namespace chromeos {
 namespace onc {
 
 // Describes the scope a policy-provided certificate should be applied in.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateScope {
+class COMPONENT_EXPORT(CHROMEOS_ONC) CertificateScope {
  public:
   CertificateScope(const CertificateScope& other);
   CertificateScope(CertificateScope&& other);
@@ -63,4 +63,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateScope {
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_CERTIFICATE_SCOPE_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_CERTIFICATE_SCOPE_H_

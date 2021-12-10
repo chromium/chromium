@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_MAPPER_H_
-#define CHROMEOS_NETWORK_ONC_ONC_MAPPER_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_ONC_MAPPER_H_
+#define CHROMEOS_COMPONENTS_ONC_ONC_MAPPER_H_
 
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@ namespace base {
 class DictionaryValue;
 class ListValue;
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 namespace onc {
@@ -34,7 +34,7 @@ struct OncValueSignature;
 //
 // The ONC validator and normalizer derive from this class and adapt the default
 // copy behavior.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
+class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
  public:
   Mapper();
 
@@ -113,4 +113,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_MAPPER_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_ONC_MAPPER_H_

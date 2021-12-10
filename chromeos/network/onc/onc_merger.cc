@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/network/policy_util.h"
 #include "components/onc/onc_constants.h"
 

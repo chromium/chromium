@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_VALIDATOR_H_
-#define CHROMEOS_NETWORK_ONC_ONC_VALIDATOR_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_
+#define CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_
 
 #include <memory>
 #include <set>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/network/onc/onc_mapper.h"
+#include "chromeos/components/onc/onc_mapper.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
@@ -78,7 +78,7 @@ struct OncValueSignature;
 //
 // If no error occurred, |result| is set to VALID and an exact DeepCopy is
 // returned.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
+class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
  public:
   enum Result { VALID, VALID_WITH_WARNINGS, INVALID };
 
@@ -300,4 +300,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_VALIDATOR_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_

@@ -18,7 +18,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/onc/certificate_scope.h"
+#include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

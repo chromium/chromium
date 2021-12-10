@@ -7,6 +7,7 @@ include_rules = [
   "+chromeos/test",
   "+chromeos/dbus",
   "+chromeos/components/feature_usage",
+  "+chromeos/components/onc",
   "+chromeos/login/login_state",
   "+chromeos/services/network_config/public",
   "+components/account_id",

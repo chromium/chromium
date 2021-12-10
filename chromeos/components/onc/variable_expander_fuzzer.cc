@@ -5,7 +5,7 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/logging.h"
-#include "chromeos/network/onc/variable_expander.h"
+#include "chromeos/components/onc/variable_expander.h"
 
 namespace chromeos {
 namespace variable_expander {

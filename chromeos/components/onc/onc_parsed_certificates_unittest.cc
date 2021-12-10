@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
 
 #include <memory>
 
@@ -84,7 +84,7 @@ TEST_F(OncParsedCertificatesTest, ClientCertWithNewLines) {
 }
 
 TEST_F(OncParsedCertificatesTest, ClientCertAndError) {
-  const char  onc_certificates_json[] = R"(
+  const char onc_certificates_json[] = R"(
       [
         { "GUID": "{good-client-cert}",
           "PKCS12": "YWJj",
@@ -109,7 +109,7 @@ TEST_F(OncParsedCertificatesTest, ClientCertAndError) {
 }
 
 TEST_F(OncParsedCertificatesTest, AuthorityCerts) {
-  const char  onc_certificates_json[] = R"(
+  const char onc_certificates_json[] = R"(
       [
         { "GUID": "{trusted-cert}",
           "TrustBits": [
@@ -247,7 +247,7 @@ TEST_F(OncParsedCertificatesTest, AuthorityCertsScope) {
 }
 
 TEST_F(OncParsedCertificatesTest, UnknownTrustBitsIgnored) {
-  const char onc_certificates_json[] =R"(
+  const char onc_certificates_json[] = R"(
       [
         { "GUID": "{trusted-cert}",
           "TrustBits": [
@@ -321,7 +321,7 @@ TEST_F(OncParsedCertificatesTest, ServerCertAndError) {
           "Type": "Server",
           "X509": "leading junk \n
       -----BEGIN CERTIFICATE-----  \n
-      !!!! 
+      !!!!
       MIICWDCCAcECAxAAATANBgkqhkiG9w0BAQQFADCBkzEVMBMGA1UEChMMR29vZ2xlLCBJbm\n
       MuMREwDwYDVQQLEwhDaHJvbWVPUzEiMCAGCSqGSIb3DQEJARYTZ3NwZW5jZXJAZ29vZ2xl\n
       LmNvbTEaMBgGA1UEBxMRTW91bnRhaW4gVmlldywgQ0ExCzAJBgNVBAgTAkNBMQswCQYDVQ\n
@@ -393,7 +393,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   OncParsedCertificates authority_and_client_certs(*onc_certificates);
   EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
             authority_and_client_certs.server_or_authority_certificates());
-  EXPECT_EQ(authority_and_client_certs.client_certificates(), 
+  EXPECT_EQ(authority_and_client_certs.client_certificates(),
             authority_and_client_certs.client_certificates());
 
   // Mangle the TrustBits part and assume that authorities will not be equal
@@ -446,33 +446,32 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the X509 payload an authority certificate.
   {
     base::Value authority_x509_mangled = onc_certificates->Clone();
-    authority_x509_mangled.GetList()[1].SetKey(
-        "X509", base::Value(R"(
+    authority_x509_mangled.GetList()[1].SetKey("X509", base::Value(R"(
                             -----BEGIN CERTIFICATE-----
                             MIICWDCCAcECAxAAATANBgkqhkiG9w0BAQQFADCBkzEVMBMGA1
                             UEChMMR29vZ2xlLCBJbm
                             MuMREwDwYDVQQLEwhDaHJvbWVPUzEiMCAGCSqGSIb3DQEJARYT
                             Z3NwZW5jZXJAZ29vZ2xl
                             LmNvbTEaMBgGA1UEBxMRTW91bnRhaW4gVmlldywgQ0ExCzAJBg
-                            NVBAgTAkNBMQswCQYDVQ                
+                            NVBAgTAkNBMQswCQYDVQ
                             QGEwJVUzENMAsGA1UEAxMEbG1hbzAeFw0xMTAzMTYyMzQ5Mzha
-                            Fw0xMjAzMTUyMzQ5Mzha                
+                            Fw0xMjAzMTUyMzQ5Mzha
                             MFMxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEVMBMGA1UECh
-                            MMR29vZ2xlLCBJbmMuMR                
+                            MMR29vZ2xlLCBJbmMuMR
                             EwDwYDVQQLEwhDaHJvbWVPUzENMAsGA1UEAxMEbG1hbzCBnzAN
-                            BgkqhkiG9w0BAQEFAAOB                
+                            BgkqhkiG9w0BAQEFAAOB
                             jQAwgYkCgYEA31WiJ9LvprrhKtDlW0RdLFAO7Qjkvs+
-                            sG6j2Vp2aBSrlhALG/0BVHUhWi4                
+                            sG6j2Vp2aBSrlhALG/0BVHUhWi4
                             F/HHJho+ncLHAg5AGO0sdAjYUdQG6tfPqjLsIALtoKEZZdFe/
-                            JhmqOEaxWsSdu2S2RdPgC                
+                            JhmqOEaxWsSdu2S2RdPgC
                             QOsP79EH58gXwu2gejCkJDmU22WL4YLuqOc17nxbDC8CAwEAAT
-                            ANBgkqhkiG9w0BAQQFAA                
+                            ANBgkqhkiG9w0BAQQFAA
                             OBgQCv4vMD+PMlfnftu4/6Yf/oMLE8yCOqZTQ/
-                            dWCxB9PiJnOefiBeSzSZE6Uv3G7qnblZ                
+                            dWCxB9PiJnOefiBeSzSZE6Uv3G7qnblZ
                             PVZaFeJMd+
                             ostt0viCyPucFsFgLMyyoV1dMVPVwJT5Iq1AHehWXnTBbxUK9w
-                            ioA5jOEKdr                
-                            oKjuSSsg/Q8Wx6cpJmttQz5olGPgstmACRWA==                
+                            ioA5jOEKdr
+                            oKjuSSsg/Q8Wx6cpJmttQz5olGPgstmACRWA==
                             -----END CERTIFICATE-----                    )"));
 
     OncParsedCertificates parsed_authority_x509_mangled(authority_x509_mangled);

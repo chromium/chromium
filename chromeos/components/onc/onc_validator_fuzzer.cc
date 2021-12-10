@@ -9,8 +9,8 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

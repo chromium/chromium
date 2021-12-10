@@ -8,17 +8,17 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
 
 namespace chromeos {
 namespace onc {
 
 Normalizer::Normalizer(bool remove_recommended_fields)
-    : remove_recommended_fields_(remove_recommended_fields) {
-}
+    : remove_recommended_fields_(remove_recommended_fields) {}
 
 Normalizer::~Normalizer() = default;
 
@@ -119,11 +119,9 @@ void Normalizer::NormalizeEthernet(base::DictionaryValue* ethernet) {
 void Normalizer::NormalizeEAP(base::DictionaryValue* eap) {
   std::string clientcert_type =
       GetString(*eap, ::onc::client_cert::kClientCertType);
-  RemoveEntryUnless(eap,
-                    ::onc::client_cert::kClientCertPattern,
+  RemoveEntryUnless(eap, ::onc::client_cert::kClientCertPattern,
                     clientcert_type == ::onc::client_cert::kPattern);
-  RemoveEntryUnless(eap,
-                    ::onc::client_cert::kClientCertRef,
+  RemoveEntryUnless(eap, ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
   RemoveEntryUnless(
       eap, ::onc::client_cert::kClientCertProvisioningProfileId,
@@ -151,11 +149,9 @@ void Normalizer::NormalizeIPsec(base::DictionaryValue* ipsec) {
 
   std::string clientcert_type =
       GetString(*ipsec, ::onc::client_cert::kClientCertType);
-  RemoveEntryUnless(ipsec,
-                    ::onc::client_cert::kClientCertPattern,
+  RemoveEntryUnless(ipsec, ::onc::client_cert::kClientCertPattern,
                     clientcert_type == ::onc::client_cert::kPattern);
-  RemoveEntryUnless(ipsec,
-                    ::onc::client_cert::kClientCertRef,
+  RemoveEntryUnless(ipsec, ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
   RemoveEntryUnless(
       ipsec, ::onc::client_cert::kClientCertProvisioningProfileId,
@@ -178,13 +174,11 @@ void Normalizer::NormalizeNetworkConfiguration(base::DictionaryValue* network) {
   }
 
   std::string type = GetString(*network, ::onc::network_config::kType);
-  RemoveEntryUnless(network,
-                    ::onc::network_config::kEthernet,
+  RemoveEntryUnless(network, ::onc::network_config::kEthernet,
                     type == ::onc::network_type::kEthernet);
-  RemoveEntryUnless(
-      network, ::onc::network_config::kVPN, type == ::onc::network_type::kVPN);
-  RemoveEntryUnless(network,
-                    ::onc::network_config::kWiFi,
+  RemoveEntryUnless(network, ::onc::network_config::kVPN,
+                    type == ::onc::network_type::kVPN);
+  RemoveEntryUnless(network, ::onc::network_config::kWiFi,
                     type == ::onc::network_type::kWiFi);
 
   NormalizeStaticIPConfigForNetwork(network);
@@ -193,11 +187,9 @@ void Normalizer::NormalizeNetworkConfiguration(base::DictionaryValue* network) {
 void Normalizer::NormalizeOpenVPN(base::DictionaryValue* openvpn) {
   std::string clientcert_type =
       GetString(*openvpn, ::onc::client_cert::kClientCertType);
-  RemoveEntryUnless(openvpn,
-                    ::onc::client_cert::kClientCertPattern,
+  RemoveEntryUnless(openvpn, ::onc::client_cert::kClientCertPattern,
                     clientcert_type == ::onc::client_cert::kPattern);
-  RemoveEntryUnless(openvpn,
-                    ::onc::client_cert::kClientCertRef,
+  RemoveEntryUnless(openvpn, ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
   RemoveEntryUnless(
       openvpn, ::onc::client_cert::kClientCertProvisioningProfileId,

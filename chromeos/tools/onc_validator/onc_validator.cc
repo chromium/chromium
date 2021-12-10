@@ -14,8 +14,8 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_validator.h"
 
 // TODO Check why this file do not fail on default trybots
 // http://crbug.com/543919

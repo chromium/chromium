@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/onc/certificate_scope.h"
+#include "chromeos/components/onc/certificate_scope.h"
 
 namespace net {
 class X509Certificate;

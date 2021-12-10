@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/network/onc/onc_mapper.h"
+#include "chromeos/components/onc/onc_mapper.h"
 
 namespace chromeos {
 namespace onc {

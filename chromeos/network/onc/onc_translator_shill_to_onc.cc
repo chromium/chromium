@@ -12,11 +12,12 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_util.h"
 #include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_translation_tables.h"
 #include "chromeos/network/onc/onc_translator.h"
 #include "chromeos/network/shill_property_util.h"
@@ -30,8 +31,8 @@ namespace onc {
 
 namespace {
 
-// Converts a VPN string to a base::Value of the given |type|. If the conversion
-// fails, returns a default value for |type|.
+// Converts a VPN string to a base::Value of the given |type|. If the
+// conversion fails, returns a default value for |type|.
 base::Value ConvertVpnStringToValue(const std::string& str,
                                     base::Value::Type type) {
   if (type == base::Value::Type::STRING)
@@ -52,9 +53,9 @@ std::string FindStringKeyOrEmpty(const base::Value* dict,
   return value ? *value : std::string();
 }
 
-// If the network is configured with an installed certificate, a PKCS11 id will
-// be set which is provided for the UI to display certificate information.
-// Returns true if the PKCS11 id is available and set.
+// If the network is configured with an installed certificate, a PKCS11 id
+// will be set which is provided for the UI to display certificate
+// information. Returns true if the PKCS11 id is available and set.
 bool SetPKCS11Id(const base::Value* shill_dictionary,
                  const char* cert_id_property,
                  const char* cert_slot_property,
@@ -83,8 +84,8 @@ bool SetPKCS11Id(const base::Value* shill_dictionary,
 
 // This class implements the translation of properties from the given
 // |shill_dictionary| to a new ONC object of signature |onc_signature|. Using
-// recursive calls to CreateTranslatedONCObject of new instances, nested objects
-// are translated.
+// recursive calls to CreateTranslatedONCObject of new instances, nested
+// objects are translated.
 class ShillToONCTranslator {
  public:
   ShillToONCTranslator(const base::Value& shill_dictionary,
@@ -112,8 +113,8 @@ class ShillToONCTranslator {
   ShillToONCTranslator(const ShillToONCTranslator&) = delete;
   ShillToONCTranslator& operator=(const ShillToONCTranslator&) = delete;
 
-  // Translates the associated Shill dictionary and creates an ONC object of the
-  // given signature.
+  // Translates the associated Shill dictionary and creates an ONC object of
+  // the given signature.
   std::unique_ptr<base::DictionaryValue> CreateTranslatedONCObject();
 
  private:
@@ -144,16 +145,16 @@ class ShillToONCTranslator {
   // |onc_field_name|.
   void TranslateAndAddNestedObject(const std::string& onc_field_name);
 
-  // Sets |onc_field_name| in dictionary |onc_dictionary_name| in |onc_object_|
-  // to |value| if the dictionary exists.
+  // Sets |onc_field_name| in dictionary |onc_dictionary_name| in
+  // |onc_object_| to |value| if the dictionary exists.
   void SetNestedOncValue(const std::string& onc_dictionary_name,
                          const std::string& onc_field_name,
                          const base::Value& value);
 
   // Translates a list of nested objects and adds the list to |onc_object_| at
   // |onc_field_name|. If there are errors while parsing individual objects or
-  // if the resulting list contains no entries, the result will not be added to
-  // |onc_object_|.
+  // if the resulting list contains no entries, the result will not be added
+  // to |onc_object_|.
   void TranslateAndAddListOfObjects(const std::string& onc_field_name,
                                     const base::Value& list);
 
@@ -254,8 +255,8 @@ void ShillToONCTranslator::TranslateOpenVPN() {
   if (shill_dictionary_->FindKey(shill::kOpenVPNVerifyX509NameProperty))
     TranslateAndAddNestedObject(::onc::openvpn::kVerifyX509);
 
-  // Shill supports only one RemoteCertKU but ONC requires a list. If existing,
-  // wraps the value into a list.
+  // Shill supports only one RemoteCertKU but ONC requires a list. If
+  // existing, wraps the value into a list.
   const std::string* certKU =
       shill_dictionary_->FindStringKey(shill::kOpenVPNRemoteCertKUProperty);
   if (certKU) {
@@ -360,7 +361,8 @@ void ShillToONCTranslator::TranslateVPN() {
   CopyPropertiesAccordingToSignature();
 
   // Parse Shill Provider dictionary. Note, this may not exist, e.g. if we are
-  // just translating network state in network_util::TranslateNetworkStateToONC.
+  // just translating network state in
+  // network_util::TranslateNetworkStateToONC.
   const base::Value* provider =
       shill_dictionary_->FindDictKey(shill::kProviderProperty);
   if (!provider) {
@@ -473,8 +475,8 @@ void ShillToONCTranslator::TranslateCellularWithState() {
     onc_object_->MergeDictionary(nested_object.get());
 
     // Both the Scanning property and the ProviderRequiresRoaming property are
-    // retrieved from the Device dictionary, but only if this is the active SIM,
-    // meaning that the service ICCID matches the device ICCID.
+    // retrieved from the Device dictionary, but only if this is the active
+    // SIM, meaning that the service ICCID matches the device ICCID.
     const std::string* service_iccid =
         onc_object_->FindStringKey(::onc::cellular::kICCID);
     if (service_iccid) {
@@ -828,7 +830,8 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
       continue;
     result.Append(std::move(*nested_object));
   }
-  // If there are no entries in the list, there is no need to expose this field.
+  // If there are no entries in the list, there is no need to expose this
+  // field.
   if (result.GetList().empty())
     return;
   onc_object_->SetKey(onc_field_name, std::move(result));

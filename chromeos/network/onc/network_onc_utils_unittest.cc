@@ -13,10 +13,10 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_test_utils.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_test_utils.h"
-#include "chromeos/network/onc/variable_expander.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

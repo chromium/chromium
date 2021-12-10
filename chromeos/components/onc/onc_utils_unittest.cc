@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/components/onc/onc_utils.h"
 
 #include <string>
 
@@ -15,9 +15,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_test_utils.h"
-#include "chromeos/network/onc/variable_expander.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_test_utils.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

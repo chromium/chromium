@@ -13,8 +13,8 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/network/onc/onc_certificate_importer.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {

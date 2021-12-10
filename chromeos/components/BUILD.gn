@@ -27,6 +27,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/components/mojo_bootstrap:unit_tests",
     "//chromeos/components/multidevice:unit_tests",
+    "//chromeos/components/onc:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/sensors:unit_tests",
     "//chromeos/components/string_matching:unit_tests",

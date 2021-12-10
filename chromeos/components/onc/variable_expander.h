@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_VARIABLE_EXPANDER_H_
-#define CHROMEOS_NETWORK_ONC_VARIABLE_EXPANDER_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_VARIABLE_EXPANDER_H_
+#define CHROMEOS_COMPONENTS_ONC_VARIABLE_EXPANDER_H_
 
 #include <map>
 #include <string>
@@ -28,7 +28,7 @@ namespace chromeos {
 //   VariableExpander expander({{"machine_name", "chromebook"}});
 //   expander.ExpandString(&str);
 //   // str is now "I run chrome on my chromebook"
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) VariableExpander {
+class COMPONENT_EXPORT(CHROMEOS_ONC) VariableExpander {
  public:
   VariableExpander();
 
@@ -64,4 +64,4 @@ namespace ash {
 using ::chromeos::VariableExpander;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_ONC_VARIABLE_EXPANDER_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_VARIABLE_EXPANDER_H_

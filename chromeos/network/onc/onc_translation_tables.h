@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 
 namespace chromeos {
 namespace onc {

@@ -17,9 +17,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -33,8 +34,8 @@ std::string ValidateUTF8(const std::string& str) {
   std::string result;
   for (int32_t index = 0; index < static_cast<int32_t>(str.size()); ++index) {
     uint32_t code_point_out;
-    bool is_unicode_char = base::ReadUnicodeCharacter(
-        str.c_str(), str.size(), &index, &code_point_out);
+    bool is_unicode_char = base::ReadUnicodeCharacter(str.c_str(), str.size(),
+                                                      &index, &code_point_out);
     const uint32_t kFirstNonControlChar = 0x20;
     if (is_unicode_char && (code_point_out >= kFirstNonControlChar)) {
       base::WriteUnicodeCharacter(code_point_out, &result);
@@ -297,16 +298,15 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
   success &= !type.empty();
   dest->SetKey(shill::kTypeProperty, base::Value(type));
   if (type == shill::kTypeWifi) {
-    success &=
-        CopyStringFromDictionary(
-            service_properties, shill::kSecurityClassProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kSecurityClassProperty, dest);
     success &=
         CopyStringFromDictionary(service_properties, shill::kWifiHexSsid, dest);
-    success &= CopyStringFromDictionary(
-        service_properties, shill::kModeProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kModeProperty, dest);
   } else if (type == shill::kTypeVPN) {
-    success &= CopyStringFromDictionary(
-        service_properties, shill::kNameProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kNameProperty, dest);
 
     // VPN Provider values are read from the "Provider" dictionary, but written
     // with the keys "Provider.Type" and "Provider.Host".
@@ -363,8 +363,7 @@ bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
                                   const base::Value& old_properties) {
   base::Value new_identifying(base::Value::Type::DICTIONARY);
   if (!CopyIdentifyingProperties(
-          new_properties,
-          false /* properties were not read from Shill */,
+          new_properties, false /* properties were not read from Shill */,
           &new_identifying)) {
     return false;
   }

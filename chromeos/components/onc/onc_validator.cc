@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_validator.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 #include "components/crx_file/id_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"

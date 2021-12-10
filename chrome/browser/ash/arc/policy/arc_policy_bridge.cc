@@ -30,7 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/onc/network_onc_utils.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"

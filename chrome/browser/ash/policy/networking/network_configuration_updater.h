@@ -12,8 +12,8 @@
 
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "chromeos/network/onc/certificate_scope.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/certificate_scope.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_service.h"

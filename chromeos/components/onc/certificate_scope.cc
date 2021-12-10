@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/certificate_scope.h"
+#include "chromeos/components/onc/certificate_scope.h"
 
 #include <tuple>
 

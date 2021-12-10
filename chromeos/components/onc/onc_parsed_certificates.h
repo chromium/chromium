@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_PARSED_CERTIFICATES_H_
-#define CHROMEOS_NETWORK_ONC_ONC_PARSED_CERTIFICATES_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_ONC_PARSED_CERTIFICATES_H_
+#define CHROMEOS_COMPONENTS_ONC_ONC_PARSED_CERTIFICATES_H_
 
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/onc/certificate_scope.h"
+#include "chromeos/components/onc/certificate_scope.h"
 
 namespace base {
 class Value;
@@ -24,7 +24,7 @@ namespace chromeos {
 namespace onc {
 
 // Represents certificates parsed from the ONC Certificates section.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
+class COMPONENT_EXPORT(CHROMEOS_ONC) OncParsedCertificates {
  public:
   // A Server or Authority certificate parsed from ONC. The payload is
   // represented as a net::X509Certificate.
@@ -140,4 +140,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_PARSED_CERTIFICATES_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_ONC_PARSED_CERTIFICATES_H_

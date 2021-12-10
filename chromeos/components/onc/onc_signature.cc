@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 
 #include "components/onc/onc_constants.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 using base::Value;
 

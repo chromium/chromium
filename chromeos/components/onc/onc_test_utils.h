@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_TEST_UTILS_H_
-#define CHROMEOS_NETWORK_ONC_ONC_TEST_UTILS_H_
+#ifndef CHROMEOS_COMPONENTS_ONC_ONC_TEST_UTILS_H_
+#define CHROMEOS_COMPONENTS_ONC_ONC_TEST_UTILS_H_
 
 #include <memory>
 #include <string>
@@ -19,12 +19,12 @@ namespace chromeos {
 namespace onc {
 namespace test_utils {
 
+// Read the file at |filename| as a string. CHECKs if any error occurs.
+std::string ReadTestData(const std::string& filename);
+
 // Read a JSON from |filename| and return it as a base::Value.
 // CHECKs if any error occurs.
 std::unique_ptr<base::Value> ReadTestJson(const std::string& filename);
-
-// Read the file at |filename| as a string. CHECKs if any error occurs.
-std::string ReadTestData(const std::string& filename);
 
 // Read a JSON dictionary from |filename| and return it as a base::Value.
 // CHECKs if any error occurs.
@@ -44,4 +44,4 @@ std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_TEST_UTILS_H_
+#endif  // CHROMEOS_COMPONENTS_ONC_ONC_TEST_UTILS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_validator.h"
 
 #include <memory>
 #include <string>
@@ -11,9 +11,9 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_test_utils.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_test_utils.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

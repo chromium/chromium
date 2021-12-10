@@ -12,9 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
 
