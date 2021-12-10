@@ -35,8 +35,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioVolumePercent[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioDevicesState[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEduCoexistenceId[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kEduCoexistenceSecondaryAccountsInvalidationVersion[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEduCoexistenceToSVersion[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEduCoexistenceToSAcceptedVersion[];

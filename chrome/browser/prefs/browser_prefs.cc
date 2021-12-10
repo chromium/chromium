@@ -191,6 +191,7 @@
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -296,7 +297,6 @@
 #include "chrome/browser/ash/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
-#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -683,6 +683,12 @@ const char kStabilityIncompleteSessionEndCount[] =
 const char kStabilitySessionEndCompleted[] =
     "user_experience_metrics.stability.session_end_completed";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 12/2021.
+const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
+    "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -880,6 +886,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kAvailabilityProberOriginCheck);
   registry->RegisterDictionaryPref(kAvailabilityProberTLSCanaryCheck);
   registry->RegisterDictionaryPref(kAvailabilityProberDNSCanaryCheck);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterStringPref(
+      kEduCoexistenceSecondaryAccountsInvalidationVersion, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1351,9 +1362,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::quick_unlock::RegisterProfilePrefs(registry);
   ash::RegisterSamlProfilePrefs(registry);
   ash::ScreenTimeController::RegisterProfilePrefs(registry);
-  ash::SecondaryAccountConsentLogger::RegisterPrefs(registry);
   ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
       registry);
+  chromeos::EduCoexistenceLoginHandler::RegisterProfilePrefs(registry);
   ash::SigninErrorNotifier::RegisterPrefs(registry);
   ash::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   chromeos::settings::OSSettingsUI::RegisterProfilePrefs(registry);
@@ -1740,6 +1751,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kAvailabilityProberOriginCheck);
   profile_prefs->ClearPref(kAvailabilityProberTLSCanaryCheck);
   profile_prefs->ClearPref(kAvailabilityProberDNSCanaryCheck);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 12/2021.
+  profile_prefs->ClearPref(kEduCoexistenceSecondaryAccountsInvalidationVersion);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

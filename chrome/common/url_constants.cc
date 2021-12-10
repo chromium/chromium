@@ -378,9 +378,6 @@ const char kAutoUpdatePolicyURL[] =
 const char kGoogleNameserversLearnMoreURL[] =
     "https://developers.google.com/speed/public-dns";
 
-const char kGsuiteTermsEducationPrivacyURL[] =
-    "https://gsuite.google.com/terms/education_privacy.html";
-
 const char kInstantTetheringLearnMoreURL[] =
     "https://support.google.com/chromebook?p=instant_tethering";
 

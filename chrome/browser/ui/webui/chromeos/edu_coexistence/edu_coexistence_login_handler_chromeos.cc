@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
@@ -128,6 +129,12 @@ std::string GetDeviceIdForActiveUserProfile() {
 }
 
 }  // namespace
+
+void EduCoexistenceLoginHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
+                               std::string() /* default_value */);
+}
 
 EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
     const base::RepeatingClosure& close_dialog_closure)

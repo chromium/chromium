@@ -333,9 +333,6 @@ extern const char kAutoUpdatePolicyURL[];
 // The URL for providing more information about Google nameservers.
 extern const char kGoogleNameserversLearnMoreURL[];
 
-// The URL for G Suite for Education Privacy Notice.
-extern const char kGsuiteTermsEducationPrivacyURL[];
-
 // The URL for the "learn more" link for Instant Tethering.
 extern const char kInstantTetheringLearnMoreURL[];
 

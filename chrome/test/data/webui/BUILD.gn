@@ -148,7 +148,6 @@ if (include_js_tests) {
         "../chromeos/oobe_webui_browsertest.js",
         "chromeos/account_manager/account_manager_browsertest.js",
         "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
-        "chromeos/edu_login/edu_login_browsertest.js",
         "chromeos/emoji_picker/emoji_picker_browsertest.js",
         "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
         "chromeos/internet_detail_dialog_browsertest.js",

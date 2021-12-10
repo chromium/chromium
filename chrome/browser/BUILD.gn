@@ -7362,7 +7362,6 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/crostini_upgrader:web_components",
       "//chrome/browser/resources/chromeos/edu_coexistence:edu_coexistence_controller",
       "//chrome/browser/resources/chromeos/edu_coexistence:web_components",
-      "//chrome/browser/resources/chromeos/edu_login:web_components",
       "//chrome/browser/resources/chromeos/emulator:web_components",
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/parent_access:web_components",

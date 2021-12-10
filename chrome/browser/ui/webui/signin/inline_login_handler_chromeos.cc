@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,88 +82,6 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
   // Child user is adding/reauthenticating a secondary account.
   return kCrosAddAccountEduFlow;
 }
-
-// A version of SigninHelper for child users. After obtaining OAuth token it
-// logs the parental consent with provided parent id and rapt. After successful
-// consent logging populates Chrome OS AccountManager with the token.
-class ChildSigninHelper : public SigninHelper {
- public:
-  ChildSigninHelper(
-      account_manager::AccountManager* account_manager,
-      crosapi::AccountManagerMojoService* account_manager_mojo_service,
-      const base::RepeatingClosure& close_dialog_closure,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& gaia_id,
-      const std::string& email,
-      const std::string& auth_code,
-      const std::string& signin_scoped_device_id,
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      const std::string& parent_obfuscated_gaia_id,
-      const std::string& re_auth_proof_token)
-      : SigninHelper(account_manager,
-                     account_manager_mojo_service,
-                     close_dialog_closure,
-                     url_loader_factory,
-                     gaia_id,
-                     email,
-                     auth_code,
-                     signin_scoped_device_id),
-        identity_manager_(identity_manager),
-        pref_service_(pref_service),
-        parent_obfuscated_gaia_id_(parent_obfuscated_gaia_id),
-        re_auth_proof_token_(re_auth_proof_token) {}
-  ChildSigninHelper(const ChildSigninHelper&) = delete;
-  ChildSigninHelper& operator=(const ChildSigninHelper&) = delete;
-  ~ChildSigninHelper() override = default;
-
- protected:
-  // GaiaAuthConsumer overrides.
-  void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
-    // Log parental consent for secondary account addition. In case of success,
-    // refresh token from |result| will be added to Account Manager in
-    // |OnConsentLogged|.
-    DCHECK(!secondary_account_consent_logger_);
-    secondary_account_consent_logger_ =
-        std::make_unique<SecondaryAccountConsentLogger>(
-            identity_manager_, GetUrlLoaderFactory(), pref_service_, GetEmail(),
-            parent_obfuscated_gaia_id_, re_auth_proof_token_,
-            base::BindOnce(&ChildSigninHelper::OnConsentLogged,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           result.refresh_token));
-    secondary_account_consent_logger_->StartLogging();
-  }
-
-  void OnConsentLogged(const std::string& refresh_token,
-                       SecondaryAccountConsentLogger::Result result) {
-    secondary_account_consent_logger_.reset();
-    if (result == SecondaryAccountConsentLogger::Result::kSuccess) {
-      // The EDU account has been added/re-authenticated. Mark migration to
-      // ARC++ as completed.
-      pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
-                                true);
-
-      UpsertAccount(refresh_token);
-    } else {
-      LOG(ERROR) << "Could not log parent consent, the result was: "
-                 << static_cast<int>(result);
-      // TODO(anastasiian): send error to UI?
-    }
-
-    CloseDialogAndExit();
-  }
-
- private:
-  // Unowned pointer to identity manager.
-  signin::IdentityManager* const identity_manager_;
-  // Unowned pointer to pref service.
-  PrefService* const pref_service_;
-  const std::string parent_obfuscated_gaia_id_;
-  const std::string re_auth_proof_token_;
-  std::unique_ptr<SecondaryAccountConsentLogger>
-      secondary_account_consent_logger_;
-  base::WeakPtrFactory<ChildSigninHelper> weak_ptr_factory_{this};
-};
 
 class EduCoexistenceChildSigninHelper : public SigninHelper {
  public:

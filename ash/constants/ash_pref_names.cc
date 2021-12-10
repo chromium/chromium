@@ -75,13 +75,6 @@ const char kAudioDevicesState[] = "settings.audio.device_state";
 // consent in EDU account addition flow.
 const char kEduCoexistenceId[] = "account_manager.edu_coexistence_id";
 
-// A string pref storing a parental consent text version that requires
-// invalidation of the secondary accounts added with the previous consent
-// versions.
-// This is used for the V1 version of EduCoexistence and will be removed.
-const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
-    "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
-
 // A string pref containing valid version of Edu Coexistence Terms of Service.
 // Controlled by EduCoexistenceToSVersion policy.
 const char kEduCoexistenceToSVersion[] =

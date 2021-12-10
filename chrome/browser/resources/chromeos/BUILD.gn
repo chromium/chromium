@@ -40,7 +40,6 @@ group("closure_compile") {
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
     "edu_coexistence:closure_compile",
-    "edu_login:closure_compile",
     "emoji_picker:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",

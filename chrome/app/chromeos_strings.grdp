@@ -5622,29 +5622,6 @@
       Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Another process is already trying to install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph> or hasn't finished cancelling. Please try again later.
   </message>
   <!--
-    ==================================================================================
-    If you change any IDS_EDU_LOGIN_INFO_* string, update kConsentScreenTextVersion in
-    chrome/browser/ash/child_accounts/secondary_account_consent_logger.cc
-    to the value of "v<GERRIT_CL_NUMBER>"
-  -->
-  <message name="IDS_EDU_LOGIN_INFO_COEXISTENCE_TITLE" desc="Title for the screen explaining co-existence to a parent.">
-    School account information for parents
-  </message>
-  <message name="IDS_EDU_LOGIN_INFO_COEXISTENCE_BODY" desc="Text on the screen explaining co-existence to a parent.">
-    Adding a school account to a profile enables easy sign-in to websites, extensions, and apps as a student while operating under parental controls. It does not give a child access to bookmarks, passwords, or other browser data synced with the school account.&lt;br&gt;&lt;br&gt;
-    If your child uses a Chromebook in school and you wish to mirror the school experience at home to ensure your child has access to all necessary schoolwork, please sign out of this Family Link account and sign in to the school account from the Chrome OS accounts page (note: Family Link parental controls will not apply).&lt;br&gt;&lt;br&gt;
-    If your child does not use a Chromebook in school or if you prefer to manage your child’s experience at home using Family Link, please click the Next button below to add a school account to this profile.
-  </message>
-  <message name="IDS_EDU_LOGIN_INFO_TITLE" desc="Title for the parent information screen in EDU account addition flow.">
-    G Suite for Education accounts
-  </message>
-  <message name="IDS_EDU_LOGIN_INFO_BODY" desc="Text informing parent that only EDU account may be added to the device.">
-    The <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://gsuite.google.com/terms/education_privacy.html</ex>"&gt;</ph>G Suite for Education Privacy Notice<ph name="LINK_END">&lt;/a&gt;</ph> is meant to help G Suite for Education users and parents understand what data the product collects, why it is collected, and what is done with it.
-  </message>
-  <message name="IDS_EDU_LOGIN_INFO_PARENT_SETTINGS" desc="Text informing parent about Google services that users can access, browsing data storage and Family Link parent settings.">
-    G Suite for Education administrators determine which Google services their users can access while signed into a G Suite for Education account. This may include some features or services that your child was previously unable to access using this supervised  account. School administrators are required to provide or obtain consent for the use of the services by their minor users.
-  </message>
-  <!--
     IDS_EDU_LOGIN_INFO_* strings END
     ==================================================================================
   -->

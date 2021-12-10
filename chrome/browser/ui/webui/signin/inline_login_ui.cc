@@ -83,19 +83,6 @@ void AddEduStrings(content::WebUIDataSource* source,
   source->AddString("parentSigninAccountRecoveryUrl",
                     chrome::kAccountRecoveryURL);
 
-  source->AddLocalizedString("parentInfoTitle", IDS_EDU_LOGIN_INFO_TITLE);
-  source->AddLocalizedString("parentInfoParentSettingsText",
-                             IDS_EDU_LOGIN_INFO_PARENT_SETTINGS);
-  source->AddString(
-      "parentInfoBody",
-      l10n_util::GetStringFUTF16(
-          IDS_EDU_LOGIN_INFO_BODY,
-          base::ASCIIToUTF16(chrome::kGsuiteTermsEducationPrivacyURL)));
-  source->AddLocalizedString("coexistenceTitle",
-                             IDS_EDU_LOGIN_INFO_COEXISTENCE_TITLE);
-  source->AddLocalizedString("coexistenceBody",
-                             IDS_EDU_LOGIN_INFO_COEXISTENCE_BODY);
-
   // Strings for server based EDU Coexistence flow.
   source->AddLocalizedString("eduCoexistenceNetworkDownHeading",
                              IDS_EDU_COEXISTENCE_NETWORK_DOWN_HEADING);
@@ -135,21 +122,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
-    {"edu", IDR_EDU_LOGIN_EDU_LOGIN_HTML},
-    {"app.js", IDR_EDU_LOGIN_EDU_LOGIN_JS},
-    {"edu_login_button.js", IDR_EDU_LOGIN_EDU_LOGIN_BUTTON_JS},
-    {"edu_login_template.js", IDR_EDU_LOGIN_EDU_LOGIN_TEMPLATE_JS},
-    {"edu_login_css.js", IDR_EDU_LOGIN_EDU_LOGIN_CSS_JS},
-    {"icons.js", IDR_EDU_LOGIN_ICONS_JS},
-    {"browser_proxy.js", IDR_EDU_LOGIN_BROWSER_PROXY_JS},
-    {"edu_login_util.js", IDR_EDU_LOGIN_EDU_LOGIN_UTIL_JS},
-    {"edu_login_coexistence_info.js",
-     IDR_EDU_LOGIN_EDU_LOGIN_COEXISTENCE_INFO_JS},
-    {"edu_login_parents.js", IDR_EDU_LOGIN_EDU_LOGIN_PARENTS_JS},
-    {"edu_login_parent_signin.js", IDR_EDU_LOGIN_EDU_LOGIN_PARENT_SIGNIN_JS},
-    {"edu_login_parent_info.js", IDR_EDU_LOGIN_EDU_LOGIN_PARENT_INFO_JS},
-    {"edu_login_signin.js", IDR_EDU_LOGIN_EDU_LOGIN_SIGNIN_JS},
-    {"edu_login_error.js", IDR_EDU_LOGIN_EDU_LOGIN_ERROR_JS},
     // Resources for the server-based edu coexistence flow.
     {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
     {"edu_coexistence_app.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_APP_JS},
