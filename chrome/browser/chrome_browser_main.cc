@@ -236,7 +236,6 @@
 #if defined(OS_MAC)
 #include <Security/Security.h>
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1729,13 +1728,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     // Record now as the last successful chrome start.
     if (ShouldRecordActiveUse(parsed_command_line()))
       GoogleUpdateSettings::SetLastRunTime();
-
-#if defined(OS_MAC)
-    // Call Recycle() here as late as possible, before going into the loop
-    // because Start() will add things to it while creating the main window.
-    if (parameters_.autorelease_pool)
-      parameters_.autorelease_pool->Recycle();
-#endif  // defined(OS_MAC)
 
     // Create the RunLoop for MainMessageLoopRun() to use and transfer
     // ownership of the browser's lifetime to the BrowserProcess.
