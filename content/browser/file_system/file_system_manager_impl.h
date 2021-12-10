@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
@@ -135,6 +136,74 @@ class CONTENT_EXPORT FileSystemManagerImpl
   struct WriteSyncCallbackEntry;
   struct ReadDirectorySyncCallbackEntry;
 
+  void ContinueOpen(const url::Origin& origin,
+                    blink::mojom::FileSystemType file_system_type,
+                    mojo::ReportBadMessageCallback bad_message_callback,
+                    OpenCallback callback,
+                    const blink::StorageKey& storage_key,
+                    bool security_check_success);
+  void ContinueResolveURL(const storage::FileSystemURL& url,
+                          ResolveURLCallback callback,
+                          bool security_check_success);
+  void ContinueMove(const storage::FileSystemURL& src_url,
+                    const storage::FileSystemURL& dest_url,
+                    MoveCallback callback,
+                    bool security_check_success);
+  void ContinueCopy(const storage::FileSystemURL& src_url,
+                    const storage::FileSystemURL& dest_url,
+                    CopyCallback callback,
+                    bool security_check_success);
+  void ContinueRemove(const storage::FileSystemURL& url,
+                      bool recursive,
+                      RemoveCallback callback,
+                      bool security_check_success);
+  void ContinueReadMetadata(const storage::FileSystemURL& url,
+                            ReadMetadataCallback callback,
+                            bool security_check_success);
+  void ContinueCreate(const storage::FileSystemURL& url,
+                      bool exclusive,
+                      bool is_directory,
+                      bool recursive,
+                      CreateCallback callback,
+                      bool security_check_success);
+  void ContinueExists(const storage::FileSystemURL& url,
+                      bool is_directory,
+                      ExistsCallback callback,
+                      bool security_check_success);
+  void ContinueReadDirectory(
+      const storage::FileSystemURL& url,
+      mojo::Remote<blink::mojom::FileSystemOperationListener> listener,
+      bool security_check_success);
+  void ContinueReadDirectorySync(const storage::FileSystemURL& url,
+                                 ReadDirectorySyncCallback callback,
+                                 bool security_check_success);
+  void ContinueWrite(
+      const storage::FileSystemURL& url,
+      const std::string& blob_uuid,
+      int64_t position,
+      mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
+          op_receiver,
+      mojo::Remote<blink::mojom::FileSystemOperationListener> listener,
+      bool security_check_success);
+  void ContinueWriteSync(const storage::FileSystemURL& url,
+                         const std::string& blob_uuid,
+                         int64_t position,
+                         WriteSyncCallback callback,
+                         bool security_check_success);
+  void ContinueTruncate(
+      const storage::FileSystemURL& url,
+      int64_t length,
+      mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
+          op_receiver,
+      TruncateCallback callback,
+      bool security_check_success);
+  void ContinueTruncateSync(const storage::FileSystemURL& url,
+                            int64_t length,
+                            TruncateSyncCallback callback,
+                            bool security_check_success);
+  void ContinueCreateSnapshotFile(const storage::FileSystemURL& url,
+                                  CreateSnapshotFileCallback callback,
+                                  bool security_check_success);
   void Cancel(
       OperationID op_id,
       blink::mojom::FileSystemCancellableOperation::CancelCallback callback);
@@ -183,10 +252,15 @@ class CONTENT_EXPORT FileSystemManagerImpl
       const base::File::Info& info,
       const base::FilePath& platform_path,
       scoped_refptr<storage::ShareableFileReference> file_ref);
+  void ContinueDidCreateSnapshot(CreateSnapshotFileCallback callback,
+                                 const storage::FileSystemURL& url,
+                                 base::File::Error result,
+                                 const base::File::Info& info,
+                                 const base::FilePath& platform_path,
+                                 bool security_check_success);
   void DidGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
                           GetPlatformPathCallback callback,
                           base::FilePath platform_path);
-
   static void GetPlatformPathOnFileThread(
       const GURL& path,
       int process_id,

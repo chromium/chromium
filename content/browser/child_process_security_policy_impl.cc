@@ -1203,8 +1203,8 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
   // With site isolation, a URL from a site may only be committed in a process
   // dedicated to that site.  This check will ensure that |url| can't commit if
   // the process is locked to a different site.
-  if (!CanAccessDataForOrigin(child_id, url,
-                              false /* url_is_precursor_of_opaque_origin */))
+  if (!CanAccessDataForMaybeOpaqueOrigin(
+          child_id, url, false /* url_is_precursor_of_opaque_origin */))
     return false;
 
   {
@@ -1426,6 +1426,25 @@ bool ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile(
                                          DELETE_FILE_GRANT);
 }
 
+bool ChildProcessSecurityPolicyImpl::CanMoveFileSystemFile(
+    int child_id,
+    const storage::FileSystemURL& src_url,
+    const storage::FileSystemURL& dest_url) {
+  return HasPermissionsForFileSystemFile(child_id, dest_url,
+                                         CREATE_NEW_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, src_url, READ_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, src_url, DELETE_FILE_GRANT);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile(
+    int child_id,
+    const storage::FileSystemURL& src_url,
+    const storage::FileSystemURL& dest_url) {
+  return HasPermissionsForFileSystemFile(child_id, src_url, READ_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, dest_url,
+                                         COPY_INTO_FILE_GRANT);
+}
+
 bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
   base::AutoLock lock(lock_);
 
@@ -1516,6 +1535,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
     int child_id,
     const url::Origin& origin) {
   GURL url_to_check;
+  DCHECK(IsRunningOnExpectedThread());
   if (origin.opaque()) {
     auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
     if (!precursor_tuple.IsValid()) {
@@ -1533,8 +1553,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   } else {
     url_to_check = origin.GetURL();
   }
-  bool success =
-      CanAccessDataForOrigin(child_id, url_to_check, origin.opaque());
+  bool success = CanAccessDataForMaybeOpaqueOrigin(child_id, url_to_check,
+                                                   origin.opaque());
   if (success)
     return true;
 
@@ -1547,7 +1567,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   return false;
 }
 
-bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
+bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin) {
