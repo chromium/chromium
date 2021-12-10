@@ -159,8 +159,9 @@ class CONTENT_EXPORT ServiceWorkerContextClient
                             const blink::WebString& source_url) override;
   void SetupNavigationPreload(int fetch_event_id,
                               const blink::WebURL& url,
-                              std::unique_ptr<blink::WebFetchEventPreloadHandle>
-                                  preload_handle) override;
+                              blink::CrossVariantMojoReceiver<
+                                  network::mojom::URLLoaderClientInterfaceBase>
+                                  preload_url_loader_client_receiver) override;
   void RequestTermination(RequestTerminationCallback callback) override;
   scoped_refptr<blink::WebServiceWorkerFetchContext>
   CreateWorkerFetchContextOnInitiatorThread() override;

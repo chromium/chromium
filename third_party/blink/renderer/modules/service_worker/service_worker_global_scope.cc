@@ -1514,11 +1514,12 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
       params->request->url.ElidedString().Utf8());
 
   // Set up for navigation preload (FetchEvent#preloadResponse) if needed.
-  const bool navigation_preload_sent = !!params->preload_handle;
+  bool navigation_preload_sent = !!params->preload_url_loader_client_receiver;
   if (navigation_preload_sent) {
     To<ServiceWorkerGlobalScopeProxy>(ReportingProxy())
-        .SetupNavigationPreload(event_id, params->request->url,
-                                std::move(params->preload_handle));
+        .SetupNavigationPreload(
+            event_id, params->request->url,
+            std::move(params->preload_url_loader_client_receiver));
   }
 
   ScriptState::Scope scope(ScriptController()->GetScriptState());

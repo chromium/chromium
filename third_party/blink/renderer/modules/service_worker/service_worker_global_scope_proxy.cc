@@ -257,14 +257,11 @@ bool ServiceWorkerGlobalScopeProxy::IsServiceWorkerGlobalScopeProxy() const {
 void ServiceWorkerGlobalScopeProxy::SetupNavigationPreload(
     int fetch_event_id,
     const KURL& url,
-    mojom::blink::FetchEventPreloadHandlePtr preload_handle) {
+    mojo::PendingReceiver<network::mojom::blink::URLLoaderClient>
+        preload_url_loader_client_receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  auto web_preload_handle = std::make_unique<WebFetchEventPreloadHandle>();
-  web_preload_handle->url_loader = std::move(preload_handle->url_loader);
-  web_preload_handle->url_loader_client_receiver =
-      std::move(preload_handle->url_loader_client_receiver);
-  Client().SetupNavigationPreload(fetch_event_id, url,
-                                  std::move(web_preload_handle));
+  Client().SetupNavigationPreload(
+      fetch_event_id, url, std::move(preload_url_loader_client_receiver));
 }
 
 void ServiceWorkerGlobalScopeProxy::RequestTermination(

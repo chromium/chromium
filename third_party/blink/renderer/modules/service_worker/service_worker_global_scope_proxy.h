@@ -129,7 +129,8 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void SetupNavigationPreload(
       int fetch_event_id,
       const KURL& url,
-      mojom::blink::FetchEventPreloadHandlePtr preload_handle);
+      mojo::PendingReceiver<network::mojom::blink::URLLoaderClient>
+          preload_url_loader_client_receiver);
   void RequestTermination(WTF::CrossThreadOnceFunction<void(bool)> callback);
 
   // Detaches this proxy object entirely from the outside world, clearing out

@@ -476,14 +476,14 @@ void ServiceWorkerContextClient::SendWorkerStarted(
 void ServiceWorkerContextClient::SetupNavigationPreload(
     int fetch_event_id,
     const blink::WebURL& url,
-    std::unique_ptr<blink::WebFetchEventPreloadHandle> preload_handle) {
+    blink::CrossVariantMojoReceiver<
+        network::mojom::URLLoaderClientInterfaceBase>
+        preload_url_loader_client_receiver) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(context_);
   auto preload_request = std::make_unique<NavigationPreloadRequest>(
       this, fetch_event_id, GURL(url),
-      blink::mojom::FetchEventPreloadHandle::New(
-          std::move(preload_handle->url_loader),
-          std::move(preload_handle->url_loader_client_receiver)));
+      std::move(preload_url_loader_client_receiver));
   context_->preload_requests.AddWithID(std::move(preload_request),
                                        fetch_event_id);
 }
