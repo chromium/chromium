@@ -702,7 +702,7 @@ template("mojom") {
 
       filelist = []
       foreach(source, sources_list) {
-        filelist += [ rebase_path(source) ]
+        filelist += [ rebase_path(source, root_build_dir) ]
       }
       response_file_contents = filelist
 
@@ -710,23 +710,23 @@ template("mojom") {
         # Resolve relative input mojom paths against both the root src dir and
         # the root gen dir.
         "--input-root",
-        rebase_path("//."),
+        rebase_path("//.", root_build_dir),
         "--input-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--output-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--mojom-file-list={{response_file_name}}",
 
         "--check-imports",
-        rebase_path(build_metadata_filename),
+        rebase_path(build_metadata_filename, root_build_dir),
       ]
 
       if (defined(invoker.input_root_override)) {
         args += [
           "--input-root",
-          rebase_path(invoker.input_root_override),
+          rebase_path(invoker.input_root_override, root_build_dir),
         ]
       }
 
@@ -1394,8 +1394,8 @@ template("mojom") {
       outputs = [ _typemap_stamp_filename ]
       args = [
         get_label_info(_mojom_target_name, "label_no_toolchain"),
-        rebase_path(_typemap_config_filename),
-        rebase_path(_typemap_stamp_filename),
+        rebase_path(_typemap_config_filename, root_build_dir),
+        rebase_path(_typemap_stamp_filename, root_build_dir),
       ]
     }
 

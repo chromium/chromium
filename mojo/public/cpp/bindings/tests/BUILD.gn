@@ -210,7 +210,7 @@ source_set("mojo_public_bindings_test_utils") {
 action("generate_test_mojom") {
   script = "generate_test_mojom.py"
   outputs = [ "$target_gen_dir/generated.test-mojom" ]
-  args = [ rebase_path("$target_gen_dir/generated.test-mojom") ]
+  args = [ rebase_path("$target_gen_dir/generated.test-mojom", root_build_dir) ]
 }
 
 mojom("generated_test_mojom") {
@@ -225,8 +225,8 @@ action("mojom_types_downgrader") {
   outputs = [ "$target_gen_dir/module_to_downgrade.test-mojom" ]
   args = [
     "--outdir",
-    rebase_path(target_gen_dir),
-    rebase_path("module_to_downgrade.test-mojom"),
+    rebase_path(target_gen_dir, root_build_dir),
+    rebase_path("module_to_downgrade.test-mojom", root_build_dir),
   ]
 }
 
