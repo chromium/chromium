@@ -112,6 +112,8 @@ enum class StatusCode : StatusCodeType {
   // recreate the Renderer instead of fail the playback. See
   // https://crbug.com/1208618
   kPipelineErrorHardwareContextReset = 0x0917,
+  // The remote media component was disconnected unexpectedly, e.g. crash.
+  kPipelineErrorDisconnected = 0x0918,
 
   // Frame operation errors: 0x0A
   kUnsupportedFrameFormatError = 0x0A01,

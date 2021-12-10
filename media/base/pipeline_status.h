@@ -63,8 +63,11 @@ enum PipelineStatus {
   // https://crbug.com/1208618
   PIPELINE_ERROR_HARDWARE_CONTEXT_RESET = 23,
 
+  // The remote media component was disconnected unexpectedly, e.g. crash.
+  PIPELINE_ERROR_DISCONNECTED = 24,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET,
+  PIPELINE_STATUS_MAX = PIPELINE_ERROR_DISCONNECTED,
 };
 
 MEDIA_EXPORT absl::optional<PipelineStatus> StatusCodeToPipelineStatus(

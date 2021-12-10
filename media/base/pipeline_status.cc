@@ -48,6 +48,8 @@ absl::optional<PipelineStatus> StatusCodeToPipelineStatus(StatusCode status) {
       return DEMUXER_ERROR_DETECTED_HLS;
     case StatusCode::kPipelineErrorHardwareContextReset:
       return PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+    case StatusCode::kPipelineErrorDisconnected:
+      return PIPELINE_ERROR_DISCONNECTED;
     default:
       NOTREACHED();
       return absl::nullopt;
@@ -94,6 +96,8 @@ StatusCode PipelineStatusToStatusCode(PipelineStatus status) {
       return StatusCode::kPipelineErrorDemuxerErrorDetectedHLS;
     case PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
       return StatusCode::kPipelineErrorHardwareContextReset;
+    case PIPELINE_ERROR_DISCONNECTED:
+      return StatusCode::kPipelineErrorDisconnected;
   }
 
   NOTREACHED();
@@ -118,6 +122,7 @@ std::string PipelineStatusToString(PipelineStatus status) {
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_READ);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INVALID_STATE);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DISCONNECTED);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_OPEN);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_PARSE);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);

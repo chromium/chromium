@@ -320,7 +320,7 @@ void MojoRenderer::OnConnectionError() {
   CancelPendingCallbacks();
 
   if (client_)
-    client_->OnError(PIPELINE_ERROR_DECODE);
+    client_->OnError(PIPELINE_ERROR_DISCONNECTED);
 }
 
 void MojoRenderer::OnDemuxerStreamConnectionError(

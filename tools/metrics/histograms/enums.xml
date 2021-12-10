@@ -68998,6 +68998,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="20" label="AUDIO_RENDERER_ERROR_SPLICE_FAILED"/>
   <int value="21" label="PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED"/>
   <int value="22" label="DEMUXER_ERROR_DETECTED_HLS"/>
+  <int value="23" label="PIPELINE_ERROR_HARDWARE_CONTEXT_RESET"/>
+  <int value="24" label="PIPELINE_ERROR_DISCONNECTED"/>
 </enum>
 
 <enum name="Platform.BootMode.FirmwareWriteProtect">

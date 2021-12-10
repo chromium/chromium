@@ -263,7 +263,7 @@ TEST_F(MojoRendererTest, Flush_ConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DECODE)).Times(1);
+  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
   EXPECT_CALL(*mock_renderer_, OnFlush(_))
       .WillOnce(InvokeWithoutArgs(this, &MojoRendererTest::ConnectionError));
   Flush();
@@ -273,7 +273,7 @@ TEST_F(MojoRendererTest, Flush_AfterConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DECODE)).Times(1);
+  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
   ConnectionError();
 
   Flush();
@@ -340,7 +340,7 @@ TEST_F(MojoRendererTest, SetCdm_BeforeInitialize) {
 TEST_F(MojoRendererTest, SetCdm_AfterInitializeAndConnectionError) {
   CreateCdm();
   Initialize();
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DECODE)).Times(1);
+  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
   ConnectionError();
   SetCdmAndExpect(false);
 }
