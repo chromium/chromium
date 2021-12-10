@@ -4,29 +4,27 @@
 
 // clang-format off
 import 'chrome://settings/lazy_load.js';
+import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AccountManagerBrowserProxyImpl, pageVisibility, ProfileInfoBrowserProxyImpl, Router, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl, loadTimeData, pageVisibility, ProfileInfoBrowserProxyImpl, Router, SettingsPeoplePageElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {simulateSyncStatus} from './sync_test_util.js';
 import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {AccountManagerBrowserProxy} */
-class TestAccountManagerBrowserProxy extends TestBrowserProxy {
+class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
+    AccountManagerBrowserProxy {
   constructor() {
     super([
       'getAccounts',
-      'addAccount',
-      'reauthenticateAccount',
-      'removeAccount',
-      'showWelcomeDialogIfRequired',
     ]);
   }
 
-  /** @override */
   getAccounts() {
     this.methodCalled('getAccounts');
     return Promise.resolve([{
@@ -40,30 +38,9 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
       pic: 'data:image/png;base64,primaryAccountPicData',
     }]);
   }
-
-  /** @override */
-  addAccount() {
-    this.methodCalled('addAccount');
-  }
-
-  /** @override */
-  reauthenticateAccount(account_email) {
-    this.methodCalled('reauthenticateAccount', account_email);
-  }
-
-  /** @override */
-  removeAccount(account) {
-    this.methodCalled('removeAccount', account);
-  }
-
-  /** @override */
-  showWelcomeDialogIfRequired() {
-    this.methodCalled('showWelcomeDialogIfRequired');
-  }
 }
 
-/** @type {?AccountManagerBrowserProxy} */
-let accountManagerBrowserProxy = null;
+let accountManagerBrowserProxy: TestAccountManagerBrowserProxy;
 
 // Preferences should exist for embedded 'personalization_options.html'.
 // We don't perform tests on them.
@@ -77,14 +54,9 @@ const DEFAULT_PREFS = {
       {enabled: {value: true}, scout_reporting_enabled: {value: true}},
 };
 
-/** @type {?SettingsPeoplePageElement} */
-let peoplePage = null;
-
-/** @type {?ProfileInfoBrowserProxy} */
-let profileInfoBrowserProxy = null;
-
-/** @type {?SyncBrowserProxy} */
-let syncBrowserProxy = null;
+let peoplePage: SettingsPeoplePageElement;
+let profileInfoBrowserProxy: TestProfileInfoBrowserProxy;
+let syncBrowserProxy: TestSyncBrowserProxy;
 
 suite('Chrome OS', function() {
   suiteSetup(function() {
@@ -104,7 +76,7 @@ suite('Chrome OS', function() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
     AccountManagerBrowserProxyImpl.setInstance(accountManagerBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
     peoplePage.pageVisibility = pageVisibility;
@@ -121,29 +93,30 @@ suite('Chrome OS', function() {
 
   test('GAIA name and picture', async () => {
     chai.assert.include(
-        peoplePage.shadowRoot.querySelector('#profile-icon')
-            .style.backgroundImage,
+        peoplePage.shadowRoot!.querySelector<HTMLElement>(
+                                  '#profile-icon')!.style.backgroundImage,
         'data:image/png;base64,primaryAccountPicData');
     assertEquals(
         'Primary Account',
-        peoplePage.shadowRoot.querySelector('#profile-name')
-            .textContent.trim());
+        peoplePage.shadowRoot!.querySelector(
+                                  '#profile-name')!.textContent!.trim());
   });
 
   test('profile row is actionable', () => {
     // Simulate a signed-in user.
     simulateSyncStatus({
       signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
     });
 
     // Profile row opens account manager, so the row is actionable.
-    const profileRow = peoplePage.shadowRoot.querySelector('#profile-row');
+    const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
     assertTrue(!!profileRow);
-    assertTrue(profileRow.hasAttribute('actionable'));
-    const subpageArrow =
-        peoplePage.shadowRoot.querySelector('#profile-subpage-arrow');
+    assertTrue(profileRow!.hasAttribute('actionable'));
+    const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
+        '#profile-subpage-arrow');
     assertTrue(!!subpageArrow);
-    assertFalse(subpageArrow.hidden);
+    assertFalse(subpageArrow!.hidden);
   });
 });
 
@@ -162,7 +135,7 @@ suite('Chrome OS with account manager disabled', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
     peoplePage.pageVisibility = pageVisibility;
@@ -180,23 +153,25 @@ suite('Chrome OS with account manager disabled', function() {
     // Simulate a signed-in user.
     simulateSyncStatus({
       signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
     });
 
     // Account manager isn't available, so the row isn't actionable.
-    const profileIcon = peoplePage.shadowRoot.querySelector('#profile-icon');
+    const profileIcon =
+        peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon');
     assertTrue(!!profileIcon);
-    assertFalse(profileIcon.hasAttribute('actionable'));
-    const profileRow = peoplePage.shadowRoot.querySelector('#profile-row');
+    assertFalse(profileIcon!.hasAttribute('actionable'));
+    const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
     assertTrue(!!profileRow);
-    assertFalse(profileRow.hasAttribute('actionable'));
-    const subpageArrow =
-        peoplePage.shadowRoot.querySelector('#profile-subpage-arrow');
-    assertTrue(!!subpageArrow);
-    assertTrue(subpageArrow.hidden);
+    assertFalse(profileRow!.hasAttribute('actionable'));
+    const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
+        '#profile-subpage-arrow');
+    assertTrue(!!subpageArrow!);
+    assertTrue(subpageArrow!.hidden);
 
     // Clicking on profile icon doesn't navigate to a new route.
     const oldRoute = Router.getInstance().getCurrentRoute();
-    profileIcon.click();
+    profileIcon!.click();
     assertEquals(oldRoute, Router.getInstance().getCurrentRoute());
   });
 });
@@ -215,7 +190,7 @@ suite('Chrome OS with UseBrowserSyncConsent', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
     peoplePage.pageVisibility = pageVisibility;
@@ -232,15 +207,16 @@ suite('Chrome OS with UseBrowserSyncConsent', function() {
   test('Sync account control is shown', () => {
     simulateSyncStatus({
       syncSystemEnabled: true,
+      statusAction: StatusAction.NO_ACTION,
     });
 
     // Account control is visible.
     const accountControl =
-        peoplePage.shadowRoot.querySelector('settings-sync-account-control');
+        peoplePage.shadowRoot!.querySelector('settings-sync-account-control')!;
     assertNotEquals('none', window.getComputedStyle(accountControl).display);
 
     // Profile row items are not available.
-    assertFalse(!!peoplePage.shadowRoot.querySelector('#profile-icon'));
-    assertFalse(!!peoplePage.shadowRoot.querySelector('#profile-row'));
+    assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-icon'));
+    assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-row'));
   });
 });

@@ -34,7 +34,14 @@ const SettingsManageProfileElementBase =
       RouteObserverMixinInterface
     };
 
-class SettingsManageProfileElement extends SettingsManageProfileElementBase {
+export interface SettingsManageProfileElement {
+  $: {
+    name: CrInputElement,
+  };
+}
+
+export class SettingsManageProfileElement extends
+    SettingsManageProfileElementBase {
   static get is() {
     return 'settings-manage-profile';
   }
@@ -122,8 +129,7 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
   currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {
-        const profileNameInput =
-            this.shadowRoot!.querySelector<CrInputElement>('#name');
+        const profileNameInput = this.$.name;
         if (profileNameInput) {
           profileNameInput.value = this.profileName;
         }
@@ -195,6 +201,12 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
     } else {
       this.browserProxy_.removeProfileShortcut();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-manage-profile': SettingsManageProfileElement;
   }
 }
 

@@ -48,7 +48,7 @@ import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from 
 
 type FocusConfig = Map<string, (string|(() => void))>;
 
-interface SettingsPeoplePageElement {
+export interface SettingsPeoplePageElement {
   $: {
     importDataDialogTrigger: HTMLElement,
     toast: CrToastElement,
@@ -61,7 +61,7 @@ const SettingsPeoplePageElementBase =
       RouteObserverMixinInterface
     };
 
-class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
+export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {
     return 'settings-people-page';
   }
@@ -186,6 +186,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
+  prefs: any;
   private signinAllowed_: boolean;
   syncStatus: SyncStatus|null;
   pageVisibility: PageVisibility;
@@ -403,6 +404,12 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    */
   private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-people-page': SettingsPeoplePageElement;
   }
 }
 

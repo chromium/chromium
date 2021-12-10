@@ -7,6 +7,7 @@ import './settings_ui/settings_ui.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 export {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 export {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 export {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 export {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -45,8 +46,9 @@ export {StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './on
 export {OpenWindowProxy, OpenWindowProxyImpl} from './open_window_proxy.js';
 export {pageVisibility, setPageVisibilityForTesting} from './page_visibility.js';
 // <if expr="chromeos">
-export {AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
+export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
+export {SettingsPeoplePageElement} from './people_page/people_page.js';
 export {ProfileInfoBrowserProxyImpl} from './people_page/profile_info_browser_proxy.js';
 export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './people_page/sync_browser_proxy.js';

@@ -28,6 +28,7 @@ import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 export interface SettingsSignoutDialogElement {
   $: {
     dialog: CrDialogElement,
+    disconnectConfirm: HTMLElement,
   };
 }
 

@@ -63,12 +63,12 @@ export function setupRouterWithSyncRoutes() {
   Router.resetInstanceForTesting(new Router(routes));
 }
 
-export function simulateSyncStatus(status: SyncStatus) {
+export function simulateSyncStatus(status: SyncStatus|undefined) {
   webUIListenerCallback('sync-status-changed', status);
   flush();
 }
 
-export function simulateStoredAccounts(accounts: StoredAccount[]) {
+export function simulateStoredAccounts(accounts: StoredAccount[]|undefined) {
   webUIListenerCallback('stored-accounts-updated', accounts);
   flush();
 }

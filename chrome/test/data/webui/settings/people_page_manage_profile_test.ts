@@ -4,13 +4,18 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from 'chrome://settings/lazy_load.js';
-import {Router, routes} from 'chrome://settings/settings.js';
+import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus, SettingsManageProfileElement} from 'chrome://settings/lazy_load.js';
+import {CrToggleElement, loadTimeData, Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {ManageProfileBrowserProxy} */
-class TestManageProfileBrowserProxy extends TestBrowserProxy {
+class TestManageProfileBrowserProxy extends TestBrowserProxy implements
+    ManageProfileBrowserProxy {
+  private profileShortcutStatus_: ProfileShortcutStatus =
+      ProfileShortcutStatus.PROFILE_SHORTCUT_FOUND;
+
   constructor() {
     super([
       'getAvailableIcons',
@@ -21,66 +26,73 @@ class TestManageProfileBrowserProxy extends TestBrowserProxy {
       'addProfileShortcut',
       'removeProfileShortcut',
     ]);
-
-    /** @private {!ProfileShortcutStatus} */
-    this.profileShortcutStatus_ = ProfileShortcutStatus.PROFILE_SHORTCUT_FOUND;
   }
 
-  /** @param {!ProfileShortcutStatus} status */
-  setProfileShortcutStatus(status) {
+  setProfileShortcutStatus(status: ProfileShortcutStatus) {
     this.profileShortcutStatus_ = status;
   }
 
-  /** @override */
   getAvailableIcons() {
     this.methodCalled('getAvailableIcons');
     return Promise.resolve([
-      {url: 'fake-icon-1.png', label: 'fake-icon-1', index: 1},
-      {url: 'fake-icon-2.png', label: 'fake-icon-2', index: 2, selected: true},
-      {url: 'gaia-icon.png', label: 'gaia-icon', isGaiaAvatar: true},
+      {
+        url: 'fake-icon-1.png',
+        label: 'fake-icon-1',
+        index: 1,
+        isGaiaAvatar: false,
+        selected: false,
+      },
+      {
+        url: 'fake-icon-2.png',
+        label: 'fake-icon-2',
+        index: 2,
+        selected: true,
+        isGaiaAvatar: false,
+      },
+      {
+        url: 'gaia-icon.png',
+        label: 'gaia-icon',
+        index: 3,
+        isGaiaAvatar: true,
+        selected: false,
+      },
     ]);
   }
 
-  /** @override */
   setProfileIconToGaiaAvatar() {
     this.methodCalled('setProfileIconToGaiaAvatar');
   }
 
-  /** @override */
-  setProfileIconToDefaultAvatar(index) {
+  setProfileIconToDefaultAvatar(index: number) {
     this.methodCalled('setProfileIconToDefaultAvatar', [index]);
   }
 
-  /** @override */
-  setProfileName(name) {
+  setProfileName(name: string) {
     this.methodCalled('setProfileName', [name]);
   }
 
-  /** @override */
   getProfileShortcutStatus() {
     this.methodCalled('getProfileShortcutStatus');
     return Promise.resolve(this.profileShortcutStatus_);
   }
 
-  /** @override */
   addProfileShortcut() {
     this.methodCalled('addProfileShortcut');
   }
 
-  /** @override */
   removeProfileShortcut() {
     this.methodCalled('removeProfileShortcut');
   }
 }
 
 suite('ManageProfileTests', function() {
-  let manageProfile = null;
-  let browserProxy = null;
+  let manageProfile: SettingsManageProfileElement;
+  let browserProxy: TestManageProfileBrowserProxy;
 
   setup(function() {
     browserProxy = new TestManageProfileBrowserProxy();
     ManageProfileBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({profileShortcutsEnabled: false});
     manageProfile = createManageProfileElement();
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
@@ -90,14 +102,16 @@ suite('ManageProfileTests', function() {
     manageProfile.remove();
   });
 
-  function createManageProfileElement() {
-    const manageProfileElement =
-        document.createElement('settings-manage-profile');
-    manageProfileElement.profileIconUrl = 'fake-icon-1.png';
-    manageProfileElement.profileName = 'Initial Fake Name';
-    manageProfileElement.syncStatus = {supervisedUser: false, childUser: false};
-    document.body.appendChild(manageProfileElement);
-    return manageProfileElement;
+  function createManageProfileElement(): SettingsManageProfileElement {
+    const element = document.createElement('settings-manage-profile');
+    element.profileName = 'Initial Fake Name';
+    element.syncStatus = {
+      supervisedUser: false,
+      childUser: false,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    document.body.appendChild(element);
+    return element;
   }
 
   // Tests that the manage profile subpage
@@ -107,27 +121,27 @@ suite('ManageProfileTests', function() {
     let items = null;
     await browserProxy.whenCalled('getAvailableIcons');
     flush();
-    items = manageProfile.shadowRoot.querySelector('cr-profile-avatar-selector')
-                .shadowRoot.querySelector('#avatar-grid')
-                .querySelectorAll('.avatar');
+    items =
+        manageProfile.shadowRoot!.querySelector(
+                                     'cr-profile-avatar-selector')!.shadowRoot!
+            .querySelector('#avatar-grid')!.querySelectorAll<HTMLElement>(
+                '.avatar');
 
-    assertFalse(!!manageProfile.profileAvatar);
     assertEquals(3, items.length);
-    assertFalse(items[0].classList.contains('iron-selected'));
-    assertTrue(items[1].classList.contains('iron-selected'));
-    assertFalse(items[2].classList.contains('iron-selected'));
+    assertFalse(items[0]!.classList.contains('iron-selected'));
+    assertTrue(items[1]!.classList.contains('iron-selected'));
+    assertFalse(items[2]!.classList.contains('iron-selected'));
 
-    items[1].click();
+    items[1]!.click();
     const args = await browserProxy.whenCalled('setProfileIconToDefaultAvatar');
     assertEquals(2, args[0]);
 
-    items[2].click();
+    items[2]!.click();
     await browserProxy.whenCalled('setProfileIconToGaiaAvatar');
-
   });
 
   test('ManageProfileChangeName', async function() {
-    const nameField = manageProfile.shadowRoot.querySelector('#name');
+    const nameField = manageProfile.$.name;
     assertTrue(!!nameField);
     assertFalse(!!nameField.disabled);
     assertEquals('.*\\S.*', nameField.pattern);
@@ -142,9 +156,13 @@ suite('ManageProfileTests', function() {
   });
 
   test('ProfileNameIsDisabledForSupervisedUser', function() {
-    manageProfile.syncStatus = {supervisedUser: true, childUser: false};
+    manageProfile.syncStatus = {
+      supervisedUser: true,
+      childUser: false,
+      statusAction: StatusAction.NO_ACTION,
+    };
 
-    const nameField = manageProfile.shadowRoot.querySelector('#name');
+    const nameField = manageProfile.$.name;
     assertTrue(!!nameField);
 
     // Name field should be disabled for legacy supervised users.
@@ -153,7 +171,7 @@ suite('ManageProfileTests', function() {
 
   // Tests profile name updates pushed from the browser.
   test('ManageProfileNameUpdated', async function() {
-    const nameField = manageProfile.shadowRoot.querySelector('#name');
+    const nameField = manageProfile.$.name;
     assertTrue(!!nameField);
 
     await browserProxy.whenCalled('getAvailableIcons');
@@ -166,48 +184,50 @@ suite('ManageProfileTests', function() {
 
   // Tests that the theme selector is visible.
   test('ProfileThemeSelector', function() {
-    assertTrue(!!manageProfile.shadowRoot.querySelector('#themeSelector'));
+    assertTrue(!!manageProfile.shadowRoot!.querySelector('#themeSelector'));
   });
 
   // Tests profile shortcut toggle is hidden if profile shortcuts feature is
   // disabled.
   test('ManageProfileShortcutToggleHidden', function() {
     const hasShortcutToggle =
-        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
+        manageProfile.shadowRoot!.querySelector('#hasShortcutToggle');
     assertFalse(!!hasShortcutToggle);
   });
 
   // Tests profile shortcut toggle is visible and toggling it removes and
   // creates the profile shortcut respectively.
   test('ManageProfileShortcutToggle', async function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
+    assertFalse(
+        !!manageProfile.shadowRoot!.querySelector('#hasShortcutToggle'));
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
     const hasShortcutToggle =
-        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
+        manageProfile.shadowRoot!.querySelector<CrToggleElement>(
+            '#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
     // The profile shortcut toggle is checked.
-    assertTrue(hasShortcutToggle.checked);
+    assertTrue(hasShortcutToggle!.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle.click();
+    hasShortcutToggle!.click();
     await browserProxy.whenCalled('removeProfileShortcut');
 
     flush();
 
     // The profile shortcut toggle is checked.
-    assertFalse(hasShortcutToggle.checked);
+    assertFalse(hasShortcutToggle!.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle.click();
+    hasShortcutToggle!.click();
     await browserProxy.whenCalled('addProfileShortcut');
   });
 
@@ -217,21 +237,23 @@ suite('ManageProfileTests', function() {
     browserProxy.setProfileShortcutStatus(
         ProfileShortcutStatus.PROFILE_SHORTCUT_NOT_FOUND);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
+    assertFalse(
+        !!manageProfile.shadowRoot!.querySelector('#hasShortcutToggle'));
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
     const hasShortcutToggle =
-        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
+        manageProfile.shadowRoot!.querySelector<CrToggleElement>(
+            '#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
-    assertFalse(hasShortcutToggle.checked);
+    assertFalse(hasShortcutToggle!.checked);
   });
 
   // Tests the case when the profile shortcut setting is hidden. This can
@@ -240,17 +262,19 @@ suite('ManageProfileTests', function() {
     browserProxy.setProfileShortcutStatus(
         ProfileShortcutStatus.PROFILE_SHORTCUT_SETTING_HIDDEN);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
+    assertFalse(
+        !!manageProfile.shadowRoot!.querySelector('#hasShortcutToggle'));
 
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
-    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
+    assertFalse(
+        !!manageProfile.shadowRoot!.querySelector('#hasShortcutToggle'));
   });
 });
