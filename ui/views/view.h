@@ -452,6 +452,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return base::WrapUnique(view);
   }
 
+  // Partially specialized version to directly take a raw_ptr<T>.
+  template <typename T>
+  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T> view) {
+    return RemoveChildViewT(view.get());
+  }
+
   // Removes all the children from this view. This deletes all children that are
   // not set_owned_by_client(), which is deprecated.
   void RemoveAllChildViews();
