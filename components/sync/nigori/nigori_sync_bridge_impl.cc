@@ -246,31 +246,6 @@ std::string PackExplicitPassphraseKey(const CryptographerImpl& cryptographer) {
   return encoded_key;
 }
 
-// Unpacks explicit passphrase keys. Returns a populated sync_pb::NigoriKey if
-// successful, or an empty instance (i.e. default value) if |packed_key| is
-// empty or decoding/decryption errors occur.
-sync_pb::NigoriKey UnpackExplicitPassphraseKey(const std::string& packed_key) {
-  if (packed_key.empty()) {
-    return sync_pb::NigoriKey();
-  }
-
-  std::string decoded_key;
-  if (!base::Base64Decode(packed_key, &decoded_key)) {
-    DLOG(ERROR) << "Failed to decode explicit passphrase key.";
-    return sync_pb::NigoriKey();
-  }
-
-  std::string decrypted_key;
-  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
-    DLOG(ERROR) << "Failed to decrypt expliciti passphrase key.";
-    return sync_pb::NigoriKey();
-  }
-
-  sync_pb::NigoriKey key;
-  key.ParseFromString(decrypted_key);
-  return key;
-}
-
 }  // namespace
 
 class NigoriSyncBridgeImpl::BroadcastingObserver
@@ -359,12 +334,9 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
 
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     std::unique_ptr<NigoriLocalChangeProcessor> processor,
-    std::unique_ptr<NigoriStorage> storage,
-    const std::string& packed_explicit_passphrase_key)
+    std::unique_ptr<NigoriStorage> storage)
     : processor_(std::move(processor)),
       storage_(std::move(storage)),
-      explicit_passphrase_key_(
-          UnpackExplicitPassphraseKey(packed_explicit_passphrase_key)),
       broadcasting_observer_(std::make_unique<BroadcastingObserver>(
           // base::Unretained() legit because the observer gets destroyed
           // together with |this|.
@@ -835,17 +807,6 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag(
     decryption_key_bag.AddKeyFromProto(*keystore_decryptor_key);
   }
 
-  // TODO(crbug.com/1057655, crbug.com/1020084): This should be allowed for
-  // KEYSTORE_PASSPHRASE and disallowed for TRUSTED_VAULT_PASSPHRASE, keep
-  // temporarily as is to avoid behavioral changes.
-  if (state_.passphrase_type != NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-    // Note: key derived from explicit passphrase was stored in prefs prior to
-    // USS, and using |explicit_passphrase_key_| here effectively does
-    // migration. If |explicit_passphrase_key_| is empty, following line is
-    // no-op.
-    decryption_key_bag.AddKeyFromProto(explicit_passphrase_key_);
-  }
-
   // TODO(crbug.com/1057655): this should be allowed for KEYSTORE_PASSPHRASE,
   // but should be disallowed if |passphrase_type| was changed in current
   // update.
@@ -935,15 +896,7 @@ std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetData() {
 
 void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The user intended to disable sync, so we need to clear all the data, except
-  // |explicit_passphrase_key_| in memory, because this function can be called
-  // due to BackendMigrator. It's safe even if this function called due to
-  // actual disabling sync, since we remove the persisted key by clearing sync
-  // prefs explicitly, and don't reuse current instance of the bridge after
-  // that.
-  // TODO(crbug.com/922900): idea with keeping
-  // |explicit_passphrase_key_| will become not working, once we clean up
-  // storing explicit passphrase key in prefs, we need to find better solution.
+
   storage_->ClearData();
   state_.keystore_keys_cryptographer = KeystoreKeysCryptographer::CreateEmpty();
   state_.cryptographer->ClearAllKeys();

@@ -214,8 +214,7 @@ void SyncEngineBackend::DoInitialize(
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
-          sync_data_folder_.Append(kNigoriStorageFilename)),
-      params.encryption_bootstrap_token);
+          sync_data_folder_.Append(kNigoriStorageFilename)));
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);

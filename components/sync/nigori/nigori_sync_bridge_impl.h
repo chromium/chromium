@@ -48,8 +48,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
                              public SyncEncryptionHandler {
  public:
   NigoriSyncBridgeImpl(std::unique_ptr<NigoriLocalChangeProcessor> processor,
-                       std::unique_ptr<NigoriStorage> storage,
-                       const std::string& packed_explicit_passphrase_key);
+                       std::unique_ptr<NigoriStorage> storage);
 
   NigoriSyncBridgeImpl(const NigoriSyncBridgeImpl&) = delete;
   NigoriSyncBridgeImpl& operator=(const NigoriSyncBridgeImpl&) = delete;
@@ -163,11 +162,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
 
   const std::unique_ptr<NigoriLocalChangeProcessor> processor_;
   const std::unique_ptr<NigoriStorage> storage_;
-
-  // Stores a key derived from explicit passphrase and loaded from the prefs.
-  // Empty (i.e. default value) if prefs doesn't contain this key or in case of
-  // decryption/decoding errors.
-  const sync_pb::NigoriKey explicit_passphrase_key_;
 
   syncer::NigoriState state_;
 

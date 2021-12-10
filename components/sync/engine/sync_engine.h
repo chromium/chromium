@@ -68,9 +68,6 @@ class SyncEngine : public ModelTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
-    // TODO(crbug.com/1276958): this field is already never initialized, clean
-    // up the related code and remove the field.
-    std::string encryption_bootstrap_token;
   };
 
   SyncEngine();
