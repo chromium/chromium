@@ -1276,11 +1276,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.DeleteTemplate" enum="BooleanHit"
+    expires_after="2022-11-11">
+  <owner>avynn@google.com</owner>
+  <owner>janetmac@chromium.com</owner>
+  <summary>Recorded when desk templates are deleted, is never false.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.LaunchFromTemplate" enum="BooleanHit"
     expires_after="2022-07-14">
   <owner>richui@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
-  <summary>Emitted when a template is launched and a desk is created.</summary>
+  <summary>
+    Emitted when a template is launched and a desk is created, is never false.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.LoadTemplateGrid" enum="BooleanHit"
+    expires_after="2022-11-12">
+  <owner>avynn@google.com</owner>
+  <owner>janetmac@chromium.com</owner>
+  <summary>
+    Recorded when a user opens the template grid, is never false.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.NewTemplate" enum="BooleanHit"
+    expires_after="2022-11-22">
+  <owner>avynn@google.com</owner>
+  <owner>janetmac@chromium.com</owner>
+  <summary>
+    Recorded when a user creates a desk template, is never false.
+  </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.TabCount" units="count"

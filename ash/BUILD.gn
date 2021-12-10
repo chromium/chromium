@@ -1705,6 +1705,8 @@ component("ash") {
     "wm/desks/templates/desks_templates_icon_view.h",
     "wm/desks/templates/desks_templates_item_view.cc",
     "wm/desks/templates/desks_templates_item_view.h",
+    "wm/desks/templates/desks_templates_metrics_util.cc",
+    "wm/desks/templates/desks_templates_metrics_util.h",
     "wm/desks/templates/desks_templates_name_view.cc",
     "wm/desks/templates/desks_templates_name_view.h",
     "wm/desks/templates/desks_templates_presenter.cc",

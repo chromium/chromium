@@ -27,6 +27,7 @@
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -1169,6 +1170,9 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
+  // Record template grid histogram.
+  RecordLoadTemplateHistogram();
+
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
   overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());

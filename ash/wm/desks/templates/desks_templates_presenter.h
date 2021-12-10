@@ -62,7 +62,8 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void MaybeSaveActiveDeskAsTemplate();
 
   // Saves or updates the `desk_template` to the model.
-  void SaveOrUpdateDeskTemplate(std::unique_ptr<DeskTemplate> desk_template);
+  void SaveOrUpdateDeskTemplate(bool is_update,
+                                std::unique_ptr<DeskTemplate> desk_template);
 
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
@@ -94,6 +95,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
       std::unique_ptr<DeskTemplate> entry);
 
   void OnAddOrUpdateEntry(
+      bool was_update,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Pointer to the session which owns `this`.

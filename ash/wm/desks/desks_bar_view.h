@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "base/callback_list.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"

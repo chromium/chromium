@@ -292,7 +292,7 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
     return;
 
   DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-      std::move(updated_template));
+      /*is_update=*/false, std::move(updated_template));
 }
 
 void DesksTemplatesItemView::ContentsChanged(

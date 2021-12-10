@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -24,7 +25,6 @@
 namespace ash {
 
 namespace {
-
 DesksTemplatesPresenter* g_instance = nullptr;
 
 // The amount of time for which the launch template toasts will remain
@@ -163,10 +163,12 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate() {
   DesksController::Get()->CaptureActiveDeskAsTemplate(
       base::BindOnce(&DesksTemplatesPresenter::SaveOrUpdateDeskTemplate,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*is_update=*/false));
 }
 
 void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
+    bool is_update,
     std::unique_ptr<DeskTemplate> desk_template) {
   if (!desk_template)
     return;
@@ -179,7 +181,7 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template_clone),
       base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), is_update));
 }
 
 void DesksTemplatesPresenter::DeskModelLoaded() {}
@@ -217,6 +219,7 @@ void DesksTemplatesPresenter::OnDeleteEntry(
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
 
+  RecordDeleteTemplateHistogram();
   GetAllEntries();
 
   UpdateDesksTemplatesUI();
@@ -240,9 +243,12 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
+
+  RecordLaunchTemplateHistogram();
 }
 
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
+    bool was_update,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;
@@ -261,6 +267,9 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
       grid_list[0]->desks_bar_view()->IsZeroState());
   for (auto& overview_grid : grid_list)
     overview_grid->UpdateSaveDeskAsTemplateButton();
+
+  if (!was_update)
+    RecordNewTemplateHistogram();
 }
 
 }  // namespace ash

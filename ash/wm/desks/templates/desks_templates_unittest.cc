@@ -23,6 +23,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
@@ -40,6 +41,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
@@ -616,6 +618,9 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   // This window should be hidden whenever the desk templates grid is open.
   auto test_window = CreateAppWindow();
 
+  // This action should record deletions and grid shows in a UMA histogram.
+  base::HistogramTester histogram_tester;
+
   OpenOverviewAndShowTemplatesGrid();
 
   // The window is hidden because the desk templates grid is open.
@@ -646,6 +651,13 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   auto* save_template =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(save_template->IsVisible());
+
+  // Assert that histogram metrics were recorded.
+  // note: deleting a template that doesn't exist counts as a delete according
+  // to the desks model hence expected_deletes being set to two.
+  const int expected_deletes = 2;
+  histogram_tester.ExpectTotalCount(kDeleteTemplateHistogramName,
+                                    expected_deletes);
 }
 
 // Tests that the save desk as template button is disabled when the maximum
@@ -1632,6 +1644,124 @@ TEST_F(DesksTemplatesTest, TemplateNameEllipsis) {
   name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab",
             DesksTemplatesNameViewTestApi(name_view).full_text());
+}
+
+// Tesets that Showing the overview records to the TemplateGrid histogram.
+TEST_F(DesksTemplatesTest, RecordDesksTemplateGridShows) {
+  // Make sure that LoadTemplateHistogram is recorded.
+  base::HistogramTester histogram_tester;
+
+  // Entry needed so that overview is accessible
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Assert load grid histogram recorded.
+  constexpr int kExpectedGridShows = 1;
+  histogram_tester.ExpectTotalCount(kLoadTemplateGridHistogramName,
+                                    kExpectedGridShows);
+}
+
+// Tests that deleting templates in the templates grid Records to the delete
+// template histogram.
+TEST_F(DesksTemplatesTest, DeleteTemplateRecordsMetric) {
+  UpdateDisplay("800x600,800x600");
+
+  // Populate with several entries.
+  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  AddEntry(uuid_1, "template_1", base::Time::Now());
+
+  // This window should be hidden whenever the desk templates grid is open.
+  auto test_window = CreateTestWindow();
+
+  // This action should record deletions and grid shows in a UMA histogram.
+  base::HistogramTester histogram_tester;
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // The window is hidden because the desk templates grid is open.
+  EXPECT_EQ(0.0f, test_window->layer()->opacity());
+  EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // Delete the template with `uuid_1`.
+  DeleteTemplate(uuid_1, /*expected_current_item_count=*/1);
+  EXPECT_EQ(0ul, desk_model()->GetEntryCount());
+
+  // There is only one desk to delete in this test so we should have
+  // exited the overview.
+  EXPECT_EQ(1.0f, test_window->layer()->opacity());
+
+  // Verifies that the template with `uuid_1`, doesn't exist anymore.
+  DeleteTemplate(uuid_1, /*expected_current_item_count=*/0,
+                 /*expect_template_exists=*/false);
+  EXPECT_EQ(0ul, desk_model()->GetEntryCount());
+
+  // Assert that histogram metrics were recorded.
+  const int expected_deletes = 1;
+  histogram_tester.ExpectTotalCount(kDeleteTemplateHistogramName,
+                                    expected_deletes);
+}
+
+// Tests that Launches are recorded to the appropriate histogram.
+TEST_F(DesksTemplatesTest, LaunchTemplateRecordsMetric) {
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  auto test_window = CreateAppWindow();
+
+  // Log histogram recording
+  base::HistogramTester histogram_tester;
+
+  // Capture the current desk and open the templates grid.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Click on the grid item to launch the template.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
+  WaitForDesksTemplatesUI();
+  waiter.Wait();
+
+  // Verify that we have created and activated a new desk.
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Assert load grid histogram and launch histogram recorded.
+  constexpr int kExpectedLaunches = 1;
+  histogram_tester.ExpectTotalCount(kLaunchTemplateHistogramName,
+                                    kExpectedLaunches);
+}
+
+// Tests that clicking the save desk as template button records to the
+// new template histogram.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateRecordsMetric) {
+  // There are no saved template entries and one test window initially.
+  auto test_window = CreateAppWindow();
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  // Record histogram
+  base::HistogramTester histogram_tester;
+
+  // The `save_desk_as_template_widget` is visible when at least one window is
+  // open.
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(save_desk_as_template_widget);
+  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+
+  // Click on `save_desk_as_template_widget` button.
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Expect that the Desk Templates grid is visible.
+  EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+
+  // Assert that there was a new template event recorded to the proper
+  // histogram.
+  constexpr int kExpectedNewTemplates = 1;
+  histogram_tester.ExpectTotalCount(kNewTemplateHistogramName,
+                                    kExpectedNewTemplates);
 }
 
 }  // namespace ash
