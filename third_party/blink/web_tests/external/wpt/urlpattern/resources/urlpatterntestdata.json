@@ -2565,5 +2565,22 @@
     "expected_match": {
       "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
     }
+  },
+  {
+    "pattern": [{ "pathname": "{:foo}bar" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":foo\\bar" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_obj": {
+      "pathname": "{:foo}bar"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
   }
 ]

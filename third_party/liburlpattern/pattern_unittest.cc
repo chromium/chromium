@@ -383,6 +383,14 @@ TEST(PatternStringTest, NamedGroupWithCustomRegexpAndValidNameSuffix) {
   RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
 }
 
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByValidNameText) {
+  RunPatternStringTest("{:foo}bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByEscapedValidNameText) {
+  RunPatternStringTest(":foo\\bar", "{:foo}bar");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;

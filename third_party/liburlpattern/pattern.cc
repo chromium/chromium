@@ -127,20 +127,34 @@ std::string Pattern::GeneratePatternString() const {
     // necessary when the group:
     //
     // 1. is using a non-automatic prefix or any suffix.
-    // 2. followed by a matching group that may be represented by a
-    //    `(...)` expression.  This is necessary to avoid the following `(...)`
-    //    being mistakenly interpretted as the custom regexp for this
-    //    named group; like `:foo(...)`.
-    const Part* next_part =
-        (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
     bool needs_grouping =
         !part.suffix.empty() ||
         (!part.prefix.empty() &&
          (part.prefix.size() != 1 ||
-          options_.prefix_list.find(part.prefix[0]) == std::string::npos)) ||
-        (custom_name && part.modifier == Modifier::kNone && next_part &&
-         next_part->type != PartType::kFixed && next_part->prefix.empty() &&
-         next_part->suffix.empty() && !next_part->HasCustomName());
+          options_.prefix_list.find(part.prefix[0]) == std::string::npos));
+
+    // 2. followed by a matching group that may be expressed in a way that can
+    //    be mistakenly interpreted as part of this matching group.  For
+    //    example:
+    //
+    //    a. An `(...)` expression following a `:foo` group.  We want to
+    //       output `{:foo}(...)` and not `:foo(...)`.
+    //    b. A plain text expression following a `:foo` group where the text
+    //       could be mistakenly interpreted as part of the name.  We want to
+    //       output `{:foo}bar` and not `:foobar`.
+    const Part* next_part =
+        (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
+    if (!needs_grouping && custom_name && part.modifier == Modifier::kNone &&
+        next_part && next_part->prefix.empty() && next_part->suffix.empty()) {
+      if (next_part->type == PartType::kFixed) {
+        UChar32 codepoint = -1;
+        U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0, 0,
+               static_cast<int>(next_part->value.size()), codepoint);
+        needs_grouping = IsNameCodepoint(codepoint, /*first_codepoint=*/false);
+      } else {
+        needs_grouping = !next_part->HasCustomName();
+      }
+    }
 
     // This is a full featured part.  We must generate a string that looks
     // like:
