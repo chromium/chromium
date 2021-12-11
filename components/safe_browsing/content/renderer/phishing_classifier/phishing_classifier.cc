@@ -83,7 +83,7 @@ PhishingClassifier::~PhishingClassifier() {
   DCHECK(!page_text_);
 }
 
-void PhishingClassifier::set_phishing_scorer(const Scorer* scorer) {
+void PhishingClassifier::set_phishing_scorer(Scorer* scorer) {
   DCHECK(done_callback_.is_null());
   DCHECK(!page_text_);
   scorer_ = scorer;

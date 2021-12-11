@@ -124,7 +124,8 @@ FlatBufferModelScorer* FlatBufferModelScorer::Create(
 
   // Only do this part if the visual model file exists
   if (visual_tflite_model.IsValid()) {
-    if (!scorer->visual_tflite_model_.Initialize(
+    scorer->visual_tflite_model_ = std::make_unique<base::MemoryMappedFile>();
+    if (!scorer->visual_tflite_model_->Initialize(
             std::move(visual_tflite_model))) {
       RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
       return nullptr;
@@ -186,9 +187,9 @@ void FlatBufferModelScorer::GetMatchingVisualTargets(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
-    base::OnceCallback<void(std::vector<double>)> callback) const {
+    base::OnceCallback<void(std::vector<double>)> callback) {
   DCHECK(content::RenderThread::IsMainThread());
-  if (visual_tflite_model_.IsValid()) {
+  if (visual_tflite_model_ && visual_tflite_model_->IsValid()) {
     base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -196,10 +197,9 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        flatbuffer_model_->tflite_metadata()->input_width(),
                        flatbuffer_model_->tflite_metadata()->input_height(),
-                       std::string(reinterpret_cast<const char*>(
-                                       visual_tflite_model_.data()),
-                                   visual_tflite_model_.length())),
-        std::move(callback));
+                       std::move(visual_tflite_model_)),
+        base::BindOnce(&FlatBufferModelScorer::OnVisualTfLiteModelComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     base::UmaHistogramTimes(
         "SBClientPhishing.TfLiteModelLoadTime.FlatbufferScorer",
         base::Time::Now() - start_post_task_time);

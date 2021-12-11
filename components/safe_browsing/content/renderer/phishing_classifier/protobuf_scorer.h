@@ -54,7 +54,7 @@ class ProtobufModelScorer : public Scorer {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
-      base::OnceCallback<void(std::vector<double>)> callback) const override;
+      base::OnceCallback<void(std::vector<double>)> callback) override;
 #endif
 
   int model_version() const override;
