@@ -386,11 +386,17 @@ void FrameLoader::FinishedParsing() {
 // does not do anything when navigation is in progress, or when loading
 // has finished already. We should call it at the right times.
 void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
-  // Only declare the whole frame finished if the committed navigation is done
-  // and there is no provisional navigation in progress.
-  if ((document_loader_ && !document_loader_->SentDidFinishLoad()) ||
-      HasProvisionalNavigation()) {
-    return;
+  if (document_loader_) {
+    // Only declare the whole frame finished if the committed navigation is done
+    // and there is no provisional navigation in progress.
+    // appHistory may prevent a navigation from completing while waiting for a
+    // JS-provided promise to resolve, so check it as well.
+    if (!document_loader_->SentDidFinishLoad() || HasProvisionalNavigation())
+      return;
+    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+      if (app_history->HasOngoingNavigation())
+        return;
+    }
   }
 
   // This code in this block is meant to prepare a document for display, but
@@ -658,23 +664,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
-        (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
-                               frame_->DomWindow()->GetSecurityOrigin()))) {
-      if (app_history->DispatchNavigateEvent(
-              url, request.Form(), NavigateEventType::kCrossDocument,
-              frame_load_type,
-              request.GetTriggeringEventInfo() ==
-                      mojom::blink::TriggeringEventInfo::kFromTrustedEvent
-                  ? UserNavigationInvolvement::kActivation
-                  : UserNavigationInvolvement::kNone) !=
-          AppHistory::DispatchResult::kContinue) {
-        return;
-      }
-    }
-  }
-
   // If we're navigating and there's still a text fragment permission token on
   // the document loader, it means this navigation didn't try to invoke a text
   // fragment. In this case, we want to propagate this to the next document to
@@ -740,6 +729,23 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                                   request.JavascriptWorld());
     }
     return;
+  }
+
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
+        (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
+                               frame_->DomWindow()->GetSecurityOrigin()))) {
+      if (app_history->DispatchNavigateEvent(
+              url, request.Form(), NavigateEventType::kCrossDocument,
+              frame_load_type,
+              request.GetTriggeringEventInfo() ==
+                      mojom::blink::TriggeringEventInfo::kFromTrustedEvent
+                  ? UserNavigationInvolvement::kActivation
+                  : UserNavigationInvolvement::kNone) !=
+          AppHistory::DispatchResult::kContinue) {
+        return;
+      }
+    }
   }
 
   if (frame_->IsMainFrame())
@@ -1439,8 +1445,11 @@ bool FrameLoader::ShouldClose(bool is_reload) {
     IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
         frame_->GetDocument());
     if (!frame_->GetDocument()->DispatchBeforeUnloadEvent(
-            &page->GetChromeClient(), is_reload, did_allow_navigation))
+            &page->GetChromeClient(), is_reload, did_allow_navigation)) {
+      if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+        app_history->InformAboutCanceledNavigation();
       return false;
+    }
 
     // Then deal with descendent frames.
     for (Member<LocalFrame>& descendant_frame : descendant_frames) {
@@ -1460,8 +1469,11 @@ bool FrameLoader::ShouldClose(bool is_reload) {
           ignore_opens_during_unload_descendant(
               descendant_frame->GetDocument());
       if (!descendant_frame->GetDocument()->DispatchBeforeUnloadEvent(
-              &page->GetChromeClient(), is_reload, did_allow_navigation))
+              &page->GetChromeClient(), is_reload, did_allow_navigation)) {
+        if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+          app_history->InformAboutCanceledNavigation();
         return false;
+      }
     }
   }
 
@@ -1531,6 +1543,8 @@ void FrameLoader::ClearClientNavigation() {
 void FrameLoader::CancelClientNavigation() {
   if (!client_navigation_)
     return;
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+    app_history->InformAboutCanceledNavigation();
   ResourceError error = ResourceError::CancelledError(client_navigation_->url);
   ClearClientNavigation();
   if (WebPluginContainerImpl* plugin = frame_->GetWebPluginContainer())

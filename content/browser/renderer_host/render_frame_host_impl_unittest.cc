@@ -419,4 +419,53 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadSentToRenderer) {
   local_frame.RunBeforeUnloadCallback();
 }
 
+class LoadingStateChangedDelegate : public WebContentsDelegate {
+ public:
+  void LoadingStateChanged(WebContents* source,
+                           bool should_show_loading_ui) final {
+    should_show_loading_ui_ = should_show_loading_ui;
+  }
+
+  bool should_show_loading_ui() { return should_show_loading_ui_; }
+
+ private:
+  bool should_show_loading_ui_ = false;
+};
+
+TEST_F(RenderFrameHostImplTest, TransitionWhileShowLoadingUi) {
+  // Initial commit.
+  const GURL url1("http://foo");
+  NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
+
+  std::unique_ptr<LoadingStateChangedDelegate> delegate =
+      std::make_unique<LoadingStateChangedDelegate>();
+  contents()->SetDelegate(delegate.get());
+  ASSERT_FALSE(delegate->should_show_loading_ui());
+  ASSERT_FALSE(contents()->IsLoading());
+  ASSERT_FALSE(contents()->ShouldShowLoadingUI());
+
+  // Emulate appHistory.transitionWhile().
+  const GURL url2("http://foo#a");
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->did_create_new_entry = false;
+  params->should_replace_current_entry = true;
+  params->url = url2;
+  params->origin = url::Origin::Create(url2);
+  params->referrer = blink::mojom::Referrer::New();
+  params->transition = ui::PAGE_TRANSITION_LINK;
+  params->should_update_history = true;
+  params->method = "GET";
+  params->page_state = blink::PageState::CreateFromURL(url2);
+  params->post_id = -1;
+  main_test_rfh()->SendDidCommitSameDocumentNavigation(
+      std::move(params),
+      blink::mojom::SameDocumentNavigationType::kAppHistoryTransitionWhile);
+
+  // appHistory.transitionWhile() should leave WebContents in the loading state
+  // and showing loading UI, unlike other same-document navigations.
+  EXPECT_TRUE(delegate->should_show_loading_ui());
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_TRUE(contents()->ShouldShowLoadingUI());
+}
+
 }  // namespace content

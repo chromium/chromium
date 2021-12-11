@@ -44,29 +44,33 @@ namespace blink {
 class NavigateReaction final : public NewScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
+  enum class ReactType { kImmediate, kTransitionWhile };
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
                     AppHistoryTransition* transition,
-                    AbortSignal* signal) {
+                    AbortSignal* signal,
+                    ReactType react_type) {
     promise.Then(MakeGarbageCollected<NewScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
                                        navigation, transition, signal,
-                                       ResolveType::kFulfill)),
+                                       ResolveType::kFulfill, react_type)),
                  MakeGarbageCollected<NewScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
                                        navigation, transition, signal,
-                                       ResolveType::kReject)));
+                                       ResolveType::kReject, react_type)));
   }
 
   NavigateReaction(AppHistoryApiNavigation* navigation,
                    AppHistoryTransition* transition,
                    AbortSignal* signal,
-                   ResolveType type)
+                   ResolveType resolve_type,
+                   ReactType react_type)
       : navigation_(navigation),
         transition_(transition),
         signal_(signal),
-        type_(type) {}
+        resolve_type_(resolve_type),
+        react_type_(react_type) {}
 
   void Trace(Visitor* visitor) const final {
     NewScriptFunction::Callable::Trace(visitor);
@@ -84,7 +88,7 @@ class NavigateReaction final : public NewScriptFunction::Callable {
 
     AppHistory* app_history = AppHistory::appHistory(*window);
     app_history->ongoing_navigation_signal_ = nullptr;
-    if (type_ == ResolveType::kFulfill) {
+    if (resolve_type_ == ResolveType::kFulfill) {
       if (navigation_) {
         navigation_->ResolveFinishedPromise();
       }
@@ -98,6 +102,13 @@ class NavigateReaction final : public NewScriptFunction::Callable {
       app_history->transition_ = nullptr;
     }
 
+    if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {
+      window->GetFrame()->Loader().DidFinishNavigation(
+          resolve_type_ == ResolveType::kFulfill
+              ? FrameLoader::NavigationFinishState::kSuccess
+              : FrameLoader::NavigationFinishState::kFailure);
+    }
+
     return ScriptValue();
   }
 
@@ -105,7 +116,8 @@ class NavigateReaction final : public NewScriptFunction::Callable {
   Member<AppHistoryApiNavigation> navigation_;
   Member<AppHistoryTransition> transition_;
   Member<AbortSignal> signal_;
-  ResolveType type_;
+  ResolveType resolve_type_;
+  ReactType react_type_;
 };
 
 template <typename... DOMExceptionArgs>
@@ -670,13 +682,11 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   if (!promise_list.IsEmpty()) {
     transition_ =
         MakeGarbageCollected<AppHistoryTransition>(navigation_type, current());
-
-    // The spec says that at this point we should either run the URL and history
-    // update steps (for non-traverse cases) or we should do a same-document
-    // history traversal. In our implementation it's easier for the caller to do
-    // a history traversal since it has access to all the info it needs.
-    // TODO(japhet): Figure out how cross-document back-forward should work.
-    if (type != WebFrameLoadType::kBackForward) {
+    // In order to handle fragment cases (especially browser-initiated ones)
+    // correctly, we need state that only DocumentLoader holds. Defer to
+    // DocumentLoader to run the url and history update steps for the fragment
+    // case, but run it here for other cases.
+    if (event_type != NavigateEventType::kFragment) {
       GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
           url,
           mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
@@ -686,9 +696,12 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   if (!promise_list.IsEmpty() ||
       event_type != NavigateEventType::kCrossDocument) {
+    NavigateReaction::ReactType react_type =
+        promise_list.IsEmpty() ? NavigateReaction::ReactType::kImmediate
+                               : NavigateReaction::ReactType::kTransitionWhile;
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, promise_list),
-        ongoing_navigation_, transition_, navigate_event->signal());
+        ongoing_navigation_, transition_, navigate_event->signal(), react_type);
   } else if (ongoing_navigation_) {
     // The spec assumes it's ok to leave a promise permanently unresolved, but
     // ScriptPromiseResolver requires either resolution or explicit detach.

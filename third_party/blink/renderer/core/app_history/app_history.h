@@ -61,6 +61,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                               const WebVector<WebHistoryItem>& forward_entries);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
 
+  bool HasOngoingNavigation() const { return ongoing_navigation_signal_; }
+
   // Web-exposed:
   AppHistoryEntry* current() const;
   HeapVector<Member<AppHistoryEntry>> entries();

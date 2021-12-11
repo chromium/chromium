@@ -5,7 +5,7 @@
 async_test(t => {
   let events = [];
   function finish() {
-    assert_array_equals(events, ["onnavigate", "committed promisefulfilled", "onnavigateerror", "finished promiserejected"]);
+    assert_array_equals(events, ["onnavigate", "committed promisefulfilled", "onnavigateerror", "finished promiserejected",  "onhashchange", "onpopstate"]);
     t.done();
   }
 

@@ -741,7 +741,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // from the document, since a new document is already loading.
   bool was_loading = frame_->IsLoading();
   if (!was_loading)
-    GetLocalFrameClient().DidStartLoading();
+    GetFrameLoader().Progress().ProgressStarted();
 
   // Update the data source's request with the new URL to fake the URL change
   frame_->GetDocument()->SetURL(new_url);
@@ -800,10 +800,16 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       history_item_.Get(), commit_type, is_synchronously_committed,
       same_document_navigation_type, is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
-  if (!was_loading) {
-    GetLocalFrameClient().DidStopLoading();
-    frame_->UpdateFaviconURL();
-  }
+
+  // If transitionWhile() was called during this same-document navigation's
+  // AppHistoryNavigateEvent, the navigation will finish asynchronously, so
+  // don't immediately call DidStopLoading() in that case.
+  bool should_send_stop_notification =
+      !was_loading &&
+      same_document_navigation_type !=
+          mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile;
+  if (should_send_stop_notification)
+    GetFrameLoader().Progress().ProgressCompleted();
 }
 
 const KURL& DocumentLoader::UrlForHistory() const {
@@ -1300,15 +1306,10 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
         involvement, nullptr, history_item);
     if (dispatch_result == AppHistory::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
-    // In the kTransitionWhile case, if the navigation is not back-forward,
-    // DispatchNavigateEvent() will have taken care of emulating a commit and we
-    // can abort here. In the back-forward case, though, DispatchNavigateEvent()
-    // doesn't have all the state needed to correctly commit, so fall through
-    // and let the commit proceed normally, just with the
-    // mojom::blink::SameDocumentNavigationType modified.
+    // In the kTransitionWhile case, fall through and let the commit proceed
+    // normally, just with the  mojom::blink::SameDocumentNavigationType
+    // modified.
     if (dispatch_result == AppHistory::DispatchResult::kTransitionWhile) {
-      if (frame_load_type != WebFrameLoadType::kBackForward)
-        return mojom::blink::CommitResult::Aborted;
       same_document_navigation_type =
           mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile;
     }

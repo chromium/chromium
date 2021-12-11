@@ -112,6 +112,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
       bool was_within_same_document);
+  void SendDidCommitSameDocumentNavigation(
+      mojom::DidCommitProvisionalLoadParamsPtr params,
+      blink::mojom::SameDocumentNavigationType same_document_navigation_type);
 
   // With the current navigation logic this method is a no-op.
   // Simulates a renderer-initiated navigation to |url| starting in the

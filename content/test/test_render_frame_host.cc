@@ -297,15 +297,22 @@ void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
     bool was_within_same_document) {
   last_commit_was_error_page_ = params->url_is_unreachable;
   if (was_within_same_document) {
-    auto same_doc_params = mojom::DidCommitSameDocumentNavigationParams::New();
-    same_doc_params->same_document_navigation_type =
-        blink::mojom::SameDocumentNavigationType::kFragment;
-    params->http_status_code = last_http_status_code();
-    DidCommitSameDocumentNavigation(std::move(params),
-                                    std::move(same_doc_params));
+    SendDidCommitSameDocumentNavigation(
+        std::move(params), blink::mojom::SameDocumentNavigationType::kFragment);
   } else {
     DidCommitProvisionalLoad(std::move(params), std::move(interface_params));
   }
+}
+
+void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
+    mojom::DidCommitProvisionalLoadParamsPtr params,
+    blink::mojom::SameDocumentNavigationType same_document_navigation_type) {
+  auto same_doc_params = mojom::DidCommitSameDocumentNavigationParams::New();
+  same_doc_params->same_document_navigation_type =
+      same_document_navigation_type;
+  params->http_status_code = last_http_status_code();
+  DidCommitSameDocumentNavigation(std::move(params),
+                                  std::move(same_doc_params));
 }
 
 void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(

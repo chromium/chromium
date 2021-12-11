@@ -10369,9 +10369,18 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // true in CommitNavigation.
   if (!is_loading()) {
     bool was_loading = frame_tree()->IsLoading();
+    // In general, loading ui is only shown for cross-document navigations,
+    // because same-document navigations are already complete by the time the
+    // renderer notifies the browser process of the navigation.
+    // AppHistory transitionWhile(), however, is an asynchronous same-document
+    // navigation, and should therefore show loading UI until load completion.
+    bool should_show_loading_ui =
+        !is_same_document_navigation ||
+        same_document_params->same_document_navigation_type ==
+            blink::mojom::SameDocumentNavigationType::
+                kAppHistoryTransitionWhile;
     is_loading_ = true;
-    frame_tree_node()->DidStartLoading(!is_same_document_navigation,
-                                       was_loading);
+    frame_tree_node()->DidStartLoading(should_show_loading_ui, was_loading);
   }
 
   if (navigation_request)
