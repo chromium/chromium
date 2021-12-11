@@ -490,6 +490,8 @@ void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
 // the last field. That is, if within one batch the options of different
 // fields changed, all but one of these events will be lost.
 void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
+  DCHECK(IsOwnedByFrame(element, render_frame()));
+
   if (datalist_option_change_batch_timer_.IsRunning())
     datalist_option_change_batch_timer_.AbandonAndStop();
 
@@ -501,10 +503,10 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
 
 void AutofillAgent::BatchDataListOptionChange(
     const blink::WebFormControlElement& element) {
-  DCHECK(IsOwnedByFrame(element, render_frame()));
-
-  if (!is_popup_possibly_visible_ || !element.Focused())
+  if (element.GetDocument().IsNull() || !is_popup_possibly_visible_ ||
+      !element.Focused()) {
     return;
+  }
 
   OnProvisionallySaveForm(WebFormElement(), element,
                           ElementChangeSource::TEXTFIELD_CHANGED);
@@ -1058,6 +1060,8 @@ void AutofillAgent::SelectControlDidChange(
 // forms changed, all but one of these events will be lost.
 void AutofillAgent::SelectFieldOptionsChanged(
     const blink::WebFormControlElement& element) {
+  DCHECK(IsOwnedByFrame(element, render_frame()));
+
   if (!was_last_action_fill_ || element_.IsNull())
     return;
 
@@ -1072,6 +1076,9 @@ void AutofillAgent::SelectFieldOptionsChanged(
 
 void AutofillAgent::BatchSelectOptionChange(
     const blink::WebFormControlElement& element) {
+  if (element.GetDocument().IsNull())
+    return;
+
   // Look for the form and field associated with the select element. If they are
   // found, notify the driver that the form was modified dynamically.
   FormData form;
