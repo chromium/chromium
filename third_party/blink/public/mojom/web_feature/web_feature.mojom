@@ -3400,6 +3400,7 @@ enum WebFeature {
   kImageLoadAtDismissalEvent = 4091,
   kPrivateNetworkAccessIgnoredPreflightError = 4092,
   kAbortPaymentRespondWithTrue = 4093,
+  kAllowPaymentRequestAttributeHasEffect = 4094,
 
 
   // Add new features immediately above this line. Don't change assigned

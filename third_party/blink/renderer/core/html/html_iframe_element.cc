@@ -356,7 +356,12 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
         mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
-    if (!policy_changed) {
+    // Measure cases where allowpaymentrequest had an actual effect, to see if
+    // we can deprecate it. See https://crbug.com/1127988
+    if (policy_changed) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kAllowPaymentRequestAttributeHasEffect);
+    } else {
       logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
     }
