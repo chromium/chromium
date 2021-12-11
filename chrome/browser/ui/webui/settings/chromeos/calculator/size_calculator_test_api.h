@@ -17,91 +17,83 @@ namespace calculator {
 
 class TotalDiskSpaceTestAPI {
  public:
-  TotalDiskSpaceTestAPI(StorageHandler* handler,
-                        TotalDiskSpaceCalculator* total_disk_space_calculator) {
-    total_disk_space_calculator_ = total_disk_space_calculator;
-    total_disk_space_calculator_->AddObserver(handler);
+  TotalDiskSpaceTestAPI(StorageHandler* handler, Profile* profile)
+      : total_disk_space_calculator_(profile) {
+    total_disk_space_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { total_disk_space_calculator_->StartCalculation(); }
+  void StartCalculation() { total_disk_space_calculator_.StartCalculation(); }
 
   void SimulateOnGetRootDeviceSize(absl::optional<uint64_t> reply) {
-    total_disk_space_calculator_->OnGetRootDeviceSize(reply);
+    total_disk_space_calculator_.OnGetRootDeviceSize(reply);
   }
 
  private:
-  TotalDiskSpaceCalculator* total_disk_space_calculator_;
+  TotalDiskSpaceCalculator total_disk_space_calculator_;
 };
 
 class FreeDiskSpaceTestAPI {
  public:
-  FreeDiskSpaceTestAPI(StorageHandler* handler,
-                       FreeDiskSpaceCalculator* free_disk_space_calculator) {
-    free_disk_space_calculator_ = free_disk_space_calculator;
-    free_disk_space_calculator_->AddObserver(handler);
+  FreeDiskSpaceTestAPI(StorageHandler* handler, Profile* profile)
+      : free_disk_space_calculator_(profile) {
+    free_disk_space_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { free_disk_space_calculator_->StartCalculation(); }
+  void StartCalculation() { free_disk_space_calculator_.StartCalculation(); }
 
   void SimulateOnGetFreeDiskSpace(int64_t* available_bytes) {
-    free_disk_space_calculator_->OnGetFreeDiskSpace(available_bytes);
+    free_disk_space_calculator_.OnGetFreeDiskSpace(available_bytes);
   }
 
  private:
-  FreeDiskSpaceCalculator* free_disk_space_calculator_;
+  FreeDiskSpaceCalculator free_disk_space_calculator_;
 };
 
 class MyFilesSizeTestAPI {
  public:
-  MyFilesSizeTestAPI(StorageHandler* handler,
-                     MyFilesSizeCalculator* my_files_size_calculator) {
-    my_files_size_calculator_ = my_files_size_calculator;
-    my_files_size_calculator_->AddObserver(handler);
+  MyFilesSizeTestAPI(StorageHandler* handler, Profile* profile)
+      : my_files_size_calculator_(profile) {
+    my_files_size_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { my_files_size_calculator_->StartCalculation(); }
+  void StartCalculation() { my_files_size_calculator_.StartCalculation(); }
 
   void SimulateOnGetTotalBytes(int64_t total_bytes) {
-    my_files_size_calculator_->NotifySizeCalculated(total_bytes);
+    my_files_size_calculator_.NotifySizeCalculated(total_bytes);
   }
 
  private:
-  MyFilesSizeCalculator* my_files_size_calculator_;
+  MyFilesSizeCalculator my_files_size_calculator_;
 };
 
 class BrowsingDataSizeTestAPI {
  public:
-  BrowsingDataSizeTestAPI(
-      StorageHandler* handler,
-      BrowsingDataSizeCalculator* browsing_data_size_calculator) {
-    browsing_data_size_calculator_ = browsing_data_size_calculator;
-    browsing_data_size_calculator_->AddObserver(handler);
+  BrowsingDataSizeTestAPI(StorageHandler* handler, Profile* profile)
+      : browsing_data_size_calculator_(profile) {
+    browsing_data_size_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() {
-    browsing_data_size_calculator_->StartCalculation();
-  }
+  void StartCalculation() { browsing_data_size_calculator_.StartCalculation(); }
 
   void SimulateOnGetBrowsingDataSize(bool is_site_data, int64_t size) {
-    browsing_data_size_calculator_->OnGetBrowsingDataSize(is_site_data, size);
+    browsing_data_size_calculator_.OnGetBrowsingDataSize(is_site_data, size);
   }
 
  private:
-  BrowsingDataSizeCalculator* browsing_data_size_calculator_;
+  BrowsingDataSizeCalculator browsing_data_size_calculator_;
 };
 
 class AppsSizeTestAPI {
  public:
-  AppsSizeTestAPI(StorageHandler* handler,
-                  AppsSizeCalculator* apps_size_calculator) {
-    apps_size_calculator_ = apps_size_calculator;
-    apps_size_calculator_->AddObserver(handler);
+  AppsSizeTestAPI(StorageHandler* handler, Profile* profile)
+      : apps_size_calculator_(profile) {
+    apps_size_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { apps_size_calculator_->StartCalculation(); }
+  void StartCalculation() { apps_size_calculator_.StartCalculation(); }
 
   void SimulateOnGetAppsSize(int64_t total_bytes) {
-    apps_size_calculator_->OnGetAppsSize(total_bytes);
+    apps_size_calculator_.OnGetAppsSize(total_bytes);
   }
 
   void SimulateOnGetAndroidAppsSize(bool succeeded,
@@ -113,58 +105,55 @@ class AppsSizeTestAPI {
     result->total_code_bytes = total_code_bytes;
     result->total_data_bytes = total_data_bytes;
     result->total_cache_bytes = total_cache_bytes;
-    apps_size_calculator_->OnGetAndroidAppsSize(succeeded, std::move(result));
+    apps_size_calculator_.OnGetAndroidAppsSize(succeeded, std::move(result));
   }
 
  private:
-  AppsSizeCalculator* apps_size_calculator_;
+  AppsSizeCalculator apps_size_calculator_;
 };
 
 class CrostiniSizeTestAPI {
  public:
-  CrostiniSizeTestAPI(StorageHandler* handler,
-                      CrostiniSizeCalculator* crostini_size_calculator) {
-    crostini_size_calculator_ = crostini_size_calculator;
-    crostini_size_calculator_->AddObserver(handler);
+  CrostiniSizeTestAPI(StorageHandler* handler, Profile* profile)
+      : crostini_size_calculator_(profile) {
+    crostini_size_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { crostini_size_calculator_->StartCalculation(); }
+  void StartCalculation() { crostini_size_calculator_.StartCalculation(); }
 
   void SimulateOnGetCrostiniSize(int64_t size) {
-    crostini_size_calculator_->OnGetCrostiniSize(
+    crostini_size_calculator_.OnGetCrostiniSize(
         crostini::CrostiniResult::SUCCESS, size);
   }
 
  private:
-  CrostiniSizeCalculator* crostini_size_calculator_;
+  CrostiniSizeCalculator crostini_size_calculator_;
 };
 
 class OtherUsersSizeTestAPI {
  public:
-  OtherUsersSizeTestAPI(StorageHandler* handler,
-                        OtherUsersSizeCalculator* other_users_size_calculator) {
-    other_users_size_calculator_ = other_users_size_calculator;
-    other_users_size_calculator_->AddObserver(handler);
+  explicit OtherUsersSizeTestAPI(StorageHandler* handler) {
+    other_users_size_calculator_.AddObserver(handler);
   }
 
-  void StartCalculation() { other_users_size_calculator_->StartCalculation(); }
+  void StartCalculation() { other_users_size_calculator_.StartCalculation(); }
 
   void InitializeOtherUserSize(int user_count) {
     // When calling OnGetOtherUserSize, a callback is fired when
     // user_sizes_.size() == other_users_.size(). We want to control the size of
     // |other_users_|, rather than its content. This function initializes
     // other_users_ as a list of |user_count| nullptrs.
-    other_users_size_calculator_->other_users_ =
+    other_users_size_calculator_.other_users_ =
         user_manager::UserList(user_count);
   }
 
   void SimulateOnGetOtherUserSize(
       absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
-    other_users_size_calculator_->OnGetOtherUserSize(reply);
+    other_users_size_calculator_.OnGetOtherUserSize(reply);
   }
 
  private:
-  OtherUsersSizeCalculator* other_users_size_calculator_;
+  OtherUsersSizeCalculator other_users_size_calculator_;
 };
 
 }  // namespace calculator

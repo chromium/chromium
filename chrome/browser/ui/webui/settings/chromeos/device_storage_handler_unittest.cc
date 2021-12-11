@@ -90,27 +90,26 @@ class StorageHandlerTest : public testing::Test {
     handler_ = std::make_unique<TestStorageHandler>(profile_, html_source);
     handler_->set_web_ui(&web_ui_);
     handler_->AllowJavascriptForTesting();
+    content::WebUIDataSource::Add(profile_, html_source);
 
     // Initialize tests APIs.
     total_disk_space_test_api_ =
-        std::make_unique<calculator::TotalDiskSpaceTestAPI>(
-            handler_.get(), new calculator::TotalDiskSpaceCalculator(profile_));
+        std::make_unique<calculator::TotalDiskSpaceTestAPI>(handler_.get(),
+                                                            profile_);
     free_disk_space_test_api_ =
-        std::make_unique<calculator::FreeDiskSpaceTestAPI>(
-            handler_.get(), new calculator::FreeDiskSpaceCalculator(profile_));
+        std::make_unique<calculator::FreeDiskSpaceTestAPI>(handler_.get(),
+                                                           profile_);
     my_files_size_test_api_ = std::make_unique<calculator::MyFilesSizeTestAPI>(
-        handler_.get(), new calculator::MyFilesSizeCalculator(profile_));
+        handler_.get(), profile_);
     browsing_data_size_test_api_ =
-        std::make_unique<calculator::BrowsingDataSizeTestAPI>(
-            handler_.get(),
-            new calculator::BrowsingDataSizeCalculator(profile_));
-    apps_size_test_api_ = std::make_unique<calculator::AppsSizeTestAPI>(
-        handler_.get(), new calculator::AppsSizeCalculator(profile_));
+        std::make_unique<calculator::BrowsingDataSizeTestAPI>(handler_.get(),
+                                                              profile_);
+    apps_size_test_api_ =
+        std::make_unique<calculator::AppsSizeTestAPI>(handler_.get(), profile_);
     crostini_size_test_api_ = std::make_unique<calculator::CrostiniSizeTestAPI>(
-        handler_.get(), new calculator::CrostiniSizeCalculator(profile_));
+        handler_.get(), profile_);
     other_users_size_test_api_ =
-        std::make_unique<calculator::OtherUsersSizeTestAPI>(
-            handler_.get(), new calculator::OtherUsersSizeCalculator());
+        std::make_unique<calculator::OtherUsersSizeTestAPI>(handler_.get());
 
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
