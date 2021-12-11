@@ -151,6 +151,9 @@ class CORE_EXPORT RuleFeatureSet {
   bool NeedsHasInvalidationForId(const AtomicString& id) const;
   bool NeedsHasInvalidationForTagName(const AtomicString& tag_name) const;
   bool NeedsHasInvalidationForElement(Element&) const;
+  bool NeedsHasInvalidationForPseudoClass(
+      CSSSelector::PseudoType pseudo_type) const;
+  bool NeedsHasInvalidationForPseudoStateChange() const;
 
   bool HasIdsInSelectors() const { return id_invalidation_sets_.size() > 0; }
   bool InvalidatesParts() const { return metadata_.invalidates_parts; }
@@ -204,6 +207,7 @@ class CORE_EXPORT RuleFeatureSet {
               WTF::IntHash<unsigned>,
               WTF::UnsignedWithZeroKeyHashTraits<unsigned>>;
   using ValuesInHasArgument = HashSet<AtomicString>;
+  using PseudosInHasArgument = HashSet<CSSSelector::PseudoType>;
 
   struct FeatureMetadata {
     DISALLOW_NEW();
@@ -490,6 +494,7 @@ class CORE_EXPORT RuleFeatureSet {
   ValuesInHasArgument ids_in_has_argument_;
   ValuesInHasArgument tag_names_in_has_argument_;
   bool universal_in_has_argument_{false};
+  PseudosInHasArgument pseudos_in_has_argument_;
 
   // If true, the RuleFeatureSet is alive and can be used.
   unsigned is_alive_ : 1;

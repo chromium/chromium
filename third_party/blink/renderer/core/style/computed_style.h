@@ -390,6 +390,51 @@ class ComputedStyle : public ComputedStyleBase,
                                IsAtShadowBoundary = kNotAtShadowBoundary);
   void CopyNonInheritedFromCached(const ComputedStyle&);
 
+  bool AncestorsAffectedByHas() const {
+    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByHas;
+  }
+
+  void SetAncestorsAffectedByHas() {
+    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
+                                 kAncestorsAffectedByHas);
+  }
+
+  bool AncestorsAffectedByHoverInHas() const {
+    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByHoverInHas;
+  }
+
+  void SetAncestorsAffectedByHoverInHas() {
+    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
+                                 kAncestorsAffectedByHoverInHas);
+  }
+
+  bool AncestorsAffectedByActiveInHas() const {
+    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByActiveInHas;
+  }
+
+  void SetAncestorsAffectedByActiveInHas() {
+    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
+                                 kAncestorsAffectedByActiveInHas);
+  }
+
+  bool AncestorsAffectedByFocusInHas() const {
+    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByFocusInHas;
+  }
+
+  void SetAncestorsAffectedByFocusInHas() {
+    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
+                                 kAncestorsAffectedByFocusInHas);
+  }
+
+  bool AncestorsAffectedByFocusVisibleInHas() const {
+    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByFocusVisibleInHas;
+  }
+
+  void SetAncestorsAffectedByFocusVisibleInHas() {
+    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
+                                 kAncestorsAffectedByFocusVisibleInHas);
+  }
+
   PseudoId StyleType() const {
     return static_cast<PseudoId>(StyleTypeInternal());
   }

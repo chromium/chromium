@@ -923,11 +923,13 @@ bool PossiblyAffectingHasState(Element& element) {
   return !style || style->AncestorsAffectedByHas();
 }
 
-void InvalidateAncestorsAffectedByHas(Element* element) {
+void InvalidateAncestorsAffectedByHas(Element* element,
+                                      bool for_pseudo_change) {
   while (element) {
     const ComputedStyle* style = element->GetComputedStyle();
 
-    if (style && style->AffectedByHas()) {
+    if (style && style->AffectedByHas() &&
+        (!for_pseudo_change || style->AffectedByPseudoInHas())) {
       // TODO(blee@igalia.com) non-terminal ':has() is not supported yet,
       // so we will always invalidate the element marked as 'AffectedByHas'
 
@@ -947,6 +949,14 @@ void InvalidateAncestorsAffectedByHas(Element* element) {
 
     element = element->parentElement();
   }
+}
+
+void InvalidateAncestorsAffectedByHasForPseudoChange(Element* element) {
+  InvalidateAncestorsAffectedByHas(element, true /* for_pseudo_change */);
+}
+
+void InvalidateAncestorsAffectedByHas(Element* element) {
+  InvalidateAncestorsAffectedByHas(element, false /* for_pseudo_change */);
 }
 
 }  // namespace
@@ -1136,11 +1146,25 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
 
 void StyleEngine::PseudoStateChangedForElement(
     CSSSelector::PseudoType pseudo_type,
-    Element& element) {
+    Element& element,
+    bool invalidate_descendants_or_siblings,
+    bool invalidate_ancestors) {
+  if (!invalidate_descendants_or_siblings && !invalidate_ancestors)
+    return;
+
   if (ShouldSkipInvalidationFor(element))
     return;
-  if (IsSubtreeAndSiblingsStyleDirty(element))
+
+  if (invalidate_ancestors && RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element)) {
+    if (GetRuleFeatureSet().NeedsHasInvalidationForPseudoClass(pseudo_type))
+      InvalidateAncestorsAffectedByHasForPseudoChange(element.parentElement());
+  }
+
+  if (!invalidate_descendants_or_siblings ||
+      IsSubtreeAndSiblingsStyleDirty(element)) {
     return;
+  }
 
   InvalidationLists invalidation_lists;
   GetRuleFeatureSet().CollectInvalidationSetsForPseudoClass(
@@ -1352,8 +1376,12 @@ void StyleEngine::ElementInsertedOrRemoved(Element* parent, Element& element) {
   if (ShouldSkipInvalidationFor(*parent))
     return;
 
-  if (GetRuleFeatureSet().NeedsHasInvalidationForElement(element))
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+
+  if (features.NeedsHasInvalidationForElement(element))
     InvalidateAncestorsAffectedByHas(parent);
+  else if (features.NeedsHasInvalidationForPseudoStateChange())
+    InvalidateAncestorsAffectedByHasForPseudoChange(parent);
 }
 
 void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
@@ -1372,6 +1400,8 @@ void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
       return;
     }
   }
+  if (features.NeedsHasInvalidationForPseudoStateChange())
+    InvalidateAncestorsAffectedByHasForPseudoChange(parent);
 }
 
 void StyleEngine::InvalidateStyle() {

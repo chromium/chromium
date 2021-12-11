@@ -1528,16 +1528,18 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
                                     matched_property_cache_inherited_hit, 1);
 
       EInsideLink link_status = state.Style()->InsideLink();
-      bool ancestors_affected_by_has = state.Style()->AncestorsAffectedByHas();
+      unsigned dynamic_restyle_flags_for_has =
+          state.Style()->DynamicRestyleFlagsForHas();
       // If the cache item parent style has identical inherited properties to
       // the current parent style then the resulting style will be identical
       // too. We copy the inherited properties over from the cache and are done.
       state.Style()->InheritFrom(*cached_matched_properties->computed_style);
 
-      // Unfortunately the link status and 'ancestors affected by has' are
+      // Unfortunately the 'link status' and 'dynamic restyle flags for has' are
       // treated like an inherited property. We need to explicitly restore it.
       state.Style()->SetInsideLink(link_status);
-      state.Style()->SetAncestorsAffectedByHas(ancestors_affected_by_has);
+      state.Style()->SetDynamicRestyleFlagsForHas(
+          dynamic_restyle_flags_for_has);
 
       is_inherited_cache_hit = true;
     }

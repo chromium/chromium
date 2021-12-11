@@ -452,4 +452,264 @@ TEST_F(AffectedByPseudoTest, AncestorsAffectedByHasCheckFalseRestore) {
   ASSERT_EQ(1U, element_count);
 }
 
+TEST_F(AffectedByPseudoTest,
+       AffectedByDescendantPseudoStateAndAncestorsAffectedByHover) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .a:has(.b:hover) { background-color: lime; }
+      .c:has(:hover) { background-color: green; }
+      .d:has(.e) { background-color: blue }
+    </style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3></div>
+        <div id=div4></div>
+      </div>
+      <div id=div5 class='a'>
+        <div id=div6></div>
+        <div id=div7 class='b'></div>
+      </div>
+      <div id=div8 class='c'>
+        <div id=div9></div>
+        <div id=div10></div>
+      </div>
+      <div id=div11 class='d'>
+        <div id=div12></div>
+        <div id=div13></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div2")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div3")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div3")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div4")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div4")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_TRUE(
+      GetElementById("div5")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div5")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div6")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div6")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div7")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div7")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_TRUE(
+      GetElementById("div8")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div8")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div9")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div9")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div10")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div10")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div11")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div11")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div12")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div12")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div13")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div13")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div3")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div4")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(3U, element_count);
+
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div2")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div3")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div3")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div4")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div4")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div2")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div3")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div3")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div4")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div4")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div3")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div4")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->setAttribute(html_names::kClassAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div2")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div3")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div3")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div4")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_TRUE(GetElementById("div4")
+                  ->GetComputedStyle()
+                  ->AncestorsAffectedByHoverInHas());
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(3U, element_count);
+
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div2")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div3")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div3")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+  EXPECT_FALSE(
+      GetElementById("div4")->GetComputedStyle()->AffectedByPseudoInHas());
+  EXPECT_FALSE(GetElementById("div4")
+                   ->GetComputedStyle()
+                   ->AncestorsAffectedByHoverInHas());
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div6")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div6")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div7")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div7")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div9")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div9")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div10")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div10")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div12")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div12")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div13")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div13")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

@@ -5241,4 +5241,51 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationUniversalInArgument) {
   ASSERT_EQ(1U, element_count);
 }
 
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationInsertionRemovalWithPseudoInHas) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .a:has(.b:focus) { background-color: lime; }
+      .c:has(.d) { background-color: green; }
+    </style>
+    <div id=div1>
+      <div id=div2 class='a'></div>
+      <div id=div3 class='c'></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div4 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div4->setAttribute(html_names::kIdAttr, "div4");
+  GetDocument().getElementById("div2")->AppendChild(div4);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div5->setAttribute(html_names::kIdAttr, "div5");
+  GetDocument().getElementById("div3")->AppendChild(div5);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div2")->RemoveChild(
+      GetDocument().getElementById("div4"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div3")->RemoveChild(
+      GetDocument().getElementById("div5"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+}
+
 }  // namespace blink

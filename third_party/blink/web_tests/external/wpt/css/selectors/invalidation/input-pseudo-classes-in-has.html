@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Selectors Invalidation: input pseudo classes in :has() argument</title>
+<link rel="author" title="Byungwoo Lee" href="blee@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  .ancestor:has(input:checked) { color: green }
+  .ancestor:has(input:indeterminate) { color: yellowgreen }
+</style>
+<div id=subject class=ancestor>
+  <div>
+    <input type="checkbox" name="my-checkbox" id="checkme">
+    <label for="checkme">Check me!</label>
+  </div>
+</div>
+<script>
+  test(() => {
+    checkme.checked = false;
+    assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)",
+                  "ancestor should be black");
+    checkme.checked = true;
+    assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)",
+                  "ancestor should be green");
+    checkme.indeterminate = true;
+    assert_equals(getComputedStyle(subject).color, "rgb(154, 205, 50)",
+                  "ancestor should be yellowgreen");
+    checkme.remove();
+    assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)",
+                  "ancestor should be black");
+
+    {
+      const input = document.createElement('input');
+      input.id = 'checkme';
+      input.setAttribute('type', 'checkbox');
+      input.setAttribute('name', 'my-checkbox');
+      input.checked = true;
+      assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)",
+                    "ancestor should be black");
+      subject.prepend(input);
+      assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)",
+                    "ancestor should be green");
+    }
+
+      });
+</script>

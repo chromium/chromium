@@ -571,6 +571,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RebuildLayoutTree(WhitespaceAttacher&);
   void HandleSubtreeModifications();
   void PseudoStateChanged(CSSSelector::PseudoType);
+  void PseudoStateChangedForTesting(CSSSelector::PseudoType);
   void SetAnimationStyleChange(bool);
   void SetNeedsAnimationStyleRecalc();
 
@@ -1119,6 +1120,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
  private:
   friend class AXObject;
+  struct AffectedByPseudoStateChange;
 
   void ScrollLayoutBoxBy(const ScrollToOptions*);
   void ScrollLayoutBoxTo(const ScrollToOptions*);
@@ -1404,6 +1406,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& name);
 
   DisplayLockContext* GetDisplayLockContextFromRareData() const;
+
+  void PseudoStateChanged(CSSSelector::PseudoType pseudo,
+                          AffectedByPseudoStateChange&&);
 
   Member<ElementData> element_data_;
 };

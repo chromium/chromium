@@ -367,7 +367,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void IdChangedForElement(const AtomicString& old_id,
                            const AtomicString& new_id,
                            Element&);
-  void PseudoStateChangedForElement(CSSSelector::PseudoType, Element&);
+  void PseudoStateChangedForElement(CSSSelector::PseudoType,
+                                    Element&,
+                                    bool invalidate_descendants_or_siblings,
+                                    bool invalidate_ancestors);
   void PartChangedForElement(Element&);
   void ExportpartsChangedForElement(Element&);
 

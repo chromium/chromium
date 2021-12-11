@@ -3696,14 +3696,72 @@ void Element::setEditContext(EditContext* edit_context) {
   InlineStyleChanged();
 }
 
+struct Element::AffectedByPseudoStateChange {
+  bool children_or_siblings{true};
+  bool ancestors{false};
+
+  AffectedByPseudoStateChange(CSSSelector::PseudoType pseudo_type,
+                              Element& element) {
+    switch (pseudo_type) {
+      case CSSSelector::kPseudoFocus:
+        children_or_siblings = element.ChildrenOrSiblingsAffectedByFocus();
+        if (auto* style = element.GetComputedStyle())
+          ancestors = style->AncestorsAffectedByFocusInHas();
+        break;
+      case CSSSelector::kPseudoFocusVisible:
+        children_or_siblings =
+            element.ChildrenOrSiblingsAffectedByFocusVisible();
+        if (auto* style = element.GetComputedStyle())
+          ancestors = style->AncestorsAffectedByFocusVisibleInHas();
+        break;
+      case CSSSelector::kPseudoFocusWithin:
+        children_or_siblings =
+            element.ChildrenOrSiblingsAffectedByFocusWithin();
+        if (auto* style = element.GetComputedStyle())
+          ancestors = style->AncestorsAffectedByFocusInHas();
+        break;
+      case CSSSelector::kPseudoHover:
+        children_or_siblings = element.ChildrenOrSiblingsAffectedByHover();
+        if (auto* style = element.GetComputedStyle())
+          ancestors = style->AncestorsAffectedByHoverInHas();
+        break;
+      case CSSSelector::kPseudoActive:
+        children_or_siblings = element.ChildrenOrSiblingsAffectedByActive();
+        if (auto* style = element.GetComputedStyle())
+          ancestors = style->AncestorsAffectedByActiveInHas();
+        break;
+      case CSSSelector::kPseudoChecked:
+      case CSSSelector::kPseudoIndeterminate:
+        ancestors = true;
+        break;
+      default:
+        break;
+    }
+  }
+
+  AffectedByPseudoStateChange() : ancestors(true) {}  // For testing
+};
+
 void Element::PseudoStateChanged(CSSSelector::PseudoType pseudo) {
+  PseudoStateChanged(pseudo, AffectedByPseudoStateChange(pseudo, *this));
+}
+
+void Element::PseudoStateChangedForTesting(CSSSelector::PseudoType pseudo) {
+  PseudoStateChanged(pseudo, AffectedByPseudoStateChange());
+}
+
+void Element::PseudoStateChanged(
+    CSSSelector::PseudoType pseudo,
+    AffectedByPseudoStateChange&& affected_by_pseudo) {
   // We can't schedule invaliation sets from inside style recalc otherwise
   // we'd never process them.
   // TODO(esprehn): Make this an ASSERT and fix places that call into this
   // like HTMLSelectElement.
   if (GetDocument().InStyleRecalc())
     return;
-  GetDocument().GetStyleEngine().PseudoStateChangedForElement(pseudo, *this);
+  GetDocument().GetStyleEngine().PseudoStateChangedForElement(
+      pseudo, *this, affected_by_pseudo.children_or_siblings,
+      affected_by_pseudo.ancestors);
 }
 
 void Element::SetAnimationStyleChange(bool animation_style_change) {
@@ -6904,8 +6962,7 @@ void Element::SetHovered(bool hovered) {
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_hover));
   }
-  if (ChildrenOrSiblingsAffectedByHover())
-    PseudoStateChanged(CSSSelector::kPseudoHover);
+  PseudoStateChanged(CSSSelector::kPseudoHover);
 
   InvalidateIfHasEffectiveAppearance();
 }
@@ -6917,14 +6974,13 @@ void Element::SetActive(bool active) {
   GetDocument().UserActionElements().SetActive(this, active);
 
   if (!GetLayoutObject()) {
-    if (ChildrenOrSiblingsAffectedByActive()) {
-      PseudoStateChanged(CSSSelector::kPseudoActive);
-    } else {
+    if (!ChildrenOrSiblingsAffectedByActive()) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::CreateWithExtraData(
                               style_change_reason::kPseudoClass,
                               style_change_extra_data::g_active));
     }
+    PseudoStateChanged(CSSSelector::kPseudoActive);
     return;
   }
 
@@ -6938,8 +6994,7 @@ void Element::SetActive(bool active) {
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_active));
   }
-  if (ChildrenOrSiblingsAffectedByActive())
-    PseudoStateChanged(CSSSelector::kPseudoActive);
+  PseudoStateChanged(CSSSelector::kPseudoActive);
 
   if (!IsDisabledFormControl())
     InvalidateIfHasEffectiveAppearance();

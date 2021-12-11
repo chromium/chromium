@@ -150,10 +150,19 @@
       custom_compare: true,
     },
     {
-      name: "AncestorsAffectedByHas",
-      field_template: "primitive",
+      name: "AffectedByPseudoInHas",
+      field_template: "monotonic_flag",
       default_value: "false",
-      type_name: "bool",
+      custom_copy: true,
+      custom_compare: true,
+    },
+    {
+      name: "DynamicRestyleFlagsForHas",
+      field_template: "primitive",
+      field_group: "*",
+      field_size: 5,
+      default_value: "0",
+      type_name: "unsigned",
       inherited: true,
     },
     // A non-inherited property references a variable or @apply is used

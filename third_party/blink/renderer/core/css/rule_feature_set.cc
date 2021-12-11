@@ -409,6 +409,7 @@ RuleFeatureSet::~RuleFeatureSet() {
   ids_in_has_argument_.clear();
   tag_names_in_has_argument_.clear();
   universal_in_has_argument_ = false;
+  pseudos_in_has_argument_.clear();
 
   is_alive_ = false;
 }
@@ -440,6 +441,7 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
          ids_in_has_argument_ == other.ids_in_has_argument_ &&
          tag_names_in_has_argument_ == other.tag_names_in_has_argument_ &&
          universal_in_has_argument_ == other.universal_in_has_argument_ &&
+         pseudos_in_has_argument_ == other.pseudos_in_has_argument_ &&
          is_alive_ == other.is_alive_;
 }
 
@@ -894,6 +896,10 @@ bool RuleFeatureSet::AddValueOfSimpleSelectorInHasArgument(
     tag_names_in_has_argument_.insert(selector.TagQName().LocalName());
     return true;
   }
+  if (selector.Match() == CSSSelector::kPseudoClass) {
+    pseudos_in_has_argument_.insert(selector.GetPseudoType());
+    return true;
+  }
   return false;
 }
 
@@ -1239,6 +1245,8 @@ void RuleFeatureSet::Add(const RuleFeatureSet& other) {
   for (const auto& tag_name : other.tag_names_in_has_argument_)
     tag_names_in_has_argument_.insert(tag_name);
   universal_in_has_argument_ |= other.universal_in_has_argument_;
+  for (const auto& pseudo_type : other.pseudos_in_has_argument_)
+    pseudos_in_has_argument_.insert(pseudo_type);
 }
 
 void RuleFeatureSet::Clear() {
@@ -1258,6 +1266,7 @@ void RuleFeatureSet::Clear() {
   ids_in_has_argument_.clear();
   tag_names_in_has_argument_.clear();
   universal_in_has_argument_ = false;
+  pseudos_in_has_argument_.clear();
 }
 
 void RuleFeatureSet::CollectInvalidationSetsForClass(
@@ -1535,6 +1544,15 @@ bool RuleFeatureSet::NeedsHasInvalidationForElement(Element& element) const {
   }
 
   return NeedsHasInvalidationForTagName(element.LocalNameForSelectorMatching());
+}
+
+bool RuleFeatureSet::NeedsHasInvalidationForPseudoClass(
+    CSSSelector::PseudoType pseudo_type) const {
+  return pseudos_in_has_argument_.Contains(pseudo_type);
+}
+
+bool RuleFeatureSet::NeedsHasInvalidationForPseudoStateChange() const {
+  return !pseudos_in_has_argument_.IsEmpty();
 }
 
 void RuleFeatureSet::InvalidationSetFeatures::Add(

@@ -1111,8 +1111,7 @@ void ContainerNode::FocusStateChanged() {
       StyleChangeReasonForTracing::CreateWithExtraData(
           style_change_reason::kPseudoClass, style_change_extra_data::g_focus));
 
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocus())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
 
   InvalidateIfHasEffectiveAppearance();
@@ -1132,8 +1131,7 @@ void ContainerNode::FocusVisibleStateChanged() {
                           style_change_reason::kPseudoClass,
                           style_change_extra_data::g_focus_visible));
 
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusVisible())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
 }
 
@@ -1148,8 +1146,7 @@ void ContainerNode::FocusWithinStateChanged() {
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus_within));
   }
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusWithin())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
@@ -1185,35 +1182,36 @@ void ContainerNode::SetFocused(bool received,
 
   // If :focus sets display: none, we lose focus but still need to recalc our
   // style.
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocus()) {
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
-  } else {
+  if (!this_element || !this_element->ChildrenOrSiblingsAffectedByFocus()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::CreateWithExtraData(
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus));
   }
+  if (this_element)
+    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
 
   if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    if (this_element &&
-        this_element->ChildrenOrSiblingsAffectedByFocusVisible()) {
-      this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
-    } else {
+    if (!this_element ||
+        !this_element->ChildrenOrSiblingsAffectedByFocusVisible()) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::CreateWithExtraData(
                               style_change_reason::kPseudoClass,
                               style_change_extra_data::g_focus_visible));
     }
+    if (this_element)
+      this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
   }
 
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusWithin()) {
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
-  } else {
+  if (!this_element ||
+      !this_element->ChildrenOrSiblingsAffectedByFocusWithin()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::CreateWithExtraData(
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus_within));
   }
+  if (this_element)
+    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
 void ContainerNode::SetHasFocusWithinUpToAncestor(bool flag, Node* ancestor) {
