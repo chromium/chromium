@@ -310,12 +310,6 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
     first_list = get_files_to_compare(first_dir, recursive)
     second_list = get_files_to_compare(second_dir, recursive)
 
-  # Always check that the main ninja files are deterministic.
-  # Ideally we'd compare all of them, but that requires walking
-  # the clobbered build dir to find them. This is less code
-  # and gives most of the benefit.
-  first_list.update(['build.ninja', 'toolchain.ninja'])
-  second_list.update(['build.ninja', 'toolchain.ninja'])
 
   equals = []
   expected_diffs = []
