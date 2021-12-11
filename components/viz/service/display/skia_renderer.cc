@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -2208,6 +2209,9 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
+  bool translate_only = params->content_device_transform.matrix().isTranslate();
+  UMA_HISTOGRAM_BOOLEAN("SkiaRenderer.DrawTileDrawQuad.CDT.TranslateOnly",
+                        translate_only);
   if (builder.paint_op_buffer()) {
     DCHECK(!rpdq_params);
     DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,

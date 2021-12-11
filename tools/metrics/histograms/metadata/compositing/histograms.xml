@@ -642,6 +642,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly"
+    units="boolean" expires_after="2022-05-29">
+  <owner>penghuang@chromium.org</owner>
+  <owner>herb@google.com</owner>
+  <summary>
+    Records if the content to device transform (CDT) used in
+    SkiaRenderer::DrawTileDrawQuad is a translate only transfrom.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2022-08-19">
   <owner>weiliangc@chromium.org</owner>
