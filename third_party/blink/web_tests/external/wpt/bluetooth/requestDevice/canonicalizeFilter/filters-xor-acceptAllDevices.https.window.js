@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'RequestDeviceOptions should have exactly one of ' +
     '\'filters\' or \'acceptAllDevices:true\'. Reject with TypeError if not.';
@@ -22,9 +20,9 @@ const test_specs = [
 bluetooth_test(() => {
   let test_promises = Promise.resolve();
   test_specs.forEach(
-      args => {test_promises = test_promises.then(
-                   () => assert_promise_rejects_with_message(
-                       requestDeviceWithTrustedClick(args), expected))});
+      args => {
+          test_promises = test_promises.then(
+              () => assert_promise_rejects_with_message(
+                  requestDeviceWithTrustedClick(args), expected))});
   return test_promises;
 }, test_desc);
-</script>

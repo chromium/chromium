@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'A device name longer than 248 must reject.';
 const expected = new DOMException(
@@ -19,4 +17,3 @@ bluetooth_test(
         requestDeviceWithTrustedClick({filters: [{name: name_too_long}]}),
         expected, 'Device name longer than 248'),
     test_desc);
-</script>

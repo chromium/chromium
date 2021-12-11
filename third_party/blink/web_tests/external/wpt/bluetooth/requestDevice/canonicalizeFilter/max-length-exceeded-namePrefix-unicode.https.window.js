@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/bluetooth/resources/bluetooth-test.js"></script>
-<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
-<script>
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/bluetooth/resources/bluetooth-test.js
+// META: script=/bluetooth/resources/bluetooth-fake-devices.js
 'use strict';
 const test_desc = 'Unicode string with utf8 representation longer than 248 ' +
-    'bytes in \'name\' must throw TypeError.';
+    'bytes in \'namePrefix\' must throw NotFoundError.';
 const expected = new DOMException(
     'Failed to execute \'requestDevice\' on \'Bluetooth\': ' +
         'A device name can\'t be longer than 248 bytes.',
@@ -19,7 +17,6 @@ const unicode_name = '\u2764'.repeat(83);
 
 bluetooth_test(
     () => assert_promise_rejects_with_message(
-        requestDeviceWithTrustedClick({filters: [{name: unicode_name}]}),
+        requestDeviceWithTrustedClick({filters: [{namePrefix: unicode_name}]}),
         expected),
     test_desc);
-</script>
