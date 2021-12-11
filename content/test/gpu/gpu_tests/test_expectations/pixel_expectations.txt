@@ -344,6 +344,7 @@ crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundI
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
 crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
 crbug.com/1220766 [ android android-chromium android-nexus-5x ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
+crbug.com/1278885 [ android android-chromium android-nexus-5x skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
 
 # Frequently fails on Nexus 5X
 crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
@@ -486,8 +487,11 @@ crbug.com/1274796 [ win nvidia-0x2184 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1274796 [ win intel-0x5912 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1274796 [ win amd-0x7340 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 
-# Pixel_Video_Media_Stream_Incompatible_Stride flakes on NVIDIA Linux SkiaRenderer GL
-crbug.com/1213542 [ linux nvidia-0x1cb3 skia-renderer-gl ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+# Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
+crbug.com/1213542 [ skia-renderer-gl linux nvidia-0x1cb3 ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+crbug.com/1213542 [ skia-renderer-gl linux nvidia-0x2184 passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+crbug.com/1213542 [ skia-renderer-gl mac intel-0x3e9b no-passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+crbug.com/1213542 [ skia-renderer-gl mac amd-0x6821 passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
 # OffscreenCanvas pixel tests flaky crashes on ChromeOS Kevin
 crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
@@ -495,6 +499,7 @@ crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_Offsc
 
 # Flaky on Pixel 4 Android WebView
 crbug.com/1276605 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
+crbug.com/1278893 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

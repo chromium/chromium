@@ -502,16 +502,18 @@ crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/gls
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/abs/abs_001_to_006.html [ RetryOnFailure ]
 
 # Vulkan / Win / Passthrough command decoder
-crbug.com/angleproject/3469 [ win angle-vulkan passthrough nvidia ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
-
-# Note: the following test crashes so it's skipped.  http://anglebug.com/3352
 crbug.com/angleproject/2921 [ win angle-vulkan passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 crbug.com/angleproject/3111 [ win angle-vulkan passthrough ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
 crbug.com/angleproject/4334 [ win angle-vulkan passthrough ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Failure ]
+
+# Vulkan / Win (32-bit) / Passthrough command decoder
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
+crbug.com/1216686 [ win angle-swiftshader passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
+crbug.com/1216686 [ win angle-swiftshader passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
 # Vulkan / Win / NVIDIA / Passthrough command decoder
+crbug.com/angleproject/3469 [ win angle-vulkan passthrough nvidia ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 crbug.com/963205 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 # crbug.com/964321 [ win nvidia angle-vulkan passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
 crbug.com/1051576 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
@@ -541,14 +543,13 @@ crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragd
 
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/929009 [ mac amd release-x64 angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-disabled ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/1227774 [ mac amd debug-x64 angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/1227774 [ mac amd angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
@@ -759,6 +760,7 @@ crbug.com/1175226 [ android android-pixel-4 no-passthrough no-swiftshader-gl ] c
 crbug.com/1179432 [ android android-pixel-4 no-passthrough ] conformance/rendering/polygon-offset.html [ RetryOnFailure ]
 crbug.com/1191030 [ android android-pixel-4 ] conformance/textures/misc/video-rotation.html [ Failure ]
 crbug.com/1187332 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/1278904 [ android android-pixel-4 android-chromium ] conformance/textures/misc/texture-npot-video.html [ RetryOnFailure ]
 
 # Misc failures
 crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]
