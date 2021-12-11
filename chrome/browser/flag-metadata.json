@@ -1960,7 +1960,7 @@
   },
   {
     "name": "enable-experimental-accessibility-switch-access-setup-guide",
-    "owners": [ "josiahk@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": ["anastasi@google.com", "josiahk@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 97
   },
   {
