@@ -656,8 +656,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
                             AnnotationType::kPageEntities);
   run_loop.Run();
 
-  // TODO(crbug/1249632): Check the corresponding output once the model is being
-  // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].topics(), absl::nullopt);
@@ -816,6 +814,8 @@ TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
       model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
 
   SetupPageTopicsV2ModelExecutor();
+  EXPECT_TRUE(
+      model_manager()->GetModelInfoForType(AnnotationType::kPageTopics));
 
   proto::Any any_metadata;
   any_metadata.set_type_url(
@@ -829,8 +829,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
   SendPageVisibilityModelToExecutor(any_metadata);
 
   EXPECT_TRUE(
-      model_manager()->GetModelInfoForType(AnnotationType::kPageTopics));
-  EXPECT_FALSE(
       model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
 }
 

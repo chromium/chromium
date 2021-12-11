@@ -47,18 +47,6 @@ GetOrCreateCurrentContentModelAnnotations(
   return std::make_unique<history::VisitContentModelAnnotations>();
 }
 
-void PretendToExecuteJob(base::OnceClosure callback,
-                         std::unique_ptr<PageContentAnnotationJob> job) {
-  while (absl::optional<std::string> input = job->GetNextInput()) {
-    job->PostNewResult(
-        BatchAnnotationResult::CreatePageTopicsResult(*input, absl::nullopt));
-  }
-  // Note to future self: The ordering of these callbacks being run will be
-  // important once actually being run on an executor.
-  job->OnComplete();
-  std::move(callback).Run();
-}
-
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
@@ -494,7 +482,7 @@ void PageContentAnnotationsModelManager::NotifyWhenModelAvailable(
     return;
   }
 
-  // TODO(crbug/1249632): Add support for page entities.
+  // TODO(crbug/1278828): Add support for page entities.
 
   std::move(callback).Run(false);
 }
@@ -506,6 +494,11 @@ PageContentAnnotationsModelManager::GetModelInfoForType(
       on_demand_page_topics_model_executor_) {
     return on_demand_page_topics_model_executor_->GetModelInfo();
   }
+  if (type == AnnotationType::kContentVisibility &&
+      page_visibility_model_executor_) {
+    return page_visibility_model_executor_->GetModelInfo();
+  }
+  // TODO(crbug/1278828): Add support for page entities.
   return absl::nullopt;
 }
 
@@ -592,11 +585,15 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     return;
   }
 
-  // TODO(crbug/1249632): Actually run the model instead.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PretendToExecuteJob, std::move(on_job_complete_callback),
-                     std::move(job)));
+  // TODO(crbug/1278828): Add support for page entities.
+  if (job->type() == AnnotationType::kPageEntities) {
+    job->FillWithNullOutputs();
+    job->OnComplete();
+    job.reset();
+    std::move(on_job_complete_callback).Run();
+    return;
+  }
+  NOTREACHED();
 }
 
 }  // namespace optimization_guide

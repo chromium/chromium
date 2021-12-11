@@ -49,6 +49,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // This will execute all supported models of the PageContentAnnotationsService
   // feature and is only used by the History service code path. See the below
   // |Annotate| for the publicly available Annotation code path.
+  // TODO(crbug/1278833): Remove this.
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
 
   // PageContentAnnotator:
@@ -65,7 +66,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // Returns the model info associated with the given AnnotationType, if it is
   // available and loaded.
-  // TODO(crbug/1249632): Add support for more than just page topics.
   absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
   // Returns the version of the page topics model that is currently being used
@@ -92,7 +92,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
     // All publicly posted jobs will have this priority level.
     kNormal = 1,
 
-    // TODO(crbug/1249632): Add a kHigh value for internal jobs.
+    // TODO(crbug/1278833): Add a kHigh value for internal jobs.
 
     // Always keep this last and as the highest priority + 1. This value is
     // passed to the priority queue ctor as "how many level of priorities are
