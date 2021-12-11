@@ -11,6 +11,8 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <drm_fourcc.h>
+#include <unistd.h>
+
 #include "base/posix/eintr_wrapper.h"
 #endif
 

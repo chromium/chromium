@@ -1311,6 +1311,7 @@ class GenXproto(FileWriter):
         self.write_header()
         self.write('#include "%s.h"' % self.module.namespace.header)
         self.write()
+        self.write('#include <unistd.h>')
         self.write('#include <xcb/xcb.h>')
         self.write('#include <xcb/xcbext.h>')
         self.write()
