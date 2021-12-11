@@ -394,6 +394,15 @@ class AutofillCapturedSitesRefresh
             TestRecipeReplayer::kHostHttpsPort));
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For refresh tests, ensure that responses for Server Predictions come from
+    // the Production Server and not the CacheReplayer so that we can capture
+    // new responses.
+    command_line->AppendSwitchASCII(test::kAutofillServerBehaviorParam,
+                                    "ProductionServer");
+    AutofillCapturedSitesInteractiveTest::SetUpCommandLine(command_line);
+  }
+
   void TearDownOnMainThread() override {
     AutofillCapturedSitesInteractiveTest::TearDownOnMainThread();
     EXPECT_TRUE(web_page_replay_server_wrapper_->Stop())
