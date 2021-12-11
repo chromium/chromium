@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
@@ -31,13 +32,12 @@ mojom::PermissionsPolicyFeature kUnavailableFeature =
 class PermissionsPolicyTest : public testing::Test {
  protected:
   PermissionsPolicyTest()
-      : feature_list_({{kDefaultOnFeature,
-                        PermissionsPolicyFeatureDefault(
-                            PermissionsPolicyFeatureDefault::EnableForAll)},
-                       {kDefaultSelfFeature,
-                        PermissionsPolicyFeatureDefault(
-                            PermissionsPolicyFeatureDefault::EnableForSelf)}}) {
-  }
+      : feature_list_(
+            {{kDefaultOnFeature, PermissionsPolicyFeatureDefault::EnableForAll},
+             {kDefaultSelfFeature,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kClientHintDPR,
+              PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
 
@@ -1652,6 +1652,93 @@ TEST_F(PermissionsPolicyTest, CreateForFencedFrame) {
   std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+}
+
+TEST_F(PermissionsPolicyTest, SetHeaderPolicy) {
+  // We can construct a policy, set headers, and then check.
+  auto policy1 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy(
+      {{{kDefaultSelfFeature, {origin_a_}, false, false}}});
+  EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultSelfFeature));
+
+  // We can't construct a policy, check, then set headers.
+  auto policy2 = CreateFromParentPolicy(nullptr, origin_a_);
+  EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_DCHECK_DEATH(policy2->SetHeaderPolicy(
+      {{{kDefaultSelfFeature, {origin_a_}, false, false}}}));
+
+  // We can't construct a policy, set headers, then set the header.
+  auto policy3 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy3->SetHeaderPolicy(
+      {{{kDefaultSelfFeature, {origin_a_}, false, false}}});
+  EXPECT_DCHECK_DEATH(policy3->SetHeaderPolicy(
+      {{{kDefaultSelfFeature, {origin_a_}, false, false}}}));
+
+  // We can't construct a policy, then set headers for kNotFound.
+  auto policy4 = CreateFromParentPolicy(nullptr, origin_a_);
+  EXPECT_DCHECK_DEATH(policy4->SetHeaderPolicy(
+      {{{mojom::PermissionsPolicyFeature::kNotFound, {}, false, false}}}));
+}
+
+TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
+  // We can construct a policy, set/overwrite the same header, and then check.
+  auto policy1 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+                              {origin_b_},
+                              false,
+                              false}}});
+  policy1->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+         {origin_a_},
+         false,
+         false}}});
+  EXPECT_TRUE(policy1->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kClientHintDPR));
+
+  // If we overwrite an enabled header with a disabled header it's now disabled.
+  auto policy2 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy2->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+                              {origin_a_},
+                              false,
+                              false}}});
+  policy2->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+         {origin_b_},
+         false,
+         false}}});
+  EXPECT_FALSE(policy2->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kClientHintDPR));
+
+  // We can construct a policy, set/overwrite different headers, and then check.
+  auto policy3 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy3->SetHeaderPolicy(
+      {{{kDefaultSelfFeature, {origin_b_}, false, false}}});
+  policy3->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+         {origin_a_},
+         false,
+         false}}});
+  EXPECT_TRUE(policy3->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kClientHintDPR));
+
+  // We can't overwrite a non-client-hint header.
+  auto policy4 = CreateFromParentPolicy(nullptr, origin_a_);
+  EXPECT_DCHECK_DEATH(policy4->OverwriteHeaderPolicyForClientHints(
+      {{{kDefaultSelfFeature, {origin_a_}, false, false}}}));
+
+  // We can't construct a policy, set headers, check, then overwrite the header.
+  auto policy5 = CreateFromParentPolicy(nullptr, origin_a_);
+  policy5->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+                              {origin_a_},
+                              false,
+                              false}}});
+  EXPECT_TRUE(policy5->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kClientHintDPR));
+  EXPECT_DCHECK_DEATH(policy5->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+         {origin_a_},
+         false,
+         false}}}));
 }
 
 }  // namespace blink

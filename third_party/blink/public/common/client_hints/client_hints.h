@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_CLIENT_HINTS_CLIENT_HINTS_H_
 
 #include <stddef.h>
+#include <set>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -24,11 +25,20 @@ using ClientHintToPolicyFeatureMap =
     base::flat_map<network::mojom::WebClientHintsType,
                    mojom::PermissionsPolicyFeature>;
 
+using PolicyFeatureToClientHintMap =
+    base::flat_map<mojom::PermissionsPolicyFeature,
+                   std::set<network::mojom::WebClientHintsType>>;
+
 // Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
 BLINK_COMMON_EXPORT const ClientHintToPolicyFeatureMap&
 GetClientHintToPolicyFeatureMap();
+
+// Mapping from Permissions-Policy to the corresponding WebClientHintsType(s)
+// (e.g. kClientHintsDPR => {kDpr, kDpr_DEPRECATED}).
+BLINK_COMMON_EXPORT const PolicyFeatureToClientHintMap&
+GetPolicyFeatureToClientHintMap();
 
 // Mapping from WebEffectiveConnectionType to the header value. This value is
 // sent to the origins and is returned by the JavaScript API. The ordering

@@ -84,6 +84,24 @@ const ClientHintToPolicyFeatureMap& GetClientHintToPolicyFeatureMap() {
   return *map;
 }
 
+PolicyFeatureToClientHintMap MakePolicyFeatureToClientHintMap() {
+  PolicyFeatureToClientHintMap map;
+  for (const auto& pair : GetClientHintToPolicyFeatureMap()) {
+    if (map.contains(pair.second)) {
+      map[pair.second].insert(pair.first);
+    } else {
+      map[pair.second] = {pair.first};
+    }
+  }
+  return map;
+}
+
+const PolicyFeatureToClientHintMap& GetPolicyFeatureToClientHintMap() {
+  static const base::NoDestructor<PolicyFeatureToClientHintMap> map(
+      MakePolicyFeatureToClientHintMap());
+  return *map;
+}
+
 const char* const kWebEffectiveConnectionTypeMapping[] = {
     "4g" /* Unknown */, "4g" /* Offline */, "slow-2g" /* Slow 2G */,
     "2g" /* 2G */,      "3g" /* 3G */,      "4g" /* 4G */
