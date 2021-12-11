@@ -143,6 +143,12 @@
   </div>
 </selectmenu>
 
+<selectmenu id="selectMenu14">
+  <div slot="button" behavior="button" id="selectMenu14-button0">button0</div>
+  <option>one</option>
+  <option id="selectMenu14-option2">two</option>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -443,4 +449,40 @@ promise_test(async () => {
     selectMenuOption4.click();
     assert_equals(selectMenu.value, "");
   }, "Controller code should be updated when nested parts are removed");
+
+  promise_test(async () => {
+    let selectMenu = document.getElementById("selectMenu14");
+    assert_equals(selectMenu.value, "one");
+    const selectMenuButton0 = document.getElementById("selectMenu14-button0");
+    const selectMenuOption2 = document.getElementById("selectMenu14-option2");
+
+    selectMenuButton0.click();
+    assert_true(selectMenu.open);
+    await clickOn(selectMenuOption2);
+    assert_equals(selectMenu.value, "two");
+
+    document.body.removeChild(selectMenu);
+    selectMenu.removeChild(selectMenuOption2);
+    assert_equals(selectMenu.value, "one");
+    let newOption = document.createElement("option");
+    newOption.innerText = "three";
+    selectMenu.appendChild(newOption);
+    newOption.click();
+    assert_equals(selectMenu.value, "three", "New option should receive controller code");
+
+    let doc = document.implementation.createHTMLDocument('');
+    let selectMenu1 = doc.createElement('selectmenu');
+    let firstOption = doc.createElement('option');
+    firstOption.innerText = 'one';
+    let secondOption = doc.createElement('option');
+    secondOption.innerText = 'two';
+    selectMenu1.appendChild(firstOption);
+    selectMenu1.appendChild(secondOption);
+    assert_equals(selectMenu1.value, "one");
+    secondOption.click();
+    assert_equals(selectMenu1.value, "two");
+    document.body.appendChild(selectMenu1);
+    selectMenu1.removeChild(secondOption);
+    assert_equals(selectMenu1.value, "one");
+  }, "Moving a selectmenu between documents should keep controller code active");
 </script>

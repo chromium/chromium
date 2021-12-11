@@ -57,6 +57,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   class SelectMutationCallback;
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
+  void DidMoveToNewDocument(Document& old_document) override;
   void OpenListbox();
   void CloseListbox();
 

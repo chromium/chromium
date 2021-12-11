@@ -40,7 +40,6 @@ class HTMLSelectMenuElement::SelectMutationCallback
                         const QualifiedName& name,
                         const AtomicString& old_value,
                         const AtomicString& new_value) final;
-  void DidMoveTreeToNewDocument(const Node& root) final;
 
   void Trace(Visitor* visitor) const override;
 
@@ -122,12 +121,6 @@ void HTMLSelectMenuElement::SelectMutationCallback::AttributeChanged(
       SlotChanged(new_value);
     }
   }
-}
-
-void HTMLSelectMenuElement::SelectMutationCallback::DidMoveTreeToNewDocument(
-    const Node& root) {
-  if (root == select_)
-    SetDocument(&select_->GetDocument());
 }
 
 template <typename StringType>
@@ -304,6 +297,11 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::OptionPartEventListener>(
           this);
+}
+
+void HTMLSelectMenuElement::DidMoveToNewDocument(Document& old_document) {
+  HTMLFormControlElementWithState::DidMoveToNewDocument(old_document);
+  select_mutation_callback_->SetDocument(&GetDocument());
 }
 
 String HTMLSelectMenuElement::value() const {
