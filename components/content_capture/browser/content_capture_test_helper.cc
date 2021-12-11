@@ -94,4 +94,53 @@ void ContentCaptureConsumerHelper::Reset() {
   removed_sessions_.clear();
 }
 
+ContentCaptureTestHelper::ContentCaptureTestHelper() = default;
+
+ContentCaptureTestHelper::~ContentCaptureTestHelper() = default;
+
+void ContentCaptureTestHelper::CreateProviderAndConsumer(
+    content::WebContents* web_contents,
+    SessionRemovedTestHelper* session_removed_helper) {
+  onscreen_content_provider_ = OnscreenContentProvider::Create(web_contents);
+
+  content_capture_consumer_ =
+      std::make_unique<ContentCaptureConsumerHelper>(session_removed_helper);
+  onscreen_content_provider_->AddConsumer(*(content_capture_consumer_.get()));
+}
+
+void ContentCaptureTestHelper::InitTestData(const std::u16string& data1,
+                                            const std::u16string& data2) {
+  ContentCaptureData child;
+  // Have the unique id for text content.
+  child.id = 2;
+  child.value = u"Hello";
+  child.bounds = gfx::Rect(5, 5, 5, 5);
+  // No need to set id in sender.
+  test_data_.value = data1;
+  test_data_.bounds = gfx::Rect(10, 10);
+  test_data_.children.push_back(child);
+  test_data2_.value = data2;
+  test_data2_.bounds = gfx::Rect(10, 10);
+  test_data2_.children.push_back(child);
+
+  ContentCaptureData child_change;
+  // Same ID with child.
+  child_change.id = 2;
+  child_change.value = u"Hello World";
+  child_change.bounds = gfx::Rect(5, 5, 5, 5);
+  test_data_change_.value = data1;
+  test_data_change_.bounds = gfx::Rect(10, 10);
+  test_data_change_.children.push_back(child_change);
+
+  // Update to test_data_.
+  ContentCaptureData child2;
+  // Have the unique id for text content.
+  child2.id = 3;
+  child2.value = u"World";
+  child2.bounds = gfx::Rect(5, 10, 5, 5);
+  test_data_update_.value = data1;
+  test_data_update_.bounds = gfx::Rect(10, 10);
+  test_data_update_.children.push_back(child2);
+}
+
 }  // namespace content_capture

@@ -7,6 +7,7 @@
 
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 
 namespace content_capture {
 
@@ -108,6 +109,46 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
   std::vector<ContentCaptureSession> removed_sessions_;
   raw_ptr<SessionRemovedTestHelper> session_removed_test_helper_;
   std::u16string updated_title_;
+};
+
+class ContentCaptureTestHelper {
+ public:
+  ContentCaptureTestHelper();
+  ContentCaptureTestHelper(const ContentCaptureTestHelper&) = delete;
+  ContentCaptureTestHelper& operator=(const ContentCaptureTestHelper&) = delete;
+  virtual ~ContentCaptureTestHelper();
+
+  void CreateProviderAndConsumer(
+      content::WebContents* web_contents,
+      SessionRemovedTestHelper* session_removed_helper = nullptr);
+
+  void InitTestData(const std::u16string& data1, const std::u16string& data2);
+
+  OnscreenContentProvider* onscreen_content_provider() const {
+    return onscreen_content_provider_;
+  }
+
+  ContentCaptureConsumerHelper* content_capture_consumer() const {
+    return content_capture_consumer_.get();
+  }
+
+  const ContentCaptureData& test_data() const { return test_data_; }
+  const ContentCaptureData& test_data2() const { return test_data2_; }
+  const ContentCaptureData& test_data_change() const {
+    return test_data_change_;
+  }
+  const ContentCaptureData& test_data_update() const {
+    return test_data_update_;
+  }
+
+ private:
+  raw_ptr<OnscreenContentProvider> onscreen_content_provider_ = nullptr;
+  std::unique_ptr<ContentCaptureConsumerHelper> content_capture_consumer_;
+
+  ContentCaptureData test_data_;
+  ContentCaptureData test_data2_;
+  ContentCaptureData test_data_change_;
+  ContentCaptureData test_data_update_;
 };
 
 }  // namespace content_capture
