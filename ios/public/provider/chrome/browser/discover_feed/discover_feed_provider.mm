@@ -17,16 +17,6 @@ bool DiscoverFeedProvider::IsDiscoverFeedEnabled() {
   return false;
 }
 
-UIViewController* DiscoverFeedProvider::NewFeedViewController(
-    Browser* browser) {
-  return nil;
-}
-
-UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
-    DiscoverFeedViewControllerConfiguration* configuration) {
-  return nil;
-}
-
 UIViewController*
 DiscoverFeedProvider::NewDiscoverFeedViewControllerWithConfiguration(
     DiscoverFeedViewControllerConfiguration* configuration) {
