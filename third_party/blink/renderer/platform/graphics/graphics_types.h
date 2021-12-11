@@ -48,10 +48,10 @@ enum DataU8ColorType {
   kN32ColorType,
 };
 
-enum ImageDataStorageFormat {
-  kUint8ClampedArrayStorageFormat,
-  kUint16ArrayStorageFormat,
-  kFloat32ArrayStorageFormat,
+enum class ImageDataStorageFormat {
+  kUint8,
+  kUint16,
+  kFloat32,
 };
 
 enum ImageEncodingMimeType {
@@ -219,6 +219,8 @@ PLATFORM_EXPORT bool ParseTextAlign(const String&, TextAlign&);
 
 PLATFORM_EXPORT String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
+
+PLATFORM_EXPORT String ImageDataStorageFormatName(ImageDataStorageFormat);
 
 }  // namespace blink
 

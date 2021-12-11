@@ -50,17 +50,6 @@ namespace blink {
 class ExceptionState;
 class ImageBitmapOptions;
 
-constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
-constexpr const char* kUint16ArrayStorageFormatName = "uint16";
-constexpr const char* kFloat32ArrayStorageFormatName = "float32";
-
-// Convert a string to an ImageDataStorageFormat. On unrecognized strings this
-// will return kUint8ClampedArrayStorageFormat.
-ImageDataStorageFormat CORE_EXPORT
-ImageDataStorageFormatFromName(const String& string);
-String CORE_EXPORT
-ImageDataStorageFormatToName(ImageDataStorageFormat storage_format);
-
 class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     public ImageBitmapSource {
   DEFINE_WRAPPERTYPEINFO();
@@ -197,11 +186,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
             CanvasColorSpace,
             ImageDataStorageFormat);
 
-  static String CanvasColorSpaceName(CanvasColorSpace);
-  static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
-  static unsigned StorageFormatBytesPerPixel(const String&);
-  static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
-
   gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
@@ -243,7 +227,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
   CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
-  ImageDataStorageFormat storage_format_ = kUint8ClampedArrayStorageFormat;
+  ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,

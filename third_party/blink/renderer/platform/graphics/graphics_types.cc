@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -215,6 +216,19 @@ bool ParseTextBaseline(const String& s, TextBaseline& baseline) {
     return true;
   }
   return false;
+}
+
+String ImageDataStorageFormatName(ImageDataStorageFormat format) {
+  switch (format) {
+    case ImageDataStorageFormat::kUint8:
+      return "uint8";
+    case ImageDataStorageFormat::kUint16:
+      return "uint16";
+    case ImageDataStorageFormat::kFloat32:
+      return "float32";
+  }
+  NOTREACHED();
+  return String();
 }
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 
 namespace blink {
 
@@ -48,13 +49,13 @@ SerializedImageDataSettings::SerializedImageDataSettings(
     ImageDataStorageFormat storage_format)
     : color_space_(SerializeColorSpace(color_space)) {
   switch (storage_format) {
-    case kUint8ClampedArrayStorageFormat:
+    case ImageDataStorageFormat::kUint8:
       storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
       break;
-    case kUint16ArrayStorageFormat:
+    case ImageDataStorageFormat::kUint16:
       storage_format_ = SerializedImageDataStorageFormat::kUint16;
       break;
-    case kFloat32ArrayStorageFormat:
+    case ImageDataStorageFormat::kFloat32:
       storage_format_ = SerializedImageDataStorageFormat::kFloat32;
       break;
   }
@@ -72,40 +73,20 @@ CanvasColorSpace SerializedImageDataSettings::GetColorSpace() const {
 ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
   switch (storage_format_) {
     case SerializedImageDataStorageFormat::kUint8Clamped:
-      return kUint8ClampedArrayStorageFormat;
+      return ImageDataStorageFormat::kUint8;
     case SerializedImageDataStorageFormat::kUint16:
-      return kUint16ArrayStorageFormat;
+      return ImageDataStorageFormat::kUint16;
     case SerializedImageDataStorageFormat::kFloat32:
-      return kFloat32ArrayStorageFormat;
+      return ImageDataStorageFormat::kFloat32;
   }
   NOTREACHED();
-  return kUint8ClampedArrayStorageFormat;
+  return ImageDataStorageFormat::kUint8;
 }
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
-  switch (DeserializeColorSpace(color_space_)) {
-    case CanvasColorSpace::kSRGB:
-      settings->setColorSpace(kSRGBCanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kRec2020:
-      settings->setColorSpace(kRec2020CanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kP3:
-      settings->setColorSpace(kP3CanvasColorSpaceName);
-      break;
-  }
-  switch (storage_format_) {
-    case SerializedImageDataStorageFormat::kUint8Clamped:
-      settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-      break;
-    case SerializedImageDataStorageFormat::kUint16:
-      settings->setStorageFormat(kUint16ArrayStorageFormatName);
-      break;
-    case SerializedImageDataStorageFormat::kFloat32:
-      settings->setStorageFormat(kFloat32ArrayStorageFormatName);
-      break;
-  }
+  settings->setColorSpace(CanvasColorSpaceToName(GetColorSpace()));
+  settings->setStorageFormat(ImageDataStorageFormatName(GetStorageFormat()));
   return settings;
 }
 

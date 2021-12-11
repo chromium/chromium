@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -1004,7 +1005,8 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   path.Append(test::CoreTestDataPath());
   path.Append("/png-16bit/");
   ImageDataSettings* color_setting = ImageDataSettings::Create();
-  color_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
+  color_setting->setStorageFormat(
+      ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
   color_setting->setColorSpace(canvas_color_space);
   for (auto interlace : interlace_status) {
     for (auto color_profile : color_profiles) {
@@ -1062,8 +1064,9 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
 
   unsigned num_image_data_storage_formats = 3;
   ImageDataStorageFormat image_data_storage_formats[] = {
-      kUint8ClampedArrayStorageFormat, kUint16ArrayStorageFormat,
-      kFloat32ArrayStorageFormat,
+      ImageDataStorageFormat::kUint8,
+      ImageDataStorageFormat::kUint16,
+      ImageDataStorageFormat::kFloat32,
   };
 
   CanvasColorSpace canvas_color_spaces[] = {
@@ -1130,13 +1133,13 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
     for (unsigned j = 0; j < num_image_data_storage_formats; j++) {
       NotShared<DOMArrayBufferView> data_array;
       switch (image_data_storage_formats[j]) {
-        case kUint8ClampedArrayStorageFormat:
+        case ImageDataStorageFormat::kUint8:
           data_array = data_u8;
           break;
-        case kUint16ArrayStorageFormat:
+        case ImageDataStorageFormat::kUint16:
           data_array = data_u16;
           break;
-        case kFloat32ArrayStorageFormat:
+        case ImageDataStorageFormat::kFloat32:
           data_array = data_f32;
           break;
         default:
@@ -1149,15 +1152,15 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
-          ImageData::CanvasColorSpaceName(canvas_color_spaces[k]));
+          CanvasColorSpaceToName(canvas_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
         case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(
-              kUint8ClampedArrayStorageFormatName);
+              ImageDataStorageFormatName(ImageDataStorageFormat::kUint8));
           break;
         case CanvasPixelFormat::kF16:
           canvas_color_setting->setStorageFormat(
-              kFloat32ArrayStorageFormatName);
+              ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
           break;
         default:
           NOTREACHED();

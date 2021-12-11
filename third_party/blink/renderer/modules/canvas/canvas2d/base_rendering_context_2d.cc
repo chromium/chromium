@@ -2137,7 +2137,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   SkPixmap data_pixmap = data->GetSkPixmap();
   CanvasColorParams data_color_params(
       data->GetCanvasColorSpace(),
-      data->GetImageDataStorageFormat() != kUint8ClampedArrayStorageFormat
+      data->GetImageDataStorageFormat() != ImageDataStorageFormat::kUint8
           ? CanvasPixelFormat::kF16
           : CanvasPixelFormat::kUint8,
       kNonOpaque);

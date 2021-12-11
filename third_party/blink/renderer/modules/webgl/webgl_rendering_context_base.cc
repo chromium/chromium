@@ -5378,15 +5378,15 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
   GLenum image_type;
   WebGLImageConversion::DataFormat data_format;
   switch (pixels->GetImageDataStorageFormat()) {
-    case kUint8ClampedArrayStorageFormat:
+    case ImageDataStorageFormat::kUint8:
       image_type = GL_UNSIGNED_BYTE;
       data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA8;
       break;
-    case kUint16ArrayStorageFormat:
+    case ImageDataStorageFormat::kUint16:
       image_type = GL_UNSIGNED_SHORT;
       data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA16;
       break;
-    case kFloat32ArrayStorageFormat:
+    case ImageDataStorageFormat::kFloat32:
       image_type = GL_FLOAT;
       data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA32F;
       break;
