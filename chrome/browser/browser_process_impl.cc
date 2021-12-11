@@ -339,12 +339,10 @@ void BrowserProcessImpl::Init() {
       base::BindRepeating(&BrowserProcessImpl::ApplyDefaultBrowserPolicy,
                           base::Unretained(this)));
 
-#if !defined(OS_ANDROID)
   // This preference must be kept in sync with external values; update them
   // whenever the preference or its controlling policy changes.
   pref_change_registrar_.Add(metrics::prefs::kMetricsReportingEnabled,
                              base::BindRepeating(&ApplyMetricsReportingPolicy));
-#endif
 
   DCHECK(!webrtc_event_log_manager_);
   webrtc_event_log_manager_ = WebRtcEventLogManager::CreateSingletonInstance();
@@ -1156,9 +1154,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   if (local_state_->IsManagedPreference(prefs::kDefaultBrowserSettingEnabled))
     ApplyDefaultBrowserPolicy();
 
-#if !defined(OS_ANDROID)
   ApplyMetricsReportingPolicy();
-#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ChromeJsErrorReportProcessor::Create();

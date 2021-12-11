@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "build/chromeos_buildflags.h"
@@ -26,6 +27,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_ANDROID)
+#include "components/policy/core/common/features.h"
+#endif  // defined(OS_ANDROID)
 
 namespace {
 
@@ -151,15 +156,21 @@ void UpdateMetricsPrefsOnPermissionChange(bool metrics_enabled) {
   crash_keys::ClearMetricsClientId();
 }
 
-#if !defined(OS_ANDROID)
 void ApplyMetricsReportingPolicy() {
+#if defined(OS_ANDROID)
+  // Android must verify if this policy is feature-enabled.
+  if (!base::FeatureList::IsEnabled(
+          policy::features::kActivateMetricsReportingEnabledPolicyAndroid)) {
+    return;
+  }
+#endif  // defined(OS_ANDROID)
+
   GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&GoogleUpdateSettings::SetCollectStatsConsent),
           ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()));
 }
-#endif
 
 bool IsMetricsReportingPolicyManaged() {
   const PrefService* pref_service = g_browser_process->local_state();

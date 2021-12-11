@@ -33,6 +33,10 @@ const base::Feature kEnableUserCloudSigninRestrictionPolicyFetcher{
     "UserCloudSigninRestrictionPolicyFetcher",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kActivateMetricsReportingEnabledPolicyAndroid{
+    "ActivateMetricsReportingEnabledPolicyAndroid",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 }  // namespace policy

@@ -2837,6 +2837,12 @@ const char kAccessibilityPageZoomDescription[] =
     "Whether the UI and underlying code for page zoom should be enabled to"
     " allow a user to increase/decrease the web contents zoom factor.";
 
+const char kActivateMetricsReportingEnabledPolicyAndroidName[] =
+    "Activate MetricsReportingEnabled policy on Android";
+const char kActivateMetricsReportingEnabledPolicyAndroidDescription[] =
+    " Allows admins to block metrics reporting by using "
+    " MetricsReportingEnabled policy.";
+
 const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
 const char kAddToHomescreenIPHDescription[] =
     " Shows in-product-help messages educating users about add to homescreen "

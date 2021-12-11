@@ -29,11 +29,9 @@ void ChangeMetricsReportingStateWithReply(
 // prefs, so as not to trigger upload of various stale data.
 void UpdateMetricsPrefsOnPermissionChange(bool metrics_enabled);
 
-#if !defined(OS_ANDROID)
 // Propagates the state of metrics reporting pref (which may be policy
 // managed) to GoogleUpdateSettings.
 void ApplyMetricsReportingPolicy();
-#endif
 
 // Returns whether MetricsReporting can be modified by the user (except
 // Android).

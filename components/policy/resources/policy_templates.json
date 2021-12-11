@@ -3786,6 +3786,7 @@
         'chrome.*:8-',
         'ios:88-',
       ],
+      'future_on': ['android'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': False,

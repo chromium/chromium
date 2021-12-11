@@ -1737,7 +1737,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "android"
     ],
     "official_only": true,
     "can_be_recommended": true,

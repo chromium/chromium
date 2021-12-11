@@ -51816,6 +51816,8 @@ from previous Chrome versions.
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
+  <int value="-357250869"
+      label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
   <int value="-355931495" label="FastPair:enabled"/>
   <int value="-355278724" label="CorbAllowlistAlsoAppliesToOorCors:disabled"/>
   <int value="-354783358" label="NTPSaveToOffline:disabled"/>
@@ -52605,6 +52607,8 @@ from previous Chrome versions.
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
+  <int value="255765456"
+      label="ActivateMetricsReportingEnabledPolicyAndroid:disabled"/>
   <int value="258621334"
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
   <int value="259021228" label="OffMainThreadFetch:disabled"/>

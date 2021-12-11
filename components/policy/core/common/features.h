@@ -40,6 +40,11 @@ POLICY_EXPORT extern const base::Feature kPasswordBreachEventReporting;
 POLICY_EXPORT extern const base::Feature
     kEnableUserCloudSigninRestrictionPolicyFetcher;
 
+// Enable MetricsReportingEnabled policy to alter MetricsReportingState on
+// Android.
+POLICY_EXPORT extern const base::Feature
+    kActivateMetricsReportingEnabledPolicyAndroid;
+
 }  // namespace features
 }  // namespace policy
 
