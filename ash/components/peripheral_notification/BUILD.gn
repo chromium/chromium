@@ -6,8 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
-component("pcie_peripheral") {
-  defines = [ "IS_ASH_PCIE_PERIPHERAL_IMPL" ]
+component("peripheral_notification") {
+  defines = [ "IS_ASH_PERIPHERAL_NOTIFICATION_IMPL" ]
 
   deps = [
     "//ash/constants/",
@@ -18,18 +18,18 @@ component("pcie_peripheral") {
   ]
 
   sources = [
-    "pcie_peripheral_manager.cc",
-    "pcie_peripheral_manager.h",
+    "peripheral_notification_manager.cc",
+    "peripheral_notification_manager.h",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "pcie_peripheral_manager_unittest.cc" ]
+  sources = [ "peripheral_notification_manager_unittest.cc" ]
 
   deps = [
-    ":pcie_peripheral",
+    ":peripheral_notification",
     "//ash:test_support",
     "//base/test:test_support",
     "//chromeos/dbus/pciguard",

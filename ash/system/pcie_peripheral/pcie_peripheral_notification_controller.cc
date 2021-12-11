@@ -149,15 +149,15 @@ PciePeripheralNotificationController::PciePeripheralNotificationController(
 }
 
 PciePeripheralNotificationController::~PciePeripheralNotificationController() {
-  if (ash::PciePeripheralManager::IsInitialized())
-    ash::PciePeripheralManager::Get()->RemoveObserver(this);
+  if (ash::PeripheralNotificationManager::IsInitialized())
+    ash::PeripheralNotificationManager::Get()->RemoveObserver(this);
 }
 
 void PciePeripheralNotificationController::
-    OnPciePeripheralManagerInitialized() {
-  DCHECK(ash::PciePeripheralManager::IsInitialized());
+    OnPeripheralNotificationManagerInitialized() {
+  DCHECK(ash::PeripheralNotificationManager::IsInitialized());
 
-  ash::PciePeripheralManager::Get()->AddObserver(this);
+  ash::PeripheralNotificationManager::Get()->AddObserver(this);
 }
 
 void PciePeripheralNotificationController::NotifyBillboardDevice() {

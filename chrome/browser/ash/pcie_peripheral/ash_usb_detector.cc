@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/device_service.h"
 
@@ -75,7 +75,8 @@ void AshUsbDetector::OnDeviceChecked(
   if (!allowed)
     return;
 
-  ash::PciePeripheralManager::Get()->OnDeviceConnected(device_info.get());
+  ash::PeripheralNotificationManager::Get()->OnDeviceConnected(
+      device_info.get());
 
   if (is_testing_)
     ++on_device_checked_counter_for_testing_;

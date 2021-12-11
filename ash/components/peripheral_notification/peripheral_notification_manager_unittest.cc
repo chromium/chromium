@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 #include <memory>
 
@@ -30,7 +30,7 @@ constexpr char root_prefix_for_testing[] = "/tmp/tbt";
 
 namespace ash {
 
-class FakeObserver : public PciePeripheralManager::Observer {
+class FakeObserver : public PeripheralNotificationManager::Observer {
  public:
   FakeObserver() = default;
   ~FakeObserver() override = default;
@@ -55,7 +55,7 @@ class FakeObserver : public PciePeripheralManager::Observer {
     return is_current_guest_device_tbt_only_;
   }
 
-  // PciePeripheralManager::Observer:
+  // PeripheralNotificationManager::Observer:
   void OnLimitedPerformancePeripheralReceived() override {
     ++num_limited_performance_notification_calls_;
   }
@@ -81,13 +81,14 @@ class FakeObserver : public PciePeripheralManager::Observer {
   bool is_current_guest_device_tbt_only_ = false;
 };
 
-class PciePeripheralManagerTest : public AshTestBase {
+class PeripheralNotificationManagerTest : public AshTestBase {
  protected:
-  PciePeripheralManagerTest() = default;
-  PciePeripheralManagerTest(const PciePeripheralManagerTest&) = delete;
-  PciePeripheralManagerTest& operator=(const PciePeripheralManagerTest&) =
+  PeripheralNotificationManagerTest() = default;
+  PeripheralNotificationManagerTest(const PeripheralNotificationManagerTest&) =
       delete;
-  ~PciePeripheralManagerTest() override = default;
+  PeripheralNotificationManagerTest& operator=(
+      const PeripheralNotificationManagerTest&) = delete;
+  ~PeripheralNotificationManagerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -106,9 +107,9 @@ class PciePeripheralManagerTest : public AshTestBase {
 
   void InitializeManager(bool is_guest_session,
                          bool is_pcie_tunneling_allowed) {
-    PciePeripheralManager::Initialize(is_guest_session,
-                                      is_pcie_tunneling_allowed);
-    manager_ = PciePeripheralManager::Get();
+    PeripheralNotificationManager::Initialize(is_guest_session,
+                                              is_pcie_tunneling_allowed);
+    manager_ = PeripheralNotificationManager::Get();
 
     manager_->AddObserver(&fake_observer_);
     manager_->SetRootPrefixForTesting(root_prefix_for_testing);
@@ -118,7 +119,7 @@ class PciePeripheralManagerTest : public AshTestBase {
     AshTestBase::TearDown();
 
     manager_->RemoveObserver(&fake_observer_);
-    PciePeripheralManager::Shutdown();
+    PeripheralNotificationManager::Shutdown();
     chromeos::TypecdClient::Shutdown();
     chromeos::PciguardClient::Shutdown();
     base::DeletePathRecursively(base::FilePath(thunderbolt_path_for_testing));
@@ -157,7 +158,7 @@ class PciePeripheralManagerTest : public AshTestBase {
  private:
   chromeos::FakeTypecdClient* fake_typecd_client_;
   chromeos::FakePciguardClient* fake_pciguard_client_;
-  PciePeripheralManager* manager_ = nullptr;
+  PeripheralNotificationManager* manager_ = nullptr;
   FakeObserver fake_observer_;
 };
 
@@ -188,7 +189,7 @@ scoped_refptr<device::FakeUsbDeviceInfo> CreateTestDeviceOfClass(
   return device;
 }
 
-TEST_F(PciePeripheralManagerTest, InitialTest) {
+TEST_F(PeripheralNotificationManagerTest, InitialTest) {
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
@@ -197,7 +198,7 @@ TEST_F(PciePeripheralManagerTest, InitialTest) {
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
 }
 
-TEST_F(PciePeripheralManagerTest, LimitedPerformanceNotification) {
+TEST_F(PeripheralNotificationManagerTest, LimitedPerformanceNotification) {
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
 
@@ -205,8 +206,8 @@ TEST_F(PciePeripheralManagerTest, LimitedPerformanceNotification) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kAltModeFallbackDueToPciguard,
       0);
 
@@ -219,13 +220,13 @@ TEST_F(PciePeripheralManagerTest, LimitedPerformanceNotification) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kAltModeFallbackDueToPciguard,
       1);
 }
 
-TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
+TEST_F(PeripheralNotificationManagerTest, NoNotificationShown) {
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/true);
 
@@ -233,8 +234,8 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTSupportedAndAllowed,
       0);
 
@@ -246,8 +247,8 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTSupportedAndAllowed,
       1);
 
@@ -261,13 +262,13 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   // No observer was called, therefore don't expect this to be updated.
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTSupportedAndAllowed,
       2);
 }
 
-TEST_F(PciePeripheralManagerTest, TBTOnlyAndBlockedByPciguard) {
+TEST_F(PeripheralNotificationManagerTest, TBTOnlyAndBlockedByPciguard) {
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
 
@@ -275,8 +276,8 @@ TEST_F(PciePeripheralManagerTest, TBTOnlyAndBlockedByPciguard) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTOnlyAndBlockedByPciguard,
       0);
 
@@ -288,13 +289,13 @@ TEST_F(PciePeripheralManagerTest, TBTOnlyAndBlockedByPciguard) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTOnlyAndBlockedByPciguard,
       1);
 }
 
-TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
+TEST_F(PeripheralNotificationManagerTest, GuestNotificationLimitedPerformance) {
   InitializeManager(/*is_guest_profile=*/true,
                     /*is_pcie_tunneling_allowed=*/false);
 
@@ -302,8 +303,8 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kAltModeFallbackInGuestSession,
       0);
 
@@ -316,13 +317,13 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
   EXPECT_EQ(1u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kAltModeFallbackInGuestSession,
       1);
 }
 
-TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
+TEST_F(PeripheralNotificationManagerTest, GuestNotificationRestricted) {
   InitializeManager(/*is_guest_profile=*/true,
                     /*is_pcie_tunneling_allowed=*/false);
 
@@ -330,8 +331,8 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTOnlyAndBlockedInGuestSession,
       0);
 
@@ -344,13 +345,13 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
   EXPECT_EQ(1u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_TRUE(GetIsCurrentGuestDeviceTbtOnly());
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kTBTOnlyAndBlockedInGuestSession,
       1);
 }
 
-TEST_F(PciePeripheralManagerTest, BlockedDeviceReceived) {
+TEST_F(PeripheralNotificationManagerTest, BlockedDeviceReceived) {
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/true);
 
@@ -366,13 +367,13 @@ TEST_F(PciePeripheralManagerTest, BlockedDeviceReceived) {
   EXPECT_EQ(1u, GetNumPeripheralBlockedNotificationObserverCalls());
 
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kPeripheralBlocked,
       1);
 }
 
-TEST_F(PciePeripheralManagerTest, BillboardDevice) {
+TEST_F(PeripheralNotificationManagerTest, BillboardDevice) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kPcieBillboardNotification);
 
@@ -387,7 +388,7 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   // Simulate connecting a billboard device.
   const auto fake_device = CreateTestDeviceOfClass(kBillboardDeviceClassCode);
   const auto device = fake_device->GetDeviceInfo().Clone();
-  PciePeripheralManager::Get()->OnDeviceConnected(device.get());
+  PeripheralNotificationManager::Get()->OnDeviceConnected(device.get());
 
   task_environment()->RunUntilIdle();
 
@@ -397,8 +398,8 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   EXPECT_EQ(1u, GetNumBillboardNotificationObserverCalls());
 
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kBillboardDevice,
       1);
 
@@ -406,7 +407,7 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   const auto fake_device_1 =
       CreateTestDeviceOfClass(kNonBillboardDeviceClassCode);
   const auto device_1 = fake_device_1->GetDeviceInfo().Clone();
-  PciePeripheralManager::Get()->OnDeviceConnected(device_1.get());
+  PeripheralNotificationManager::Get()->OnDeviceConnected(device_1.get());
 
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
@@ -421,7 +422,7 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   // Connect a billboard device. There should be no notification.
   const auto fake_device_2 = CreateTestDeviceOfClass(kBillboardDeviceClassCode);
   const auto device_2 = fake_device_2->GetDeviceInfo().Clone();
-  PciePeripheralManager::Get()->OnDeviceConnected(device_2.get());
+  PeripheralNotificationManager::Get()->OnDeviceConnected(device_2.get());
 
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
@@ -429,8 +430,8 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   EXPECT_EQ(1u, GetNumBillboardNotificationObserverCalls());
 
   histogram_tester_.ExpectBucketCount(
-      "Ash.PciePeripheral.ConnectivityResults",
-      PciePeripheralManager::PciePeripheralConnectivityResults::
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
           kBillboardDevice,
       1);
 }

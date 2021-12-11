@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_PCIE_PERIPHERAL_PCIE_PERIPHERAL_MANAGER_H_
-#define ASH_COMPONENTS_PCIE_PERIPHERAL_PCIE_PERIPHERAL_MANAGER_H_
+#ifndef ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
+#define ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
 
 #include <memory>
 
@@ -26,9 +26,9 @@ namespace ash {
 // and translating those signals to notification observer events. It handles
 // additional logic such determining if notifications are required or whether a
 // guest-session notification is needed.
-class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
-    : public chromeos::TypecdClient::Observer,
-      public chromeos::PciguardClient::Observer {
+class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
+    PeripheralNotificationManager : public chromeos::TypecdClient::Observer,
+                                    public chromeos::PciguardClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum PciePeripheralConnectivityResults {
+  enum PeripheralConnectivityResults {
     kTBTSupportedAndAllowed = 0,
     kTBTOnlyAndBlockedByPciguard = 1,
     kTBTOnlyAndBlockedInGuestSession = 2,
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   static void Shutdown();
 
   // Gets the global instance pointer.
-  static PciePeripheralManager* Get();
+  static PeripheralNotificationManager* Get();
 
   // Returns true if the global instance is initialized.
   static bool IsInitialized();
@@ -88,12 +88,14 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   void OnDeviceConnected(device::mojom::UsbDeviceInfo* device);
 
  private:
-  friend class PciePeripheralManagerTest;
+  friend class PeripheralNotificationManagerTest;
 
-  PciePeripheralManager(bool is_guest_profile, bool is_pcie_tunneling_allowed);
-  PciePeripheralManager(const PciePeripheralManager&) = delete;
-  PciePeripheralManager& operator=(const PciePeripheralManager&) = delete;
-  ~PciePeripheralManager() override;
+  PeripheralNotificationManager(bool is_guest_profile,
+                                bool is_pcie_tunneling_allowed);
+  PeripheralNotificationManager(const PeripheralNotificationManager&) = delete;
+  PeripheralNotificationManager& operator=(
+      const PeripheralNotificationManager&) = delete;
+  ~PeripheralNotificationManager() override;
 
   // TypecdClient::Observer:
   void OnThunderboltDeviceConnected(bool is_thunderbolt_only) override;
@@ -124,9 +126,9 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   std::string root_prefix_ = "";
 
   // Used for callbacks.
-  base::WeakPtrFactory<PciePeripheralManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PeripheralNotificationManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_PCIE_PERIPHERAL_PCIE_PERIPHERAL_MANAGER_H_
+#endif  // ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_

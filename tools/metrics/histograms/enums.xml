@@ -68105,8 +68105,7 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PciePeripheralConnectivityResult">
-<!-- This must be kept current with PciePeripheralConnectivityResults
-        located in ash/components/pcie_peripheral/pcie_peripheral_manager.h -->
+<!-- Obsolete - replaced by PeripheralConnectivityResult  -->
 
   <int value="0" label="TBT-supported peripheral connected and allowed"/>
   <int value="1" label="TBT-only peripheral connected and blocked by Pciguard"/>
@@ -68533,6 +68532,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="RESPONSE_START"/>
   <int value="24" label="RESPONSE_END"/>
   <int value="25" label="DOM_LOADING"/>
+</enum>
+
+<enum name="PeripheralConnectivityResult">
+<!-- This must be kept current with PeripheralConnectivityResults located in
+    ash/components/peripheral_notification/peripheral_notification_manager.h -->
+
+  <int value="0" label="TBT-supported peripheral connected and allowed"/>
+  <int value="1" label="TBT-only peripheral connected and blocked by Pciguard"/>
+  <int value="2"
+      label="TBT-only peripheral connected and blocked due to guest session"/>
+  <int value="3" label="Alt-mode fallback due to Pciguard"/>
+  <int value="4" label="Alt-mode fallback in guest session"/>
+  <int value="5" label="Peripheral blocked"/>
+  <int value="6" label="Billboard device"/>
 </enum>
 
 <enum name="PermissionAction">

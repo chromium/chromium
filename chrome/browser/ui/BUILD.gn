@@ -2899,7 +2899,7 @@ static_library("ui") {
       "//ash/components/drivefs",
       "//ash/components/drivefs/mojom:mojom",
       "//ash/components/login/session",
-      "//ash/components/pcie_peripheral",
+      "//ash/components/peripheral_notification",
       "//ash/components/phonehub",
       "//ash/components/phonehub:debug",
       "//ash/components/proximity_auth",

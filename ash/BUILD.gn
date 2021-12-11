@@ -2011,7 +2011,7 @@ component("ash") {
     "//ash/components/audio",
     "//ash/components/fwupd",
     "//ash/components/geolocation",
-    "//ash/components/pcie_peripheral",
+    "//ash/components/peripheral_notification",
     "//ash/components/phonehub",
     "//ash/components/settings",
     "//ash/constants",

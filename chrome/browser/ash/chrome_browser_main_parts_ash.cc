@@ -20,7 +20,7 @@
 #include "ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/login/session/session_termination_manager.h"
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/components/power/dark_resume_controller.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
@@ -1248,12 +1248,12 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     // The local_state pref may not be available at this stage of Chrome's
     // lifecycle, default to false for now. The actual state will be set in a
     // later initializer.
-    PciePeripheralManager::Initialize(
+    PeripheralNotificationManager::Initialize(
         user_manager::UserManager::Get()->IsLoggedInAsGuest(),
         /*initial_state=*/false);
     Shell::Get()
         ->pcie_peripheral_notification_controller()
-        ->OnPciePeripheralManagerInitialized();
+        ->OnPeripheralNotificationManagerInitialized();
   }
 
   crostini_unsupported_action_notifier_ =

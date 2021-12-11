@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
@@ -296,8 +296,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     // Pciguard can only be set by non-guest, primary users. By default,
     // Pciguard is turned on.
-    if (PciePeripheralManager::IsInitialized()) {
-      PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(
+    if (PeripheralNotificationManager::IsInitialized()) {
+      PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(
           chromeos::settings::PeripheralDataAccessHandler::GetPrefState());
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(

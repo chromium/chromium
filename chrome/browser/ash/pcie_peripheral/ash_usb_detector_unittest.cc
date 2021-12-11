@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
@@ -40,8 +40,9 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
 
     chromeos::TypecdClient::InitializeFake();
     chromeos::PciguardClient::InitializeFake();
-    PciePeripheralManager::Initialize(/*is_guest_session=*/false,
-                                      /*is_pcie_tunneling_allowed=*/false);
+    PeripheralNotificationManager::Initialize(
+        /*is_guest_session=*/false,
+        /*is_pcie_tunneling_allowed=*/false);
   }
 
   void TearDown() override {

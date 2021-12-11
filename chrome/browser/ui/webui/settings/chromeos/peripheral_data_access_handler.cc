@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -132,7 +132,8 @@ void PeripheralDataAccessHandler::OnPeripheralDataAccessProtectionChanged() {
   CrosSettings::Get()->GetBoolean(chromeos::kDevicePeripheralDataAccessEnabled,
                                   &new_state);
 
-  ash::PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(new_state);
+  ash::PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(
+      new_state);
   PciguardClient::Get()->SendExternalPciDevicesPermissionState(new_state);
 }
 

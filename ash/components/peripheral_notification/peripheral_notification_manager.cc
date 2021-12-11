@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
@@ -16,15 +16,14 @@
 namespace ash {
 
 namespace {
-PciePeripheralManager* g_instance = nullptr;
+PeripheralNotificationManager* g_instance = nullptr;
 
 const int kBillboardDeviceClassCode = 17;
 constexpr char thunderbolt_file_path[] = "/sys/bus/thunderbolt/devices/0-0";
 
 void RecordConnectivityMetric(
-    PciePeripheralManager::PciePeripheralConnectivityResults results) {
-  base::UmaHistogramEnumeration("Ash.PciePeripheral.ConnectivityResults",
-                                results);
+    PeripheralNotificationManager::PeripheralConnectivityResults results) {
+  base::UmaHistogramEnumeration("Ash.Peripheral.ConnectivityResults", results);
 }
 
 // Checks if the board supports Thunderbolt.
@@ -33,8 +32,9 @@ bool CheckIfThunderboltFilepathExists(std::string root_prefix) {
 }
 }  // namespace
 
-PciePeripheralManager::PciePeripheralManager(bool is_guest_profile,
-                                             bool is_pcie_tunneling_allowed)
+PeripheralNotificationManager::PeripheralNotificationManager(
+    bool is_guest_profile,
+    bool is_pcie_tunneling_allowed)
     : is_guest_profile_(is_guest_profile),
       is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {
   DCHECK(chromeos::TypecdClient::Get());
@@ -43,7 +43,7 @@ PciePeripheralManager::PciePeripheralManager(bool is_guest_profile,
   chromeos::PciguardClient::Get()->AddObserver(this);
 }
 
-PciePeripheralManager::~PciePeripheralManager() {
+PeripheralNotificationManager::~PeripheralNotificationManager() {
   chromeos::TypecdClient::Get()->RemoveObserver(this);
   chromeos::PciguardClient::Get()->RemoveObserver(this);
 
@@ -51,15 +51,16 @@ PciePeripheralManager::~PciePeripheralManager() {
   g_instance = nullptr;
 }
 
-void PciePeripheralManager::AddObserver(Observer* observer) {
+void PeripheralNotificationManager::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void PciePeripheralManager::RemoveObserver(Observer* observer) {
+void PeripheralNotificationManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void PciePeripheralManager::NotifyLimitedPerformancePeripheralReceived() {
+void PeripheralNotificationManager::
+    NotifyLimitedPerformancePeripheralReceived() {
   // Show no notifications if PCIe tunneling is allowed.
   if (is_pcie_tunneling_allowed_)
     return;
@@ -68,18 +69,18 @@ void PciePeripheralManager::NotifyLimitedPerformancePeripheralReceived() {
     observer.OnLimitedPerformancePeripheralReceived();
 }
 
-void PciePeripheralManager::NotifyGuestModeNotificationReceived(
+void PeripheralNotificationManager::NotifyGuestModeNotificationReceived(
     bool is_thunderbolt_only) {
   for (auto& observer : observer_list_)
     observer.OnGuestModeNotificationReceived(is_thunderbolt_only);
 }
 
-void PciePeripheralManager::NotifyPeripheralBlockedReceived() {
+void PeripheralNotificationManager::NotifyPeripheralBlockedReceived() {
   for (auto& observer : observer_list_)
     observer.OnPeripheralBlockedReceived();
 }
 
-void PciePeripheralManager::OnBillboardDeviceConnected(
+void PeripheralNotificationManager::OnBillboardDeviceConnected(
     bool billboard_is_supported) {
   if (!features::IsPcieBillboardNotificationEnabled()) {
     return;
@@ -89,20 +90,18 @@ void PciePeripheralManager::OnBillboardDeviceConnected(
     for (auto& observer : observer_list_)
       observer.OnBillboardDeviceConnected();
 
-    RecordConnectivityMetric(
-        PciePeripheralConnectivityResults::kBillboardDevice);
+    RecordConnectivityMetric(PeripheralConnectivityResults::kBillboardDevice);
   }
 }
 
-void PciePeripheralManager::OnThunderboltDeviceConnected(
+void PeripheralNotificationManager::OnThunderboltDeviceConnected(
     bool is_thunderbolt_only) {
   if (is_guest_profile_) {
     NotifyGuestModeNotificationReceived(is_thunderbolt_only);
-    RecordConnectivityMetric(is_thunderbolt_only
-                                 ? PciePeripheralConnectivityResults::
-                                       kTBTOnlyAndBlockedInGuestSession
-                                 : PciePeripheralConnectivityResults::
-                                       kAltModeFallbackInGuestSession);
+    RecordConnectivityMetric(
+        is_thunderbolt_only
+            ? PeripheralConnectivityResults::kTBTOnlyAndBlockedInGuestSession
+            : PeripheralConnectivityResults::kAltModeFallbackInGuestSession);
     return;
   }
 
@@ -112,67 +111,68 @@ void PciePeripheralManager::OnThunderboltDeviceConnected(
     NotifyLimitedPerformancePeripheralReceived();
     RecordConnectivityMetric(
         is_thunderbolt_only
-            ? PciePeripheralConnectivityResults::kTBTOnlyAndBlockedByPciguard
-            : PciePeripheralConnectivityResults::kAltModeFallbackDueToPciguard);
+            ? PeripheralConnectivityResults::kTBTOnlyAndBlockedByPciguard
+            : PeripheralConnectivityResults::kAltModeFallbackDueToPciguard);
     return;
   }
 
   RecordConnectivityMetric(
-      PciePeripheralConnectivityResults::kTBTSupportedAndAllowed);
+      PeripheralConnectivityResults::kTBTSupportedAndAllowed);
 }
 
-void PciePeripheralManager::OnBlockedThunderboltDeviceConnected(
+void PeripheralNotificationManager::OnBlockedThunderboltDeviceConnected(
     const std::string& name) {
   // Currently the device name is not shown in the notification.
   NotifyPeripheralBlockedReceived();
-  RecordConnectivityMetric(
-      PciePeripheralConnectivityResults::kPeripheralBlocked);
+  RecordConnectivityMetric(PeripheralConnectivityResults::kPeripheralBlocked);
 }
 
-void PciePeripheralManager::OnDeviceConnected(
+void PeripheralNotificationManager::OnDeviceConnected(
     device::mojom::UsbDeviceInfo* device) {
   if (device->class_code == kBillboardDeviceClassCode) {
     // PathExist is a blocking call. PostTask it and wait on the result.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&CheckIfThunderboltFilepathExists, root_prefix_),
-        base::BindOnce(&PciePeripheralManager::OnBillboardDeviceConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &PeripheralNotificationManager::OnBillboardDeviceConnected,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void PciePeripheralManager::SetPcieTunnelingAllowedState(
+void PeripheralNotificationManager::SetPcieTunnelingAllowedState(
     bool is_pcie_tunneling_allowed) {
   is_pcie_tunneling_allowed_ = is_pcie_tunneling_allowed;
 }
 
-void PciePeripheralManager::SetRootPrefixForTesting(const std::string& prefix) {
+void PeripheralNotificationManager::SetRootPrefixForTesting(
+    const std::string& prefix) {
   root_prefix_ = prefix;
 }
 
 // static
-void PciePeripheralManager::Initialize(bool is_guest_profile,
-                                       bool is_pcie_tunneling_allowed) {
+void PeripheralNotificationManager::Initialize(bool is_guest_profile,
+                                               bool is_pcie_tunneling_allowed) {
   CHECK(!g_instance);
-  g_instance =
-      new PciePeripheralManager(is_guest_profile, is_pcie_tunneling_allowed);
+  g_instance = new PeripheralNotificationManager(is_guest_profile,
+                                                 is_pcie_tunneling_allowed);
 }
 
 // static
-void PciePeripheralManager::Shutdown() {
+void PeripheralNotificationManager::Shutdown() {
   CHECK(g_instance);
   delete g_instance;
   g_instance = NULL;
 }
 
 // static
-PciePeripheralManager* PciePeripheralManager::Get() {
+PeripheralNotificationManager* PeripheralNotificationManager::Get() {
   CHECK(g_instance);
   return g_instance;
 }
 
 // static
-bool PciePeripheralManager::IsInitialized() {
+bool PeripheralNotificationManager::IsInitialized() {
   return g_instance;
 }
 

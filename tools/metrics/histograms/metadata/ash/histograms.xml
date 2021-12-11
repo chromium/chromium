@@ -2335,6 +2335,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PciePeripheral.ConnectivityResults"
     enum="PciePeripheralConnectivityResult" expires_after="2022-03-15">
+  <obsolete>
+    Expired on M98. Marked as obsolete on 12/2021. Replaced by
+    Ash.Peripheral.ConnectivityResults which includes Thunderbolt and USB4 data
+    in addition to invalid cable data for PCIe and USB.
+  </obsolete>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2342,6 +2347,21 @@ chromium-metrics-reviews@google.com.
     peripheral to their Chrome OS device. This is recorded for only devices that
     support Thunderbolt/USB4 connectivity. Gets recorded every time a
     Thunderbolt/USB4 peripheral is plugged in.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Peripheral.ConnectivityResults"
+    enum="PeripheralConnectivityResult" expires_after="2022-12-31">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>jthies@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    The connectivity results of when the user plugs in a Thunderbolt/USB4
+    peripheral to their Chrome OS device. This is recorded for only devices that
+    support Thunderbolt/USB4 connectivity. Gets recorded every time a
+    Thunderbolt/USB4 peripheral is plugged in. This histogram is based off of
+    the obsolete Ash.PciePeripheral.ConnectivityResults histogram and also
+    includes invalid cable detection from the Chrome OS type-c daemon.
   </summary>
 </histogram>
 

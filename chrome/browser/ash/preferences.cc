@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_features.h"
@@ -1078,8 +1078,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       reason == REASON_PREF_CHANGED) {
     const bool value = g_browser_process->local_state()->GetBoolean(
         prefs::kLocalStateDevicePeripheralDataAccessEnabled);
-    if (PciePeripheralManager::IsInitialized()) {
-      PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(value);
+    if (PeripheralNotificationManager::IsInitialized()) {
+      PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(value);
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(value);
   }

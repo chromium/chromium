@@ -95,7 +95,7 @@ source_set("chromeos") {
     "//ash/components/fwupd",
     "//ash/components/geolocation",
     "//ash/components/login/session",
-    "//ash/components/pcie_peripheral",
+    "//ash/components/peripheral_notification",
     "//ash/components/phonehub",
     "//ash/components/phonehub/proto",
     "//ash/components/policy",
