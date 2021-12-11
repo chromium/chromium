@@ -467,10 +467,6 @@ crbug.com/dawn/1095 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 # (NVIDIA-only) Started failing when the test was added.
 crbug.com/tint/1287 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,shared_structs:shared_between_stages:* [ Failure ]
 
-# Missing several necessary Vulkan extensions on GTX 1660 machines.
-crbug.com/dawn/1213 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:* [ Crash Failure ]
-crbug.com/dawn/1213 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Crash Failure ]
-
 ###
 ### Windows (D3D12) specific
 ###
