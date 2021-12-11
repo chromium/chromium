@@ -2295,6 +2295,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" translateable="false" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
         Remove power cable to enable this option.
       </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_SHUT_DOWN_BUTTON_LABEL" translateable="false" desc="Label for the shutdown button.">
+        Shut down
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_REBOOT_BUTTON_LABEL" translateable="false" desc="Label for the reboot button.">
+        Reboot
+      </message>
       <message name="IDS_SHIMLESS_RMA_LOGS_TITLE" translateable="false" desc="Title for the logs dialog displayed on repair complete page">
         RMA Logs
       </message>

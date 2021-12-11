@@ -195,6 +195,10 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON},
       {"repairCompletedDiagnosticsDescriptionText",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION},
+      {"repairCompleteShutDownButtonText",
+       IDS_SHIMLESS_RMA_REPAIR_COMPLETED_SHUT_DOWN_BUTTON_LABEL},
+      {"repairCompleteRebootButtonText",
+       IDS_SHIMLESS_RMA_REPAIR_COMPLETED_REBOOT_BUTTON_LABEL},
       {"repairCompletedLogsButtonText",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_BUTTON},
       {"repairCompletedLogsDescriptionText",
@@ -217,7 +221,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_BATTERY_SHUTOFF_CANCEL_BUTTON},
       {"batteryShutoffShutdownButtonText",
        IDS_SHIMLESS_BATTERY_SHUTOFF_SHUTDOWN_BUTTON},
-
       // Manual disable wp page
       {"manuallyDisableWpTitleText",
        IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE},

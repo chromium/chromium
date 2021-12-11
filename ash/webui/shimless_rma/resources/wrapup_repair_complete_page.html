@@ -51,6 +51,12 @@
   <div slot="header">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
     <div>[[i18n('repairCompletedDescriptionText')]]</div>
+    <cr-button id="shutDownButton" on-click="onShutDownButtonClick_">
+        [[i18n('repairCompleteShutDownButtonText')]]
+    </cr-button>
+    <cr-button id="rebootButton" on-click="onRebootButtonClick_">
+        [[i18n('repairCompleteRebootButtonText')]]
+    </cr-button>
   </div>
   <div slot="body">
     <cr-button id="diagnosticsButton" class="button-card"

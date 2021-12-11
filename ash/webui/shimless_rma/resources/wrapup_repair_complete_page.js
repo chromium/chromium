@@ -75,7 +75,34 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
-  onShutdownClick_() {}
+  onShutDownButtonClick_(e) {
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.endRmaAndShutdown();
+          })
+        },
+        ));
+  }
+
+  /** @protected */
+  onRebootButtonClick_(e) {
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.endRmaAndReboot();
+          })
+        },
+        ));
+  }
 
   /** @protected */
   onRmaLogButtonClick_() {
