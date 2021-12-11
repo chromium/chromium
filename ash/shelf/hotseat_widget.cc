@@ -952,7 +952,7 @@ void HotseatWidget::UpdateLayout(bool animate) {
   }
 
   // If shelf view is invisible, the hotseat should be as well. Otherwise the
-  // hotseat opacit should be 1.0f to preserve background blur.
+  // hotseat opacity should be 1.0f to preserve background blur.
   const double target_opacity =
       (new_layout_inputs.shelf_view_opacity == 0.f ? 0.f : 1.f);
   const gfx::Rect& target_bounds = new_layout_inputs.bounds;
