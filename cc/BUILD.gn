@@ -887,6 +887,10 @@ cc_test("cc_unittests") {
     "//third_party/mesa_headers",
   ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:cc_unittests_filters" ]
+  }
+
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
