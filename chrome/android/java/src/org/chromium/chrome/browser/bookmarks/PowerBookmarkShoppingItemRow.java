@@ -79,10 +79,11 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
         mCurrencyFormatter =
                 new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());
-        mSubscriptionsManager.isSubscribed(mSubscription, (subscribed) -> {
-            initPriceTrackingUI(meta.getLeadImage().getUrl(), subscribed,
-                    currentPrice.getAmountMicros(), currentPrice.getAmountMicros());
-        });
+
+        boolean mIsPriceTrackingEnabled =
+                meta != null && meta.getShoppingSpecifics().getIsPriceTracked();
+        initPriceTrackingUI(meta.getLeadImage().getUrl(), mIsPriceTrackingEnabled,
+                currentPrice.getAmountMicros(), currentPrice.getAmountMicros());
         return bookmarkItem;
     }
 
