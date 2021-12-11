@@ -104,6 +104,8 @@ ts_definitions("build_mojo_dts") {
   foreach(dep, extra_deps) {
     js_files += rebase_path(get_target_outputs(dep), root_dir, root_build_dir)
   }
+
+  extra_deps += [ "//ui/webui/resources/mojo:copy_bindings_dts" ]
 }
 
 ts_library("build_ts") {
