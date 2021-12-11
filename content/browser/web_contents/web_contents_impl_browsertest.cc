@@ -4803,7 +4803,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
              "geometrychangeCount = 0;"
              "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
              "  geometrychangeCount++;"
-             "  rect = e.boundingRect;"
+             "  rect = e.titlebarAreaRect;"
              "  visible = e.visible;"
              "  document.title = 'ongeometrychange' + geometrychangeCount"
              "}"));
@@ -4855,7 +4855,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
              "geometrychangeCount = 0;"
              "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
              "  geometrychangeCount++;"
-             "  rect = e.boundingRect;"
+             "  rect = e.titlebarAreaRect;"
              "  visible = e.visible;"
              "  document.title = 'ongeometrychangefromzoomlevel'"
              "}"));

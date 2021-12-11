@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 dictionary WindowControlsOverlayGeometryChangeEventInit : EventInit {
-    required DOMRect boundingRect;
+    required DOMRect titlebarAreaRect;
     required boolean visible;
 };

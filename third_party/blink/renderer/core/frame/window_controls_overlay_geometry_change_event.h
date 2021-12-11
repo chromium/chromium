@@ -28,7 +28,7 @@ class WindowControlsOverlayGeometryChangeEvent final : public Event {
                                            DOMRect* rect,
                                            bool visible);
 
-  DOMRect* boundingRect() const;
+  DOMRect* titlebarAreaRect() const;
   bool visible() const;
 
   void Trace(Visitor*) const override;

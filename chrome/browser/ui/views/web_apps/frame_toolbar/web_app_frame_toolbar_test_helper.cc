@@ -157,7 +157,7 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
              "document.title = 'beforegeometrychange';"
              "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
              "  geometrychangeCount++;"
-             "  overlay_rect_from_event = e.boundingRect;"
+             "  overlay_rect_from_event = e.titlebarAreaRect;"
              "  overlay_visible_from_event = e.visible;"
              "  document.title = 'ongeometrychange';"
              "}"));
