@@ -362,31 +362,16 @@ HacksAndPatchesCommon() {
   done
   set -e
 
-  # Glibc 2.27 introduced some new optimizations to several math functions, but
-  # it will be a while before it makes it into all supported distros.  Luckily,
-  # glibc maintains ABI compatibility with previous versions, so the old symbols
-  # are still there.
-  # TODO(thomasanderson): Remove this once glibc 2.27 is available on all
-  # supported distros.
-  local math_h="${INSTALL_ROOT}/usr/include/math.h"
-  local libm_so="${INSTALL_ROOT}/lib/${arch}-${os}/libm.so.6"
-  nm -D --defined-only --with-symbol-versions "${libm_so}" | \
-    "${SCRIPT_DIR}/find_incompatible_glibc_symbols.py" >> "${math_h}"
-
-  # glob64() was also optimized in glibc 2.27.  Make sure to choose the older
-  # version.
-  local glob_h="${INSTALL_ROOT}/usr/include/glob.h"
-  local libc_so="${INSTALL_ROOT}/lib/${arch}-${os}/libc.so.6"
-  nm -D --defined-only --with-symbol-versions "${libc_so}" | \
-    "${SCRIPT_DIR}/find_incompatible_glibc_symbols.py" >> "${glob_h}"
+  # Avoid requiring unsupported glibc versions.
+  "${SCRIPT_DIR}/reversion_glibc.py" \
+    "${INSTALL_ROOT}/lib/${arch}-${os}/libc.so.6"
+  "${SCRIPT_DIR}/reversion_glibc.py" \
+    "${INSTALL_ROOT}/lib/${arch}-${os}/libm.so.6"
 
   # fcntl64() was introduced in glibc 2.28.  Make sure to use fcntl() instead.
   local fcntl_h="${INSTALL_ROOT}/usr/include/fcntl.h"
   sed -i '{N; s/#ifndef __USE_FILE_OFFSET64\(\nextern int fcntl\)/#if 1\1/}' \
       "${fcntl_h}"
-  # On i386, fcntl() was updated in glibc 2.28.
-  nm -D --defined-only --with-symbol-versions "${libc_so}" | \
-    "${SCRIPT_DIR}/find_incompatible_glibc_symbols.py" >> "${fcntl_h}"
 
   # __GLIBC_MINOR__ is used as a feature test macro.  Replace it with the
   # earliest supported version of glibc (2.17, https://crbug.com/376567).

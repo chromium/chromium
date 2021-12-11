@@ -9,14 +9,18 @@ set -o errexit
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 KEYS=(
+    # Debian Archive Automatic Signing Key (11/bullseye)
+    "73A4F27B8DD47936"
+    # Debian Security Archive Automatic Signing Key (11/bullseye)
+    "A48449044AAD5C5D"
+    # Debian Stable Release Key (11/bullseye)
+    "605C66F00D6C9793"
     # Debian Stable Release Key (10/buster)
     "DCC9EFBF77E11517"
     # Debian Archive Automatic Signing Key (10/buster)
     "DC30D7C23CBBABEE"
     # Debian Security Archive Automatic Signing Key (10/buster)
     "4DFAB270CAA96DFA"
-    # Debian Archive Automatic Signing Key (10/buster)
-    "DC30D7C23CBBABEE"
     # Jessie Stable Release Key
     "CBF8D6FD518E17E1"
     # Debian Archive Automatic Signing Key (7.0/wheezy)
@@ -33,5 +37,5 @@ KEYS=(
     "EF0F382A1A7B6500"
 )
 
-gpg --recv-keys ${KEYS[@]}
+gpg --keyserver keyserver.ubuntu.com --recv-keys ${KEYS[@]}
 gpg --output "${SCRIPT_DIR}/debian_archive_unstable.gpg" --export ${KEYS[@]}
