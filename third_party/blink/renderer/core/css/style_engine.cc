@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
@@ -321,42 +322,28 @@ void StyleEngine::ModifiedStyleSheetCandidateNode(Node& node) {
     SetNeedsActiveStyleUpdate(node.GetTreeScope());
 }
 
-void StyleEngine::AdoptedStyleSheetsWillChange(
-    TreeScope& tree_scope,
-    const HeapVector<Member<CSSStyleSheet>>& old_sheets,
-    const HeapVector<Member<CSSStyleSheet>>& new_sheets) {
+void StyleEngine::AdoptedStyleSheetAdded(TreeScope& tree_scope,
+                                         CSSStyleSheet* sheet) {
   if (GetDocument().IsDetached())
     return;
-
-  unsigned old_sheets_count = old_sheets.size();
-  unsigned new_sheets_count = new_sheets.size();
-
-  unsigned min_count = std::min(old_sheets_count, new_sheets_count);
-  unsigned index = 0;
-  while (index < min_count && old_sheets[index] == new_sheets[index]) {
-    index++;
-  }
-
-  if (old_sheets_count == new_sheets_count && index == old_sheets_count)
-    return;
-
-  for (unsigned i = index; i < old_sheets_count; ++i) {
-    old_sheets[i]->RemovedAdoptedFromTreeScope(tree_scope);
-  }
-  for (unsigned i = index; i < new_sheets_count; ++i) {
-    new_sheets[i]->AddedAdoptedToTreeScope(tree_scope);
-  }
-
+  sheet->AddedAdoptedToTreeScope(tree_scope);
   if (!tree_scope.RootNode().isConnected())
     return;
+  EnsureStyleSheetCollectionFor(tree_scope);
+  if (tree_scope != document_)
+    active_tree_scopes_.insert(&tree_scope);
+  SetNeedsActiveStyleUpdate(tree_scope);
+}
 
-  if (new_sheets_count) {
-    EnsureStyleSheetCollectionFor(tree_scope);
-    if (tree_scope != document_)
-      active_tree_scopes_.insert(&tree_scope);
-  } else if (!StyleSheetCollectionFor(tree_scope)) {
+void StyleEngine::AdoptedStyleSheetRemoved(TreeScope& tree_scope,
+                                           CSSStyleSheet* sheet) {
+  if (GetDocument().IsDetached())
     return;
-  }
+  sheet->RemovedAdoptedFromTreeScope(tree_scope);
+  if (!tree_scope.RootNode().isConnected())
+    return;
+  if (!StyleSheetCollectionFor(tree_scope))
+    return;
   SetNeedsActiveStyleUpdate(tree_scope);
 }
 

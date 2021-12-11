@@ -44,6 +44,7 @@ class Document;
 class ExceptionState;
 class GetInnerHTMLOptions;
 class SlotAssignment;
+class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
 
 enum class ShadowRootType { kOpen, kClosed, kUserAgent };
@@ -186,6 +187,17 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   }
 
   void Trace(Visitor*) const override;
+
+ protected:
+  void OnAdoptedStyleSheetSet(ScriptState*,
+                              V8ObservableArrayCSSStyleSheet&,
+                              uint32_t,
+                              Member<CSSStyleSheet>&,
+                              ExceptionState&) override;
+  void OnAdoptedStyleSheetDelete(ScriptState*,
+                                 V8ObservableArrayCSSStyleSheet&,
+                                 uint32_t,
+                                 ExceptionState&) override;
 
  private:
   void ChildrenChanged(const ChildrenChange&) override;

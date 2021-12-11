@@ -57,22 +57,41 @@
 
 namespace blink {
 
-TreeScope::TreeScope(ContainerNode& root_node, Document& document)
+TreeScope::TreeScope(ContainerNode& root_node,
+                     Document& document,
+                     V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback
+                         adopted_style_sheets_set_callback,
+                     V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback
+                         adopted_style_sheets_delete_callback)
     : root_node_(&root_node),
       document_(&document),
       parent_tree_scope_(&document),
       id_target_observer_registry_(
-          MakeGarbageCollected<IdTargetObserverRegistry>()) {
+          MakeGarbageCollected<IdTargetObserverRegistry>()),
+      adopted_style_sheets_(
+          MakeGarbageCollected<V8ObservableArrayCSSStyleSheet>(
+              &root_node,
+              adopted_style_sheets_set_callback,
+              adopted_style_sheets_delete_callback)) {
   DCHECK_NE(root_node, document);
   root_node_->SetTreeScope(this);
 }
 
-TreeScope::TreeScope(Document& document)
+TreeScope::TreeScope(Document& document,
+                     V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback
+                         adopted_style_sheets_set_callback,
+                     V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback
+                         adopted_style_sheets_delete_callback)
     : root_node_(document),
       document_(&document),
       parent_tree_scope_(nullptr),
       id_target_observer_registry_(
-          MakeGarbageCollected<IdTargetObserverRegistry>()) {
+          MakeGarbageCollected<IdTargetObserverRegistry>()),
+      adopted_style_sheets_(
+          MakeGarbageCollected<V8ObservableArrayCSSStyleSheet>(
+              &document,
+              adopted_style_sheets_set_callback,
+              adopted_style_sheets_delete_callback)) {
   root_node_->SetTreeScope(this);
 }
 
@@ -333,39 +352,66 @@ SVGTreeScopeResources& TreeScope::EnsureSVGTreeScopedResources() {
 }
 
 bool TreeScope::HasAdoptedStyleSheets() const {
-  return adopted_style_sheets_.size() > 0;
+  return adopted_style_sheets_->size();
 }
 
-const HeapVector<Member<CSSStyleSheet>>& TreeScope::AdoptedStyleSheets() {
-  return adopted_style_sheets_;
+void TreeScope::StyleSheetWasAdded(CSSStyleSheet* sheet) {
+  GetDocument().GetStyleEngine().AdoptedStyleSheetAdded(*this, sheet);
 }
 
-void TreeScope::SetAdoptedStyleSheets(
-    HeapVector<Member<CSSStyleSheet>>& adopted_style_sheets,
+void TreeScope::StyleSheetWasRemoved(CSSStyleSheet* sheet) {
+  GetDocument().GetStyleEngine().AdoptedStyleSheetRemoved(*this, sheet);
+}
+
+void TreeScope::OnAdoptedStyleSheetSet(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    Member<CSSStyleSheet>& sheet,
     ExceptionState& exception_state) {
-  for (CSSStyleSheet* sheet : adopted_style_sheets) {
-    if (!sheet->IsConstructed()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "Can't adopt non-constructed stylesheets.");
-      return;
-    }
-    Document* document = sheet->ConstructorDocument();
-    if (document && *document != GetDocument()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                        "Sharing constructed stylesheets in "
-                                        "multiple documents is not allowed");
-      return;
-    }
+  if (!sheet->IsConstructed()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Can't adopt non-constructed stylesheets.");
+    return;
   }
-  SetAdoptedStyleSheets(adopted_style_sheets);
+  Document* document = sheet->ConstructorDocument();
+  if (document && *document != GetDocument()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "Sharing constructed stylesheets in "
+                                      "multiple documents is not allowed");
+    return;
+  }
+  StyleSheetWasAdded(sheet.Get());
 }
 
-void TreeScope::SetAdoptedStyleSheets(
+void TreeScope::OnAdoptedStyleSheetDelete(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    ExceptionState& exception_state) {
+  StyleSheetWasRemoved(adopted_style_sheets_->at(index));
+}
+
+void TreeScope::ClearAdoptedStyleSheets() {
+  HeapVector<Member<CSSStyleSheet>> removed;
+  removed.AppendRange(adopted_style_sheets_->begin(),
+                      adopted_style_sheets_->end());
+  adopted_style_sheets_->clear();
+  for (auto sheet : removed) {
+    StyleSheetWasRemoved(sheet);
+  }
+}
+
+void TreeScope::SetAdoptedStyleSheetsForTesting(
     HeapVector<Member<CSSStyleSheet>>& adopted_style_sheets) {
-  GetDocument().GetStyleEngine().AdoptedStyleSheetsWillChange(
-      *this, adopted_style_sheets_, adopted_style_sheets);
-  adopted_style_sheets_ = adopted_style_sheets;
+  ClearAdoptedStyleSheets();
+  for (auto sheet : adopted_style_sheets) {
+    DCHECK(sheet->IsConstructed());
+    DCHECK_EQ(sheet->ConstructorDocument(), GetDocument());
+    adopted_style_sheets_->push_back(sheet);
+    StyleSheetWasAdded(sheet);
+  }
 }
 
 DOMSelection* TreeScope::GetSelection() const {

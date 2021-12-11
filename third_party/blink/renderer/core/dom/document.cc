@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
@@ -656,7 +657,12 @@ Document* Document::CreateForTest() {
 Document::Document(const DocumentInit& initializer,
                    DocumentClassFlags document_classes)
     : ContainerNode(nullptr, kCreateDocument),
-      TreeScope(*this),
+      TreeScope(
+          *this,
+          static_cast<V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback>(
+              &Document::OnAdoptedStyleSheetSet),
+          static_cast<V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback>(
+              &Document::OnAdoptedStyleSheetDelete)),
       is_initial_empty_document_(initializer.IsInitialEmptyDocument()),
       is_prerendering_(initializer.IsPrerendering()),
       evaluate_media_queries_on_style_recalc_(false),
@@ -4939,6 +4945,27 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
 
   blink::NotifyPriorityScrollAnchorStatusChanged(old_focused_element,
                                                  new_focused_element);
+}
+
+// This forwards to the TreeScope implementation.
+void Document::OnAdoptedStyleSheetSet(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    Member<CSSStyleSheet>& sheet,
+    ExceptionState& exception_state) {
+  TreeScope::OnAdoptedStyleSheetSet(script_state, observable_array, index,
+                                    sheet, exception_state);
+}
+
+// This forwards to the TreeScope implementation.
+void Document::OnAdoptedStyleSheetDelete(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    ExceptionState& exception_state) {
+  TreeScope::OnAdoptedStyleSheetDelete(script_state, observable_array, index,
+                                       exception_state);
 }
 
 void Document::SetSequentialFocusNavigationStartingPoint(Node* node) {

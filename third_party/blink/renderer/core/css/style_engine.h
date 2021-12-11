@@ -194,10 +194,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AddStyleSheetCandidateNode(Node&);
   void RemoveStyleSheetCandidateNode(Node&, ContainerNode& insertion_point);
   void ModifiedStyleSheetCandidateNode(Node&);
-  void AdoptedStyleSheetsWillChange(
-      TreeScope&,
-      const HeapVector<Member<CSSStyleSheet>>& old_sheets,
-      const HeapVector<Member<CSSStyleSheet>>& new_sheets);
+
+  void AdoptedStyleSheetAdded(TreeScope& tree_scope, CSSStyleSheet* sheet);
+  void AdoptedStyleSheetRemoved(TreeScope& tree_scope, CSSStyleSheet* sheet);
+
   void AddedCustomElementDefaultStyles(
       const HeapVector<Member<CSSStyleSheet>>& default_styles);
   void WatchedSelectorsChanged();
@@ -526,7 +526,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void LoadVisionDeficiencyFilter();
 
- private:
   bool NeedsActiveStyleSheetUpdate() const {
     return tree_scopes_removed_ || document_scope_dirty_ ||
            dirty_tree_scopes_.size() || user_style_dirty_;

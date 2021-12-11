@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -72,7 +73,7 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
   if (!GetTreeScope().HasAdoptedStyleSheets())
     return;
 
-  for (CSSStyleSheet* sheet : GetTreeScope().AdoptedStyleSheets()) {
+  for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
     if (!sheet ||
         !sheet->CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName()))
