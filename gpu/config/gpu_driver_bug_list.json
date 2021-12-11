@@ -3817,22 +3817,6 @@
       "features": [
         "check_egl_fence_before_wait"
       ]
-    },
-    {
-      "id": 382,
-      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
-      "cr_bugs": [1251071],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "op": "<=",
-        "value": "6.15.7.7"
-      },
-      "features": [
-        "disable_accelerated_h264_encode"
-      ]
     }
   ]
 }
