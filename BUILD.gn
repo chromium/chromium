@@ -1186,10 +1186,6 @@ if (!is_ios) {
       data_deps += [ "//build/win:copy_cdb_to_output" ]
     }
 
-    if (is_mac) {
-      data += [ "//third_party/apache-mac/" ]
-    }
-
     if (is_android) {
       data += [
         "//third_party/catapult/",
