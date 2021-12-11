@@ -25,7 +25,8 @@ std::unique_ptr<download::DownloadItem> CreateDownloadItemWithStartTimeOffset(
   auto download = std::make_unique<content::FakeDownloadItem>();
   download->SetState(download::DownloadItem::IN_PROGRESS);
   download->SetStartTime(base::Time::Now() + start_time_offset);
-  content::DownloadItemUtils::AttachInfo(download.get(), profile, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(download.get(), profile,
+                                                   nullptr);
   return download;
 }
 

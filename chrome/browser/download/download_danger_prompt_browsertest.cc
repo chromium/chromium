@@ -190,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(DownloadDangerPromptTest, MAYBE_TestAll) {
   ON_CALL(download(), GetURL()).WillByDefault(ReturnRef(download_url));
   ON_CALL(download(), GetReferrerUrl())
       .WillByDefault(ReturnRef(GURL::EmptyGURL()));
-  content::DownloadItemUtils::AttachInfo(&download(), browser()->profile(),
-                                         nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(
+      &download(), browser()->profile(), nullptr);
   base::FilePath empty_file_path;
   ON_CALL(download(), GetTargetFilePath())
       .WillByDefault(ReturnRef(empty_file_path));
@@ -322,8 +322,8 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
 
     // Set up test-specific parameters
     ON_CALL(download_, GetDangerType()).WillByDefault(Return(danger_type_));
-    content::DownloadItemUtils::AttachInfo(&download_, browser()->profile(),
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(
+        &download_, browser()->profile(), nullptr);
     DownloadDangerPrompt::Create(
         &download_, browser()->tab_strip_model()->GetActiveWebContents(),
         invocation_type_ == FROM_DOWNLOAD_API, DownloadDangerPrompt::OnDone());

@@ -205,8 +205,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
     ON_CALL(*test_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
-    content::DownloadItemUtils::AttachInfo(test_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(test_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, test_item_.get());
 
     // Add another item.
@@ -215,8 +215,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
         .WillByDefault(Return(kOtherDownloadId));
     ON_CALL(*other_item_, GetEndTime())
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
-    content::DownloadItemUtils::AttachInfo(other_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(other_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, other_item_.get());
 
     // Add an item with an id of zero.
@@ -227,8 +227,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
     ON_CALL(*zero_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
-    content::DownloadItemUtils::AttachInfo(zero_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(zero_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, zero_item_.get());
 
     ON_CALL(download_manager_, GetAllDownloads(_))

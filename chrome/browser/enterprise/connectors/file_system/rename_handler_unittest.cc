@@ -88,7 +88,7 @@ TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
   item.SetURL(GURL("https://renameme.com"));
   item.SetTabUrl(GURL("https://renameme.com"));
   item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   auto handler = RenameHandler::CreateIfNeeded(&item);
   ASSERT_EQ(enable_feature_flag(), handler.get() != nullptr);
 }
@@ -157,7 +157,7 @@ TEST_P(RenameHandlerCreateTest_Policies, Test) {
   item.SetURL(GURL(param.item_url));
   item.SetTabUrl(GURL(param.tab_url));
   item.SetMimeType(param.item_mime_type);
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   auto handler = RenameHandler::CreateIfNeeded(&item);
   bool rename_handler_created = handler.get() != nullptr;
@@ -720,8 +720,8 @@ class RenameHandlerTestBase {
 
     item_.SetTargetFilePath(kTargetFileName);
     item_.SetURL(GURL("https://any.com"));
-    content::DownloadItemUtils::AttachInfo(&item_, profile,
-                                           web_contents_.get());
+    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile,
+                                                     web_contents_.get());
     ASSERT_TRUE(base::WriteFile(item_.GetFullPath(), "RenameHandlerTest"))
         << "Failed to create " << item_.GetFullPath();
 

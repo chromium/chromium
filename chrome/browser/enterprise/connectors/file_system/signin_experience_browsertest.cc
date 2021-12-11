@@ -46,8 +46,8 @@ class SigninExperienceForDownloadItemBrowserTest
     test_item.SetState(download::DownloadItem::IN_PROGRESS);
     web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    content::DownloadItemUtils::AttachInfo(&test_item, browser()->profile(),
-                                           web_contents);
+    content::DownloadItemUtils::AttachInfoForTesting(
+        &test_item, browser()->profile(), web_contents);
 
     settings = GetFileSystemSettings(&test_item);
     ASSERT_TRUE(settings.has_value());

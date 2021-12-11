@@ -384,7 +384,8 @@ ChromeDownloadManagerDelegateTest::CreateActiveDownloadItem(int32_t id) {
       .WillByDefault(Return(false));
   std::string guid = base::GenerateGUID();
   ON_CALL(*item, GetGuid()).WillByDefault(ReturnRefOfCopy(guid));
-  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents());
+  content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile(),
+                                                   web_contents());
   EXPECT_CALL(*download_manager_, GetDownload(id))
       .WillRepeatedly(Return(item.get()));
   EXPECT_CALL(*download_manager_, GetDownloadByGuid(guid))
@@ -1840,7 +1841,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_Android) {
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<download::MockDownloadItem> download_item =
         CreateActiveDownloadItem(1);
-    content::DownloadItemUtils::AttachInfo(
+    content::DownloadItemUtils::AttachInfoForTesting(
         download_item.get(), profile(),
         test_case.web_contents == WebContents::AVAILABLE ? web_contents()
                                                          : nullptr);

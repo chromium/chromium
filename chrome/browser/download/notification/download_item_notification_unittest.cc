@@ -129,8 +129,8 @@ class DownloadItemNotificationTest : public testing::Test {
     ON_CALL(*download_item_, IsDone()).WillByDefault(Return(false));
     ON_CALL(*download_item_, GetURL()).WillByDefault(ReturnRefOfCopy(
         GURL("http://www.example.com/download.bin")));
-    content::DownloadItemUtils::AttachInfo(download_item_.get(), profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(download_item_.get(),
+                                                     profile_, nullptr);
   }
 
   void TearDown() override {

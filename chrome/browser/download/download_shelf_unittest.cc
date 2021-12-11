@@ -58,8 +58,8 @@ DownloadShelfTest::DownloadShelfTest() {
   ON_CALL(*download_item(), IsTemporary()).WillByDefault(Return(false));
   ON_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
       .WillByDefault(Return(false));
-  content::DownloadItemUtils::AttachInfo(download_item(), profile_.get(),
-                                         nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(download_item(),
+                                                   profile_.get(), nullptr);
 
   auto download_manager =
       std::make_unique<::testing::NiceMock<content::MockDownloadManager>>();

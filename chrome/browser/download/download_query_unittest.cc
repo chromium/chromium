@@ -68,7 +68,8 @@ class DownloadQueryTest : public testing::Test {
       mocks_.push_back(owned_mocks_.back().get());
       EXPECT_CALL(mock(mocks_.size() - 1), GetId()).WillRepeatedly(Return(
           mocks_.size() - 1));
-      content::DownloadItemUtils::AttachInfo(mocks_.back(), nullptr, nullptr);
+      content::DownloadItemUtils::AttachInfoForTesting(mocks_.back(), nullptr,
+                                                       nullptr);
     }
   }
 

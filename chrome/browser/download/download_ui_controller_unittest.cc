@@ -257,8 +257,8 @@ DownloadUIControllerTest::CreateMockInProgressDownload() {
   EXPECT_CALL(*item, IsSavePackageDownload()).WillRepeatedly(Return(false));
   EXPECT_CALL(*item, GetOriginalMimeType())
       .WillRepeatedly(Return(std::string()));
-  content::DownloadItemUtils::AttachInfo(item.get(), browser_context(),
-                                         nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(item.get(),
+                                                   browser_context(), nullptr);
 
   return item;
 }

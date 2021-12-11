@@ -126,9 +126,10 @@ void DownloadItemUtils::AttachInfo(download::DownloadItem* download_item,
 }
 
 // static
-void DownloadItemUtils::AttachInfo(download::DownloadItem* download_item,
-                                   BrowserContext* browser_context,
-                                   WebContents* web_contents) {
+void DownloadItemUtils::AttachInfoForTesting(
+    download::DownloadItem* download_item,
+    BrowserContext* browser_context,
+    WebContents* web_contents) {
   DownloadItemUtils::AttachInfo(
       download_item, browser_context, web_contents,
       web_contents ? web_contents->GetMainFrame()->GetGlobalId()

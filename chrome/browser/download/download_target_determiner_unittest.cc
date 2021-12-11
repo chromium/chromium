@@ -416,7 +416,8 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       DownloadItem::TARGET_DISPOSITION_PROMPT :
       DownloadItem::TARGET_DISPOSITION_OVERWRITE;
   EXPECT_TRUE((test_case.test_type != FORCED) || !forced_file_path.empty());
-  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents());
+  content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile(),
+                                                   web_contents());
 
   ON_CALL(*item, GetDangerType())
       .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
