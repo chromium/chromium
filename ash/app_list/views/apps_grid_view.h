@@ -293,6 +293,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   const AppListModel* model() const { return model_; }
 
+  GridIndex reorder_placeholder() const { return reorder_placeholder_; }
+
   bool FireFolderItemReparentTimerForTest();
   bool FireDragToShelfTimerForTest();
 
@@ -382,9 +384,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // list item view during the drag.
   virtual void SetFocusAfterEndDrag() = 0;
 
-  // Calculates the item views' bounds for non-folder.
-  virtual void CalculateIdealBoundsForNonFolder() = 0;
-
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
   // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
@@ -396,6 +395,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Calculates the item views' bounds for both folder and non-folder.
   void CalculateIdealBounds();
+  void CalculateIdealBoundsForPageStructureWithPartialPages();
 
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
@@ -435,7 +435,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   views::ViewModelT<PulsingBlockView>& pulsing_blocks_model() {
     return pulsing_blocks_model_;
   }
-  GridIndex reorder_placeholder() const { return reorder_placeholder_; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   void set_last_drag_point(const gfx::Point& p) { last_drag_point_ = p; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }

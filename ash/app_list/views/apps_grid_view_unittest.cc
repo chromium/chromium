@@ -175,34 +175,32 @@ aura::Window* FindMenuWindow(aura::Window* root) {
 }
 
 // Dragging task to be run after page flip is observed.
-class DragAfterPageFlipTask : public PaginationModelObserver {
+class PostPageFlipTask : public PaginationModelObserver {
  public:
-  DragAfterPageFlipTask(PaginationModel* model,
-                        AppsGridView* view,
-                        const ui::MouseEvent& drag_event)
-      : model_(model), view_(view), drag_event_(drag_event) {
+  PostPageFlipTask(PaginationModel* model, base::OnceClosure task)
+      : model_(model), task_(std::move(task)) {
     model_->AddObserver(this);
   }
 
-  DragAfterPageFlipTask(const DragAfterPageFlipTask&) = delete;
-  DragAfterPageFlipTask& operator=(const DragAfterPageFlipTask&) = delete;
+  PostPageFlipTask(const PostPageFlipTask&) = delete;
+  PostPageFlipTask& operator=(const PostPageFlipTask&) = delete;
 
-  ~DragAfterPageFlipTask() override { model_->RemoveObserver(this); }
+  ~PostPageFlipTask() override { model_->RemoveObserver(this); }
 
  private:
   // PaginationModelObserver overrides:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override {
   }
   void SelectedPageChanged(int old_selected, int new_selected) override {
-    view_->UpdateDragFromItem(AppsGridView::MOUSE, drag_event_);
+    if (task_)
+      std::move(task_).Run();
   }
   void TransitionStarted() override {}
   void TransitionChanged() override {}
   void TransitionEnded() override {}
 
   PaginationModel* model_;
-  AppsGridView* view_;
-  ui::MouseEvent drag_event_;
+  base::OnceClosure task_;
 };
 
 class TestSuggestedSearchResult : public TestSearchResult {
@@ -619,12 +617,15 @@ class AppsGridViewTest : public AshTestBase {
     gfx::NativeWindow window = app_list_view_->GetWidget()->GetNativeWindow();
     aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
                                        &root_to);
-    ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, to, root_to,
-                              ui::EventTimeForNow(), 0, 0);
 
     // Update dragging and relayout apps grid view after drag ends.
-    DragAfterPageFlipTask task(GetPaginationModel(), paged_apps_grid_view_,
-                               drag_event);
+    PostPageFlipTask task(
+        GetPaginationModel(), base::BindLambdaForTesting([&]() {
+          ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, to, root_to,
+                                    ui::EventTimeForNow(), 0, 0);
+          paged_apps_grid_view_->UpdateDragFromItem(AppsGridView::MOUSE,
+                                                    drag_event);
+        }));
     page_flip_waiter_->Reset();
     UpdateDrag(AppsGridView::MOUSE, point_in_page_flip_buffer,
                paged_apps_grid_view_,
@@ -2658,6 +2659,239 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
 
   // End the drag to satisfy checks in AppsGridView destructor.
   EndDrag(apps_grid_view_, /*cancel=*/true);
+}
+
+TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  // Create a full page and a partially full second page.
+  model_->PopulateApps(GetTilesPerPage(0) + 3);
+  apps_grid_view_->UpdatePagedViewStructure();
+  UpdateLayout();
+
+  // Drag an item from the first page to the last existing slot on the next
+  // page.
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+  AppListItemView* dragged_view = view_model->view_at(0);
+  AppListItemView* original_first_item_on_second_page =
+      view_model->view_at(GetTilesPerPage(0));
+
+  auto* generator = GetEventGenerator();
+
+  // Initiate drag.
+  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Drag the item to launcher page flip zone, and flip the launcher to the
+  // second page.
+  generator->MoveMouseTo(
+      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+      gfx::Vector2d(0, -1));
+  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+
+  // Task to move mouse from the page flip area after the page gets flipped, to
+  // prevent subseuquent page flips.
+  PostPageFlipTask task(GetPaginationModel(), base::BindLambdaForTesting([&]() {
+                          generator->MoveMouseBy(0, -50);
+                          generator->MoveMouseBy(0, -50);
+                        }));
+
+  page_flip_waiter_->Wait();
+
+  // Ensure that the reoreder timer ran, and that any views on the second page
+  // that should have been moved to the first page have done so.
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Move the item to the first empty slot on the second page.
+  gfx::Point empty_slot =
+      test_api_->GetItemTileRectAtVisualIndex(1, 3).CenterPoint();
+  views::View::ConvertPointToScreen(paged_apps_grid_view_, &empty_slot);
+  generator->MoveMouseTo(empty_slot);
+  test_api_->WaitForItemMoveAnimationDone();
+
+  if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning())
+    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  const int expected_final_slot = is_productivity_launcher_enabled_ ? 2 : 3;
+  EXPECT_EQ(GridIndex(1, expected_final_slot),
+            paged_apps_grid_view_->reorder_placeholder());
+
+  // Verify that the last item in the grid is left of the expected placeholder
+  // location.
+  const gfx::Rect last_slot_rect =
+      GetItemRectOnCurrentPageAt(1, expected_final_slot);
+  const views::View* last_view =
+      view_model->view_at(view_model->view_size() - 1);
+  if (is_rtl_) {
+    gfx::Point last_view_left_center_in_grid =
+        last_view->GetLocalBounds().left_center();
+    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                      &last_view_left_center_in_grid);
+    EXPECT_GE(last_view_left_center_in_grid.x(), last_slot_rect.right());
+  } else {
+    gfx::Point last_view_right_center_in_grid =
+        last_view->GetLocalBounds().right_center();
+    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                      &last_view_right_center_in_grid);
+    EXPECT_LE(last_view_right_center_in_grid.x(), last_slot_rect.x());
+  }
+
+  EndDrag(paged_apps_grid_view_, false);
+
+  EXPECT_EQ(1, GetPaginationModel()->selected_page());
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  TestAppListItemViewIndice();
+
+  // Verify that the dragged item was moved to the last slot.
+  AppListItemView* last_item_view =
+      test_api_->GetViewAtVisualIndex(1, expected_final_slot);
+  ASSERT_TRUE(last_item_view);
+  EXPECT_EQ(dragged_view->item()->id(), last_item_view->item()->id());
+
+  // For productivity launcher, the first item on second page should have been
+  // moved to the first page (to fill up the empty slot left by moving the
+  // draggged item away). For non-productivity launcher, the last slot should
+  // remain empty.
+  AppListItemView* last_item_on_first_page =
+      test_api_->GetViewAtVisualIndex(0, GetTilesPerPage(0) - 1);
+  ASSERT_EQ(is_productivity_launcher_enabled_, !!last_item_on_first_page);
+  if (is_productivity_launcher_enabled_) {
+    EXPECT_EQ(original_first_item_on_second_page->item()->id(),
+              last_item_on_first_page->item()->id());
+  }
+}
+
+TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  // Create a full page and a partially full second page.
+  model_->PopulateApps(GetTilesPerPage(0) + 3);
+  apps_grid_view_->UpdatePagedViewStructure();
+  UpdateLayout();
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+  AppListItemView* dragged_view = view_model->view_at(0);
+  AppListItemView* original_first_item_on_second_page =
+      view_model->view_at(GetTilesPerPage(0));
+
+  auto* generator = GetEventGenerator();
+
+  // Initiate drag.
+  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Drag the item to launcher page flip zone, and flip the launcher to the
+  // second page.
+  generator->MoveMouseTo(
+      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+      gfx::Vector2d(0, -1));
+  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+
+  // Task to move mouse from the page flip area after the page gets flipped, to
+  // prevent subseuquent page flips.
+  PostPageFlipTask task(GetPaginationModel(), base::BindLambdaForTesting([&]() {
+                          generator->MoveMouseBy(0, -50);
+                          generator->MoveMouseBy(0, -50);
+                        }));
+
+  page_flip_waiter_->Wait();
+
+  // Ensure that the reoreder timer ran, and that any views on the second page
+  // that should have been moved to the first page have done so.
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Move the item between two last slots on the page.
+  views::View* last_view = view_model->view_at(view_model->view_size() - 1);
+  const gfx::Point last_slot = last_view->GetBoundsInScreen().CenterPoint();
+  views::View* second_to_last_view =
+      view_model->view_at(view_model->view_size() - 2);
+  const gfx::Point second_to_last_slot =
+      second_to_last_view->GetBoundsInScreen().CenterPoint();
+  const gfx::Point drop_point((last_slot.x() + second_to_last_slot.x()) / 2,
+                              last_slot.y());
+
+  generator->MoveMouseTo(drop_point);
+
+  if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning())
+    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  const int expected_final_slot = is_productivity_launcher_enabled_ ? 1 : 2;
+  EXPECT_EQ(GridIndex(1, expected_final_slot),
+            paged_apps_grid_view_->reorder_placeholder());
+
+  // Verify that the last item in the grid is right of the expected placeholder
+  // location.
+  const gfx::Rect target_slot_rect =
+      GetItemRectOnCurrentPageAt(1, expected_final_slot);
+  if (is_rtl_) {
+    gfx::Point last_view_right_center_in_grid =
+        last_view->GetLocalBounds().right_center();
+    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                      &last_view_right_center_in_grid);
+    EXPECT_LE(last_view_right_center_in_grid.x(), target_slot_rect.x());
+  } else {
+    gfx::Point last_view_left_center_in_grid =
+        last_view->GetLocalBounds().left_center();
+    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                      &last_view_left_center_in_grid);
+    EXPECT_GE(last_view_left_center_in_grid.x(), target_slot_rect.right());
+  }
+
+  // Verify that second to last item in the grid is left of the expected
+  // placeholder location.
+  if (is_rtl_) {
+    gfx::Point second_to_last_view_left_center_in_grid =
+        second_to_last_view->GetLocalBounds().left_center();
+    views::View::ConvertPointToTarget(second_to_last_view,
+                                      paged_apps_grid_view_,
+                                      &second_to_last_view_left_center_in_grid);
+    EXPECT_GE(second_to_last_view_left_center_in_grid.x(),
+              target_slot_rect.right());
+  } else {
+    gfx::Point second_to_last_view_right_center_in_grid =
+        second_to_last_view->GetLocalBounds().right_center();
+    views::View::ConvertPointToTarget(
+        second_to_last_view, paged_apps_grid_view_,
+        &second_to_last_view_right_center_in_grid);
+    EXPECT_LE(second_to_last_view_right_center_in_grid.x(),
+              target_slot_rect.x());
+  }
+
+  generator->ReleaseLeftButton();
+
+  EXPECT_EQ(1, GetPaginationModel()->selected_page());
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  TestAppListItemViewIndice();
+
+  // Verify that the dragged item was moved to the target slot.
+  AppListItemView* last_item_view =
+      test_api_->GetViewAtVisualIndex(1, expected_final_slot);
+  ASSERT_TRUE(last_item_view);
+  EXPECT_EQ(dragged_view->item()->id(), last_item_view->item()->id());
+
+  // For productivity launcher, the first item on second page should have been
+  // moved to the first page (to fill up the empty slot left by moving the
+  // draggged item away). For non-productivity launcher, the last slot should
+  // remain empty.
+  AppListItemView* last_item_on_first_page =
+      test_api_->GetViewAtVisualIndex(0, GetTilesPerPage(0) - 1);
+  ASSERT_EQ(is_productivity_launcher_enabled_, !!last_item_on_first_page);
+  if (is_productivity_launcher_enabled_) {
+    EXPECT_EQ(original_first_item_on_second_page->item()->id(),
+              last_item_on_first_page->item()->id());
+  }
 }
 
 TEST_P(AppsGridViewTabletTest,

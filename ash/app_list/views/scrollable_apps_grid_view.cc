@@ -148,30 +148,6 @@ bool ScrollableAppsGridView::IsScrollAxisVertical() const {
   return true;
 }
 
-void ScrollableAppsGridView::CalculateIdealBoundsForNonFolder() {
-  DCHECK(!IsInFolder());
-
-  int grid_index = 0;
-  int model_index = 0;
-  for (const auto& entry : view_model()->entries()) {
-    views::View* view = entry.view;
-    if (grid_index == reorder_placeholder().slot) {
-      // Create space by incrementing the grid index.
-      ++grid_index;
-    }
-    if (view == drag_view()) {
-      // Skip the drag view. The dragging code will set the bounds. Collapse
-      // space in the grid by not incrementing grid_index.
-      ++model_index;
-      continue;
-    }
-    gfx::Rect tile_slot = GetExpectedTileBounds(GridIndex(0, grid_index));
-    view_model()->set_ideal_bounds(model_index, tile_slot);
-    ++model_index;
-    ++grid_index;
-  }
-}
-
 bool ScrollableAppsGridView::MaybeAutoScroll() {
   ScrollDirection direction;
   if (!IsPointInAutoScrollMargin(last_drag_point(), &direction)) {
