@@ -24,6 +24,7 @@
 #include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -397,6 +398,8 @@ void BluetoothNotificationController::NotifyPairedDevice(
       kNotificationBluetoothIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kPairedNotification);
 }
 
 }  // namespace ash

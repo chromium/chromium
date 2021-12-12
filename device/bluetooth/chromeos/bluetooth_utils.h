@@ -67,7 +67,8 @@ enum class BluetoothUiSurface {
   kConnectionToast = 6,
   kDisconnectedToast = 7,
   kOobeHidDetection = 8,
-  kMaxValue = kOobeHidDetection
+  kPairedToast = 9,
+  kMaxValue = kPairedToast
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

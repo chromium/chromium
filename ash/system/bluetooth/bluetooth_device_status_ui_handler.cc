@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -48,6 +49,7 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
       /*visible_on_lock_screen=*/false);
 
   ShowToast(toast_data);
+  device::RecordUiSurfaceDisplayed(device::BluetoothUiSurface::kPairedToast);
 }
 
 void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
@@ -62,6 +64,8 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
       /*dismiss_text=*/absl::nullopt,
       /*visible_on_lock_screen=*/false);
   ShowToast(toast_data);
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kConnectionToast);
 }
 
 void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
@@ -76,6 +80,8 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
       /*dismiss_text=*/absl::nullopt,
       /*visible_on_lock_screen=*/false);
   ShowToast(toast_data);
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kDisconnectedToast);
 }
 
 void BluetoothDeviceStatusUiHandler::ShowToast(

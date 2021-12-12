@@ -23,6 +23,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -48,6 +49,8 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateDisabledView();
   CreatePairNewDeviceView();
   UpdateBluetoothEnabledState(/*enabled=*/false);
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
 
 BluetoothDetailedViewImpl::~BluetoothDetailedViewImpl() = default;
