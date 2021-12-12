@@ -168,6 +168,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2584132361465095047">Adicionar conta...</translation>
 <translation id="2600682495497606169">Limpar cookies de sites</translation>
 <translation id="2625189173221582860">Palavra-passe copiada</translation>
+<translation id="2626236249646841566">Verifique a sua ligação e experimente iniciar sessão novamente.</translation>
 <translation id="2637313651144986786">Pesquisar separadores…</translation>
 <translation id="2647269890314209800">Cookies em utilização</translation>
 <translation id="2648803196158606475">Eliminar lidas</translation>
@@ -364,6 +365,7 @@ Siga os passos abaixo:</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>
 <translation id="4526249700380860531">Ver e gerir as palavras-passe guardadas em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Experimente iniciar sessão novamente.</translation>
+<translation id="4540780316273593836">Algo correu mal</translation>
 <translation id="457386861538956877">Mais...</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
@@ -479,6 +481,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{A mostrar 1 janela do Chrome agora}one{A mostrar {count} janela(s) do Chrome agora}other{A mostrar {count} janelas do Chrome agora}}</translation>
+<translation id="5704908597376970822">Não é possível iniciar sessão.</translation>
 <translation id="5706552126692816153">Ativo há 1 dia</translation>
 <translation id="5711039611392265845">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização e serviços Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Para navegar na Web em privado, adicione um novo separador.</translation>
@@ -788,6 +791,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="842017693807136194">Iniciar sessão com</translation>
 <translation id="8428045167754449968">Cidade/Localidade</translation>
 <translation id="8428213095426709021">Definições</translation>
+<translation id="8428634594422941299">OK</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8458397775385147834">1 item eliminado</translation>
 <translation id="8459333855531264009">Inseguro</translation>

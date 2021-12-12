@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
+<translation id="118437560755358292">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‌വേഡ് അല്ലെങ്കിൽ പിൻ നൽകുക</translation>
 <translation id="118532027333893379">പൂർണ്ണ സ്ക്രീൻ ചിത്രമെടുക്കാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1190609913194133056">അറിയിപ്പ് കേന്ദ്രം</translation>
 <translation id="1190678134285018527">ഉപകരണത്തിന് മുമ്പത്തെ പതിപ്പിലേക്ക് തിരികെ പോകേണ്ടതുണ്ട്.</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">ലാപ്ടോപ്പ് മോഡിലേക്ക് മാറി</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിന് പിന്നീട്, തുടർന്നും സൈൻ ഇൻ ചെയ്യാനാവും.</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
+<translation id="3339826665088060472">സ്ക്രീൻ ക്യാപ്ച്ചർ, സ്ക്രീൻഷോട്ടുകളും സ്ക്രീൻ റെക്കോർഡിംഗുകളും എടുക്കാനുള്ള ടൂളുകൾ</translation>
 <translation id="3341303451326249809">സ്‌ക്രീൻഷോട്ട് ക്യാപ്‌ചർ ചെയ്തു</translation>
 <translation id="334252345105450327">സ്‌ക്രീൻഷോട്ട് എടുക്കൂ</translation>
 <translation id="3351879221545518001">നിലവിൽ നിങ്ങൾ സ്ക്രീൻ കാസ്‌റ്റ് ചെയ്യുന്നു.</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ കണക്‌റ്റ് ചെയ്‌തു.</translation>
 <translation id="3615926715408477684">മൊബൈൽ ഡാറ്റ പ്രവർത്തനക്ഷമമാക്കുന്നത് Bluetooth-ഉം പ്രവർത്തനക്ഷമമാക്കും.</translation>
 <translation id="3616883743181209306">സ്‌ക്രീനിന്റെ മുകളിൽ വലത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
+<translation id="3619536907358025872">സ്ക്രീൻ ക്യാപ്ച്ചർ ക്രമീകരണം</translation>
 <translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3621712662352432595">ഓഡിയോ ക്രമീകരണങ്ങൾ</translation>
 <translation id="3626281679859535460">മിഴിവ്</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിന് ഇനിപ്പറയുന്ന കാര്യങ്ങൾ ചെയ്യാൻ കഴിയും:</translation>
 <translation id="4274537685965975248">'Ctrl + Alt + താഴേക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. End കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + വലത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="4279490309300973883">മിററിംഗ്</translation>
+<translation id="4283888303416325161">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="429402653707266969">ടൂൾബാർ ലൊക്കേഷൻ മാറ്റുക</translation>
 <translation id="4294319844246081198">ഗുഡ്മോണിംഗ് <ph name="GIVEN_NAME" />,</translation>
@@ -708,6 +712,7 @@
 <translation id="5769373120130404283">സ്വകാര്യതാ സ്‌ക്രീൻ</translation>
 <translation id="5777841717266010279">സ്‌ക്രീൻ പങ്കിടൽ നിർത്തണോ?</translation>
 <translation id="5779721926447984944">പിൻ ചെയ്ത ഫയലുകൾ</translation>
+<translation id="5788127256798019331">Play ഫയലുകൾ</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
@@ -760,6 +765,7 @@
 <translation id="607652042414456612">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾക്ക് കണ്ടെത്താനാകുന്നതാണ് ഒപ്പം അത് <ph name="ADDRESS" /> എന്ന വിലാസത്തിൽ "<ph name="NAME" />" എന്നതായി ദൃശ്യമാകും.</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="6134259848159370930">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള ഡയലോഗ് നീക്കം ചെയ്യുക തുറക്കുക</translation>

@@ -35,6 +35,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1175572348579024023">Mag-scroll</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
+<translation id="118437560755358292">Ilagay ang password o PIN para sa higit pang seguridad</translation>
 <translation id="118532027333893379">Mag-tap kahit saan para i-capture ang full screen</translation>
 <translation id="1190609913194133056">Notification Center</translation>
 <translation id="1190678134285018527">Kailangan ng device na bumalik sa nakaraang bersyon</translation>
@@ -338,6 +339,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
+<translation id="3339826665088060472">Screen capture, mga tool sa pagkuha ng mga screenshot at recording ng screen</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="3351879221545518001">Kasalukuyan kang nagka-cast ng screen.</translation>
@@ -394,6 +396,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3606978283550408104">Nagkonekta ng braille display.</translation>
 <translation id="3615926715408477684">Kapag na-enable ang mobile data, mae-enable din ang Bluetooth</translation>
 <translation id="3616883743181209306">Inilipat ang menu sa kanang sulok sa itaas ng screen.</translation>
+<translation id="3619536907358025872">Mga setting ng screen capture</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621712662352432595">Mga Setting ng Audio</translation>
 <translation id="3626281679859535460">Tingkad</translation>
@@ -492,6 +495,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
+<translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="429402653707266969">I-toggle ang lokasyon ng toolbar</translation>
 <translation id="4294319844246081198">Magandang umaga <ph name="GIVEN_NAME" />,</translation>
@@ -708,6 +712,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5769373120130404283">Screen sa privacy</translation>
 <translation id="5777841717266010279">Itigil ang screen sharing?</translation>
 <translation id="5779721926447984944">Mga naka-pin na file</translation>
+<translation id="5788127256798019331">Mga Play file</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
@@ -760,6 +765,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="607652042414456612">Ang iyong computer ay katuklas-tuklas sa mga kalapit na Bluetooth device at lalabas bilang "<ph name="NAME" />" na may address na <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Na-download na ang mga <ph name="LANGUAGE" /> na speech file</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
 <translation id="6134259848159370930">Maghanap sa iyong device, mga app, mga setting, at web.</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>

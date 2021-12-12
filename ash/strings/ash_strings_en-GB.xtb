@@ -192,6 +192,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2224075387478458881">Screen recording is not allowed when protected content is visible</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
+<translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268813581635650749">Sign out all</translation>
 <translation id="2269016722240250274">An application is using your microphone</translation>
@@ -587,6 +588,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
 <translation id="485592688953820832">No action (pause)</translation>
+<translation id="4860284199500934869">Check your network connection to download <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Download will be attempted later. Speech will be sent to Google for processing until download is completed.</translation>
 <translation id="4868492592575313542">activated</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
@@ -712,6 +714,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5779721926447984944">Pinned files</translation>
+<translation id="5788127256798019331">Play files</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
@@ -803,6 +806,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6452181791372256707">Reject</translation>
 <translation id="6453179446719226835">Language has been changed</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> before the deadline</translation>
@@ -814,7 +818,10 @@ Here are some things that you can try to get started.</translation>
 <translation id="6528179044667508675">Do not disturb</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+New install</translation>
 <translation id="6559976592393364813">Ask administrator</translation>
 <translation id="6565007273808762236">eSIM connection unavailable</translation>
 <translation id="6570831796530454248">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
@@ -846,6 +853,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">GO TO SETTINGS</translation>
 <translation id="6751052314767925245">Enforced by your administrator</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
@@ -981,6 +989,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
+<translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7745560842763881396">Show apps in shelf</translation>
@@ -1167,6 +1176,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
+<translation id="9000771174482730261">MANAGE STORAGE</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
 <translation id="9024331582947483881">full screen</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
@@ -1212,6 +1222,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Decline</translation>
+<translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>

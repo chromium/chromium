@@ -4386,7 +4386,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
         Als dit beleid is ingesteld op True, wordt de gebruiker uitgelogd zodra zijn of haar verificatietoken ongeldig wordt. Er wordt geprobeerd dit probleem met de token op te lossen.
         Als dit beleid is ingesteld op False of niet is ingesteld, kan de gebruiker blijven werken terwijl de verificatie ongeldig is.</translation>
 <translation id="631183702829488873">Als deze functie aanstaat, wordt een knop getoond op het inlog- en vergrendelscherm waarmee het wachtwoord kan worden weergegeven.
-          De knop wordt weergegeven als een oog in het tekstveld voor het wachtwoord. De knop is afwezig als de functie uitstaat.</translation>
+          De knop wordt getoond als een oog in het tekstveld voor het wachtwoord. De knop is afwezig als de functie uitstaat.</translation>
 <translation id="6313170479290171718">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Als je het beleid instelt op True, staat het schermtoetsenbord aan bij het inloggen. Als je het beleid instelt op False, staat het schermtoetsenbord uit bij het inloggen.
@@ -5723,7 +5723,7 @@ Als dit beleid niet is ingesteld of niet wordt toegepast, worden de Safe Browsin
 Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>
-<translation id="7821864705813933283">Sta toe dat het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt weergegeven in het contextmenu, als dat wordt ondersteund.</translation>
+<translation id="7821864705813933283">Sta toe dat het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt getoond in het contextmenu, als dat wordt ondersteund.</translation>
 <translation id="7823902813460802031">Als je dit beleid toepast, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
 
        Als je het beleid niet toepast of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>

@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">स्क्रोल गर्नुहोस्</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="118437560755358292">थप सुरक्षाका लागि पासवर्ड वा PIN हाल्नुहोस्</translation>
 <translation id="118532027333893379">फुल स्क्रिनको फोटो खिच्न कुनै ठाउँमा ट्याप गर्नुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
 <translation id="1190678134285018527">यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नु पर्छ</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">ल्यापटप मोड प्रयोग गर्न थालियो</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> अझै पनि पछि साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="3321628682574733415">अभिभावकको कोड गलत छ</translation>
+<translation id="3339826665088060472">स्क्रिन क्याप्चर अर्थात् स्क्रिनसट र स्क्रिन रेकर्डिङ गर्ने टुल</translation>
 <translation id="3341303451326249809">स्क्रिनसट खिचियो</translation>
 <translation id="334252345105450327">स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="3351879221545518001">तपाईं अहिले स्क्रिन cast गर्दै हुनुहुन्छ।</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">ब्रेल प्रदर्शन जडित छ।</translation>
 <translation id="3615926715408477684">तपाईंले मोबाइल डेटा अन गर्नुभयो भने ब्लुटुथ अन हुने छ</translation>
 <translation id="3616883743181209306">मेनु सारेर स्क्रिनको सिरानको दायाँ कुनामा लगियो।</translation>
+<translation id="3619536907358025872">स्क्रिन क्याप्चरसम्बन्धी सेटिङ</translation>
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3621712662352432595">अडियो सेटिङहरू</translation>
 <translation id="3626281679859535460">चम्किलोपना</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">यो डिभाइसको प्रशासक निम्न कुराहरू गर्न सक्नुहु्न्छ:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। End की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + राइट एरो थिच्नुहोस्।</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
+<translation id="4283888303416325161">थप सुरक्षाका लागि पासवर्ड हाल्नुहोस्</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="429402653707266969">टगल गरी टुलबारको स्थान बदल्नुहोस्</translation>
 <translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
@@ -708,6 +712,7 @@
 <translation id="5769373120130404283">गोपनीयताको स्क्रिन</translation>
 <translation id="5777841717266010279">स्क्रिन साझा गर्ने रोक्ने?</translation>
 <translation id="5779721926447984944">पिन गरिएका फाइलहरू</translation>
+<translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
 <translation id="5790085346892983794">सफलता</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
@@ -760,6 +765,7 @@
 <translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ डिभाइसहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" /> को डाउनलोड पुष्टि गर्नुहोस्</translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
 <translation id="6134259848159370930">आफ्नो यन्त्र, एप, सेटिङ र वेबमा खोज्नुहोस्।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>

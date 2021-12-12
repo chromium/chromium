@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4588090240171750605">ಬಲಕ್ಕೆ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ</translation>
 <translation id="4724120544754982507">ಅಧಿಸೂಚನೆ ಕೇಂದ್ರ, <ph name="UNREAD_NOTIFICATION_COUNT" /> ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು</translation>
+<translation id="4746179598275229723">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ತಿಂಗಳು ಉಳಿದಿದೆ}one{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}other{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="4888938634149558681">ಕರೆ ಮಾಡಿ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್}one{# ಸೆಕೆಂಡುಗಳು}other{# ಸೆಕೆಂಡುಗಳು}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಸೆಕೆಂಡುಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಸೆಕೆಂಡುಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="5941711191222866238">ಕುಗ್ಗಿಸಿ</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
+<translation id="6007284015834422026">ವಿಸ್ತರಣೆಯನ್ನು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6117103120090651229">ಮಧ್ಯದ ಬಟನ್</translation>
 <translation id="6129953537138746214">ಸ್ಪೇಸ್</translation>

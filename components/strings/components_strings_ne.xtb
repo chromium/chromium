@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">थप देखाउनुहोस्</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">ब्राउजर संस्करण खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="1476595624592550506">आफ्नो पासवर्ड बदल्नुहोस्</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
 <translation id="1484290072879560759">ढुवानीको ठेगाना छनौट गर्नुहोस्</translation>
@@ -1882,6 +1883,7 @@
 <translation id="7118618213916969306">क्लिपबोर्डको URL <ph name="SHORT_URL" /> खोज्नुहोस्</translation>
 <translation id="7119414471315195487">अन्य ट्याब वा कार्यक्रमहरू बन्द गर्नुहोस्</translation>
 <translation id="7129409597930077180">यो ठेगानामा ढुवानी गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
+<translation id="7132939140423847331">तपाईंका एड्मिनले लगाएको प्रतिबन्धका कारण यो डेटा कपी गर्न मिल्दैन।</translation>
 <translation id="7135130955892390533">स्थिति देखाउनुहोस्</translation>
 <translation id="7138472120740807366">डेलिभरीको विधि</translation>
 <translation id="7139724024395191329">इमिरेट</translation>
@@ -2440,6 +2442,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफ्नो ब्राउजिङ इतिहास हेर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">सिस्टम संस्करण खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="899688752321268742"><ph name="URL" /> ले तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी माग्दै छ</translation>
 <translation id="8996941253935762404">अगाडीको साइटमा हानिकारक कार्यक्रमहरू छन्</translation>
 <translation id="8997023839087525404">सर्भरले प्रमाणपत्र पारदर्शी नीतिको प्रयोग गरेर सार्वजनिक रूपमा प्रस्तुत नगरिएको प्रमाणपत्र प्रस्तुत गर्यो। यो केही प्रमाणपत्रहरू विश्वासनीय छन् भनी सुनिश्चित गर्न र आक्रमणकारीहरूबाट जोगाउन चाहिने एक आवश्यक कुरा हो।</translation>

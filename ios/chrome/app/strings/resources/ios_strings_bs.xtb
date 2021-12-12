@@ -168,7 +168,8 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2584132361465095047">Dodaj račun…</translation>
 <translation id="2600682495497606169">Obriši kolačiće web lokacije</translation>
 <translation id="2625189173221582860">Zaporka je kopirana</translation>
-<translation id="2637313651144986786">Pretraži kartice...</translation>
+<translation id="2626236249646841566">Provjerite vezu i ponovo se pokušajte prijaviti.</translation>
+<translation id="2637313651144986786">Pretraživanje kartica...</translation>
 <translation id="2647269890314209800">Upotreba kolačića</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -364,6 +365,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4508750114462689118">Zatvaranje promocije za prijavu</translation>
 <translation id="4526249700380860531">Prikaz spremljenih zaporki i upravljanje njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
+<translation id="4540780316273593836">Nešto nije uredu</translation>
 <translation id="457386861538956877">Više...</translation>
 <translation id="4592368184551360546">Tastatura</translation>
 <translation id="461440297010471931">Pretraživanje s Googleom</translation>
@@ -479,6 +481,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromea}one{Trenutno se prikazuje {count} prozor Chromea}few{Trenutno se prikazuju {count} prozora Chromea}other{Trenutno se prikazuje {count} prozora Chromea}}</translation>
+<translation id="5704908597376970822">Nije se moguće prijaviti.</translation>
 <translation id="5706552126692816153">Aktivan prije 1 dan</translation>
 <translation id="5711039611392265845">Za više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka, pogledajte <ph name="BEGIN_LINK" />Sinhronizacija i Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
@@ -788,6 +791,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="842017693807136194">Prijavljeni ste sa</translation>
 <translation id="8428045167754449968">Grad/mjesto</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8428634594422941299">Shvaćam</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8458397775385147834">Izbrisana je 1 stavka</translation>
 <translation id="8459333855531264009">Nije sigurno</translation>

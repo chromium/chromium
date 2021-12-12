@@ -168,6 +168,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2584132361465095047">Pridať účet…</translation>
 <translation id="2600682495497606169">Vymazať súbory cookie webu</translation>
 <translation id="2625189173221582860">Heslo bolo skopírované.</translation>
+<translation id="2626236249646841566">Skontrolujte pripojenie a skúste sa prihlásiť znova.</translation>
 <translation id="2637313651144986786">Vyhľadajte karty…</translation>
 <translation id="2647269890314209800">Používané súbory cookie</translation>
 <translation id="2648803196158606475">Odstrániť prečítané</translation>
@@ -364,6 +365,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
 <translation id="4526249700380860531">Zobrazte si a spravujte uložené heslá na stránke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
+<translation id="4540780316273593836">Vyskytol sa problém</translation>
 <translation id="457386861538956877">Viac...</translation>
 <translation id="4592368184551360546">Klávesnica</translation>
 <translation id="461440297010471931">Vyhľadávate pomocou Googlu</translation>
@@ -479,6 +481,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzia <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Práve sa zobrazuje 1 okno Chromu}few{Práve sa zobrazujú {count} okná Chromu}many{Now showing {count} Chrome windows}other{Práve sa zobrazuje {count} okien Chromu}}</translation>
+<translation id="5704908597376970822">Nepodarilo sa prihlásiť.</translation>
 <translation id="5706552126692816153">Aktívne včera</translation>
 <translation id="5711039611392265845">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v časti <ph name="BEGIN_LINK" />Synchronizácia a služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
@@ -788,6 +791,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="842017693807136194">Prihlásenie pomocou</translation>
 <translation id="8428045167754449968">Mesto</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
+<translation id="8428634594422941299">Dobre</translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8458397775385147834">Počet odstránených záložiek: 1</translation>
 <translation id="8459333855531264009">Nezabezpečené</translation>

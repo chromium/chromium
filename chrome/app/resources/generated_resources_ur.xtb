@@ -1683,6 +1683,7 @@
 <translation id="2707024448553392710">جزو ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="270921614578699633">اوسط اوور</translation>
 <translation id="2709516037105925701">آٹو فل</translation>
+<translation id="2710014902399506864">ایک نیا فون شامل کریں</translation>
 <translation id="2710101514844343743">استعمال اور ڈائیگناسٹکس کا ڈیٹا</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2712173769900027643">اجازت طلب کریں</translation>
@@ -2041,6 +2042,7 @@
 <translation id="3055590424724986000">اپنی پسند کے فراہم کنندہ کے ساتھ</translation>
 <translation id="3058498974290601450">آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں</translation>
 <translation id="3058517085907878899">آلہ کا نام</translation>
+<translation id="3059195548603439580">سسٹم کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="3060379269883947824">سننے کیلئے منتخب کریں کو فعال کریں</translation>
 <translation id="3060952009917586498">آلہ کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="3060987956645097882">‏ہم آپ کے فون کے ساتھ کنکشن قائم کرنے سے قاصر تھے۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
@@ -2700,6 +2702,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏USB آلہ کے ساتھ مواصلت کریں}other{‏‎# USB آلات کے ساتھ مواصلت کریں}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}other{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}}</translation>
 <translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
+<translation id="3766115177661377251">ایک نئے ڈسپلے پر کاسٹ کریں</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">آئس کریم</translation>
 <translation id="3771290962915251154">یہ ترتیب غیر فعال ہے کیونکہ پیرنٹل کنٹرولز آن ہیں</translation>
@@ -3489,6 +3492,7 @@
 <translation id="4590324241397107707">ڈیٹابیس اسٹوریج</translation>
 <translation id="4592891116925567110">اسٹائلس ڈرائنگ ایپ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> پر &amp;جائیں</translation>
+<translation id="4594577641390224176">سسٹم کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="4595560905247879544">ایپس اور ایکسٹینشنز میں صرف مینیجر (<ph name="CUSTODIAN_NAME" />) ترمیم کر سکتا ہے۔</translation>
 <translation id="4596295440756783523">آپ کے پاس فائل پر ان سرورز کی شناخت کرنے والے سرٹیفیکیٹس ہیں</translation>
 <translation id="4598556348158889687">اسٹوریج کا نظم</translation>
@@ -4873,6 +4877,7 @@
 <translation id="6085886413119427067">کسی محفوظ کنکشن پر ویب سائٹس سے منسلک ہونے کے طریقے کا تعین کرتا ہے</translation>
 <translation id="6086004606538989567">آپ کے توثیق کردہ اکاؤنٹ کو اس آلے تک رسائی حاصل کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
+<translation id="6087746524533454243">براؤزر کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="6087960857463881712">زبردست چہرہ</translation>
 <translation id="608912389580139775">اس صفحے کو اپنی پڑھنے کی فہرست میں شامل کرنے کیلئے بُک مارک آئیکن پر کلک کریں</translation>
 <translation id="6091761513005122595">اشتراک کو کامیابی کے ساتھ ماؤنٹ کر دیا گیا۔</translation>
@@ -4971,6 +4976,7 @@
 <translation id="6198102561359457428">سائن آؤٹ ہوں پھر دوبارہ سائن ان کریں…</translation>
 <translation id="6198252989419008588">‏PIN تبدیل کریں</translation>
 <translation id="6200047250927636406">فائل مسترد کریں</translation>
+<translation id="6200151268994853226">ایکسٹینشن کا نظم کریں</translation>
 <translation id="6201608810045805374">اس اکاؤنٹ کو ہٹائیں؟</translation>
 <translation id="6202304368170870640">‏آپ اپنا آلہ غیر مقفل کرنے یا اس میں سائن ان ہونے کے لیے اپنا PIN استعمال کر سکتے ہیں۔</translation>
 <translation id="6206311232642889873">تصویر &amp;کاپی کریں</translation>
@@ -5258,6 +5264,7 @@
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="6498249116389603658">&amp;آپ کی سبھی زبانیں</translation>
 <translation id="6499143127267478107">میزبان کو پراکسی اسکرپٹ میں حل کیا جا رہا ہے…</translation>
+<translation id="6499764981457476645">کوئی قریبی آلہ نہیں ملا</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> اس فائل کو کھولنا چاہتا ہے:</translation>
 <translation id="6501957628055559556">سبھی کنٹینرز</translation>
 <translation id="650266656685499220">‏البمز تخلیق کرنے کے لیے Google تصاویر پر جائیں</translation>
@@ -5723,6 +5730,7 @@
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6981553172137913845">نجی طور پر براؤز کرنے کی خاطر پوشیدگی ٹیب کھولنے کے لیے نقطے والے آئیکن مینو پر کلک کریں</translation>
+<translation id="6981761993313539853">اس بات کو یقینی بنائیں کہ آپ کا بلوٹوتھ آلہ جوڑا بنانے والے موڈ میں اور قریبی ہے۔ صرف آپ کے بھروسہ مند آلات کے ساتھ جوڑا بنائیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6983507711977005608">فوری ٹیدرنگ نیٹ ورک کو غیر منسلک کریں</translation>
 <translation id="6983783921975806247">‏رجسٹرڈ OID</translation>
@@ -6629,6 +6637,7 @@
 <translation id="7898725031477653577">ہمیشہ ترجمہ کریں</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7901914889562552258">‏صفحہ کے میٹرکس کا استعمال کرنے والا بہتر کردہ Chrome</translation>
+<translation id="7903290522161827520">براؤزر کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="7903345046358933331">صفحہ جواب نہیں دے رہا ہے۔ آپ اس کے جواب دینے کا انتظار کر سکتے ہیں یا اسے بند کر سکتے ہیں۔</translation>
 <translation id="7903742244674067440">آپ کے پاس ان سرٹیفیکیٹ اتھارٹی کی شناخت کرنے والی فائل پر سرٹیفیکیٹس ہیں</translation>
 <translation id="7903925330883316394">یوٹیلٹی: <ph name="UTILITY_TYPE" /></translation>
@@ -7002,6 +7011,7 @@
 <translation id="8271268254812352141">دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کرنے اور دبائے رکھنے پر تعریفیں، ترجمے یا یونٹ کی تبدیلیاں حاصل کریں۔ <ph name="LINK_BEGIN" />ویب سائٹ کی زبانوں<ph name="LINK_END" /> میں ترجمے کی زبانوں کو حسب ضرورت بنائیں۔</translation>
 <translation id="8271379370373330993">والدین، اگلے کچھ اقدامات آپ کے لئے ہیں۔ اکاؤنٹ سیٹ اپ کے بعد آپ <ph name="DEVICE_TYPE" /> بچے کو واپس دے سکتے ہیں۔</translation>
 <translation id="8272443605911821513">"مزید ٹولز" مینو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
+<translation id="8272677921396592934">‏QR کوڈ اسکین کرنے کیلئے کیمرا استعمال کریں</translation>
 <translation id="8274332263553132018">فائل کاسٹ کریں</translation>
 <translation id="8274921654076766238">میگنیفائر کی بورڈ فوکس کے مطابق ہوتا ہے</translation>
 <translation id="8274924778568117936">اپ ڈیٹ مکمل ہونے تک اپنے <ph name="DEVICE_TYPE" /> کو آف یا بند نہ کریں۔ انسٹالیشن مکمل ہونے کے بعد آپ کا <ph name="DEVICE_TYPE" /> دوبارہ شروع ہو جائے گا۔</translation>
@@ -7679,6 +7689,7 @@
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں صاف کریں؟</translation>
 <translation id="9004952710076978168">ایک نامعلوم پرنٹر کیلئے ایک اطلاع موصول ہوئی۔</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
+<translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> کی تفصیلات کے صفحے پر موجود پیچھے جانے کا بٹن</translation>
 <translation id="9009369504041480176">‏اپ لوڈ کیا جا رہا ہے (‎<ph name="PROGRESS_PERCENT" />%‎)…</translation>
 <translation id="9009708085379296446">کیا آپ کا مطلب اس صفحے کو تبدیل کرنا تھا؟</translation>
 <translation id="9011163749350026987">ہمیشہ آئیکن دکھائیں</translation>
@@ -7862,6 +7873,7 @@
 <translation id="917510707618656279">جب کوئی سائٹ بلوٹوتھ آلات تک رسائی حاصل کرنا چاہے تو پوچھیں</translation>
 <translation id="9176476835295860688">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - بلوٹوتھ آلہ منسلک ہے</translation>
+<translation id="9178061802301856367">سائن ان کا ڈیٹا حذف کریں</translation>
 <translation id="9179524979050048593">سائن ان اسکرین کے لیے صارف کا نام</translation>
 <translation id="9180281769944411366">‏اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ Linux کنٹینر شروع ہو رہا ہے۔</translation>
 <translation id="9180380851667544951">سائٹ آپ کی اسکرین کا اشتراک کر سکتی ہے</translation>

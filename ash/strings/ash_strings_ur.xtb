@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="118437560755358292">‏مزید سیکیورٹی کے لیے پاس ورڈ یا PIN درج کریں</translation>
 <translation id="118532027333893379">فُل اسکرین کیپچر کرنے کیلئے کہیں پر بھی تھپتھپائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
 <translation id="1190678134285018527">آلہ کو گزشتہ ورژن پر واپس جانے کی ضرورت ہے</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">لیپ ٹاپ وضح میں سوئچ کیا</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
 <translation id="3321628682574733415">والدین کا غلط کوڈ</translation>
+<translation id="3339826665088060472">اسکرین کیپچر، اسکرین شاٹس لینے کے لیے ٹولز اور اسکرین ریکارڈنگز</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="3351879221545518001">آپ فی الحال اسکرین کاسٹ کر رہے ہیں۔</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">بریل ڈسپلے منسلک ہو گیا۔</translation>
 <translation id="3615926715408477684">موبائل ڈیٹا فعال کرنے سے بلوٹوتھ فعال ہو جائے گا</translation>
 <translation id="3616883743181209306">مینو کو اسکرین کے اوپر دائیں کونے میں منتقل کر دیا گیا۔</translation>
+<translation id="3619536907358025872">اسکرین کیپچر کی ترتیبات</translation>
 <translation id="3621202678540785336">ان پٹ</translation>
 <translation id="3621712662352432595">آڈیو کی ترتیبات</translation>
 <translation id="3626281679859535460">چمکیلاپن</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">اس آلہ کا منتظم یہ کام کر سکتا ہے:</translation>
 <translation id="4274537685965975248">‏Ctrl + Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ End کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'دائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4279490309300973883">مررنگ</translation>
+<translation id="4283888303416325161">مزید سیکیورٹی کے لیے پاس ورڈ درج کریں</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="429402653707266969">ٹول بار کا مقام ٹوگل کریں</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
@@ -708,6 +712,7 @@
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5779721926447984944">فائلز کو پن کیا گیا</translation>
+<translation id="5788127256798019331">‏Play فائلز</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
@@ -760,6 +765,7 @@
 <translation id="607652042414456612">آپ کا کمپیوٹر قریبی بلوٹوتھ آلات کے ذریعہ قابل دریافت ہے اور "<ph name="NAME" />" کے بطور پتہ <ph name="ADDRESS" /> کے ساتھ ظاہر ہوگا</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" /> ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="6134259848159370930">اپنا آلہ، ایپس، ترتیبات اور ویب تلاش کریں۔</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ہٹائیں کا ڈائیلاگ کھولیں</translation>
