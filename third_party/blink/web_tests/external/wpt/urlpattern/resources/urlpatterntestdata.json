@@ -2582,5 +2582,45 @@
     "expected_match": {
       "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
     }
+  },
+  {
+    "pattern": [{ "pathname": ":foo{}(.*)" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_obj": {
+      "pathname": "{:foo}(.*)"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "f", "0": "oobar" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":foo{}bar" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_obj": {
+      "pathname": "{:foo}bar"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":foo{}?bar" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_obj": {
+      "pathname": "{:foo}bar"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": "*{}**?" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_obj": {
+      "pathname": "*(.*)?"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "0": "foobar", "1": "" }}
+    }
   }
 ]

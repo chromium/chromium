@@ -391,6 +391,25 @@ TEST(PatternStringTest, NamedGroupFollowedByEscapedValidNameText) {
   RunPatternStringTest(":foo\\bar", "{:foo}bar");
 }
 
+TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndWildcard) {
+  RunPatternStringTest(":foo{}(.*)", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndValidNameText) {
+  RunPatternStringTest(":foo{}bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest,
+     NamedGroupFollowedByEmptyGroupWithOptionalModifierAndValidNameText) {
+  RunPatternStringTest(":foo{}?bar", "{:foo}bar");
+}
+
+TEST(
+    PatternStringTest,
+    WildcardFollowedByEmptyGroupWithZeroOrMoreModifierAndWildcardWithOptionalModifier) {
+  RunPatternStringTest("*{}**?", "*(.*)?");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;
