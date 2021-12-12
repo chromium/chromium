@@ -1485,7 +1485,6 @@ TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Cache) {
                                      &response_info);
 
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
-  EXPECT_FALSE(response_info.server_data_unavailable);
   EXPECT_FALSE(response_info.network_accessed);
   EXPECT_EQ(CacheEntryStatus::ENTRY_USED, response_info.cache_entry_status);
 }

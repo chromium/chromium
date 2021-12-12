@@ -185,7 +185,6 @@ HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
 HttpResponseInfo::HttpResponseInfo()
     : was_cached(false),
       cache_entry_status(CacheEntryStatus::ENTRY_UNDEFINED),
-      server_data_unavailable(false),
       network_accessed(false),
       was_fetched_via_spdy(false),
       was_alpn_negotiated(false),

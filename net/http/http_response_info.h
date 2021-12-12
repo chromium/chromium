@@ -150,11 +150,6 @@ class NET_EXPORT HttpResponseInfo {
   // How this response was handled by the HTTP cache.
   CacheEntryStatus cache_entry_status;
 
-  // True if the request was fetched from cache rather than the network
-  // because of a LOAD_FROM_CACHE_IF_OFFLINE flag when the system
-  // was unable to contact the server.
-  bool server_data_unavailable;
-
   // True if the request accessed the network in the process of retrieving
   // data.
   bool network_accessed;
