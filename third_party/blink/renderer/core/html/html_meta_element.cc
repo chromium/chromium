@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -678,9 +679,9 @@ void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
       document, is_http_equiv ? WebFeature::kClientHintsMetaHTTPEquivAcceptCH
                               : WebFeature::kClientHintsMetaNameAcceptCH);
   FrameClientHintsPreferencesContext hints_context(frame);
-  frame->GetClientHintsPreferences().UpdateFromMetaTagAcceptCH(
-      content, document.Url(), &hints_context, is_http_equiv,
-      is_preload_or_sync_parser);
+  UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
+      frame->GetClientHintsPreferences(), document.domWindow(), content,
+      document.Url(), &hints_context, is_http_equiv, is_preload_or_sync_parser);
 }
 
 void HTMLMetaElement::FinishParsingChildren() {

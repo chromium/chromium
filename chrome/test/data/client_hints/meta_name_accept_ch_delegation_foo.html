@@ -1,0 +1,12 @@
+<html>
+<meta name="Accept-CH" content="dpr=(https://foo.com/),sec-ch-dpr=(https://foo.com/),device-memory=(https://foo.com/),sec-ch-device-memory=(https://foo.com/),viewport-width=(https://foo.com/),sec-ch-viewport-width=(https://foo.com/),rtt=(https://foo.com/),downlink=(https://foo.com/),ect=(https://foo.com/),sec-ch-ua-arch=(https://foo.com/),sec-ch-ua-platform-version=(https://foo.com/),sec-ch-ua-model=(https://foo.com/),sec-ch-ua-full-version=(https://foo.com/),sec-ch-prefers-color-scheme=(https://foo.com/),sec-ch-ua-bitness=(https://foo.com/),sec-ch-viewport-height=(https://foo.com/),sec-ch-ua-full-version-list=(https://foo.com/)">
+<link rel="icon" href="data:;base64,=">
+<body>
+    <img src="non-existing-image.jpg"></img>
+    <img src="https://foo.com/non-existing-image.jpg"></img>
+    <script type="text/javascript">
+        document.body.innerHTML += '<img src="non-existing-image2.jpg"></img>';
+        document.body.innerHTML += '<img src="https://bar.com/non-existing-image.jpg"></img>';
+    </script>
+</body>
+</html>

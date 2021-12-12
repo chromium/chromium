@@ -38,6 +38,8 @@ blink_core_sources_html = [
   "canvas/text_metrics.cc",
   "canvas/text_metrics.h",
   "canvas/ukm_parameters.h",
+  "client_hints_util.cc",
+  "client_hints_util.h",
   "collection_items_cache.h",
   "collection_type.h",
   "conversion_measurement_parsing.cc",

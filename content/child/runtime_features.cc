@@ -415,6 +415,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kClientHintsMetaHTTPEquivAcceptCH},
           {"ClientHintsMetaNameAcceptCH",
            blink::features::kClientHintsMetaNameAcceptCH},
+          {"ClientHintThirdPartyDelegation",
+           blink::features::kClientHintThirdPartyDelegation},
           {"UserAgentReduction", blink::features::kReduceUserAgent},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {

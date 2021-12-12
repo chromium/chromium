@@ -92,13 +92,15 @@ using ::testing::Not;
 using ::testing::Optional;
 
 constexpr unsigned expected_client_hints_number = 17u;
+constexpr unsigned expected_default_third_party_client_hints_number = 3u;
+constexpr unsigned expected_requested_third_party_client_hints_number = 20u;
 
 // An interceptor that records count of fetches and client hint headers for
-// requests to https://foo.com/non-existing-image.jpg.
+// requests to https://{foo|bar}.com/non-existing-image.jpg.
 class ThirdPartyURLLoaderInterceptor {
  public:
-  explicit ThirdPartyURLLoaderInterceptor(const GURL intercepted_url)
-      : intercepted_url_(intercepted_url),
+  explicit ThirdPartyURLLoaderInterceptor(const std::set<GURL> intercepted_urls)
+      : intercepted_urls_(intercepted_urls),
         interceptor_(base::BindRepeating(
             &ThirdPartyURLLoaderInterceptor::InterceptURLRequest,
             base::Unretained(this))) {}
@@ -116,8 +118,10 @@ class ThirdPartyURLLoaderInterceptor {
 
  private:
   bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url != intercepted_url_)
+    if (intercepted_urls_.find(params->url_request.url) ==
+        intercepted_urls_.end()) {
       return false;
+    }
 
     request_count_seen_++;
     for (const auto& elem : network::GetClientHintToNameMap()) {
@@ -128,7 +132,7 @@ class ThirdPartyURLLoaderInterceptor {
     return false;
   }
 
-  GURL intercepted_url_;
+  std::set<GURL> intercepted_urls_;
 
   size_t request_count_seen_ = 0u;
 
@@ -317,6 +321,14 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
         https_server_.GetURL("/http_equiv_accept_ch_injection.html");
     meta_name_accept_ch_injection_ =
         https_server_.GetURL("/meta_name_accept_ch_injection.html");
+    http_equiv_accept_ch_delegation_foo_ =
+        https_server_.GetURL("/http_equiv_accept_ch_delegation_foo.html");
+    meta_name_accept_ch_delegation_foo_ =
+        https_server_.GetURL("/meta_name_accept_ch_delegation_foo.html");
+    http_equiv_accept_ch_delegation_bar_ =
+        https_server_.GetURL("/http_equiv_accept_ch_delegation_bar.html");
+    meta_name_accept_ch_delegation_bar_ =
+        https_server_.GetURL("/meta_name_accept_ch_delegation_bar.html");
     http_equiv_accept_ch_merge_ =
         https_server_.GetURL("/http_equiv_accept_ch_merge.html");
     meta_name_accept_ch_merge_ =
@@ -349,9 +361,9 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-
     request_interceptor_ = std::make_unique<ThirdPartyURLLoaderInterceptor>(
-        GURL("https://foo.com/non-existing-image.jpg"));
+        (std::set<GURL>){GURL("https://foo.com/non-existing-image.jpg"),
+                         GURL("https://bar.com/non-existing-image.jpg")});
     base::RunLoop().RunUntilIdle();
   }
 
@@ -495,6 +507,22 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   }
   const GURL& meta_name_accept_ch_injection() const {
     return meta_name_accept_ch_injection_;
+  }
+
+  // A page where hints are delegated to the third-party site `foo.com`.
+  const GURL& http_equiv_accept_ch_delegation_foo() const {
+    return http_equiv_accept_ch_delegation_foo_;
+  }
+  const GURL& meta_name_accept_ch_delegation_foo() const {
+    return meta_name_accept_ch_delegation_foo_;
+  }
+
+  // A page where hints are delegated to the third-party site `bar.com`.
+  const GURL& http_equiv_accept_ch_delegation_bar() const {
+    return http_equiv_accept_ch_delegation_bar_;
+  }
+  const GURL& meta_name_accept_ch_delegation_bar() const {
+    return meta_name_accept_ch_delegation_bar_;
   }
 
   // A page where some hints are in accept-ch header, some in http-equiv.
@@ -951,6 +979,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   GURL accept_ch_empty_;
   GURL http_equiv_accept_ch_injection_;
   GURL meta_name_accept_ch_injection_;
+  GURL http_equiv_accept_ch_delegation_foo_;
+  GURL meta_name_accept_ch_delegation_foo_;
+  GURL http_equiv_accept_ch_delegation_bar_;
+  GURL meta_name_accept_ch_delegation_bar_;
   GURL http_equiv_accept_ch_merge_;
   GURL meta_name_accept_ch_merge_;
   GURL without_accept_ch_cross_origin_;
@@ -985,6 +1017,20 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 
   // Set to 2G in SetUpCommandLine().
   net::EffectiveConnectionType expected_ect = net::EFFECTIVE_CONNECTION_TYPE_2G;
+};
+
+class ClientHintsBrowserTestWithThirdPartyDelegation
+    : public ClientHintsBrowserTest {
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine(
+        "UserAgentClientHint,CriticalClientHint,"
+        "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
+        "ViewportHeightClientHintHeader,UserAgentClientHintFullVersionList,"
+        "ClientHintsMetaNameAcceptCH,ClientHintThirdPartyDelegation",
+        "");
+    return feature_list;
+  }
 };
 
 // True if testing for http-equiv correctness. When set to true, the tests
@@ -1459,6 +1505,108 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaName) {
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(0u, count_client_hints_headers_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_HttpEquiv) {
+  // Go to a page which delegates hints to `foo.com`.
+  GURL gurl = http_equiv_accept_ch_delegation_foo();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(0u, count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
+                       DelegateToFoo_HttpEquiv) {
+  // Go to a page which delegates hints to `foo.com`.
+  GURL gurl = http_equiv_accept_ch_delegation_foo();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(0u, count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
+  // Go to a page which delegates hints to `foo.com`.
+  GURL gurl = meta_name_accept_ch_delegation_foo();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(expected_client_hints_number * 2,
+            count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
+                       DelegateToFoo_MetaName) {
+  // Go to a page which delegates hints to `foo.com`.
+  GURL gurl = meta_name_accept_ch_delegation_foo();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(expected_client_hints_number * 2,
+            count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_requested_third_party_client_hints_number +
+                expected_default_third_party_client_hints_number,
+            third_party_client_hints_count_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_HttpEquiv) {
+  // Go to a page which delegates hints to `bar.com`.
+  GURL gurl = http_equiv_accept_ch_delegation_bar();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(0u, count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
+                       DelegateToBar_HttpEquiv) {
+  // Go to a page which delegates hints to `bar.com`.
+  GURL gurl = http_equiv_accept_ch_delegation_bar();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(0u, count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_MetaName) {
+  // Go to a page which delegates hints to `bar.com`.
+  GURL gurl = meta_name_accept_ch_delegation_bar();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(expected_client_hints_number * 2,
+            count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen());
+}
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
+                       DelegateToBar_MetaName) {
+  // Go to a page which delegates hints to `bar.com`.
+  GURL gurl = meta_name_accept_ch_delegation_bar();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(expected_client_hints_number * 2,
+            count_client_hints_headers_seen());
+  EXPECT_EQ(2u, third_party_request_count_seen());
+  EXPECT_EQ(expected_requested_third_party_client_hints_number +
+                expected_default_third_party_client_hints_number,
+            third_party_client_hints_count_seen());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_HttpEquiv) {

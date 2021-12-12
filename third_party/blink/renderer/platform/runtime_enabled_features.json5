@@ -403,6 +403,10 @@
       status: "experimental",
     },
     {
+      name: "ClientHintThirdPartyDelegation",
+      status: "experimental",
+    },
+    {
       name: "ClipboardCustomFormats",
       status: "experimental",
     },

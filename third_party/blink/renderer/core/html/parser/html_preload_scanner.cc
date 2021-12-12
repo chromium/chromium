@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -1022,7 +1023,8 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
 
   if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
       RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
-    client_hints_preferences_.UpdateFromMetaTagAcceptCH(
+    UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
+        client_hints_preferences_, document_parameters_->local_dom_window,
         content_attribute->Value(), document_url_, nullptr,
         /*is_http_equiv*/ false,
         /*is_preload_or_parser*/ scanner_type_ == ScannerType::kMainDocument);
@@ -1128,7 +1130,9 @@ void TokenPreloadScanner::ScanCommon(
             const typename Token::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
-              client_hints_preferences_.UpdateFromMetaTagAcceptCH(
+              UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
+                  client_hints_preferences_,
+                  document_parameters_->local_dom_window,
                   content_attribute->Value(), document_url_, nullptr,
                   /*is_http_equiv*/ true,
                   /*is_preload_or_parser*/ scanner_type_ ==
@@ -1286,6 +1290,7 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
                                &disabled_image_types);
   subresource_redirect_origins_preloader =
       SubresourceRedirectOriginsPreloader::From(*document);
+  local_dom_window = document->domWindow();
 }
 
 }  // namespace blink
