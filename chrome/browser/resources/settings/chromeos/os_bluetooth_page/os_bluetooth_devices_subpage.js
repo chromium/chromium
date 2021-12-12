@@ -11,10 +11,14 @@ import '../../settings_shared_css.js';
 import './os_paired_bluetooth_list.js';
 import './settings_fast_pair_toggle.js';
 
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {Route} from '../../router.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -22,9 +26,10 @@ const mojom = chromeos.bluetoothConfig.mojom;
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
  */
 const SettingsBluetoothDevicesSubpageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, RouteObserverBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothDevicesSubpageElement extends
@@ -92,6 +97,18 @@ class SettingsBluetoothDevicesSubpageElement extends
         value: [],
       }
     };
+  }
+
+  /**
+   * RouteObserverBehaviorInterface override
+   * @param {!Route} route
+   */
+  currentRouteChanged(route) {
+    if (route !== routes.BLUETOOTH_DEVICES) {
+      return;
+    }
+    recordBluetoothUiSurfaceMetrics(
+        BluetoothUiSurface.SETTINGS_DEVICE_LIST_SUBPAGE);
   }
 
   /** @private */

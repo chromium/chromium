@@ -8,6 +8,7 @@
  */
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
 
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @polymer */
@@ -18,6 +19,12 @@ class SettingsBluetoothPairingDialogElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    recordBluetoothUiSurfaceMetrics(BluetoothUiSurface.SETTINGS_PAIRING_DIALOG);
   }
 
   /**

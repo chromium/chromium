@@ -14,6 +14,7 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import './os_bluetooth_change_device_name_dialog.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_battery_info.js';
 
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -128,6 +129,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
     this.deviceId_ = decodeURIComponent(deviceId);
+    recordBluetoothUiSurfaceMetrics(
+        BluetoothUiSurface.SETTINGS_DEVICE_DETAIL_SUBPAGE);
   }
 
   /** @private */
