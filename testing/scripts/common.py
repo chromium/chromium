@@ -466,13 +466,15 @@ class BaseIsolatedScriptArgsAdapter(object):
     valid = True
     try:
       env['CHROME_HEADLESS'] = '1'
-      logging.info('Running command: %s\nwith env: %r' % (
+      print('Running command: %s\nwith env: %r' % (
           ' '.join(cmd), env))
+      sys.stdout.flush()
       if self.options.xvfb and sys.platform.startswith('linux'):
         exit_code = xvfb.run_executable(cmd, env)
       else:
         exit_code = test_env.run_command(cmd, env=env, log=False)
-      logging.info('Command returned exit code %d' % exit_code)
+      print('Command returned exit code %d' % exit_code)
+      sys.stdout.flush()
       self.do_post_test_run_tasks()
       return exit_code
     except Exception:
