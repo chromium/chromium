@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -73,9 +73,9 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
   explicit WebIDBGetDBNamesCallbacksImpl(
       ScriptPromiseResolver* promise_resolver)
       : promise_resolver_(promise_resolver) {
-    probe::AsyncTaskScheduled(
+    async_task_context_.Schedule(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        indexed_db_names::kIndexedDB, &async_task_id_);
+        indexed_db_names::kIndexedDB);
   }
 
   ~WebIDBGetDBNamesCallbacksImpl() override {
@@ -86,8 +86,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
     if (!script_state->ContextIsValid())
       return;
 
-    probe::AsyncTaskCanceled(ExecutionContext::From(script_state),
-                             &async_task_id_);
+    async_task_context_.Cancel();
     promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "An unexpected shutdown occured before the "
@@ -103,7 +102,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
     probe::AsyncTask async_task(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_id_, "error");
+        &async_task_context_, "error");
     promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "The databases() promise was rejected."));
@@ -129,7 +128,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
     async_task_.emplace(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_id_, "success");
+        &async_task_context_, "success");
     promise_resolver_->Resolve(name_and_version_list);
     // Note: Resolve may cause |this| to be deleted.  async_task_ will be
     // completed in the destructor.
@@ -198,7 +197,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
   void DetachRequestFromCallback() override { NOTREACHED(); }
 
  private:
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   absl::optional<probe::AsyncTask> async_task_;
   Persistent<ScriptPromiseResolver> promise_resolver_;
 };
