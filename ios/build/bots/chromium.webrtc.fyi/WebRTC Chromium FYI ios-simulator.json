@@ -1,8 +1,8 @@
 {
   "comments": [
-    "Runs tests on @3x, @2x, 64-bit phone, tablet, iOS 12."
+    "Runs tests on @3x, @2x, 64-bit phone, tablet, iOS 14."
   ],
-  "xcode build version": "12d4e",
+  "xcode build version": "13a233",
   "gn_args": [
     "enable_run_ios_unittests_with_xctest=true",
     "goma_dir=\"$(goma_dir)\"",
