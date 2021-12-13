@@ -20716,6 +20716,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DevToolsCssEditorOpened">
+  <obsolete>
+    Removed in M95. See crbug.com/1235544.
+  </obsolete>
   <int value="0" label="Color Picker opened"/>
   <int value="1" label="Shadow Editor opened"/>
   <int value="2" label="Bezier Editor opened"/>
@@ -20746,6 +20749,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DevToolsDualScreenDeviceEmulated">
+  <obsolete>
+    Removed in M87. See crbug.com/1125666.
+  </obsolete>
   <int value="0" label="Dual-screen or fold device selected"/>
   <int value="1" label="Dual-screen span mode selected"/>
   <int value="2" label="Platform dual-screen support used"/>
