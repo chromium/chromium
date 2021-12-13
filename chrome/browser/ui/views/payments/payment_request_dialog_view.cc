@@ -367,7 +367,7 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
     const autofill::CreditCard& credit_card,
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   if (!request_->spec())
     return;
 
@@ -375,7 +375,7 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
                         std::make_unique<CvcUnmaskViewController>(
                             request_->spec(), request_->state(),
                             weak_ptr_factory_.GetWeakPtr(), credit_card,
-                            result_delegate, web_contents),
+                            result_delegate, render_frame_host),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)

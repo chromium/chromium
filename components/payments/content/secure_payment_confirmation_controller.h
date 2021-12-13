@@ -40,7 +40,7 @@ class SecurePaymentConfirmationController
       const autofill::CreditCard& credit_card,
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate,
-      content::WebContents* web_contents) override;
+      content::RenderFrameHost* render_frame_host) override;
   void ShowPaymentHandlerScreen(
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) override;

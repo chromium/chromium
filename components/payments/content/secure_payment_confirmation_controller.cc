@@ -178,7 +178,7 @@ void SecurePaymentConfirmationController::ShowCvcUnmaskPrompt(
     const autofill::CreditCard& credit_card,
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   // CVC unmasking is nut supported.
   NOTREACHED();
 }
