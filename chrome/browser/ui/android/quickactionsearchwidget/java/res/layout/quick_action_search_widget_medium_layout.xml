@@ -7,9 +7,9 @@
     android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="@dimen/quick_action_search_widget_medium_height"
-    android:paddingVertical="@dimen/quick_action_search_widget_medium_vertical_margin"
     android:background="@drawable/quick_action_search_widget_background"
     android:clipToOutline="true"
+    android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
