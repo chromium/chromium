@@ -107,7 +107,7 @@ GURL GetFileManagerMainPageUrlWithParams(
       dict->SetBoolean("selected",
                        (static_cast<size_t>(file_type_index) == (i + 1)));
 
-      types_list.Set(i, std::move(dict));
+      types_list.Append(std::move(dict));
     }
     arg_value.SetKey("typeList", std::move(types_list));
 
