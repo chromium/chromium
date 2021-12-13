@@ -6459,6 +6459,9 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyGet) {
   StaticSocketDataProvider data1(data_reads1, data_writes1);
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
   SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ssl.ssl_info.cert);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
   ConnectedHandler connected_handler;
@@ -6499,6 +6502,10 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyGet) {
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
+
+  // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
+  // not be reported as a property of the origin.
+  EXPECT_FALSE(response->ssl_info.cert);
 }
 
 // Test a SPDY get through an HTTPS Proxy.
@@ -6532,6 +6539,9 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
 
   SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ssl.ssl_info.cert);
   ssl.next_proto = kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
@@ -6571,6 +6581,10 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
+
+  // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
+  // not be reported as a property of the origin.
+  EXPECT_FALSE(response->ssl_info.cert);
 }
 
 // Verifies that a session which races and wins against the owning transaction
