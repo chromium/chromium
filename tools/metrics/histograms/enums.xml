@@ -13567,6 +13567,11 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="613" label="X_Takri"/>
 </enum>
 
+<enum name="ClearBrowsingDataMyActivityNavigation">
+  <int value="0" label="Top level MyActivity URL"/>
+  <int value="1" label="Search history in MyActivity"/>
+</enum>
+
 <enum name="ClearBrowsingDataTab">
   <int value="0" label="Basic"/>
   <int value="1" label="Advanced"/>

@@ -50,6 +50,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.ClearBrowsingData.OpenMyActivity"
+    enum="ClearBrowsingDataMyActivityNavigation" expires_after="M102">
+  <owner>andzaytsev@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records which MyActivity URLs the user clicked in Clear Browsing Data.
+  </summary>
+</histogram>
+
 <histogram name="Settings.FilterOnLoadTime" units="ms"
     expires_after="2018-08-30">
   <owner>gab@chromium.org</owner>
