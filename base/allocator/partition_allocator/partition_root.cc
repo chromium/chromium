@@ -532,6 +532,10 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
+    // TODO(crbug.com/1277519): Should remove all traces of thread-unsafe roots,
+    // but until this is done, forbid them from being used.
+    PA_CHECK(thread_safe);
+
 #if defined(OS_APPLE)
     // Needed to statically bound page size, which is a runtime constant on
     // apple OSes.
