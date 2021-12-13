@@ -121,8 +121,8 @@ ScriptedIdleTaskController::RegisterCallback(
   idle_tasks_.Set(id, idle_task);
   uint32_t timeout_millis = options->timeout();
 
-  probe::AsyncTaskScheduled(GetExecutionContext(), "requestIdleCallback",
-                            idle_task->async_task_id());
+  idle_task->async_task_context()->Schedule(GetExecutionContext(),
+                                            "requestIdleCallback");
 
   scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper =
       internal::IdleRequestCallbackWrapper::Create(id, this);
@@ -199,7 +199,7 @@ void ScriptedIdleTaskController::RunCallback(
       std::max(deadline - base::TimeTicks::Now(), base::TimeDelta());
 
   probe::AsyncTask async_task(GetExecutionContext(),
-                              idle_task->async_task_id());
+                              idle_task->async_task_context());
   probe::UserCallback probe(GetExecutionContext(), "requestIdleCallback",
                             AtomicString(), true);
 

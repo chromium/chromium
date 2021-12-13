@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_callback.h"
 #include "third_party/blink/renderer/core/dom/idle_deadline.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -32,10 +32,10 @@ class IdleTask : public GarbageCollected<IdleTask>, public NameClient {
   const char* NameInHeapSnapshot() const override { return "IdleTask"; }
   ~IdleTask() override = default;
   virtual void invoke(IdleDeadline*) = 0;
-  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
  private:
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
 };
 
 // |V8IdleTask| is the adapter class for the conversion from
