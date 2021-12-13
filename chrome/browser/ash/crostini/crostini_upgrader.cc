@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -61,6 +62,9 @@ class CrostiniUpgraderFactory : public BrowserContextKeyedServiceFactory {
     return new CrostiniUpgrader(profile);
   }
 };
+
+const char kLogFileBasename[] = "container_upgrade.log";
+
 }  // namespace
 
 CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
@@ -68,7 +72,12 @@ CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
 }
 
 CrostiniUpgrader::CrostiniUpgrader(Profile* profile)
-    : profile_(profile), container_id_("", ""), backup_path_(absl::nullopt) {
+    : profile_(profile),
+      container_id_("", ""),
+      log_sequence_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      current_log_file_(absl::nullopt),
+      backup_path_(absl::nullopt) {
   CrostiniManager::GetForProfile(profile_)->AddUpgradeContainerProgressObserver(
       this);
 }
@@ -269,6 +278,46 @@ void CrostiniUpgrader::DoPrechecks() {
 void CrostiniUpgrader::Upgrade(const ContainerId& container_id) {
   container_id_ = container_id;
 
+  // Clear log path so any log messages get buffered.
+  current_log_file_ = absl::nullopt;
+  // Clear the buffer, which may have been previously moved from.
+  log_buffer_ = std::vector<std::string>();
+
+  base::FilePath path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
+          kLogFileBasename);
+  // Create the new log file on the blocking threadpool.
+  log_sequence_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath path) -> absl::optional<base::FilePath> {
+            path = base::GetUniquePath(path);
+            base::File file(path,
+                            base::File::FLAG_READ | base::File::FLAG_CREATE);
+            if (!file.IsValid()) {
+              PLOG(ERROR) << "Failed to create log file!";
+              return absl::nullopt;
+            }
+            return path;
+          },
+          path),
+      // Once the file is created, write out the buffered log messages.
+      base::BindOnce(
+          [](base::WeakPtr<CrostiniUpgrader> weak_this,
+             absl::optional<base::FilePath> path) {
+            if (!weak_this)
+              return;
+
+            weak_this->current_log_file_ = path;
+            if (path) {
+              weak_this->WriteLogMessages(std::move(weak_this->log_buffer_));
+              for (auto& observer : weak_this->upgrader_observers_) {
+                observer.OnLogFileCreated(path->BaseName());
+              }
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+
   // Shut down the existing VM then upgrade. StopVm doesn't give an error if
   // the VM doesn't exist. That's fine.
   CrostiniManager::GetForProfile(profile_)->StopVm(
@@ -381,6 +430,15 @@ void CrostiniUpgrader::OnUpgradeContainerProgress(
   if (container_id != container_id_) {
     return;
   }
+
+  // Write `messages` to the log file, or append it to the buffer if the log
+  // file is still pending.
+  if (current_log_file_) {
+    WriteLogMessages(messages);
+  } else {
+    log_buffer_.insert(log_buffer_.end(), messages.begin(), messages.end());
+  }
+
   switch (status) {
     case UpgradeContainerProgressStatus::UPGRADING:
       for (auto& observer : upgrader_observers_) {
@@ -400,6 +458,20 @@ void CrostiniUpgrader::OnUpgradeContainerProgress(
       }
       break;
   }
+}
+
+void CrostiniUpgrader::WriteLogMessages(std::vector<std::string> messages) {
+  log_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath path, std::vector<std::string> messages) {
+            for (const std::string& s : messages) {
+              if (!base::AppendToFile(path, s + "\n")) {
+                PLOG(ERROR) << "Failed to write logs";
+              }
+            }
+          },
+          *current_log_file_, std::move(messages)));
 }
 
 // Return true if internal state allows starting upgrade.

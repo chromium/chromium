@@ -100,6 +100,12 @@ Polymer({
       value: 0,
     },
 
+    /** @private */
+    logFileName_: {
+      type: String,
+      value: '',
+    },
+
     /**
      * Enable the html template to use State.
      * @private
@@ -197,7 +203,10 @@ Polymer({
         if (this.canCancel_(this.state_)) {
           this.onCancelButtonClick_();
         }
-      })
+      }),
+      callbackRouter.onLogFileCreated.addListener((path) => {
+        this.logFileName_ = path;
+      }),
     ];
 
     document.addEventListener('keyup', event => {
@@ -334,6 +343,13 @@ Polymer({
     return !(
         this.isState_(this.state_, State.UPGRADE_ERROR) ||
         this.isState_(this.state_, State.OFFER_RESTORE));
+  },
+
+  isLogsMessageHidden_(state) {
+    return !(
+        this.isState_(this.state_, State.UPGRADE_ERROR) ||
+        this.isState_(this.state_, State.OFFER_RESTORE) ||
+        this.isState_(this.state_, State.SUCCEEDED));
   },
 
   /**

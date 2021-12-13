@@ -32,6 +32,7 @@ class CrostiniUpgraderUIObserver {
   virtual void OnRestoreSucceeded() = 0;
   virtual void OnRestoreFailed() = 0;
   virtual void OnCanceled() = 0;
+  virtual void OnLogFileCreated(const base::FilePath& path) {}
 };
 
 class CrostiniUpgraderUIDelegate {

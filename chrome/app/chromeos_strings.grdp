@@ -4574,6 +4574,9 @@
   <message name="IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE" desc="Title of the Crostini upgrader when the container upgrade fails and restore of a backup is in progress.">
     Linux files and apps are being restored to their backed up state.
   </message>
+  <message name="IDS_CROSTINI_UPGRADER_LOG_FILE" desc="A message shown in the Crostini upgrader that says which file the upgrade log messages have been stored in.">
+    These logs have been saved in My Files as
+  </message>
   <message name="IDS_CROSTINI_UPGRADER_NOT_NOW" desc="Text on the button to defer performing the upgrade">
     Not now
   </message>

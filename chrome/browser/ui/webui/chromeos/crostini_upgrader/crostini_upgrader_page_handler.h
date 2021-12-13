@@ -67,6 +67,7 @@ class CrostiniUpgraderPageHandler
   void OnRestoreSucceeded() override;
   void OnRestoreFailed() override;
   void OnCanceled() override;
+  void OnLogFileCreated(const base::FilePath& path) override;
 
  private:
   // The chrome://crostini-upgrader WebUI that triggered the upgrade.

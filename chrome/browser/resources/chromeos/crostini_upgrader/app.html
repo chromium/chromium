@@ -20,7 +20,6 @@
   #img-square-error-illustration {
     align-self: center;
     height: 180px;
-    margin-bottom: 40px;
     width: 180px;
   }
 
@@ -77,6 +76,14 @@
     --paper-progress-container-color: rgba(var(--google-blue-600-rgb), .24);
     margin-top: 36px;
     width: 100%;
+  }
+
+  #log-storage-message {
+    color: var(--cros-text-color-secondary);
+    flex-grow: 1;
+    font-family: Roboto;
+    font-size: 13px;
+    line-height: 18px;
   }
 
   #bottom-container {
@@ -144,6 +151,9 @@
   <img id="[[getIllustrationStyle_(state_)]]"
       src="[[getIllustrationURI_(state_)]]" alt=""
       hidden="[[hideIllustration_(state_)]]">
+  <div id="log-storage-message" hidden="[[isLogsMessageHidden_(state_)]]">
+    <span>$i18n{logFileMessage} [[logFileName_]]</span>
+  </div>
   <div id="backup-checkbox" hidden="[[!isState_(state_, State.PROMPT)]]">
     <cr-checkbox checked="{{backupCheckboxChecked_}}" >
       <p class="checkbox-text">

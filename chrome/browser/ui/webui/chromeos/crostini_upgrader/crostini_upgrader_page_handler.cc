@@ -173,4 +173,8 @@ void CrostiniUpgraderPageHandler::OnCanceled() {
   page_->OnCanceled();
 }
 
+void CrostiniUpgraderPageHandler::OnLogFileCreated(const base::FilePath& path) {
+  page_->OnLogFileCreated(path.AsUTF8Unsafe());
+}
+
 }  // namespace chromeos
