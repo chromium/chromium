@@ -171,47 +171,39 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
                                   output_version_type);
 }
 
-const blink::UserAgentBrandList& GetUserAgentBrandMajorVersionList(
+const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
-  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
-                            enable_updated_grease_by_policy,
-                            version_info::GetVersionNumber(),
-                            blink::UserAgentBrandVersionType::kMajorVersion));
-  return *brand_list;
+  return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
+                               enable_updated_grease_by_policy,
+                               version_info::GetVersionNumber(),
+                               blink::UserAgentBrandVersionType::kMajorVersion);
 }
 
-const blink::UserAgentBrandList& GetForcedM100UserAgentBrandMajorVersionList(
+blink::UserAgentBrandList GetForcedM100UserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
-  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(kMajorVersion100, enable_updated_grease_by_policy,
-                            GetM100VersionNumber(),
-                            blink::UserAgentBrandVersionType::kMajorVersion));
-  return *brand_list;
+  return GetUserAgentBrandList(
+      kMajorVersion100, enable_updated_grease_by_policy, GetM100VersionNumber(),
+      blink::UserAgentBrandVersionType::kMajorVersion);
 }
 
-const blink::UserAgentBrandList& GetUserAgentBrandFullVersionList(
+blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
-  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
-                            enable_updated_grease_by_policy,
-                            version_info::GetVersionNumber(),
-                            blink::UserAgentBrandVersionType::kFullVersion));
-  return *brand_list;
+  return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
+                               enable_updated_grease_by_policy,
+                               version_info::GetVersionNumber(),
+                               blink::UserAgentBrandVersionType::kFullVersion);
 }
 
-const blink::UserAgentBrandList& GetForcedM100UserAgentBrandFullVersionList(
+blink::UserAgentBrandList GetForcedM100UserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
-  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(kMajorVersion100, enable_updated_grease_by_policy,
-                            GetM100VersionNumber(),
-                            blink::UserAgentBrandVersionType::kFullVersion));
-  return *brand_list;
+  return GetUserAgentBrandList(
+      kMajorVersion100, enable_updated_grease_by_policy, GetM100VersionNumber(),
+      blink::UserAgentBrandVersionType::kFullVersion);
 }
 
 // Return UserAgentBrandList with the major version populated in the brand
 // `version` value.
-const blink::UserAgentBrandList& GetBrandMajorVersionList(
+blink::UserAgentBrandList GetBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
   if (base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
@@ -223,7 +215,7 @@ const blink::UserAgentBrandList& GetBrandMajorVersionList(
 
 // Return UserAgentBrandList with the full version populated in the brand
 // `version` value.
-const blink::UserAgentBrandList& GetBrandFullVersionList(
+blink::UserAgentBrandList GetBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
   if (base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
