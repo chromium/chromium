@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceListener.Duration.{Device}" units="ms"
+<histogram name="Media.Audio.OutputDeviceListener.Duration{Device}" units="ms"
     expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
