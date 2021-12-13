@@ -31,6 +31,10 @@
 #include "net/dns/public/resolv_reader.h"
 #endif
 
+#if defined(OS_MAC)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #if defined(OS_WIN)
 #include <netfw.h>
 #include <windows.h>
