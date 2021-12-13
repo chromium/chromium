@@ -4426,6 +4426,8 @@ static_library("browser") {
       "webauthn/authenticator_request_scheduler.cc",
       "webauthn/authenticator_request_scheduler.h",
       "webauthn/authenticator_transport.h",
+      "webauthn/cablev2_devices.cc",
+      "webauthn/cablev2_devices.h",
       "webauthn/chrome_authenticator_request_delegate.cc",
       "webauthn/chrome_authenticator_request_delegate.h",
       "webauthn/observable_authenticator_list.cc",

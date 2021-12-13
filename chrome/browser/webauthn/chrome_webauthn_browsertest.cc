@@ -419,21 +419,21 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
       kGetAssertionCredID1234, &result));
 
   constexpr char kExpectedTrace[] = R"(
-PAIRING: name2 02020202 040506
 PAIRING: aaa 03030303 040506
-PAIRING: zzz 04040404 040506
+PAIRING: name2 02020202 040506
 PAIRING: name2 01010101 040506
 PAIRING: name2 00000000 040506
+PAIRING: zzz 04040404 040506
 UINAME: aaa
 UINAME: name2
 UINAME: zzz
-CONTACT: phone_instance=0 step=0
-CONTACT: phone_instance=3 step=1
-CONTACT: phone_instance=4 step=2
-CONTACT: phone_instance=2 step=3
-CONTACT: phone_instance=1 step=4
+CONTACT: phone_instance=1 step=0
+CONTACT: phone_instance=2 step=1
+CONTACT: phone_instance=3 step=2
+CONTACT: phone_instance=4 step=3
+CONTACT: phone_instance=0 step=4
 )";
-  EXPECT_EQ(trace_.str(), kExpectedTrace);
+  EXPECT_EQ(kExpectedTrace, trace_.str());
   EXPECT_EQ("webauthn: OK", result);
 }
 

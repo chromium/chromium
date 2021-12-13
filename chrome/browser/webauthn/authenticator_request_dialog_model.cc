@@ -132,12 +132,6 @@ AuthenticatorRequestDialogModel::PairedPhone&
 AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
     default;
 
-bool AuthenticatorRequestDialogModel::PairedPhone::CompareByName(
-    const PairedPhone& a,
-    const PairedPhone& b) {
-  return a.name < b.name;
-}
-
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
   selected_authenticator_id_ = absl::nullopt;
   saved_authenticators_.RemoveAllAuthenticators();
@@ -663,16 +657,11 @@ void AuthenticatorRequestDialogModel::set_cable_transport_info(
   contact_phone_callback_ = std::move(contact_phone_callback);
   cable_qr_string_ = cable_qr_string;
 
-  std::stable_sort(paired_phones_.begin(), paired_phones_.end(),
-                   PairedPhone::CompareByName);
   paired_phones_contacted_.assign(paired_phones_.size(), false);
 }
 
 std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
     const {
-  DCHECK(std::is_sorted(paired_phones_.begin(), paired_phones_.end(),
-                        PairedPhone::CompareByName));
-
   std::vector<std::string> names;
   std::transform(paired_phones_.begin(), paired_phones_.end(),
                  std::back_inserter(names),
@@ -804,9 +793,6 @@ void AuthenticatorRequestDialogModel::DispatchRequestAsyncInternal(
 
 void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
     const std::string& name) {
-  DCHECK(std::is_sorted(paired_phones_.begin(), paired_phones_.end(),
-                        PairedPhone::CompareByName));
-
   bool found_name = false;
   for (size_t i = 0; i != paired_phones_.size(); i++) {
     const PairedPhone& phone = paired_phones_[i];

@@ -190,10 +190,6 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  // GetCablePairings returns any known caBLE pairing data.
-  virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
-  GetCablePairings();
-
   void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
