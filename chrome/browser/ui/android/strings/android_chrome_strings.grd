@@ -4925,6 +4925,26 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Creating GIF <ph name="PERCENT">%1$d<ex>13</ex></ph>%%
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_TOOLBAR_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the lightweight reactions toolbar is selected. The user can then select a reaction from the toolbar to place on the screen.">
+        Choose an emotion
+      </message>
+
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_RESIZE_AND_ROTATE_BUTTON" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the resize and rotate editing tool is selected. The user can then resize and rotate the reaction on the scene.">
+        Resize and rotate
+      </message>
+
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_DUPLICATE_BUTTON" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the duplicate editing tool is selected. The user can then dupicate the reaction on the scene.">
+        Duplicate
+      </message>
+
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_TITLE_FOR_SHARE" desc="The title of the shared lightweight reaction.">
+        Emotion GIF <ph name="CURRENT_DATE_ISO">%1$s<ex>2020-09-16</ex></ph>
+      </message>
+
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_FILENAME_PREFIX" desc="The file name prefix of the shared lightweight reaction. Followed by the timestamp.">
+        chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
+      </message>
+
       <!-- Share Screenshot strings -->
       <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
         Edit

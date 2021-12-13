@@ -84,7 +84,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
             ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                     mActivity, R.layout.reaction_layout, null);
-            reactionLayout.init(drawable, this);
+            reactionLayout.init(drawable, this, reaction.localizedName);
 
             int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE_DP);
             RelativeLayout.LayoutParams lp =
@@ -236,7 +236,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                     mActivity, R.layout.reaction_layout, null);
             ReactionGifDrawable drawable =
                     new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888);
-            newReactionLayout.init(drawable, this);
+            newReactionLayout.init(drawable, this, reaction.localizedName);
 
             RelativeLayout.LayoutParams oldLayoutParams =
                     (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
@@ -307,7 +307,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         ++mNbTypeChange;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             mActiveReaction.setDrawable(
-                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888));
+                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888),
+                    reaction.localizedName);
             resetReactions(mActiveReaction);
         });
     }

@@ -20,6 +20,8 @@ static_library("core") {
     ":features",
     ":reaction_types",
     "//components/keyed_service/core",
+    "//components/strings:components_strings",
+    "//ui/base",
   ]
 }
 

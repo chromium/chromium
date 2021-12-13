@@ -41,17 +41,20 @@ class ReactionLayout extends RelativeLayout {
      * Initialize the ReactionLayout outside of the constructor since the Layout is inflated.
      * @param drawable {@link ReactionGifDrawable} of the reaction.
      * @param sceneEditorDelegate {@link SceneEditorDelegate} to call scene editing methods.
+     * @param localizedName The name of the reaction for accessibility.
      */
-    void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate) {
-        setDrawable(drawable);
+    void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate,
+            String localizedName) {
+        setDrawable(drawable, localizedName);
         mSceneEditorDelegate = sceneEditorDelegate;
         mIsActive = true;
         setUpReactionView();
     }
 
-    void setDrawable(ReactionGifDrawable drawable) {
+    void setDrawable(ReactionGifDrawable drawable, String localizedName) {
         mDrawable = drawable;
         mReaction.setImageDrawable(mDrawable);
+        mReaction.setContentDescription(localizedName);
     }
 
     @Override
