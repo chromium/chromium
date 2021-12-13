@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOnEmptyBody404) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
 }
 
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
 }
 
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
 }
 
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
 
   // Cancellation must have occurred due to authentication request.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kLoginAuthRequested, 1);
 }
 
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubframe) {
 
   // Cancellation must have occurred due to authentication request.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kLoginAuthRequested, 1);
 }
 
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
 
   // Cancellation must have occurred due to authentication request.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kLoginAuthRequested, 1);
 }
 
@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginRedirection) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kCrossOriginRedirect, 1);
 }
 
@@ -1296,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
 }
 
@@ -1695,7 +1695,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnPreferredSizeChanged) {
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDestroyed, 1);
 }
 
@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester should log
@@ -1958,7 +1958,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   SetBrowserClientForTesting(old_browser_client);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester should log
@@ -2100,7 +2100,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       GetExpectedFinalStatus(), 1);
 }
 
@@ -2141,7 +2141,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       GetExpectedFinalStatus(), 1);
 }
 
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // just cancels the url request, and leads to the cancellation of
   // prerendering with kNavigationRequestNetworkError.
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       GetParam() == SSLPrerenderTestErrorBlockType::kClientCertRequested
           ? PrerenderHost::FinalStatus::kClientCertRequested
           : PrerenderHost::FinalStatus::kNavigationRequestNetworkError,
@@ -2213,7 +2213,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       GetExpectedFinalStatus(), 1);
 }
 
@@ -2411,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
     host_observer.WaitForDestroyed();
     histogram_tester.ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
 
@@ -2470,7 +2470,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
     host_observer.WaitForDestroyed();
     histogram_tester.ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
 
@@ -2604,7 +2604,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
   // Verify Mojo capability control cancels prerendering.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
@@ -2690,7 +2690,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       web_contents(), GetUrl("/prerender/page-with-embedded-plugin.html"),
       prerender_helper());
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
@@ -2708,7 +2708,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       web_contents(), GetUrl("/prerender/page-with-object-plugin.html"),
       prerender_helper());
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 2);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
@@ -2764,7 +2764,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
                                    prerender_helper());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
@@ -2799,7 +2799,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadByScript) {
             RenderFrameHost::kNoFrameTreeNodeId);
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDownload, 1);
 }
 
@@ -2818,7 +2818,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInMainFrame) {
                                    prerender_helper());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDownload, 1);
 }
 
@@ -2847,7 +2847,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
             RenderFrameHost::kNoFrameTreeNodeId);
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDownload, 1);
 }
 
@@ -2878,7 +2878,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RequestAudioOutputDevice) {
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kAudioOutputDeviceRequested, 1);
 }
 
@@ -2944,7 +2944,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
   // It should fail.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kLowEndDevice, 1);
 }
 
@@ -2978,7 +2978,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDestroyed, 1);
 }
 
@@ -3185,7 +3185,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kDidFailLoad, 1);
 }
 
@@ -3304,7 +3304,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
           prerender_host_id));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
 
   // Wait for completion of the navigation. This shouldn't be the prerendered
@@ -3962,7 +3962,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
   }
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
 #if defined(OS_ANDROID)
       PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
 #else
@@ -3993,7 +3993,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessIsKilled) {
   }
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
 }
 
@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   prerender_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
 }
 
@@ -4402,7 +4402,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   prerender_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
 }
 
@@ -4419,7 +4419,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   AddPrerender(kFirstPrerenderingUrl);
   histogram_tester.ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
 
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
@@ -4430,7 +4430,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
   registry_observer.WaitForTrigger(kSecondPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kSecondPrerenderingUrl));
   histogram_tester.ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
 }
 
@@ -4452,7 +4452,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kCrossOriginNavigation, 1);
 }
 
@@ -4472,14 +4472,14 @@ IN_PROC_BROWSER_TEST_F(
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
       web_contents_impl()->StartPrerendering(
-          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "_DirectURLInput");
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
   ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected, 1);
 }
 
@@ -4499,14 +4499,14 @@ IN_PROC_BROWSER_TEST_F(
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
       web_contents_impl()->StartPrerendering(
-          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "_DirectURLInput");
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
   ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected,
       1);
 }
@@ -4876,7 +4876,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
             RenderFrameHost::kNoFrameTreeNodeId);
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMixedContent, 1);
 }
 

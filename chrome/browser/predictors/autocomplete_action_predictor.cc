@@ -221,7 +221,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     }
 
     prerender_handle_ = web_contents.StartPrerendering(
-        url, content::PrerenderTriggerType::kEmbedder, "_DirectURLInput");
+        url, content::PrerenderTriggerType::kEmbedder, "DirectURLInput");
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =

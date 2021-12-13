@@ -180,7 +180,7 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
       return histogram_name + ".SpeculationRule";
     case content::PrerenderTriggerType::kEmbedder:
       DCHECK(!embedder_histogram_suffix_.empty());
-      return histogram_name + ".Embedder" + embedder_histogram_suffix_;
+      return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
   }
   NOTREACHED();
 }

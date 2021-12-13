@@ -29,6 +29,20 @@ int32_t InterfaceNameHasher(const std::string& interface_name) {
   return static_cast<int32_t>(base::HashMetricNameAs32Bits(interface_name));
 }
 
+std::string GenerateHistogramName(const std::string& histogram_base_name,
+                                  PrerenderTriggerType trigger_type,
+                                  const std::string& embedder_suffix) {
+  switch (trigger_type) {
+    case PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".SpeculationRule";
+    case PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // Called by MojoBinderPolicyApplier. This function records the Mojo interface
@@ -57,20 +71,20 @@ void RecordPrerenderActivationTime(
     base::TimeDelta delta,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
-  switch (trigger_type) {
-    case PrerenderTriggerType::kSpeculationRule:
-      DCHECK(embedder_histogram_suffix.empty());
-      base::UmaHistogramTimes(
-          "Navigation.TimeToActivatePrerender.SpeculationRule", delta);
-      return;
-    case PrerenderTriggerType::kEmbedder:
-      DCHECK(!embedder_histogram_suffix.empty());
-      base::UmaHistogramTimes("Navigation.TimeToActivatePrerender.Embedder" +
-                                  embedder_histogram_suffix,
-                              delta);
-      return;
-  }
-  NOTREACHED();
+  base::UmaHistogramTimes(
+      GenerateHistogramName("Navigation.TimeToActivatePrerender", trigger_type,
+                            embedder_histogram_suffix),
+      delta);
+}
+
+void RecordPrerenderHostFinalStatus(
+    PrerenderHost::FinalStatus status,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
+                            trigger_type, embedder_histogram_suffix),
+      status);
 }
 
 }  // namespace content

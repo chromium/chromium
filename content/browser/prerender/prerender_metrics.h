@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -31,6 +32,11 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(
     base::TimeDelta delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
+void RecordPrerenderHostFinalStatus(
+    PrerenderHost::FinalStatus status,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 

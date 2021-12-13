@@ -1682,15 +1682,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.Experimental.PrerenderHostFinalStatus"
+<histogram name="Prerender.Experimental.PrerenderHostFinalStatus{TriggerType}"
     enum="PrerenderHostFinalStatus" expires_after="2022-06-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Final status for a prerendering attempt. Recorded by PrerenderHost or
     PrerenderHostRegistry in the browser process when the attempt finishes.
   </summary>
+  <token key="TriggerType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead. Non-suffix name
+        was removed in Dec 2021.
+      </obsolete>
+    </variant>
+    <variant name=".Embedder_DirectURLInput"/>
+    <variant name=".SpeculationRule"/>
+  </token>
 </histogram>
 
 <histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"

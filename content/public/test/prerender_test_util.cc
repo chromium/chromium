@@ -474,7 +474,7 @@ std::string PrerenderTestHelper::GenerateHistogramName(
       return std::string(histogram_base_name) + ".SpeculationRule";
     case content::PrerenderTriggerType::kEmbedder:
       DCHECK(!embedder_suffix.empty());
-      return std::string(histogram_base_name) + ".Embedder" + embedder_suffix;
+      return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }
   NOTREACHED();
 }

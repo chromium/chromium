@@ -5,12 +5,12 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -773,8 +773,8 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
 void PrerenderHost::RecordFinalStatus(FinalStatus status) {
   DCHECK(!final_status_);
   final_status_ = status;
-  base::UmaHistogramEnumeration(
-      "Prerender.Experimental.PrerenderHostFinalStatus", status);
+  RecordPrerenderHostFinalStatus(status, trigger_type(),
+                                 embedder_histogram_suffix());
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {

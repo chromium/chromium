@@ -149,7 +149,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 
   void ExpectFinalStatus(PrerenderHost::FinalStatus status) {
     histogram_tester_.ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+        status, 1);
   }
 
   std::unique_ptr<TestWebContents> CreateWebContents(const GURL& url) {

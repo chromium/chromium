@@ -269,12 +269,14 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
   void ExpectUniqueSampleOfFinalStatus(PrerenderHost::FinalStatus status) {
     histogram_tester_.ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+        status, 1);
   }
 
   void ExpectBucketCountOfFinalStatus(PrerenderHost::FinalStatus status) {
     histogram_tester_.ExpectBucketCount(
-        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+        status, 1);
   }
 
  private:
@@ -328,7 +330,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl,
                                   PrerenderTriggerType::kEmbedder,
-                                  "_DirectURLInput", render_frame_host),
+                                  "DirectURLInput", render_frame_host),
       *web_contents);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =

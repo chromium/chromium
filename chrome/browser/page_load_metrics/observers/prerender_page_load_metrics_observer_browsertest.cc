@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  const std::string histogram_suffix = "_DirectURLInput";
+  const char histogram_suffix[] = "DirectURLInput";
 
   // Hold PrerenderHandle while the test is executed to avoid canceling a
   // prerender host in the destruction of PrerenderHandle.
