@@ -35,7 +35,7 @@
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="118437560755358292">基於安全考量，請輸入密碼或 PIN 碼</translation>
+<translation id="118437560755358292">為安全起見，請輸入密碼或 PIN</translation>
 <translation id="118532027333893379">輕按任何一處即可擷取全螢幕畫面</translation>
 <translation id="1190609913194133056">通知中心</translation>
 <translation id="1190678134285018527">裝置需要回復為先前的版本</translation>
@@ -339,7 +339,7 @@
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
-<translation id="3339826665088060472">螢幕畫面擷取、擷取螢幕截圖和錄製螢幕畫面的工具</translation>
+<translation id="3339826665088060472">螢幕截圖，用嚟擷取螢幕截圖同埋錄影螢幕嘅工具</translation>
 <translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
 <translation id="3351879221545518001">您目前正在投放畫面。</translation>
@@ -396,7 +396,7 @@
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
 <translation id="3615926715408477684">如果您啟用流動數據，藍牙亦會隨之開啟</translation>
 <translation id="3616883743181209306">已經將選單移去螢幕右上角。</translation>
-<translation id="3619536907358025872">螢幕畫面擷取設定</translation>
+<translation id="3619536907358025872">螢幕截圖設定</translation>
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621712662352432595">音效檔案設定</translation>
 <translation id="3626281679859535460">亮度</translation>
@@ -495,7 +495,7 @@
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4279490309300973883">鏡像</translation>
-<translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
+<translation id="4283888303416325161">為安全起見，請輸入密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="429402653707266969">切換工具列位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
@@ -764,7 +764,7 @@
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
-<translation id="6121838516699723042">確認下載「<ph name="FILENAME" />」</translation>
+<translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6134259848159370930">搜尋您的裝置、應用程式、設定和網絡。</translation>
 <translation id="6137566720514957455">打開移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅對話框</translation>

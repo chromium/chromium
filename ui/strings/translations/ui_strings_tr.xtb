@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4588090240171750605">Sağa Kaydır</translation>
 <translation id="4724120544754982507">Bildirim Merkezi, <ph name="UNREAD_NOTIFICATION_COUNT" /> okunmamış bildirim</translation>
+<translation id="4746179598275229723">Uzantının sabitlemesi kaldırıldı</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ay kaldı}other{# ay kaldı}}</translation>
 <translation id="4888938634149558681">Telefon et</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 saniye}other{# saniye}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 saniye kaldı}other{# saniye kaldı}}</translation>
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 saat}other{# saat}}</translation>
+<translation id="6007284015834422026">Uzantı sabitlendi</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6117103120090651229">Orta düğme</translation>
 <translation id="6129953537138746214">Boşluk</translation>

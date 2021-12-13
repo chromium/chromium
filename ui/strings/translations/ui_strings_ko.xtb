@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4588090240171750605">오른쪽 스크롤</translation>
 <translation id="4724120544754982507">알림 센터, 읽지 않은 알림 <ph name="UNREAD_NOTIFICATION_COUNT" />개</translation>
+<translation id="4746179598275229723">확장 프로그램 고정 해제됨</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1개월 남음}other{#개월 남음}}</translation>
 <translation id="4888938634149558681">전화 걸기</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1초}other{#초}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1초 남음}other{#초 남음}}</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1시간}other{#시간}}</translation>
+<translation id="6007284015834422026">확장 프로그램 고정됨</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6117103120090651229">가운데 버튼</translation>
 <translation id="6129953537138746214">Space</translation>
