@@ -6,6 +6,8 @@
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_LIST_VIEW_H_
 
 #include <stddef.h>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/views/search_result_container_view.h"
@@ -145,6 +147,25 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // Returns search results for the class's current list_type_.
   std::vector<SearchResult*> GetCategorizedSearchResults();
 
+  // Updates the set of results shown in this result list.
+  std::vector<SearchResult*> UpdateResultViews();
+
+  // A filter that returns whether a search result should be shown in the
+  // unified search result list.
+  // `for_assistant_results` - When true only assistant results will be
+  // included. When false assistant results are not included.
+  bool FilterResultsForUnifiedList(bool for_assistant_results,
+                                   const SearchResult& result) const;
+
+  // A filter that returns whether a search result should be shown in the best
+  // matches container.
+  bool FilterBestMatches(const SearchResult& result) const;
+
+  // A filter that returns whether a search results should be shown in the
+  // categorized flavour of search result list.
+  bool FilterSearchResultsByCategory(const SearchResult::Category& category,
+                                     const SearchResult& result) const;
+
   AppListMainView* main_view_;          // Owned by views hierarchy.
   AppListViewDelegate* view_delegate_;  // Not owned.
 
@@ -172,6 +193,11 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   bool enabled_ = true;
 
   const SearchResultView::SearchResultViewType search_result_view_type_;
+
+  // Set of results that have been removed from the result list using remove
+  // search result actions. Used to filter those results out from the list of
+  // shown results until results in the search model get refreshed.
+  std::set<std::string> removed_results_;
 };
 
 }  // namespace ash

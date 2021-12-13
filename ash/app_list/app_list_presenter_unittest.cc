@@ -982,8 +982,8 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
 
   // The result selection should be at the same position.
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
-  EXPECT_EQ(result_location,
-            result_selection_controller->selected_location_details());
+  EXPECT_EQ(*result_location,
+            *result_selection_controller->selected_location_details());
 
   // Click remove suggestion action button again.
   generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
@@ -998,10 +998,8 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
   EXPECT_TRUE(AppListSearchResultPageVisible());
   EXPECT_FALSE(GetSearchResultPageDialog());
 
-  // The result selection should be at the same position.
+  // A result should still be selected.
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
-  EXPECT_EQ(result_location,
-            result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
       {kTestResultId, SearchResultActionType::kRemove}};

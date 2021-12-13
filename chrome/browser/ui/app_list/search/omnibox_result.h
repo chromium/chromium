@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_RESULT_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_RESULT_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -54,7 +57,8 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
 
   void OnFaviconFetched(const gfx::Image& icon);
 
-  void SetZeroSuggestionActions();
+  void InitializeButtonActions(
+      const std::vector<ash::SearchResultActionType>& button_actions);
 
   ash::SearchResultType GetSearchResultType() const;
 

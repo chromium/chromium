@@ -2393,7 +2393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateSearchResutRemovalDecision"
-    enum="AppListZeroStateResultRemovalConfirmation" expires_after="2019-12-31">
+    enum="AppListResultRemovalConfirmation" expires_after="2019-12-31">
   <obsolete>
     Removed June 2019, replaced by
     Apps.AppList.ZeroStateSearchResultRemovalDecision.

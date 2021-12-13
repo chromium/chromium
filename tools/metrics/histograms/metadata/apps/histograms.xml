@@ -989,6 +989,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.SearchResultRemovalDecision"
+    enum="AppListResultRemovalConfirmation" expires_after="2022-12-31">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The decision of the user whether to remove a search result from search
+    results UI when productivity launcher is enabled. When productivity launcher
+    is enabled, the user has an option to remove subset of omnibox results from
+    search results. When removing the result, the user is shown a dialog to
+    confirm or cancel result removal. This histogram record the user action in
+    that dialog.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
     expires_after="2022-10-29">
   <owner>wrong@chromium.org</owner>
@@ -1383,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateSearchResultRemovalDecision"
-    enum="AppListZeroStateResultRemovalConfirmation" expires_after="2021-12-31">
+    enum="AppListResultRemovalConfirmation" expires_after="2022-06-01">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

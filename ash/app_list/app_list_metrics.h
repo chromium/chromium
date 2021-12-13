@@ -41,9 +41,9 @@ enum class ZeroStateSearchResultUserActionType {
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
-// AppListZeroStateResultRemovalConfirmation enum listing in
+// AppListResultRemovalConfirmation enum listing in
 // tools/metrics/histograms/enums.xml.
-enum class ZeroStateSearchResutRemovalConfirmation {
+enum class SearchResultRemovalConfirmation {
   kRemovalConfirmed = 0,
   kRemovalCanceled = 1,
   kMaxValue = kRemovalCanceled,
@@ -236,7 +236,10 @@ void RecordZeroStateSearchResultUserActionHistogram(
     ZeroStateSearchResultUserActionType action);
 
 void RecordZeroStateSearchResultRemovalHistogram(
-    ZeroStateSearchResutRemovalConfirmation removal_decision);
+    SearchResultRemovalConfirmation removal_decision);
+
+void RecordSearchResultRemovalDialogDecision(
+    SearchResultRemovalConfirmation removal_decision);
 
 void RecordAppListUserJourneyTime(AppListShowSource source,
                                   base::TimeDelta time);

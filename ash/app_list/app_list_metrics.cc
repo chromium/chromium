@@ -51,10 +51,18 @@ constexpr char kCardifiedStateAnimationSmoothnessExit[] =
 constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
     "Apps.AppList.ZeroStateSearchResultUserActionType";
 
-// The UMA histogram that logs user's decision(remove or cancel) for zero state
+// The UMA histogram that logs user's decision (remove or cancel) for zero state
 // search result removal confirmation.
 constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
+
+// The UMA histogram that logs user's decision (remove or cancel) for search
+// result removal confirmation. Recorded if productivity launcher is enabled, in
+// which case search result removal is enabled outside zero state search.
+// Otherwise, the dialog result is reported using
+// `kAppListZeroStateSearchResultRemovalHistogram`.
+constexpr char kSearchResultRemovalDialogDecisionHistogram[] =
+    "Apps.AppList.SearchResultRemovalDecision";
 
 // The base UMA histogram that logs app launches within the HomeLauncher (tablet
 // mode AppList), and the fullscreen AppList (when ProductivityLauncher is
@@ -202,9 +210,15 @@ void RecordZeroStateSearchResultUserActionHistogram(
 }
 
 void RecordZeroStateSearchResultRemovalHistogram(
-    ZeroStateSearchResutRemovalConfirmation removal_decision) {
+    SearchResultRemovalConfirmation removal_decision) {
   UMA_HISTOGRAM_ENUMERATION(kAppListZeroStateSearchResultRemovalHistogram,
                             removal_decision);
+}
+
+void RecordSearchResultRemovalDialogDecision(
+    SearchResultRemovalConfirmation removal_decision) {
+  base::UmaHistogramEnumeration(kSearchResultRemovalDialogDecisionHistogram,
+                                removal_decision);
 }
 
 std::string GetAppListOpenMethod(AppListShowSource source) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/strings/strcat.h"
@@ -152,14 +153,19 @@ OmniboxResult::OmniboxResult(Profile* profile,
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   set_relevance(match_.relevance / kMaxOmniboxScore);
 
-  if (AutocompleteMatch::IsSearchType(match_.type))
-    SetIsOmniboxSearch(true);
+  const bool is_omnibox_search = AutocompleteMatch::IsSearchType(match_.type);
+  SetIsOmniboxSearch(is_omnibox_search);
 
   UpdateIcon();
   UpdateTitleAndDetails();
 
-  if (is_zero_suggestion_)
-    SetZeroSuggestionActions();
+  if (is_zero_suggestion_) {
+    InitializeButtonActions({ash::SearchResultActionType::kRemove,
+                             ash::SearchResultActionType::kAppend});
+  } else if (is_omnibox_search &&
+             ash::features::IsProductivityLauncherEnabled()) {
+    InitializeButtonActions({ash::SearchResultActionType::kRemove});
+  }
 }
 
 OmniboxResult::~OmniboxResult() = default;
@@ -175,7 +181,6 @@ void OmniboxResult::Remove() {
 }
 
 void OmniboxResult::InvokeAction(ash::SearchResultActionType action) {
-  DCHECK(is_zero_suggestion_);
   switch (action) {
     case ash::SearchResultActionType::kRemove:
       Remove();
@@ -369,12 +374,10 @@ void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
       ash::SharedAppListConfig::instance().search_list_favicon_dimension()));
 }
 
-void OmniboxResult::SetZeroSuggestionActions() {
-  Actions zero_suggestion_actions;
-
-  for (ash::SearchResultActionType button_action :
-       {ash::SearchResultActionType::kRemove,
-        ash::SearchResultActionType::kAppend}) {
+void OmniboxResult::InitializeButtonActions(
+    const std::vector<ash::SearchResultActionType>& button_actions) {
+  Actions actions;
+  for (ash::SearchResultActionType button_action : button_actions) {
     gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
@@ -401,10 +404,10 @@ void OmniboxResult::SetZeroSuggestionActions() {
     }
     Action search_action(button_action, button_image, button_tooltip,
                          visible_on_hover);
-    zero_suggestion_actions.emplace_back(search_action);
+    actions.emplace_back(search_action);
   }
 
-  SetActions(zero_suggestion_actions);
+  SetActions(actions);
 }
 
 }  // namespace app_list
