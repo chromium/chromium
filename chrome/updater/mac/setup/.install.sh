@@ -8,5 +8,5 @@
 PRODUCT_NAME=
 readonly PRODUCT_NAME
 
-local exe="${UNPACK_DIR}/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}"
-"${exe}" ${SERVER_ARGS}
+"${UNPACK_DIR}/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}" \
+    ${SERVER_ARGS}
