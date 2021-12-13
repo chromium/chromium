@@ -744,6 +744,26 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSDeviceRestoreSentinelError"
+    enum="SigninIOSDeviceRestoreSentinelError" expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records errors when creating sentinel files at cold start. Those sentinel
+    files are used to detect a device restore. Histogram only for iOS.
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSDeviceRestoreSentinelPathGenerated"
+    enum="BooleanSuccess" expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records if the path for a sentinel file (used to detect iOS restore) is
+    generated successfully. Recorded on cold start.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSGaiaCookiePresentOnNavigation" enum="BooleanPresent"
     expires_after="2022-01-30">
   <obsolete>
@@ -763,7 +783,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
     enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-04-10">
-  <owner>jebel@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -778,7 +798,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.IOSLoginMethodAndSyncState"
     enum="SigninIOSLoginMethodAndSyncState" expires_after="2022-04-01">
-  <owner>jebel@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

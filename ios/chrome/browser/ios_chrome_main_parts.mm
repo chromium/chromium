@@ -58,6 +58,7 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -180,6 +181,10 @@ void IOSChromeMainParts::PreCreateThreads() {
   static crash_reporter::CrashKeyString<4> key("first-run");
   if (FirstRun::IsChromeFirstRun())
     key.Set("yes");
+
+  // Compute device restore flag before IO is disallowed on UI thread, so the
+  // value is available from cache synchronously.
+  IsFirstSessionAfterDeviceRestore();
 
   // Convert freeform experimental settings into switches before initializing
   // local state, in case any of the settings affect policy.

@@ -79716,6 +79716,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Different account"/>
 </enum>
 
+<enum name="SigninIOSDeviceRestoreSentinelError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Failed to create sentinel file"/>
+  <int value="2"
+      label="Failed to set ExcludedFromBackup flag on sentinel file"/>
+</enum>
+
 <enum name="SigninIOSLoginMethodAndSyncState">
   <int value="0" label="Client Login / Sync Off"/>
   <int value="1" label="Client Login / Sync On"/>

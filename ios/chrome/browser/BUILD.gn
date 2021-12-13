@@ -236,6 +236,7 @@ source_set("browser_impl") {
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/update_client",
     "//ios/chrome/common",
