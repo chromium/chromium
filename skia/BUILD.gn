@@ -41,10 +41,16 @@ buildflag_header("buildflags") {
 # External-facing config for dependent code.
 config("skia_config") {
   defines = [
+    "SK_CODEC_DECODES_PNG",
+    "SK_CODEC_DECODES_WEBP",
+    "SK_ENCODE_PNG",
+    "SK_ENCODE_WEBP",
+    "SK_ENABLE_SKSL",
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
+    "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
-    "SK_EXPERIMENTAL_ADD_ATLAS_PADDING",
   ]
+
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {
@@ -59,15 +65,6 @@ config("skia_config") {
     configs =
         [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
   }
-
-  defines += [
-    "SK_CODEC_DECODES_PNG",
-    "SK_CODEC_DECODES_WEBP",
-    "SK_ENCODE_PNG",
-    "SK_ENCODE_WEBP",
-    "SK_ENABLE_SKSL",
-    "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
-  ]
 
   if (skia_use_gl) {
     defines += [ "SK_GL" ]
