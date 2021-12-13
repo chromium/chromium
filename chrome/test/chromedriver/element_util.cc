@@ -93,10 +93,10 @@ bool ParseFromValue(base::Value* value, WebRect* rect) {
 
 std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebRect& rect) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("left", rect.X());
-  dict->SetInteger("top", rect.Y());
-  dict->SetInteger("width", rect.Width());
-  dict->SetInteger("height", rect.Height());
+  dict->SetIntKey("left", rect.X());
+  dict->SetIntKey("top", rect.Y());
+  dict->SetIntKey("width", rect.Width());
+  dict->SetIntKey("height", rect.Height());
   return dict;
 }
 
@@ -353,8 +353,8 @@ std::unique_ptr<base::DictionaryValue> CreateShadowRoot(
 
 std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("x", point.x);
-  dict->SetInteger("y", point.y);
+  dict->SetIntKey("x", point.x);
+  dict->SetIntKey("y", point.y);
   return dict;
 }
 
@@ -1004,8 +1004,8 @@ Status GetAXNodeByElementId(Session* session,
     return status;
 
   base::DictionaryValue body;
-  body.SetInteger("nodeId", node_id);
-  body.SetBoolean("fetchRelatives", false);
+  body.SetIntKey("nodeId", node_id);
+  body.SetBoolKey("fetchRelatives", false);
 
   std::unique_ptr<base::Value> result;
 
