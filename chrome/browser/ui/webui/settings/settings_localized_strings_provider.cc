@@ -166,6 +166,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
     {"menu", IDS_MENU},
     {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
     {"moreActions", IDS_SETTINGS_MORE_ACTIONS},
+    {"noThanks", IDS_NO_THANKS},
     {"ok", IDS_OK},
     {"restart", IDS_SETTINGS_RESTART},
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1604,7 +1605,6 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacyReviewLabel", IDS_SETTINGS_PRIVACY_REVIEW_LABEL},
       {"privacyReviewSublabel", IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL},
-      {"privacyReviewPromoTitle", IDS_SETTINGS_PRIVACY_REVIEW_PROMO_TITLE},
       {"privacyReviewPromoBody", IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY},
       {"privacyReviewPromoStartButton",
        IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON},
