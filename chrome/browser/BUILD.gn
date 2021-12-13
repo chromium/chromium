@@ -3434,6 +3434,7 @@ static_library("browser") {
       "//components/browser_ui/util/android",
       "//components/cbor",
       "//components/cdm/browser",
+      "//components/commerce/core:proto",
       "//components/component_updater/android:native_background_task_update_scheduler",
       "//components/content_capture/android",
       "//components/content_creation/notes/android",

@@ -11,8 +11,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/android/gurl_android.h"
 
@@ -30,6 +33,7 @@ class ManagedBookmarkService;
 class ScopedGroupBookmarkActions;
 }
 
+class OptimizationGuideKeyedService;
 class Profile;
 
 // The delegate to fetch bookmarks information for the Android native
@@ -289,6 +293,20 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  void GetUpdatedProductPrices(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobjectArray>& gurls,
+      const base::android::JavaParamRef<jobject>& callback);
+
+  void OnProductPriceUpdated(
+      base::android::ScopedJavaGlobalRef<jobject> callback,
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
  private:
   ~BookmarkBridge() override;
 
@@ -374,6 +392,13 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  // A means of accessing metadata about bookmarks.
+  OptimizationGuideKeyedService* opt_guide_;
+
+  // Weak pointers for creating callbacks that won't call into a destroyed
+  // object.
+  base::WeakPtrFactory<BookmarkBridge> weak_ptr_factory_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_BOOKMARK_BRIDGE_H_

@@ -9,11 +9,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/bookmarks/bookmark_bridge.h"
+#endif
 
 namespace content {
 class BrowserContext;
@@ -105,6 +110,12 @@ class OptimizationGuideKeyedService
   MaybeCreatePushNotificationManager(Profile* profile);
 
  private:
+  // BookmarkBridge is a friend class since it is a consumer of the
+  // CanApplyOptimizationOnDemand API.
+#if defined(OS_ANDROID)
+  friend class BookmarkBridge;
+#endif
+
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideKeyedServiceBrowserTest;
