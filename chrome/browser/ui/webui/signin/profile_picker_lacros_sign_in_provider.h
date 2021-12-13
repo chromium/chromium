@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 struct CoreAccountInfo;

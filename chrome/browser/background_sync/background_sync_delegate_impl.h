@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/site_engagement/content/site_engagement_observer.h"

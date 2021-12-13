@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_manager_core/account.h"
