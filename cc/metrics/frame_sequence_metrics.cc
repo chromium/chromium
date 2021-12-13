@@ -205,7 +205,24 @@ void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
 }
 
 void FrameSequenceMetrics::AdvanceTrace(base::TimeTicks timestamp) {
-  trace_data_.Advance(timestamp);
+  uint32_t expected = 0, dropped = 0;
+  switch (GetEffectiveThread()) {
+    case SmoothEffectDrivingThread::kCompositor:
+      expected = impl_throughput_.frames_expected;
+      dropped =
+          impl_throughput_.frames_expected - impl_throughput_.frames_produced;
+      break;
+
+    case SmoothEffectDrivingThread::kMain:
+      expected = main_throughput_.frames_expected;
+      dropped =
+          main_throughput_.frames_expected - main_throughput_.frames_produced;
+      break;
+
+    case SmoothEffectDrivingThread::kUnknown:
+      NOTREACHED();
+  }
+  trace_data_.Advance(timestamp, expected, dropped);
 }
 
 void FrameSequenceMetrics::ReportMetrics() {
@@ -621,7 +638,9 @@ void FrameSequenceMetrics::TraceData::Terminate() {
   trace_id = nullptr;
 }
 
-void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks new_timestamp) {
+void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks new_timestamp,
+                                              uint32_t expected,
+                                              uint32_t dropped) {
   if (!enabled)
     return;
   if (!trace_id) {
@@ -638,9 +657,10 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks new_timestamp) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "cc,benchmark", trace_names[++this->frame_count % 3],
       TRACE_ID_LOCAL(trace_id), this->last_timestamp);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
       "cc,benchmark", trace_names[this->frame_count % 3],
-      TRACE_ID_LOCAL(trace_id), new_timestamp);
+      TRACE_ID_LOCAL(trace_id), new_timestamp, "expected", expected, "dropped",
+      dropped);
   this->last_timestamp = new_timestamp;
 }
 

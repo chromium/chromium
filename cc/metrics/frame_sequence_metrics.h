@@ -218,7 +218,9 @@ class CC_EXPORT FrameSequenceMetrics {
     bool enabled = false;
     raw_ptr<void> trace_id = nullptr;
 
-    void Advance(base::TimeTicks new_timestamp);
+    void Advance(base::TimeTicks new_timestamp,
+                 uint32_t expected,
+                 uint32_t dropped);
     void Terminate();
   } trace_data_{this};
 
