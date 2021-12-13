@@ -468,7 +468,7 @@ class CachedResponseFileReaderLoaderClient final
   void DidFail(FileErrorCode error) override {
     callback_->sendFailure(ProtocolResponse::ServerError(
         String::Format("Unable to read the cached response, error code: %d",
-                       error)
+                       static_cast<int>(error))
             .Utf8()));
     dispose();
   }
