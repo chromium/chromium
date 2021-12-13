@@ -5,6 +5,7 @@
 #include "components/reporting/client/report_queue_provider.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -22,7 +23,6 @@
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
-#include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"

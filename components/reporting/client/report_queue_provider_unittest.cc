@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/reporting/client/report_queue_provider.h"
+
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"

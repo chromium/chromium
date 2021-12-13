@@ -4,6 +4,7 @@
 
 #include "components/reporting/client/report_queue_configuration.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

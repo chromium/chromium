@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_CONFIGURATION_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"

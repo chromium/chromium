@@ -5,6 +5,7 @@
 #include "components/reporting/client/mock_report_queue_provider.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
