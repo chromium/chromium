@@ -265,20 +265,20 @@ TEST_F('PrintPreviewSettingsSelectTest', 'All', function() {
   mocha.run();
 });
 
-var PrintPreviewSelectBehaviorTest = class extends PrintPreviewTest {
+var PrintPreviewSelectMixinTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/select_behavior_test.js&host=webui-test';
+    return 'chrome://print/test_loader.html?module=print_preview/select_mixin_test.js&host=webui-test';
   }
 
   /** @override */
   get suiteName() {
-    return select_behavior_test.suiteName;
+    return select_mixin_test.suiteName;
   }
 };
 
-TEST_F('PrintPreviewSelectBehaviorTest', 'CallProcessSelectChange', function() {
-  this.runMochaTest(select_behavior_test.TestNames.CallProcessSelectChange);
+TEST_F('PrintPreviewSelectMixinTest', 'CallProcessSelectChange', function() {
+  this.runMochaTest(select_mixin_test.TestNames.CallProcessSelectChange);
 });
 
 var PrintPreviewNumberSettingsSectionTest = class extends PrintPreviewTest {

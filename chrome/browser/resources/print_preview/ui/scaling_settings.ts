@@ -210,5 +210,11 @@ export class PrintPreviewScalingSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-scaling-settings': PrintPreviewScalingSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewScalingSettingsElement.is, PrintPreviewScalingSettingsElement);

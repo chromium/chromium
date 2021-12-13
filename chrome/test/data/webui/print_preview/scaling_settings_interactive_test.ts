@@ -5,26 +5,29 @@
 import {PrintPreviewModelElement, PrintPreviewScalingSettingsElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
+
 import {selectOption} from './print_preview_test_utils.js';
 
-window.scaling_settings_interactive_test = {};
-scaling_settings_interactive_test.suiteName = 'ScalingSettingsInteractiveTest';
-/** @enum {string} */
-scaling_settings_interactive_test.TestNames = {
-  AutoFocusInput: 'auto focus input',
+const scaling_settings_interactive_test = {
+  suiteName: 'ScalingSettingsInteractiveTest',
+  TestNames: {
+    AutoFocusInput: 'auto focus input',
+  },
 };
 
+Object.assign(
+    window,
+    {scaling_settings_interactive_test: scaling_settings_interactive_test});
+
 suite(scaling_settings_interactive_test.suiteName, function() {
-  /** @type {?PrintPreviewScalingSettingsElement} */
-  let scalingSection = null;
+  let scalingSection: PrintPreviewScalingSettingsElement;
 
-  /** @type {?PrintPreviewModelElement} */
-  let model = null;
+  let model: PrintPreviewModelElement;
 
-  /** @override */
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.scalingTypePdf.available', false);
@@ -41,13 +44,11 @@ suite(scaling_settings_interactive_test.suiteName, function() {
       assert(scaling_settings_interactive_test.TestNames.AutoFocusInput),
       async () => {
         const scalingInput =
-            scalingSection.shadowRoot
-                .querySelector('print-preview-number-settings-section')
-                .$.userValue.inputElement;
-        const scalingDropdown =
-            scalingSection.shadowRoot.querySelector('.md-select');
+            scalingSection.shadowRoot!
+                .querySelector('print-preview-number-settings-section')!.$
+                .userValue.inputElement;
         const collapse =
-            scalingSection.shadowRoot.querySelector('iron-collapse');
+            scalingSection.shadowRoot!.querySelector('iron-collapse')!;
 
         assertFalse(collapse.opened);
         assertEquals(
@@ -55,8 +56,7 @@ suite(scaling_settings_interactive_test.suiteName, function() {
 
         // Select custom with the dropdown. This should autofocus the input.
         await Promise.all([
-          selectOption(
-              scalingSection, scalingSection.ScalingValue.CUSTOM.toString()),
+          selectOption(scalingSection, ScalingType.CUSTOM.toString()),
           eventToPromise('transitionend', collapse),
         ]);
         assertTrue(collapse.opened);
@@ -65,14 +65,12 @@ suite(scaling_settings_interactive_test.suiteName, function() {
         // Blur and select default.
         scalingInput.blur();
         await Promise.all([
-          selectOption(
-              scalingSection, scalingSection.ScalingValue.DEFAULT.toString()),
+          selectOption(scalingSection, ScalingType.DEFAULT.toString()),
           eventToPromise('transitionend', collapse),
         ]);
         assertEquals(
             ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
-        assertFalse(
-            scalingSection.shadowRoot.querySelector('iron-collapse').opened);
+        assertFalse(collapse.opened);
 
         // Set custom in JS, which happens when we set the sticky settings. This
         // should not autofocus the input.
