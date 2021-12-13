@@ -61,8 +61,11 @@
   desc: Test exceptions on CanvasFilter() blur.object
   code: |
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur"});
-    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDevation: null});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: undefined});
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: "foo"});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: [1,2]});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: NaN});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: {}});
 
 - name: 2d.filter.canvasFilterObject.colorMatrix
   desc: Test the functionality of ColorMatrix filters in CanvasFilter objects

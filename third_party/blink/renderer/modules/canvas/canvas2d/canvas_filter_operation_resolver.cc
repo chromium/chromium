@@ -121,10 +121,13 @@ ComponentTransferFunction GetComponentTransferFunction(
     const StringView& key,
     const Dictionary& filter,
     ExceptionState& exception_state) {
+  ComponentTransferFunction result;
+  // An earlier stage threw an error
+  if (exception_state.HadException())
+    return result;
   Dictionary transfer_dict;
   filter.Get(key, transfer_dict);
 
-  ComponentTransferFunction result;
   result.slope =
       transfer_dict.Get<IDLDouble>("slope", exception_state).value_or(1);
   result.intercept =
@@ -135,11 +138,6 @@ ComponentTransferFunction GetComponentTransferFunction(
       transfer_dict.Get<IDLDouble>("exponent", exception_state).value_or(1);
   result.offset =
       transfer_dict.Get<IDLDouble>("offset", exception_state).value_or(0);
-
-  absl::optional<Vector<float>> table_values =
-      transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
-  if (table_values)
-    result.table_values.AppendVector(table_values.value());
 
   String type = transfer_dict.Get<IDLString>("type", exception_state)
                     .value_or("identity");
@@ -153,6 +151,11 @@ ComponentTransferFunction GetComponentTransferFunction(
     result.type = FECOMPONENTTRANSFER_TYPE_TABLE;
   else if (type == "discrete")
     result.type = FECOMPONENTTRANSFER_TYPE_DISCRETE;
+
+  absl::optional<Vector<float>> table_values =
+      transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
+  if (table_values)
+    result.table_values.AppendVector(table_values.value());
 
   return result;
 }
