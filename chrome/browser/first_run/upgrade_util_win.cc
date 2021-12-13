@@ -111,6 +111,8 @@ bool InvokeGoogleUpdateForRename() {
     return false;
   }
 
+  TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename RENAME_SUCCESSFUL");
+
   return true;
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
