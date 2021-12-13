@@ -808,7 +808,6 @@ TtsBackground = class extends ChromeTtsBase {
    */
   updateVoice_(voiceName, opt_callback) {
     chrome.tts.getVoices((voices) => {
-      console.log('get!' + JSON.stringify(voices));
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
       const newVoice = voices.find((v) => {

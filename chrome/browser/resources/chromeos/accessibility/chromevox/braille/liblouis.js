@@ -110,9 +110,7 @@ LibLouis = class {
    * Invoked when the Web Assembly instance successfully loads.
    * @private
    */
-  onInstanceLoad_() {
-    window.console.info('loaded liblouis Web Assembly instance');
-  }
+  onInstanceLoad_() {}
 
   /**
    * Invoked when the Web Assembly instance fails to load.
