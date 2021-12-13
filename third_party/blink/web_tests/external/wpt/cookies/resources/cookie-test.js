@@ -22,37 +22,25 @@ async function getDefaultPathCookies(path = '/cookies/resources') {
   });
 }
 
-// getRedirectedCookies is a helper method to get and delete cookies that
-// were set from a Location header redirect.
-async function getRedirectedCookies(location, cookie) {
+// getAndExpireCookiesForRedirectTest is a helper method to get and delete
+// cookies that were set from a Location header redirect.
+async function getAndExpireCookiesForRedirectTest(location) {
   return new Promise((resolve, reject) => {
     try {
       const iframe = document.createElement('iframe');
       iframe.style = 'display: none';
       iframe.src = location;
-
+      const listener = (e) => {
+        if (typeof e.data == 'object' && 'cookies' in e.data) {
+          window.removeEventListener('message', listener);
+          document.documentElement.removeChild(iframe);
+          resolve(e.data.cookies);
+        }
+      };
+      window.addEventListener('message', listener);
       iframe.addEventListener('load', (e) => {
-        const win = e.target.contentWindow;
-        let iframeCookie;
-        // go ask for the cookie
-        win.postMessage('getCookies', '*');
-
-        // once we get it, send a message to delete on the other
-        // side, then resolve the cookie back to httpRedirectCookieTest
-        window.addEventListener('message', (e) => {
-          if (typeof e.data == 'object' && 'cookies' in e.data) {
-            iframeCookie = e.data.cookies;
-            e.source.postMessage({'expireCookie': cookie}, '*');
-          }
-
-          // wait on the iframe to tell us it deleted the cookies before
-          // resolving, to avoid any state race conditions.
-          if (e.data == 'expired') {
-            resolve(iframeCookie);
-          }
-        });
+        e.target.contentWindow.postMessage('getAndExpireCookiesForRedirectTest', '*');
       }, {once: true});
-
       document.documentElement.appendChild(iframe);
     } catch (e) {
       reject(e);
@@ -90,21 +78,26 @@ function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
 // This is a variation on httpCookieTest, where a redirect happens via
 // the Location header and we check to see if cookies are sent via
 // getRedirectedCookies
+//
+// Note: the locations targeted by this function have a dependency on
+// path-redirect-shared.js and should be sure to include it.
 function httpRedirectCookieTest(cookie, expectedValue, name, location) {
   return promise_test(async (t) => {
+    // The result is ignored as we're expiring cookies for cleaning here.
+    await getAndExpireCookiesForRedirectTest(location);
+
     const encodedCookie = encodeURIComponent(JSON.stringify(cookie));
     const encodedLocation = encodeURIComponent(location);
     const setParams = `?set=${encodedCookie}&location=${encodedLocation}`;
     await fetch(`/cookies/resources/cookie.py${setParams}`);
     // for the tests where a redirect happens, we need to head
     // to that URI to get the cookies (and then delete them there)
-    const cookies = await getRedirectedCookies(location, cookie);
+    const cookies = await getAndExpireCookiesForRedirectTest(location);
     if (Boolean(expectedValue)) {
       assert_equals(cookies, expectedValue, 'The cookie was set as expected.');
     } else {
       assert_equals(cookies, expectedValue, 'The cookie was rejected.');
     }
-    await fetch(`/cookies/resources/cookie.py?drop=${encodedCookie}`);
   }, name);
 }
 
