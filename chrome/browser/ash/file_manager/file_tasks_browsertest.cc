@@ -513,10 +513,10 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
     task_descriptor = TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
                                      "https://www.example.com/handle_file");
     // Skip past the permission dialog.
-    web_app::ScopedRegistryUpdate(
-        &web_app::WebAppProvider::GetForTest(profile)->sync_bridge())
-        ->UpdateApp(app_id)
-        ->SetFileHandlerApprovalState(web_app::ApiApprovalState::kAllowed);
+    web_app::WebAppProvider::GetForTest(profile)
+        ->sync_bridge()
+        .SetAppFileHandlerApprovalState(app_id,
+                                        web_app::ApiApprovalState::kAllowed);
   } else {
     // Use an existing SWA in ash - Media app.
     task_descriptor = TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP,

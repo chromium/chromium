@@ -30,8 +30,6 @@ source_set("web_applications") {
     "externally_managed_app_manager_impl.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
-    "file_handlers_permission_helper.cc",
-    "file_handlers_permission_helper.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
     "install_bounce_metric.cc",

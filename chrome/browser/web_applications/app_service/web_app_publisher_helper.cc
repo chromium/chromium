@@ -1471,22 +1471,13 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
   DCHECK(
       provider_->os_integration_manager().IsFileHandlingAPIAvailable(app_id));
 
-  // TODO(estade): move the system app check into
-  // WebAppRegistrar::GetFileHandlerApprovalState().
-  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
-  DCHECK(web_app);
-  if (web_app->IsSystemApp()) {
-    std::move(callback).Run(LaunchAppWithParams(std::move(params)));
-    return;
-  }
-
   std::vector<base::FilePath> file_paths = params.launch_files;
   auto launch_callback =
       base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,
                      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(params),
                      std::move(callback));
 
-  switch (web_app->file_handler_approval_state()) {
+  switch (provider_->registrar().GetAppFileHandlerApprovalState(app_id)) {
     case ApiApprovalState::kRequiresPrompt:
       chrome::ShowWebAppFileLaunchDialog(file_paths, profile(), app_id,
                                          std::move(launch_callback));
