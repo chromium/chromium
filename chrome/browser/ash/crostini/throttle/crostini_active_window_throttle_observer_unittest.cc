@@ -35,10 +35,12 @@ TEST_F(CrostiniActiveWindowThrottleObserverTest, TestConstructDestruct) {}
 
 TEST_F(CrostiniActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   aura::test::TestWindowDelegate dummy_delegate;
-  aura::Window* crostini_window = aura::test::CreateTestWindowWithDelegate(
-      &dummy_delegate, 1, gfx::Rect(), nullptr);
-  aura::Window* chrome_window = aura::test::CreateTestWindowWithDelegate(
-      &dummy_delegate, 2, gfx::Rect(), nullptr);
+  std::unique_ptr<aura::Window> crostini_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 1, gfx::Rect(),
+                                               nullptr));
+  std::unique_ptr<aura::Window> chrome_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 2, gfx::Rect(),
+                                               nullptr));
   crostini_window->SetProperty(aura::client::kAppType,
                                static_cast<int>(ash::AppType::CROSTINI_APP));
   chrome_window->SetProperty(aura::client::kAppType,
@@ -49,19 +51,19 @@ TEST_F(CrostiniActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   // Test observer is active for crostini window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      crostini_window, chrome_window);
+      crostini_window.get(), chrome_window.get());
   EXPECT_TRUE(observer()->active());
 
   // Test observer is inactive for non-crostini window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      chrome_window, crostini_window);
+      chrome_window.get(), crostini_window.get());
   EXPECT_FALSE(observer()->active());
 
   // Test observer is inactive for null gained_active window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      nullptr, crostini_window);
+      nullptr, crostini_window.get());
   EXPECT_FALSE(observer()->active());
 }
 
