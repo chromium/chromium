@@ -280,9 +280,8 @@ void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  // TODO(b/173425436): Remove max_num from prime search routine.
   remote_diagnostics_service_->RunPrimeSearchRoutine(
-      params->request.length_seconds, /*max_num=*/0, std::move(cb));
+      params->request.length_seconds, std::move(cb));
 }
 
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------

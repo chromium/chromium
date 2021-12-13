@@ -198,10 +198,8 @@ void DiagnosticsService::RunDiskReadRoutine(
           std::move(callback)));
 }
 
-// TODO(b/173425436): Remove |max_num| from this routine.
 void DiagnosticsService::RunPrimeSearchRoutine(
     uint32_t length_seconds,
-    uint64_t max_num,
     RunPrimeSearchRoutineCallback callback) {
   GetService()->RunPrimeSearchRoutine(
       cros_healthd::mojom::NullableUint32::New(length_seconds),

@@ -199,21 +199,19 @@ interface DiagnosticsService {
       => (RunRoutineResponse response);
 
   // Requests that the PrimeSearch routine is created and started on the
-  // platform. Calculate prime numbers between 2 to max_num and verify the
-  // calculation repeatedly in a duration. This routine is only available
-  // if GetAvailableRoutines returned kPrimeSearch.
+  // platform. Calculate prime numbers and verifies the calculation repeatedly
+  // in a duration. This routine is only available if GetAvailableRoutines
+  // returned kPrimeSearch.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the PrimeSearch
   //                      routine for. This parameter needs to be strictly
   //                      greater than zero.
-  // * |max_num| - largest number that routine will calculate prime numbers up
-  //               to.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunPrimeSearchRoutine(uint32 length_seconds, uint64 max_num)
+  RunPrimeSearchRoutine(uint32 length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the BatteryDischarge routine is created and started on the
