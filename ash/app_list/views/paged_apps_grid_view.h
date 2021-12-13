@@ -299,6 +299,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Vertical tile spacing between the tile views on the first page.
   int first_page_vertical_tile_padding_ = 0;
 
+  // Cardified animation observers.
+  std::vector<std::unique_ptr<ui::ImplicitAnimationObserver>>
+      animation_observers_;
+
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };
 

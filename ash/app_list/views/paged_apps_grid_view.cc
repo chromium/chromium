@@ -127,13 +127,15 @@ class CardifiedAnimationObserver : public ui::ImplicitAnimationObserver {
   CardifiedAnimationObserver(const CardifiedAnimationObserver&) = delete;
   CardifiedAnimationObserver& operator=(const CardifiedAnimationObserver&) =
       delete;
-  ~CardifiedAnimationObserver() override = default;
+  ~CardifiedAnimationObserver() override {
+    if (callback_)
+      std::move(callback_).Run();
+  }
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
     if (callback_)
       std::move(callback_).Run();
-    delete this;
   }
 
  private:
@@ -1141,8 +1143,9 @@ void PagedAppsGridView::AnimateCardifiedState() {
     auto animator = animation_settings(entry_view->layer());
     // When the animations are done, discard the layer and reset view to
     // proper scale.
-    animator->AddObserver(
-        new CardifiedAnimationObserver(on_bounds_animator_callback));
+    animation_observers_.push_back(std::make_unique<CardifiedAnimationObserver>(
+        on_bounds_animator_callback));
+    animator->AddObserver(animation_observers_.back().get());
     entry_view->layer()->SetTransform(gfx::Transform());
   }
 
@@ -1194,8 +1197,10 @@ void PagedAppsGridView::AnimateCardifiedState() {
 
 void PagedAppsGridView::MaybeCallOnBoundsAnimatorDone() {
   --bounds_animation_for_cardified_state_in_progress_;
-  if (bounds_animation_for_cardified_state_in_progress_ == 0)
+  if (bounds_animation_for_cardified_state_in_progress_ == 0) {
+    animation_observers_.clear();
     OnBoundsAnimatorDone(/*animator=*/nullptr);
+  }
 }
 
 void PagedAppsGridView::RecenterItemsContainer() {
