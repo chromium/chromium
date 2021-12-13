@@ -562,6 +562,15 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
                       _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
 
+  def testWebSocketCommandReturnsNotSupported(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    websocket = websocket_connection.WebSocketConnection(
+        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+
+    websocket.SendCommand({"SOME": "COMMAND"})
+    message = websocket.ReadMessage()
+    self.assertEqual("not supported", message)
+
   def testWebSocketInvalidSessionId(self):
     driver = self.CreateDriver(web_socket_url=True)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
