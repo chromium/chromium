@@ -12,6 +12,10 @@
 #include "ui/base/prediction/input_predictor.h"
 #include "ui/base/prediction/prediction_metrics_handler.h"
 
+namespace cc {
+class ScrollUpdateEventMetrics;
+}
+
 namespace blink {
 
 namespace test {
@@ -57,7 +61,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   void ResampleEvent(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval,
                      WebInputEvent* event,
-                     ui::LatencyInfo* latency_info);
+                     ui::LatencyInfo* latency_info,
+                     cc::ScrollUpdateEventMetrics* metrics);
 
   // Reports metrics scores UMA histogram based on the metrics defined
   // in |PredictionMetricsHandler|

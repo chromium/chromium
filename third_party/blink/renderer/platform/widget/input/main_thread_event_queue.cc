@@ -71,7 +71,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
               WebInputEvent::Type::kPointerRawUpdate);
     std::unique_ptr<cc::EventMetrics> metrics =
         cc::EventMetrics::CreateFromExisting(
-            raw_event->Event().GetTypeAsUiEventType(), absl::nullopt,
+            raw_event->Event().GetTypeAsUiEventType(),
             cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
             original_metrics);
     return std::make_unique<QueuedWebInputEvent>(
@@ -134,6 +134,12 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
 
     known_by_scheduler_count_ += other_event->known_by_scheduler_count_;
     event_->CoalesceWith(*other_event->event_);
+    auto* metrics = metrics_ ? metrics_->AsScrollUpdate() : nullptr;
+    auto* other_metrics = other_event->metrics_
+                              ? other_event->metrics_->AsScrollUpdate()
+                              : nullptr;
+    if (metrics && other_metrics)
+      metrics->CoalesceWith(*other_metrics);
 
     // The newest event (|other_item|) always wins when updating fields.
     originally_cancelable_ = other_event->originally_cancelable_;

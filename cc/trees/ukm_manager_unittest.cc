@@ -141,13 +141,8 @@ class UkmManagerTest : public testing::Test {
     return test_tick_clock_.NowTicks();
   }
 
-  std::unique_ptr<EventMetrics> CreateEventMetrics(
-      ui::EventType type,
-      absl::optional<EventMetrics::GestureParams> gesture_params) {
-    base::TimeTicks event_time = AdvanceNowByMs(10);
-    AdvanceNowByMs(10);
-    std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
-        type, gesture_params, event_time, &test_tick_clock_);
+  std::unique_ptr<EventMetrics> SetupEventMetrics(
+      std::unique_ptr<EventMetrics> metrics) {
     if (metrics) {
       AdvanceNowByMs(10);
       metrics->SetDispatchStageTimestamp(
@@ -163,6 +158,24 @@ class UkmManagerTest : public testing::Test {
           EventMetrics::DispatchStage::kRendererMainFinished);
     }
     return metrics;
+  }
+
+  std::unique_ptr<EventMetrics> CreateScrollBeginEventMetrics() {
+    base::TimeTicks event_time = AdvanceNowByMs(10);
+    AdvanceNowByMs(10);
+    return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
+        ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kWheel,
+        /*is_inertial=*/false, event_time, &test_tick_clock_));
+  }
+
+  std::unique_ptr<EventMetrics> CreateScrollUpdateEventMetrics(
+      bool is_inertial,
+      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
+    base::TimeTicks event_time = AdvanceNowByMs(10);
+    AdvanceNowByMs(10);
+    return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
+        ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel, is_inertial,
+        scroll_update_type, /*delta=*/10.0f, event_time, &test_tick_clock_));
   }
 
   struct DispatchTimestamps {
@@ -535,22 +548,16 @@ TEST_F(UkmManagerTest, EventLatency) {
   const bool kScrollIsInertial = true;
   const bool kScrollIsNotInertial = false;
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(
-          ui::ET_GESTURE_SCROLL_BEGIN,
-          EventMetrics::GestureParams(ui::ScrollInputType::kWheel,
-                                      kScrollIsNotInertial)),
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::GestureParams(
-                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
-                             EventMetrics::ScrollUpdateType::kStarted)),
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::GestureParams(
-                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
-                             EventMetrics::ScrollUpdateType::kContinued)),
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::GestureParams(
-                             ui::ScrollInputType::kWheel, kScrollIsInertial,
-                             EventMetrics::ScrollUpdateType::kContinued)),
+      CreateScrollBeginEventMetrics(),
+      CreateScrollUpdateEventMetrics(
+          kScrollIsNotInertial,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kStarted),
+      CreateScrollUpdateEventMetrics(
+          kScrollIsNotInertial,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+      CreateScrollUpdateEventMetrics(
+          kScrollIsInertial,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
   };
   EXPECT_THAT(event_metrics_ptrs, ::testing::Each(::testing::NotNull()));
   EventMetrics::List events_metrics(
@@ -640,7 +647,7 @@ TEST_F(UkmManagerTest, EventLatency) {
         entry, kEventType, static_cast<int64_t>(event_metrics->type()));
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kScrollInputType,
-        static_cast<int64_t>(*event_metrics->scroll_type()));
+        static_cast<int64_t>(event_metrics->AsScroll()->scroll_type()));
 
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kGenerationToRendererCompositor,

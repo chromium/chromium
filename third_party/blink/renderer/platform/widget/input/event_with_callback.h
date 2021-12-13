@@ -77,7 +77,7 @@ class PLATFORM_EXPORT EventWithCallback {
   }
   void SetScrollbarManipulationHandledOnCompositorThread();
 
-  const cc::EventMetrics* metrics() const {
+  cc::EventMetrics* metrics() const {
     return original_events_.empty() ? nullptr
                                     : original_events_.front().metrics_.get();
   }

@@ -629,9 +629,12 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
-    cc::EventMetrics::GestureParams gesture_params(
-        ui::ScrollInputType::kScrollbar,
-        /*scroll_is_inertial=*/false);
+    std::unique_ptr<WebGestureEvent> gesture_event =
+        WebGestureEvent::GenerateInjectedScrollGesture(
+            params.type, input_event.TimeStamp(), params.device, position,
+            params.scroll_delta, params.granularity);
+
+    std::unique_ptr<cc::EventMetrics> metrics;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(
@@ -652,17 +655,23 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
                 ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                 nullptr));
       }
-      DCHECK(gesture_params.scroll_params.has_value());
-      gesture_params.scroll_params->update_type =
+      metrics = cc::ScrollUpdateEventMetrics::CreateFromExisting(
+          gesture_event->GetTypeAsUiEventType(),
+          ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
           last_injected_gesture_was_begin_
-              ? cc::EventMetrics::ScrollUpdateType::kStarted
-              : cc::EventMetrics::ScrollUpdateType::kContinued;
+              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
+              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          params.scroll_delta.y(),
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          original_metrics);
+    } else {
+      metrics = cc::ScrollEventMetrics::CreateFromExisting(
+          gesture_event->GetTypeAsUiEventType(),
+          ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          original_metrics);
     }
 
-    std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            params.type, input_event.TimeStamp(), params.device, position,
-            params.scroll_delta, params.granularity);
     if (params.type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           params.scrollable_area_element_id.GetStableId();
@@ -675,11 +684,6 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       cc::LatencyInfoSwapPromiseMonitor latency_info_swap_promise_monitor(
           &scrollbar_latency_info,
           widget_->LayerTreeHost()->GetSwapPromiseManager());
-      std::unique_ptr<cc::EventMetrics> metrics =
-          cc::EventMetrics::CreateFromExisting(
-              gesture_event->GetTypeAsUiEventType(), gesture_params,
-              cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-              original_metrics);
       cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
       if (metrics) {
         metrics->SetDispatchStageTimestamp(
