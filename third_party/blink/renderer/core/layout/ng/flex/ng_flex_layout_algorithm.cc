@@ -1165,7 +1165,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   DCHECK(involved_in_block_fragmentation_);
 
   absl::optional<LayoutUnit> fallback_baseline;
-  NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken());
+  NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken(),
+                                   is_horizontal_flow_);
 
   for (auto entry = item_iterator.NextItem();
        NGFlexItem* flex_item = entry.flex_item;

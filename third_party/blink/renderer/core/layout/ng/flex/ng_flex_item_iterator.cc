@@ -10,8 +10,11 @@
 namespace blink {
 
 NGFlexItemIterator::NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
-                                       const NGBlockBreakToken* break_token)
-    : flex_lines_(flex_lines), break_token_(break_token) {
+                                       const NGBlockBreakToken* break_token,
+                                       bool is_horizontal_flow)
+    : flex_lines_(flex_lines),
+      break_token_(break_token),
+      is_horizontal_flow_(is_horizontal_flow) {
   if (flex_lines_.size()) {
     DCHECK(flex_lines_[0].line_items.size());
     next_unstarted_item_ =
@@ -58,7 +61,15 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
       if (child_token_idx_ == child_break_tokens.size()) {
         // We reached the last child break token. Prepare for the next unstarted
         // sibling, and forget the parent break token.
-        if (!break_token_->HasSeenAllChildren())
+        if (is_horizontal_flow_ && flex_item_idx_ != 0) {
+          // All flex items in a row are processed before moving to the next
+          // fragmentainer. If the current item in the row has a break token,
+          // but the next item in the row doesn't, that means the next item has
+          // already finished layout. In this case, move to the next row.
+          flex_line_idx_++;
+          flex_item_idx_ = 0;
+          next_unstarted_item_ = FindNextItem();
+        } else if (!break_token_->HasSeenAllChildren())
           next_unstarted_item_ = FindNextItem();
         break_token_ = nullptr;
       }
