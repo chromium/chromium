@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
@@ -113,7 +114,7 @@ CGFloat kSectionFooterHeight = 8.;
       initWithType:ItemTypeRestrictedAccountsFooter];
   footer.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES);
-  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
+  footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kChromeUIManagementURL)] ];
   return footer;
 }
 
@@ -176,8 +177,8 @@ CGFloat kSectionFooterHeight = 8.;
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  DCHECK(URL == GURL(kChromeUIManagementURL));
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  DCHECK(URL.gurl == GURL(kChromeUIManagementURL));
   DCHECK(self.actionDelegate);
   [self.actionDelegate showManagementHelpPage];
 }

@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
@@ -212,20 +213,21 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           initWithType:ItemTypePrivacyFooter];
 
   NSString* privacyFooterText;
-  std::vector<GURL> urls;
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
+  NSMutableArray* urls = [[NSMutableArray alloc] init];
   if (syncService->IsSyncFeatureEnabled()) {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
-    urls.push_back(GURL(kSyncSettingsURL));
+    [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
   } else {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
   }
-  urls.push_back(GURL(kGoogleServicesSettingsURL));
+  [urls
+      addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];
 
   showPrivacyFooterItem.text = privacyFooterText;
   showPrivacyFooterItem.urls = urls;
@@ -366,12 +368,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  if (URL == GURL(kGoogleServicesSettingsURL)) {
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
     // kGoogleServicesSettingsURL is not a realy link. It should be handled
     // with a special case.
     [self.dispatcher showGoogleServicesSettingsFromViewController:self];
-  } else if (URL == GURL(kSyncSettingsURL)) {
+  } else if (URL.gurl == GURL(kSyncSettingsURL)) {
     [self.dispatcher showSyncSettingsFromViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];

@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -364,7 +365,8 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
             initWithType:SignOutItemFooterType];
     footerItem.text = l10n_util::GetNSString(
         IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
-    footerItem.urls = std::vector<GURL>{GURL("chrome://management/")};
+    footerItem.urls =
+        @[ [[CrURL alloc] initWithGURL:GURL("chrome://management/")] ];
     [model setFooter:footerItem
         forSectionWithIdentifier:SignOutSectionIdentifier];
   }

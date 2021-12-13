@@ -80,6 +80,7 @@ source_set("password_ui") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",

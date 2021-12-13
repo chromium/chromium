@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -639,16 +640,19 @@ void RemoveFormsToBeDeleted(
               kIOSEnablePasswordManagerBrandingUpdate)) {
     footerItem.text =
         l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
-
-    footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-        GURL(password_manager::kPasswordManagerAccountDashboardURL),
-        GetApplicationContext()->GetApplicationLocale())};
+    footerItem.urls = @[ [[CrURL alloc]
+        initWithGURL:
+            google_util::AppendGoogleLocaleParam(
+                GURL(password_manager::kPasswordManagerAccountDashboardURL),
+                GetApplicationContext()->GetApplicationLocale())] ];
   } else if (isSyncingPasswords) {
     footerItem.text =
         l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SETTINGS_SYNC_HEADER);
-    footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-        GURL(password_manager::kPasswordManagerAccountDashboardURL),
-        GetApplicationContext()->GetApplicationLocale())};
+    footerItem.urls = @[ [[CrURL alloc]
+        initWithGURL:
+            google_util::AppendGoogleLocaleParam(
+                GURL(password_manager::kPasswordManagerAccountDashboardURL),
+                GetApplicationContext()->GetApplicationLocale())] ];
   } else {
     footerItem.text = l10n_util::GetNSString(
         IDS_IOS_PASSWORD_MANAGER_SETTINGS_NOT_SYNC_HEADER);
@@ -790,8 +794,7 @@ void RemoveFormsToBeDeleted(
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  GURL convertedURL = net::GURLWithNSURL(URL);
-  [self view:nil didTapLinkURL:convertedURL];
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 #pragma mark - BooleanObserver

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -445,8 +446,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  [self openURLInNewTab:URL];
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self openURLInNewTab:URL.gurl];
 }
 
 #pragma mark UISearchResultsUpdating
@@ -813,7 +814,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         [[TableViewLinkHeaderFooterItem alloc]
             initWithType:ItemTypeEntriesStatusWithLink];
     header.text = newStatusMessage;
-    header.urls = std::vector<GURL>{GURL(kHistoryMyActivityURL)};
+    header.urls = @[ [[CrURL alloc] initWithGURL:GURL(kHistoryMyActivityURL)] ];
     item = header;
   } else {
     TableViewTextHeaderFooterItem* header =

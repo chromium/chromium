@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
@@ -109,7 +110,8 @@ float kPaddingSecurityHeader = 28.0f;
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypeSecurityDescription];
   securityDescription.text = self.pageInfoSecurityDescription.message;
-  securityDescription.urls = std::vector<GURL>{GURL(kPageInfoHelpCenterURL)};
+  securityDescription.urls =
+      @[ [[CrURL alloc] initWithGURL:GURL(kPageInfoHelpCenterURL)] ];
   [self.tableViewModel setFooter:securityDescription
         forSectionWithIdentifier:SectionIdentifierSecurityContent];
 }
@@ -138,8 +140,8 @@ float kPaddingSecurityHeader = 28.0f;
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  DCHECK(URL == GURL(kPageInfoHelpCenterURL));
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  DCHECK(URL.gurl == GURL(kPageInfoHelpCenterURL));
   [self.handler showSecurityHelpPage];
 }
 

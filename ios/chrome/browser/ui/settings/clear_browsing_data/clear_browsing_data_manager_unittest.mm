@@ -20,6 +20,7 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
 #include "ios/chrome/browser/browsing_data/fake_browsing_data_remover.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -317,7 +318,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
       base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
   ASSERT_TRUE(([accountFooterTextItem.text rangeOfString:@"Google"].location !=
                NSNotFound));
-  ASSERT_EQ(2u, accountFooterTextItem.urls.size());
+  ASSERT_EQ(2u, [accountFooterTextItem.urls count]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
@@ -366,7 +367,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
                                       encoding:[NSString
                                                    defaultCStringEncoding]]]
            .location != NSNotFound));
-  ASSERT_EQ(1u, accountFooterTextItem.urls.size());
+  ASSERT_EQ(1u, [accountFooterTextItem.urls count]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
@@ -403,7 +404,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
                                       encoding:[NSString
                                                    defaultCStringEncoding]]]
            .location != NSNotFound));
-  ASSERT_EQ(0u, accountFooterTextItem.urls.size());
+  ASSERT_EQ(0u, [accountFooterTextItem.urls count]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
@@ -440,7 +441,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
                                       encoding:[NSString
                                                    defaultCStringEncoding]]]
            .location != NSNotFound));
-  ASSERT_EQ(1u, accountFooterTextItem.urls.size());
+  ASSERT_EQ(1u, [accountFooterTextItem.urls count]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
@@ -478,7 +479,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
                                       encoding:[NSString
                                                    defaultCStringEncoding]]]
            .location != NSNotFound));
-  ASSERT_EQ(0u, accountFooterTextItem.urls.size());
+  ASSERT_EQ(0u, [accountFooterTextItem.urls count]);
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -186,8 +187,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   item.text = l10n_util::GetNSString(
       IDS_IOS_BANDWIDTH_MANAGEMENT_DESCRIPTION_LEARN_MORE);
-  item.urls = std::vector<GURL>{
-      GURL(l10n_util::GetStringUTF8(IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL))};
+  item.urls = @[ [[CrURL alloc]
+      initWithGURL:GURL(l10n_util::GetStringUTF8(
+                       IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL))] ];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   return item;
 }

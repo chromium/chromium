@@ -17,6 +17,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
@@ -118,9 +119,10 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footer.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING_DESCRIPTION);
-  footer.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-      GURL(kTranslateLearnMoreUrl),
-      GetApplicationContext()->GetApplicationLocale())};
+  footer.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(kTranslateLearnMoreUrl),
+                       GetApplicationContext()->GetApplicationLocale())] ];
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierTranslate];
 }
 
