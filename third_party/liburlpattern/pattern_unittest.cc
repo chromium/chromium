@@ -379,16 +379,16 @@ TEST(PatternStringTest, NamedGroupWithEscapedInvalidNameSuffix) {
   RunPatternStringTest("{:foo\\.bar}", "{:foo.bar}");
 }
 
-TEST(PatternStringTest, NamedGroupWithCustomRegexpAndValidNameSuffix) {
-  RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
-}
-
 TEST(PatternStringTest, NamedGroupInGroupingFollowedByValidNameText) {
   RunPatternStringTest("{:foo}bar", "{:foo}bar");
 }
 
 TEST(PatternStringTest, NamedGroupFollowedByEscapedValidNameText) {
   RunPatternStringTest(":foo\\bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpFollowedByValidNameText) {
+  RunPatternStringTest(":foo(baz)bar", ":foo(baz)bar");
 }
 
 TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndWildcard) {
@@ -402,6 +402,14 @@ TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndValidNameText) {
 TEST(PatternStringTest,
      NamedGroupFollowedByEmptyGroupWithOptionalModifierAndValidNameText) {
   RunPatternStringTest(":foo{}?bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpFollowedByWildcard) {
+  RunPatternStringTest(":foo(bar)(.*)", ":foo(bar)(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpAndValidNameSuffix) {
+  RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
 }
 
 TEST(

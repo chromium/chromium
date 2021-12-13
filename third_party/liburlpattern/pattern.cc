@@ -139,13 +139,15 @@ std::string Pattern::GeneratePatternString() const {
     //
     //    a. An `(...)` expression following a `:foo` group.  We want to
     //       output `{:foo}(...)` and not `:foo(...)`.
-    //    b. A plain text expression following a `:foo` group where the text
+    //    b. A plaint text expression following a `:foo` group where the text
     //       could be mistakenly interpreted as part of the name.  We want to
     //       output `{:foo}bar` and not `:foobar`.
     const Part* next_part =
         (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
-    if (!needs_grouping && custom_name && part.modifier == Modifier::kNone &&
-        next_part && next_part->prefix.empty() && next_part->suffix.empty()) {
+    if (!needs_grouping && custom_name &&
+        part.type == PartType::kSegmentWildcard &&
+        part.modifier == Modifier::kNone && next_part &&
+        next_part->prefix.empty() && next_part->suffix.empty()) {
       if (next_part->type == PartType::kFixed) {
         UChar32 codepoint = -1;
         U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0, 0,

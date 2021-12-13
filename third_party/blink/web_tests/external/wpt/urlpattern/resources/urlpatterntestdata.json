@@ -2622,5 +2622,19 @@
     "expected_match": {
       "pathname": { "input": "foobar", "groups": { "0": "foobar", "1": "" }}
     }
+  },
+  {
+    "pattern": [{ "pathname": ":foo(baz)(.*)" }],
+    "inputs": [{ "pathname": "bazbar" }],
+    "expected_match": {
+      "pathname": { "input": "bazbar", "groups": { "foo": "baz", "0": "bar" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":foo(baz)bar" }],
+    "inputs": [{ "pathname": "bazbar" }],
+    "expected_match": {
+      "pathname": { "input": "bazbar", "groups": { "foo": "baz" }}
+    }
   }
 ]
