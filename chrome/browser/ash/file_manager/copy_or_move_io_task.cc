@@ -270,7 +270,7 @@ void CopyOrMoveIOTask::GotFreeDiskSpace(int64_t free_space) {
 
   // Move operations that are same-filesystem do not require disk space.
   if (progress_.type == OperationType::kMove) {
-    for (int i = 0; i < source_sizes_.size(); i++) {
+    for (size_t i = 0; i < source_sizes_.size(); i++) {
       if (!IsCrossFileSystem(progress_.sources[i].url,
                              progress_.destination_folder)) {
         required_bytes -= source_sizes_[i];
