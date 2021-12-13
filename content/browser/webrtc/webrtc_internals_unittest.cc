@@ -51,19 +51,19 @@ class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
 
   const std::string& event_name() const { return event_name_; }
 
-  base::Value* event_data() { return event_data_.get(); }
+  base::Value* event_data() { return &event_data_; }
 
  private:
   void OnUpdate(const std::string& event_name,
                 const base::Value* event_data) override {
     event_name_ = event_name;
-    event_data_.reset(event_data ? event_data->DeepCopy() : nullptr);
+    event_data_ = event_data ? event_data->Clone() : base::Value();
     if (loop_)
       loop_->Quit();
   }
 
   std::string event_name_;
-  std::unique_ptr<base::Value> event_data_;
+  base::Value event_data_;
   raw_ptr<base::RunLoop> loop_{nullptr};
 };
 
@@ -603,7 +603,7 @@ TEST_F(WebRtcInternalsTest, AudioDebugRecordingsFileSelectionCanceled) {
 
   EXPECT_EQ("audio-debug-recordings-file-selection-cancelled",
             observer.event_name());
-  EXPECT_EQ(nullptr, observer.event_data());
+  EXPECT_TRUE(observer.event_data()->is_none());
 
   base::RunLoop().RunUntilIdle();
 }

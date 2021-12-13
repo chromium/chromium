@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
@@ -363,14 +364,15 @@ SupervisedUserSettingsService::ProcessSyncChanges(
     std::string key = supervised_user_setting.name();
     base::Value* dict = GetDictionaryAndSplitKey(&key);
     base::Value* old_value = dict->FindKey(key);
+    base::Value old_value_for_delete;
     SyncChange::SyncChangeType change_type = sync_change.change_type();
     base::Value* new_value = nullptr;
 
     switch (change_type) {
       case SyncChange::ACTION_ADD:
       case SyncChange::ACTION_UPDATE: {
-        std::unique_ptr<base::Value> value =
-            JSONReader::ReadDeprecated(supervised_user_setting.value());
+        absl::optional<base::Value> value =
+            JSONReader::Read(supervised_user_setting.value());
         if (old_value) {
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_ADD)
               << "Value for key " << key << " already exists";
@@ -378,14 +380,21 @@ SupervisedUserSettingsService::ProcessSyncChanges(
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_UPDATE)
               << "Value for key " << key << " doesn't exist yet";
         }
-        new_value = dict->SetKey(
-            key, base::Value::FromUniquePtrValue(std::move(value)));
+        DLOG_IF(WARNING, !value.has_value())
+            << "Invalid supervised_user_setting: "
+            << supervised_user_setting.value();
+        if (!value.has_value())
+          continue;
+        new_value = dict->SetKey(key, std::move(*value));
         break;
       }
       case SyncChange::ACTION_DELETE: {
         DLOG_IF(WARNING, !old_value)
             << "Trying to delete nonexistent key " << key;
-        old_value = old_value->DeepCopy();
+        if (!old_value)
+          continue;
+        old_value_for_delete = old_value->Clone();
+        old_value = &old_value_for_delete;
         dict->RemoveKey(key);
         break;
       }

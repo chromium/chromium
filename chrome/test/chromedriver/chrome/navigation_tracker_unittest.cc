@@ -55,7 +55,8 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
         result_dict.SetString("root.baseURL", "http://test");
         result_dict.SetString("root.documentURL", "http://test");
       }
-      result->reset(result_dict.DeepCopy());
+      *result = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(result_dict.Clone()));
       return Status(kOk);
     } else if (method == "Runtime.evaluate") {
       std::string expression;
@@ -65,7 +66,8 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
           result_dict.SetInteger("result.value", 1);
         else if (expression == "document.readyState")
           result_dict.SetString("result.value", "loading");
-        result->reset(result_dict.DeepCopy());
+        *result = base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(result_dict.Clone()));
         return Status(kOk);
       }
     }
@@ -81,7 +83,8 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
 
     base::DictionaryValue result_dict;
     result_dict.SetBoolean("result.value", is_loading_);
-    result->reset(result_dict.DeepCopy());
+    *result = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(result_dict.Clone()));
     return Status(kOk);
   }
 
@@ -102,7 +105,7 @@ class EvaluateScriptWebView : public StubWebView {
                         const bool awaitPromise,
                         std::unique_ptr<base::Value>* result) override {
     base::Value value(result_);
-    result->reset(value.DeepCopy());
+    *result = base::Value::ToUniquePtrValue(value.Clone());
     return Status(code_);
   }
 
@@ -404,7 +407,8 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
       is_dom_getDocument_requested_ = true;
       base::DictionaryValue result_dict;
       result_dict.SetString("root.baseURL", "http://test");
-      result->reset(result_dict.DeepCopy());
+      *result = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(result_dict.Clone()));
       return Status(kOk);
     }
     EXPECT_STREQ("Runtime.evaluate", method.c_str());

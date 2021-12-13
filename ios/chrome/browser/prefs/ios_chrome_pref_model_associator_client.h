@@ -31,7 +31,7 @@ class IOSChromePrefModelAssociatorClient
   bool IsMergeableListPreference(const std::string& pref_name) const override;
   bool IsMergeableDictionaryPreference(
       const std::string& pref_name) const override;
-  std::unique_ptr<base::Value> MaybeMergePreferenceValues(
+  base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;

@@ -175,10 +175,10 @@ void TestSchemaValidationHelper(const std::string& source,
   // Test that Schema::Normalize() will return the same value as
   // Schema::Validate().
   error = kNoErrorReturned;
-  std::unique_ptr<base::Value> cloned_value(value.DeepCopy());
+  base::Value cloned_value(value.Clone());
   bool touched = false;
   returned =
-      schema.Normalize(cloned_value.get(), strategy, nullptr, &error, &touched);
+      schema.Normalize(&cloned_value, strategy, nullptr, &error, &touched);
   EXPECT_EQ(expected_return_value, returned) << source << ": " << error;
 
   bool strictly_valid = schema.Validate(value, SCHEMA_STRICT, nullptr, &error);
@@ -187,10 +187,10 @@ void TestSchemaValidationHelper(const std::string& source,
   // Test that Schema::Normalize() have actually dropped invalid and unknown
   // properties.
   if (expected_return_value) {
-    EXPECT_TRUE(schema.Validate(*cloned_value, SCHEMA_STRICT, nullptr, &error))
+    EXPECT_TRUE(schema.Validate(cloned_value, SCHEMA_STRICT, nullptr, &error))
         << source;
-    EXPECT_TRUE(schema.Normalize(cloned_value.get(), SCHEMA_STRICT, nullptr,
-                                 &error, nullptr))
+    EXPECT_TRUE(schema.Normalize(&cloned_value, SCHEMA_STRICT, nullptr, &error,
+                                 nullptr))
         << source;
   }
 }

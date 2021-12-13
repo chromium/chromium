@@ -381,11 +381,11 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
     return is_dict_pref_;
   }
 
-  std::unique_ptr<base::Value> MaybeMergePreferenceValues(
+  base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override {
-    return nullptr;
+    return base::Value();
   }
 
   void SetIsDictPref(bool is_dict_pref) { is_dict_pref_ = is_dict_pref; }

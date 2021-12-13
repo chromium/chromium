@@ -58,7 +58,7 @@ struct RecordingCondition {
 
     std::unique_ptr<RecordingCondition> result(new RecordingCondition());
     result->factory = url_matcher_condition_factory;
-    result->value.reset(condition.DeepCopy());
+    result->value = base::Value::ToUniquePtrValue(condition.Clone());
     return result;
   }
 };
