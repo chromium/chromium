@@ -98,6 +98,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:binary_size_trybot",
+    use_python3 = True,
 )
 
 build_recipe(
