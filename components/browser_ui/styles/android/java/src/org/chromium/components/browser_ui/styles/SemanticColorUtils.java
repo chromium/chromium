@@ -53,7 +53,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_text_color_accent1. */
     public static @ColorInt int getDefaultTextColorAccent1(Context context) {
-        return resolve(R.attr.colorPrimary, R.color.default_text_color_blue, context);
+        return resolve(R.attr.colorPrimary, R.color.default_text_color_blue_baseline, context);
     }
 
     /** Returns the semantic color value that corresponds to default_icon_color. */

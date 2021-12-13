@@ -8,4 +8,4 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-    android:textColorLink="@color/default_text_color_link" />
+    android:textColorLink="@macro/default_text_color_link" />

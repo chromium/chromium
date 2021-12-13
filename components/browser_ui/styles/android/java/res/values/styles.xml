@@ -250,6 +250,29 @@
         <item name="android:textColor">@color/default_text_color_secondary_list</item>
     </style>
 
+    <!-- Accent1 text styles -->
+    <style name="TextAppearance.TextLarge.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextLarge.Link" parent="TextAppearance.TextLarge">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Link" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Link" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+
     <!-- Other text styles -->
     <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_list</item>
@@ -260,6 +283,10 @@
         <item name="android:textColor">@color/default_text_color_secondary_list</item>
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.EditorDialogSectionAddButton"
+        parent="TextAppearance.TextMedium.Link">
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <!-- Disabled text styles -->

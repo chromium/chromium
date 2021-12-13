@@ -39,5 +39,5 @@
         android:layout_below="@+id/progress_bar_layout"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
 </RelativeLayout>

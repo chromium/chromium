@@ -64,7 +64,7 @@
           android:gravity="center|end"
           android:layout_gravity="end"
           android:text="@string/bookmark_item_edit"
-          android:textAppearance="@style/TextAppearance.TextMedium.Blue"
+          android:textAppearance="@style/TextAppearance.TextMedium.Link"
           style="@style/TextButton"
           android:paddingEnd="24dp" />
     </LinearLayout>

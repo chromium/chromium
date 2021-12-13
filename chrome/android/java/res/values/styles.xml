@@ -392,7 +392,9 @@
         <item name="android:textAppearance">
             @style/TextAppearance.DataUsageBreakdownColumnLabel</item>
     </style>
-    <style name="TextAppearance.DataUsageBreakdownSavedColumnLabel" parent="@style/TextAppearance.Button.Text.Blue">
+    <style name="TextAppearance.DataUsageBreakdownSavedColumnLabel"
+        parent="@style/TextAppearance.DataUsageBreakdownColumnLabel">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
         <item name="android:textAllCaps">false</item>
     </style>
     <style name="DataUsageBreakdownSavedColumnLabel" parent="DataUsageBreakdownColumnLabel">
@@ -407,15 +409,15 @@
         <item name="android:textAppearance">@style/TextAppearance.TextSmall.Secondary</item>
     </style>
     <style name="DataUsageBreakdownSavedColumnItem" parent="DataUsageBreakdownColumnItem">
-        <item name="android:textAppearance">@style/TextAppearance.TextSmall.Blue</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextSmall.Accent1</item>
     </style>
     <style name="TextAppearance.DataReductionHeadline" parent="TextAppearance.Headline.Primary">
-        <item name="android:textColor">@color/default_text_color_link</item>
+        <item name="android:textColor">@macro/default_text_color_accent1</item>
     </style>
 
     <!-- Incognito New Tab Page -->
     <style name="TextAppearance.IncognitoNewTabLearnMoreLinkModern">
-        <item name="android:textColor">@color/modern_blue_300</item>
+        <item name="android:textColor">@color/default_text_color_link_light</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 

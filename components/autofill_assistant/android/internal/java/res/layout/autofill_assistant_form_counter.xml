@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.TextLarge.Blue"/>
+        android:textAppearance="@style/TextAppearance.TextLarge.Accent1"/>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/increase_button"
         android:layout_width="@dimen/autofill_assistant_minimum_touch_target_size"

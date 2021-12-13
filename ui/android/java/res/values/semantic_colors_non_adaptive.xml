@@ -34,6 +34,8 @@
     <color name="default_text_color_disabled_light">@color/baseline_neutral_100_alpha_38</color>
     <color name="default_text_color_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
     <!-- Same as ?attr/colorPrimary. -->
+    <color name="default_text_color_blue_dark">@color/baseline_primary_600</color>
+    <color name="default_text_color_blue_light">@color/baseline_primary_200</color>
     <color name="default_text_color_link_dark">@color/baseline_primary_600</color>
     <color name="default_text_color_link_light">@color/baseline_primary_200</color>
     <!-- Same as ?attr/colorError. -->

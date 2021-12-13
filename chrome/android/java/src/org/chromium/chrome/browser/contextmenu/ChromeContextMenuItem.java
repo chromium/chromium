@@ -13,7 +13,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -259,7 +259,7 @@ class ChromeContextMenuItem {
         }
         return SpanApplier.applySpans(menuTitle,
                 new SpanInfo("<new>", "</new>", new SuperscriptSpan(), new RelativeSizeSpan(0.75f),
-                        new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                                context.getResources(), R.color.default_text_color_blue))));
+                        new ForegroundColorSpan(
+                                SemanticColorUtils.getDefaultTextColorAccent1(context))));
     }
 }

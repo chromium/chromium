@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        style="@style/TextAppearance.TextSmall.Blue"
+        style="@style/TextAppearance.TextSmall.Link"
         android:text="@string/learn_more" />
 
     <org.chromium.components.browser_ui.widget.DualControlLayout

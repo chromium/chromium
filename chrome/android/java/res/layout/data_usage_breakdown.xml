@@ -21,7 +21,7 @@
         android:paddingTop="26dp"
         android:singleLine="true"
         android:text="@string/details_link"
-        android:textAppearance="@style/TextAppearance.TextSmall.Blue" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Accent1" />
 
     <TableLayout
         android:id="@+id/data_reduction_proxy_breakdown_table"

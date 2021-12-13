@@ -45,7 +45,7 @@
                 android:layout_marginTop="3dp"
                 android:paddingStart="3dp"
                 android:text="@string/data_reduction_savings_label"
-                android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
 
         </LinearLayout>
 

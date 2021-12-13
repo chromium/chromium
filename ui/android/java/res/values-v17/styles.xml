@@ -258,19 +258,6 @@
     </style>
 
     <!-- Blue And Button Text Styles -->
-    <style name="TextAppearance.TextLarge.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextMedium.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextMediumThick.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextSmall.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-
     <style name="TextAppearance.TextMediumThick.Green">
         <item name="android:textColor">@color/default_green</item>
     </style>
@@ -298,23 +285,27 @@
     </style>
 
     <!-- Blue Non Adaptive Text Styles -->
-    <style name="TextAppearance.TextMedium.Blue.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Blue.Baseline.Light" parent="TextAppearance.TextMedium">
         <item name="android:textColor">@color/default_icon_color_blue_light</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Blue.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.Blue.Baseline.Light"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_light</item>
     </style>
-
-    <style name="TextAppearance.TextLarge.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.Blue.Baseline.Dark" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextMedium.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Blue.Baseline.Dark" parent="TextAppearance.TextMedium"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextSmall.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextSmall.Blue.Baseline.Dark" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.Blue.Baseline.Dark"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
 

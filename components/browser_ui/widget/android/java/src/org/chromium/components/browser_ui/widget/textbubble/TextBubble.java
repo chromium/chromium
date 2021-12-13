@@ -527,7 +527,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         view.setText(mIsAccessibilityEnabled ? mAccessibilityString : mString);
         if (mInverseColor) {
             ApiCompatibilityUtils.setTextAppearance(
-                    view, R.style.TextAppearance_TextMediumThick_Blue);
+                    view, R.style.TextAppearance_TextMediumThick_Accent1);
         }
     }
 

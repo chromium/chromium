@@ -142,7 +142,7 @@ public class ConnectionInfoView implements OnClickListener {
         mCertificateViewerTextView = new TextView(mContext);
         mCertificateViewerTextView.setText(label);
         ApiCompatibilityUtils.setTextAppearance(
-                mCertificateViewerTextView, R.style.TextAppearance_TextSmall_Blue);
+                mCertificateViewerTextView, R.style.TextAppearance_TextSmall_Link);
         mCertificateViewerTextView.setOnClickListener(this);
         mCertificateViewerTextView.setPadding(0, mPaddingVertical, 0, 0);
         mCertificateLayout.addView(mCertificateViewerTextView);
@@ -169,7 +169,7 @@ public class ConnectionInfoView implements OnClickListener {
         mLinkUrl = HELP_URL;
         mMoreInfoLink.setText(linkText);
         ApiCompatibilityUtils.setTextAppearance(
-                mMoreInfoLink, R.style.TextAppearance_TextSmall_Blue);
+                mMoreInfoLink, R.style.TextAppearance_TextSmall_Link);
         mMoreInfoLink.setPadding(0, mPaddingVertical, 0, 0);
         mMoreInfoLink.setOnClickListener(this);
         mDescriptionLayout.addView(mMoreInfoLink);

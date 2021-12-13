@@ -49,6 +49,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/incognito_reauth_page_see_other_tabs_label"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue.Light" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Blue.Baseline.Light" />
     </LinearLayout>
 </RelativeLayout>

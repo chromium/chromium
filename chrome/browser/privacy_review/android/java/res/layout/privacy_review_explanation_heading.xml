@@ -16,6 +16,6 @@
         android:layout_marginHorizontal="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.TextMediumThick.Blue" />
+        style="@style/TextAppearance.TextMediumThick.Accent1" />
 
 </LinearLayout>

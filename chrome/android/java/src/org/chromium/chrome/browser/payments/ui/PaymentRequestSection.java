@@ -366,7 +366,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         // The title is always displayed for the row at the top of the main section.
         mTitleView = new TextView(getContext());
         mTitleView.setText(sectionName);
-        ApiCompatibilityUtils.setTextAppearance(mTitleView, R.style.TextAppearance_TextMedium_Blue);
+        ApiCompatibilityUtils.setTextAppearance(
+                mTitleView, R.style.TextAppearance_TextMedium_Accent1);
         mainSectionLayout.addView(
                 mTitleView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 

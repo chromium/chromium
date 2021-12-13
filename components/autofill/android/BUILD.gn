@@ -21,7 +21,6 @@ android_resources("autofill_java_resources") {
     "java/res/layout/autofill_dropdown_item_refresh.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
   ]
   deps = [
     ":autofill_strings_grd",

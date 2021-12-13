@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/signin_fre_uma_dialog_first_section_header"
-                style="@style/TextAppearance.TextMediumThick.Blue" />
+                style="@style/TextAppearance.TextMediumThick.Accent1" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/signin_fre_uma_dialog_second_section_header"
-                style="@style/TextAppearance.TextMediumThick.Blue" />
+                style="@style/TextAppearance.TextMediumThick.Accent1" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:layout_width="match_parent"
