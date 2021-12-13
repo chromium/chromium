@@ -34,7 +34,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.send_header('Content-Type', 'application/javascript')
             self.end_headers()
-            self.wfile.write(self.server.expectations_js)
+            self.wfile.write(self.server.expectations_js.encode())
         elif self.path == '/_start' or self.path == '/_stop':
             self.send_response(200)
             self.end_headers()
