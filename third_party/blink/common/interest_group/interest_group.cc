@@ -70,6 +70,7 @@ InterestGroup::InterestGroup(
     url::Origin owner,
     std::string name,
     absl::optional<GURL> bidding_url,
+    absl::optional<GURL> bidding_wasm_helper_url,
     absl::optional<GURL> update_url,
     absl::optional<GURL> trusted_bidding_signals_url,
     absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
@@ -80,6 +81,7 @@ InterestGroup::InterestGroup(
       owner(std::move(owner)),
       name(std::move(name)),
       bidding_url(std::move(bidding_url)),
+      bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
       update_url(std::move(update_url)),
       trusted_bidding_signals_url(std::move(trusted_bidding_signals_url)),
       trusted_bidding_signals_keys(std::move(trusted_bidding_signals_keys)),
@@ -98,6 +100,11 @@ bool InterestGroup::IsValid() const {
 
   if (bidding_url && !IsUrlAllowed(*bidding_url, *this))
     return false;
+
+  if (bidding_wasm_helper_url &&
+      !IsUrlAllowed(*bidding_wasm_helper_url, *this)) {
+    return false;
+  }
 
   if (update_url && !IsUrlAllowed(*update_url, *this))
     return false;
@@ -135,6 +142,8 @@ size_t InterestGroup::EstimateSize() const {
   size += name.size();
   if (bidding_url)
     size += bidding_url->spec().length();
+  if (bidding_wasm_helper_url)
+    size += bidding_wasm_helper_url->spec().length();
   if (update_url)
     size += update_url->spec().length();
   if (trusted_bidding_signals_url)
@@ -157,11 +166,13 @@ size_t InterestGroup::EstimateSize() const {
 }
 
 bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
-  return std::tie(expiry, owner, name, bidding_url, update_url,
-                  trusted_bidding_signals_url, trusted_bidding_signals_keys,
-                  user_bidding_signals, ads, ad_components) ==
+  return std::tie(expiry, owner, name, bidding_url, bidding_wasm_helper_url,
+                  update_url, trusted_bidding_signals_url,
+                  trusted_bidding_signals_keys, user_bidding_signals, ads,
+                  ad_components) ==
          std::tie(other.expiry, other.owner, other.name, other.bidding_url,
-                  other.update_url, other.trusted_bidding_signals_url,
+                  other.bidding_wasm_helper_url, other.update_url,
+                  other.trusted_bidding_signals_url,
                   other.trusted_bidding_signals_keys,
                   other.user_bidding_signals, other.ads, other.ad_components);
 }

@@ -70,6 +70,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_EQ(String::FromUTF8(expected_error), error);
 
     blink::InterestGroup interest_group;
+    // mojo deserialization will call InterestGroup::IsValid.
     EXPECT_FALSE(
         mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
             blink_interest_group, interest_group));
@@ -95,6 +96,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/foo?bar"));
     blink_interest_group->bidding_url = kAllowedUrl;
     blink_interest_group->update_url = kAllowedUrl;
+    blink_interest_group->bidding_wasm_helper_url = kAllowedUrl;
 
     // `trusted_bidding_signals_url` doesn't allow query strings, unlike the
     // above ones.
@@ -186,8 +188,8 @@ TEST_F(ValidateBlinkInterestGroupTest, NonHttpsOriginRejected) {
       "owner origin must be HTTPS." /* expected_error */);
 }
 
-// Check that `bidding_url`, `update_url`, and `trusted_bidding_signals_url`
-// must be same-origin and HTTPS.
+// Check that `bidding_url`, `bidding_wasm_helper_url`, `update_url`, and
+// `trusted_bidding_signals_url` must be same-origin and HTTPS.
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
 // test.
@@ -196,6 +198,9 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   const char kBadBiddingUrlError[] =
       "biddingUrl must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
+  const char kBadBiddingWasmHelperUrlError[] =
+      "biddingWasmHelperUrl must have the same origin as the InterestGroup "
+      "owner and have no fragment identifier or embedded credentials.";
   const char kBadUpdateUrlError[] =
       "updateUrl must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
@@ -252,6 +257,15 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         blink_interest_group, "biddingUrl" /* expected_error_field_name */,
         rejected_url.GetString().Utf8() /* expected_error_field_value */,
         kBadBiddingUrlError /* expected_error */);
+
+    // Test `bidding_wasm_helper_url`
+    blink_interest_group = CreateMinimalInterestGroup();
+    blink_interest_group->bidding_wasm_helper_url = rejected_url;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group,
+        "biddingWasmHelperUrl" /* expected_error_field_name */,
+        rejected_url.GetString().Utf8() /* expected_error_field_value */,
+        kBadBiddingWasmHelperUrlError /* expected_error */);
 
     // Test `update_url`.
     blink_interest_group = CreateMinimalInterestGroup();

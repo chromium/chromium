@@ -83,6 +83,12 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeBiddingUrl) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeWasmHelperUrl) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_wasm_helper_url = GURL(kUrl1);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUpdateUrl) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = GURL(kUrl1);

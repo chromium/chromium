@@ -34,6 +34,8 @@ struct InterestGroup {
   string name;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
+  // `bidding_wasm_helper_url` must match the current frame URL's origin.
+  url.mojom.Url? bidding_wasm_helper_url;
   // `update_url` must match the current frame URL's origin.
   url.mojom.Url? update_url;
   // `trusted_bidding_signals_url` must match the current frame URL's origin.

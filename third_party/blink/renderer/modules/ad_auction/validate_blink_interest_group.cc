@@ -49,6 +49,9 @@ size_t EstimateBlinkInterestGroupSize(
   if (group.bidding_url)
     size += group.bidding_url->GetString().length();
 
+  if (group.bidding_wasm_helper_url)
+    size += group.bidding_wasm_helper_url->GetString().length();
+
   if (group.update_url)
     size += group.update_url->GetString().length();
 
@@ -98,6 +101,17 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       error =
           "biddingUrl must have the same origin as the InterestGroup owner "
           "and have no fragment identifier or embedded credentials.";
+      return false;
+    }
+  }
+
+  if (group.bidding_wasm_helper_url) {
+    if (!IsUrlAllowed(*group.bidding_wasm_helper_url, group)) {
+      error_field_name = "biddingWasmHelperUrl";
+      error_field_value = group.bidding_wasm_helper_url->GetString();
+      error =
+          "biddingWasmHelperUrl must have the same origin as the InterestGroup "
+          "owner and have no fragment identifier or embedded credentials.";
       return false;
     }
   }

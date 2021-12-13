@@ -1037,6 +1037,7 @@ class AuctionRunnerTest : public testing::Test,
         blink::InterestGroup(
             base::Time::Max(), std::move(owner), std::move(name),
             std::move(bidding_url),
+            /* bidding_wasm_helper_url = */ absl::nullopt,
             /* update_url = */ GURL(), std::move(trusted_bidding_signals_url),
             std::move(trusted_bidding_signals_keys), absl::nullopt,
             std::move(ads), std::move(ad_components)),

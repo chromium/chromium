@@ -54,6 +54,11 @@ struct BLINK_COMMON_EXPORT
     return interest_group.bidding_url;
   }
 
+  static const absl::optional<GURL>& bidding_wasm_helper_url(
+      const blink::InterestGroup& interest_group) {
+    return interest_group.bidding_wasm_helper_url;
+  }
+
   static const absl::optional<GURL>& update_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.update_url;
