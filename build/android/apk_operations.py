@@ -620,11 +620,17 @@ class _LogcatProcessor:
                package_name,
                stack_script_context,
                deobfuscate=None,
-               verbose=False):
+               verbose=False,
+               exit_on_match=None):
     self._device = device
     self._package_name = package_name
     self._verbose = verbose
     self._deobfuscator = deobfuscate
+    if exit_on_match is not None:
+      self._exit_on_match = re.compile(exit_on_match)
+    else:
+      self._exit_on_match = None
+    self._found_exit_match = False
     self._native_stack_symbolizer = _LogcatProcessor.NativeStackSymbolizer(
         stack_script_context, self._PrintParsedLine)
     # Process ID for the app's main process (with no :name suffix).
@@ -731,6 +737,9 @@ class _LogcatProcessor:
         date, invokation_time, pid, tid, priority, tag, original_message)
 
   def _PrintParsedLine(self, parsed_line, dim=False):
+    if self._exit_on_match and self._exit_on_match.search(parsed_line.message):
+      self._found_exit_match = True
+
     tid_style = colorama.Style.NORMAL
     user_match = self._user_defined_highlight and (
         re.search(self._user_defined_highlight, parsed_line.tag)
@@ -766,6 +775,9 @@ class _LogcatProcessor:
         self._native_stack_symbolizer.AddLine(*args)
     self._initial_buffered_lines = None
     self.nonce = None
+
+  def FoundExitMatch(self):
+    return self._found_exit_match
 
   def ProcessLine(self, line):
     if not line or line.startswith('------'):
@@ -815,14 +827,24 @@ class _LogcatProcessor:
         self._initial_buffered_lines.append((log, not owned_pid))
 
 
-def _RunLogcat(device, package_name, stack_script_context, deobfuscate,
-               verbose):
-  logcat_processor = _LogcatProcessor(
-      device, package_name, stack_script_context, deobfuscate, verbose)
+def _RunLogcat(device,
+               package_name,
+               stack_script_context,
+               deobfuscate,
+               verbose,
+               exit_on_match=None):
+  logcat_processor = _LogcatProcessor(device,
+                                      package_name,
+                                      stack_script_context,
+                                      deobfuscate,
+                                      verbose,
+                                      exit_on_match=exit_on_match)
   device.RunShellCommand(['log', logcat_processor.nonce])
   for line in device.adb.Logcat(logcat_format='threadtime'):
     try:
       logcat_processor.ProcessLine(line)
+      if logcat_processor.FoundExitMatch():
+        return
     except:
       sys.stderr.write('Failed to process line: ' + line + '\n')
       # Skip stack trace for the common case of the adb server being
@@ -1484,8 +1506,9 @@ To disable filtering, (but keep coloring), use --verbose.
         self.bundle_generation_info,
         quiet=True)
     try:
-      _RunLogcat(self.devices[0], self.args.package_name, stack_script_context,
-                 deobfuscate, bool(self.args.verbose_count))
+      _RunLogcat(self.devices[0],
+                 self.args.package_name, stack_script_context, deobfuscate,
+                 bool(self.args.verbose_count), self.args.exit_on_match)
     except KeyboardInterrupt:
       pass  # Don't show stack trace upon Ctrl-C
     finally:
@@ -1501,6 +1524,8 @@ To disable filtering, (but keep coloring), use --verbose.
       group.set_defaults(no_deobfuscate=False)
       group.add_argument('--proguard-mapping-path',
           help='Path to ProGuard map (enables deobfuscation)')
+    group.add_argument('--exit-on-match',
+                       help='Exits logcat when a message matches this regex.')
 
 
 class _PsCommand(_Command):

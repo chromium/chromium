@@ -986,6 +986,9 @@ public class LibraryLoader {
             throw new ProcessInitException(LoaderErrors.FAILED_TO_REGISTER_JNI);
         }
 
+        // The "Successfully loaded native library" string is used by
+        // tools/android/build_speed/benchmark.py. Please update that script if this log message is
+        // changed.
         Log.i(TAG, "Successfully loaded native library");
         UmaRecorderHolder.onLibraryLoaded();
 
