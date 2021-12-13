@@ -178,8 +178,9 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     std::move(callback).Run(nullptr);
     return;
   }
-  const base::DictionaryValue* data = nullptr;
-  if (!create_params.GetDictionary(appview::kData, &data)) {
+
+  const base::Value* data = create_params.FindDictKey(appview::kData);
+  if (!data) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -202,7 +203,8 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     queue->AddPendingTask(
         context_id,
         base::BindOnce(&AppViewGuest::LaunchAppAndFireEvent,
-                       weak_ptr_factory_.GetWeakPtr(), data->CreateDeepCopy(),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
                        std::move(callback)));
     return;
   }
@@ -212,7 +214,8 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
       process_manager->GetBackgroundHostForExtension(guest_extension->id());
   DCHECK(host);
   LaunchAppAndFireEvent(
-      data->CreateDeepCopy(), std::move(callback),
+      base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
+      std::move(callback),
       std::make_unique<LazyContextTaskQueue::ContextInfo>(host));
 }
 

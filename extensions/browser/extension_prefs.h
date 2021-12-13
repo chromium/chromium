@@ -803,7 +803,7 @@ class ExtensionPrefs : public KeyedService {
   // |extension| dictionary.
   std::unique_ptr<ExtensionInfo> GetInstalledInfoHelper(
       const std::string& extension_id,
-      const base::DictionaryValue* extension,
+      const base::Value* extension,
       bool include_component_extensions) const;
 
   // Deprecated kPrefBlocklistAcknowledged kPrefBlocklist. Use
