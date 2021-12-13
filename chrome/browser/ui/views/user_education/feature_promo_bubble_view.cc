@@ -318,8 +318,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   auto close_bubble_and_run_callback = [](FeaturePromoBubbleView* view,
                                           base::RepeatingClosure callback,
                                           const ui::Event& event) {
-    view->CloseBubble();
-    callback.Run();
+    if (view->GetWidget())
+      view->CloseBubble();
+    if (callback)
+      callback.Run();
   };
 
   // Add close button (optional).
