@@ -125,12 +125,12 @@ class TestParseBuild(unittest.TestCase):
         'clang -c gen/c.c -o a.o',
     ]
     (roots, includes) = parse_build(x)
-    self.assertEquals(roots, set(['a.cc', 'out/foo/gen/c.c']))
-    self.assertEquals(set(includes.keys()),
-                      set(['a.cc', 'a.h', 'out/foo/gen/c.c']))
-    self.assertEquals(includes['a.cc'], set(['a.h']))
-    self.assertEquals(includes['a.h'], set())
-    self.assertEquals(includes['out/foo/gen/c.c'], set())
+    self.assertEqual(roots, set(['a.cc', 'out/foo/gen/c.c']))
+    self.assertEqual(set(includes.keys()),
+                     set(['a.cc', 'a.h', 'out/foo/gen/c.c']))
+    self.assertEqual(includes['a.cc'], set(['a.h']))
+    self.assertEqual(includes['a.h'], set())
+    self.assertEqual(includes['out/foo/gen/c.c'], set())
 
   def test_more(self):
     x = [
@@ -143,12 +143,12 @@ class TestParseBuild(unittest.TestCase):
         '. ../../e.h',
     ]
     (roots, includes) = parse_build(x)
-    self.assertEquals(roots, set(['a.cc']))
-    self.assertEquals(includes['a.cc'], set(['a.h', 'b.h', 'e.h']))
-    self.assertEquals(includes['b.h'], set(['c.h']))
-    self.assertEquals(includes['c.h'], set(['d.h']))
-    self.assertEquals(includes['d.h'], set())
-    self.assertEquals(includes['e.h'], set())
+    self.assertEqual(roots, set(['a.cc']))
+    self.assertEqual(includes['a.cc'], set(['a.h', 'b.h', 'e.h']))
+    self.assertEqual(includes['b.h'], set(['c.h']))
+    self.assertEqual(includes['c.h'], set(['d.h']))
+    self.assertEqual(includes['d.h'], set())
+    self.assertEqual(includes['e.h'], set())
 
   def test_multiple(self):
     x = [
@@ -159,9 +159,9 @@ class TestParseBuild(unittest.TestCase):
         '. ../../b.h',
     ]
     (roots, includes) = parse_build(x)
-    self.assertEquals(roots, set(['a.cc', 'b.cc']))
-    self.assertEquals(includes['a.cc'], set(['a.h']))
-    self.assertEquals(includes['b.cc'], set(['b.h']))
+    self.assertEqual(roots, set(['a.cc', 'b.cc']))
+    self.assertEqual(includes['a.cc'], set(['a.h']))
+    self.assertEqual(includes['b.cc'], set(['b.h']))
 
 
 def post_order_nodes(root, child_nodes):
