@@ -333,8 +333,13 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(favicon_service);
   DCHECK(IsValidBookmarkSpecifics(specifics));
 
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  DCHECK(parent_guid.is_valid());
+  DCHECK_EQ(parent_guid, parent->guid());
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
@@ -452,14 +457,13 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;
   }
-  if (specifics.has_parent_guid()) {
-    const base::GUID parent_guid =
-        base::GUID::ParseLowercase(specifics.parent_guid());
-    if (!parent_guid.is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
-      is_valid = false;
-    }
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  if (!parent_guid.is_valid()) {
+    DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
+    is_valid = false;
   }
 
   switch (specifics.type()) {

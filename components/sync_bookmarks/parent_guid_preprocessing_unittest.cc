@@ -205,7 +205,10 @@ TEST(ParentGuidPreprocessingTest,
 }
 
 TEST(ParentGuidPreprocessingTest,
-     ShouldNotPopulateParentGuidIfParentSetButUnknown) {
+     ShouldPopulateWithFakeGuidIfParentSetButUnknown) {
+  // Fork of the private constant in the .cc file.
+  const std::string kInvalidParentGuid = "220a410e-37b9-5bbc-8674-ea982459f940";
+
   const std::string kParentFolderId = "parent_folder_id";
   const std::string kParentFolderGuid =
       base::GUID::GenerateRandomV4().AsLowercaseString();
@@ -221,7 +224,8 @@ TEST(ParentGuidPreprocessingTest,
 
   PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
 
-  EXPECT_FALSE(updates[0].entity.specifics.bookmark().has_parent_guid());
+  EXPECT_THAT(updates[0].entity.specifics.bookmark().parent_guid(),
+              Eq(kInvalidParentGuid));
 }
 
 }  // namespace

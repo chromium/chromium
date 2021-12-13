@@ -25,6 +25,15 @@ const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";
 
+// Fake GUID used to populate field |BookmarkSpecifics.parent_guid| for the case
+// where a parent is specified in |SyncEntity.parent_id| but the parent's
+// precise GUID could not be determined. Doing this is mostly relevant for UMA
+// metrics. The precise GUID used in this string was generated using the same
+// technique as the well-known GUIDs in bookmarks::BookmarkNode, using the name
+// "unknown_parent_guid". The precise value is irrelevant though and can be
+// changed since all updates using the parent GUID will be ignored in practice.
+const char kInvalidParentGuid[] = "220a410e-37b9-5bbc-8674-ea982459f940";
+
 bool NeedsParentGuidInSpecifics(const syncer::UpdateResponseData& update) {
   return !update.entity.is_deleted() &&
          update.entity.parent_id != std::string("0") &&
@@ -148,9 +157,22 @@ base::GUID GetParentGuidForUpdate(
   // codepath is most crucial for initial sync, where |tracker| is empty, but is
   // also useful for non-initial sync, if the same incoming batch creates both
   // parent and child, none of which would be known by |tracker|.
-  return base::GUID::ParseLowercase(
+  guid = base::GUID::ParseLowercase(
       sync_id_to_guid_map_in_updates->GetGuidForSyncId(
           update.entity.parent_id));
+  if (guid.is_valid()) {
+    return guid;
+  }
+
+  // At this point the parent's GUID couldn't be determined, but actually
+  // the |parent_id| was non-empty. The update will be ignored regardless, but
+  // to avoid behavioral differences in UMA metrics
+  // Sync.ProblematicServerSideBookmarks[DuringMerge], a fake parent GUID is
+  // used here, which is known to never match an existing entity.
+  guid = base::GUID::ParseLowercase(kInvalidParentGuid);
+  DCHECK(guid.is_valid());
+  DCHECK(!tracker->GetEntityForGUID(guid));
+  return guid;
 }
 
 // Same as PopulateParentGuidInSpecifics(), but |tracker| must not be null.

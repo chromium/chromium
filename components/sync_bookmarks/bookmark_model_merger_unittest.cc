@@ -110,9 +110,8 @@ class UpdateResponseDataBuilder {
     data_.parent_id = GetFakeServerIdFromGUID(parent_guid);
     data_.originator_client_item_id = guid.AsLowercaseString();
 
-    // Note that proto field |parent_guid| is not currently populated here
-    // because the code doesn't actually need it, and besides legacy data coming
-    // from the server may not include it.
+    // Note that proto field |parent_guid| is currently only used to consider
+    // specifics valid.
     sync_pb::BookmarkSpecifics* bookmark_specifics =
         data_.specifics.mutable_bookmark();
     bookmark_specifics->set_legacy_canonicalized_title(title);
@@ -120,6 +119,7 @@ class UpdateResponseDataBuilder {
     bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
     *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
     bookmark_specifics->set_guid(guid.AsLowercaseString());
+    bookmark_specifics->set_parent_guid(parent_guid.AsLowercaseString());
   }
 
   UpdateResponseDataBuilder& SetUrl(const GURL& url) {

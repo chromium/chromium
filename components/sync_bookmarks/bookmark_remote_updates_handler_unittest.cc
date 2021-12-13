@@ -176,12 +176,12 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   response_data.entity.originator_client_item_id = guid.AsLowercaseString();
   response_data.entity.parent_id = GetFakeServerIdFromGUID(parent_guid);
 
-  // Note that proto field |parent_guid| is not currently populated here
-  // because the code doesn't actually need it, and besides legacy data coming
-  // from the server may not include it.
+  // Note that proto field |parent_guid| is currently only used to consider
+  // specifics valid.
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       response_data.entity.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(guid.AsLowercaseString());
+  bookmark_specifics->set_parent_guid(parent_guid.AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title(title);
   bookmark_specifics->set_full_title(title);
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
@@ -935,6 +935,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kParentGuid.AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
@@ -986,6 +988,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::GUID::GenerateRandomV4().AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1029,6 +1033,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::GUID::GenerateRandomV4().AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1072,6 +1078,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::GUID::GenerateRandomV4().AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =
@@ -1143,6 +1151,8 @@ TEST_F(
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kBookmarkGuid.AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =

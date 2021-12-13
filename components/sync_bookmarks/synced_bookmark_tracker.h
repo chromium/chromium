@@ -62,6 +62,8 @@ class SyncedBookmarkTracker {
 
     // Check whether |data| matches the stored specifics hash. It also compares
     // parent information, but only if present in specifics (M94 and above).
+    // TODO(crbug.com/1274122): Remove Possibly from the name, since it's now
+    // guaranteed and update comment.
     bool MatchesDataPossiblyIncludingParent(
         const syncer::EntityData& data) const;
 
