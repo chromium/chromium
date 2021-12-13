@@ -163,14 +163,17 @@ bool FrameInfo::WasMainUpdateDropped() const {
   return false;
 }
 
-bool FrameInfo::WasScrollUpdateDropped() const {
+bool FrameInfo::IsScrollPrioritizeFrameDropped() const {
+  // If any scroll is active the dropped frame for only the scrolling thread is
+  // reported. If no scroll is active then reports if dropped frames is
+  // affecting smoothness.
   switch (scroll_thread) {
     case SmoothEffectDrivingThread::kCompositor:
       return WasCompositorUpdateDropped();
     case SmoothEffectDrivingThread::kMain:
       return WasMainUpdateDropped();
     case SmoothEffectDrivingThread::kUnknown:
-      return false;
+      return IsDroppedAffectingSmoothness();
   }
 }
 

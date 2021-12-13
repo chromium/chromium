@@ -592,7 +592,7 @@ void DroppedFrameCounter::UpdateDroppedFrameCountInWindow(
     dropped_frame_count_in_window_[SmoothnessStrategy::kMainFocusedStrategy] +=
         count;
   }
-  if (frame_info.WasScrollUpdateDropped()) {
+  if (frame_info.IsScrollPrioritizeFrameDropped()) {
     DCHECK_GE(dropped_frame_count_in_window_
                       [SmoothnessStrategy::kScrollFocusedStrategy] +
                   count,
