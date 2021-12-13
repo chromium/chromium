@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // There are four type of modes how channels operate:
   //
   // - Server and named server: In these modes, the Channel is
-  //   responsible for settingb up the IPC object
+  //   responsible for setting up the IPC object.
   // - An "open" named server: It accepts connections from ANY client.
   //   The caller must then implement their own access-control based on the
   //   client process' user Id.
