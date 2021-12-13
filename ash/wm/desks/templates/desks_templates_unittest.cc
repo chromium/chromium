@@ -1764,4 +1764,45 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateRecordsMetric) {
                                     kExpectedNewTemplates);
 }
 
+// Tests to verify that clicking the spacebar doesn't cause the name view to
+// lose focus (since it's within a button), and that whitespaces are handled
+// correctly.
+TEST_F(DesksTemplatesTest, TemplateNameTestSpaces) {
+  auto test_window = CreateAppWindow();
+
+  const std::string template_name = "desk name";
+  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Pressing spacebar does not cause `name_view` to lose focus.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_TRUE(name_view->HasFocus());
+  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u" ", name_view->GetText());
+
+  // Extra whitespace should be trimmed.
+  SendKey(ui::VKEY_HOME);
+  SendKey(ui::VKEY_SPACE);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_EQ(u"  " + base::UTF8ToUTF16(template_name) + u" ",
+            name_view->GetText());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+
+  // A string consisting of just spaces is considered an empty string, and the
+  // name change is reverted.
+  EXPECT_FALSE(name_view->HasFocus());
+  ClickOnView(name_view);
+  EXPECT_TRUE(name_view->HasFocus());
+  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_EQ(u" ", name_view->GetText());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+}
+
 }  // namespace ash

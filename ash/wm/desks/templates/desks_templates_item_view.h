@@ -58,6 +58,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void OnThemeChanged() override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
+  KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

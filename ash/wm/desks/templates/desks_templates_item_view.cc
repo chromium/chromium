@@ -267,6 +267,12 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   defer_select_all_ = false;
   name_view_->UpdateViewAppearance();
 
+  // Collapse the whitespace for the text first before comparing it or trying to
+  // commit the name in order to prevent duplicate name issues.
+  name_view_->SetText(
+      base::CollapseWhitespace(name_view_->GetText(),
+                               /*trim_sequences_with_line_breaks=*/false));
+
   // When committing the name, do not allow an empty template name. Also, don't
   // commit the name changes if the view was blurred from the user pressing the
   // escape key (identified by `should_commit_name_changes_`). Revert back to
@@ -293,6 +299,16 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
 
   DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
       /*is_update=*/false, std::move(updated_template));
+}
+
+views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
+    const ui::KeyEvent& event) {
+  // Prevents any key events from activating a button click while the template
+  // name is being modified.
+  if (is_template_name_being_modified_)
+    return KeyClickAction::kNone;
+
+  return Button::GetKeyClickActionForEvent(event);
 }
 
 void DesksTemplatesItemView::ContentsChanged(
