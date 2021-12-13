@@ -1,8 +1,10 @@
 {
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
+  "$build/goma": {
+    "enable_ats": true,
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

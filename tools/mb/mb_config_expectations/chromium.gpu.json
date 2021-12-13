@@ -26,8 +26,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "GPU Linux Builder (dbg)": {
