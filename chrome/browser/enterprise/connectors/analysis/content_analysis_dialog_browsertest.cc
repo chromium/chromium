@@ -656,7 +656,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*access_point=*/
         testing::Values(safe_browsing::DeepScanAccessPoint::UPLOAD,
                         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
-                        safe_browsing::DeepScanAccessPoint::PASTE)));
+                        safe_browsing::DeepScanAccessPoint::PASTE,
+                        safe_browsing::DeepScanAccessPoint::PRINT)));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
                        Test) {
@@ -715,7 +716,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*access_point=*/
         testing::Values(safe_browsing::DeepScanAccessPoint::UPLOAD,
                         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
-                        safe_browsing::DeepScanAccessPoint::PASTE)));
+                        safe_browsing::DeepScanAccessPoint::PASTE,
+                        safe_browsing::DeepScanAccessPoint::PRINT)));
 
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:

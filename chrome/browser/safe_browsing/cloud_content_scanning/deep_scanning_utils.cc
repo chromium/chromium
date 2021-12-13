@@ -245,6 +245,8 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
       return "DragAndDrop";
     case DeepScanAccessPoint::PASTE:
       return "Paste";
+    case DeepScanAccessPoint::PRINT:
+      return "Print";
   }
   NOTREACHED();
   return "";

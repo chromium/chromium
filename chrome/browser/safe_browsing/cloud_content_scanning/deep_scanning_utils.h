@@ -48,6 +48,9 @@ enum class DeepScanAccessPoint {
 
   // A deep scan was initiated from pasting text.
   PASTE,
+
+  // A deep scan was initiated from printing a page.
+  PRINT,
 };
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 

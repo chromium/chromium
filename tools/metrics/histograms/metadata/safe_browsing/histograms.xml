@@ -654,6 +654,123 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.DeepScan.Print.BytesPerSeconds" units="bytes"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of a user print request divided by
+    the duration of a successful deep scanning upload request. It is logged once
+    for each successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.CancelledByUser.Duration"
+    units="ms" expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the duration from the time the binary is uploaded for deep
+    scanning of a print until the time the user decides to cancel the upload. It
+    is logged once for each binary upload when the user bypasses the verdict.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request. It is
+    logged once for each binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.FailedToGetToken.Duration"
+    units="ms" expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    FailedToGetToken result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.FailedToGetVerdict.Duration"
+    units="ms" expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    non-successful scan verdict. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.FileTooLarge.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    FileTooLarge result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.Success.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    Success result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.Timeout.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    Timeout result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.TooManyRequests.Duration"
+    units="ms" expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with a
+    TooManyRequests result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.Unknown.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user print request with an
+    Unknown result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Print.UnsupportedFileType.Duration"
+    units="ms" expires_after="2022-12-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    UnsupportedFileType result. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.DeepScan.Upload.BytesPerSeconds" units="bytes"
     expires_after="2022-02-01">
   <owner>domfc@chromium.org</owner>
