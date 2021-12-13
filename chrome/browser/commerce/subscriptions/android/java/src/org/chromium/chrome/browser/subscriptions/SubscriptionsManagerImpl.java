@@ -168,6 +168,34 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         }
     }
 
+    /**
+     * Checks if the given subscription matches any subscriptions in local storage.
+     *
+     * @param subscription The subscription to check.
+     * @param callback The callback to receive the result.
+     */
+    @Override
+    public void isSubscribed(CommerceSubscription subscription, Callback<Boolean> callback) {
+        if (subscription == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        // Searching by prefix instead of loading by key to handle cases of duplicates.
+        String targetKey = CommerceSubscriptionsStorage.getKey(subscription);
+        mStorage.loadWithPrefix(targetKey, localSubscriptions -> {
+            // TODO: (crbug/1279519) CommerceSubscriptionsStorage should support full key matching
+            // and we shouldn't need to perform this additional check.
+            for (CommerceSubscription current : localSubscriptions) {
+                if (targetKey.equals(CommerceSubscriptionsStorage.getKey(current))) {
+                    callback.onResult(true);
+                    return;
+                }
+            }
+            callback.onResult(false);
+        });
+    }
+
     private void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback) {
         String type = subscriptions.get(0).getType();
         if (subscriptions == null || !isSubscriptionTypeSupported(type)) {
