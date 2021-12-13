@@ -30,7 +30,7 @@ namespace content {
 class RenderFrameHost;
 
 // Manages network requests and maintains relevant state for interaction with
-// the Identity Provider across a WebID transaction. Owned by
+// the Identity Provider across a FedCM transaction. Owned by
 // FederatedAuthRequestImpl and has a lifetime limited to a single identity
 // transaction between an RP and an IDP.
 //
@@ -39,7 +39,7 @@ class RenderFrameHost;
 //  |Browser|                           |IDP|
 //  '-------'                           '---'
 //      |                                 |
-//      |     GET /.well-known/webid      |
+//      |     GET /.well-known/fedcm      |
 //      |-------------------------------->|
 //      |                                 |
 //      |        JSON{idp_url}            |
@@ -113,7 +113,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string terms_of_service_url;
   };
 
-  static constexpr char kWellKnownFilePath[] = ".well-known/webid";
+  static constexpr char kWellKnownFilePath[] = ".well-known/fedcm";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using FetchWellKnownCallback =

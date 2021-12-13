@@ -133,10 +133,10 @@ std::unique_ptr<views::WebView> SigninPageView::CreateContentWebView(
   // Navigate using the WebContents directly because the WebID custom header
   // is needed.
   const int kBytes = 64 / 8;
-  std::string webid_header_value;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
+  std::string fedcm_header_value;
+  base::Base64Encode(base::RandBytesAsString(kBytes), &fedcm_header_value);
   std::string header =
-      std::string(content::kSecWebIdCsrfHeader) + ": " + webid_header_value;
+      std::string(content::kSecFedCmCsrfHeader) + ": " + fedcm_header_value;
   idp_web_contents->GetController().LoadURL(
       provider, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, header);
 

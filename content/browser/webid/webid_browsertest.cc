@@ -46,13 +46,13 @@ namespace {
 
 constexpr char kRpHostName[] = "rp.example";
 constexpr char kIdpOrigin[] = "https://idp.example.org";
-constexpr char kExpectedWellKnownPath[] = "/.well-known/webid";
-constexpr char kIdpEndpointRelativeValue[] = "/webid/sign-in";
+constexpr char kExpectedWellKnownPath[] = "/.well-known/fedcm";
+constexpr char kIdpEndpointRelativeValue[] = "/fedcm/sign-in";
 constexpr char kTestWellKnownResponseBody[] =
-    "{\"idp_endpoint\": \"/webid/sign-in\"}";
-constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/webid/\"}";
+    "{\"idp_endpoint\": \"/fedcm/sign-in\"}";
+constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/fedcm/\"}";
 constexpr char kTestContentType[] = "application/json";
-constexpr char kIdpForbiddenHeader[] = "Sec-WebID-CSRF";
+constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
 // Value will be added here as token introspection is implemented.
 constexpr char kIdToken[] = "[not a real token]";
 constexpr char kIdpEndpointTokenResponse[] =
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
   idp_server()->SetWellKnownResponseDetails(
       {net::HTTP_OK, well_known_response_body, kTestContentType});
 
-  std::string signin_url_absolute_url = BaseIdpUrl() + "/webid";
+  std::string signin_url_absolute_url = BaseIdpUrl() + "/fedcm";
   std::string idp_endpoint_response_body =
       "{\"signin_url\": \"" + signin_url_absolute_url + "\"}";
   idp_server()->SetIdpEndpointResponseDetails(

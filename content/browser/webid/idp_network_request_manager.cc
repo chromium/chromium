@@ -67,11 +67,11 @@ constexpr char kJSONMimeType[] = "application/json";
 constexpr int maxResponseSizeInKiB = 1024;
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
-  return net::DefineNetworkTrafficAnnotation("webid", R"(
+  return net::DefineNetworkTrafficAnnotation("fedcm", R"(
         semantics {
-          sender: "WebID Backend"
+          sender: "FedCM Backend"
           description:
-            "The WebID API allows websites to initiate user account login "
+            "The FedCM API allows websites to initiate user account login "
             "with identity providers which provide federated sign-in "
             "capabilities using OpenID Connect. The API provides a "
             "browser-mediated alternative to previously existing federated "
@@ -114,7 +114,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   const int kBytes = 64 / 8;
   std::string webid_header_value;
   base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
-  resource_request->headers.SetHeader(kSecWebIdCsrfHeader, webid_header_value);
+  resource_request->headers.SetHeader(kSecFedCmCsrfHeader, webid_header_value);
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
@@ -206,7 +206,7 @@ constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     const GURL& provider,
     RenderFrameHost* host) {
-  // WebID is restricted to secure contexts.
+  // FedCM is restricted to secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(url::Origin::Create(provider)))
     return nullptr;
 

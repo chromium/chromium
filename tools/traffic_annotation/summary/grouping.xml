@@ -292,7 +292,8 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="device_management_service"/>
       <traffic_annotation unique_id="lookup_single_password_leak"/>
     </sender>
-    <sender name="OAuth 2.0 and WebID">
+    <sender name="OAuth 2.0 and FedCM">
+      <traffic_annotation unique_id="fedcm"/>
       <traffic_annotation unique_id="gaia_auth_check_connection_info"/>
       <traffic_annotation unique_id="gaia_auth_exchange_device_id"/>
       <traffic_annotation unique_id="gaia_auth_fetch_for_uber"/>
@@ -313,7 +314,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="oauth2_access_token_fetcher"/>
       <traffic_annotation unique_id="oauth2_mint_token_flow"/>
       <traffic_annotation unique_id="safe_search_service"/>
-      <traffic_annotation unique_id="webid"/>
     </sender>
     <sender name="Payments">
       <traffic_annotation unique_id="payments_sync_cards"/>
