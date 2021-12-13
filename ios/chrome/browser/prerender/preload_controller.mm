@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -660,8 +661,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // http://crbug.com/436813 for more details.
   // On iOS 13, PDF are getting focused when loaded, preventing the user from
   // typing in the omnibox. See crbug.com/1017352.
-  return mimeType == "application/octet-stream" ||
-         mimeType == "application/pdf";
+  return mimeType == kBinaryDataMimeType || mimeType == "application/pdf";
 }
 
 - (void)removeScheduledPrerenderRequests {

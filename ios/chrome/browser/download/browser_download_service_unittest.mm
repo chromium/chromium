@@ -275,7 +275,7 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
 TEST_F(BrowserDownloadServiceTest, ZipArchiveMimeType) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task =
-      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "application/zip");
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kZipArchiveMimeType);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
@@ -293,7 +293,7 @@ TEST_F(BrowserDownloadServiceTest, ZipArchiveMimeType) {
 TEST_F(BrowserDownloadServiceTest, ExeMimeType) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(
-      GURL(kUrl), "application/x-msdownload");
+      GURL(kUrl), kMicrosoftApplicationMimeType);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
@@ -312,7 +312,7 @@ TEST_F(BrowserDownloadServiceTest, ExeMimeType) {
 TEST_F(BrowserDownloadServiceTest, ApkMimeType) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(
-      GURL(kUrl), "application/vnd.android.package-archive");
+      GURL(kUrl), kAndroidPackageArchiveMimeType);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
