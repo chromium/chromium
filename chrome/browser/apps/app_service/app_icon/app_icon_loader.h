@@ -144,18 +144,18 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void MaybeLoadFallbackOrCompleteEmpty();
 
-  IconType icon_type_;
+  const IconType icon_type_ = IconType::kUnknown;
 
-  int size_hint_in_dip_ = 0;
-  int icon_size_in_px_ = 0;
+  const int size_hint_in_dip_ = 0;
+  const int icon_size_in_px_ = 0;
   // The scale factor the icon is intended for. See gfx::ImageSkiaRep::scale
   // comments.
-  float icon_scale_ = 0.0f;
+  const float icon_scale_ = 0.0f;
   // A scale factor to take as input for the IconType::kCompressed response. See
   // gfx::ImageSkia::GetRepresentation() comments.
   float icon_scale_for_compressed_response_ = 1.0f;
 
-  bool is_placeholder_icon_;
+  const bool is_placeholder_icon_ = false;
   apps::IconEffects icon_effects_;
 
   // If |fallback_favicon_url_| is populated, then the favicon service is the
@@ -167,7 +167,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()
   // (after the favicon service).
-  int fallback_icon_resource_;
+  int fallback_icon_resource_ = kInvalidIconResource;
 
   LoadIconCallback callback_;
 

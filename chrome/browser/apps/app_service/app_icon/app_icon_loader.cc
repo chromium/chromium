@@ -258,16 +258,16 @@ AppIconLoader::AppIconLoader(
     LoadIconCallback callback)
     : icon_type_(icon_type),
       size_hint_in_dip_(size_hint_in_dip),
+      icon_size_in_px_(apps_util::ConvertDipToPx(
+          size_hint_in_dip,
+          /*quantize_to_supported_scale_factor=*/true)),
+      // Both px and dip sizes are integers but the scale factor is fractional.
+      icon_scale_(static_cast<float>(icon_size_in_px_) / size_hint_in_dip),
       is_placeholder_icon_(is_placeholder_icon),
       icon_effects_(icon_effects),
       fallback_icon_resource_(fallback_icon_resource),
       callback_(std::move(callback)),
-      fallback_callback_(std::move(fallback)) {
-  icon_size_in_px_ = apps_util::ConvertDipToPx(
-      size_hint_in_dip, /*quantize_to_supported_scale_factor=*/true);
-  // Both px and dip sizes are integers but the scale factor is fractional.
-  icon_scale_ = static_cast<float>(icon_size_in_px_) / size_hint_in_dip;
-}
+      fallback_callback_(std::move(fallback)) {}
 
 AppIconLoader::AppIconLoader(
     int size_hint_in_dip,
