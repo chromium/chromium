@@ -170,6 +170,8 @@ std::string DisplayTypeToString(
       return "Chip";
     case ash::SearchResultDisplayType::kContinue:
       return "Continue";
+    case ash::SearchResultDisplayType::kRecentApps:
+      return "RecentApps";
   }
   NOTREACHED();
 }

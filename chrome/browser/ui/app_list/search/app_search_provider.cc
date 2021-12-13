@@ -433,7 +433,7 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
       std::make_unique<AppServiceDataSource>(profile, this));
 }
 
-AppSearchProvider::~AppSearchProvider() {}
+AppSearchProvider::~AppSearchProvider() = default;
 
 void AppSearchProvider::Start(const std::u16string& query) {
   // When the AppSearchProvider initializes, UpdateRecommendedResults is called
@@ -533,12 +533,16 @@ void AppSearchProvider::UpdateRecommendedResults(
       result->set_relevance(0.0f);
     }
 
-    // In the old launcher, create a second result to the display in the
-    // launcher chips, that is otherwise identical to |result|.
-    //
-    // TODO(crbug.com/1258415): This can be removed once the productivity
-    // launcher is launched.
-    if (!ash::features::IsProductivityLauncherEnabled()) {
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      // For ProductivityLauncher, zero-state suggestions for apps are displayed
+      // in a separate "recent apps" section.
+      result->SetDisplayType(ChromeSearchResult::DisplayType::kRecentApps);
+    } else {
+      // In the old launcher, create a second result to the display in the
+      // launcher chips, that is otherwise identical to |result|.
+      //
+      // TODO(crbug.com/1258415): This can be removed once the productivity
+      // launcher is launched.
       std::unique_ptr<AppResult> chip_result =
           app->data_source()->CreateResult(app->id(), list_controller_, true);
       chip_result->SetMetadata(result->CloneMetadata());

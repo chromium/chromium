@@ -96,9 +96,7 @@ class RecentAppsViewTest : public AshTestBase,
     auto result = std::make_unique<TestSearchResult>();
     result->set_result_id(id);
     result->set_result_type(type);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
     model->results()->Add(std::move(result));
   }
 

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -260,8 +261,9 @@ int SharedAppListConfig::GetPreferredIconDimension(
       return suggestion_chip_icon_dimension_;
     case SearchResultDisplayType::kContinue:
       return suggestion_chip_icon_dimension_;
-    case SearchResultDisplayType::kNone:        // Falls through.
-    case SearchResultDisplayType::kAnswerCard:  // Falls through.
+    case SearchResultDisplayType::kNone:
+    case SearchResultDisplayType::kAnswerCard:
+    case SearchResultDisplayType::kRecentApps:
     case SearchResultDisplayType::kLast:
       return 0;
   }

@@ -131,9 +131,7 @@ void AppListTestHelper::AddRecentApps(int num_apps) {
     // result IDs must match app item IDs in the app list data model.
     result->set_result_id(test::AppListTestModel::GetItemName(i));
     result->set_result_type(AppListSearchResultType::kInstalledApp);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
     GetSearchResults()->Add(std::move(result));
   }
 }

@@ -58,15 +58,11 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   return app_id;
 }
 
-// Returns a list of recent apps by filtering suggestion chip data.
-// TODO(crbug.com/1216662): Replace with a real implementation after the ML team
-// gives us a way to query directly for recent apps.
-std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
-    SearchModel* search_model) {
+// Returns a list of recent apps by filtering zero-state suggestion data.
+std::vector<std::string> GetRecentAppIds(SearchModel* search_model) {
   SearchModel::SearchResults* results = search_model->results();
   auto is_app_suggestion = [](const SearchResult& r) -> bool {
-    return IsAppListSearchResultAnApp(r.result_type()) &&
-           r.display_type() == SearchResultDisplayType::kList;
+    return r.display_type() == SearchResultDisplayType::kRecentApps;
   };
   std::vector<SearchResult*> app_suggestion_results =
       SearchModel::FilterSearchResultsByFunction(
@@ -171,8 +167,7 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
   item_views_.clear();
   RemoveAllChildViews();
 
-  std::vector<std::string> app_ids =
-      GetRecentAppIdsFromSuggestionChips(search_model);
+  std::vector<std::string> app_ids = GetRecentAppIds(search_model);
   std::vector<AppListItem*> items;
 
   for (const std::string& app_id : app_ids) {
