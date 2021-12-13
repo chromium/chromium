@@ -58,7 +58,7 @@ class VideoSourceImpl : public mojom::VideoSource {
   void OnClientDisconnected();
   void StartDeviceWithSettings(
       const media::VideoCaptureParams& requested_settings);
-  void OnCreateDeviceResponse(mojom::DeviceAccessResultCode result_code);
+  void OnCreateDeviceResponse(media::VideoCaptureError result_code);
   void OnPushSubscriptionClosedOrDisconnectedOrDiscarded(
       PushVideoStreamSubscriptionImpl* subscription,
       base::OnceClosure done_cb);

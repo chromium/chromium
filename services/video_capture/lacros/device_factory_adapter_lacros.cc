@@ -48,19 +48,18 @@ void DeviceFactoryAdapterLacros::CreateDevice(
   auto wrapped_callback = base::BindOnce(
       [](CreateDeviceCallback callback,
          crosapi::mojom::DeviceAccessResultCode code) {
-        video_capture::mojom::DeviceAccessResultCode video_capture_result_code;
+        media::VideoCaptureError video_capture_result_code;
         switch (code) {
           case crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED:
-            video_capture_result_code =
-                video_capture::mojom::DeviceAccessResultCode::NOT_INITIALIZED;
+            video_capture_result_code = media::VideoCaptureError::
+                kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice;
             break;
           case crosapi::mojom::DeviceAccessResultCode::SUCCESS:
-            video_capture_result_code =
-                video_capture::mojom::DeviceAccessResultCode::SUCCESS;
+            video_capture_result_code = media::VideoCaptureError::kNone;
             break;
           case crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND:
-            video_capture_result_code = video_capture::mojom::
-                DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND;
+            video_capture_result_code = media::VideoCaptureError::
+                kServiceDeviceLauncherServiceRespondedWithDeviceNotFound;
             break;
           default:
             NOTREACHED() << "Unexpected device access result code";

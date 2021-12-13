@@ -10,12 +10,6 @@ import "services/video_capture/public/mojom/devices_changed_observer.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/virtual_device.mojom";
 
-enum DeviceAccessResultCode {
-  NOT_INITIALIZED,
-  SUCCESS,
-  ERROR_DEVICE_NOT_FOUND
-};
-
 // Enables access to a set of video capture devices.
 // Typical operation is to first call GetDeviceInfos() to obtain
 // information about available devices. The |device_id| of the infos can
@@ -38,7 +32,7 @@ interface DeviceFactory {
   // |device_receiver| has been (asynchronously) discarded a subsequent call to
   // CreateDevice() would succeed if it were to deny access while still in use.
   CreateDevice(string device_id, pending_receiver<Device> device_receiver)
-      => (DeviceAccessResultCode result_code);
+      => (media.mojom.VideoCaptureError result_code);
 
   // Creates a new virtual capture device, which will be exposed by the device
   // factory using the given |device_info|. The returned |virtual_device| is to

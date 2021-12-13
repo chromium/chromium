@@ -156,9 +156,8 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
   void OnCreateDeviceCallback(
       const std::vector<media::VideoCaptureDeviceInfo>& infos,
       media::VideoCaptureBufferType buffer_type_to_request,
-      video_capture::mojom::DeviceAccessResultCode result_code) {
-    ASSERT_EQ(video_capture::mojom::DeviceAccessResultCode::SUCCESS,
-              result_code);
+      media::VideoCaptureError result_code) {
+    ASSERT_EQ(media::VideoCaptureError::kNone, result_code);
 
     media::VideoCaptureParams requestable_settings;
     ASSERT_FALSE(infos[0].supported_formats.empty());

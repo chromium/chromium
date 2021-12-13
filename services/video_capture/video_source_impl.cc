@@ -101,36 +101,32 @@ void VideoSourceImpl::StartDeviceWithSettings(
 }
 
 void VideoSourceImpl::OnCreateDeviceResponse(
-    mojom::DeviceAccessResultCode result_code) {
+    media::VideoCaptureError result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (result_code) {
-    case mojom::DeviceAccessResultCode::SUCCESS: {
-      broadcaster_video_frame_handler_.reset();
-      device_->Start(
-          device_start_settings_,
-          broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
-      device_status_ = DeviceStatus::kStarted;
-      if (push_subscriptions_.empty()) {
-        StopDeviceAsynchronously();
-        return;
-      }
-      for (auto& entry : push_subscriptions_) {
-        auto& subscription = entry.second;
-        subscription->OnDeviceStartSucceededWithSettings(
-            device_start_settings_);
-      }
+
+  if (result_code == media::VideoCaptureError::kNone) {
+    // Device was created successfully.
+    broadcaster_video_frame_handler_.reset();
+    device_->Start(device_start_settings_,
+                   broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
+    device_status_ = DeviceStatus::kStarted;
+    if (push_subscriptions_.empty()) {
+      StopDeviceAsynchronously();
       return;
     }
-    case mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND:  // Fall through
-    case mojom::DeviceAccessResultCode::NOT_INITIALIZED:
-      for (auto& entry : push_subscriptions_) {
-        auto& subscription = entry.second;
-        subscription->OnDeviceStartFailed();
-      }
-      push_subscriptions_.clear();
-      device_status_ = DeviceStatus::kNotStarted;
-      return;
+    for (auto& entry : push_subscriptions_) {
+      auto& subscription = entry.second;
+      subscription->OnDeviceStartSucceededWithSettings(device_start_settings_);
+    }
+    return;
   }
+  for (auto& entry : push_subscriptions_) {
+    auto& subscription = entry.second;
+    subscription->OnDeviceStartFailed(result_code);
+  }
+  push_subscriptions_.clear();
+  device_status_ = DeviceStatus::kNotStarted;
+  return;
 }
 
 void VideoSourceImpl::OnPushSubscriptionClosedOrDisconnectedOrDiscarded(

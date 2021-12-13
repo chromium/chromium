@@ -150,8 +150,10 @@ TEST_F(VideoCaptureServiceTest, ErrorCodeOnCreateDeviceForInvalidDescriptor) {
   mojo::Remote<mojom::Device> fake_device_remote;
   base::MockCallback<mojom::DeviceFactory::CreateDeviceCallback>
       create_device_remote_callback;
-  EXPECT_CALL(create_device_remote_callback,
-              Run(mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND))
+  EXPECT_CALL(
+      create_device_remote_callback,
+      Run(media::VideoCaptureError::
+              kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
   factory_->GetDeviceInfos(device_info_receiver_.Get());
@@ -171,7 +173,7 @@ TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
   base::MockCallback<mojom::DeviceFactory::CreateDeviceCallback>
       create_device_remote_callback;
   EXPECT_CALL(create_device_remote_callback,
-              Run(mojom::DeviceAccessResultCode::SUCCESS))
+              Run(media::VideoCaptureError::kNone))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
   mojo::Remote<mojom::Device> device_remote;
