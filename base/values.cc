@@ -1358,17 +1358,6 @@ ListValue::ListValue(span<const Value> in_list) : Value(in_list) {}
 ListValue::ListValue(ListStorage&& in_list) noexcept
     : Value(std::move(in_list)) {}
 
-bool ListValue::Set(size_t index, std::unique_ptr<Value> in_value) {
-  if (!in_value)
-    return false;
-
-  if (index >= list().size())
-    list().resize(index + 1);
-
-  list()[index] = std::move(*in_value);
-  return true;
-}
-
 bool ListValue::Get(size_t index, const Value** out_value) const {
   if (index >= list().size())
     return false;
