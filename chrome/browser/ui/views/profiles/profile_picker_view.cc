@@ -715,6 +715,7 @@ void ProfilePickerView::CancelSignedInFlow() {
 }
 
 void ProfilePickerView::WindowClosing() {
+  views::WidgetDelegateView::WindowClosing();
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
   // may have already opened a new instance).
