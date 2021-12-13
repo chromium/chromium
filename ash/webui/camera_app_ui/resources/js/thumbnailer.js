@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as dom from './dom.js';
 import {
   EmptyThumbnailError,
   LoadError,
@@ -46,7 +45,7 @@ async function elementToJpegBlob(element, width, height) {
  * @throws {!Error} Thrown when it fails to load video.
  */
 async function loadVideoBlob(blob) {
-  const el = dom.create('video', HTMLVideoElement);
+  const el = document.createElement('video');
   try {
     const hasLoaded = new WaitableEvent();
     el.addEventListener('error', () => {

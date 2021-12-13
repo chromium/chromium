@@ -21,7 +21,7 @@ import {WaitableEvent} from './waitable_event.js';
 export function newDrawingCanvas(
     {width, height}: {width: number, height: number}):
     {canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D} {
-  const canvas = dom.create('canvas', HTMLCanvasElement);
+  const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const ctx =
@@ -206,7 +206,7 @@ export function instantiateTemplate(selector: string): DocumentFragment {
 export async function createUntrustedJSModule(scriptUrl: string):
     Promise<unknown> {
   const untrustedPageReady = new WaitableEvent();
-  const iFrame = dom.create('iframe', HTMLIFrameElement);
+  const iFrame = document.createElement('iframe');
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
   iFrame.setAttribute(
       'src',

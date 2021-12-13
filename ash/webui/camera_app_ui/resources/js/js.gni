@@ -14,7 +14,7 @@ compile_js_files = [
   "device/device_info_updater.js",
   "device/stream_constraints.js",
   "device/stream_manager.js",
-  "dom.js",
+  "dom.ts",
   "error.ts",
   "expert.js",
   "face.js",
