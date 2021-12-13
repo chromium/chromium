@@ -957,7 +957,6 @@ void VideoCaptureManager::OnScreenUnlocked() {
   RecordDeviceSessionLockDuration();
 
   if (base::FeatureList::IsEnabled(features::kStopVideoCaptureOnScreenLock)) {
-    idle_close_timer_.Stop();
     ResumeDevices();
   }
 }
@@ -968,6 +967,10 @@ void VideoCaptureManager::RecordDeviceSessionLockDuration() {
       "Media.VideoCaptureManager.DeviceSessionLockDuration",
       base::TimeTicks::Now() - lock_time_);
   lock_time_ = base::TimeTicks();
+
+  if (base::FeatureList::IsEnabled(features::kStopVideoCaptureOnScreenLock)) {
+    idle_close_timer_.Stop();
+  }
 }
 
 void VideoCaptureManager::EmitLogMessage(const std::string& message,
