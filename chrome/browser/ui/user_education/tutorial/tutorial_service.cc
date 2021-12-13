@@ -16,19 +16,23 @@
 TutorialService::TutorialService() = default;
 TutorialService::~TutorialService() = default;
 
-bool TutorialService::StartTutorial(TutorialIdentifier id,
-                                    ui::ElementContext context) {
-  TutorialServiceManager* tutorial_service_manager =
-      TutorialServiceManager::GetInstance();
+bool TutorialService::StartTutorial(
+    TutorialIdentifier id,
+    ui::ElementContext context,
+    TutorialBubbleFactoryRegistry* bubble_factory_registry,
+    TutorialRegistry* tutorial_registry) {
+  if (!bubble_factory_registry || !tutorial_registry) {
+    TutorialServiceManager* tutorial_service_manager =
+        TutorialServiceManager::GetInstance();
 
-  TutorialBubbleFactoryRegistry* factory_registry =
-      tutorial_service_manager->bubble_factory_registry();
+    bubble_factory_registry =
+        tutorial_service_manager->bubble_factory_registry();
 
-  TutorialRegistry* tutorial_registry =
-      tutorial_service_manager->tutorial_registry();
+    tutorial_registry = tutorial_service_manager->tutorial_registry();
+  }
 
-  return StartTutorialImpl(
-      tutorial_registry->CreateTutorial(id, this, factory_registry, context));
+  return StartTutorialImpl(tutorial_registry->CreateTutorial(
+      id, this, bubble_factory_registry, context));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
@@ -40,15 +44,25 @@ bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
   return true;
 }
 
+void TutorialService::SetOnCompleteTutorial(CompletedCallback callback) {
+  completed_callback_ = std::move(callback);
+}
+
+void TutorialService::SetOnAbortTutorial(AbortedCallback callback) {
+  aborted_callback_ = std::move(callback);
+}
+
 void TutorialService::AbortTutorial() {
-  // TODO (dpenning): Add in hooks to listen for abort
   running_tutorial_.reset();
   currently_displayed_bubble_.reset();
+  if (aborted_callback_)
+    aborted_callback_.Run();
 }
 
 void TutorialService::CompleteTutorial() {
-  // TODO (dpenning): Add in hooks to listen for complete
   running_tutorial_.reset();
+  if (completed_callback_)
+    completed_callback_.Run();
 
   // TODO (dpenning): decide what to do with the currently displayed bubble, we
   // want it to stick around for a while, but we also want to cleanup the

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"

@@ -1413,6 +1413,8 @@ static_library("ui") {
       "user_education/tutorial/tutorial_service.h",
       "user_education/tutorial/tutorial_service_manager.cc",
       "user_education/tutorial/tutorial_service_manager.h",
+      "user_education/tutorial/tutorial_test_util.cc",
+      "user_education/tutorial/tutorial_test_util.h",
       "views/eye_dropper/eye_dropper.cc",
       "views/eye_dropper/eye_dropper.h",
       "views/eye_dropper/eye_dropper_view.cc",

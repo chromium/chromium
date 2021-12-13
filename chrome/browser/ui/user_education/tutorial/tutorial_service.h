@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
@@ -23,6 +24,9 @@ class TutorialService : public KeyedService {
   TutorialService();
   ~TutorialService() override;
 
+  using CompletedCallback = base::RepeatingClosure;
+  using AbortedCallback = base::RepeatingClosure;
+
   // returns true if there is a currently running tutorial.
   bool IsRunningTutorial() const;
 
@@ -35,7 +39,14 @@ class TutorialService : public KeyedService {
   std::vector<TutorialIdentifier> GetTutorialIdentifiers() const;
 
   // Starts the tutorial by looking for the id in the Tutorial Registry.
-  bool StartTutorial(TutorialIdentifier id, ui::ElementContext context);
+  bool StartTutorial(
+      TutorialIdentifier id,
+      ui::ElementContext context,
+      TutorialBubbleFactoryRegistry* bubble_factory_registry = nullptr,
+      TutorialRegistry* tutorial_registry = nullptr);
+
+  void SetOnCompleteTutorial(CompletedCallback callback);
+  void SetOnAbortTutorial(AbortedCallback callback);
 
  private:
   friend class Tutorial;
@@ -56,6 +67,10 @@ class TutorialService : public KeyedService {
 
   // The current bubble.
   std::unique_ptr<TutorialBubble> currently_displayed_bubble_;
+
+  // a function to call on complete of the tutorial
+  CompletedCallback completed_callback_;
+  AbortedCallback aborted_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_SERVICE_H_
