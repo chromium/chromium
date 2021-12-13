@@ -355,14 +355,6 @@ bool DefinitelyNewFormattingContext(const Node& node,
   return false;
 }
 
-inline bool WillCreateMulticolContainer(const ComputedStyle& style) {
-  // Note that we depend on this returning the truth, i.e. no false positives,
-  // and no false negatives (which is different from the rest of the legacy
-  // fallback detection machinery, where false positives are generally
-  // acceptable). This is an honest attempt to achieve that.
-  return style.SpecifiesColumns() && style.IsDisplayBlockContainer();
-}
-
 inline bool NeedsLegacyBlockFragmentation(const Element& element,
                                           const ComputedStyle& style) {
   if (!style.InsideFragmentationContextWithNondeterministicEngine())
@@ -417,7 +409,7 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     // Disable NG for the entire subtree if we're establishing a multicol
     // container.
-    if (WillCreateMulticolContainer(style)) {
+    if (style.SpecifiesColumns()) {
       UseCounter::Count(document, WebFeature::kLegacyLayoutByMultiCol);
       return true;
     }
