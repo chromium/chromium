@@ -33,15 +33,27 @@ int TabStripModelOrderController::DetermineInsertionIndex(
       // tab, insert it adjacent to the tab that opened that link.
       return model_->active_index() + 1;
     }
-    content::WebContents* opener = model_->GetActiveWebContents();
-    // Get the index of the next item opened by this tab, and insert after
-    // it...
-    int index = model_->GetIndexOfLastWebContentsOpenedBy(
+    content::WebContents* const opener = model_->GetActiveWebContents();
+    // Figure out the last tab opened by the current tab.
+    const int index = model_->GetIndexOfLastWebContentsOpenedBy(
         opener, model_->active_index());
-    if (index != TabStripModel::kNoTab)
-      return index + 1;
-    // Otherwise insert adjacent to opener...
-    return model_->active_index() + 1;
+    // If no such tab exists, simply place next to the current tab.
+    if (index == TabStripModel::kNoTab)
+      return model_->active_index() + 1;
+
+    // Normally we'd add the tab immediately after the most recent tab
+    // associated with `opener`. However, if there is a group discontinuity
+    // between the active tab and where we'd like to place the tab, we'll place
+    // it just before the discontinuity instead (see crbug.com/1246421).
+    const auto opener_group = model_->GetTabGroupForTab(model_->active_index());
+    for (int i = model_->active_index() + 1; i <= index; ++i) {
+      // Insert before the first tab that differs in group.
+      if (model_->GetTabGroupForTab(i) != opener_group)
+        return i;
+    }
+    // If there is no discontinuity, add after the last tab already associated
+    // with the opener.
+    return index + 1;
   }
   // In other cases, such as Ctrl+T, open at the end of the strip.
   return model_->count();
