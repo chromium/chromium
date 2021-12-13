@@ -349,14 +349,9 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
     StopSharing();
 }
 
-void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
-      handle->IsSameDocument() || handle->GetWebContents() != shared_tab_) {
+void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
+  if (!shared_tab_)
     return;
-  }
   shared_tab_name_ = GetTabName(shared_tab_);
   for (const auto& infobars_entry : infobars_) {
     // Recreate infobars to reflect the new shared tab's hostname.

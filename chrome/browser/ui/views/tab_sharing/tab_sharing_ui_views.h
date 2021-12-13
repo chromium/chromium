@@ -79,8 +79,7 @@ class TabSharingUIViews : public TabSharingUI,
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
   // WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
   // DidUpdateFaviconURL() is not overridden. We wait until
   // FaviconPeriodicUpdate() before updating the favicon. A captured tab can
