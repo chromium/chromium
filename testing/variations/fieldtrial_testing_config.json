@@ -181,6 +181,21 @@
             ]
         }
     ],
+    "AndroidFixedUmaSessionResumeOrder": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FixedUmaSessionResumeOrder"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [
