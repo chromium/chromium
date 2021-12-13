@@ -50,8 +50,6 @@ template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<UnmountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const absl::optional<RenameReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<MountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<MigrateKeyReply>&);
