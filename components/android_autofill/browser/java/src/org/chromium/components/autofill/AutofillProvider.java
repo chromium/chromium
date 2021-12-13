@@ -813,12 +813,10 @@ public class AutofillProvider {
 
     @CalledByNative
     private void onQueryDone(boolean success) {
-        if (mRequest != null) {
-            mRequest.onQueryDone(success);
-        }
+        if (mRequest == null) return;
+        mRequest.onQueryDone(success);
         mAutofillUMA.onServerTypeAvailable(
-                (success && mRequest != null) ? mRequest.mFormData : null,
-                /*afterSessionStarted*/ true);
+                success ? mRequest.mFormData : null, /*afterSessionStarted*/ true);
         mAutofillManager.onQueryDone(success);
     }
 
