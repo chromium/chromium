@@ -73,10 +73,11 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   // Mark a key idea.
   void MarkKeyIdea();
 
-  // Called by Capture Mode to notify with the state of a projector-initiated
-  // video recording.
-  void OnRecordingStarted();
-  void OnRecordingEnded();
+  // Called by Capture Mode to notify with the state of a video recording.
+  // `is_in_projector_mode` indicates whether it's a projector-initiated video
+  // recording.
+  void OnRecordingStarted(bool is_in_projector_mode);
+  void OnRecordingEnded(bool is_in_projector_mode);
 
   // Called by Capture Mode to notify us that a Projector-initiated recording
   // session was aborted (i.e. recording was never started) due to e.g. user

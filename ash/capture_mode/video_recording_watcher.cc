@@ -228,8 +228,9 @@ VideoRecordingWatcher::VideoRecordingWatcher(
     recording_overlay_controller_ =
         std::make_unique<RecordingOverlayController>(window_being_recorded_,
                                                      GetOverlayWidgetBounds());
-    ProjectorControllerImpl::Get()->OnRecordingStarted();
   }
+  if (features::IsProjectorEnabled())
+    ProjectorControllerImpl::Get()->OnRecordingStarted(is_in_projector_mode_);
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
@@ -254,8 +255,8 @@ void VideoRecordingWatcher::ShutDown() {
   recording_overlay_controller_.reset();
   dimmers_.clear();
 
-  if (is_in_projector_mode_)
-    ProjectorControllerImpl::Get()->OnRecordingEnded();
+  if (features::IsProjectorEnabled())
+    ProjectorControllerImpl::Get()->OnRecordingEnded(is_in_projector_mode_);
 
   window_being_recorded_->RemovePreTargetHandler(this);
   TabletModeController::Get()->RemoveObserver(this);

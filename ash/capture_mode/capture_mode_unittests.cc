@@ -5037,6 +5037,16 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       ProjectorSessionNeverStartsWhenVideoRecordingIsOnGoing) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  EXPECT_FALSE(ProjectorSession::Get()->is_active());
+  EXPECT_FALSE(ProjectorController::Get()->CanStartNewSession());
+}
+
 namespace {
 
 enum AbortReason {

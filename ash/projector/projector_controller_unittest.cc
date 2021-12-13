@@ -219,7 +219,7 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
 
-  controller_->OnRecordingStarted();
+  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
@@ -243,7 +243,7 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   base::TimeDelta forward_by = start_time - base::Time::Now();
   task_environment()->AdvanceClock(forward_by);
   controller_->projector_session()->Start("projector_data");
-  controller_->OnRecordingStarted();
+  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
 
   base::RunLoop runLoop;
   controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
@@ -267,7 +267,7 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
                                      // Screencast file name without extension.
                                      .Append(expected_screencast_name)));
 
-        controller_->OnRecordingEnded();
+        controller_->OnRecordingEnded(/*is_in_projector_mode=*/true);
         runLoop.Quit();
       }));
 

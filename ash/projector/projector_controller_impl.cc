@@ -160,7 +160,8 @@ bool ProjectorControllerImpl::CanStartNewSession() const {
   // TODO(crbug.com/1165435) Add other pre-conditions to starting a new
   // projector session.
   return IsEligible() && !projector_session_->is_active() &&
-         client_->IsDriveFsMounted();
+         client_->IsDriveFsMounted() &&
+         !CaptureModeController::Get()->is_recording_in_progress();
 }
 
 void ProjectorControllerImpl::OnToolSet(const AnnotatorTool& tool) {
@@ -188,14 +189,18 @@ void ProjectorControllerImpl::MarkKeyIdea() {
   ui_controller_->OnKeyIdeaMarked();
 }
 
-void ProjectorControllerImpl::OnRecordingStarted() {
+void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
+  if (!is_in_projector_mode)
+    return;
   ui_controller_->ShowToolbar();
   StartSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
 }
 
-void ProjectorControllerImpl::OnRecordingEnded() {
+void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
+  if (!is_in_projector_mode)
+    return;
   DCHECK(projector_session_->is_active());
 
   StopSpeechRecognition();

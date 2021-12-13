@@ -276,7 +276,8 @@ TEST_P(ProjectorUiControllerTest, UmaMetricsTest) {
   Shell::Get()->projector_controller()->SetClient(&mock_client);
   Shell::Get()->projector_controller()->OnSpeechRecognitionAvailabilityChanged(
       SpeechRecognitionAvailability::kAvailable);
-  Shell::Get()->projector_controller()->OnRecordingStarted();
+  Shell::Get()->projector_controller()->OnRecordingStarted(
+      /*is_in_projector_mode=*/true);
 
   histogram_tester.ExpectUniqueSample(
       kProjectorToolbarHistogramName,
