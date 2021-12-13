@@ -293,14 +293,12 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
       source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML);
-      source->AddResourcePath(kCustomElementsJSPath,
-                              IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_JS);
     } else {
       source->SetDefaultResource(IDR_OOBE_HTML);
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_OOBE_HTML);
-      source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
     }
+    source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
   }
   source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
 }
@@ -316,15 +314,13 @@ void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
       source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML);
-      source->AddResourcePath(kCustomElementsJSPath,
-                              IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_JS);
     } else {
       source->SetDefaultResource(IDR_MD_LOGIN_HTML);
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
-      source->AddResourcePath(kCustomElementsJSPath,
-                              IDR_CUSTOM_ELEMENTS_LOGIN_JS);
     }
+    source->AddResourcePath(kCustomElementsJSPath,
+                            IDR_CUSTOM_ELEMENTS_LOGIN_JS);
   }
 
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);

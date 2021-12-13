@@ -31,6 +31,7 @@ group("polymer3_elements") {
     ":offline_ad_login_module",
     ":oobe_reset_module",
     ":os_install_module",
+    ":os_trial_module",
     ":parental_handoff_module",
     ":pin_setup_module",
     ":signin_fatal_error_module",
@@ -68,6 +69,7 @@ js_type_check("closure_compile_module") {
     ":offline_ad_login.m",
     ":oobe_reset.m",
     ":os_install.m",
+    ":os_trial.m",
     ":parental_handoff.m",
     ":pin_setup.m",
     ":signin_fatal_error.m",
@@ -385,6 +387,25 @@ js_library("parental_handoff.m") {
   extra_deps = [ ":parental_handoff_module" ]
 }
 
+js_library("os_trial.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_trial.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+  ]
+
+  externs_list = [ "$externs_path/webview_tag.js" ]
+
+  extra_deps = [ ":os_trial_module" ]
+}
+
 js_library("pin_setup.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/pin_setup.m.js" ]
   deps = [
@@ -626,6 +647,14 @@ polymer_modulizer("oobe_reset") {
 polymer_modulizer("os_install") {
   js_file = "os_install.js"
   html_file = "os_install.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("os_trial") {
+  js_file = "os_trial.js"
+  html_file = "os_trial.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

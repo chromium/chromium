@@ -21,7 +21,6 @@ function loadCommonComponents() {
 // <include src="../security_token_pin.js">
 
 // <include src="components_[OOBE].js">
-// <include src="components_[OS_INSTALL].js">
 // TODO(crbug.com/1111387) - Remove excessive logging.
   console.warn('loadCommonComponents() : Common components have loaded.');
 }
