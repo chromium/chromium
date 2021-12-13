@@ -15,50 +15,6 @@
 # release modes.  It is not an error to list symbols in this file that will not
 # be present in each output variant.
 
-# Provided by base/allocator/allocator_shim_override_cpp_symbols.h
-# Allocator shims
-#
-# void* operator new(size_t size)
-__Znwm
-# void operator delete(void* p) noexcept
-__ZdlPv
-# void* operator new[](size_t size)
-__Znam
-# void operator delete[](void* p)
-__ZdaPv
-# void* operator new(size_t size, const std::nothrow_t&) noexcept
-__ZnwmRKSt9nothrow_t
-# void* operator new[](size_t size, const std::nothrow_t&) noexcept
-__ZnamRKSt9nothrow_t
-# void operator delete(void* p, const std::nothrow_t&) noexcept
-__ZdlPvRKSt9nothrow_t
-# void operator delete[](void* p, const std::nothrow_t&) noexcept
-__ZdaPvRKSt9nothrow_t
-# void operator delete(void* p, size_t) noexcept
-__ZdlPvm
-# void operator delete[](void* p, size_t) noexcept
-__ZdaPvm
-# void* operator new(std::size_t size, std::align_val_t alignment)
-__ZnwmSt11align_val_t
-# void* operator new(std::size_t size, std::align_val_t alignment, const std::nothrow_t&) noexcept
-__ZnwmSt11align_val_tRKSt9nothrow_t
-# void operator delete(void* p, std::align_val_t) noexcept
-__ZdlPvSt11align_val_t
-# void operator delete(void* p, std::size_t size, std::align_val_t) noexcept
-__ZdlPvmSt11align_val_t
-# void operator delete(void* p, std::align_val_t, const std::nothrow_t&) noexcept
-__ZdlPvSt11align_val_tRKSt9nothrow_t
-# void* operator new[](std::size_t size, std::align_val_t alignment)
-__ZnamSt11align_val_t
-# void* operator new[](std::size_t size, std::align_val_t alignment, const std::nothrow_t&) noexcept
-__ZnamSt11align_val_tRKSt9nothrow_t
-# void operator delete[](void* p, std::align_val_t) noexcept
-__ZdaPvSt11align_val_t
-# void operator delete[](void* p, std::size_t size, std::align_val_t) noexcept
-__ZdaPvmSt11align_val_t
-# void operator delete[](void* p, std::align_val_t, const std::nothrow_t&) noexcept
-__ZdaPvSt11align_val_tRKSt9nothrow_t
-
 # Provided by build/sanitizers/sanitizer_options.cc in ASan builds.
 ___asan_default_options
 
