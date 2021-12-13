@@ -2100,6 +2100,12 @@ const char kQuickActionSearchWidgetAndroidDinoVariantName[] =
 const char kQuickActionSearchWidgetAndroidDinoVariantDescription[] =
     "When enabled, the Dino widget will be available to add to the homescreen";
 
+const char kQuickDimName[] = "Enable lock on leave";
+const char kQuickDimDescription[] =
+    "Enables lock on leave feature to better dim or lock the device. Can be "
+    "enabled and disabled from the Smart privacy section of your device "
+    "settings.";
+
 const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =

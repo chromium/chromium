@@ -1203,6 +1203,9 @@ extern const char kQuicDescription[];
 extern const char kQuickActionSearchWidgetAndroidName[];
 extern const char kQuickActionSearchWidgetAndroidDescription[];
 
+extern const char kQuickDimName[];
+extern const char kQuickDimDescription[];
+
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 

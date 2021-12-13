@@ -2622,6 +2622,19 @@ const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
      base::size(kSnoopingProtectionBalance), nullptr},
     {"Slow Comprehensive", kSnoopingProtectionRecall,
      base::size(kSnoopingProtectionRecall), nullptr}};
+
+const FeatureEntry::FeatureParam kQuickDim120s[] = {{"quick_dim_ms", "120000"}};
+
+const FeatureEntry::FeatureParam kQuickDim30s[] = {{"quick_dim_ms", "30000"}};
+
+const FeatureEntry::FeatureParam kQuickDimInstantly[] = {
+    {"quick_dim_ms", "1000"}};
+
+const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
+    {"QuickDim120s", kQuickDim120s, base::size(kQuickDim120s), nullptr},
+    {"QuickDim30s", kQuickDim30s, base::size(kQuickDim30s), nullptr},
+    {"QuickDimInstantly", kQuickDimInstantly, base::size(kQuickDimInstantly),
+     nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // RECORDING USER METRICS FOR FLAGS:
@@ -7655,6 +7668,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSnoopingProtection,
                                     kSnoopingProtectionVariations,
                                     "SnoopingProtection")},
+
+    {"quick-dim", flag_descriptions::kQuickDimName,
+     flag_descriptions::kQuickDimDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kQuickDim,
+                                    kQuickDimVariations,
+                                    "QuickDim")},
 #endif
 
 #if defined(OS_WIN)
