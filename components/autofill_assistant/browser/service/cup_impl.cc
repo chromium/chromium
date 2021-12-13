@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cup.h"
+#include "cup_impl.h"
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -43,36 +43,37 @@ bool ShouldVerifyGetActionsResponses() {
 
 namespace autofill_assistant {
 
-std::unique_ptr<client_update_protocol::Ecdsa> CUP::CreateQuerySigner() {
+std::unique_ptr<client_update_protocol::Ecdsa> CUPImpl::CreateQuerySigner() {
   return client_update_protocol::Ecdsa::Create(kKeyVersion,
                                                GetKey(kKeyPubBytesBase64));
 }
 
-bool CUP::ShouldSignRequests(RpcType rpc_type) {
+bool CUPImpl::ShouldSignRequests(RpcType rpc_type) {
   return ShouldSignGetActionsRequests() && rpc_type == RpcType::GET_ACTIONS;
 }
 
-bool CUP::ShouldVerifyResponses(RpcType rpc_type) {
+bool CUPImpl::ShouldVerifyResponses(RpcType rpc_type) {
   return ShouldVerifyGetActionsResponses() && rpc_type == RpcType::GET_ACTIONS;
 }
 
-CUP::CUP(std::unique_ptr<client_update_protocol::Ecdsa> query_signer)
+CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer)
     : query_signer_{std::move(query_signer)} {
   DCHECK(query_signer_);
 }
 
-CUP::~CUP() = default;
+CUPImpl::~CUPImpl() = default;
 
-std::string CUP::PackAndSignRequest(const std::string& original_request) {
+std::string CUPImpl::PackAndSignRequest(const std::string& original_request) {
   return PackGetActionsRequest(original_request);
 }
 
-absl::optional<std::string> CUP::UnpackResponse(
+absl::optional<std::string> CUPImpl::UnpackResponse(
     const std::string& original_response) {
   return UnpackGetActionsResponse(original_response);
 }
 
-std::string CUP::PackGetActionsRequest(const std::string& original_request) {
+std::string CUPImpl::PackGetActionsRequest(
+    const std::string& original_request) {
   autofill_assistant::ScriptActionRequestProto actions_request;
   actions_request.mutable_cup_data()->set_request(original_request);
 
@@ -87,7 +88,7 @@ std::string CUP::PackGetActionsRequest(const std::string& original_request) {
   return serialized_request;
 }
 
-absl::optional<std::string> CUP::UnpackGetActionsResponse(
+absl::optional<std::string> CUPImpl::UnpackGetActionsResponse(
     const std::string& original_response) {
   autofill_assistant::ActionsResponseProto actions_response;
   if (!actions_response.ParseFromString(original_response)) {
@@ -105,7 +106,7 @@ absl::optional<std::string> CUP::UnpackGetActionsResponse(
   return serialized_response;
 }
 
-client_update_protocol::Ecdsa& CUP::GetQuerySigner() {
+client_update_protocol::Ecdsa& CUPImpl::GetQuerySigner() {
   return *query_signer_.get();
 }
 

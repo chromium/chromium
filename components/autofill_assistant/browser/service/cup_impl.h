@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_IMPL_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_IMPL_H_
 
 #include "components/autofill_assistant/browser/service/rpc_type.h"
 #include "components/client_update_protocol/ecdsa.h"
@@ -19,7 +19,7 @@ namespace autofill_assistant {
 // HTTP headers, and is sent as part of the request and response body instead.
 //
 // This class can only be used once per service call.
-class CUP {
+class CUPImpl {
  public:
   static std::unique_ptr<client_update_protocol::Ecdsa> CreateQuerySigner();
 
@@ -33,10 +33,10 @@ class CUP {
   // |ShouldSignRequest| returns |false|.
   static bool ShouldVerifyResponses(RpcType rpc_type);
 
-  CUP(std::unique_ptr<client_update_protocol::Ecdsa> query_signer);
-  CUP(const CUP&) = delete;
-  CUP& operator=(const CUP&) = delete;
-  ~CUP();
+  CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer);
+  CUPImpl(const CUPImpl&) = delete;
+  CUPImpl& operator=(const CUPImpl&) = delete;
+  ~CUPImpl();
 
   // Generates a new |request| where |original_request| is packed and signed in
   // its |cup_data| field.
@@ -66,4 +66,4 @@ class CUP {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_CUP_IMPL_H_
