@@ -105,8 +105,8 @@ public class BookmarkUtils {
         if (BookmarkFeatures.isImprovedSaveFlowEnabled()) {
             BookmarkId newBookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
                     tab.getOriginalUrl(), tab.getWebContents(), /*parent=*/null, bookmarkType);
-            showSaveFlow(activity, bookmarkModel, bottomSheetController, fromExplicitTrackUi,
-                    newBookmarkId, /*wasBookmarkMoved=*/false);
+            showSaveFlow(activity, bottomSheetController, fromExplicitTrackUi, newBookmarkId,
+                    /*wasBookmarkMoved=*/false);
             callback.onResult(newBookmarkId);
             return;
         }
@@ -153,14 +153,12 @@ public class BookmarkUtils {
      * Shows the bookmark save flow.
      *
      * @param activity The current Activity.
-     * @param bookmarkModel The BookmarkModel, used for bookmark operations.
      * @param bottomSheetController The BottomsheetController, used to show the save flow.
      * @param fromExplicitTrackUi Whether the bookmark was added from the explicit UI.
      * @param bookmarkId The BookmarkId to show the save flow for.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
      */
     public static void showSaveFlow(@NonNull Activity activity,
-            @NonNull BookmarkModel bookmarkModel,
             @NonNull BottomSheetController bottomSheetController, boolean fromExplicitTrackUi,
             @NonNull BookmarkId bookmarkId, boolean wasBookmarkMoved) {
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =

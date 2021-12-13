@@ -91,7 +91,7 @@ public final class ReadingListUtils {
         bookmarkIds.add(bookmarkId);
         ReadingListUtils.typeSwapBookmarksIfNecessary(
                 bookmarkModel, bookmarkIds, bookmarkModel.getReadingListFolder());
-        BookmarkUtils.showSaveFlow(activity, bookmarkModel, bottomsheetController,
+        BookmarkUtils.showSaveFlow(activity, bottomsheetController,
                 /*fromExplicitTrackUi=*/false, bookmarkIds.get(0), /*wasBookmarkMoved=*/true);
         return true;
     }

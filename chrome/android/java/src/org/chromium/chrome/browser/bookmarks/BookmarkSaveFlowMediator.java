@@ -133,8 +133,6 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
                     this::handleNotificationSwitchToggle);
 
             if (fromExplicitTrackUi) {
-                mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_TEXT,
-                        mContext.getResources().getString(R.string.price_tracking_title));
                 mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, true);
             }
         }
@@ -144,9 +142,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         if (mSubscriptionsManagerCallback == null) {
             mSubscriptionsManagerCallback = mCallbackController.makeCancelable((Integer status) -> {
                 boolean statusOk = (status == SubscriptionsManager.StatusCode.OK);
-                if (statusOk) {
-                    setPriceTrackingIconForEnabledState(toggled);
-                } else {
+                if (!statusOk) {
                     // Set it back to the previous state if the request.
                     mPropertyModel.set(
                             BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER, null);
@@ -159,7 +155,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
                 setPriceTrackingNotificationUiEnabled(statusOk);
             });
         }
-        // TODO(crbug.com/1243383): Follow-up with UX about failure.
+
+        setPriceTrackingIconForEnabledState(toggled);
         PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
                 mBookmarkId, toggled, mSubscriptionsManagerCallback);
     }
