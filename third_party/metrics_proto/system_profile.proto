@@ -563,7 +563,6 @@ message SystemProfileProto {
     // launches, since page load count roughly corresponds to usage.
     optional int32 page_load_count = 2;
     optional int32 renderer_crash_count = 3;
-    optional int32 renderer_hang_count = 4;
     optional int32 renderer_failed_launch_count = 24;
     optional int32 renderer_launch_count = 26;
 
