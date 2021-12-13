@@ -1,4 +1,0 @@
-Ensure that simulated click is still dispatched to an inert node. To test manually, click the CLICK ME label and verify it does change the value of the checkbox.
-
-PASS
-CLICK ME
