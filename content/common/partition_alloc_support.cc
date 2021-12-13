@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/allocator/allocator_shim.h"
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
@@ -57,25 +58,6 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   if (name) {
     base::internal::PCScan::SetProcessName(name);
   }
-}
-
-bool IsPCScanEnabled(const std::string& process_type) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  DCHECK(base::FeatureList::GetInstance());
-  bool enabled =
-      base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan);
-  // No specified process type means this is the Browser process.
-  if (process_type.empty()) {
-    enabled = enabled || base::FeatureList::IsEnabled(
-                             base::features::kPartitionAllocPCScanBrowserOnly);
-  } else if (process_type == switches::kRendererProcess) {
-    enabled = enabled || base::FeatureList::IsEnabled(
-                             base::features::kPartitionAllocPCScanRendererOnly);
-  }
-  return enabled;
-#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  return false;
-#endif
 }
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
@@ -301,26 +283,18 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  // If BRP is not enabled, check if any of PCScan flags is enabled.
-  bool enable_scan = !enable_brp && IsPCScanEnabled(process_type);
-
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  const bool enable_thread_cache_on_v8_partition =
-      enable_scan && process_type == switches::kRendererProcess;
   base::allocator::ConfigurePartitions(
       base::allocator::EnableBrp(enable_brp),
       base::allocator::SplitMainPartition(split_main_partition),
       base::allocator::UseDedicatedAlignedPartition(
-          use_dedicated_aligned_partition),
-      base::allocator::ThreadCacheOnNonQuarantinablePartition(
-          enable_thread_cache_on_v8_partition));
+          use_dedicated_aligned_partition));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  if (enable_scan) {
-    // Even though we already know the PCScan should be enabled, we go through
-    // the logic of querying Finch (in the callees) again, to determine, which
-    // function should be called to enable PCScan.
-    bool scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
+  // If BRP is not enabled, check if any of PCScan flags is enabled.
+  bool scan_enabled = false;
+  if (!enable_brp) {
+    scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
     // No specified process type means this is the Browser process.
     if (process_type.empty()) {
       scan_enabled = scan_enabled ||
@@ -330,35 +304,43 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scan_enabled = scan_enabled ||
                      EnablePCScanForMallocPartitionsInRendererProcessIfNeeded();
     }
-    DCHECK(scan_enabled);
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanStackScanning)) {
+    if (scan_enabled) {
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-      base::internal::PCScan::EnableStackScanning();
-      // Notify PCScan about the main thread.
-      base::internal::PCScan::NotifyThreadCreated(
-          base::internal::GetStackTop());
+        base::internal::PCScan::EnableStackScanning();
+        // Notify PCScan about the main thread.
+        base::internal::PCScan::NotifyThreadCreated(
+            base::internal::GetStackTop());
 #endif
+      }
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanImmediateFreeing)) {
+        base::internal::PCScan::EnableImmediateFreeing();
+      }
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanEagerClearing)) {
+        base::internal::PCScan::SetClearType(
+            base::internal::PCScan::ClearType::kEager);
+      }
+      SetProcessNameForPCScan(process_type);
     }
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanImmediateFreeing)) {
-      base::internal::PCScan::EnableImmediateFreeing();
-    }
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanEagerClearing)) {
-      base::internal::PCScan::SetClearType(
-          base::internal::PCScan::ClearType::kEager);
-    }
-    SetProcessNameForPCScan(process_type);
+  }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    if (enable_thread_cache_on_v8_partition) {
-      base::internal::NonQuarantinableAllocator::Instance()
-          .root()
-          ->EnableThreadCacheIfSupported();
-    }
-#endif
+  // Non-quarantinable partition is dealing with hot V8's zone allocations.
+  // In case PCScan is enabled in Renderer, enable thread cache on this
+  // partition. At the same time, thread cache on the main(malloc) partition
+  // must be disabled, because only one partition can have it on.
+  if (scan_enabled && process_type == switches::kRendererProcess) {
+    base::internal::NonQuarantinableAllocator::Instance()
+        .root()
+        ->EnableThreadCacheIfSupported();
+  } else {
+    base::internal::PartitionAllocMalloc::Allocator()
+        ->EnableThreadCacheIfSupported();
   }
+#endif
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(

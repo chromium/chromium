@@ -176,8 +176,6 @@ BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
-using ThreadCacheOnNonQuarantinablePartition =
-    base::StrongAlias<class ThreadCacheOnNonQuarantinablePartitionTag, bool>;
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
 using UseDedicatedAlignedPartition =
     base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
@@ -188,9 +186,7 @@ using UseDedicatedAlignedPartition =
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
     SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    ThreadCacheOnNonQuarantinablePartition
-        thread_cache_on_non_quarantinable_partition);
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition);
 
 #if defined(PA_ALLOW_PCSCAN)
 BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);

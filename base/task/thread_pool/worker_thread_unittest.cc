@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/allocator/allocator_shim.h"
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
@@ -880,10 +881,8 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
   // Make sure the thread cache is enabled in the main partition.
-  allocator::ConfigurePartitions(
-      allocator::EnableBrp(false), allocator::SplitMainPartition(false),
-      allocator::UseDedicatedAlignedPartition(false),
-      allocator::ThreadCacheOnNonQuarantinablePartition(false));
+  base::internal::PartitionAllocMalloc::Allocator()
+      ->EnableThreadCacheIfSupported();
 
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
