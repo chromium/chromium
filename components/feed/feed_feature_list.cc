@@ -63,7 +63,7 @@ const base::Feature kXsurfaceMetricsReporting{
 const base::Feature kReliabilityLogging{"FeedReliabilityLogging",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedInteractiveRefresh{"FeedInteractiveRefresh",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kFeedLoadingPlaceholder{"FeedLoadingPlaceholder",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<bool>
