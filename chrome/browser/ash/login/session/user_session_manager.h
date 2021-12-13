@@ -54,7 +54,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
-class AshTurnSyncOnHelper;
 class GURL;
 class PrefRegistrySimple;
 class PrefService;
@@ -675,8 +674,6 @@ class UserSessionManager
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
-
-  std::unique_ptr<AshTurnSyncOnHelper> ash_turn_sync_on_helper_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 

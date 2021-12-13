@@ -691,6 +691,11 @@ const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
     "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 12/2021.
+const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -893,6 +898,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(
       kEduCoexistenceSecondaryAccountsInvalidationVersion, std::string());
+
+  registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1759,6 +1766,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 12/2021.
   profile_prefs->ClearPref(kEduCoexistenceSecondaryAccountsInvalidationVersion);
+
+  // Added 12/2021
+  profile_prefs->ClearPref(kSyncFirstRunCompleted);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

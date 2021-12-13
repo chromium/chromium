@@ -388,15 +388,15 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
+    // <if expr="chromeos">
+    return false;
+    // </if>
+    // <if expr="not chromeos">
     if (this.syncStatus === undefined) {
       return false;
     }
-    // <if expr="chromeos">
-    if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
-      return false;
-    }
-    // </if>
     return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_;
+    // </if>
   }
 
   /**

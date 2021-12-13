@@ -1220,15 +1220,6 @@ const base::Feature kUseAuthsessionAuthentication{
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Uses the same browser sync consent dialog as Windows/Mac/Linux. Allows the
-// user to fully opt-out of browser sync, including marking the IdentityManager
-// primary account as unconsented. Requires SyncConsentOptional.
-// NOTE: Call UseBrowserSyncConsent() to test the flag, see implementation.
-// TODO(https://crbug.com/1246824) Maybe deprecate the flag in favor of
-// SyncConsentOptional.
-const base::Feature kUseBrowserSyncConsent{"UseBrowserSyncConsent",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
@@ -1903,12 +1894,6 @@ bool ShouldUseAttachApn() {
   // See comment on |kCellularForbidAttachApn| for details.
   return !base::FeatureList::IsEnabled(kCellularForbidAttachApn) &&
          base::FeatureList::IsEnabled(kCellularUseAttachApn);
-}
-
-bool ShouldUseBrowserSyncConsent() {
-  // UseBrowserSyncConsent requires SyncConsentOptional.
-  return base::FeatureList::IsEnabled(kSyncConsentOptional) &&
-         base::FeatureList::IsEnabled(kUseBrowserSyncConsent);
 }
 
 bool ShouldUseV1DeviceSync() {

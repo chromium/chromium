@@ -461,9 +461,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseAuthsessionAuthentication;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseBluetoothSystemInAsh;
-// Visible for testing. Call UseBrowserSyncConsent() to check the flag.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kUseBrowserSyncConsent;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseMessagesStagingUrl;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -651,7 +648,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowControlMenuEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAttachApn();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseBrowserSyncConsent();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 

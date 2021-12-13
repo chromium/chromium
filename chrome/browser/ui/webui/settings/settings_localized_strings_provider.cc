@@ -1210,15 +1210,12 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_dice_enabled = false;
-  bool use_browser_sync_consent =
-      chromeos::features::ShouldUseBrowserSyncConsent();
 #else
   bool is_dice_enabled =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile);
-  bool use_browser_sync_consent = false;
 #endif
 
-  if (use_browser_sync_consent || is_dice_enabled) {
+  if (is_dice_enabled) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
         {"syncDisconnectTitle",

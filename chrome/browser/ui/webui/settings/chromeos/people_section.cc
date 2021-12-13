@@ -494,8 +494,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       chromeos::features::IsSyncSettingsCategorizationEnabled());
   html_source->AddBoolean("syncConsentOptionalEnabled",
                           chromeos::features::IsSyncConsentOptionalEnabled());
-  html_source->AddBoolean("useBrowserSyncConsent",
-                          chromeos::features::ShouldUseBrowserSyncConsent());
   html_source->AddString(
       "browserSettingsSyncSetupUrl",
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSyncSetupSubPage}));
@@ -676,20 +674,11 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       user->IsActiveDirectoryUser() ||
           profile()->GetProfilePolicyConnector()->IsManaged());
 
-  if (chromeos::features::ShouldUseBrowserSyncConsent()) {
-    static constexpr webui::LocalizedString kTurnOffStrings[] = {
-        {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-        {"syncDisconnectTitle",
-         IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE},
-    };
-    html_source->AddLocalizedStrings(kTurnOffStrings);
-  } else {
-    static constexpr webui::LocalizedString kSignOutStrings[] = {
-        {"syncDisconnect", IDS_SETTINGS_PEOPLE_SIGN_OUT},
-        {"syncDisconnectTitle", IDS_SETTINGS_SYNC_DISCONNECT_TITLE},
-    };
-    html_source->AddLocalizedStrings(kSignOutStrings);
-  }
+  static constexpr webui::LocalizedString kSignOutStrings[] = {
+      {"syncDisconnect", IDS_SETTINGS_PEOPLE_SIGN_OUT},
+      {"syncDisconnectTitle", IDS_SETTINGS_SYNC_DISCONNECT_TITLE},
+  };
+  html_source->AddLocalizedStrings(kSignOutStrings);
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(

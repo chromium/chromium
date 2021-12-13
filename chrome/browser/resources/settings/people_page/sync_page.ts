@@ -632,13 +632,13 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private shouldShowSyncAccountControl_(): boolean {
     // <if expr="chromeos">
-    if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
-      return false;
-    }
+    return false;
     // </if>
+    // <if expr="not chromeos">
     return this.syncStatus !== undefined &&
         !!this.syncStatus.syncSystemEnabled &&
         loadTimeData.getBoolean('signinAllowed');
+    // </if>
   }
 
   private shouldShowExistingPassphraseBelowAccount_(): boolean {

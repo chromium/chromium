@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl, loadTimeData, pageVisibility, ProfileInfoBrowserProxyImpl, Router, SettingsPeoplePageElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {simulateSyncStatus} from './sync_test_util.js';
@@ -173,50 +173,5 @@ suite('Chrome OS with account manager disabled', function() {
     const oldRoute = Router.getInstance().getCurrentRoute();
     profileIcon!.click();
     assertEquals(oldRoute, Router.getInstance().getCurrentRoute());
-  });
-});
-
-suite('Chrome OS with UseBrowserSyncConsent', function() {
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      useBrowserSyncConsent: true,
-    });
-  });
-
-  setup(async function() {
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-
-    profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
-    ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
-
-    document.body.innerHTML = '';
-    peoplePage = document.createElement('settings-people-page');
-    peoplePage.prefs = DEFAULT_PREFS;
-    peoplePage.pageVisibility = pageVisibility;
-    document.body.appendChild(peoplePage);
-
-    await syncBrowserProxy.whenCalled('getSyncStatus');
-    flush();
-  });
-
-  teardown(function() {
-    peoplePage.remove();
-  });
-
-  test('Sync account control is shown', () => {
-    simulateSyncStatus({
-      syncSystemEnabled: true,
-      statusAction: StatusAction.NO_ACTION,
-    });
-
-    // Account control is visible.
-    const accountControl =
-        peoplePage.shadowRoot!.querySelector('settings-sync-account-control')!;
-    assertNotEquals('none', window.getComputedStyle(accountControl).display);
-
-    // Profile row items are not available.
-    assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-icon'));
-    assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-row'));
   });
 });
