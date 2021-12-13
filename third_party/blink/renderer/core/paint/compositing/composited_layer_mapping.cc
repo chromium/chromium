@@ -167,12 +167,8 @@ CompositedLayerMapping::~CompositedLayerMapping() {
 }
 
 void CompositedLayerMapping::Destroy() {
-  RemoveSquashedLayers(non_scrolling_squashed_layers_);
-  RemoveSquashedLayers(squashed_layers_in_scrolling_contents_);
-  UpdateOverflowControlsLayers(false, false, false);
   UpdateForegroundLayer(false);
   UpdateMaskLayer(false);
-  UpdateScrollingContentsLayer(false);
   UpdateSquashingLayers(false);
   if (graphics_layer_)
     graphics_layer_.Release()->Destroy();
@@ -196,22 +192,6 @@ void CompositedLayerMapping::Destroy() {
 #if DCHECK_IS_ON()
   is_destroyed_ = true;
 #endif
-}
-
-void CompositedLayerMapping::RemoveSquashedLayers(
-    HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers) {
-  // Do not leave the destroyed pointer dangling on any Layers that painted to
-  // this mapping's squashing layer.
-  for (auto& squashed_layer : squashed_layers) {
-    PaintLayer* old_squashed_layer = squashed_layer->paint_layer;
-    // Assert on incorrect mappings between layers and groups
-    DCHECK_EQ(old_squashed_layer->GroupedMapping(), this);
-    if (old_squashed_layer->GroupedMapping() == this) {
-      old_squashed_layer->SetGroupedMapping(
-          nullptr, PaintLayer::kDoNotInvalidateLayerAndRemoveFromMapping);
-      old_squashed_layer->SetLostGroupedMapping(true);
-    }
-  }
 }
 
 Member<GraphicsLayer> CompositedLayerMapping::CreateGraphicsLayer(
@@ -245,15 +225,6 @@ void CompositedLayerMapping::UpdateCompositedBounds() {
   composited_bounds_ = owning_layer_->BoundingBoxForCompositing();
 }
 
-void CompositedLayerMapping::UpdateCompositingReasons() {
-  // All other layers owned by this mapping will have the same compositing
-  // reason for their lifetime, so they are initialized only when created.
-  graphics_layer_->SetCompositingReasons(
-      owning_layer_->GetCompositingReasons());
-  graphics_layer_->SetSquashingDisallowedReasons(
-      owning_layer_->GetSquashingDisallowedReasons());
-}
-
 bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
     const PaintLayer* compositing_container) {
   DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
@@ -274,9 +245,6 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
           compositor->NeedsContentsCompositingLayer(owning_layer_)))
     layer_config_changed = true;
 
-  if (UpdateScrollingContentsLayer(owning_layer_->NeedsCompositedScrolling()))
-    layer_config_changed = true;
-
   // If the outline needs to draw over the composited scrolling contents layer
   // or scrollbar layers (or video or webgl) it needs to be drawn into a
   // separate layer.
@@ -284,11 +252,6 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
       NeedsDecorationOutlineLayer(*owning_layer_, layout_object);
 
   if (UpdateDecorationOutlineLayer(needs_decoration_outline_layer))
-    layer_config_changed = true;
-
-  if (UpdateOverflowControlsLayers(RequiresHorizontalScrollbarLayer(),
-                                   RequiresVerticalScrollbarLayer(),
-                                   RequiresScrollCornerLayer()))
     layer_config_changed = true;
 
   if (UpdateSquashingLayers(!non_scrolling_squashed_layers_.IsEmpty()))
@@ -622,7 +585,6 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
   UpdateContentsRect();
   UpdateDrawsContentAndPaintsHitTest();
   UpdateElementId();
-  UpdateCompositingReasons();
 }
 
 void CompositedLayerMapping::UpdateMainGraphicsLayerGeometry(
@@ -710,11 +672,6 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   auto* scrolling_coordinator = owning_layer_->GetScrollingCoordinator();
   scrolling_coordinator->UpdateCompositorScrollOffset(*layout_box.GetFrame(),
                                                       *scrollable_area);
-
-  if (scroll_size != scrolling_contents_layer_->Size() ||
-      scroll_container_size_changed) {
-    scrolling_coordinator->ScrollableAreaScrollLayerDidChange(scrollable_area);
-  }
 
   scrolling_contents_layer_->SetSize(scroll_size);
 
@@ -907,83 +864,6 @@ void CompositedLayerMapping::UpdateDrawsContentAndPaintsHitTest() {
     mask_layer_->SetDrawsContent(true);
 }
 
-bool CompositedLayerMapping::ToggleScrollbarLayerIfNeeded(
-    Member<GraphicsLayer>& layer,
-    bool needs_layer,
-    CompositingReasons reason) {
-  if (needs_layer == !!layer)
-    return false;
-  if (layer)
-    layer.Release()->Destroy();
-  else
-    layer = CreateGraphicsLayer(reason);
-
-  if (PaintLayerScrollableArea* scrollable_area =
-          owning_layer_->GetScrollableArea()) {
-    if (ScrollingCoordinator* scrolling_coordinator =
-            owning_layer_->GetScrollingCoordinator()) {
-      if (reason == CompositingReason::kLayerForHorizontalScrollbar) {
-        scrolling_coordinator->ScrollableAreaScrollbarLayerDidChange(
-            scrollable_area, kHorizontalScrollbar);
-      } else if (reason == CompositingReason::kLayerForVerticalScrollbar) {
-        scrolling_coordinator->ScrollableAreaScrollbarLayerDidChange(
-            scrollable_area, kVerticalScrollbar);
-      }
-    }
-  }
-  return true;
-}
-
-bool CompositedLayerMapping::UpdateOverflowControlsLayers(
-    bool needs_horizontal_scrollbar_layer,
-    bool needs_vertical_scrollbar_layer,
-    bool needs_scroll_corner_layer) {
-  if (PaintLayerScrollableArea* scrollable_area =
-          owning_layer_->GetScrollableArea()) {
-    // If the scrollable area is marked as needing a new scrollbar layer,
-    // destroy the layer now so that it will be created again below.
-    if (layer_for_horizontal_scrollbar_ && needs_horizontal_scrollbar_layer &&
-        scrollable_area->ShouldRebuildHorizontalScrollbarLayer()) {
-      ToggleScrollbarLayerIfNeeded(
-          layer_for_horizontal_scrollbar_, false,
-          CompositingReason::kLayerForHorizontalScrollbar);
-    }
-    if (layer_for_vertical_scrollbar_ && needs_vertical_scrollbar_layer &&
-        scrollable_area->ShouldRebuildVerticalScrollbarLayer()) {
-      ToggleScrollbarLayerIfNeeded(
-          layer_for_vertical_scrollbar_, false,
-          CompositingReason::kLayerForVerticalScrollbar);
-    }
-    scrollable_area->ResetRebuildScrollbarLayerFlags();
-  }
-
-  // If the subtree is invisible, we don't actually need scrollbar layers.
-  // Only do this check if at least one of the bits is currently true.
-  // This is important because this method is called during the destructor
-  // of CompositedLayerMapping, which may happen during style recalc,
-  // and therefore visible content status may be invalid.
-  if (needs_horizontal_scrollbar_layer || needs_vertical_scrollbar_layer ||
-      needs_scroll_corner_layer) {
-    bool invisible = owning_layer_->SubtreeIsInvisible();
-    needs_horizontal_scrollbar_layer &= !invisible;
-    needs_vertical_scrollbar_layer &= !invisible;
-    needs_scroll_corner_layer &= !invisible;
-  }
-
-  bool horizontal_scrollbar_layer_changed = ToggleScrollbarLayerIfNeeded(
-      layer_for_horizontal_scrollbar_, needs_horizontal_scrollbar_layer,
-      CompositingReason::kLayerForHorizontalScrollbar);
-  bool vertical_scrollbar_layer_changed = ToggleScrollbarLayerIfNeeded(
-      layer_for_vertical_scrollbar_, needs_vertical_scrollbar_layer,
-      CompositingReason::kLayerForVerticalScrollbar);
-  bool scroll_corner_layer_changed = ToggleScrollbarLayerIfNeeded(
-      layer_for_scroll_corner_, needs_scroll_corner_layer,
-      CompositingReason::kLayerForScrollCorner);
-
-  return horizontal_scrollbar_layer_changed ||
-         vertical_scrollbar_layer_changed || scroll_corner_layer_changed;
-}
-
 void CompositedLayerMapping::PositionOverflowControlsLayers() {
   if (GraphicsLayer* layer = LayerForHorizontalScrollbar()) {
     Scrollbar* h_bar =
@@ -1114,45 +994,6 @@ bool CompositedLayerMapping::UpdateMaskLayer(bool needs_mask_layer) {
   } else if (mask_layer_) {
     mask_layer_.Release()->Destroy();
     layer_changed = true;
-  }
-
-  return layer_changed;
-}
-
-bool CompositedLayerMapping::UpdateScrollingContentsLayer(
-    bool needs_scrolling_contents_layer) {
-  ScrollingCoordinator* scrolling_coordinator =
-      owning_layer_->GetScrollingCoordinator();
-
-  auto* scrollable_area = owning_layer_->GetScrollableArea();
-  if (scrollable_area)
-    scrollable_area->SetUsesCompositedScrolling(needs_scrolling_contents_layer);
-
-  bool layer_changed = false;
-  if (needs_scrolling_contents_layer) {
-    if (!scrolling_contents_layer_) {
-      // Inner layer which renders the content that scrolls.
-      scrolling_contents_layer_ =
-          CreateGraphicsLayer(CompositingReason::kLayerForScrollingContents);
-      scrolling_contents_layer_->SetHitTestable(true);
-
-      DCHECK(scrollable_area);
-      auto element_id = scrollable_area->GetScrollElementId();
-      scrolling_contents_layer_->SetElementId(element_id);
-
-      layer_changed = true;
-      if (scrolling_coordinator) {
-        scrolling_coordinator->ScrollableAreaScrollLayerDidChange(
-            scrollable_area);
-      }
-    }
-  } else if (scrolling_contents_layer_) {
-    scrolling_contents_layer_.Release()->Destroy();
-    layer_changed = true;
-    if (scrolling_coordinator && scrollable_area) {
-      scrolling_coordinator->ScrollableAreaScrollLayerDidChange(
-          scrollable_area);
-    }
   }
 
   return layer_changed;
@@ -1782,9 +1623,6 @@ bool CompositedLayerMapping::UpdateSquashingLayerAssignmentInternal(
   }
   // Must invalidate before adding the squashed layer to the mapping.
   Compositor()->PaintInvalidationOnCompositingChange(&squashed_layer);
-  squashed_layer.SetGroupedMapping(
-      this, PaintLayer::kInvalidateLayerAndRemoveFromMapping);
-
   return true;
 }
 
@@ -1875,9 +1713,6 @@ void CompositedLayerMapping::FinishAccumulatingSquashingLayers(
         !LayerInSquashedLayersVector(squashed_layers_in_scrolling_contents_,
                                      *layer)) {
       Compositor()->PaintInvalidationOnCompositingChange(layer);
-      layer->SetGroupedMapping(
-          nullptr, PaintLayer::kDoNotInvalidateLayerAndRemoveFromMapping);
-      layer->SetLostGroupedMapping(true);
     }
   }
 }

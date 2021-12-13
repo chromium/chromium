@@ -164,16 +164,12 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
 }  // namespace
 
 PaintLayerRareData::PaintLayerRareData()
-    : enclosing_pagination_layer(nullptr),
-      squashing_disallowed_reasons(SquashingDisallowedReason::kNone),
-      grouped_mapping(nullptr) {}
+    : enclosing_pagination_layer(nullptr) {}
 
 PaintLayerRareData::~PaintLayerRareData() = default;
 
 void PaintLayerRareData::Trace(Visitor* visitor) const {
   visitor->Trace(enclosing_pagination_layer);
-  visitor->Trace(composited_layer_mapping);
-  visitor->Trace(grouped_mapping);
   visitor->Trace(resource_info);
 }
 
@@ -190,7 +186,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
 #endif
       has3d_transformed_descendant_(false),
       should_isolate_composited_descendants_(false),
-      lost_grouped_mapping_(false),
       self_needs_repaint_(false),
       descendant_needs_repaint_(false),
       needs_cull_rect_update_(false),
@@ -252,11 +247,6 @@ void PaintLayer::Destroy() {
       reference_clip->RemoveClient(*rare_data_->resource_info);
     rare_data_->resource_info->ClearLayer();
   }
-
-  // Child layers will be deleted by their corresponding layout objects, so
-  // we don't need to delete them ourselves.
-  if (HasCompositedLayerMapping())
-    ClearCompositedLayerMapping(true);
 
   // Reset this flag before disposing scrollable_area_ to prevent
   // PaintLayerScrollableArea::WillRemoveScrollbar() from dirtying the z-order
@@ -585,32 +575,6 @@ void PaintLayer::ClearPaginationRecursive() {
     rare_data_->enclosing_pagination_layer = nullptr;
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->ClearPaginationRecursive();
-}
-
-void PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-    const LayoutBoxModelObject& paint_invalidation_container,
-    PhysicalOffset& point) {
-  PaintLayer* paint_invalidation_layer = paint_invalidation_container.Layer();
-  if (!paint_invalidation_layer->GroupedMapping())
-    return;
-
-  GraphicsLayer* squashing_layer =
-      paint_invalidation_layer->GroupedMapping()->SquashingLayer(
-          *paint_invalidation_layer);
-
-  auto source_state =
-      paint_invalidation_container.FirstFragment().LocalBorderBoxProperties();
-  auto dest_state = squashing_layer->GetPropertyTreeState();
-
-  // Move the point into the source_state transform space, map to dest_state
-  // transform space, then move into squashing layer state.
-  point +=
-      paint_invalidation_container.PrimaryStitchingFragment().PaintOffset();
-  point = PhysicalOffset::FromPointFRound(
-      GeometryMapper::SourceToDestinationProjection(source_state.Transform(),
-                                                    dest_state.Transform())
-          .MapPoint(gfx::PointF(point)));
-  point -= PhysicalOffset(squashing_layer->GetOffsetFromTransformNode());
 }
 
 void PaintLayer::DirtyVisibleContentStatus() {
@@ -966,28 +930,6 @@ bool PaintLayer::IsPaintInvalidationContainer() const {
          GetCompositingState() == kPaintsIntoGroupedBacking;
 }
 
-// Note: enclosingCompositingLayer does not include squashed layers. Compositing
-// stacking children of squashed layers receive graphics layers that are
-// parented to the compositing ancestor of the squashed layer.
-PaintLayer* PaintLayer::EnclosingLayerWithCompositedLayerMapping(
-    IncludeSelfOrNot include_self) const {
-  DCHECK(IsAllowedToQueryCompositingState());
-
-  if ((include_self == kIncludeSelf) &&
-      GetCompositingState() != kNotComposited &&
-      GetCompositingState() != kPaintsIntoGroupedBacking)
-    return const_cast<PaintLayer*>(this);
-
-  for (PaintLayer* curr = CompositingContainer(); curr;
-       curr = curr->CompositingContainer()) {
-    if (curr->GetCompositingState() != kNotComposited &&
-        curr->GetCompositingState() != kPaintsIntoGroupedBacking)
-      return curr;
-  }
-
-  return nullptr;
-}
-
 // Return the enclosingCompositedLayerForPaintInvalidation for the given Layer
 // including crossing frame boundaries.
 PaintLayer*
@@ -1120,17 +1062,6 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   return false;
 }
 
-void PaintLayer::SetSquashingDisallowedReasons(
-    SquashingDisallowedReasons reasons) {
-  SquashingDisallowedReasons old_reasons =
-      rare_data_ ? rare_data_->squashing_disallowed_reasons
-                 : SquashingDisallowedReason::kNone;
-  if (old_reasons == reasons)
-    return;
-  if (rare_data_ || reasons != SquashingDisallowedReason::kNone)
-    EnsureRareData().squashing_disallowed_reasons = reasons;
-}
-
 void PaintLayer::SetShouldIsolateCompositedDescendants(
     bool should_isolate_composited_descendants) {
   if (should_isolate_composited_descendants_ ==
@@ -1139,10 +1070,6 @@ void PaintLayer::SetShouldIsolateCompositedDescendants(
 
   should_isolate_composited_descendants_ =
       should_isolate_composited_descendants;
-
-  if (HasCompositedLayerMapping())
-    GetCompositedLayerMapping()->SetNeedsGraphicsLayerUpdate(
-        kGraphicsLayerUpdateLocal);
 }
 
 bool PaintLayer::HasAncestorWithFilterThatMovesPixels() const {
@@ -2850,26 +2777,6 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
   return result;
 }
 
-CompositingState PaintLayer::GetCompositingState() const {
-#if DCHECK_IS_ON()
-  DCHECK(IsAllowedToQueryCompositingState())
-      << " " << GetLayoutObject().GetDocument().Lifecycle().ToString();
-#endif
-
-  // This is computed procedurally so there is no redundant state variable that
-  // can get out of sync from the real actual compositing state.
-
-  if (GroupedMapping()) {
-    DCHECK(!GetCompositedLayerMapping());
-    return kPaintsIntoGroupedBacking;
-  }
-
-  if (!GetCompositedLayerMapping())
-    return kNotComposited;
-
-  return kPaintsIntoOwnBacking;
-}
-
 bool PaintLayer::IsAllowedToQueryCompositingState() const {
   if (g_compositing_query_mode == kCompositingQueriesAreAllowed ||
       RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -2888,11 +2795,6 @@ bool PaintLayer::IsAllowedToQueryCompositingInputs() const {
          DocumentLifecycle::kCompositingInputsClean;
 }
 
-CompositedLayerMapping* PaintLayer::GetCompositedLayerMapping() const {
-  DCHECK(IsAllowedToQueryCompositingState());
-  return rare_data_ ? rare_data_->composited_layer_mapping : nullptr;
-}
-
 GraphicsLayer* PaintLayer::GraphicsLayerBacking(const LayoutObject* obj) const {
   switch (GetCompositingState()) {
     case kNotComposited:
@@ -2905,55 +2807,6 @@ GraphicsLayer* PaintLayer::GraphicsLayerBacking(const LayoutObject* obj) const {
                  ? GetCompositedLayerMapping()->ScrollingContentsLayer()
                  : GetCompositedLayerMapping()->MainGraphicsLayer();
   }
-}
-
-void PaintLayer::EnsureCompositedLayerMapping() {
-  if (HasCompositedLayerMapping())
-    return;
-
-  EnsureRareData().composited_layer_mapping =
-      MakeGarbageCollected<CompositedLayerMapping>(*this);
-  rare_data_->composited_layer_mapping->SetNeedsGraphicsLayerUpdate(
-      kGraphicsLayerUpdateSubtree);
-}
-
-void PaintLayer::ClearCompositedLayerMapping(bool layer_being_destroyed) {
-  DCHECK(HasCompositedLayerMapping());
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  if (!layer_being_destroyed) {
-    // We need to make sure our descendants get a geometry update. In principle,
-    // we could call setNeedsGraphicsLayerUpdate on our children, but that would
-    // require walking the z-order lists to find them. Instead, we
-    // over-invalidate by marking our parent as needing a geometry update.
-    if (PaintLayer* compositing_parent =
-            EnclosingLayerWithCompositedLayerMapping(kExcludeSelf))
-      compositing_parent->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-  }
-  DCHECK(rare_data_);
-  rare_data_->composited_layer_mapping.Release()->Destroy();
-}
-
-void PaintLayer::SetGroupedMapping(CompositedLayerMapping* grouped_mapping,
-                                   SetGroupMappingOptions options) {
-  CompositedLayerMapping* old_grouped_mapping = GroupedMapping();
-  if (grouped_mapping == old_grouped_mapping)
-    return;
-
-  if (options == kInvalidateLayerAndRemoveFromMapping && old_grouped_mapping) {
-    old_grouped_mapping->SetNeedsGraphicsLayerUpdate(
-        kGraphicsLayerUpdateSubtree);
-    old_grouped_mapping->RemoveLayerFromSquashingGraphicsLayer(*this);
-  }
-  if (rare_data_ || grouped_mapping)
-    EnsureRareData().grouped_mapping = grouped_mapping;
-#if DCHECK_IS_ON()
-  if (grouped_mapping)
-    grouped_mapping->AssertInSquashedLayersVector(*this);
-#endif
-  if (options == kInvalidateLayerAndRemoveFromMapping && grouped_mapping)
-    grouped_mapping->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
 }
 
 bool PaintLayer::NeedsCompositedScrolling() const {
@@ -3133,73 +2986,11 @@ void PaintLayer::UpdateClipPath(const ComputedStyle* old_style,
   }
 }
 
-bool PaintLayer::AttemptDirectCompositingUpdate(
-    const StyleDifference& diff,
-    const ComputedStyle* old_style) {
-  // This function implements an optimization for transforms and opacity.
-  // A common pattern is for a touchmove handler to update the transform
-  // and/or an opacity of an element every frame while the user moves their
-  // finger across the screen. The conditions below recognize when the
-  // compositing state is set up to receive a direct transform or opacity
-  // update.
-
-  if (!diff.HasAtMostPropertySpecificDifferences(
-          StyleDifference::kTransformChanged |
-          StyleDifference::kOpacityChanged))
-    return false;
-  if (!rare_data_ || !rare_data_->composited_layer_mapping)
-    return false;
-
-  // If a transform changed, we can't use the fast path.
-  if (diff.TransformChanged())
-    return false;
-
-  // We composite transparent Layers differently from non-transparent
-  // Layers even when the non-transparent Layers are already a
-  // stacking context.
-  if (diff.OpacityChanged() &&
-      layout_object_->StyleRef().HasOpacity() != old_style->HasOpacity())
-    return false;
-
-  // Changes in pointer-events affect hit test visibility of the scrollable
-  // area and its |m_scrollsOverflow| value which determines if the layer
-  // requires composited scrolling or not.
-  if (scrollable_area_ && layout_object_->StyleRef().UsedPointerEvents() !=
-                              old_style->UsedPointerEvents())
-    return false;
-
-  UpdateTransform(old_style, GetLayoutObject().StyleRef());
-
-  // FIXME: Consider introducing a smaller graphics layer update scope
-  // that just handles transforms and opacity. GraphicsLayerUpdateLocal
-  // will also program bounds, clips, and many other properties that could
-  // not possibly have changed.
-  rare_data_->composited_layer_mapping->SetNeedsGraphicsLayerUpdate(
-      kGraphicsLayerUpdateLocal);
-  if (Compositor()) {
-    Compositor()->SetNeedsCompositingUpdate(
-        kCompositingUpdateAfterGeometryChange);
-  }
-
-  if (RequiresScrollableArea()) {
-    DCHECK(scrollable_area_);
-    scrollable_area_->UpdateAfterStyleChange(old_style);
-  }
-
-  return true;
-}
-
 void PaintLayer::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   UpdateScrollableArea();
 
   has_filter_that_moves_pixels_ = ComputeHasFilterThatMovesPixels();
-
-  if (AttemptDirectCompositingUpdate(diff, old_style)) {
-    if (diff.HasDifference())
-      GetLayoutObject().SetNeedsPaintPropertyUpdate();
-    return;
-  }
 
   if (PaintLayerStackingNode::StyleDidChange(*this, old_style))
     MarkAncestorChainForFlagsUpdate();
@@ -3627,7 +3418,6 @@ void ShowLayerTree(const blink::PaintLayer* layer) {
         ExternalRepresentation(frame,
                                blink::kLayoutAsTextShowAllLayers |
                                    blink::kLayoutAsTextShowLayerNesting |
-                                   blink::kLayoutAsTextShowCompositedLayers |
                                    blink::kLayoutAsTextShowAddresses |
                                    blink::kLayoutAsTextShowIDAndClass |
                                    blink::kLayoutAsTextDontUpdateLayout |

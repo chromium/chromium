@@ -56,23 +56,21 @@ enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextShowAllLayers = 1 << 0,
   // Annotate the layer lists.
   kLayoutAsTextShowLayerNesting = 1 << 1,
-  // Show which layers are composited.
-  kLayoutAsTextShowCompositedLayers = 1 << 2,
   // Show layer and layoutObject addresses.
-  kLayoutAsTextShowAddresses = 1 << 3,
+  kLayoutAsTextShowAddresses = 1 << 2,
   // Show id and class attributes
-  kLayoutAsTextShowIDAndClass = 1 << 4,
+  kLayoutAsTextShowIDAndClass = 1 << 3,
   // Dump the tree in printing mode.
-  kLayoutAsTextPrintingMode = 1 << 5,
+  kLayoutAsTextPrintingMode = 1 << 4,
   // Don't update layout, to make it safe to call ShowLayerTree() from the
   // debugger inside layout or painting code.
-  kLayoutAsTextDontUpdateLayout = 1 << 6,
+  kLayoutAsTextDontUpdateLayout = 1 << 5,
   // Print the various 'needs layout' bits on layoutObjects.
-  kLayoutAsTextShowLayoutState = 1 << 7,
+  kLayoutAsTextShowLayoutState = 1 << 6,
   // Dump the line trees for each LayoutBlockFlow.
-  kLayoutAsTextShowLineTrees = 1 << 8,
+  kLayoutAsTextShowLineTrees = 1 << 7,
   // Print paint properties associated with layers and layout objects.
-  kLayoutAsTextShowPaintProperties = 1 << 9,
+  kLayoutAsTextShowPaintProperties = 1 << 8,
 };
 typedef unsigned LayoutAsTextBehavior;
 

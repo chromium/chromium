@@ -107,27 +107,10 @@ void BoxPainter::PaintBoxDecorationBackground(
   RecordHitTestData(paint_info, paint_rect, *background_client);
   RecordRegionCaptureData(paint_info, paint_rect, *background_client);
 
-  bool needs_scroll_hit_test = true;
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
-    // display items for composited scrollers because these display items are
-    // only used to create non-fast scrollable regions for non-composited
-    // scrollers. With CompositeAfterPaint, we always paint the scroll hit
-    // test display items but ignore the non-fast region if the scroll was
-    // composited in PaintArtifactCompositor::UpdateNonFastScrollableRegions.
-    if (layout_box_.HasLayer() &&
-        layout_box_.Layer()->GetCompositedLayerMapping() &&
-        layout_box_.Layer()
-            ->GetCompositedLayerMapping()
-            ->ScrollingContentsLayer()) {
-      needs_scroll_hit_test = false;
-    }
-  }
-
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
-  if (!painting_background_in_contents_space && needs_scroll_hit_test)
+  if (!painting_background_in_contents_space)
     RecordScrollHitTestData(paint_info, *background_client);
 }
 

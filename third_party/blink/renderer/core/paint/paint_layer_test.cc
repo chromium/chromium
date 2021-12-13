@@ -1280,13 +1280,6 @@ TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
@@ -1323,13 +1316,6 @@ TEST_P(PaintLayerTest,
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
   EXPECT_EQ(span, target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(span,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
@@ -1350,13 +1336,6 @@ TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
   } else {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
-  }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
   }
 }
 
@@ -1380,18 +1359,6 @@ TEST_P(PaintLayerTest,
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
   }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      EXPECT_EQ(GetPaintLayerByElementId("span"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    } else {
-      EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    }
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1411,13 +1378,6 @@ TEST_P(PaintLayerTest,
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1438,13 +1398,6 @@ TEST_P(PaintLayerTest,
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
   EXPECT_EQ(span, target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(span,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1469,13 +1422,6 @@ TEST_P(PaintLayerTest,
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
   }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1499,18 +1445,6 @@ TEST_P(PaintLayerTest,
   } else {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
-  }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      EXPECT_EQ(GetPaintLayerByElementId("span"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    } else {
-      EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    }
   }
 }
 
@@ -1888,15 +1822,6 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
   } else {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
-  }
-  PaintLayer* composited_container =
-      GetPaintLayerByElementId("compositedContainer");
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(composited_container,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
   }
 }
 

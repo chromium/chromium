@@ -46,34 +46,6 @@ bool IsLinkHighlighted(const LayoutObject& object) {
 
 }  // anonymous namespace
 
-static void SetNeedsCompositingLayerPropertyUpdate(const LayoutObject& object) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  if (!object.HasLayer())
-    return;
-
-  auto* compositor = object.View()->Compositor();
-  if (!compositor)
-    return;
-
-  PaintLayer* paint_layer = To<LayoutBoxModelObject>(object).Layer();
-
-  // This ensures that CompositingLayerPropertyUpdater::Update will
-  // be called and update LayerState for the LayoutView.
-  auto* mapping = paint_layer->GetCompositedLayerMapping();
-  if (!mapping)
-    mapping = paint_layer->GroupedMapping();
-  if (!mapping)
-    return;
-
-  // These two calls will cause GraphicsLayerUpdater to run on |paint_layer|
-  // from with PLC::UpdateIfNeeded.
-  compositor->SetNeedsCompositingUpdate(
-      kCompositingUpdateAfterCompositingInputChange);
-  mapping->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateLocal);
-}
-
 void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   if (root_frame_view.ShouldThrottleRendering()) {
     // Skip the throttled frame. Will update it when it becomes unthrottled.
@@ -99,8 +71,6 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     if (property_changed >
         PaintPropertyChangeType::kChangedOnlyCompositedValues) {
       root_frame_view.SetPaintArtifactCompositorNeedsUpdate();
-      if (auto* layout_view = root_frame_view.GetLayoutView())
-        SetNeedsCompositingLayerPropertyUpdate(*layout_view);
     }
   }
 
@@ -298,7 +268,6 @@ void PrePaintTreeWalk::InvalidatePaintForHitTesting(
   context.paint_invalidator_context.painting_layer->SetNeedsRepaint();
   ObjectPaintInvalidator(object).InvalidateDisplayItemClient(
       object, PaintInvalidationReason::kHitTest);
-  SetNeedsCompositingLayerPropertyUpdate(object);
 }
 
 void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
@@ -620,28 +589,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
         object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
       }
 
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-        if ((property_changed >
-             PaintPropertyChangeType::kChangedOnlyCompositedValues) &&
-            context.paint_invalidation_container) {
-          // Mark the previous paint invalidation container as needing
-          // raster invalidation. This handles cases where raster invalidation
-          // needs to happen but no compositing layers were added or removed.
-          const auto* paint_invalidation_container =
-              context.paint_invalidation_container->Layer();
-          if (!paint_invalidation_container->SelfNeedsRepaint()) {
-            auto* mapping =
-                paint_invalidation_container->GetCompositedLayerMapping();
-            if (!mapping)
-              mapping = paint_invalidation_container->GroupedMapping();
-            if (mapping)
-              mapping->SetNeedsCheckRasterInvalidation();
-          }
-
-          SetNeedsCompositingLayerPropertyUpdate(object);
-        }
-      } else if (!context.tree_builder_context
-                      ->supports_composited_raster_invalidation) {
+      if (!context.tree_builder_context
+               ->supports_composited_raster_invalidation) {
         paint_invalidator_context.subtree_flags |=
             PaintInvalidatorContext::kSubtreeFullInvalidation;
       }

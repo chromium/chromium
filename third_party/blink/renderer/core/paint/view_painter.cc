@@ -86,22 +86,6 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool paints_scroll_hit_test =
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
-    // display items for composited scrollers because these display items are
-    // only used to create non-fast scrollable regions for non-composited
-    // scrollers. With CompositeAfterPaint, we always paint the scroll hit
-    // test display items but ignore the non-fast region if the scroll was
-    // composited in PaintArtifactCompositor::UpdateNonFastScrollableRegions.
-    if (layout_view_.HasLayer() &&
-        layout_view_.Layer()->GetCompositedLayerMapping() &&
-        layout_view_.Layer()
-            ->GetCompositedLayerMapping()
-            ->ScrollingContentsLayer()) {
-      paints_scroll_hit_test = false;
-    }
-  }
-
   if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
       !paints_scroll_hit_test && !has_region_capture_data)
     return;

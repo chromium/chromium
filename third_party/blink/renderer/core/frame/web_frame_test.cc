@@ -6593,35 +6593,19 @@ class CompositedSelectionBoundsTest
     RunTest(test_file);
   }
 
-  static GraphicsLayer* GetExpectedLayerForSelection(blink::Node* node) {
-    CompositedLayerMapping* clm = node->GetLayoutObject()
-                                      ->EnclosingLayer()
-                                      ->EnclosingLayerForPaintInvalidation()
-                                      ->GetCompositedLayerMapping();
-
-    // If the Node is a scroller, the selection will be relative to its
-    // scrolling contents layer.
-    return clm->ScrollingContentsLayer() ? clm->ScrollingContentsLayer()
-                                         : clm->MainGraphicsLayer();
-  }
-
   static int LayerIdFromNode(const cc::Layer* root_layer, blink::Node* node) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      return GetExpectedLayerForSelection(node)->CcLayer().id();
+    Vector<const cc::Layer*> layers;
+    if (node->IsDocumentNode()) {
+      layers = CcLayersByName(root_layer,
+                              "Scrolling background of LayoutView #document");
     } else {
-      Vector<const cc::Layer*> layers;
-      if (node->IsDocumentNode()) {
-        layers = CcLayersByName(root_layer,
-                                "Scrolling background of LayoutView #document");
-      } else {
-        DCHECK(node->IsElementNode());
-        layers = CcLayersByDOMElementId(root_layer,
-                                        To<Element>(node)->GetIdAttribute());
-      }
-
-      EXPECT_EQ(layers.size(), 1u);
-      return layers[0]->id();
+      DCHECK(node->IsElementNode());
+      layers = CcLayersByDOMElementId(root_layer,
+                                      To<Element>(node)->GetIdAttribute());
     }
+
+    EXPECT_EQ(layers.size(), 1u);
+    return layers[0]->id();
   }
 
   frame_test_helpers::WebViewHelper web_view_helper_;

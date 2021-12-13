@@ -176,11 +176,6 @@ static CompositingReasons SubtreeReasonsForCompositing(
   if (!has_composited_descendants)
     return subtree_reasons;
 
-  // When a layer has composited descendants, some effects, like 2d transforms,
-  // filters, masks etc must be implemented via compositing so that they also
-  // apply to those composited descendants.
-  subtree_reasons |= CompositingReason::kNone;
-
   if (layer->ShouldIsolateCompositedDescendants()) {
     DCHECK(layer->GetLayoutObject().IsStackingContext());
     subtree_reasons |= CompositingReason::kIsolateCompositedDescendants;
@@ -570,8 +565,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
 
   // Layer assignment is needed for allocating or removing composited
   // layers related to this PaintLayer; hence the below conditions.
-  if (reasons_to_composite || layer->GetCompositingState() != kNotComposited ||
-      layer->LostGroupedMapping()) {
+  if (reasons_to_composite || layer->GetCompositingState() != kNotComposited) {
     layer->SetNeedsCompositingLayerAssignment();
   } else if (contains_composited_layer) {
     // If this is an iframe whose content document is composited, then we need

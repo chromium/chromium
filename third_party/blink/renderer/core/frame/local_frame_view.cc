@@ -1325,21 +1325,6 @@ bool LocalFrameView::InvalidateViewportConstrainedObjects() {
     // if we're not compositing-inputs-clean, then we can't query
     // layer->SubtreeIsInvisible() here.
     layout_object->SetSubtreeShouldCheckForPaintInvalidation();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        !layer->SelfOrDescendantNeedsRepaint()) {
-      // Paint properties of the layer relative to its containing graphics
-      // layer may change if the paint properties escape the graphics layer's
-      // property state. Need to check raster invalidation for relative paint
-      // property changes.
-      if (auto* paint_invalidation_layer =
-              layer->EnclosingLayerForPaintInvalidation()) {
-        auto* mapping = paint_invalidation_layer->GetCompositedLayerMapping();
-        if (!mapping)
-          mapping = paint_invalidation_layer->GroupedMapping();
-        if (mapping)
-          mapping->SetNeedsCheckRasterInvalidation();
-      }
-    }
 
     // If the fixed layer has a blur/drop-shadow filter applied on at least one
     // of its parents, we cannot scroll using the fast path, otherwise the
@@ -2889,16 +2874,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
             PaintLayer* frame_root_layer = frame_layout_view->Layer();
             DCHECK(frame_root_layer);
             DCHECK(owner->Layer());
-            // In pre-CompositeAfterPaint the root layer's SelfNeedsRepaint()
-            // means it's compositing state has changed, so propagate the flag
-            // to owner. Or propagate DescendantNeedsRepaint only if it is not
-            // composited. In CompositeAfterPaint, the whole condition can be
-            // changed to |if
-            // (frame_root_layer->SelfOrDescendantNeedsRepaint())|.
-            if (frame_root_layer->SelfNeedsRepaint() ||
-                (frame_root_layer->DescendantNeedsRepaint() &&
-                 frame_root_layer->GetCompositingState() !=
-                     kPaintsIntoOwnBacking))
+            if (frame_root_layer->SelfOrDescendantNeedsRepaint())
               owner->Layer()->SetDescendantNeedsRepaint();
           }
           // If debug info was just enabled, then the paint cache won't have any

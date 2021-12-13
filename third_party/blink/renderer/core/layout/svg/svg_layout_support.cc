@@ -398,22 +398,10 @@ AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
   }
 
   // Continue walking up the layer tree, accumulating CSS transforms.
-  // FIXME: this queries layer compositing state - which is not
-  // supported during layout. Hence, the result may not include all CSS
-  // transforms.
   PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
-  while (layer && layer->IsAllowedToQueryCompositingState()) {
-    // We can stop at compositing layers, to match the backing resolution.
-    // FIXME: should we be computing the transform to the nearest composited
-    // layer, or the nearest composited layer that does not paint into its
-    // ancestor? I think this is the nearest composited ancestor since we will
-    // inherit its transforms in the composited layer tree.
-    if (layer->GetCompositingState() != kNotComposited)
-      break;
-
+  while (layer) {
     if (TransformationMatrix* layer_transform = layer->Transform())
       transform = layer_transform->ToAffineTransform() * transform;
-
     layer = layer->Parent();
   }
 

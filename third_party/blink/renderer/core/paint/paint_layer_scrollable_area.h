@@ -296,18 +296,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
 
-  // For composited scrolling, we allocate an extra GraphicsLayer to hold
-  // onto the scrolling content. The layer can be shifted on the GPU and
-  // composited at little cost.
-  // Note that this is done in CompositedLayerMapping, this function being
-  // only a helper.
-  cc::Layer* LayerForScrolling() const override;
-
   void DidCompositorScroll(const gfx::PointF&) override;
 
   // GraphicsLayers for the scrolling components.
   // Any function can return nullptr if they are not accelerated.
-  GraphicsLayer* GraphicsLayerForScrolling() const;
   GraphicsLayer* GraphicsLayerForHorizontalScrollbar() const;
   GraphicsLayer* GraphicsLayerForVerticalScrollbar() const;
   GraphicsLayer* GraphicsLayerForScrollCorner() const;

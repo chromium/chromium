@@ -55,8 +55,8 @@ WebString TestWebFrameContentDumper::DumpLayoutTreeAsText(
     behavior |= kLayoutAsTextShowLineTrees;
 
   if (to_show & kLayoutAsTextDebug) {
-    behavior |= kLayoutAsTextShowCompositedLayers | kLayoutAsTextShowAddresses |
-                kLayoutAsTextShowIDAndClass | kLayoutAsTextShowLayerNesting;
+    behavior |= kLayoutAsTextShowAddresses | kLayoutAsTextShowIDAndClass |
+                kLayoutAsTextShowLayerNesting;
   }
 
   if (to_show & kLayoutAsTextPrinting)

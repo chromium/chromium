@@ -327,69 +327,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
   }
 }
 
-static void RestartAnimationOnCompositor(const LayoutObject& layout_object) {
-  ElementAnimations* element_animations = nullptr;
-  if (auto* element = DynamicTo<Element>(layout_object.GetNode()))
-    element_animations = element->GetElementAnimations();
-  if (element_animations)
-    element_animations->RestartAnimationOnCompositor();
-}
-
-bool PaintLayerCompositor::AllocateOrClearCompositedLayerMapping(
-    PaintLayer* layer,
-    const CompositingStateTransitionType composited_layer_update) {
-  bool composited_layer_mapping_changed = false;
-
-  // FIXME: It would be nice to directly use the layer's compositing reason,
-  // but allocateOrClearCompositedLayerMapping also gets called without having
-  // updated compositing requirements fully.
-  switch (composited_layer_update) {
-    case kAllocateOwnCompositedLayerMapping:
-      DCHECK(!layer->HasCompositedLayerMapping());
-      SetCompositingModeEnabled(true);
-
-      // If we need to issue paint invalidations, do so before allocating the
-      // compositedLayerMapping and clearing out the groupedMapping.
-      PaintInvalidationOnCompositingChange(layer);
-
-      // If this layer was previously squashed, we need to remove its reference
-      // to a groupedMapping right away, so that computing paint invalidation
-      // rects will know the layer's correct compositingState.
-      // FIXME: do we need to also remove the layer from it's location in the
-      // squashing list of its groupedMapping?  Need to create a test where a
-      // squashed layer pops into compositing. And also to cover all other sorts
-      // of compositingState transitions.
-      layer->SetLostGroupedMapping(false);
-      layer->SetGroupedMapping(
-          nullptr, PaintLayer::kInvalidateLayerAndRemoveFromMapping);
-
-      layer->EnsureCompositedLayerMapping();
-      composited_layer_mapping_changed = true;
-
-      RestartAnimationOnCompositor(layer->GetLayoutObject());
-      break;
-    case kRemoveOwnCompositedLayerMapping:
-    // PutInSquashingLayer means you might have to remove the composited layer
-    // mapping first.
-    case kPutInSquashingLayer:
-      if (layer->HasCompositedLayerMapping()) {
-        layer->ClearCompositedLayerMapping();
-        composited_layer_mapping_changed = true;
-      }
-
-      break;
-    case kRemoveFromSquashingLayer:
-    case kNoCompositingStateChange:
-      // Do nothing.
-      break;
-  }
-
-  if (!composited_layer_mapping_changed)
-    return false;
-
-  return true;
-}
-
 void PaintLayerCompositor::PaintInvalidationOnCompositingChange(
     PaintLayer* layer) {
   // If the layoutObject is not attached yet, no need to issue paint

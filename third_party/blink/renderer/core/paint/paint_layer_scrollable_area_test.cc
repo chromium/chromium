@@ -1048,8 +1048,6 @@ TEST_P(PaintLayerScrollableAreaTest, CompositedStickyDescendant) {
   auto* scroller =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   auto* scrollable_area = scroller->GetScrollableArea();
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_EQ(kPaintsIntoOwnBacking, scroller->Layer()->GetCompositingState());
   auto* sticky = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
 
   EXPECT_EQ(&sticky->FirstFragment().LocalBorderBoxProperties().Transform(),

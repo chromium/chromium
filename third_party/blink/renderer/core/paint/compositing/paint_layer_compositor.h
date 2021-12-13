@@ -126,13 +126,6 @@ class CORE_EXPORT PaintLayerCompositor final
 
   void ClearRootLayerAttachmentDirty() { root_layer_attachment_dirty_ = false; }
 
-  // FIXME: Move allocateOrClearCompositedLayerMapping to
-  // CompositingLayerAssigner once we've fixed the compositing chicken/egg
-  // issues.
-  bool AllocateOrClearCompositedLayerMapping(
-      PaintLayer*,
-      CompositingStateTransitionType composited_layer_update);
-
   PaintLayer* GetCompositingInputsRoot() {
     return compositing_inputs_root_.Get();
   }

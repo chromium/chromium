@@ -669,21 +669,6 @@ static void Write(WTF::TextStream& ts,
               layer.GetLayoutObject().StyleRef().GetBlendMode());
   }
 
-  if (behavior & kLayoutAsTextShowCompositedLayers) {
-    if (layer.HasCompositedLayerMapping()) {
-      ts << " (composited, bounds="
-         << layer.GetCompositedLayerMapping()->CompositedBounds()
-         << ", drawsContent="
-         << layer.GetCompositedLayerMapping()
-                ->MainGraphicsLayer()
-                ->DrawsContent()
-         << (layer.ShouldIsolateCompositedDescendants()
-                 ? ", isolatesCompositedBlending"
-                 : "")
-         << ")";
-    }
-  }
-
   if ((behavior & kLayoutAsTextShowPaintProperties) && layer.SelfNeedsRepaint())
     ts << " needsRepaint";
 

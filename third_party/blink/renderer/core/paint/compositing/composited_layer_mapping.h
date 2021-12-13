@@ -294,9 +294,6 @@ class CORE_EXPORT CompositedLayerMapping final
   Member<GraphicsLayer> CreateGraphicsLayer(
       CompositingReasons,
       SquashingDisallowedReasons = SquashingDisallowedReason::kNone);
-  bool ToggleScrollbarLayerIfNeeded(Member<GraphicsLayer>&,
-                                    bool needs_layer,
-                                    CompositingReasons);
 
   LayoutBoxModelObject& GetLayoutObject() const {
     return owning_layer_->GetLayoutObject();
@@ -307,16 +304,12 @@ class CORE_EXPORT CompositedLayerMapping final
 
   void UpdateInternalHierarchy();
   void UpdatePaintingPhases();
-  bool UpdateOverflowControlsLayers(bool needs_horizontal_scrollbar_layer,
-                                    bool needs_vertical_scrollbar_layer,
-                                    bool needs_scroll_corner_layer);
   bool UpdateForegroundLayer(bool needs_foreground_layer);
   bool UpdateDecorationOutlineLayer(bool needs_decoration_outline_layer);
   bool UpdateMaskLayer(bool needs_mask_layer);
   bool RequiresHorizontalScrollbarLayer() const;
   bool RequiresVerticalScrollbarLayer() const;
   bool RequiresScrollCornerLayer() const;
-  bool UpdateScrollingContentsLayer(bool needs_scrolling_contents_layer);
   bool UpdateSquashingLayers(bool needs_squashing_layers);
   void UpdateDrawsContentAndPaintsHitTest();
   void UpdateCompositedBounds();
@@ -336,7 +329,6 @@ class CORE_EXPORT CompositedLayerMapping final
   bool ContainsPaintedContent() const;
 
   void UpdateContentsRect();
-  void UpdateCompositingReasons();
 
   static bool HasVisibleNonCompositingDescendant(PaintLayer* parent);
 
@@ -360,8 +352,6 @@ class CORE_EXPORT CompositedLayerMapping final
       HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers,
       PaintLayer& squashed_layer,
       wtf_size_t next_squashed_layer_index);
-  void RemoveSquashedLayers(
-      HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers);
 
   Member<PaintLayer> owning_layer_;
 
