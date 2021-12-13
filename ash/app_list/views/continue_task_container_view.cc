@@ -30,7 +30,8 @@ using views::TableLayout;
 namespace ash {
 namespace {
 // Suggested tasks layout constants.
-constexpr int kColumnSpacingClamshell = 8;
+constexpr int kColumnInnerSpacingClamshell = 8;
+constexpr int kColumnOuterSpacingClamshell = 6;
 constexpr int kColumnSpacingTablet = 16;
 constexpr int kRowSpacing = 8;
 constexpr size_t kMaxFilesForContinueSection = 4;
@@ -185,16 +186,22 @@ void ContinueTaskContainerView::InitializeTableLayout() {
   table_layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
   std::vector<size_t> linked_columns;
   for (int i = 0; i < columns_; i++) {
-    if (i > 0) {
+    if (i == 0) {
       table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kColumnSpacingClamshell);
+                                      kColumnOuterSpacingClamshell);
+    } else {
+      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                      kColumnInnerSpacingClamshell);
     }
     table_layout_->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
         /*horizontal_resize=*/1.0f, views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
-    linked_columns.push_back(2 * i);
+    linked_columns.push_back(2 * i + 1);
   }
+  table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                  kColumnOuterSpacingClamshell);
+
   table_layout_->LinkColumnSizes(linked_columns);
   // Continue section only shows if there are 3 or more suggestions, so there
   // are always 2 rows.
