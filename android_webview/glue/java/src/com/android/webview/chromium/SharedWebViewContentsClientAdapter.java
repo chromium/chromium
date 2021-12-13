@@ -9,10 +9,9 @@ import android.os.Build;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewDelegate;
 
 import androidx.annotation.Nullable;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;

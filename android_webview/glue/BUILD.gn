@@ -76,7 +76,6 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForS.java",
     "java/src/com/android/webview/chromium/WebViewContentsClientAdapter.java",
     "java/src/com/android/webview/chromium/WebViewDatabaseAdapter.java",
-    "java/src/com/android/webview/chromium/WebViewDelegateFactory.java",
     "java/src/com/android/webview/chromium/WebViewLibraryPreloader.java",
     "java/src/com/android/webview/chromium/WebViewRenderProcessAdapter.java",
     "java/src/com/android/webview/chromium/WebViewRenderProcessClientAdapter.java",

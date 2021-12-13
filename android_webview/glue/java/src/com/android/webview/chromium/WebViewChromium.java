@@ -255,7 +255,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mFactory = factory;
             mShouldDisableThreadChecking = shouldDisableThreadChecking;
-            factory.getWebViewDelegate().addWebViewAssetPath(mWebView.getContext());
+            factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium =
                     new SharedWebViewChromium(mFactory.getRunQueue(), mFactory.getAwInit());
         }
@@ -2540,7 +2540,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         @Override
         public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return mFactory.getWebViewDelegate();
+                return mFactory.getWebViewDelegate()::drawWebViewFunctor;
             }
             return null;
         }

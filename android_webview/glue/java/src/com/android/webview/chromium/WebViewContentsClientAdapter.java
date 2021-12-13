@@ -33,8 +33,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
+import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwContentsClient;
