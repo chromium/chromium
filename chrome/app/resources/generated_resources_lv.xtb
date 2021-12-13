@@ -1685,6 +1685,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2707024448553392710">Komponents tiek lejupielādēts</translation>
 <translation id="270921614578699633">Virs vidējā</translation>
 <translation id="2709516037105925701">Automātiskā aizpilde</translation>
+<translation id="2710014902399506864">Pievienot jaunu tālruni</translation>
 <translation id="2710101514844343743">Lietojuma un diagnostikas dati</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2712173769900027643">Lūgt atļauju</translation>
@@ -1998,6 +1999,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3009300415590184725">Vai tiešām vēlaties atcelt mobilo datu pakalpojumu iestatīšanas procesu?</translation>
 <translation id="3009779501245596802">Rādītājā iekļautās datu bāzes</translation>
 <translation id="3010279545267083280">Parole dzēsta</translation>
+<translation id="301080557829842765">Konfidencialitātes ceļvedis</translation>
 <translation id="3011384993885886186">Silti pelēka</translation>
 <translation id="3011488081941333749">Sīkfaili no domēna <ph name="DOMAIN" /> tiks dzēsti, aizverot domēnu.</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2044,6 +2046,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3055590424724986000">Izmantojot jūsu izvēlēto pakalpojumu sniedzēju</translation>
 <translation id="3058498974290601450">Jebkurā brīdī varat ieslēgt sinhronizāciju iestatījumos.</translation>
 <translation id="3058517085907878899">Ierīces nosaukuma piešķiršana</translation>
+<translation id="3059195548603439580">Vai meklējat sistēmas komponentus? Apmeklējiet vietni</translation>
 <translation id="3060379269883947824">Iespējot funkciju “Atlasīt, lai izrunātu”</translation>
 <translation id="3060952009917586498">Varat mainīt ierīces valodu. Pašreizējā valoda: <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nevarēja izveidot savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
@@ -2149,7 +2152,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3163511056918491211">Varat jebkurā laikā ērti atjaunot datus vai nomainīt ierīci. Jūsu dublējumi tiek augšupielādēti Google serveros un šifrēti, izmantojot jūsu Google konta paroli.</translation>
 <translation id="3164329792803560526">Šī cilne tiek kopīgota lietotnē <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Daļa mobilo sakaru operatoru var bloķēt šo funkciju.</translation>
-<translation id="316652501498554287">G Suite for Education konti</translation>
 <translation id="3170072451822350649">Varat arī izlaist pierakstīšanos un <ph name="LINK_START" />veikt pārlūkošanu kā viesis<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Jauna cilne pa kreisi</translation>
 <translation id="3177909033752230686">Lapas valoda:</translation>
@@ -2179,7 +2181,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="321084946921799184">Dzeltena un balta</translation>
 <translation id="321356136776075234">Ierīces organizācijas vienība (piemēram, OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu bērna (<ph name="SUPERVISED_USER_NAME" />) personīgajiem rezultātiem.</translation>
-<translation id="3216825226035747725">G Suite for Education administratori nosaka, kuriem Google pakalpojumiem lietotāji var piekļūt ar G Suite for Education kontu. Var būt ietvertas noteiktas funkcijas un pakalpojumi, kuriem jūsu bērns iepriekš nevarēja piekļūt, izmantojot uzraudzītu kontu. Skolu administratoriem ir jāsniedz vai jāiegūst piekrišana tam, ka nepilngadīgie lietotāji izmanto pakalpojumus.</translation>
 <translation id="3217843140356091325">Vai izveidot saīsni?</translation>
 <translation id="321834671654278338">Linux atinstalēšanas programma</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> savienotāja process ir avarējis. Vai restartēt?</translation>
@@ -2703,6 +2704,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Saziņa ar USB ierīci}zero{Saziņa ar # USB ierīcēm}one{Saziņa ar # USB ierīci}other{Saziņa ar # USB ierīcēm}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Notiek satura (<ph name="ATTACHMENTS" />) sūtīšana uz ierīci <ph name="DEVICE_NAME" />}zero{Notiek satura (<ph name="ATTACHMENTS" />) sūtīšana uz ierīci <ph name="DEVICE_NAME" />}one{Notiek satura (<ph name="ATTACHMENTS" />) sūtīšana uz ierīci <ph name="DEVICE_NAME" />}other{Notiek satura (<ph name="ATTACHMENTS" />) sūtīšana uz ierīci <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Neizdevās nolasīt bezsaistes demonstrācijas režīma politiku.</translation>
+<translation id="3766115177661377251">Apraide uz jaunu displeju</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Saldējums</translation>
 <translation id="3771290962915251154">Šis iestatījums ir atspējots, jo ir ieslēgta vecāku kontrole</translation>
@@ -3475,9 +3477,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4573515936045019911">Lai jauninātu Linux, nepieciešams tīkla savienojums. Lūdzu, izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
 <translation id="457386861538956877">Vēl...</translation>
 <translation id="4574741712540401491">• <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Pievienojot profilam mācību iestādes kontu, skolēns var ērti pierakstīties vietnēs, paplašinājumos un lietotnēs, bet vienlaikus tiek lietoti vecāku kontroles iestatījumi. Bērns neiegūst piekļuvi grāmatzīmēm, parolēm un citiem pārlūkošanas datiem, kas tiek sinhronizēti ar mācību iestādes kontu.&lt;br&gt;&lt;br&gt;
-    Ja bērns mācību iestādē lieto Chromebook datoru un jūs vēlaties mājās nodrošināt tādas pašas iespējas kā mācību iestādē, Chrome OS kontu lapā izrakstieties no šī Family Link konta un pierakstieties mācību iestādes kontā. Tādā gadījumā bērns iegūs piekļuvi visiem nepieciešamajiem skolas darbiem, taču netiks lietoti Family Link vecāku kontroles iestatījumi.&lt;br&gt;&lt;br&gt;
-    Ja bērns mācību iestādē nelieto Chromebook datoru vai ja vēlaties pārvaldīt bērna iespējas mājās, izmantojot Family Link, lūdzu, noklikšķiniet uz pogas Tālāk, lai pievienotu šim profilam mācību iestādes kontu.</translation>
 <translation id="4576541033847873020">Bluetooth ierīces savienošana pārī</translation>
 <translation id="4576763597586015380">Lai turpinātu saglabāt paroles savā Google kontā, apstipriniet savu identitāti</translation>
 <translation id="4579453506923101210">Saistītā tālruņa neiegaumēšana</translation>
@@ -3492,6 +3491,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4590324241397107707">Datu bāzes krātuve</translation>
 <translation id="4592891116925567110">Lietotne zīmēšanai ar skārienekrāna pildspalvu</translation>
 <translation id="4593021220803146968">Doties uz <ph name="URL" /></translation>
+<translation id="4594577641390224176">Vai meklējat sistēmas lapu “Par”? Apmeklējiet vietni</translation>
 <translation id="4595560905247879544">Lietotnes un paplašinājumus var pārveidot tikai pārvaldnieks (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Sistēmā ir sertifikāti, kas identificē šos serverus</translation>
 <translation id="4598556348158889687">Krātuves pārvaldība</translation>
@@ -3786,7 +3786,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vēlas sazināties ar paplašinājumu “<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
-<translation id="4921290200821452703">Mācību iestādes konta informācija vecākiem</translation>
 <translation id="4921348630401250116">Teksta pārvēršana runā</translation>
 <translation id="4921809350408880559">Jums tiek rādīti nesen izmantotie un ieteicamie dokumenti, pamatojoties uz jūsu iepriekšējām darbībām Google diska izmantošanas laikā.
         <ph name="BREAK" />
@@ -4334,7 +4333,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5502915260472117187">Bērns</translation>
 <translation id="5503356662318814623">Sūtīt ziņojumu</translation>
 <translation id="5503982651688210506">Lapa <ph name="HOST" /> drīkst arī turpmāk izmantot un kustināt jūsu kameru, kā arī izmantot jūsu mikrofonu</translation>
-<translation id="5504909642107847870">Konfidencialitātes un drošības pārskatīšana</translation>
 <translation id="5505264765875738116">Vietnēs nevar lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="5505307013568720083">Beigusies tinte</translation>
 <translation id="5505794066310932198">Pārslēgt Commander</translation>
@@ -4877,6 +4875,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6085886413119427067">Nosaka, kā izveidot drošu savienojumu ar vietnēm.</translation>
 <translation id="6086004606538989567">Ar jūsu verificēto kontu nav atļauts piekļūt šai ierīcei.</translation>
 <translation id="6086846494333236931">Instalēja administrators.</translation>
+<translation id="6087746524533454243">Vai meklējat pārlūka lapu “Par”? Apmeklējiet vietni</translation>
 <translation id="6087960857463881712">Satriecoša seja</translation>
 <translation id="608912389580139775">Lai pievienotu šo lapu lasīšanas sarakstam, pieskarieties grāmatzīmes ikonai</translation>
 <translation id="6091761513005122595">Kopīgošana veiksmīgi iekļauta.</translation>
@@ -4975,6 +4974,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6198102561359457428">Izrakstīties un tad pierakstīties vēlreiz</translation>
 <translation id="6198252989419008588">Mainīt PIN</translation>
 <translation id="6200047250927636406">Atmest failu</translation>
+<translation id="6200151268994853226">Pārvaldīt paplašinājumu</translation>
 <translation id="6201608810045805374">Vai noņemt šo kontu?</translation>
 <translation id="6202304368170870640">Varat izmantot PIN kodu, lai pierakstītos vai atbloķētu savu ierīci.</translation>
 <translation id="6206311232642889873">Kopēt &amp;attēlu</translation>
@@ -5211,7 +5211,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> — Bluetooth meklēšana ir aktīva</translation>
 <translation id="6445450263907939268">Ja nevēlējāties veikt šīs izmaiņas, varat atjaunot iepriekšējos iestatījumus.</translation>
 <translation id="6446213738085045933">Izveidot darbvirsmas saīsni</translation>
-<translation id="6447210166804596538">Varat vienuviet pārskatīt svarīgākās konfidencialitātes un drošības vadīklas.</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6450876761651513209">Mainīt konfidencialitātes iestatījumus</translation>
 <translation id="6451344358166983408">Vietne vai lapa</translation>
@@ -5262,6 +5261,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6497789971060331894">Peles ritināšana atpakaļgaitā</translation>
 <translation id="6498249116389603658">&amp;Visas valodas</translation>
 <translation id="6499143127267478107">No starpniekservera skripta tiek noteikts saimniekdators...</translation>
+<translation id="6499764981457476645">Tuvumā netika atrasta neviena ierīce</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> vēlas atvērt šo failu:</translation>
 <translation id="6501957628055559556">Visi konteineri</translation>
 <translation id="650266656685499220">Lai izveidotu albumus, pārejiet uz pakalpojumu Google fotoattēli.</translation>
@@ -5727,6 +5727,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6979440798594660689">Izslēgt skaņu (noklusējums)</translation>
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6981553172137913845">Lai pārlūkotu tīmekli privāti, atveriet inkognito režīma logu, noklikšķinot uz punktu ikonas izvēlnes.</translation>
+<translation id="6981761993313539853">Jūsu Bluetooth ierīcē ir jābūt aktivizētam režīmam savienošanai pārī, un tai ir jāatrodas tuvumā. Veiciet savienošanu pārī tikai ar uzticamām ierīcēm. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6983507711977005608">Tūlītējas piesaistes tīkla atvienošana</translation>
 <translation id="6983783921975806247">Reģistrētais OID</translation>
@@ -6632,6 +6633,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7898725031477653577">Vienmēr tulkot</translation>
 <translation id="7901405293566323524">Tālruņu centrāle</translation>
 <translation id="7901914889562552258">Uzlabota Chrome darbība, izmantojot lapas rādītājus</translation>
+<translation id="7903290522161827520">Vai meklējat pārlūka komponentus? Apmeklējiet vietni</translation>
 <translation id="7903345046358933331">Lapa vairs nereaģē. Varat uzgaidīt, līdz tā atsāks reaģēt, vai aizvērt to.</translation>
 <translation id="7903742244674067440">Sistēmā ir sertifikāti, kas identificē šīs sertifikātu izdevējiestādes</translation>
 <translation id="7903925330883316394">Utilīta: <ph name="UTILITY_TYPE" /></translation>
@@ -6860,7 +6862,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="811994229154425014">Punkta ievade, divreiz nospiežot atstarpes taustiņu</translation>
 <translation id="8120505434908124087">Instalēt eSIM profilu</translation>
 <translation id="812260729110117038">Reklāmdevēji un izdevēji var pētīt reklāmu efektivitāti, neizsekojot jūsu darbībām vairākās vietnēs.</translation>
-<translation id="81231173274944570">Iespējot vibrāciju. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Dzeltens un balts zieds</translation>
 <translation id="8124313775439841391">Pārvaldītais ONC</translation>
 <translation id="813082847718468539">Skatīt informāciju par vietni</translation>
@@ -7006,6 +7007,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8271268254812352141">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot. Varat pielāgot tulkošanas valodas sadaļā <ph name="LINK_BEGIN" />Vietņu valodas<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Vecāki, nākamās darbības ir jāveic jums. Kad būsiet iestatījis kontu, varēsiet <ph name="DEVICE_TYPE" /> ierīci atdot bērnam.</translation>
 <translation id="8272443605911821513">Pārvaldiet savus paplašinājumus, izvēlnē “Citi rīki” noklikšķinot uz Paplašinājumi.</translation>
+<translation id="8272677921396592934">Skenēt QR kodu, izmantojot kameru</translation>
 <translation id="8274332263553132018">Apraidīt failu</translation>
 <translation id="8274921654076766238">Lupa seko tastatūras fokusam</translation>
 <translation id="8274924778568117936">Neizslēdziet un neaizveriet savu <ph name="DEVICE_TYPE" /> ierīci, kamēr notiek atjaunināšana. Pēc instalēšanas pabeigšanas jūsu <ph name="DEVICE_TYPE" /> ierīce tiks restartēta.</translation>
@@ -7685,6 +7687,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9004754973617721124">Vai notīrīt vietnes <ph name="SITE_NAME" />, visu tās apakšvietņu datus un atļaujas, kā arī instalēto lietotni?</translation>
 <translation id="9004952710076978168">Tika saņemts paziņojums par nezināmu printeri.</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
+<translation id="9008201858626224558">Poga Atpakaļ detalizētās informācijas lapā <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Notiek augšupielāde (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Vai vēlējāties mainīt šo lapu?</translation>
 <translation id="9011163749350026987">Vienmēr rādīt ikonu</translation>
@@ -7788,7 +7791,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9103868373786083162">Nospiediet, lai pārietu atpakaļ; atveriet kontekstizvēlni, lai skatītu vēsturi</translation>
 <translation id="9108035152087032312">Piešķirt nosaukumu &amp;logam...</translation>
 <translation id="9108072915170399168">Pašreizējais datu lietojuma iestatījums ir “Bez interneta savienojuma”.</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education konfidencialitātes paziņojums<ph name="LINK_END" /> ir paredzēts, lai palīdzētu G Suite for Education lietotājiem un vecākiem izprast, kādi dati šajā produktā tiek apkopoti, kādēļ tie tiek apkopoti un kas ar tiem tiek darīts.</translation>
 <translation id="9108808586816295166">Drošs DNS serveris var nebūt pieejams visu laiku.</translation>
 <translation id="9109122242323516435">Lai atbrīvotu vietu, izdzēsiet failus no šīs ierīces.</translation>
 <translation id="9109283579179481106">Savienojuma izveide ar mobilo tīklu</translation>
@@ -7868,6 +7870,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="917510707618656279">Vaicāt, ja vietne vēlas piekļūt Bluetooth ierīcēm</translation>
 <translation id="9176476835295860688">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo <ph name="BEGIN_LINK1" />iestatījumu<ph name="END_LINK1" /> ir noteicis īpašnieks. Ja ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> — pievienota Bluetooth ierīce</translation>
+<translation id="9178061802301856367">Pierakstīšanās datu dzēšana</translation>
 <translation id="9179524979050048593">Lietotājvārds pierakstīšanās ekrānā</translation>
 <translation id="9180281769944411366">Šis process var ilgt dažas minūtes. Notiek Linux konteinera startēšana.</translation>
 <translation id="9180380851667544951">Vietne var kopīgot jūsu ekrānu.</translation>

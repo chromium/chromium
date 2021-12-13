@@ -288,6 +288,7 @@
       Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no permitirá que se inicien los perfiles de invitado.</translation>
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
+<translation id="1371626834351873151">La reducción de user-agent se habilitará para todos los orígenes.</translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilita el modo avanzado de carga de la batería</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
@@ -801,6 +802,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se inhabilita esta política o no se le asigna ningún valor, no se usará la transición rápida.</translation>
 <translation id="1972134432340252414">Bloquea los puntos de extensión antiguos en el proceso del navegador</translation>
 <translation id="1977581177449752640">Si se le asigna un valor a esta política, el host de acceso remoto utilizará un certificado de cliente con el CN de emisor especificado para autenticarse en <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para usar cualquier certificado de cliente disponible, asígnale el valor <ph name="WILDCARD_VALUE" />. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
+<translation id="1985598967415986700">La reducción de user-agent se podrá controlar mediante pruebas de campo y de origen.</translation>
 <translation id="1988345404999458987">Proporciona la configuración de los servidores de impresión disponibles.
 
       Esta política permite enviar archivos JSON de configuración de servidores de impresión externos a dispositivos con <ph name="PRODUCT_OS_NAME" />.
@@ -834,11 +836,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Las impresoras conectadas a <ph name="CLOUD_PRINT_NAME" /> se consideran <ph name="PRINTER_TYPE_CLOUD" />, y el resto de las impresoras se clasifican como <ph name="PRINTER_TYPE_LOCAL" />.
 
       Nota: La omisión de algún campo implica que todos los valores coinciden. Por ejemplo, si no se especifica la conectividad, la vista previa de impresión buscará todo tipo de impresoras, tanto <ph name="PRINTER_TYPE_LOCAL" /> como <ph name="PRINTER_TYPE_CLOUD" />. Los patrones de expresión regular deben seguir la sintaxis de JavaScript RegExp, y las coincidencias distinguen entre mayúsculas y minúsculas.</translation>
-<translation id="2003441790537575907">Si se habilita esta política o no se establece, <ph name="LEGACY_EXTENSION_DISABLE_API" /> podrá bloquear los puntos de extensión antiguos en el proceso del navegador.
-
-      Si se inhabilita esta política, se reducirán la seguridad y la estabilidad de <ph name="PRODUCT_NAME" />, ya que se podría cargar código desconocido y potencialmente hostil en el proceso del navegador de <ph name="PRODUCT_NAME" />. Por ello, esta política solo debe inhabilitarse si hay problemas de compatibilidad con un software de terceros que deba ejecutarse en el proceso del navegador de <ph name="PRODUCT_NAME" />.
-
-      Nota: Consulta más información sobre las políticas de mitigación de procesos en la página https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="2005506794355327448">Acción que se debe llevar a cabo cuando la tapa esté cerrada</translation>
 <translation id="2006530844219044261">Gestión de la batería</translation>
 <translation id="2008514891623783266">La política que gestiona la IP de WebRTC</translation>
@@ -2031,6 +2028,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.
 
       Esta política está obsoleta. Usa <ph name="PRINTERS_POLICY_NAME" /> en su lugar.</translation>
+<translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
@@ -2991,6 +2989,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Nota: Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4531706050939927436">Las aplicaciones para Android se pueden instalar de manera forzada desde la consola de administración de Google usando Google Play. No utilizan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
+<translation id="4537906430022369840">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4543502256674577024">Configuración de actualización de dispositivos</translation>
 <translation id="454585952814397564">Utiliza la prioridad normal para el proceso de audio</translation>
@@ -5524,6 +5523,12 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7509761893401042250">Esta política está obsoleta a partir de la versión M96. Usa <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> y <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
 
       Si se habilita la política o no se establece, los dispositivos registrados informarán sobre las estadísticas de hardware, como el uso de la CPU/RAM. Si se inhabilita la política, los dispositivos registrados no informarán sobre las estadísticas de hardware.</translation>
+<translation id="7512065400265675158">Se ha programado que el encabezado de solicitud HTTP <ph name="USER_AGENT_HEADER_NAME" /> se reduzca. Para facilitar las pruebas y la compatibilidad, esta política puede habilitar la función de reducción para todos los sitios web o impedir que las pruebas de origen o de campo puedan habilitarla.
+
+      Para obtener más información sobre <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> y su cronología, consulta este enlace:
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      </translation>
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios web</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de dispersión</translation>

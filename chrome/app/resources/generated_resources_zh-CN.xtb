@@ -1680,6 +1680,7 @@
 <translation id="2707024448553392710">正在下载组件</translation>
 <translation id="270921614578699633"> </translation>
 <translation id="2709516037105925701">自动填充</translation>
+<translation id="2710014902399506864">添加新手机</translation>
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新建</translation>
 <translation id="2712173769900027643">请求批准</translation>
@@ -1992,6 +1993,7 @@
 <translation id="3009300415590184725">确定要取消移动数据服务安装过程吗？</translation>
 <translation id="3009779501245596802">索引型数据库</translation>
 <translation id="3010279545267083280">密码已删除</translation>
+<translation id="301080557829842765">隐私保护指南</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系统将在您退出时清除来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2038,6 +2040,7 @@
 <translation id="3055590424724986000">使用您选择的提供商</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
+<translation id="3059195548603439580">想要查看系统组件？请访问</translation>
 <translation id="3060379269883947824">启用“随选朗读”</translation>
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我们无法与您的手机建立连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
@@ -2143,7 +2146,6 @@
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
-<translation id="316652501498554287">G Suite 教育版帐号</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
@@ -2173,7 +2175,6 @@
 <translation id="321084946921799184">黄色和白色</translation>
 <translation id="321356136776075234">设备 OU（例如 OU=Chromebooks,DC=example,DC=com）</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。</translation>
-<translation id="3216825226035747725">G Suite 教育版管理员可决定用户在登录 G Suite 教育版帐号后能访问哪些 Google 服务。其中可能会包括您的孩子以前使用此受监管帐号时无法访问的一些功能或服务。学校管理员必须提供同意声明或征得同意，才能允许未成年人用户使用相关服务。</translation>
 <translation id="3217843140356091325">创建快捷方式？</translation>
 <translation id="321834671654278338">Linux 卸载程序</translation>
 <translation id="3220586366024592812">该 <ph name="CLOUD_PRINT_NAME" /> 连接器进程已崩溃。是否重新启动？</translation>
@@ -2697,6 +2698,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{可与 1 部 USB 设备通信}other{可与 # 部 USB 设备通信}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3765246971671567135">无法读取离线演示模式政策。</translation>
+<translation id="3766115177661377251">投射到新的显示屏</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
 <translation id="377050016711188788">冰淇淋</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
@@ -3468,9 +3470,6 @@
 <translation id="4573515936045019911">必须建立网络连接，才能升级 Linux。请连接到互联网，然后重试。</translation>
 <translation id="457386861538956877">更多...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">只要您向个人资料添加一个学校帐号，孩子便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。此操作不会授权孩子访问与学校帐号同步的书签、密码或其他浏览器数据。&lt;br&gt;&lt;br&gt;
-    如果您的孩子在校时使用 Chromebook，并且您希望在家中复制同样的在校使用体验，确保孩子能够获取所有必要的学校作业，请退出此 Family Link 帐号，然后从 Chrome 操作系统帐号页面登录学校帐号（注意：Family Link 家长控制将不适用）。&lt;br&gt;&lt;br&gt;
-    如果您的孩子在校时不使用 Chromebook，或者您更愿意借助 Family Link 管理孩子的在家使用体验，请点击下方的“下一步”按钮向这份个人资料添加学校帐号。</translation>
 <translation id="4576541033847873020">配对蓝牙设备</translation>
 <translation id="4576763597586015380">若要继续将密码保存在您的 Google 帐号中，请验证您的身份</translation>
 <translation id="4579453506923101210">移除已连接的手机</translation>
@@ -3485,6 +3484,7 @@
 <translation id="4590324241397107707">数据库存储</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
+<translation id="4594577641390224176">想要查看系统简介页面？请访问</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4596295440756783523">您有证书可标识以下服务器</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
@@ -3779,7 +3779,6 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”扩展程序通信</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4921290200821452703">致家长：学校帐号信息</translation>
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="4921809350408880559">您的最新文档和建议文档是系统根据您之前使用 Google 云端硬盘的活动记录向您显示的。
         <ph name="BREAK" />
@@ -4327,7 +4326,6 @@
 <translation id="5502915260472117187">孩子</translation>
 <translation id="5503356662318814623">发送消息</translation>
 <translation id="5503982651688210506">继续允许 <ph name="HOST" /> 使用和移动您的摄像头，并允许其使用您的麦克风</translation>
-<translation id="5504909642107847870">检查隐私和安全设置</translation>
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
 <translation id="5505307013568720083">墨水已耗尽</translation>
 <translation id="5505794066310932198">开启/关闭 Commander</translation>
@@ -4870,6 +4868,7 @@
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
+<translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
@@ -4968,6 +4967,7 @@
 <translation id="6198102561359457428">退出后重新登录...</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6200047250927636406">舍弃文件</translation>
+<translation id="6200151268994853226">管理扩展程序</translation>
 <translation id="6201608810045805374">移除此帐号？</translation>
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
@@ -5204,7 +5204,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 正在搜寻蓝牙设备</translation>
 <translation id="6445450263907939268">如果您不想保留这些更改，可以还原之前的设置。</translation>
 <translation id="6446213738085045933">创建桌面快捷方式</translation>
-<translation id="6447210166804596538">在一处集中检查最重要的隐私和安全控件的设置</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">更改您的隐私相关设置</translation>
 <translation id="6451344358166983408">网站或网页</translation>
@@ -5255,6 +5254,7 @@
 <translation id="6497789971060331894">鼠标反向滚动</translation>
 <translation id="6498249116389603658">所选全部语言(&amp;A)</translation>
 <translation id="6499143127267478107">正在解析代理脚本中的主机...</translation>
+<translation id="6499764981457476645">在附近找不到任何设备</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 想打开这个文件：</translation>
 <translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如需创建影集，请转至 Google 相册。</translation>
@@ -5720,6 +5720,7 @@
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6981553172137913845">若要私密地浏览网页，请点击三点状图标菜单以打开一个无痕式窗口</translation>
+<translation id="6981761993313539853">请确保您的蓝牙设备处于配对模式且就在附近。仅与您信任的设备配对。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6983507711977005608">断开“即时网络共享”的网络连接</translation>
 <translation id="6983783921975806247">已注册的 OID</translation>
@@ -6625,6 +6626,7 @@
 <translation id="7898725031477653577">一律翻译</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7901914889562552258">使用网页指标改进后的 Chrome</translation>
+<translation id="7903290522161827520">想要查看浏览器组件？请访问</translation>
 <translation id="7903345046358933331">该页面已停止响应。您可以等待该页面恢复响应，也可以将其关闭。</translation>
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
@@ -6853,7 +6855,6 @@
 <translation id="811994229154425014">按两下空格键时输入句点</translation>
 <translation id="8120505434908124087">安装 eSIM 卡配置文件</translation>
 <translation id="812260729110117038">广告主和发布商可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。</translation>
-<translation id="81231173274944570">启用触感反馈。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
 <translation id="813082847718468539">查看网站信息</translation>
@@ -6999,6 +7000,7 @@
 <translation id="8271268254812352141">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果。您可在<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />部分中自定义翻译语言。</translation>
 <translation id="8271379370373330993">接下来的几个步骤需由家长完成。家长可在设置好帐号后将 <ph name="DEVICE_TYPE" /> 交还给孩子。</translation>
 <translation id="8272443605911821513">点击“更多工具”菜单中的“扩展程序”，可以管理您的扩展程序。</translation>
+<translation id="8272677921396592934">使用摄像头扫描二维码</translation>
 <translation id="8274332263553132018">投射文件</translation>
 <translation id="8274921654076766238">放大镜跟随键盘焦点</translation>
 <translation id="8274924778568117936">在完成更新之前，请勿关闭您的 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 将会于安装完毕后重启。</translation>
@@ -7676,6 +7678,7 @@
 <translation id="9004754973617721124">清除 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用的网站数据和权限？</translation>
 <translation id="9004952710076978168">收到了与未知打印机相关的通知。</translation>
 <translation id="9008201768610948239">忽略</translation>
+<translation id="9008201858626224558">“<ph name="SUBPAGE_TITLE" />”详情页面上的返回按钮</translation>
 <translation id="9009369504041480176">正在上传 (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">更改此网页是您的本意吗？</translation>
 <translation id="9011163749350026987">始终显示图标</translation>
@@ -7779,7 +7782,6 @@
 <translation id="9103868373786083162">点按该按钮可后退，点按上下文菜单可查看历史记录</translation>
 <translation id="9108035152087032312">为窗口命名(&amp;W)…</translation>
 <translation id="9108072915170399168">当前的流量使用设置是“不使用互联网”</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite 教育版隐私权声明<ph name="LINK_END" />旨在帮助 G Suite 教育版用户和家长了解此产品会收集哪些数据、为什么收集这些数据以及会使用这些数据做什么。</translation>
 <translation id="9108808586816295166">安全 DNS 未必一直可用</translation>
 <translation id="9109122242323516435">要释放空间，请将文件从设备存储空间中删除。</translation>
 <translation id="9109283579179481106">连接到移动网络</translation>
@@ -7859,6 +7861,7 @@
 <translation id="917510707618656279">在网站想访问蓝牙设备时询问您</translation>
 <translation id="9176476835295860688">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已连接蓝牙设备</translation>
+<translation id="9178061802301856367">删除登录数据</translation>
 <translation id="9179524979050048593">在登录屏幕上显示用户名</translation>
 <translation id="9180281769944411366">此过程可能需要几分钟的时间。正在启动 Linux 容器。</translation>
 <translation id="9180380851667544951">该网站可能会共享您的屏幕</translation>

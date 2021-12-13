@@ -192,6 +192,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
 <translation id="2224075387478458881">La funzionalità Registrazione dello schermo non è consentita se sono visibili contenuti protetti</translation>
 <translation id="225680501294068881">Ricerca dispositivi in corso...</translation>
+<translation id="2257486738914982088">Si è verificato un errore durante il download del file <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
 <translation id="2268813581635650749">Disconnetti tutti</translation>
 <translation id="2269016722240250274">Un'applicazione sta utilizzando il microfono</translation>
@@ -588,6 +589,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4831034276697007977">Vuoi disattivare i clic automatici?</translation>
 <translation id="4849058404725798627">Evidenzia oggetto con stato attivo della tastiera</translation>
 <translation id="485592688953820832">Nessuna azione (pausa)</translation>
+<translation id="4860284199500934869">Controlla la tua connessione a Internet per scaricare il file <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Verrà effettuato un tentativo di download in un secondo tempo. Ciò che dici verrà inviato a Google per l'elaborazione fino al completamento del download.</translation>
 <translation id="4868492592575313542">attivato</translation>
 <translation id="4872237917498892622">Alt+tasto per la ricerca o Maiusc</translation>
@@ -805,6 +807,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6453179446719226835">La lingua è stata modificata</translation>
 <translation id="6459472438155181876">Estensione dello schermo su <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Impossibile scaricare il file</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> richiede l'aggiornamento di <ph name="DEVICE_TYPE" /> entro il termine ultimo</translation>
@@ -816,7 +819,10 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6528179044667508675">Non disturbare</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537924328260219877">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Scansione del file <ph name="FILENAME" /> per il download in corso…</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nuova installazione</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>
 <translation id="6565007273808762236">Connessione eSIM non disponibile</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aggiorna il dispositivo entro 1 ora}one{Aggiorna il dispositivo entro # ora}other{Aggiorna il dispositivo entro # ore}}</translation>
@@ -848,6 +854,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">VAI A IMPOSTAZIONI</translation>
 <translation id="6751052314767925245">Applicata dall'amministratore</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>
@@ -983,6 +990,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
+<translation id="7720410380936703141">RIPROVA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}one{# notifications}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7745560842763881396">Mostra app nella barra delle app</translation>
@@ -1169,6 +1177,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">In uso: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
+<translation id="9000771174482730261">GESTISCI SPAZIO DI ARCHIVIAZIONE</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
 <translation id="9024331582947483881">schermo intero</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
@@ -1214,6 +1223,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="951991426597076286">Rifiuta</translation>
+<translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="990277280839877440">Finestra <ph name="WINDOW_TITILE" /> chiusa.</translation>

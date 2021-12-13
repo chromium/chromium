@@ -835,11 +835,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Máy in đã kết nối với <ph name="CLOUD_PRINT_NAME" /> được coi là <ph name="PRINTER_TYPE_CLOUD" />, các máy in còn lại được phân loại là <ph name="PRINTER_TYPE_LOCAL" />.
 
       Lưu ý: Việc bỏ qua một trường tức là mọi giá trị đều trùng khớp. Ví dụ: nếu bạn không chỉ định khả năng kết nối, chế độ Xem trước bản in sẽ bắt đầu tìm kiếm tất cả loại máy in, <ph name="PRINTER_TYPE_LOCAL" /> và <ph name="PRINTER_TYPE_CLOUD" />. Mẫu biểu thức chính quy phải tuân theo cú pháp JavaScript RegExp và kết quả trùng khớp có phân biệt chữ hoa/chữ thường.</translation>
-<translation id="2003441790537575907">Nếu bạn bật hoặc không đặt chính sách này, thì hệ thống sẽ cho phép <ph name="LEGACY_EXTENSION_DISABLE_API" /> chặn các điểm tiện ích cũ trong Quá trình chạy trình duyệt.
-
-      Khi bạn tắt chính sách này, thì tính bảo mật và độ ổn định của <ph name="PRODUCT_NAME" /> sẽ bị ảnh hưởng vì mã không xác định và có khả năng gây hại có thể được phép tải trong quá trình chạy trình duyệt của <ph name="PRODUCT_NAME" />. Bạn chỉ nên tắt chính sách này nếu gặp vấn đề về khả năng tương thích với phần mềm bên thứ ba. Phần mềm này phải hoạt động trong quá trình chạy trình duyệt của <ph name="PRODUCT_NAME" />.
-
-      Xin lưu ý: Hãy đọc thêm về Chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="2005506794355327448">Hành động cần thực hiện khi đóng nắp</translation>
 <translation id="2006530844219044261">Quản lý nguồn</translation>
 <translation id="2008514891623783266">Chính sách xử lý IP của WebRTC</translation>

@@ -1998,6 +1998,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3009300415590184725">Opravdu chcete zrušit proces nastavení služby mobilních dat?</translation>
 <translation id="3009779501245596802">Indexované databáze</translation>
 <translation id="3010279545267083280">Heslo bylo smazáno</translation>
+<translation id="301080557829842765">Průvodce ochranou osobních údajů</translation>
 <translation id="3011384993885886186">Teple šedá</translation>
 <translation id="3011488081941333749">Soubory cookie z domény <ph name="DOMAIN" /> se při ukončení návštěvy smažou</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2150,7 +2151,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3163511056918491211">Kdykoliv můžete snadno obnovit svá data nebo přejít na jiné zařízení. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="3164329792803560526">Tato karta je sdílena s aplikací <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Někteří operátoři mohou tuto funkci blokovat.</translation>
-<translation id="316652501498554287">Účty G Suite pro vzdělávání</translation>
 <translation id="3170072451822350649">Také můžete přihlášení přeskočit a <ph name="LINK_START" />prohlížet v roli hosta<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nová karta vlevo</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
@@ -2180,7 +2180,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="321084946921799184">Žlutá a bílá</translation>
 <translation id="321356136776075234">Organizační jednotka zařízení (např. OU=Chromebooky,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu.</translation>
-<translation id="3216825226035747725">Administrátoři G Suite pro vzdělávání určují, ke kterým službám Google mají uživatelé přihlášení k účtu G Suite pro vzdělávání přístup. Mohou poskytovat přístup funkcím či službám, ke kterým vaše dítě dříve pomocí dozorovaného účtu přístup nemělo. Školní administrátoři mají povinnost poskytnout nebo získat k používání služeb nezletilými souhlas.</translation>
 <translation id="3217843140356091325">Vytvořit zástupce?</translation>
 <translation id="321834671654278338">Odinstalační program Linuxu</translation>
 <translation id="3220586366024592812">Proces konektoru služby <ph name="CLOUD_PRINT_NAME" /> selhal. Restartovat?</translation>
@@ -3476,9 +3475,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4573515936045019911">K upgradování Linuxu je potřeba připojení k síti. Připojte se k internetu a zkuste to znovu</translation>
 <translation id="457386861538956877">Další...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Po přidání školního účtu se dítě bude moci přihlašovat na weby, do rozšíření a do aplikací jako student, přičemž zůstane aktivní rodičovská kontrola. Dítě nebude mít přístup k záložkám, heslům ani jiným datům prohlížeče, která se synchronizují se školním účtem.&lt;br&gt;&lt;br&gt;
-    Pokud dítě používá Chromebook ve škole a chcete, aby doma mělo stejné prostředí a přístup ke všem školním úlohám, odhlaste se z účtu Family Link a na stránce systému Chrome OS s účty se přihlaste ke školnímu účtu. (Poznámka: Na účet se nebude vztahovat rodičovská kontrola Family Link.)&lt;br&gt;&lt;br&gt;
-    Pokud dítě ve škole Chromebook nepoužívá, nebo mu doma prostředí chcete spravovat pomocí služby Family Link, klikněte níže na tlačítko Další a přidejte do tohoto profilu školní účet.</translation>
 <translation id="4576541033847873020">Párování zařízení Bluetooth</translation>
 <translation id="4576763597586015380">Pokud chcete pokračovat v ukládání hesel do účtu Google, ověřte svoji totožnost</translation>
 <translation id="4579453506923101210">Zapomenout připojený telefon</translation>
@@ -3788,7 +3784,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4918021164741308375">Web <ph name="ORIGIN" /> chce komunikovat s rozšířením <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Přijmout</translation>
-<translation id="4921290200821452703">Informace o školních účtech pro rodiče</translation>
 <translation id="4921348630401250116">Převod textu na řeč</translation>
 <translation id="4921809350408880559">Zobrazují se vám nedávné a navrhované dokumenty na základě vaší předchozí aktivity na Disku.
         <ph name="BREAK" />
@@ -4336,7 +4331,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5502915260472117187">Dítě</translation>
 <translation id="5503356662318814623">Poslat zprávu</translation>
 <translation id="5503982651688210506">Povolit webu <ph name="HOST" /> používat a natáčet kameru a používat mikrofon i nadále</translation>
-<translation id="5504909642107847870">Shrnutí ochrany soukromí a zabezpečení</translation>
 <translation id="5505264765875738116">Weby nemohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="5505307013568720083">Došel inkoust</translation>
 <translation id="5505794066310932198">Přepnout Commander</translation>
@@ -5215,7 +5209,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – probíhá vyhledávání zařízení Bluetooth</translation>
 <translation id="6445450263907939268">Pokud jste tyto změny provádět nechtěli, můžete obnovit svá předchozí nastavení.</translation>
 <translation id="6446213738085045933">Vytvořit zástupce na ploše</translation>
-<translation id="6447210166804596538">Zkontrolujte si nejdůležitější ovládací prvky ochrany soukromí a zabezpečení na jednom místě</translation>
 <translation id="6447842834002726250">Soubory cookie</translation>
 <translation id="6450876761651513209">Změnit nastavení související s ochranou soukromí</translation>
 <translation id="6451344358166983408">Web nebo stránka</translation>
@@ -6867,7 +6860,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="811994229154425014">Dvojitým stisknutím mezerníku zadávat tečku</translation>
 <translation id="8120505434908124087">Nainstalovat profil eSIM</translation>
 <translation id="812260729110117038">Inzerenti a majitelé obsahu mohou posuzovat účinnost reklam způsobem, při kterém nebudete sledováni napříč weby.</translation>
-<translation id="81231173274944570">Zapnout hmatovou odezvu. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Žluto-bílá květina</translation>
 <translation id="8124313775439841391">Spravovaná ONC</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
@@ -7797,7 +7789,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9103868373786083162">Stisknutím přejdete zpět. V kontextové nabídce můžete zobrazit historii</translation>
 <translation id="9108035152087032312">Název &amp;okna…</translation>
 <translation id="9108072915170399168">Využívání dat je aktuálně nastaveno na možnost Bez internetu</translation>
-<translation id="9108692355621501797">V <ph name="LINK_BEGIN" />upozornění ve věci ochrany soukromí v G Suite pro vzdělávání<ph name="LINK_END" /> najdou uživatelé G Suite pro vzdělávání a jejich rodiče informace o tom, jaké údaje tato služba shromažďuje, proč je shromažďuje a co se s nimi dělá.</translation>
 <translation id="9108808586816295166">Zabezpečené DNS nemusí být vždy k dispozici</translation>
 <translation id="9109122242323516435">Uvolněte místo smazáním souborů z úložiště zařízení.</translation>
 <translation id="9109283579179481106">Připojení k mobilní síti</translation>

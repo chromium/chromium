@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4588090240171750605">O‘ngga aylantirish</translation>
 <translation id="4724120544754982507">Bildirishnomalar markazi, <ph name="UNREAD_NOTIFICATION_COUNT" /> ta o‘qilmagan bildirishnoma</translation>
+<translation id="4746179598275229723">Kengaytma olib tashlandi</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 oy qoldi}other{# oy qoldi}}</translation>
 <translation id="4888938634149558681">Telefon qilish</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 soniya}other{# soniya}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 soniya qoldi}other{# soniya qoldi}}</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 soat}other{# soat}}</translation>
+<translation id="6007284015834422026">Kengaytma mahkamlandi</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6117103120090651229">Markaziy tugma</translation>
 <translation id="6129953537138746214">Bo‘shliq</translation>

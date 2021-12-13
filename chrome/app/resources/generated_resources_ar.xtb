@@ -1691,6 +1691,7 @@
 <translation id="2707024448553392710">تنزيل المُكوّن</translation>
 <translation id="270921614578699633">تم تجاوز المعدل</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
+<translation id="2710014902399506864">إضافة هاتف جديد</translation>
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
 <translation id="271033894570825754">جديدة</translation>
 <translation id="2712173769900027643">طلب إذن</translation>
@@ -2006,6 +2007,7 @@
 <translation id="3009300415590184725">هل تريد فعلًا إلغاء عملية إعداد خدمة بيانات الجوال؟</translation>
 <translation id="3009779501245596802">قواعد بيانات مفهرسة</translation>
 <translation id="3010279545267083280">تم حذف كلمة المرور</translation>
+<translation id="301080557829842765">دليل الخصوصية</translation>
 <translation id="3011384993885886186">رمادي فاتح</translation>
 <translation id="3011488081941333749">سيتم محو ملفات تعريف الارتباط من <ph name="DOMAIN" /> عند الخروج</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2052,6 +2054,7 @@
 <translation id="3055590424724986000">من خلال مقدِّم خدمة من اختيارك</translation>
 <translation id="3058498974290601450">يمكنك تفعيل المزامنة في أي وقت في الإعدادات.</translation>
 <translation id="3058517085907878899">تسمية الجهاز</translation>
+<translation id="3059195548603439580">هل تبحث عن مكوِّنات النظام؟ انتقِل إلى</translation>
 <translation id="3060379269883947824">تفعيل سماع الاختيار</translation>
 <translation id="3060952009917586498">تغيير لغة الجهاز اللغة الحالية هي <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">‏تعذَّر علينا إنشاء اتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
@@ -2157,7 +2160,6 @@
 <translation id="3163511056918491211">‏يمكنك استعادة بياناتك أو تبديل الأجهزة بسهولة متى شئت. يتم تحميل النُسخ الاحتياطية إلى Google ويتم تشفيرها باستخدام كلمة مرور حساب Google.</translation>
 <translation id="3164329792803560526">مشاركة علامة التبويب هذه مع <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">قد يحظر بعض مشغلي شبكات الجوّال هذه الميزة.</translation>
-<translation id="316652501498554287">‏حسابات "G Suite للتعليم"</translation>
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="3177909033752230686">لغة الصفحة:</translation>
@@ -2187,7 +2189,6 @@
 <translation id="321084946921799184">أصفر وأبيض</translation>
 <translation id="321356136776075234">‏الوحدة التنظيمية للجهاز (على سبيل المثال، OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> يمكن الوصول إلى نتائج <ph name="SUPERVISED_USER_NAME" /> الشخصية باستخدام صوت مشابه لصوت طفلك أو تسجيل لصوته.</translation>
-<translation id="3216825226035747725">‏يحدّد مشرفو "G Suite للتعليم" خدمات Google التي يمكن للمستخدمين الوصول إليها أثناء تسجيل الدخول باستخدام حساب "G Suite للتعليم". وقد يتضمن هذا الإجراء بعض الميزات أو الخدمات التي كان يتعذّر على طفلك الوصول إليها سابقًا باستخدام هذا الحساب الخاضع للإشراف. ويُطلَب من مُشرفي المؤسسة التعليمية تقديم موافقة أو الحصول عليها حتى يتم السماح للمستخدمين القاصرين باستخدام خدمات Google.</translation>
 <translation id="3217843140356091325">هل تريد إنشاء اختصار؟</translation>
 <translation id="321834671654278338">‏أداة إزالة نظام التشغيل Linux</translation>
 <translation id="3220586366024592812">تعطلت عملية موصل <ph name="CLOUD_PRINT_NAME" /> . هل تريد إعادة التشغيل؟</translation>
@@ -2713,6 +2714,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏الاتصال بجهاز USB}zero{‏الاتصال بـ # من أجهزة USB}two{‏الاتصال بجهازي USB (#)}few{‏الاتصال بـ # أجهزة USB}many{‏ الاتصال بـ # جهاز USB}other{‏ الاتصال بـ # من أجهزة USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}zero{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}two{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}few{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}many{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}other{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">تعذَّرت قراءة سياسة الوضع التجريبي بلا إنترنت.</translation>
+<translation id="3766115177661377251">البث إلى شاشة جديدة</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> هرتز</translation>
 <translation id="377050016711188788">المثلجات</translation>
 <translation id="3771290962915251154">لقد تم إيقاف هذا الإعداد بسبب تفعيل "أدوات الرقابة الأبوية".</translation>
@@ -3483,9 +3485,6 @@
 <translation id="4573515936045019911">‏يجب الاتصال بالشبكة لترقية نظام التشغيل Linux. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="457386861538956877">المزيد...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">‏تتيح إضافة حساب مؤسسة تعليمية للطلاب سهولة تسجيل الدخول إلى المواقع الإلكترونية والإضافات والتطبيقات حتى إذا كانت أدوات الرقابة الأبوية مفعَّلة. ولا يتم منح الطفل إمكانية الوصول إلى الإشارات المرجعية وكلمات المرور أو بيانات التصفُّح الأخرى التي تمت مزامنتها مع حساب المؤسسة التعليمية.&lt;br&gt;&lt;br&gt;
-    في حال كان طفلك يستخدم جهاز Chromebook في المؤسسة التعليمية، وتريد عرض تجربة المؤسسة التعليمية في المنزل لضمان وصول طفلك إلى جميع المواد التعليمية الضرورية، يُرجى تسجيل الخروج من حساب Family Link وتسجيل الدخول إلى حساب المؤسسة التعليمية من صفحة حسابات "نظام التشغيل Chrome" (ملاحظة: لن يتم تطبيق أدوات الرقابة الأبوية في Family Link عند تسجيل الخروج من الحساب المرتبط به).&lt;br&gt;&lt;br&gt;
-وفي حال كان طفلك لا يستخدم جهاز Chromebook في المؤسسة التعليمية أو إذا كنت تفضّل إدارة تجربة طفلك في المنزل باستخدام حساب Family Link، يُرجى النقر على زر "التالي" أدناه لإضافة حساب مؤسسة تعليمية إلى هذا الملف الشخصي.</translation>
 <translation id="4576541033847873020">إقران جهاز بلوتوث</translation>
 <translation id="4576763597586015380">‏لمواصلة حفظ كلمات المرور في حسابك على Google، عليك إثبات هويّتك.</translation>
 <translation id="4579453506923101210">قطع اتصال الهاتف المتّصل</translation>
@@ -3500,6 +3499,7 @@
 <translation id="4590324241397107707">تخزين قاعدة البيانات</translation>
 <translation id="4592891116925567110">تطبيق الرسم باستخدام قلم الشاشة</translation>
 <translation id="4593021220803146968">&amp;انتقال إلى <ph name="URL" /></translation>
+<translation id="4594577641390224176">هل تبحث عن صفحة "لمحة عن" الخاصة بالنظام؟ انتقِل إلى</translation>
 <translation id="4595560905247879544">لا يمكن تعديل التطبيقات والإضافات إلا من قِبل المدير (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">لديك شهادات في الملف تحدد هذه الخوادم</translation>
 <translation id="4598556348158889687">إدارة مساحة التخزين</translation>
@@ -3795,7 +3795,6 @@
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> يريد الاتصال مع الإضافة "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">قبول</translation>
-<translation id="4921290200821452703">معلومات حساب المؤسسة التعليمية للوالدَين</translation>
 <translation id="4921348630401250116">تحويل النص إلى كلام</translation>
 <translation id="4921809350408880559">‏يتم عرض مستنداتك الأخيرة والمقترَحة استنادًا إلى نشاطك السابق على Google Drive.
         <ph name="BREAK" />
@@ -4344,7 +4343,6 @@
 <translation id="5502915260472117187">طفل</translation>
 <translation id="5503356662318814623">إرسال رسالة</translation>
 <translation id="5503982651688210506">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها واستخدام الميكروفون</translation>
-<translation id="5504909642107847870">مراجعة إعدادات الخصوصية والأمان</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
 <translation id="5505307013568720083">نفد الحبر</translation>
 <translation id="5505794066310932198">‏إيقاف/تفعيل Commander</translation>
@@ -4888,6 +4886,7 @@
 <translation id="6085886413119427067">تحديد طريقة الاتصال بمواقع إلكترونية من خلال اتصال آمن</translation>
 <translation id="6086004606538989567">غير مسموح للحساب الذي أثبتّ ملكيته بالوصول إلى هذا الجهاز.</translation>
 <translation id="6086846494333236931">تم التثبيت من قبل مشرفك</translation>
+<translation id="6087746524533454243">هل تبحث عن صفحة "لمحة عن" الخاصة بالمتصفِّح؟ انتقِل إلى</translation>
 <translation id="6087960857463881712">وجه رائع</translation>
 <translation id="608912389580139775">لإضافة هذه الصفحة إلى "قائمة القراءة"، انقر على رمز الإشارات المرجعية.</translation>
 <translation id="6091761513005122595">تم تحميل المشاركة بنجاح.</translation>
@@ -4986,6 +4985,7 @@
 <translation id="6198102561359457428">الخروج ثم إعادة تسجيل الدخول...</translation>
 <translation id="6198252989419008588">تغيير رقم التعريف الشخصي</translation>
 <translation id="6200047250927636406">تجاهل الملف</translation>
+<translation id="6200151268994853226">إدارة الإضافة</translation>
 <translation id="6201608810045805374">هل تريد إزالة هذا الحساب؟</translation>
 <translation id="6202304368170870640">يمكنك استخدام رقم تعريفك الشخصي لتسجيل الدخول أو فتح قفل جهازك.</translation>
 <translation id="6206311232642889873">نس&amp;خ صورة</translation>
@@ -5222,7 +5222,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - يتم البحث عن جهاز يتضمّن بلوتوث</translation>
 <translation id="6445450263907939268">إذا كنت لا تريد هذه التغييرات، فيمكنك استعادة الإعدادات السابقة.</translation>
 <translation id="6446213738085045933">إنشاء اختصار على سطح المكتب</translation>
-<translation id="6447210166804596538">مراجعة أهم عناصر التحكّم في الخصوصية والأمان من مكان واحد</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6450876761651513209">تغيير الإعدادات المتعلقة بالخصوصية</translation>
 <translation id="6451344358166983408">الموقع الإلكتروني أو الصفحة</translation>
@@ -5273,6 +5272,7 @@
 <translation id="6497789971060331894">التمرير العكسي عبر الماوس</translation>
 <translation id="6498249116389603658">&amp;جميع اللغات</translation>
 <translation id="6499143127267478107">حل المضيف في النص البرمجي للخادم الوكيل...</translation>
+<translation id="6499764981457476645">لم يتم العثور على أي أجهزة جوّالة مجاورة.</translation>
 <translation id="6501086852992132091">يريد تطبيق <ph name="APP_ORIGIN" /> فتح هذا الملف:</translation>
 <translation id="6501957628055559556">جميع الحاويات</translation>
 <translation id="650266656685499220">‏لإنشاء ألبومات، انتقِل إلى "صور Google".</translation>
@@ -5738,6 +5738,7 @@
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6981553172137913845">للتصفُّح بخصوصية تامّة، انقر على القائمة المشار إليها برمز النقاط لفتح نافذة للتصفُّح المتخفي.</translation>
+<translation id="6981761993313539853">يُرجى التأكّد من أنّ جهازك الذي يتضمّن بلوتوث في وضع الإقران وأنّه في مكان مجاور. ولا تقرِنه إلا بأجهزة تثق بها. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6983507711977005608">قطع الاتصال بشبكة "التوصيل الفوري"</translation>
 <translation id="6983783921975806247">‏معرّف الكائنات (OID) المسجل</translation>
@@ -6646,6 +6647,7 @@
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">‏تحسين التصفُّّح والبحث على Chrome باستخدام مقاييس الصفحة</translation>
+<translation id="7903290522161827520">هل تبحث عن مكوِّنات المتصفِّح؟ انتقِل إلى</translation>
 <translation id="7903345046358933331">أصبحت الصفحة غير مستجيبة. يمكنك الانتظار حتى تصبح مستجيبة أو إغلاقها.</translation>
 <translation id="7903742244674067440">لديك شهادات في الملف تحدد صلاحيات الشهادة هذه</translation>
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
@@ -6875,7 +6877,6 @@
 <translation id="811994229154425014">مسافة مزدوجة لكتابة نقطة</translation>
 <translation id="8120505434908124087">‏تثبيت الملف الشخصي لشريحة eSIM</translation>
 <translation id="812260729110117038">يمكن للمعلِنين والناشرين تحديد مدى فعالية الإعلانات بدون الحاجة إلى تتبّع نشاطك في المواقع الإلكترونية.</translation>
-<translation id="81231173274944570">تفعيل الملاحظات والآراء الملموسة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">زهرة صفراء وبيضاء</translation>
 <translation id="8124313775439841391">‏ONC مُدار</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
@@ -7024,6 +7025,7 @@
 <translation id="8271268254812352141">يمكنك تعريف المصطلحات وترجمة النصوص وتحويل الوحدات من خلال النقر بزر الماوس الأيمن على نص أو النقر عليه مع الاستمرار، بالإضافة إلى تخصيص لغات الترجمة في <ph name="LINK_BEGIN" />لغات المواقع الإلكترونية<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">الخطوات التالية مخصَّصة للوالدَين. يمكنك إعادة جهاز <ph name="DEVICE_TYPE" /> للطفل بعد إعداد الحساب.</translation>
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
+<translation id="8272677921396592934">استخدام الكاميرا لمسح رمز الاستجابة السريعة ضوئيًا</translation>
 <translation id="8274332263553132018">إرسال الملف</translation>
 <translation id="8274921654076766238">المكبِّر يتبع تركيز لوحة المفاتيح.</translation>
 <translation id="8274924778568117936">لا توقف تشغيل جهاز <ph name="DEVICE_TYPE" /> أو تُغلقه لحين الانتهاء من التحديث. ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> بعد اكتمال التثبيت.</translation>
@@ -7707,6 +7709,7 @@
 <translation id="9004754973617721124">هل تريد محو البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وأيّ مواقع إلكترونية ضمن النطاق، وتطبيقه المثبَّت؟</translation>
 <translation id="9004952710076978168">تلقيت إشعارًا خاصًا بطابعة غير معروفة.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
+<translation id="9008201858626224558">زر الرجوع إلى صفحة تفاصيل <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">جارٍ تحميل (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">هل كنت تقصد تغيير هذه الصفحة؟</translation>
 <translation id="9011163749350026987">إظهار الرمز دائمًا</translation>
@@ -7810,7 +7813,6 @@
 <translation id="9103868373786083162">اضغط للرجوع، وقائمة السياقات لمشاهدة السجلّ.</translation>
 <translation id="9108035152087032312">‏تسمية &amp;window...</translation>
 <translation id="9108072915170399168">إعداد استخدام البيانات الحالي هو "بدون إنترنت"</translation>
-<translation id="9108692355621501797">‏إنّ الهدف من <ph name="LINK_BEGIN" />إشعار خصوصية "G Suite للتعليم"<ph name="LINK_END" /> هو مساعدة مستخدمي "G Suite للتعليم" والوالدَين على فهم نوع البيانات التي يجمعها المنتج فضلًا عن السبب والغرض من جمعها.</translation>
 <translation id="9108808586816295166">قد لا يكون نظام أسماء النطاقات الآمن متاحًا طوال الوقت.</translation>
 <translation id="9109122242323516435">لتفريغ مساحة، احذف الملفات من مساحة تخزين الجهاز.</translation>
 <translation id="9109283579179481106">الاتصال بشبكة الجوّال</translation>
@@ -7890,6 +7892,7 @@
 <translation id="917510707618656279">طلب الإذن عند محاولة موقع إلكتروني الوصول إلى أجهزة البلوتوث</translation>
 <translation id="9176476835295860688">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يرسل هذا الجهاز حاليًا بيانات استخدام التطبيق والجهاز والتشخيص تلقائيًا إلى Google. سيساعد ذلك في استقرار عمل النظام والتطبيقات، بالإضافة إلى التحسينات الأخرى. كما ستساعد بعض البيانات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج نظام التشغيل Android. ويفرض المالك هذا <ph name="BEGIN_LINK1" />الإعداد<ph name="END_LINK1" />. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - جهاز البلوتوث متصل</translation>
+<translation id="9178061802301856367">حذف بيانات تسجيل الدخول</translation>
 <translation id="9179524979050048593">اسم المستخدم في شاشة تسجيل الدخول</translation>
 <translation id="9180281769944411366">‏قد تستغرق هذه العملية بضع دقائق. جارٍ بدء تشغيل حاوية نظام التشغيل Linux.</translation>
 <translation id="9180380851667544951">يمكن للموقع الإلكتروني مشاركة شاشتك.</translation>

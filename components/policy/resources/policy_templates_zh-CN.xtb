@@ -286,6 +286,7 @@
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将禁止使用访客个人资料登录。</translation>
 <translation id="1361661842732478894">在工具栏上显示首页按钮</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
+<translation id="1371626834351873151">系统将为所有来源启用“用户代理字符串缩短”功能。</translation>
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
 <translation id="1384459581748403878">参考页面：<ph name="REFERENCE_URL" /></translation>
@@ -795,6 +796,7 @@
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
 <translation id="1972134432340252414">屏蔽浏览器进程中的旧版扩展点</translation>
 <translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
+<translation id="1985598967415986700">“用户代理字符串缩短”功能将可通过现场试验和源试用进行控制。</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
       此政策让您能够以 JSON 文件的形式向 <ph name="PRODUCT_OS_NAME" />设备提供外部打印服务器的配置。
@@ -827,11 +829,6 @@
 
       连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，其余打印机则会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。
       注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果不指定网络连接状态，那么进行打印预览时，系统将会查找所有类型的打印机（<ph name="PRINTER_TYPE_LOCAL" />和<ph name="PRINTER_TYPE_CLOUD" />）。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
-<translation id="2003441790537575907">如果此政策已启用或未设置，<ph name="LEGACY_EXTENSION_DISABLE_API" /> 便会屏蔽浏览器进程中的旧版扩展点。
-
-      停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的浏览器进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的浏览器进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
-
-      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="2005506794355327448">当设备的盖子合上后应执行的操作</translation>
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 处理政策</translation>
@@ -2008,6 +2005,7 @@
       注意：对于 <ph name="MS_AD_NAME" /> 管理的设备，此政策支持将 <ph name="MACHINE_NAME_VARIABLE" /> 扩展为 <ph name="MS_AD_NAME" /> 机器名称或其子字符串。例如，如果机器名称是“<ph name="MACHINE_NAME_EXAMPLE" />”，<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> 便会被替换为第 6 个字符后面的 4 个字符（即 <ph name="MACHINE_NAME_PART_EXAMPLE" />）。位置序数从 0 起算。
 
       此政策已被弃用，请改用 <ph name="PRINTERS_POLICY_NAME" />。</translation>
+<translation id="3300784749135986828">启用或停用“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能。</translation>
 <translation id="3302829897293005699">如果此政策已启用或未设置，已注册的设备将会报告当前自助服务终端会话的相关信息（例如应用 ID 和版本）。
 
       如果此政策已停用，已注册的设备将不会报告自助服务终端会话信息。</translation>
@@ -2955,6 +2953,7 @@
       注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="4531706050939927436">您可以通过 Google Play 从 Google 管理控制台中强制安装 Android 应用。这些应用不会使用此政策。</translation>
 <translation id="4534500438517478692">Android 限制名称：</translation>
+<translation id="4537906430022369840">“用户代理字符串缩短”功能已停用，且未通过现场试验或源试用启用。</translation>
 <translation id="4541530620466526913">设备本地帐号</translation>
 <translation id="4543502256674577024">设备更新设置</translation>
 <translation id="454585952814397564">对音频进程使用普通优先级</translation>
@@ -5452,6 +5451,12 @@
 <translation id="7509761893401042250">自 M96 起，此政策已被弃用。请改用 <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" /> 和 <ph name="REPORT_DEVICE_AUDIO_STATUS" />。
 
       如果此政策已启用或未设置，已注册的设备会报告硬件统计信息（例如 CPU/RAM 使用情况）。如果此政策已停用，已注册的设备不会报告硬件统计信息。</translation>
+<translation id="7512065400265675158">我们已排定缩短<ph name="USER_AGENT_HEADER_NAME" /> HTTP 请求标头的时间。为方便测试和提高兼容性，此政策可为所有网站启用缩短功能，也可禁止通过源试用或现场试验启用该功能。
+
+      如需详细了解“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能及其发布阶段时间安排，请参阅：
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      </translation>
 <translation id="7519218194072744342">协议处理程序的网址。</translation>
 <translation id="7519251620064708155">允许在这些网站上使用密钥生成功能</translation>
 <translation id="7529144158022474049">自动更新分配因素</translation>

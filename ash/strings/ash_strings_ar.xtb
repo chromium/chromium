@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">التمرير</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="118437560755358292">أدخِل كلمة المرور أو رقم التعريف الشخصي لزيادة مستوى الأمان</translation>
 <translation id="118532027333893379">انقر في أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
 <translation id="1190678134285018527">يجب إعادة الجهاز إلى الإصدار السابق</translation>
@@ -339,6 +340,7 @@
 <translation id="3307642347673023554">تمّ التبديل إلى وضع الكمبيوتر المحمول.</translation>
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
+<translation id="3339826665088060472">لقطة الشاشة، أدوات التقاط لقطات الشاشة وتسجيلات الشاشة</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
 <translation id="334252345105450327">التقاط لقطة شاشة</translation>
 <translation id="3351879221545518001">أنت حاليًا تبث محتوى الشاشة.</translation>
@@ -395,6 +397,7 @@
 <translation id="3606978283550408104">تم توصيل شاشة برايل.</translation>
 <translation id="3615926715408477684">سيؤدي تفعيل ميزة بيانات الجوّال إلى تفعيل البلوتوث.</translation>
 <translation id="3616883743181209306">تم نقل القائمة إلى أعلى يسار الشاشة.</translation>
+<translation id="3619536907358025872">إعدادات تصوير الشاشة</translation>
 <translation id="3621202678540785336">الإدخال</translation>
 <translation id="3621712662352432595">إعدادات الصوت</translation>
 <translation id="3626281679859535460">السطوع</translation>
@@ -493,6 +496,7 @@
 <translation id="4269883910223712419">يمتلك مشرف هذا الجهاز القدرة على ما يلي:</translation>
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
+<translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
 <translation id="4285498937028063278">إزالة تثبيت</translation>
 <translation id="429402653707266969">تبديل مكان شريط الأدوات</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
@@ -762,6 +766,7 @@
 <translation id="607652042414456612">يمكن لأجهزة بلوتوث القريبة اكتشاف جهاز الكمبيوتر وسيظهر كـ "<ph name="NAME" />" بالعنوان <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
 <translation id="6134259848159370930">يمكنك البحث في الجهاز والتطبيقات والإعدادات والويب.</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>

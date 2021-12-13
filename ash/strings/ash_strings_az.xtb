@@ -191,6 +191,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2222841058024245321">Masa 7</translation>
 <translation id="2224075387478458881">Qorunan məzmun görünəndə ekranın yazılmasına icazə verilmir</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> faylını endirkən xəta baş verdi</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
 <translation id="2268813581635650749">Hamısından çıxın</translation>
 <translation id="2269016722240250274">Tətbiq mikrofonunuzu işlədir</translation>
@@ -583,6 +584,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4831034276697007977">Avtomatik klikləri deaktiv etmək istədiyinizə əminsiniz?</translation>
 <translation id="4849058404725798627">Obyekti klaviatura fokusu ilə vurğulayın</translation>
 <translation id="485592688953820832">Əməliyyat yoxdur (fasilə)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> faylını endirmək üçün şəbəkə bağlantısını yoxlayın</translation>
 <translation id="486056901304535126">Endirməyə daha sonra cəhd ediləcək. Danışıq endirmə tamamlanana qədər emal üçün Google'a göndəriləcək.</translation>
 <translation id="4868492592575313542">aktiv</translation>
 <translation id="4872237917498892622">Alt+Search və ya Shift</translation>
@@ -799,6 +801,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6452181791372256707">Rədd edin</translation>
 <translation id="6453179446719226835">Dil dəyişdirilib</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> üçün ekran genişləndirilir</translation>
+<translation id="6477681113376365978">Faylı endirmək mümkün deyil</translation>
 <translation id="6482559668224714696">Tam ekran böyüdücüsü</translation>
 <translation id="6490471652906364588">USB-C cihazı (sağ port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> son tarixdən əvvəl <ph name="DEVICE_TYPE" /> cihazını güncəlləməyinizi tələb edir</translation>
@@ -812,6 +815,8 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6537924328260219877">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> endirməsi skanlanır</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Yeni quraşdırma</translation>
 <translation id="6559976592393364813">Administrator ilə Əlaqə</translation>
 <translation id="6565007273808762236">eSIM bağlantısı əlçatan deyil</translation>
 <translation id="6570831796530454248">{0,plural, =1{Cihazı bir saat ərzində güncəlləyin}other{Cihazı # saat ərzində güncəlləyin}}</translation>
@@ -843,6 +848,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6727969043791803658">Qoşuludur, <ph name="BATTERY_PERCENTAGE" />% batareya</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">AYARLARA KEÇİN</translation>
 <translation id="6751052314767925245">Administratorunuz tərəfindən icbari icra olunur</translation>
 <translation id="6751826523481687655">Performansın izlənməsi aktiv edildi</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> silinərək Masa <ph name="RECEIVE_DESK" /> ilə birləşdirildi</translation>
@@ -978,6 +984,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7662283695561029522">Konfiqurasiya etmək üçün klikləyin</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yeni mobil şəbəkə əlavə edin</translation>
+<translation id="7720410380936703141">YENİDƏN SINAYIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildiriş}other{# bildiriş}}</translation>
 <translation id="7724603315864178912">Kəsin</translation>
 <translation id="7745560842763881396">Rəfdə tətbiqləri göstərin</translation>
@@ -1164,6 +1171,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> işlədilir</translation>
 <translation id="899350903320462459">Bildiriş əməliyyatını icra etmək üçün cihazı <ph name="LOGIN_ID" /> olaraq kiliddən çıxarın</translation>
+<translation id="9000771174482730261">YADDAŞI İDARƏ EDİN</translation>
 <translation id="9017320285115481645">Family Link valideyn girişi kodunu daxil edin.</translation>
 <translation id="9024331582947483881">Tam ekran</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> üzrə ayarları açın</translation>
@@ -1209,6 +1217,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="938963181863597773">Təqvimdə nə var?</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="951991426597076286">Kənarlaşdırın</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> üçün cihazda kifayət qədər yer yoxdur. Yer boşaldın.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> üzrə <ph name="RESULT_COUNT" /> nəticə göstərilir</translation>
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> pəncərəsi bağlandı.</translation>

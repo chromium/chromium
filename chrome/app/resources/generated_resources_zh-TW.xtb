@@ -1997,6 +1997,7 @@
 <translation id="3009300415590184725">你確定要取消行動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
+<translation id="301080557829842765">隱私權指南</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系統會在你離開時將 <ph name="DOMAIN" /> 產生的 Cookie 清除</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2149,7 +2150,6 @@
 <translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
-<translation id="316652501498554287">G Suite 教育版帳戶</translation>
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
@@ -2179,7 +2179,6 @@
 <translation id="321084946921799184">黃色與白色</translation>
 <translation id="321356136776075234">裝置機構單位 (例如 OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。</translation>
-<translation id="3216825226035747725">G Suite 教育版的系統管理員可決定使用者登入 G Suite 教育版帳戶後，可以存取哪些 Google 服務。這可能會包含子女先前無法透過這個受監督帳戶存取的某些功能或服務。學校的系統管理員必須提供或取得家長的同意聲明，才能讓未成年使用者使用這些服務。</translation>
 <translation id="3217843140356091325">要建立捷徑嗎？</translation>
 <translation id="321834671654278338">Linux 解除安裝程式</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 連接器處理程序當掉了，你要重新啟動嗎？</translation>
@@ -3475,9 +3474,6 @@
 <translation id="4573515936045019911">必須連上網路才能升級 Linux。請連線至網際網路，然後再試一次。</translation>
 <translation id="457386861538956877">更多…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">將學校帳戶新增至設定檔可讓孩子以學生的身分輕鬆登入網站、擴充功能及應用程式，同時遵守家長監護功能的操作規範。這項操作不允許孩子存取與學校帳戶同步的書籤、密碼或其他瀏覽器資料。&lt;br&gt;&lt;br&gt;
-    如果孩子在學校使用 Chromebook，而你想在家中複製相同的學校使用體驗，以確保孩子可存取所有與學校作業相關的必要資訊，請登出這個 Family Link 帳戶，然後從 Chrome 作業系統帳戶頁面登入學校帳戶 (注意：系統不會套用 Family Link 家長監護功能)。&lt;br&gt;&lt;br&gt;
-    如果孩子在學校不是使用 Chromebook，或是你想要使用 Family Link 管理孩子在家中的使用體驗，請按下方的 [下一步] 按鈕，將學校帳戶新增至這個設定檔。</translation>
 <translation id="4576541033847873020">配對藍牙裝置</translation>
 <translation id="4576763597586015380">如要繼續將密碼儲存在 Google 帳戶中，請驗證你的身分</translation>
 <translation id="4579453506923101210">清除已連結的手機</translation>
@@ -3787,7 +3783,6 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 要求與「<ph name="EXTENSION_NAME" />」擴充功能通訊</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4921290200821452703">給家長的學校帳戶資訊</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
 <translation id="4921809350408880559">這是根據你使用 Google 雲端硬碟的活動記錄而顯示的最近和建議文件。
         <ph name="BREAK" />
@@ -4335,7 +4330,6 @@
 <translation id="5502915260472117187">孩子</translation>
 <translation id="5503356662318814623">傳送訊息</translation>
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用與調整攝影機，以及存取麥克風</translation>
-<translation id="5504909642107847870">隱私權和安全性檢查</translation>
 <translation id="5505264765875738116">網站無法要求傳送通知給你</translation>
 <translation id="5505307013568720083">墨水已用盡</translation>
 <translation id="5505794066310932198">切換指令工具</translation>
@@ -5214,7 +5208,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 藍牙掃描啟用中</translation>
 <translation id="6445450263907939268">如果你不想套用這些變更，可以還原為先前的設定。</translation>
 <translation id="6446213738085045933">建立桌面捷徑</translation>
-<translation id="6447210166804596538">集中檢查最重要的隱私權和安全性控制項</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">變更隱私權相關設定</translation>
 <translation id="6451344358166983408">網站或網頁</translation>
@@ -6867,7 +6860,6 @@
 <translation id="811994229154425014">按兩下空格鍵可輸入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
 <translation id="812260729110117038">廣告客戶和發布商不必追蹤你的網站瀏覽記錄，就能瞭解自身的廣告成效。</translation>
-<translation id="81231173274944570">啟用觸動回饋。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">黃色和白色花朵</translation>
 <translation id="8124313775439841391">管理化 ONC</translation>
 <translation id="813082847718468539">查看網站資訊</translation>
@@ -7795,7 +7787,6 @@
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9108035152087032312">命名視窗...(&amp;W)</translation>
 <translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>
-<translation id="9108692355621501797">《<ph name="LINK_BEGIN" />G Suite 教育版隱私權聲明<ph name="LINK_END" />》旨在協助 G Suite 教育版使用者和家長瞭解這項產品會收集哪些資料、收集這些資料的原因和用途。</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9109122242323516435">如要釋出空間，請刪除裝置儲存空間內的檔案</translation>
 <translation id="9109283579179481106">連線至行動網路</translation>

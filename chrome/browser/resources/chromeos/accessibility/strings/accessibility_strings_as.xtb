@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{প্ৰশ্নবোধক চিন}one{#টা প্ৰশ্নবোধক চিন}other{#টা প্ৰশ্নবোধক চিন}}</translation>
 <translation id="3505359110822747654">ChromeVox মেনু সংকোচন কৰক</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{কেৰেট}one{#টা কেৰেট}other{#টা কেৰেট}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{বগা বুলেট}one{# বগা বুলেট}other{# বগা বুলেট}}</translation>
 <translation id="352577523970648069">সম্পাদনা কৰিব পৰা পাঠৰ ক্ষেত্ৰ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> কাট কৰক।</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">পৰৱৰ্তী চেকবক্স</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ৰেডিঅ' বুটাম বাছনি কৰাটো বাতিল কৰা হ'ল</translation>
 <translation id="5601172225407283979">ডিফ'ল্ট কার্য কৰক</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{বৰ্গাকৃতিৰ বুলেট}one{# বৰ্গাকৃতিৰ বুলেট}other{# বৰ্গাকৃতিৰ বুলেট}}</translation>
 <translation id="5608798115546226984">স্বয়ংক্ৰিয়ভাৱে সম্পূর্ণ হোৱা ইনলাইন</translation>
 <translation id="5616029807486814372">পৰৱৰ্তী অনুশীলনী</translation>
 <translation id="561939826962581046">সময়</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">ড্ৰপ ডাউনৰ সূচী</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> সমাপ্ত</translation>
 <translation id="867187640362843212">শিৰোনাম ৫</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{নেষ্ট কৰা স্তৰ #}other{নেষ্ট কৰা স্তৰ #}}</translation>
 <translation id="8693391540059827073">মোৰ প্ৰিয় ঋতু</translation>
 <translation id="8696284982970258155">HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#ডাল উলম্ব পাইপ}other{#ডাল উলম্ব পাইপ}}</translation>

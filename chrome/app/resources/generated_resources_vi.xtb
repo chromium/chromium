@@ -2011,6 +2011,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3009300415590184725">Bạn có chắc chắn muốn hủy quá trình thiết lập dịch vụ dữ liệu di động không?</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
 <translation id="3010279545267083280">Đã xóa mật khẩu</translation>
+<translation id="301080557829842765">Hướng dẫn về quyền riêng tư</translation>
 <translation id="3011384993885886186">Xám ấm</translation>
 <translation id="3011488081941333749">Cookie từ <ph name="DOMAIN" /> sẽ bị xóa khi thoát</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2162,7 +2163,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3163511056918491211">Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
 <translation id="3164329792803560526">Đang chia sẻ thẻ này với <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Một số nhà cung cấp dịch vụ có thể chặn tính năng này.</translation>
-<translation id="316652501498554287">Tài khoản G Suite cho Giáo dục</translation>
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Thẻ mới ở bên trái</translation>
 <translation id="3177909033752230686">Ngôn ngữ trang:</translation>
@@ -2192,7 +2192,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="321084946921799184">Vàng và trắng</translation>
 <translation id="321356136776075234">Đơn vị tổ chức của thiết bị (ví dụ: OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn.</translation>
-<translation id="3216825226035747725">Quản trị viên G Suite cho Giáo dục sẽ xác định người dùng có thể sử dụng dịch vụ nào của Google khi họ đăng nhập vào tài khoản G Suite cho Giáo dục. Việc sử dụng có thể bao gồm một số tính năng hoặc dịch vụ mà trước đây con bạn chưa thể sử dụng bằng tài khoản được giám sát này. Quản trị viên trường học phải đồng ý hoặc có được sự đồng ý nếu để người dùng là trẻ vị thành niên sử dụng các dịch vụ đó.</translation>
 <translation id="3217843140356091325">Tạo lối tắt?</translation>
 <translation id="321834671654278338">Trình gỡ cài đặt Linux</translation>
 <translation id="3220586366024592812">Quy trình của trình kết nối <ph name="CLOUD_PRINT_NAME" /> đã xảy ra lỗi. Khởi động lại?</translation>
@@ -3489,9 +3488,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4573515936045019911">Cần có kết nối mạng để nâng cấp Linux. Vui lòng kết nối Internet rồi thử lại.</translation>
 <translation id="457386861538956877">Thêm...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Khi thêm một tài khoản trường học vào hồ sơ, bạn sẽ dễ dàng đăng nhập vào các trang web, tiện ích và ứng dụng của mình trong vai trò học viên, trong khi vẫn hoạt động theo các quyền kiểm soát của cha mẹ. Thao tác này không cấp cho con quyền truy cập vào dấu trang, mật khẩu hoặc các dữ liệu khác trên trình duyệt được đồng bộ hóa với tài khoản trường học.&lt;br&gt;&lt;br&gt;
-    Nếu con bạn sử dụng Chromebook ở trường học và bạn muốn mô phỏng trải nghiệm trường học tại nhà nhằm đảm bảo con có quyền truy cập vào tất cả bài tập về nhà cần thiết, vui lòng đăng xuất khỏi tài khoản Family Link này, rồi đăng nhập vào tài khoản trường học trên trang tài khoản Chrome OS (lưu ý: Không áp dụng quyền kiểm soát của cha mẹ trên Family Link).&lt;br&gt;&lt;br&gt;
-    Nếu con bạn không sử dụng Chromebook ở trường học hoặc nếu bạn muốn kiểm soát việc sử dụng của con tại nhà bằng Family Link, vui lòng nhấp vào nút Tiếp theo ở bên dưới để thêm tài khoản trường học vào hồ sơ này.</translation>
 <translation id="4576541033847873020">Ghép nối thiết bị Bluetooth</translation>
 <translation id="4576763597586015380">Hãy xác minh danh tính của bạn để tiếp tục lưu mật khẩu trong Tài khoản Google</translation>
 <translation id="4579453506923101210">Xóa điện thoại đã kết nối</translation>
@@ -3800,7 +3796,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> muốn giao tiếp với tiện ích "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
-<translation id="4921290200821452703">Thông tin về tài khoản trường học dành cho cha mẹ</translation>
 <translation id="4921348630401250116">Chuyển văn bản sang lời nói</translation>
 <translation id="4921809350408880559">Các tài liệu gần đây và tài liệu đề xuất của bạn xuất hiện dựa trên hoạt động mà bạn thực hiện trước đây thông qua Google Drive.
         <ph name="BREAK" />
@@ -4348,7 +4343,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5502915260472117187">Một trẻ</translation>
 <translation id="5503356662318814623">Gửi tin nhắn</translation>
 <translation id="5503982651688210506">Tiếp tục cho phép <ph name="HOST" /> dùng và di chuyển máy ảnh, cũng như sử dụng micrô</translation>
-<translation id="5504909642107847870">Kiểm tra quyền riêng tư và tính bảo mật</translation>
 <translation id="5505264765875738116">Các trang web không thể xin phép gửi thông báo</translation>
 <translation id="5505307013568720083">Hết mực</translation>
 <translation id="5505794066310932198">Bật/tắt tính năng Commander</translation>
@@ -5225,7 +5219,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Đang tích cực quét tìm thiết bị Bluetooth</translation>
 <translation id="6445450263907939268">Nếu không thích những thay đổi này, bạn có thể khôi phục cài đặt trước của mình.</translation>
 <translation id="6446213738085045933">Tạo lối tắt trên màn hình</translation>
-<translation id="6447210166804596538">Kiểm tra các chế độ kiểm soát quan trọng nhất về quyền riêng tư và tính bảo mật tại cùng một nơi</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">Thay đổi các cài đặt liên quan đến bảo mật của bạn</translation>
 <translation id="6451344358166983408">Trang web</translation>
@@ -6875,7 +6868,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="811994229154425014">Hai dấu cách để nhập dấu chấm câu</translation>
 <translation id="8120505434908124087">Cài đặt hồ sơ eSIM</translation>
 <translation id="812260729110117038">Các nhà quảng cáo và nhà xuất bản có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.</translation>
-<translation id="81231173274944570">Bật chế độ phản hồi xúc giác. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Hoa màu vàng và trắng</translation>
 <translation id="8124313775439841391">ONC được quản lý</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
@@ -7801,7 +7793,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9103868373786083162">Nhấn để quay lại, nhấn menu ngữ cảnh để xem lịch sử</translation>
 <translation id="9108035152087032312">Đặt tên cho &amp;cửa sổ...</translation>
 <translation id="9108072915170399168">Chế độ sử dụng dữ liệu hiện tại là Không dùng Internet</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Thông báo về quyền riêng tư của G Suite cho Giáo dục<ph name="LINK_END" /> nhằm giúp người dùng và cha mẹ sử dụng G Suite cho Giáo dục hiểu rõ những dữ liệu mà sản phẩm này thu thập, lý do thu thập cũng như những việc chúng tôi làm với dữ liệu đó.</translation>
 <translation id="9108808586816295166">DNS bảo mật có thể không phải lúc nào cũng hoạt động</translation>
 <translation id="9109122242323516435">Để giải phóng dung lượng, hãy xóa tệp khỏi bộ nhớ thiết bị.</translation>
 <translation id="9109283579179481106">Kết nối với mạng di động</translation>

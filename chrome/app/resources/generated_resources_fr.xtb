@@ -1684,6 +1684,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2707024448553392710">Téléchargement de composants en cours…</translation>
 <translation id="270921614578699633">Moyenne de</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
+<translation id="2710014902399506864">Ajouter un téléphone</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2712173769900027643">Demander l'autorisation</translation>
@@ -1997,6 +1998,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3009300415590184725">Voulez-vous vraiment annuler la configuration du service Internet mobile ?</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
 <translation id="3010279545267083280">Mot de passe supprimé</translation>
+<translation id="301080557829842765">Guide de confidentialité</translation>
 <translation id="3011384993885886186">Gris chaud</translation>
 <translation id="3011488081941333749">Les cookies de <ph name="DOMAIN" /> seront effacés lorsque vous quitterez votre session de navigation</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2043,6 +2045,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3055590424724986000">Avec un fournisseur de votre choix</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3058517085907878899">Nommer l'appareil</translation>
+<translation id="3059195548603439580">Vous recherchez des composants du système ? Accédez à la page</translation>
 <translation id="3060379269883947824">Activer "Sélectionner pour prononcer"</translation>
 <translation id="3060952009917586498">Modifier la langue de l'appareil. La langue actuelle est : <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nous n'avons pas pu établir la connexion avec votre téléphone. Vérifiez qu'il est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés.</translation>
@@ -2148,7 +2151,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3163511056918491211">Restaurez vos données ou changez d'appareil, facilement et à tout moment. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="3164329792803560526">Partage de l'onglet avec <ph name="APP_NAME" />…</translation>
 <translation id="3165390001037658081">Certains opérateurs peuvent bloquer cette fonctionnalité.</translation>
-<translation id="316652501498554287">Comptes G Suite for Education</translation>
 <translation id="3170072451822350649">Vous pouvez également ignorer l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
@@ -2178,7 +2180,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="321084946921799184">Jaune et blanc</translation>
 <translation id="321356136776075234">UO de l'appareil (par exemple, OU=Chromebooks, DC=example, DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Les administrateurs de G Suite for Education déterminent les services Google auxquels leurs utilisateurs peuvent accéder lorsqu'ils sont connectés à un compte G Suite for Education. Cela peut inclure des fonctionnalités ou des services auxquels votre enfant ne pouvait pas accéder auparavant avec ce compte supervisé. Pour les utilisateurs mineurs, les administrateurs de l'établissement scolaire doivent donner ou obtenir une autorisation avant de permettre l'accès à ces services.</translation>
 <translation id="3217843140356091325">Créer un raccourci ?</translation>
 <translation id="321834671654278338">Programme de désinstallation de Linux</translation>
 <translation id="3220586366024592812">Le processus du connecteur <ph name="CLOUD_PRINT_NAME" /> est bloqué. Voulez-vous le redémarrer ?</translation>
@@ -2702,6 +2703,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communication avec un appareil USB}one{Communication avec # appareil USB}other{Communication avec # appareils USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Envoi de <ph name="ATTACHMENTS" /> à l'appareil "<ph name="DEVICE_NAME" />"}one{Envoi de <ph name="ATTACHMENTS" /> à l'appareil "<ph name="DEVICE_NAME" />"}other{Envoi de <ph name="ATTACHMENTS" /> à l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3765246971671567135">Impossible de lire la règle du mode de démonstration hors connexion.</translation>
+<translation id="3766115177661377251">Caster sur un nouvel écran</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Glace</translation>
 <translation id="3771290962915251154">Ce paramètre est désactivé en raison de l'activation du contrôle parental</translation>
@@ -3474,9 +3476,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4573515936045019911">Vous devez disposer d'une connexion réseau pour mettre à niveau Linux. Veuillez vous connecter à Internet, puis réessayer.</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">L'ajout d'un compte scolaire à un profil permet de se connecter facilement aux sites Web, aux extensions et aux applications en tant qu'élève. Le contrôle parental n'est pas désactivé. Cependant, l'enfant ne pourra pas accéder aux favoris, mots de passe et autres données du navigateur qui sont synchronisés avec le compte scolaire.&lt;br&gt;&lt;br&gt;
-    Si votre enfant utilise un Chromebook à l'école et que vous souhaitez qu'il ait accès aux mêmes ressources à la maison pour faire ses devoirs, veuillez vous déconnecter du compte Family Link, puis vous connecter au compte scolaire depuis la page des comptes de Chrome OS. Remarque : le contrôle parental Family Link ne s'applique pas dans ce cas.&lt;br&gt;&lt;br&gt;
-    Si votre enfant n'utilise pas un Chromebook à l'école ou si vous préférez gérer son activité à la maison avec Family Link, veuillez cliquer sur le bouton "Suivant" ci-dessous pour ajouter un compte scolaire à ce profil.</translation>
 <translation id="4576541033847873020">Associer un appareil Bluetooth</translation>
 <translation id="4576763597586015380">Pour continuer à enregistrer des mots de passe dans votre compte Google, confirmez votre identité</translation>
 <translation id="4579453506923101210">Supprimer le téléphone connecté</translation>
@@ -3491,6 +3490,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4590324241397107707">Stockage des bases de données</translation>
 <translation id="4592891116925567110">Application de dessin avec le stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
+<translation id="4594577641390224176">Vous recherchez des informations à propos du système ? Accédez à la page</translation>
 <translation id="4595560905247879544">Seul l'administrateur (<ph name="CUSTODIAN_NAME" />) est autorisé à modifier les applications et les extensions.</translation>
 <translation id="4596295440756783523">Certains de vos certificats enregistrés identifient ces serveurs.</translation>
 <translation id="4598556348158889687">Gestion du stockage</translation>
@@ -3785,7 +3785,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> souhaite communiquer avec l'extension "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4918086044614829423">Accepter</translation>
-<translation id="4921290200821452703">Informations pour les parents concernant les comptes scolaires</translation>
 <translation id="4921348630401250116">Synthèse vocale</translation>
 <translation id="4921809350408880559">Vos documents récents et suggérés s'affichent en fonction de vos activités précédentes sur Google Drive.
         <ph name="BREAK" />
@@ -4333,7 +4332,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5502915260472117187">Un enfant</translation>
 <translation id="5503356662318814623">Envoyer un message</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra, et à utiliser le micro</translation>
-<translation id="5504909642107847870">Examen de la confidentialité et de la sécurité</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5505307013568720083">À court d'encre</translation>
 <translation id="5505794066310932198">Activer/Désactiver Commander</translation>
@@ -4877,6 +4875,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6085886413119427067">Détermine comment se connecter aux sites Web via une connexion sécurisée</translation>
 <translation id="6086004606538989567">Le compte que vous avez validé n'est pas autorisé à accéder à cet appareil.</translation>
 <translation id="6086846494333236931">Installée par votre administrateur</translation>
+<translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
@@ -4975,6 +4974,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6198102561359457428">Se déconnecter, puis se connecter de nouveau…</translation>
 <translation id="6198252989419008588">Modifier le code</translation>
 <translation id="6200047250927636406">Supprimer le fichier</translation>
+<translation id="6200151268994853226">Gérer l'extension</translation>
 <translation id="6201608810045805374">Supprimer ce compte ?</translation>
 <translation id="6202304368170870640">Vous pouvez utiliser votre code pour vous connecter à votre appareil ou le déverrouiller.</translation>
 <translation id="6206311232642889873">Cop&amp;ier l'image</translation>
@@ -5211,7 +5211,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Recherche d'appareils Bluetooth</translation>
 <translation id="6445450263907939268">Si vous ne souhaitiez pas effectuer ces modifications, vous pouvez restaurer les paramètres précédents.</translation>
 <translation id="6446213738085045933">Créer un raccourci sur le Bureau</translation>
-<translation id="6447210166804596538">Examinez les paramètres de confidentialité et de sécurité les plus importants au même endroit</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Modifier vos paramètres de confidentialité</translation>
 <translation id="6451344358166983408">Site ou page</translation>
@@ -5262,6 +5261,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6497789971060331894">Défilement inversé avec la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
 <translation id="6499143127267478107">Résolution de l'hôte du script de proxy…</translation>
+<translation id="6499764981457476645">Aucun appareil détecté à proximité</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> veut ouvrir ce fichier :</translation>
 <translation id="6501957628055559556">Tous les conteneurs</translation>
 <translation id="650266656685499220">Pour créer des albums, accédez à Google Photos</translation>
@@ -5727,6 +5727,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6979440798594660689">Coupé (par défaut)</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6981553172137913845">Pour parcourir le Web en mode privé, cliquez sur le menu à trois points afin d'ouvrir une fenêtre de navigation privée</translation>
+<translation id="6981761993313539853">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="6983507711977005608">Se déconnecter du réseau utilisé pour le partage de connexion instantané</translation>
 <translation id="6983783921975806247">OID enregistré</translation>
@@ -6633,6 +6634,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7898725031477653577">Toujours traduire</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Amélioration de Chrome grâce aux métriques sur les pages</translation>
+<translation id="7903290522161827520">Vous recherchez des composants du navigateur ? Accédez à la page</translation>
 <translation id="7903345046358933331">La page ne répond plus. Vous pouvez attendre qu'elle soit de nouveau accessible ou la fermer.</translation>
 <translation id="7903742244674067440">Certains de vos certificats enregistrés identifient ces autorités de certification.</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
@@ -6861,7 +6863,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="811994229154425014">Appuyer deux fois sur la barre d'espace pour saisir un point</translation>
 <translation id="8120505434908124087">Installer le profil eSIM</translation>
 <translation id="812260729110117038">Les annonceurs et les éditeurs peuvent évaluer l'efficacité des annonces sans utiliser le suivi intersite.</translation>
-<translation id="81231173274944570">Activer le retour haptique. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Fleur jaune et blanche</translation>
 <translation id="8124313775439841391">ONC géré</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
@@ -7007,6 +7008,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte. Personnalisez les langues de traduction dans <ph name="LINK_BEGIN" />Langues des sites Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>
 <translation id="8272443605911821513">Cliquer sur "Extensions" dans le menu "Autres outils" pour gérer les extensions</translation>
+<translation id="8272677921396592934">Scanner le code QR avec l'appareil photo</translation>
 <translation id="8274332263553132018">Caster le fichier</translation>
 <translation id="8274921654076766238">Loupe selon la sélection au clavier</translation>
 <translation id="8274924778568117936">N'éteignez pas et ne fermez pas votre <ph name="DEVICE_TYPE" /> avant la fin de la mise à jour. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>
@@ -7685,6 +7687,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9004754973617721124">Effacer les données et autorisations de "<ph name="SITE_NAME" />", de tous les sites qui en dépendent et de l'appli installée ?</translation>
 <translation id="9004952710076978168">Réception d'une notification pour une imprimante inconnue.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="9008201858626224558">Bouton "Retour" de la page d'informations de <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Transfert en cours (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Vouliez-vous modifier cette page ?</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
@@ -7788,7 +7791,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9103868373786083162">Appuyer pour revenir en arrière, menu contextuel pour afficher l'historique</translation>
 <translation id="9108035152087032312">Nommer la &amp;fenêtre</translation>
 <translation id="9108072915170399168">Le paramètre de consommation des données est actuellement défini sur "Sans Internet"</translation>
-<translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />Avis de confidentialité G Suite for Education<ph name="LINK_END" /> a pour but d'aider les parents et les utilisateurs de G Suite for Education à mieux comprendre quelles données sont collectées par ce produit, à quelles fins elles sont collectées et comment elles sont utilisées.</translation>
 <translation id="9108808586816295166">Il est possible que le DNS sécurisé ne soit pas disponible à tout moment</translation>
 <translation id="9109122242323516435">Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="9109283579179481106">Se connecter au réseau mobile</translation>
@@ -7868,6 +7870,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="917510707618656279">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth</translation>
 <translation id="9176476835295860688">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Appareil Bluetooth connecté</translation>
+<translation id="9178061802301856367">Supprimer les données de connexion</translation>
 <translation id="9179524979050048593">Nom d'utilisateur sur l'écran de connexion</translation>
 <translation id="9180281769944411366">Cette opération peut prendre quelques minutes. Démarrage du conteneur Linux…</translation>
 <translation id="9180380851667544951">Le site peut partager votre écran</translation>

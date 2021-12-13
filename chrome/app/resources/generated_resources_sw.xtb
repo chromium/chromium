@@ -2007,6 +2007,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3009300415590184725">Je una uhakika unataka kughairi mchakato wa usanidi wa huduma ya data ya simu ya mkononi?</translation>
 <translation id="3009779501245596802">Hifadhidata zilizofahirisiwa</translation>
 <translation id="3010279545267083280">Nenosiri limefutwa</translation>
+<translation id="301080557829842765">Mwongozo wa faragha</translation>
 <translation id="3011384993885886186">Kijivu kisichokolea</translation>
 <translation id="3011488081941333749">Vidakuzi kutoka <ph name="DOMAIN" /> vitafutwa wakati wa kufunga</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2158,7 +2159,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3163511056918491211">Rejesha data yako au ubadilishe vifaa kwa urahisi wakati wowote. Nakala unazohifadhi hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti yako ya Google.</translation>
 <translation id="3164329792803560526">Inashiriki kichupo hiki kwenye <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Huenda watoa huduma wengine wakazuia kipengele hiki.</translation>
-<translation id="316652501498554287">Akaunti za G Suite for Education</translation>
 <translation id="3170072451822350649">Pia unaweza kuruka kuingia na <ph name="LINK_START" />uvinjari kama Mgeni<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Kichupo kipya kushoto</translation>
 <translation id="3177909033752230686">Lugha ya Ukurasa:</translation>
@@ -2188,7 +2188,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="321084946921799184">Manjano na nyeupe</translation>
 <translation id="321356136776075234">Kitengo cha shirika (OU) cha kifaa (kwa mfano, OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" /> Huenda sauti au rekodi ya sauti inayolingana na ya <ph name="SUPERVISED_USER_NAME" /> ikaweza kufikia matokeo yake ya binafsi.</translation>
-<translation id="3216825226035747725">Wasimamizi wa G Suite for Education hubaini huduma za Google ambazo watumiaji wanaweza kufikia wakiwa wameingia katika akaunti ya G Suite for Education. Hali hii inaweza kujumuisha baadhi ya vipengele au huduma ambazo mtoto wako hangeweza kufikia awali akitumia akaunti hii inayodhibitiwa. Wasimamizi wa shule wanahitajika kutoa au kupata idhini ya utumiaji wa huduma kwa niaba ya watumiaji ambao ni watoto.</translation>
 <translation id="3217843140356091325">Ungependa kuweka njia ya mkato?</translation>
 <translation id="321834671654278338">Programu ya kuondoa Linux</translation>
 <translation id="3220586366024592812">Mchakato wa kiunganishi cha <ph name="CLOUD_PRINT_NAME" /> umeharibika. Ungetaka kuzima na uwashe tena?</translation>
@@ -3483,9 +3482,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4573515936045019911">Unahitaji muunganisho wa mtandao ili upate toleo jipya la Linux. Tafadhali unganisha kwenye intaneti na ujaribu tena.</translation>
 <translation id="457386861538956877">Zaidi...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Hatua ya kuweka akaunti ya shuleni kwenye wasifu hurahisisha shughuli za kuingia katika akaunti za tovuti, viendelezi na programu kama mwanafunzi huku vidhibiti vya wazazi vikiendelea kutumika. Haimruhusu mtoto kufikia alamisho, manenosiri au data nyingine ya kivinjari iliyosawazishwa na akaunti ya shuleni.&lt;br&gt;&lt;br&gt;
-    Iwapo mtoto wako hutumia Chromebook shuleni na ungependelea kuakisi mazingira ya shuleni ukiwa nyumbani ili uhakikishe kuwa mtoto wako ana uwezo wa kufikia kazi zote za shuleni zinazohitajika, tafadhali ondoka katika akaunti hii ya Family Link na uingie katika akaunti ya shuleni kupitia ukurasa wa akaunti za Mfumo wa Uendeshaji wa Chrome (kumbuka: Vidhibiti vya wazazi kwenye Family Link havitatumika).&lt;br&gt;&lt;br&gt;
-    Iwapo mtoto wako hatumii Chromebook shuleni au iwapo unapendelea kudhibiti hali ya utumiaji ya mtoto wako nyumbani ukitumia Family Link, tafadhali bofya kitufe cha 'Endelea' hapa chini ili uweke akaunti ya shuleni kwenye wasifu huu.</translation>
 <translation id="4576541033847873020">Oanisha kifaa cha Bluetooth</translation>
 <translation id="4576763597586015380">Thibitisha kwamba ni wewe ili uendelee kuhifadhi manenosiri katika Akaunti yako ya Google</translation>
 <translation id="4579453506923101210">Ondoa simu iliyounganishwa</translation>
@@ -3794,7 +3790,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4917385247580444890">Thabiti</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> inataka kuwasiliana na kiendelezi "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Kubali</translation>
-<translation id="4921290200821452703">Maelezo ya akaunti ya shuleni kwa wazazi</translation>
 <translation id="4921348630401250116">Kusoma maandishi kwa sauti</translation>
 <translation id="4921809350408880559">Unaona hati zako za hivi majuzi na zilizopendekezwa, kutokana na shughuli zako za awali kwenye Hifadhi ya Google.
         <ph name="BREAK" />
@@ -4342,7 +4337,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5502915260472117187">Mtoto</translation>
 <translation id="5503356662318814623">Tuma ujumbe</translation>
 <translation id="5503982651688210506">Endelea kuruhusu <ph name="HOST" /> itumie na isogeze kamera na itumie maikrofoni yako</translation>
-<translation id="5504909642107847870">Ukaguzi wa faragha na usalama</translation>
 <translation id="5505264765875738116">Tovuti haziwezi kukuuliza kutuma arifa</translation>
 <translation id="5505307013568720083">Wino umeisha</translation>
 <translation id="5505794066310932198">Zima au uwashe Kitoa amri</translation>
@@ -5219,7 +5213,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Kichupo cha kutafuta vifaa vyenye Bluetooth kinatumika</translation>
 <translation id="6445450263907939268">Kama hutaki mabadiliko haya, unaweza kurejesha mipangilio yako ya awali.</translation>
 <translation id="6446213738085045933">Unda mkato kwenye eneo-kazi</translation>
-<translation id="6447210166804596538">Kagua vidhibiti muhimu zaidi vya faragha na usalama katika sehemu moja</translation>
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6450876761651513209">Badilisha mipangilio yako inayohusiana na faragha</translation>
 <translation id="6451344358166983408">Tovuti au ukurasa</translation>
@@ -6871,7 +6864,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="811994229154425014">Weka nafasi mbili ili kuandika kitone</translation>
 <translation id="8120505434908124087">Weka wasifu wa eSIM</translation>
 <translation id="812260729110117038">Watangazaji na wachapishaji wanaweza kubaini ufanisi wa matangazo kwa njia ambayo haikufuatilii kwenye tovuti mbalimbali.</translation>
-<translation id="81231173274944570">Washa kipengele cha majibu unayoweza kuhisi. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Ua la rangi ya manjano na nyeupe</translation>
 <translation id="8124313775439841391">ONC Inayodhibitiwa</translation>
 <translation id="813082847718468539">Angalia maelezo ya tovuti</translation>
@@ -7797,7 +7789,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="9103868373786083162">Bonyeza ili kurudi nyuma, bonyeza menyu ili uone historia</translation>
 <translation id="9108035152087032312">Lipe &amp;dirisha jina...</translation>
 <translation id="9108072915170399168">Mipangilio ya sasa ya matumizi ya data ni 'Bila Intaneti'</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Ilani ya Faragha ya G Suite for Education<ph name="LINK_END" /> imekusudiwa kuwasaidia wateja na wazazi wanaotumia G Suite for Education kuelewa data ambayo bidhaa inakusanya, sababu za kuikusanya na tunachofanya nayo.</translation>
 <translation id="9108808586816295166">Huenda DNS Salama isipatikane kila wakati</translation>
 <translation id="9109122242323516435">Ili kupata nafasi, futa faili kutoka kwenye hifadhi ya kifaa.</translation>
 <translation id="9109283579179481106">Unganisha kwenye mtandao wa simu</translation>

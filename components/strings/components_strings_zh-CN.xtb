@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">想要查看浏览器版本？请访问</translation>
 <translation id="1476595624592550506">更改您的密码</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484290072879560759">选择送货地址</translation>
@@ -1872,6 +1873,7 @@
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
+<translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
 <translation id="7135130955892390533">显示状态</translation>
 <translation id="7138472120740807366">递送方式</translation>
 <translation id="7139724024395191329">酋长国</translation>
@@ -2431,6 +2433,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可查看您在 Chrome 中的浏览记录</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">想要查看系统版本？请访问</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想了解您何时在主动使用此设备</translation>
 <translation id="8996941253935762404">您要访问的网站包含有害程序</translation>
 <translation id="8997023839087525404">该服务器提供了一个未通过证书透明度政策公开披露的证书。某些证书必须通过证书透明度政策进行公开披露，以确保它们值得信任且能保护用户免遭攻击。</translation>

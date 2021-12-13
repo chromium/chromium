@@ -2015,6 +2015,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3009300415590184725">Ali ste prepričani, da želite preklicati postopek nastavitve mobilne podatkovne storitve?</translation>
 <translation id="3009779501245596802">Indeksirane zbirke podatkov</translation>
 <translation id="3010279545267083280">Geslo je izbrisano</translation>
+<translation id="301080557829842765">Vodnik po zasebnosti</translation>
 <translation id="3011384993885886186">Toplo siva</translation>
 <translation id="3011488081941333749">Piškotki iz domene <ph name="DOMAIN" /> bodo ob izhodu izbrisani</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2167,7 +2168,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3163511056918491211">Po želji lahko preprosto obnovite podatke ali napravo zamenjate z drugo. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google.</translation>
 <translation id="3164329792803560526">Deljenje tega zavihka z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Nekateri operaterji morda blokirajo to funkcijo.</translation>
-<translation id="316652501498554287">G Suite za račune za Education</translation>
 <translation id="3170072451822350649">Prijavo lahko tudi preskočite in <ph name="LINK_START" />brskate kot gost<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Novi zavihek na levi</translation>
 <translation id="3177909033752230686">Jezik strani:</translation>
@@ -2197,7 +2197,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="321084946921799184">Rumena in bela</translation>
 <translation id="321356136776075234">OE naprave (npr. OE=Chromebooki,DC=primer,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom bi bilo morda mogoče dostopati do osebnih rezultatov otroka <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Skrbniki storitve G Suite for Education določajo, do katerih Googlovih storitev lahko dostopajo njihovi uporabniki, medtem ko so prijavljeni v račun za G Suite for Education. To morda vključuje nekatere funkcije ali storitve, do katerih otrok s tem nadzorovanim računom ni mogel dostopati. Šolski skrbniki morajo navesti ali pridobiti soglasje za storitve, ki jih uporabljajo njihovi mladoletni uporabniki.</translation>
 <translation id="3217843140356091325">Želite ustvariti bližnjico?</translation>
 <translation id="321834671654278338">Odmestitveni program za Linux</translation>
 <translation id="3220586366024592812">Proces priključka <ph name="CLOUD_PRINT_NAME" /> se je zrušil. Ga želite znova zagnati?</translation>
@@ -3495,9 +3494,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4573515936045019911">Če želite nadgraditi Linux, potrebujete omrežno povezavo. Vzpostavite povezavo z internetom in poskusite znova.</translation>
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Če profilu dodate šolski račun, omogočite preprosto prijavo kot učenca na spletnih mestih, v razširitvah in aplikacijah, medtem ko račun še vedno deluje pod starševskim nadzorom. Otroku ne omogoča dostopa do zaznamkov, gesel ali drugih podatkov brskalnika, sinhroniziranih s šolskim računom.&lt;br&gt;&lt;br&gt;
-    Če otrok uporablja Chromebook v šoli in želite poustvariti šolsko izkušnjo doma ter s tem zagotoviti, da bo imel otrok dostop do vseh potrebnih šolskih gradiv, se odjavite iz tega računa za Family Link in se na strani z računi za Chrome OS prijavite v šolski račun (opomba: Starševski nadzor Family Linka se ne bo uporabil).&lt;br&gt;&lt;br&gt;
-    Če otrok ne uporablja Chromebooka v šoli ali če želite otrokovo izkušnjo doma upravljati s Family Linkom, spodaj kliknite gumb »Naprej«, če želite temu profilu dodati šolski račun.</translation>
 <translation id="4576541033847873020">Seznanitev naprave Bluetooth</translation>
 <translation id="4576763597586015380">Če želite gesla še naprej shranjevati v računu Google, potrdite, da ste vi.</translation>
 <translation id="4579453506923101210">Pozaba povezanega telefona</translation>
@@ -3807,7 +3803,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi vzpostaviti povezavo z razširitvijo »<ph name="EXTENSION_NAME" />«</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
-<translation id="4921290200821452703">Podatki o šolskem računu za starše</translation>
 <translation id="4921348630401250116">Pretvorba besedila v govor</translation>
 <translation id="4921809350408880559">Prikazani so nedavni in predlagani dokumenti na podlagi prejšnje dejavnosti pri uporabi Googla Drive.
         <ph name="BREAK" />
@@ -4355,7 +4350,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5502915260472117187">Otrok</translation>
 <translation id="5503356662318814623">Pošljite sporočilo</translation>
 <translation id="5503982651688210506">Še naprej dovoli, da gostitelj <ph name="HOST" /> uporablja in premika kamero ter uporablja mikrofon</translation>
-<translation id="5504909642107847870">Pregled zasebnosti in varnosti</translation>
 <translation id="5505264765875738116">Spletna mesta vas ne smejo vprašati, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="5505307013568720083">Ni več črnila</translation>
 <translation id="5505794066310932198">Preklop funkcije Commander</translation>
@@ -5236,7 +5230,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – iskanje naprav Bluetooth je aktivno</translation>
 <translation id="6445450263907939268">Če niste želeli teh sprememb, lahko obnovite prejšnje nastavitve.</translation>
 <translation id="6446213738085045933">Ustvari bližnjico na namizju</translation>
-<translation id="6447210166804596538">Preglejte najpomembnejše kontrolnike za zasebnost in varnost na enem mestu</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6450876761651513209">Spreminjanje nastavitev, povezanih z zasebnostjo</translation>
 <translation id="6451344358166983408">Spletno mesto ali stran</translation>
@@ -6889,7 +6882,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="811994229154425014">Dvojni pritisk preslednice za vnos pike</translation>
 <translation id="8120505434908124087">Namestitev profila za eSIM</translation>
 <translation id="812260729110117038">Oglaševalci in izdajatelji lahko preučujejo učinkovitost oglasov na način, ki vam ne sledi na spletnih mestih.</translation>
-<translation id="81231173274944570">Omogočite povratne informacije s tresenjem. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Rumena in bela roža</translation>
 <translation id="8124313775439841391">Upravljan ONC</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
@@ -7820,7 +7812,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9103868373786083162">Pritisnite, če želite nazaj, s kontekstnim menijem pa prikažete zgodovino</translation>
 <translation id="9108035152087032312">Poimenuj &amp;okno …</translation>
 <translation id="9108072915170399168">Trenutna nastavitev za preneseno količino podatkov je »Brez interneta«</translation>
-<translation id="9108692355621501797">Namen <ph name="LINK_BEGIN" />obvestila o zasebnosti za G Suite for Education<ph name="LINK_END" /> je, da uporabnikom storitve G Suite for Education in staršem pomagamo razumeti, katere podatke storitev zbira, zakaj jih zbira in kako jih uporablja.</translation>
 <translation id="9108808586816295166">Varni DNS morda ni na voljo ves čas</translation>
 <translation id="9109122242323516435">Če želite sprostiti prostor, izbrišite datoteke iz shrambe v napravi.</translation>
 <translation id="9109283579179481106">Povezovanje z mobilnim omrežjem</translation>

@@ -35,6 +35,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="118437560755358292">Oppgi passordet eller PIN-koden for høyere sikkerhet</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
 <translation id="1190678134285018527">Enheten må gå tilbake til en tidligere versjon</translation>
@@ -338,6 +339,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3307642347673023554">Byttet til laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
+<translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
 <translation id="3351879221545518001">Du caster for øyeblikket skjermen.</translation>
@@ -394,6 +396,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3606978283550408104">En leselist er tilkoblet.</translation>
 <translation id="3615926715408477684">Hvis du slår på mobildata, blir Bluetooth også slått på</translation>
 <translation id="3616883743181209306">Menyen ble flyttet til øvre høyre hjørne av skjermen.</translation>
+<translation id="3619536907358025872">Innstillinger for skjermopptak</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3621712662352432595">Lydinnstillinger</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
@@ -492,6 +495,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4279490309300973883">Speiling</translation>
+<translation id="4283888303416325161">Oppgi passordet for høyere sikkerhet</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="429402653707266969">Endre verktøylinjens posisjon</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
@@ -761,6 +765,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="607652042414456612">Datamaskinen din kan registreres av Bluetooth-enheter i nærheten, og vises med navnet «<ph name="NAME" />» og adressen <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Bekreft nedlastingen <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
 <translation id="6134259848159370930">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
 <translation id="6137566720514957455">Åpne dialogboksen for fjerning av <ph name="USER_EMAIL_ADDRESS" /></translation>

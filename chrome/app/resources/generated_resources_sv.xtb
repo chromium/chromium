@@ -2011,6 +2011,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3009300415590184725">Är du säker på att du vill avbryta konfigurationen av den mobila datatjänsten?</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
 <translation id="3010279545267083280">Lösenordet har tagits bort</translation>
+<translation id="301080557829842765">Integritetsguide</translation>
 <translation id="3011384993885886186">Varmt grå</translation>
 <translation id="3011488081941333749">Cookies från <ph name="DOMAIN" /> rensas vid avslut</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2162,7 +2163,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3163511056918491211">Återställ data eller byt enhet enkelt när du vill. Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
 <translation id="3164329792803560526">Fliken delas med <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Vissa operatörer kanske blockerar den här funktionen.</translation>
-<translation id="316652501498554287">G Suite for Education-konton</translation>
 <translation id="3170072451822350649">Du kan även hoppa över inloggningen och <ph name="LINK_START" />surfa som gäst<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Ny flik till vänster</translation>
 <translation id="3177909033752230686">Sidans språk:</translation>
@@ -2192,7 +2192,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="321084946921799184">Gul och vit</translation>
 <translation id="321356136776075234">Organisationsenhet (OU) för enhet (t.ex. OU=Chromebook,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Det kan hända att de personliga resultaten för <ph name="SUPERVISED_USER_NAME" /> även går att komma åt med en liknande röst eller en inspelning.</translation>
-<translation id="3216825226035747725">Administratörer av G Suite for Education avgör vilka av Googles tjänster användare får åtkomst till medan de är inloggade på ett G Suite for Education-konto. Detta kan handla om vissa funktioner eller tjänster som barnet tidigare inte hade åtkomst till med det kontrollerade kontot. Det krävs att skolans administratörer ger eller inhämtar samtycke innan minderåriga användare använder tjänsterna.</translation>
 <translation id="3217843140356091325">Vill du skapa en genväg?</translation>
 <translation id="321834671654278338">Avinstallationsprogram för Linux</translation>
 <translation id="3220586366024592812">Anslutningen till <ph name="CLOUD_PRINT_NAME" /> har kraschat. Vill du starta om?</translation>
@@ -3489,9 +3488,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4573515936045019911">Det krävs en nätverksanslutning för att uppgradera Linux. Anslut till internet och försök igen.</translation>
 <translation id="457386861538956877">Mer...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Om du lägger till ett skolkonto i en profil är det enkelt att logga in på webbplatser, i tillägg och i appar som elev medan föräldrakontroller fortfarande används. Det ger inte barnet tillgång till bokmärken, lösenord eller annan webbläsardata som synkroniseras med skolkontot.&lt;br&gt;&lt;br&gt;
-    Använder ditt barn en Chromebook i skolan och du vill att barnet ska få skolupplevelsen hemma och ha tillgång till allt nödvändigt skolarbete? Logga ut från detta Family Link-konto och logga in på barnets skolkonto från kontosidan i Chrome OS (obs! Family Link-föräldrakontrollerna tillämpas inte).&lt;br&gt;&lt;br&gt;
-   Använder ditt barn inte en Chromebook i skolan eller föredrar du att hantera barnets upplevelse hemifrån med Family Link? Klicka på knappen Nästa nedan för att lägga till ett skolkonto i denna profil.</translation>
 <translation id="4576541033847873020">Koppla Bluetooth-enhet</translation>
 <translation id="4576763597586015380">Verifiera din identitet för att fortsätta att spara lösenord i Google-kontot</translation>
 <translation id="4579453506923101210">Glöm ansluten telefon</translation>
@@ -3800,7 +3796,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill kommunicera med tillägget <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Acceptera</translation>
-<translation id="4921290200821452703">Skolkontoinformation för föräldrar</translation>
 <translation id="4921348630401250116">Text till tal</translation>
 <translation id="4921809350408880559">De senaste och föreslagna dokumenten visas utifrån din tidigare aktivitet på Google Drive.
         <ph name="BREAK" />
@@ -4348,7 +4343,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5502915260472117187">Ett barn</translation>
 <translation id="5503356662318814623">Skicka ett meddelande</translation>
 <translation id="5503982651688210506">Tillåt <ph name="HOST" /> att använda och röra din kamera och använda mikrofonen även i fortsättningen</translation>
-<translation id="5504909642107847870">Säkerhets- och integritetsgranskning</translation>
 <translation id="5505264765875738116">Webbplatser får inte be om tillåtelse att skicka aviseringar</translation>
 <translation id="5505307013568720083">Slut på bläck</translation>
 <translation id="5505794066310932198">Aktivera och inaktivera Commander</translation>
@@ -5225,7 +5219,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth-sökning är aktiv</translation>
 <translation id="6445450263907939268">Om du inte vill ha dessa ändringar kan du återställa dina tidigare inställningar.</translation>
 <translation id="6446213738085045933">Skapa genväg på skrivbordet</translation>
-<translation id="6447210166804596538">Granska de viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Ändra integritetsrelaterade inställningar</translation>
 <translation id="6451344358166983408">Webbplats eller sida</translation>
@@ -6875,7 +6868,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="811994229154425014">Skriv punkt med hjälp av dubbelt mellanslag</translation>
 <translation id="8120505434908124087">Installera eSIM-profil</translation>
 <translation id="812260729110117038">Annonsörerna och utgivarna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.</translation>
-<translation id="81231173274944570">Aktivera haptisk återkoppling. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
@@ -7801,7 +7793,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9103868373786083162">Tryck här om du vill återgå till föregående, visa historiken med snabbmenyn</translation>
 <translation id="9108035152087032312">Namnge fönstret …</translation>
 <translation id="9108072915170399168">Den aktuella inställningen för dataanvändning är Utan internet</translation>
-<translation id="9108692355621501797">I <ph name="LINK_BEGIN" />integritetsmeddelandet för G Suite for Education<ph name="LINK_END" /> förklarar vi för användare av G Suite for Education och föräldrar vilken data produkten samlar in, varför den samlas in och vad som händer med den.</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9109122242323516435">Frigör utrymme genom att ta bort filer från lagringsutrymmet på enheten.</translation>
 <translation id="9109283579179481106">Anslut till ett mobilnätverk</translation>

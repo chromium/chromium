@@ -2012,6 +2012,7 @@
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
 <translation id="3010279545267083280">비밀번호 삭제됨</translation>
+<translation id="301080557829842765">개인 정보 보호 가이드</translation>
 <translation id="3011384993885886186">따뜻한 회색</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" />의 쿠키가 종료 시 삭제됩니다</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2164,7 +2165,6 @@
 <translation id="3163511056918491211">언제든지 간편하게 데이터를 복원하거나 기기를 전환하세요. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="3164329792803560526">이 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="3165390001037658081">일부 이동통신사는 이 기능을 차단할 수도 있습니다.</translation>
-<translation id="316652501498554287">G Suite for Education 계정</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="31774765611822736">새 좌측 탭</translation>
 <translation id="3177909033752230686">페이지 언어:</translation>
@@ -2194,7 +2194,6 @@
 <translation id="321084946921799184">노란색 및 흰색</translation>
 <translation id="321356136776075234">기기 OU(예: OU=Chromebooks, DC=example, DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다.</translation>
-<translation id="3216825226035747725">G Suite for Education 관리자는 사용자가 G Suite for Education 계정에 로그인되어 있는 동안 액세스할 수 있는 Google 서비스를 결정합니다. 여기에는 자녀가 이전에 이 감독 대상 계정을 사용하여 액세스할 수 없었던 일부 기능 또는 서비스가 포함될 수 있습니다. 학교 관리자는 미성년 사용자의 서비스 사용에 관한 동의를 제공하거나 얻어야 합니다.</translation>
 <translation id="3217843140356091325">바로가기를 만드시겠습니까?</translation>
 <translation id="321834671654278338">Linux 제거 프로그램</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 커넥터 프로세스가 중단되었습니다. 다시 시작하시겠습니까?</translation>
@@ -3489,9 +3488,6 @@
 <translation id="4573515936045019911">Linux를 업그레이드하려면 네트워크 연결이 필요합니다. 인터넷에 연결한 다음 다시 시도해 주세요.</translation>
 <translation id="457386861538956877">더보기...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">프로필에 학교 계정을 추가하면 학생이 계속 자녀 보호 기능으로 감독받으면서 웹사이트, 확장 프로그램, 앱에 편리하게 로그인할 수 있습니다. 이렇게 해도 자녀는 학교 계정과 동기화된 북마크, 비밀번호 및 기타 브라우저 데이터에 액세스할 수 없습니다.&lt;br&gt;&lt;br&gt;
-    자녀가 학교에서 Chromebook을 사용하며 집에서 학교 환경을 미러링하여 필요한 학교 과제에 모두 액세스할 수 있기를 원한다면, 이 Family Link 계정에서 로그아웃한 후 Chrome OS 계정 페이지에서 학교 계정으로 로그인하세요(참고: Family Link 자녀 보호 기능이 적용되지 않음).&lt;br&gt;&lt;br&gt;
-    자녀가 학교에서 Chromebook을 사용하지 않거나 Family Link를 사용하여 집에서 자녀의 환경을 관리하고 싶다면 아래에서 다음 버튼을 클릭하여 이 프로필에 학교 계정을 추가하세요.</translation>
 <translation id="4576541033847873020">블루투스 기기 페어링</translation>
 <translation id="4576763597586015380">Google 계정에 계속 비밀번호를 저장하려면 본인 인증을 하세요</translation>
 <translation id="4579453506923101210">연결된 휴대전화 삭제</translation>
@@ -3801,7 +3797,6 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 확장 프로그램과 통신하려고 합니다.</translation>
 <translation id="4918086044614829423">수락</translation>
-<translation id="4921290200821452703">부모님을 위한 학교 계정 정보</translation>
 <translation id="4921348630401250116">TTS(텍스트 음성 변환)</translation>
 <translation id="4921809350408880559">과거의 Google Drive 이용 활동을 바탕으로 표시되는 최근 문서와 추천 문서입니다.
         <ph name="BREAK" />
@@ -4349,7 +4344,6 @@
 <translation id="5502915260472117187">자녀</translation>
 <translation id="5503356662318814623">메시지 보내기</translation>
 <translation id="5503982651688210506"><ph name="HOST" />의 카메라 사용 및 이동과 마이크 사용을 계속 허용</translation>
-<translation id="5504909642107847870">개인 정보 보호 및 보안 검토</translation>
 <translation id="5505264765875738116">사이트에서 알림 전송 허용을 요청할 수 없음</translation>
 <translation id="5505307013568720083">잉크 부족</translation>
 <translation id="5505794066310932198">Commander 전환</translation>
@@ -5228,7 +5222,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 블루투스 검사 사용 중</translation>
 <translation id="6445450263907939268">변경하지 않으려는 경우 이전 설정을 복원할 수 있습니다.</translation>
 <translation id="6446213738085045933">바탕화면 바로가기 만들기</translation>
-<translation id="6447210166804596538">가장 중요한 개인 정보 보호 및 보안 제어 기능을 한 곳에서 확인</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6450876761651513209">개인정보 보호 관련 설정 변경</translation>
 <translation id="6451344358166983408">사이트 또는 페이지</translation>
@@ -6881,7 +6874,6 @@
 <translation id="811994229154425014">스페이스바를 2번 눌러 마침표 입력</translation>
 <translation id="8120505434908124087">eSIM 프로필 설치</translation>
 <translation id="812260729110117038">광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.</translation>
-<translation id="81231173274944570">햅틱 반응을 사용 설정합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
 <translation id="8124313775439841391">관리되는 ONC</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
@@ -7809,7 +7801,6 @@
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="9108035152087032312">창 이름 지정...</translation>
 <translation id="9108072915170399168">현재 데이터 사용 설정은 인터넷 사용 안함입니다</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education 개인정보처리방침<ph name="LINK_END" />은 G Suite for Education 사용자와 부모가 제품에서 수집하는 데이터의 유형과 데이터를 수집하는 이유, 데이터의 용도를 이해할 수 있도록 돕기 위한 것입니다.</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>
 <translation id="9109122242323516435">저장 공간을 확보하려면 기기 저장소에서 파일을 삭제하세요.</translation>
 <translation id="9109283579179481106">모바일 네트워크에 연결</translation>

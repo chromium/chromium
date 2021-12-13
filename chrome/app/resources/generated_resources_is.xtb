@@ -2011,6 +2011,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3009300415590184725">Ertu viss um að þú viljir hætta uppsetningarferli farsímagagnaþjónustu?</translation>
 <translation id="3009779501245596802">Niðurskiptir gagnagrunnar</translation>
 <translation id="3010279545267083280">Aðgangsorði eytt</translation>
+<translation id="301080557829842765">Leiðbeiningar um persónuvernd</translation>
 <translation id="3011384993885886186">Hlýgrár</translation>
 <translation id="3011488081941333749">Fótspor frá <ph name="DOMAIN" /> verða hreinsuð við lokun</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2162,7 +2163,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3163511056918491211">Endurheimtu gögn eða skiptu um tæki hvenær sem er á einfaldan hátt. Öryggisafritunum þínum er hlaðið upp á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
 <translation id="3164329792803560526">Deilir þessum flipa með <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Sum símafyrirtæki gætu lokað á þennan eiginleika.</translation>
-<translation id="316652501498554287">Reikningar G Suite fyrir skóla</translation>
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nýr flipi vinstra megin</translation>
 <translation id="3177909033752230686">Tungumál síðu:</translation>
@@ -2192,7 +2192,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="321084946921799184">Gulur og hvítur</translation>
 <translation id="321356136776075234">Skipulagseiningar tækis (OU) (til dæmis OU=Chromebook,DC=dæmi,DC=is)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Stjórnendur G Suite fyrir skóla ákveða hvaða þjónustu Google notendur hafa aðgang að þegar þeir eru skráðir inn á reikning G Suite fyrir skóla. Þar á meðal geta verið einhverjir eiginleikar eða þjónusta sem barnið þitt hafði ekki aðgang að áður með þessum reikningi undir eftirliti. Skólastjórnendur þurfa að samþykkja eða afla samþykkis fyrir notendur undir lögaldri sem nýta sér þessa þjónustu.</translation>
 <translation id="3217843140356091325">Búa til flýtileið?</translation>
 <translation id="321834671654278338">Linux-fjarlægingarforrit</translation>
 <translation id="3220586366024592812">Tengiferli <ph name="CLOUD_PRINT_NAME" /> hrundi. Endurræsa?</translation>
@@ -3489,9 +3488,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4573515936045019911">Nettenging er nauðsynleg til að uppfæra Linux. Tengstu internetinu og reyndu aftur.</translation>
 <translation id="457386861538956877">Meira...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Með skólareikningi getur notandi auðveldlega skráð sig inn á vefsvæði, viðbætur og forrit sem nemandi með barnalæsingar virkar. Það gefur barni ekki aðgang að bókamerkjum, aðgangsorðum eða öðrum vafragögnum sem eru samstillt við skólareikning.&lt;br&gt;&lt;br&gt;
-    Ef barnið þitt notar Chromebook í skólanum og þú vilt spegla skólareikning heima til að tryggja að barnið þitt hafi aðgang að öllu nauðsynlegu efni skaltu skrá þig út af þessum Family Link reikningi og skrá þig inn á skólareikninginn af Chrome OS reikningssíðunni (athugið: barnalæsingar Family Link munu ekki gilda).&lt;br&gt;&lt;br&gt;
-    Ef barnið þitt notar ekki Chromebook í skólanum eða ef þú vilt stjórna aðgangi barnsins heima með Family Link skaltu smella á hnappinn „Áfram“ hér að neðan til að bæta skólareikningi við þennan prófíl.</translation>
 <translation id="4576541033847873020">Para Bluetooth-tæki</translation>
 <translation id="4576763597586015380">Staðfestu að þetta sért þú til að halda áfram að vista aðgangsorð á Google reikningnum þínum</translation>
 <translation id="4579453506923101210">Gleyma tengdum síma</translation>
@@ -3800,7 +3796,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill eiga samskipti við viðbótina „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
-<translation id="4921290200821452703">Upplýsingar um skólareikning fyrir foreldra</translation>
 <translation id="4921348630401250116">Upplestur</translation>
 <translation id="4921809350408880559">Nýleg skjöl og tillögur að skjölum birtast vegna fyrri notkunar þinnar á Google Drive.
         <ph name="BREAK" />
@@ -4348,7 +4343,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5502915260472117187">Barn</translation>
 <translation id="5503356662318814623">Senda skilaboð</translation>
 <translation id="5503982651688210506">Halda áfram að leyfa <ph name="HOST" /> að nota og hreyfa myndavélina og nota hljóðnemann</translation>
-<translation id="5504909642107847870">Persónuverndar- og öryggisyfirferð</translation>
 <translation id="5505264765875738116">Vefsvæði geta ekki óskað eftir því að senda tilkynningar</translation>
 <translation id="5505307013568720083">Ekkert blek</translation>
 <translation id="5505794066310932198">Velja/afvelja Commander</translation>
@@ -5225,7 +5219,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth-leit virk</translation>
 <translation id="6445450263907939268">Ef þú vildir ekki þessar breytingar geturðu endurheimt fyrri stillingar.</translation>
 <translation id="6446213738085045933">Búa til flýtileið á skjáborði</translation>
-<translation id="6447210166804596538">Farðu yfir mikilvægustu persónuverndar- og öryggisstýringarnar á einum stað</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6450876761651513209">Breyta stillingum tengdum persónuvernd</translation>
 <translation id="6451344358166983408">Vefsvæði eða síða</translation>
@@ -6874,7 +6867,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="811994229154425014">Tvö bil til að slá inn punkt</translation>
 <translation id="8120505434908124087">Setja upp eSIM-prófíl</translation>
 <translation id="812260729110117038">Auglýsendur og útgefendur geta metið árangur auglýsinga án þess að rekja virkni þína á vefsvæðum.</translation>
-<translation id="81231173274944570">Virkja snertisvörun. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Gult og hvítt blóm</translation>
 <translation id="8124313775439841391">Stýrt ONC</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
@@ -7801,7 +7793,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9103868373786083162">Ýttu til að fara til baka, farðu í efnisvalmyndina til að sjá ferilinn</translation>
 <translation id="9108035152087032312">Nefna &amp;glugga...</translation>
 <translation id="9108072915170399168">Núverandi stilling gagnanotkunar er „Án nettengingar“</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Upplýsingar um persónuvernd G Suite fyrir skóla<ph name="LINK_END" /> veita notendum G Suite fyrir skóla og foreldrum þeirra upplýsingar um hvaða gögnum varan safnar, hvers vegna þeim er safnað og hvað er gert við þau.</translation>
 <translation id="9108808586816295166">Ekki er víst að hægt sé að nota örugg DNS alltaf</translation>
 <translation id="9109122242323516435">Eyddu skrám úr geymslu tækisins til að losa um pláss.</translation>
 <translation id="9109283579179481106">Tengjast farsímakerfi</translation>

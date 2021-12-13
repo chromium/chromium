@@ -1692,6 +1692,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2707024448553392710">Komponenten lastes ned</translation>
 <translation id="270921614578699633">Gjennomsnitt for</translation>
 <translation id="2709516037105925701">Autofyll</translation>
+<translation id="2710014902399506864">Legg til en ny telefon</translation>
 <translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2712173769900027643">Be om tillatelse</translation>
@@ -2005,6 +2006,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3009300415590184725">Er du sikker på at du vil avbryte konfigurasjonsprosessen for mobildatatjenesten?</translation>
 <translation id="3009779501245596802">Indekserte databaser</translation>
 <translation id="3010279545267083280">Passordet er slettet</translation>
+<translation id="301080557829842765">Personvernveiledning</translation>
 <translation id="3011384993885886186">Varm grå</translation>
 <translation id="3011488081941333749">Informasjonskapsler fra <ph name="DOMAIN" /> blir slettet ved avslutning</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2051,6 +2053,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3055590424724986000">Med en leverandør du velger selv</translation>
 <translation id="3058498974290601450">Du kan når som helst slå på synkronisering i innstillingene</translation>
 <translation id="3058517085907878899">Gi enheten navn</translation>
+<translation id="3059195548603439580">Ser du etter systemkomponenter? Gå til</translation>
 <translation id="3060379269883947824">Slå på Tekstopplesing</translation>
 <translation id="3060952009917586498">Bytt enhetsspråk. Gjeldende språk er <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Vi kunne ikke koble til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på.</translation>
@@ -2156,7 +2159,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3163511056918491211">Gjenopprett data eller bytt enhet enkelt når som helst. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet for Google-kontoen din.</translation>
 <translation id="3164329792803560526">Deler denne fanen med <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Det kan hende at enkelte operatører blokkerer denne funksjonen.</translation>
-<translation id="316652501498554287">G Suite for utdanning-kontoer</translation>
 <translation id="3170072451822350649">Du kan også hoppe over påloggingen og <ph name="LINK_START" />surfe som gjest<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Ny fane til venstre</translation>
 <translation id="3177909033752230686">Språket siden er på:</translation>
@@ -2186,7 +2188,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="321084946921799184">Gul og hvit</translation>
 <translation id="321356136776075234">Enhetens OE (OU) (f.eks. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen kan brukes for å få tilgang til de personlige resultatene til <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">G Suite for utdanning-administratorer bestemmer hvilke Google-tjenester brukerne har tilgang til når de er logget på G Suite for utdanning-kontoer. Dette kan inkludere funksjoner og tjenester som barnet ikke tidligere har hatt tilgang til på denne administrerte kontoen. Skoleadministratorene må gi eller innhente samtykke fra mindreårige brukere til bruk av tjenestene.</translation>
 <translation id="3217843140356091325">Vil du opprette en snarvei?</translation>
 <translation id="321834671654278338">Avinstallasjonsprogram for Linux</translation>
 <translation id="3220586366024592812">Programstopp for kontaktprosessen for <ph name="CLOUD_PRINT_NAME" />. Vil du starte på nytt?</translation>
@@ -2710,6 +2711,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{kommunisere med én USB-enhet}other{kommunisere med # USB-enheter}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Sender <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}other{Sender <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Kunne ikke lese regelen for demomodus uten nett.</translation>
+<translation id="3766115177661377251">Cast til en ny skjerm</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Iskrem</translation>
 <translation id="3771290962915251154">Denne innstillingen er avslått fordi foreldrekontroll er på</translation>
@@ -3480,9 +3482,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4573515936045019911">En nettverkstilkobling kreves for å oppgradere Linux. Koble til internett, og prøv på nytt.</translation>
 <translation id="457386861538956877">Mer</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Du kan legge til en skolekonto på en profil for å gjøre det enkelt å logge på nettsteder, utvidelser og apper som elev mens du er underlagt foreldrekontroll. Dette gir ikke barnet tilgang til bokmerker, passord eller andre nettleserdata som er synkronisert med skolekontoen.&lt;br&gt;&lt;br&gt;
-    Hvis barnet bruker Chromebook på skolen og du vil gjenskape skoleopplevelsen hjemme for å sikre at barnet har tilgang til alt nødvendig skolearbeid, logger du av denne Family Link-kontoen og logger på skolekontoen på Chrome OS-kontosiden. (Merk: Family Link-foreldrekontroll kommer ikke til å være aktiv.)&lt;br&gt;&lt;br&gt;
-    Hvis barnet ikke bruker Chromebook på skolen, eller hvis du foretrekker å administrere barnets opplevelse hjemme ved å bruke Family Link, klikker du på Neste-knappen under for å legge til en skolekonto på denne profilen.</translation>
 <translation id="4576541033847873020">Koble til Bluetooth-enhet</translation>
 <translation id="4576763597586015380">For å fortsette å lagre passord i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="4579453506923101210">Glem den tilkoblede telefonen</translation>
@@ -3497,6 +3496,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4590324241397107707">Databaselagring</translation>
 <translation id="4592891116925567110">App for tegning med pekepenn</translation>
 <translation id="4593021220803146968">&amp;Gå til <ph name="URL" /></translation>
+<translation id="4594577641390224176">Ser du etter systemets Om-side? Gå til</translation>
 <translation id="4595560905247879544">Apper og utvidelser kan bare endres av administratoren (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Du har registrerte sertifikater som identifiserer disse tjenerne</translation>
 <translation id="4598556348158889687">Lagringsbehandling</translation>
@@ -3791,7 +3791,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ønsker å kommunisere med «<ph name="EXTENSION_NAME" />»-utvidelsen</translation>
 <translation id="4918086044614829423">Godta</translation>
-<translation id="4921290200821452703">Skolekontoinformasjon for foreldre</translation>
 <translation id="4921348630401250116">Tekst til tale</translation>
 <translation id="4921809350408880559">Du ser nylige og foreslåtte dokumenter basert på tidligere aktivitet i Google Disk.
         <ph name="BREAK" />
@@ -4338,7 +4337,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5502915260472117187">Et barn</translation>
 <translation id="5503356662318814623">Send melding</translation>
 <translation id="5503982651688210506">Fortsett å tillate <ph name="HOST" /> å bruke og bevege kameraet ditt og bruke mikrofonen din</translation>
-<translation id="5504909642107847870">Personvern- og sikkerhetsgjennomgang</translation>
 <translation id="5505264765875738116">Nettsteder kan ikke be om å få sende deg varsler</translation>
 <translation id="5505307013568720083">Tom for blekk</translation>
 <translation id="5505794066310932198">Slå av/på Commander</translation>
@@ -4881,6 +4879,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6085886413119427067">Avgjør hvordan en sikker forbindelse brukes til å koble til nettsteder</translation>
 <translation id="6086004606538989567">Kontoen du verifiserte, er ikke autorisert for tilgang til denne enheten.</translation>
 <translation id="6086846494333236931">Installert av administratoren din</translation>
+<translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
@@ -4979,6 +4978,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6198102561359457428">Logg deg av og på igjen</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6200047250927636406">Forkast filen</translation>
+<translation id="6200151268994853226">Administrer utvidelsen</translation>
 <translation id="6201608810045805374">Vil du fjerne denne kontoen?</translation>
 <translation id="6202304368170870640">Du kan bruke PIN-koden til å logge på eller låse opp enheten.</translation>
 <translation id="6206311232642889873">&amp;Kopier bilde</translation>
@@ -5215,7 +5215,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth-søk pågår</translation>
 <translation id="6445450263907939268">Hvis du ikke ønsker disse endringene, kan du gjenopprette de tidligere innstillingene dine.</translation>
 <translation id="6446213738085045933">Opprett skrivebordssnarvei</translation>
-<translation id="6447210166804596538">Gjennomgå de viktigste personvern- og sikkerhetskontrollene på ett sted</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6450876761651513209">Endre innstillingene dine for personvern</translation>
 <translation id="6451344358166983408">Nettsted eller side</translation>
@@ -5266,6 +5265,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6497789971060331894">Omvendt rulling med musen</translation>
 <translation id="6498249116389603658">&amp;Alle språkene dine</translation>
 <translation id="6499143127267478107">Slår opp vertsnavn i proxy-skript …</translation>
+<translation id="6499764981457476645">Fant ingen enheter i nærheten</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> vil åpne denne filen:</translation>
 <translation id="6501957628055559556">Alle beholdere</translation>
 <translation id="650266656685499220">For å opprette album, gå til Google Foto</translation>
@@ -5731,6 +5731,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
 <translation id="6981553172137913845">For å surfe privat på nettet, klikk på menyikonet med prikkene for å åpne et inkognitovindu</translation>
+<translation id="6981761993313539853">Sørg for at Bluetooth-enheten din er i tilkoblingsmodus og i nærheten. Koble bare til enheter du stoler på. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="6983507711977005608">Koble fra nettverk med umiddelbar internettdeling</translation>
 <translation id="6983783921975806247">Registrert OID</translation>
@@ -6636,6 +6637,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7898725031477653577">Oversett alltid</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Forbedring av Chrome ved bruk av sidemålinger</translation>
+<translation id="7903290522161827520">Ser du etter nettleserkomponenter? Gå til</translation>
 <translation id="7903345046358933331">Siden svarer ikke. Du kan vente til den svarer eller lukke den.</translation>
 <translation id="7903742244674067440">Du har registrerte sertifikater som identifiserer disse sertifikatinstansene</translation>
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
@@ -6864,7 +6866,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="811994229154425014">Dobbelt mellomrom for å skrive punktum</translation>
 <translation id="8120505434908124087">Installer e-SIM-profil</translation>
 <translation id="812260729110117038">Annonsører og utgivere kan studere effektiviteten av annonser på en måte som ikke sporer deg på tvers av nettsteder.</translation>
-<translation id="81231173274944570">Slå på fysisk tilbakemelding. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Gul og hvit blomst</translation>
 <translation id="8124313775439841391">Administrert ONC</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
@@ -7010,6 +7011,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8271268254812352141">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder på tekst. Tilpass språk for oversettelse i <ph name="LINK_BEGIN" />Nettstedsspråk<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldre, dere må utføre de neste trinnene. Dere kan gi <ph name="DEVICE_TYPE" /> tilbake til barnet etter kontokonfigureringen.</translation>
 <translation id="8272443605911821513">Administrer utvidelsene dine ved å klikke på Utvidelser i Flere verktøy-menyen.</translation>
+<translation id="8272677921396592934">Bruk kameraet for å skanne QR-koden</translation>
 <translation id="8274332263553132018">Cast en fil</translation>
 <translation id="8274921654076766238">Lupen følger tastaturets fokus</translation>
 <translation id="8274924778568117936">Du må ikke slå av eller lukke <ph name="DEVICE_TYPE" />-enheten din før oppdateringen er ferdig. <ph name="DEVICE_TYPE" />-enheten starter på nytt når installasjonen er ferdig.</translation>
@@ -7687,6 +7689,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9004754973617721124">Vil du slette nettstedsdata og -tillatelser for <ph name="SITE_NAME" />, alle undernettsteder og den tilhørende installerte appen?</translation>
 <translation id="9004952710076978168">Mottok et varsel for en ukjent skriver.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="9008201858626224558">Tilbakeknapp på <ph name="SUBPAGE_TITLE" />-detaljsiden</translation>
 <translation id="9009369504041480176">Laster opp (<ph name="PROGRESS_PERCENT" /> %) ...</translation>
 <translation id="9009708085379296446">Var det meningen å endre denne siden?</translation>
 <translation id="9011163749350026987">Vis alltid ikonet</translation>
@@ -7790,7 +7793,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9103868373786083162">Trykk for å gå tilbake, eller trykk på kontekstmenyen for å se loggen</translation>
 <translation id="9108035152087032312">Gi navn til &amp;vinduet …</translation>
 <translation id="9108072915170399168">Gjeldende innstilling for databruk er Uten internett</translation>
-<translation id="9108692355621501797">Formålet med <ph name="LINK_BEGIN" />merknaden om personvern for G Suite for utdanning<ph name="LINK_END" /> er å hjelpe G Suite for utdanning-brukere og foreldre med å forstå hvilke data produktet samler inn, hvorfor de samles inn, og hva som blir gjort med dem.</translation>
 <translation id="9108808586816295166">Sikker DNS er kanskje ikke tilgjengelig hele tiden</translation>
 <translation id="9109122242323516435">For å frigjøre plass, slett filer fra enhetslagringen.</translation>
 <translation id="9109283579179481106">Koble til mobilnettverk</translation>
@@ -7870,6 +7872,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="917510707618656279">Spør når nettsteder vil ha tilgang til Bluetooth-enheter</translation>
 <translation id="9176476835295860688">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhet er tilkoblet</translation>
+<translation id="9178061802301856367">Slett påloggingsinformasjon</translation>
 <translation id="9179524979050048593">Brukernavn på påloggingsskjermen</translation>
 <translation id="9180281769944411366">Denne prosessen kan ta noen minutter. Starter Linux-beholderen.</translation>
 <translation id="9180380851667544951">Nettstedet kan dele skjermen din</translation>

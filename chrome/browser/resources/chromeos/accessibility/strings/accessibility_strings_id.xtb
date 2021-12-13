@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{tanda tanya}other{# tanda tanya}}</translation>
 <translation id="3505359110822747654">Menu ChromeVox diciutkan</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{tanda caret}other{# tanda caret}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{butir putih}other{# butir putih}}</translation>
 <translation id="352577523970648069">Kolom teks yang dapat diedit</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">memotong <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Kotak centang berikutnya</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, tombol radio tidak dipilih</translation>
 <translation id="5601172225407283979">Melakukan tindakan default</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{butir persegi}other{# butir persegi}}</translation>
 <translation id="5608798115546226984">Pelengkapan otomatis sebaris</translation>
 <translation id="5616029807486814372">Pelajaran berikutnya</translation>
 <translation id="561939826962581046">waktu</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8659501358298941449">Menu Drop-Down</translation>
 <translation id="8666733765751421568">Akhir <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Judul 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{level bertingkat #}}</translation>
 <translation id="8693391540059827073">Musim favorit saya</translation>
 <translation id="8696284982970258155">HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pipa}other{# pipa vertikal}}</translation>

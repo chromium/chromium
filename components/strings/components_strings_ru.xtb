@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">Показать больше...</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Ищете версию браузера? Перейдите на страницу</translation>
 <translation id="1476595624592550506">Смените пароль</translation>
 <translation id="1483493594462132177">Отправить</translation>
 <translation id="1484290072879560759">Выбрать адрес доставки посылок</translation>
@@ -1876,6 +1877,7 @@
 <translation id="7118618213916969306">Поиск по адресу <ph name="SHORT_URL" /> из буфера обмена</translation>
 <translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
 <translation id="7129409597930077180">Невозможно отправить заказ по этому адресу. Выберите другой вариант.</translation>
+<translation id="7132939140423847331">Администратор запретил копирование этих данных.</translation>
 <translation id="7135130955892390533">Показать статус</translation>
 <translation id="7138472120740807366">Способ доставки</translation>
 <translation id="7139724024395191329">Эмират</translation>
@@ -2433,6 +2435,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы посмотреть историю браузера в Chrome.</translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Ищете версию системы? Перейдите на страницу</translation>
 <translation id="899688752321268742">Разрешить сайту <ph name="URL" /> доступ к информации об использовании устройства?</translation>
 <translation id="8996941253935762404">Сайт содержит нежелательное ПО</translation>
 <translation id="8997023839087525404">Предоставленный сервером сертификат не проходил проверку безопасности. Она необходима в некоторых случаях, чтобы доказать, что сертификат надежен и защищает от злоумышленников.</translation>

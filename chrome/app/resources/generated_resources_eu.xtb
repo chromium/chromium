@@ -1995,6 +1995,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3009300415590184725">Ziur mugikorreko datuen zerbitzua konfiguratzeko prozesua bertan behera utzi nahi duzula?</translation>
 <translation id="3009779501245596802">Datu-base indexatuak</translation>
 <translation id="3010279545267083280">Pasahitza ezabatu da</translation>
+<translation id="301080557829842765">Pribatutasun-gida</translation>
 <translation id="3011384993885886186">Gris epela</translation>
 <translation id="3011488081941333749">Irtetean, garbitu egingo dira <ph name="DOMAIN" /> domeinuko cookieak</translation>
 <translation id="3012631534724231212">(iframe-a)</translation>
@@ -2146,7 +2147,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3163511056918491211">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuaren pasahitza erabilita enkriptatzen.</translation>
 <translation id="3164329792803560526">Fitxa hau <ph name="APP_NAME" /> aplikazioarekin dago partekatuta</translation>
 <translation id="3165390001037658081">Operadore batzuek blokeatuta izan dezakete eginbide hau.</translation>
-<translation id="316652501498554287">G Suite for Education-eko kontuak</translation>
 <translation id="3170072451822350649">Nahi baduzu, saioa hasi gabe, <ph name="LINK_START" />gonbidatu gisa araka dezakezu<ph name="LINK_END" /> sarea.</translation>
 <translation id="31774765611822736">Fitxa berria ezkerrean</translation>
 <translation id="3177909033752230686">Orriaren hizkuntza:</translation>
@@ -2176,7 +2176,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="321084946921799184">Horia eta zuria</translation>
 <translation id="321356136776075234">Gailuaren antolamendu-unitatea (adibidez: OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita <ph name="SUPERVISED_USER_NAME" /> erabiltzailearen emaitza pertsonalak atzitu ahal izatea.</translation>
-<translation id="3216825226035747725">G Suite for Education zerbitzuaren administratzaileek zehazten dituzte Google-ren zein zerbitzu atzi ditzaketen beren erabiltzaileek G Suite for Education zerbitzuko kontuarekin saioa hasita daukatenean. Haurrak kontu gainbegiratuaren bidez atzitu ezin zituen eginbide edo zerbitzu batzuk izango dira, agian, haietako batzuk. Ikastetxeko administratzaileek baimenak eman edo lortu behar dituzte erabiltzaile adingabeek zerbitzuok erabili ahal izan ditzaten.</translation>
 <translation id="3217843140356091325">Lasterbide bat sortu nahi al duzu?</translation>
 <translation id="321834671654278338">Linux desinstalatzailea</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> konektorearen prozesuan hutsegite bat izan da. Berrabiarazi egin nahi duzu?</translation>
@@ -3472,9 +3471,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4573515936045019911">Sarera konektatuta egon behar da Linux bertsio-berritzeko. Konektatu Internetera eta saiatu berriro.</translation>
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Profilean ikastetxeko kontu bat gehituz gero, haurrak erraz hasi ahalko du saioa ikasle gisa webgune, luzapen eta aplikazioetan, baina gurasoen murriztapenen mende egoteari utzi gabe. Horrela, ezingo ditu atzitu ikastetxeko kontuarekin sinkronizatutako laster-markak, pasahitzak edo bestelako arakatze-datuak.&lt;br&gt;&lt;br&gt;
-Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-eko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
-Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean egiten duena Family Link-en bidez kudeatu, sakatu behean dagoen Hurrengoa botoia eta gehitu ikastetxeko kontu bat profil honetan.</translation>
 <translation id="4576541033847873020">Parekatu Bluetooth bidezko gailua</translation>
 <translation id="4576763597586015380">Pasahitzak Google-ko kontuan gordetzen jarraitzeko, egiaztatu zeu zarela</translation>
 <translation id="4579453506923101210">Ahaztu konektatutako telefonoa</translation>
@@ -3783,7 +3779,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> webguneak "<ph name="EXTENSION_NAME" />" luzapenarekin komunikatu nahi du</translation>
 <translation id="4918086044614829423">Onartu</translation>
-<translation id="4921290200821452703">Ikastetxeko kontuari buruzko informazioa gurasoentzat</translation>
 <translation id="4921348630401250116">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="4921809350408880559">Google Drive erabiltzean egin dituzun jardueretan oinarrituta ari gara erakusten azken dokumentuak eta iradokitakoak.
         <ph name="BREAK" />
@@ -4331,7 +4326,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5502915260472117187">Haur bat</translation>
 <translation id="5503356662318814623">Bidali mezu bat</translation>
 <translation id="5503982651688210506">Ez kendu kamera erabili eta mugitzeko nahiz mikrofonoa erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
-<translation id="5504909642107847870">Pribatutasunaren eta segurtasunaren berrikuspena</translation>
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
 <translation id="5505307013568720083">Tinta agortu da</translation>
 <translation id="5505794066310932198">Aldatu Agintaria</translation>
@@ -5208,7 +5202,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" />: Bluetooth bidezko gailuak bilatzen</translation>
 <translation id="6445450263907939268">Ez bazenuen nahi aldaketa horiek egiterik, aurreko ezarpenak berrezar ditzakezu.</translation>
 <translation id="6446213738085045933">Sortu mahaigaineko lasterbidea</translation>
-<translation id="6447210166804596538">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak toki bakarrean</translation>
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6450876761651513209">Aldatu zure pribatutasun-ezarpenak</translation>
 <translation id="6451344358166983408">Webgunea edo orria</translation>
@@ -6787,6 +6780,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8054563304616131773">Idatzi balio duen helbide elektroniko bat</translation>
 <translation id="8054883179223321715">Bideoen webgune zehatz batzuetarako eskuragarri</translation>
 <translation id="8054921503121346576">USB teklatua konektatu da</translation>
+<translation id="8057414620575339583">Alboko bilaketa</translation>
 <translation id="8058655154417507695">Iraungitze-urtea</translation>
 <translation id="8058986560951482265">Behin eta berriro mozten da</translation>
 <translation id="8059417245945632445">&amp;Aztertu gailuak</translation>
@@ -6856,7 +6850,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="811994229154425014">Zuriune bikoitza puntua idazteko</translation>
 <translation id="8120505434908124087">Instalatu eSIMaren profila</translation>
 <translation id="812260729110117038">Iragarleek eta argitaratzaileek iragarkien eraginkortasuna azter dezakete, webguneetan zure jarraipena egin beharrik gabe.</translation>
-<translation id="81231173274944570">Gaitu ukipen bidezko interakzioa. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Lore hori eta zuria</translation>
 <translation id="8124313775439841391">Kudeatutako ONC propietateak</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
@@ -7782,7 +7775,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9103868373786083162">Sakatu itzultzeko, laster-menua historia ikusteko</translation>
 <translation id="9108035152087032312">Eman izena &amp;leihoari…</translation>
 <translation id="9108072915170399168">Oraingo datuen erabileraren ezarpena "Internetera konektatu gabe" da</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education zerbitzuaren Pribatutasun-oharraren bidez,<ph name="LINK_END" /> G Suite for Education zerbitzuko erabiltzaileei eta gurasoei jakinarazten zaie produktuak zer datu biltzen dituen, zergatik biltzen diren eta zer egiten den haiekin.</translation>
 <translation id="9108808586816295166">Baliteke DNS segurua beti erabilgarri ez egotea</translation>
 <translation id="9109122242323516435">Tokia egiteko, ezabatu gailuko memorian dauden fitxategiak.</translation>
 <translation id="9109283579179481106">Konektatu sare mugikor batera</translation>

@@ -1996,6 +1996,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3009300415590184725">Weet je zeker dat je het instellen van een mobiele dataservice wilt annuleren?</translation>
 <translation id="3009779501245596802">Geïndexeerde databases</translation>
 <translation id="3010279545267083280">Wachtwoord verwijderd</translation>
+<translation id="301080557829842765">Privacygids</translation>
 <translation id="3011384993885886186">Warmgrijs</translation>
 <translation id="3011488081941333749">Cookies van <ph name="DOMAIN" /> worden gewist bij het afsluiten</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2148,7 +2149,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3163511056918491211">Herstel makkelijk je gegevens of neem een nieuw apparaat in gebruik. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="3164329792803560526">Dit tabblad wordt gedeeld met <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Sommige providers kunnen deze functie blokkeren.</translation>
-<translation id="316652501498554287">G Suite for Education-accounts</translation>
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nieuw tabblad aan de linkerkant</translation>
 <translation id="3177909033752230686">Brontaal:</translation>
@@ -2178,7 +2178,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="321084946921799184">Geel/wit</translation>
 <translation id="321356136776075234">Apparaat-OE (bijvoorbeeld OE=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of opname kan misschien ook toegang krijgen tot de persoonlijke resultaten van <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">G Suite for Education-beheerders bepalen welke Google-services hun gebruikers kunnen openen terwijl ze zijn ingelogd op een G Suite for Education-account. Hieronder kunnen functies of services vallen waartoe je kind eerst geen toegang had via dit account dat onder toezicht staat. Schoolbeheerders moeten toestemming geven of verkrijgen voor het gebruik van de services door hun minderjarige gebruikers.</translation>
 <translation id="3217843140356091325">Snelkoppeling maken?</translation>
 <translation id="321834671654278338">Linux-verwijderprogramma</translation>
 <translation id="3220586366024592812">Het proces van de connector voor <ph name="CLOUD_PRINT_NAME" /> is vastgelopen. Wil je opnieuw starten?</translation>
@@ -3475,9 +3474,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4573515936045019911">Er is een netwerkverbinding vereist om Linux te upgraden. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Door een schoolaccount toe te voegen aan een profiel, kunnen kinderen gemakkelijk als leerling inloggen bij websites, extensies en apps terwijl ze nog steeds onder ouderlijk toezicht staan. Dit geeft een kind geen toegang tot bookmarks, wachtwoorden en andere browsegegevens die zijn gesynchroniseerd met het schoolaccount.&lt;br&gt;&lt;br&gt;
-    Als je kind een Chromebook gebruikt op school en je de schoolomgeving thuis wilt mirroren zodat je kind toegang heeft tot al het nodige schoolwerk, log je uit van dit Family Link-account en log je in op het schoolaccount vanaf de Chrome OS-accountpagina. (Opmerking: Ouderlijk toezicht van Family Link is dan niet van toepassing.)&lt;br&gt;&lt;br&gt;
-    Als je kind geen Chromebook gebruikt op school of als je liever de online omgeving van je kind thuis beheert met Family Link, klik je hieronder op de knop Volgende om een schoolaccount toe te voegen aan dit profiel.</translation>
 <translation id="4576541033847873020">Bluetooth-apparaat koppelen</translation>
 <translation id="4576763597586015380">Bevestig dat jij het bent als je wilt doorgaan met het opslaan van wachtwoorden in je Google-account</translation>
 <translation id="4579453506923101210">Verbonden telefoon vergeten</translation>
@@ -3787,7 +3783,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wil communiceren met de extensie '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="4918086044614829423">Accepteren</translation>
-<translation id="4921290200821452703">Informatie over schoolaccounts voor ouders</translation>
 <translation id="4921348630401250116">Tekst-naar-spraak</translation>
 <translation id="4921809350408880559">Je krijgt je recente en voorgestelde documenten te zien op basis van je eerdere activiteit bij het gebruik van Google Drive.
         <ph name="BREAK" /><ph name="BREAK" />Je vindt <ph name="BEGIN_LINK" />hier<ph name="END_LINK" /> meer informatie over de gegevens die Google Drive verzamelt en waarom.</translation>
@@ -4333,7 +4328,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5502915260472117187">Een kind</translation>
 <translation id="5503356662318814623">Bericht sturen</translation>
 <translation id="5503982651688210506">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt en de microfoon gebruikt</translation>
-<translation id="5504909642107847870">Privacy- en beveiligingscontrole</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
 <translation id="5505307013568720083">Inkt is op</translation>
 <translation id="5505794066310932198">Commander aan-/uitzetten</translation>
@@ -5212,7 +5206,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth-scan actief</translation>
 <translation id="6445450263907939268">Als je deze wijzigingen niet wilt aanbrengen, kun je je vorige instellingen herstellen.</translation>
 <translation id="6446213738085045933">Bureaubladsnelkoppeling maken</translation>
-<translation id="6447210166804596538">Bekijk de belangrijkste privacy- en beveiligingsopties op één plaats</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Je privacygerelateerde instellingen wijzigen</translation>
 <translation id="6451344358166983408">Site of pagina</translation>
@@ -6794,6 +6787,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8054563304616131773">Voer een geldig e-mailadres in</translation>
 <translation id="8054883179223321715">Beschikbaar voor specifieke videosites</translation>
 <translation id="8054921503121346576">USB-toetsenbord aangesloten</translation>
+<translation id="8057414620575339583">Zoekfunctie aan zijkant</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058986560951482265">Schokkerig</translation>
 <translation id="8059417245945632445">Apparaten &amp;inspecteren</translation>
@@ -6863,7 +6857,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="811994229154425014">Twee keer spatie om punt te typen</translation>
 <translation id="8120505434908124087">E-simkaartprofiel installeren</translation>
 <translation id="812260729110117038">Adverteerders en uitgevers kunnen de effectiviteit van advertenties onderzoeken zonder dat je bezoeken aan verschillende sites worden bijgehouden.</translation>
-<translation id="81231173274944570">Zet haptische feedback aan. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8124313775439841391">Beheerde ONC</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
@@ -7792,7 +7785,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9103868373786083162">Druk op Terug &gt; contextmenu om de geschiedenis te bekijken</translation>
 <translation id="9108035152087032312">&amp;Venster een naam geven...</translation>
 <translation id="9108072915170399168">De huidige instelling voor datagebruik is 'Zonder internet'</translation>
-<translation id="9108692355621501797">De <ph name="LINK_BEGIN" />privacyverklaring van G Suite for Education<ph name="LINK_END" /> geeft G Suite for Education-gebruikers en ouders inzicht in de gegevens die het product verzamelt, waarom ze worden verzameld en wat ermee wordt gedaan.</translation>
 <translation id="9108808586816295166">Beveiligde DNS is mogelijk niet altijd beschikbaar</translation>
 <translation id="9109122242323516435">Verwijder bestanden uit de opslag van je apparaat om ruimte vrij te maken.</translation>
 <translation id="9109283579179481106">Verbinden met mobiel netwerk</translation>

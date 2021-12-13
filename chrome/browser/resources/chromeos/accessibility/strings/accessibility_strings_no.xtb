@@ -392,6 +392,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{spørsmålstegn}other{# spørsmålstegn}}</translation>
 <translation id="3505359110822747654">Lukk ChromeVox-menyer</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{circumflekstegn}other{# circumflekstegn}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{hvitt punkttegn}other{# hvite punkttegn}}</translation>
 <translation id="352577523970648069">Et tekstfelt som kan endres</translation>
 <translation id="3538907380453898475">beskr.liste</translation>
 <translation id="3549141990712742152">klipp ut <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5597170376237141345">Neste avmerkingsrute</translation>
 <translation id="5598905979683743333">Alternativknappen <ph name="NAME" /> er ikke valgt</translation>
 <translation id="5601172225407283979">Utfør standardhandling</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratisk punkttegn}other{# kvadratiske punkttegn}}</translation>
 <translation id="5608798115546226984">Innebygd autofullføring</translation>
 <translation id="5616029807486814372">Neste leksjon</translation>
 <translation id="561939826962581046">time</translation>
@@ -1098,6 +1100,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8659501358298941449">Rullegardinlister</translation>
 <translation id="8666733765751421568">Slutt på <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Overskrift 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{flettenivå #}}</translation>
 <translation id="8693391540059827073">Favorittsesongen min</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{loddrett strek}other{# loddrette streker}}</translation>

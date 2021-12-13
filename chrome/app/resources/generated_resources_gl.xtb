@@ -1994,6 +1994,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3009300415590184725">Seguro que queres cancelar o proceso de configuración do servizo de datos móbiles?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
 <translation id="3010279545267083280">Contrasinal eliminado</translation>
+<translation id="301080557829842765">Guía de privacidade</translation>
 <translation id="3011384993885886186">Gris cálido</translation>
 <translation id="3011488081941333749">As cookies de <ph name="DOMAIN" /> borraranse ao saír da sesión</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2145,7 +2146,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3163511056918491211">Restaura facilmente os teus datos ou cambia de dispositivo en calquera momento. As copias de seguranza cárganse en Google e encríptanse co contrasinal da túa Conta de Google.</translation>
 <translation id="3164329792803560526">Compartindo esta pestana con <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">É posible que algúns operadores bloqueen esta función.</translation>
-<translation id="316652501498554287">Contas de G Suite for Education</translation>
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
 <translation id="31774765611822736">Pestana nova á esquerda</translation>
 <translation id="3177909033752230686">Idioma da páxina:</translation>
@@ -2175,7 +2175,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="321084946921799184">Amarelo e branco</translation>
 <translation id="321356136776075234">Unidade organizativa do dispositivo (por exemplo, OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Calquera persoa que teña unha voz parecida ou que dispoña dunha gravación dela poderá acceder aos resultados persoais de <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Os administradores de G Suite for Education determinan a que servizos de Google poden acceder os seus usuarios mentres teñen a sesión iniciada nunha conta de G Suite for Education. Aquí pódense incluír algunhas funcións e servizos aos que non podía acceder o teu fillo ou filla mentres utilizaba esta conta supervisada. É necesario que os administradores dos centros educativos proporcionen ou obteñan consentimento para que os menores utilicen os servizos.</translation>
 <translation id="3217843140356091325">Queres crear un atallo?</translation>
 <translation id="321834671654278338">Desinstalador de Linux</translation>
 <translation id="3220586366024592812">Produciuse un erro no proceso do conector de <ph name="CLOUD_PRINT_NAME" />. Queres reiniciar?</translation>
@@ -3471,9 +3470,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4573515936045019911">Necesítase conexión de rede para actualizar Linux. Conéctate a Internet e téntao de novo.</translation>
 <translation id="457386861538956877">Máis...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Se lle engades unha conta de centro educativo a un perfil, o usuario poderá iniciar sesión como estudante de forma sinxela en determinados sitios web, extensións e aplicacións sen que deixen de aplicarse os controis parentais. O teu fillo ou filla non obterá acceso aos marcadores, aos contrasinais nin a outros datos do navegador sincronizados coa conta do centro educativo.&lt;br&gt;&lt;br&gt;
-Se o neno ou nena utiliza un Chromebook na clase e queres recrear a experiencia escolar na casa para asegurarte de que teña acceso a todas as tarefas escolares necesarias, pecha sesión nesta conta de Family Link e inicia sesión na conta do centro educativo desde a páxina de contas de Chrome OS (non esquezas que non se aplicarán os controis parentais de Family Link).&lt;br&gt;&lt;br&gt;
-Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestionar a súa experiencia na casa con Family Link, fai clic no botón Seguinte que aparece a continuación para engadir unha conta de centro escolar a este perfil.</translation>
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Para seguir gardando contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="4579453506923101210">Esquecer teléfono conectado</translation>
@@ -3782,7 +3778,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quere comunicarse coa extensión "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceptar</translation>
-<translation id="4921290200821452703">Información para os pais sobre contas de centro educativo</translation>
 <translation id="4921348630401250116">Conversión de texto a voz</translation>
 <translation id="4921809350408880559">Estás vendo documentos recentes e suxestións de ficheiros segundo a actividade que realizaches anteriormente en Google Drive.
         <ph name="BREAK" />
@@ -4330,7 +4325,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5502915260472117187">Un neno ou nena</translation>
 <translation id="5503356662318814623">Enviar mensaxe</translation>
 <translation id="5503982651688210506">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara, e que use o teu micrófono</translation>
-<translation id="5504909642107847870">Revisión de privacidade e seguranza</translation>
 <translation id="5505264765875738116">Os sitios non poden pedir permiso para enviar notificacións</translation>
 <translation id="5505307013568720083">Non hai tinta</translation>
 <translation id="5505794066310932198">Activar/desactivar comandante</translation>
@@ -5207,7 +5201,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" />; busca de dispositivos Bluetooth activa</translation>
 <translation id="6445450263907939268">Se non querías realizar estes cambios, podes restaurar a túa configuración anterior.</translation>
 <translation id="6446213738085045933">Crear acceso directo do escritorio</translation>
-<translation id="6447210166804596538">Revisa desde un único lugar os controis de privacidade e seguranza máis importantes</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Cambia a túa configuración relacionada coa privacidade</translation>
 <translation id="6451344358166983408">Sitio ou páxina</translation>
@@ -6855,7 +6848,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="811994229154425014">Escribir punto ao poñer dous espazos</translation>
 <translation id="8120505434908124087">Instalar perfil de eSIM</translation>
 <translation id="812260729110117038">Os anunciantes e os editores poden estudar a eficacia dos anuncios sen facer un seguimento da túa actividade nos sitios.</translation>
-<translation id="81231173274944570">Permitir comentarios táctiles. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Flor branca e amarela</translation>
 <translation id="8124313775439841391">ONC xestionado</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
@@ -7781,7 +7773,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9103868373786083162">Preme para retroceder e acceder ao menú contextual para ver o historial</translation>
 <translation id="9108035152087032312">Nome da &amp;ventá...</translation>
 <translation id="9108072915170399168">A configuración de uso de datos actual é Sen Internet</translation>
-<translation id="9108692355621501797">O <ph name="LINK_BEGIN" />Aviso de privacidade de G Suite for Education<ph name="LINK_END" /> pretende axudarlles aos usuarios de G Suite for Education e aos pais a entender os datos que recompila o produto, os motivos polos que se recompilan e para que se utilizan.</translation>
 <translation id="9108808586816295166">O DNS seguro pode non estar dispoñible continuamente</translation>
 <translation id="9109122242323516435">Para liberar espazo, elimina ficheiros do almacenamento do dispositivo.</translation>
 <translation id="9109283579179481106">Conectarse a unha rede de telefonía móbil</translation>

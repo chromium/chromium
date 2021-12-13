@@ -1995,6 +1995,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3009300415590184725">Mobil veri hizmeti kurulum işlemini iptal etmek istediğinizden emin misiniz?</translation>
 <translation id="3009779501245596802">Dizine alınmış veritabanları</translation>
 <translation id="3010279545267083280">Şifre silindi</translation>
+<translation id="301080557829842765">Gizlilik kılavuzu</translation>
 <translation id="3011384993885886186">Sıcak gri</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" /> alanından gelen çerezler çıkışta silinecek</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2147,7 +2148,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3163511056918491211">Verilerinizi istediğiniz zaman kolayca geri yükleyebilir veya cihazlar arasında geçiş yapabilirsiniz. Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
 <translation id="3164329792803560526">Bu sekme <ph name="APP_NAME" /> ile paylaşılıyor</translation>
 <translation id="3165390001037658081">Bazı operatörler bu özelliği engelleyebilir.</translation>
-<translation id="316652501498554287">Eğitim için G Suite hesapları</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Sola yeni sekme</translation>
 <translation id="3177909033752230686">Sayfanın Dili:</translation>
@@ -2177,7 +2177,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="321084946921799184">Sarı ve beyaz</translation>
 <translation id="321356136776075234">Cihaz kuruluş birimi (ör. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> Benzer bir sese veya ses kayıtlarına sahip olan kişiler de <ph name="SUPERVISED_USER_NAME" /> kullanıcısının kişisel sonuçlarına erişebilir.</translation>
-<translation id="3216825226035747725">Eğitim için G Suite hesabında oturum açtıklarında kullanıcılarının hangi Google hizmetlerine erişebileceklerini Eğitim için G Suite yöneticileri belirler. Bu, çocuğunuzun gözetim altındaki bu hesabı kullanarak daha önce erişemediği bazı özellikleri veya hizmetleri içerebilir. Hizmetlerin küçük kullanıcılar tarafından kullanılması için okul yöneticilerinin izin vermesi veya izin alması gerekir.</translation>
 <translation id="3217843140356091325">Kısayol oluşturulsun mu?</translation>
 <translation id="321834671654278338">Linux yükleme kaldırma aracı</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> bağlayıcı işlemi kilitlendi. Tekrar başlatılsın mı?</translation>
@@ -3474,9 +3473,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4573515936045019911">Linux'u yeni sürüme geçirmek için ağ bağlantısı gerekiyor. Lütfen internete bağlanın ve tekrar deneyin.</translation>
 <translation id="457386861538956877">Diğer...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Profile okul hesabı eklemek, ebeveyn denetimleri altında çalışmaya devam ederken web sitelerinde, uzantılarda ve uygulamalarda öğrenci olarak kolayca oturum açmayı sağlar. Bu, çocuğa okul hesabıyla senkronize edilen yer işaretlerine, şifrelere ve diğer tarayıcı verilerine erişim izni vermez.&lt;br&gt;&lt;br&gt;
-    Çocuğunuz okulda Chromebook kullanıyorsa ve çocuğunuzun gerekli tüm okul çalışmalarına erişimini sağlamak için evde okul deneyimini yansıtmak istiyorsanız lütfen bu Family Link hesabında oturumunuzu kapatıp Chrome OS hesapları sayfasından okul hesabında oturum açın (Not: Family Link ebeveyn denetimleri geçerli olmayacak).&lt;br&gt;&lt;br&gt;
-    Çocuğunuz okulda Chromebook kullanmıyorsa veya çocuğunuzun evdeki deneyimini Family Link'i kullanarak yönetmeyi tercih ediyorsanız bu profile okul hesabı eklemek için lütfen aşağıdaki Sonraki düğmesini tıklayın.</translation>
 <translation id="4576541033847873020">Bluetooth cihazı eşle</translation>
 <translation id="4576763597586015380">Şifreleri Google Hesabınıza kaydetmeye devam edebilmek için kimliğinizi doğrulayın</translation>
 <translation id="4579453506923101210">Bağlı telefonu unut</translation>
@@ -3786,7 +3782,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" uzantısıyla iletişim kurmak istiyor</translation>
 <translation id="4918086044614829423">Kabul et</translation>
-<translation id="4921290200821452703">Ebeveynler için okul hesap bilgileri</translation>
 <translation id="4921348630401250116">Metin okuma</translation>
 <translation id="4921809350408880559">Son kullanılan ve önerilen dokümanları, daha önce Google Drive'ı kullandığınız için görüyorsunuz.
         <ph name="BREAK" />
@@ -4334,7 +4329,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5502915260472117187">Çocuk</translation>
 <translation id="5503356662318814623">Mesaj gönder</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> sitesine hem kameramı kullanması, hareket ettirmesi hem de mikrofonumu kullanması için izni vermeye devam et</translation>
-<translation id="5504909642107847870">Gizlilik ve güvenlik incelemesi</translation>
 <translation id="5505264765875738116">Siteler bildirim göndermek isteyemez</translation>
 <translation id="5505307013568720083">Mürekkep bitti</translation>
 <translation id="5505794066310932198">Commander'ı Aç/Kapat</translation>
@@ -5214,7 +5208,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth taraması etkin</translation>
 <translation id="6445450263907939268">Bu değişiklikleri istemiyorsanız önceki ayarlarınızı geri yükleyebilirsiniz.</translation>
 <translation id="6446213738085045933">Masaüstü kısayolu oluştur</translation>
-<translation id="6447210166804596538">Gizlilik ve güvenlikle ilgili en önemli kontrolleri tek bir yerde inceleyin</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6450876761651513209">Gizlilikle ilgili ayarlarınızı değiştirme</translation>
 <translation id="6451344358166983408">Site veya sayfa</translation>
@@ -6865,7 +6858,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="811994229154425014">Nokta yazmak için çift boşluk</translation>
 <translation id="8120505434908124087">eSIM profili yükle</translation>
 <translation id="812260729110117038">Reklamverenler ve yayıncılar, sizi sitelerde izlemeden reklamların etkisini inceleyebilirler.</translation>
-<translation id="81231173274944570">Dokunsal geribildirimi etkinleştir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Sarı ve beyaz çiçek</translation>
 <translation id="8124313775439841391">Yönetilen ONC</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
@@ -7793,7 +7785,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9103868373786083162">Geri gitmek için içerik menüsüne basarak geçmişi görüntüleyin</translation>
 <translation id="9108035152087032312">&amp;Pencereye ad ver...</translation>
 <translation id="9108072915170399168">Mevcut veri kullanımı, internet olmadan olarak ayarlı</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Eğitim için G Suite Gizlilik Uyarısı<ph name="LINK_END" />, Eğitim için G Suite kullanıcıları ile ebeveynlerin bu ürünün hangi verileri topladığını, neden topladığını ve bu verilerle ne yaptığını anlamalarına yardımcı olmayı amaçlamaktadır.</translation>
 <translation id="9108808586816295166">Güvenli DNS her zaman kullanılamayabilir</translation>
 <translation id="9109122242323516435">Yer açmak için cihaz depolama alanındaki dosyaları silin.</translation>
 <translation id="9109283579179481106">Mobil ağa bağlanın</translation>

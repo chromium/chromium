@@ -1998,6 +1998,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3009300415590184725">Sigur doriți să anulați procesul de configurare al serviciului de date mobile?</translation>
 <translation id="3009779501245596802">Baze de date indexate</translation>
 <translation id="3010279545267083280">Parolă ștearsă</translation>
+<translation id="301080557829842765">Ghid pentru confidențialitate</translation>
 <translation id="3011384993885886186">Gri cald</translation>
 <translation id="3011488081941333749">Cookie-urile de la <ph name="DOMAIN" /> vor fi șterse la ieșire</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2150,7 +2151,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3163511056918491211">Restabilește datele sau schimbă dispozitivele cu ușurință, în orice moment. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
 <translation id="3164329792803560526">Se distribuie această filă către <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Este posibil ca unii operatori să blocheze funcția.</translation>
-<translation id="316652501498554287">Conturi G Suite for Education</translation>
 <translation id="3170072451822350649">De asemenea, puteți să omiteți conectarea și să <ph name="LINK_START" />navigați ca invitat<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Filă nouă în stânga</translation>
 <translation id="3177909033752230686">Limba paginii:</translation>
@@ -2180,7 +2180,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="321084946921799184">Galben și alb</translation>
 <translation id="321356136776075234">Unitatea organizațională (UO) a dispozitivului (de exemplu, UO=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii ar putea accesa rezultatele personalizate ale lui <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Administratorii G Suite for Education stabilesc ce servicii Google pot accesa utilizatorii atunci când se conectează la un cont G Suite for Education. Aici pot fi incluse funcții sau servicii pe care copilul tău nu le putea accesa anterior din acest cont supravegheat. Administratorii școlii trebuie să își dea sau să obțină consimțământul pentru folosirea serviciilor de către utilizatorii minori.</translation>
 <translation id="3217843140356091325">Creezi o comandă rapidă?</translation>
 <translation id="321834671654278338">Program de dezinstalare Linux</translation>
 <translation id="3220586366024592812">Procesul conectorului <ph name="CLOUD_PRINT_NAME" /> s-a blocat. Repornești?</translation>
@@ -3477,9 +3476,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4573515936045019911">Pentru upgrade-ul la Linux, este necesară o conexiune la rețea. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="457386861538956877">Mai multe...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Dacă adaugi un cont de la școală la un profil, te poți conecta ușor la site-uri, extensii și aplicații ca elev, iar opțiunile de control parental vor rămâne active. Aceasta nu permite accesul unui copil la marcaje, parole sau alte date ale browserului sincronizate cu contul de la școală.&lt;br&gt;&lt;br&gt;
-    În cazul în care copilul tău folosește un Chromebook la școală și vrei să redai acasă experiența de la școală, ca să te asiguri că acesta are acces la toate resursele necesare pentru activitatea școlară, deconectează-te de la acest cont Family Link și conectează-te la contul de la școală din pagina Conturi a sistemului de operare Chrome (notă: opțiunile de control parental Family Link nu se vor aplica).&lt;br&gt;&lt;br&gt;
-    În cazul în care copilul tău nu folosește un Chromebook la școală sau preferi să gestionezi experiența copilului acasă folosind Family Link, dă clic pe butonul Înainte de mai jos pentru a adăuga un cont de la școală la acest profil.</translation>
 <translation id="4576541033847873020">Asociază dispozitivul Bluetooth</translation>
 <translation id="4576763597586015380">Pentru a salva în continuare parole în Contul Google, confirmă-ți identitatea</translation>
 <translation id="4579453506923101210">Elimină telefonul conectat</translation>
@@ -3789,7 +3785,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> dorește să comunice cu extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Acceptă</translation>
-<translation id="4921290200821452703">Informații pentru părinți despre contul de la școală</translation>
 <translation id="4921348630401250116">Redarea vocală a textului</translation>
 <translation id="4921809350408880559">Se afișează documentele recente și cele sugerate pe baza activității tale anterioare în Google Drive.
         <ph name="BREAK" />
@@ -4337,7 +4332,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5502915260472117187">Un copil</translation>
 <translation id="5503356662318814623">Trimite un mesaj</translation>
 <translation id="5503982651688210506">Permite în continuare ca <ph name="HOST" /> să folosească și să miște camera și să folosească microfonul</translation>
-<translation id="5504909642107847870">Examinarea confidențialității și a securității</translation>
 <translation id="5505264765875738116">Site-urile nu îți pot solicita să îți trimită notificări</translation>
 <translation id="5505307013568720083">Lipsă cerneală</translation>
 <translation id="5505794066310932198">Activează/dezactivează Commander</translation>
@@ -5216,7 +5210,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – căutare Bluetooth activă</translation>
 <translation id="6445450263907939268">Dacă nu doriți aceste modificări, puteți restabili setările anterioare.</translation>
 <translation id="6446213738085045933">Creați o comandă rapidă pe desktop</translation>
-<translation id="6447210166804596538">Examinează cele mai importante opțiuni de confidențialitate și de securitate într-un singur loc</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6450876761651513209">Modifică setările privind confidențialitatea</translation>
 <translation id="6451344358166983408">Site-ul sau pagina</translation>
@@ -6868,7 +6861,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="811994229154425014">Spațiu dublu pentru a insera punct</translation>
 <translation id="8120505434908124087">Instalează profilul eSIM</translation>
 <translation id="812260729110117038">Advertiserii și editorii pot studia eficiența anunțurilor într-un mod care nu te urmărește pe site-uri.</translation>
-<translation id="81231173274944570">Activează feedbackul haptic. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
@@ -7797,7 +7789,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9103868373786083162">Apasă pentru a naviga înapoi sau folosește meniul contextual pentru a vedea istoricul</translation>
 <translation id="9108035152087032312">Denumește fereastra...</translation>
 <translation id="9108072915170399168">Setarea actuală pentru utilizarea datelor este „Fără internet”</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Notificarea privind confidențialitatea G Suite for Education<ph name="LINK_END" /> are rolul de a ajuta utilizatorii G Suite for Education și părinții să înțeleagă ce date colectează produsul, de ce le colectează și cum sunt folosite.</translation>
 <translation id="9108808586816295166">Este posibil să nu fie disponibil oricând un DNS securizat</translation>
 <translation id="9109122242323516435">Pentru a elibera spațiu, șterge fișiere din stocarea dispozitivului.</translation>
 <translation id="9109283579179481106">Conectează-te la o rețea mobilă</translation>

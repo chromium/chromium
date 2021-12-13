@@ -1999,6 +1999,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3009300415590184725">Mobil data xidmətinin quraşdırma prosesini ləğv etmək istəyirsiniz?</translation>
 <translation id="3009779501245596802">İndeksli verilənlər bazası</translation>
 <translation id="3010279545267083280">Parol silindi</translation>
+<translation id="301080557829842765">Məxfilik bələdçisi</translation>
 <translation id="3011384993885886186">Sarımtıl boz</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" /> kukiləri çıxışda təmizlənəcək</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2150,7 +2151,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3163511056918491211">İstədiyiniz zaman asanlıqla datanı bərpa edin və ya cihazları dəyişin. Yedəkləmələriniz Google'a yüklənir və Google Hesabı parolunuzdan istifadə etməklə şifrələnir.</translation>
 <translation id="3164329792803560526">Bu tab <ph name="APP_NAME" /> ilə paylaşılır</translation>
 <translation id="3165390001037658081">Bəzi operatorlar bu funksiyanı blok edə bilər.</translation>
-<translation id="316652501498554287">G Suite for Education hesabları</translation>
 <translation id="3170072451822350649">Hesaba girişi atlayaraq <ph name="LINK_START" />Qonaq qismində girə bilərsiniz<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Sola yeni tab</translation>
 <translation id="3177909033752230686">Səhifə Dili:</translation>
@@ -2180,7 +2180,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="321084946921799184">Sarı və ağ</translation>
 <translation id="321356136776075234">Cihaz OU (məs, OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər.</translation>
-<translation id="3216825226035747725">İstifadəçilər G Suite for Education hesabına daxil olduqları zaman hansı Google xidmətlərinə giriş imkanlarının olacağını G Suite for Education administratorları müəyyənləşdirir. Buraya övladınızın bu nəzarət edilən hesabla daha əvvəl giriş edə bilmədiyi bəzi funksiyalar və ya xidmətlər daxil ola bilər. Məktəb administratorlarından azyaşlı istifadəçiləri tərəfindən xidmətlərin istifadəsi üçün razılıq vermək və ya razılıq əldə etmək tələb edilir.</translation>
 <translation id="3217843140356091325">Qısayol yaradılsın?</translation>
 <translation id="321834671654278338">Linux üçün quraşdırılmanın ləğvi</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> bağlayıcısında problem oldu. Yenidən başlasın?</translation>
@@ -3476,9 +3475,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4573515936045019911">Linux'u təkmilləşdirmək üçün şəbəkə bağlantısı tələb olunur. İnternetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="457386861538956877">Digər...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Profilə məktəb hesabının əlavə edilməsi valideyn nəzarəti altında işləyərkən tələbələrin vebsaytlara, artırmalara və tətbiqlərə asan giriş etməsini təmin edir. Bu, məktəb hesabı ilə sinxronlaşdırılan əlfəcinlər, parollar və digər brauzer datasına uşağın girişinə icazə vermir.&lt;br&gt;&lt;br&gt;
-    Övladınız məktəbdə Chromebook istifadə edirsə və siz övladınızın bütün lazımi məktəb işinə girişinin olduğuna əmin olmaq üçün evdə onun məktəbdəki fəaliyyətini izləmək istəyirsinizsə, bu Family Link hesabından çıxın və Chrome OS hesabları səhifəsindən məktəb hesabına daxil olun (qeyd: Family Link valideyn nəzarəti tətbiq edilməyəcək).&lt;br&gt;&lt;br&gt;
-    Övladınız məktəbdə Chromebook istifadə etmirsə və ya siz Family Link ilə evdə övladınızın məktəbdəki fəaliyyətini idarə etmək istəyirsinizsə, aşağıda Növbəti düyməsinə toxunaraq bu profilə məktəb hesabı əlavə edin.</translation>
 <translation id="4576541033847873020">Bluetooth cihazı ilə qoşalaşdırın</translation>
 <translation id="4576763597586015380">Parollarınızı Google Hesabınızda saxlamağa davam etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="4579453506923101210">Qoşulmuş telefonu unudun</translation>
@@ -3788,7 +3784,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" artırması ilə əlaqə yaratmaq istəyir</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
-<translation id="4921290200821452703">Valideynlər üçün məktəb hesabı məlumatı</translation>
 <translation id="4921348630401250116">Mətndən nitqə</translation>
 <translation id="4921809350408880559">Google Disk istifadə edərək əvvəlki fəaliyyətinizə əsasən son və təklif olunan sənədlərinizi görürsünüz.
         <ph name="BREAK" />
@@ -4337,7 +4332,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5502915260472117187">Uşaq</translation>
 <translation id="5503356662318814623">Mesaj göndərin</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> hostuna kameranızı istifadə etmək və hərəkət etdirmək və mikrofonunuzu istifadə etmək icazəsi verməyə davam edin</translation>
-<translation id="5504909642107847870">Məxfilik və təhlükəsizliyin nəzərdən keçirilməsi</translation>
 <translation id="5505264765875738116">Saytlar bildiriş göndərilməsini tələb edə bilməz</translation>
 <translation id="5505307013568720083">Mürəkkəb bitdi</translation>
 <translation id="5505794066310932198">Dəyişdirmə Komandanı</translation>
@@ -5213,7 +5207,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth skanlanması aktivdir</translation>
 <translation id="6445450263907939268">Bu dəyişiklikləri istəmirdinizsə, öncəki ayarlarınızı bərpa edə bilərsiniz.</translation>
 <translation id="6446213738085045933">Masaüstü qısayol yaradın</translation>
-<translation id="6447210166804596538">Ən vacib məxfilik və təhlükəsizlik nizamlayıcılarını bir yerdə nəzərdən keçirin</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6450876761651513209">Gizliliklə bağlı ayarlarınızı dəyişin</translation>
 <translation id="6451344358166983408">Sayt və ya səhifə</translation>
@@ -6795,6 +6788,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8054563304616131773">Lütfən, düzgün e-poçt ünvanı daxil edin.</translation>
 <translation id="8054883179223321715">Müəyyən video saytları üçün əlçatandır</translation>
 <translation id="8054921503121346576">USB klaviatura qoşuldu</translation>
+<translation id="8057414620575339583">Yan Axtarış</translation>
 <translation id="8058655154417507695">Bitmə ili</translation>
 <translation id="8058986560951482265">Kəsik-kəsik</translation>
 <translation id="8059417245945632445">&amp;Cihazları aşkarlayın</translation>
@@ -6864,7 +6858,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="811994229154425014">Nöqtə yazmaq üçün iki boşluq</translation>
 <translation id="8120505434908124087">eSIM profili quraşdırın</translation>
 <translation id="812260729110117038">Reklamçılar reklamların effektivliyini saytlarda sizi izləməyəcək şəkildə araşdıra bilərlər.</translation>
-<translation id="81231173274944570">Vibrocavabı aktivləşdirin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Sarı və ağ gül</translation>
 <translation id="8124313775439841391">İdarə olunan ONC</translation>
 <translation id="813082847718468539">Sayt məlumatına baxın</translation>
@@ -7792,7 +7785,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9103868373786083162">Geri qayıtmaq üçün basın və tarixməni görmək üçün kontekst menyuya basın</translation>
 <translation id="9108035152087032312">&amp;Pəncərəyə ad verin...</translation>
 <translation id="9108072915170399168">Cari data istifadəsi ayarı: İnternet olmadan</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education Məxfilik Bildirişi<ph name="LINK_END" /> G Suite for Education istifadəçilərinə və valideynlərə məhsulun hansı datanı topladığını, həmin datanın nəyə görə toplanıldığını və onunla nə edildiyini başa düşməkdə kömək etmək üçün nəzərdə tutulub.</translation>
 <translation id="9108808586816295166">Təhlükəsiz DNS hər zaman əlçatan olmaya bilər</translation>
 <translation id="9109122242323516435">Yaddaşı boşaltmaq üçün faylları silin.</translation>
 <translation id="9109283579179481106">Mobil şəbəkəyə qoşulun</translation>

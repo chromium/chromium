@@ -2006,6 +2006,7 @@
 <translation id="3009300415590184725">እርግጠኛ ነዎት የተንቀሳቃሽ ስልክ ውሂብ አገልግሎት የማዋቀር ሂደቱን ይቅር ማለት ይፈልጋሉ?</translation>
 <translation id="3009779501245596802">በመረጃ ጠቋሚ የተሰናዱ የውሂብ ጎታዎች</translation>
 <translation id="3010279545267083280">የይለፍ ቃል ተሰርዟል</translation>
+<translation id="301080557829842765">የግላዊነት መመሪያ</translation>
 <translation id="3011384993885886186">ሞቅ ያለ ግራጫ</translation>
 <translation id="3011488081941333749">ከ<ph name="DOMAIN" /> የመጡ ኩኪዎች ሲወጣ ይጸዳሉ</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2158,7 +2159,6 @@
 <translation id="3163511056918491211">የእርስዎን ውሂብ በቀላሉ ወደነበረበት ይመልሱ ወይም በማንኛውም ጊዜ መሣሪያዎች ይቀያይሩ። የእርስዎ ምትኬዎች ወደ Google ተሰቅለዋል እና የእርስዎን የGoogle መለያ የይለፍ ቃል በመጠቀም ተመስጥረዋል።</translation>
 <translation id="3164329792803560526">ወደ <ph name="APP_NAME" /> ይህን ትር በማጋራት ላይ</translation>
 <translation id="3165390001037658081">አንዳንድ የአገልግሎት አቅራቢዎች ይህን ባህሪ ሊያግዱት ይችላሉ።</translation>
-<translation id="316652501498554287">የG Suite for Education መለያዎች</translation>
 <translation id="3170072451822350649">እንዲሁም መግባቱን ትተው <ph name="LINK_START" />እንደ እንግዳ ማሰስ<ph name="LINK_END" /> ይችላሉ።</translation>
 <translation id="31774765611822736">በግራ በኩል አዲስ ትር</translation>
 <translation id="3177909033752230686">የገጽ ቋንቋ፦</translation>
@@ -2188,7 +2188,6 @@
 <translation id="321084946921799184">ቢጫ እና ነጭ</translation>
 <translation id="321356136776075234">የመሣሪያ OU (ለምሳሌ፦ OU=Chromebooks፣DC=example፣DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል።</translation>
-<translation id="3216825226035747725">የG Suite ለትምህርት አስተዳዳሪዎች ተጠቃሚዎቻቸው ወደ G Suite ለትምህርት መለያ ገብተው ሳለ የትኛዎቹን የGoogle አገልግሎቶች መድረስ እንደሚችሉ ይወስናሉ። ይህ የእርስዎ ልጅ ከዚህ ቀደም ይህን ክትትል የሚደረግበት መለያ በመጠቀም ለመድረስ ያሰናከላቸውን አንዳንድ ባህሪያት ወይም አገልግሎቶች ሊያካትት ይችላል። የትምህርት ቤት አስተዳዳሪዎች ከዐዋቂ ዕድሜ በታች የሆኑ ተጠቃሚዎቻቸው አገልግሎቶቹን እንዲጠቀሙ ፈቃድ መስጠት ወይም ማግኘት አለባቸው።</translation>
 <translation id="3217843140356091325">አቋራጭ ይፈጠር?</translation>
 <translation id="321834671654278338">Linux አራጋፊ</translation>
 <translation id="3220586366024592812">የ<ph name="CLOUD_PRINT_NAME" /> አገናኙ ተሰናክሏል። ዳግም ይጀመር?</translation>
@@ -3483,9 +3482,6 @@
 <translation id="4573515936045019911">Linuxን ደረጃን ለማሻሻል የአውታረ መረብ ግንኙነት ያስፈልጋል። እባክዎ ከበይነመረቡ ጋር ይገናኙና እንደገና ይሞክሩ።</translation>
 <translation id="457386861538956877">ተጨማሪ...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">የትምህርት ቤት መለያን ወደ መገለጫ ማከል በወላጅ ቁጥጥር ሥር ሆኖ በቀላሉ እየሰራ እንደ ተማሪ ወደ ድር ጣቢያዎች፣ ቅጥያዎች እና መተግበሪያዎች ወደ መለያ መግባትን ያነቃል። የእልባቶች፣ የይለፍ ቃል ወይም ከትምህር ቤት መለያ ጋር የሰመረ ሌላ የአሳሽ ውሂብ መዳረሻ ለልጅ አይሰጥም።&lt;br&gt;&lt;br&gt;
-    የእርስዎ ልጅ በትምህርት ቤት ላይ Chromebook የሚጠቀሙ ከሆነ እና የሁሉም አስፈላጊ የትምህርት ቤት ሥራ መዳረሻ እንዳላቸው ማረጋገጥ እንዲችሉ የትምህርት ቤት ተሞክሮ በቤት ውስጥ ማንጸባረቅ ከፈለጉ እባክዎ ከዚህ የFamily Link መለያ ዘግተው ይውጡ እና ከChrome OS መለያዎች ገጽ ሆነው ወደ የትምህርት ቤት መለያው ይግቡ (ማስታወሻ፦ Family Link የወላጅ ቁጥጥሮች ተፈጻሚ አይሆኑም)።&lt;br&gt;&lt;br&gt;
-    የእርስዎ ልጅ Chromebook በትምህርት ቤት የማይጠቀም ከሆኑ ወይም Family Linkን በመጠቀም የልጅዎን ተሞክሮ በቤት ውስጥ ለማቀናበር ከመረጡ የትምህርት ቤት መለያን ወደዚህ መገለጫ ለማከል እባክዎ ከታች ያለውን የ«ቀጣይ» አዝራር ጠቅ ያድርጉ።</translation>
 <translation id="4576541033847873020">የብሉቱዝ መሣሪያን ያጣምሩ</translation>
 <translation id="4576763597586015380">በእርስዎ Google መለያ ውስጥ የይለፍ ቃላትን ማስቀመጥ ለመቀጠል እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4579453506923101210">የተገናኘ ስልክ እርሳ</translation>
@@ -3795,7 +3791,6 @@
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ከቅጥያ «<ph name="EXTENSION_NAME" />» ጋር መገናኘት ይፈልጋል</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
-<translation id="4921290200821452703">የትምህርት ቤት መለያ መረጃ ለወላጆች</translation>
 <translation id="4921348630401250116">ጽሑፍ-ወደ-ንግግር</translation>
 <translation id="4921809350408880559">Google Driveን በመጠቀም በቀዳሚው እንቅስቃሴዎ ላይ በመመስረት የቅርብ ጊዜ እና የተጠቆሙ ሰነዶችዎን እያዩ ነው።
         <ph name="BREAK" />
@@ -4343,7 +4338,6 @@
 <translation id="5502915260472117187">ልጅ</translation>
 <translation id="5503356662318814623">መልዕክት ላክ</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> የእርስዎን ካሜራ እንዲጠቀም እና እንዲያንቀሳቅስ መፍቀዱን ይቀጥሉ እና የእርስዎን ማይክሮፎን ይጠቀሙ</translation>
-<translation id="5504909642107847870">የግላዊነት እና የደህንነት ግምገማ</translation>
 <translation id="5505264765875738116">ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ አይችሉም</translation>
 <translation id="5505307013568720083">ቀለም ጨርሷል</translation>
 <translation id="5505794066310932198">አዛዥን ይቀያይሩ</translation>
@@ -5222,7 +5216,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - የብሉቱዝ ቅኝት ንቁ ነው</translation>
 <translation id="6445450263907939268">እነዚህን ለውጦች ካልፈለጓቸው ቀዳሚዎቹ ቅንብሮችዎን ወደነበሩበት መመለስ ይችላሉ።</translation>
 <translation id="6446213738085045933">የዴስክቶፕ አቋራጭ ፍጠር</translation>
-<translation id="6447210166804596538">በጣም አስፈላጊ የሆኑትን የግላዊነት እና የደህንነት ቁጥጥሮችን በአንድ ቦታ ይገምግሙ</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6450876761651513209">ከግላዊነት ጋር የሚዛመዱ ቅንብሮችዎን ይቀይራል</translation>
 <translation id="6451344358166983408">ጣቢያ ወይም ገጽ</translation>
@@ -6880,7 +6873,6 @@ nil</translation>
 <translation id="811994229154425014">ነጥብን ለመተየብ ሁለት ባዶ ቦታ</translation>
 <translation id="8120505434908124087">የኢሲም መገለጫ ይጫኑ</translation>
 <translation id="812260729110117038">ማስታወቂያ ሰሪዎች እና አታሚዎች በሁሉም ጣቢያዎች ላይ እርስዎን በማይከታተል መንገድ የማስታወቂያዎች ውጤታማነትን ማጥናት ይችላሉ።</translation>
-<translation id="81231173274944570">በመንካት የሚገለጽ ግብረ መላሽን ያንቁ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">ቢጫ እና ነጭ አበባ</translation>
 <translation id="8124313775439841391">የሚቀናበር ONC</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
@@ -7809,7 +7801,6 @@ nil</translation>
 <translation id="9103868373786083162">ለመመለስ ይጫኑ፣ ታሪክን ለማየት የአውድ ምናሌ</translation>
 <translation id="9108035152087032312">&amp;መስኮትን ሰይም...</translation>
 <translation id="9108072915170399168">የአሁኑ የውሂብ አጠቃቀም ቅንብር ያለበይነመረብ ነው</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />የG Suite ለትምህርት ግላዊነት ማስታወቂያው<ph name="LINK_END" /> የG Suite ለትምህርት ተጠቃሚዎችና ወላጆች ምርቱ ምን ውሂብ እንደሚሰበስብ፣ ለምን እንደሚሰበስብ እና ምን እንደሚደረግበት እንዲረዱ ለማገዝ የታሰበ ነው።</translation>
 <translation id="9108808586816295166">ደህንነቱ የተጠበቀ ዲኤንኤስ ሁልጊዜ ሊገኝ የሚችል ላይሆን ይችላል</translation>
 <translation id="9109122242323516435">ባዶ ቦታ ለማስለቀቅ ከመሣሪያ ማከማቻ ፋይሎችን ይሰርዙ።</translation>
 <translation id="9109283579179481106">ወደ ሞባይል አውታረመረብ ያገናኙ</translation>

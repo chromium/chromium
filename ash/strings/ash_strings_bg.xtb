@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
+<translation id="118437560755358292">За по-голяма сигурност въведете парола или ПИН</translation>
 <translation id="118532027333893379">Докоснете произволно място, за да се заснеме целият екран</translation>
 <translation id="1190609913194133056">Център за известия</translation>
 <translation id="1190678134285018527">Устройството трябва да бъде върнато към предишна версия</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">Превключихте към режима на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> пак може да влезе в профила си по-късно.</translation>
 <translation id="3321628682574733415">Неправилен код на родител</translation>
+<translation id="3339826665088060472">Заснемане на екрана, инструменти за правене на екранни снимки и записи на екрана</translation>
 <translation id="3341303451326249809">Екранната снимка е заснета</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">Понастоящем предавате екрана.</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">Брайловият дисплей е свързан.</translation>
 <translation id="3615926715408477684">Активирането на мобилните данни ще включи Bluetooth</translation>
 <translation id="3616883743181209306">Менюто е преместено в горния десен ъгъл на екрана.</translation>
+<translation id="3619536907358025872">Настройки за заснемане на екрана</translation>
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621712662352432595">Настройки за звука</translation>
 <translation id="3626281679859535460">Яркост</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">Администраторът на това устройство може:</translation>
 <translation id="4274537685965975248">Клавишната комбинация Ctrl + Alt + стрелка надолу се промени. За да използвате клавиша End, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надясно.</translation>
 <translation id="4279490309300973883">Дублиране</translation>
+<translation id="4283888303416325161">За по-голяма сигурност въведете парола</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="429402653707266969">Превключване на местоположението на лентата с инструменти</translation>
 <translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
@@ -761,6 +765,7 @@
 <translation id="607652042414456612">Компютърът ви е откриваем за устройства с Bluetooth наблизо и ще се показва като „<ph name="NAME" />“ с адрес <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Файловете за говор на <ph name="LANGUAGE" /> бяха изтеглени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Потвърждаване на изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
 <translation id="6134259848159370930">Търсете в устройството, приложенията, настройките и мрежата.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>

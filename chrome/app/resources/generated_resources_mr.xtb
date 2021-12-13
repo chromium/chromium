@@ -2011,6 +2011,7 @@
 <translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
 <translation id="3010279545267083280">पासवर्ड  हटवला</translation>
+<translation id="301080557829842765">गोपनीयता मार्गदर्शक</translation>
 <translation id="3011384993885886186">गडद करडा</translation>
 <translation id="3011488081941333749">बाहेर पडताना <ph name="DOMAIN" /> वरील कुकीज साफ केल्या जातील</translation>
 <translation id="3012631534724231212">(आयफ्रेम)</translation>
@@ -2163,7 +2164,6 @@
 <translation id="3163511056918491211">तुमचा डेटा सहजरीत्‍या रिस्टोअर करा किंवा डिव्हाइस कधीही स्विच करा. तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
 <translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य अवरोधित शकतात.</translation>
-<translation id="316652501498554287">G Suite for Education खाती</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
 <translation id="3177909033752230686">पृष्ठ भाषा:</translation>
@@ -2193,7 +2193,6 @@
 <translation id="321084946921799184">पिवळा आणि पांढरा</translation>
 <translation id="321356136776075234">डिव्हाइस OU (उदा. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित <ph name="SUPERVISED_USER_NAME" /> चे वैयक्तिक परिणाम अ‍ॅक्सेस करू शकेल.</translation>
-<translation id="3216825226035747725">G Suite for Education खाते मध्ये साइन इन केलेले असताना त्यांचे वापरकर्ते कोणत्या Google सेवा अ‍ॅक्सेस करू शकतात हे G Suite for Education चे अ‍ॅडमिनिस्ट्रेटर ठरवतात. तुमचे लहान मूल हे पर्यवेक्षित खाते वापरून यापूर्वी अ‍ॅक्सेस करू शकत नव्हते अशा काही वैशिष्ट्यांचा किंवा सेवांचा कदाचित यामध्ये समावेश असू शकतो. अल्पवयीन वापरकर्त्यांनी त्यांच्या सेवा वापरण्यासाठी शाळेच्या अ‍ॅडमिनिस्ट्रेटरने संमती देणे किंवा घेणे आवश्यक आहे.</translation>
 <translation id="3217843140356091325">शॉर्टकट तयार करायचा?</translation>
 <translation id="321834671654278338">Linux अनइंस्टॉलर</translation>
 <translation id="3220586366024592812">कनेक्टर प्रक्रिया <ph name="CLOUD_PRINT_NAME" /> क्रॅश झाली. रीस्टार्ट करायचे?</translation>
@@ -3489,9 +3488,6 @@
 <translation id="4573515936045019911">Linux अपग्रेड करण्यासाठी नेटवर्क कनेक्शन आवश्यक आहे. कृपया इंटरनेटशी कनेक्‍ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">शाळा खाते जोडल्याने, पालकांच्या नियंत्रणाखाली ऑपरेट करत असताना विद्यार्थी म्हणून वेबसाइट, एक्स्टेंशन आणि अ‍ॅप्समध्ये सहजपणे साइन इन करता येते. ते तुमच्या मुलाला बुकमार्क, पासवर्ड किंवा शाळा खात्याशी सिंक केलेल्या इतर ब्राउझर डेटाचा अ‍ॅक्सेस देत नाही.&lt;br&gt;&lt;br&gt;
-    तुमचे मूल शाळेत Chromebook वापरत असल्यास आणि तुमच्या मुलाला सर्व आवश्यक शालेय कामाचा अ‍ॅक्सेस असेल याची खात्री करण्यासाठी तुम्हाला शाळेतील अनुभव घरात प्रतिबिंबित करायचा असल्यास, कृपया या Family Link खात्यामधून साइन आउट करा आणि Chrome OS खाती पेजमधून शाळा खात्यामध्ये साइन इन करा (टीप: Family Link पालक नियंत्रणे लागू होणार नाहीत).&lt;br&gt;&lt;br&gt;
-    तुमचे मूल शाळेत Chromebook वापरत नसल्यास किंवा तुम्हाला घरीच Family Link वापरून तुमच्या मुलाचा अनुभव व्यवस्थापित करण्यास प्राधान्य द्यायचे असल्यास, या प्रोफाइलवर शाळा खाते जोडण्यासाठी खाली दिलेल्या पुढील बटणावर क्लिक करा.</translation>
 <translation id="4576541033847873020">ब्लूटूथ डिव्हाइस जोडा</translation>
 <translation id="4576763597586015380">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करणे पुढे सुरू ठेवण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="4579453506923101210">कनेक्ट केलेला फोन विसरा</translation>
@@ -3801,7 +3797,6 @@
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> एक्स्टेंशनशी कम्युनिकेट करू इच्छित आहे "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
-<translation id="4921290200821452703">पालकांसाठी शाळा खाते माहिती</translation>
 <translation id="4921348630401250116">टेक्‍स्‍ट टू स्‍पीच</translation>
 <translation id="4921809350408880559">Google Drive वापरून केलेल्या तुमच्या मागील अ‍ॅक्टिव्हिटीच्या आधारे तुम्हाला तुमची अलीकडील आणि सुचवलेली दस्तऐवज दिसत आहेत.
         <ph name="BREAK" />
@@ -4349,7 +4344,6 @@
 <translation id="5502915260472117187">लहान मूल</translation>
 <translation id="5503356662318814623">मेसेज पाठवा</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि तो हलवण्याची व तुमचा मायक्रोफोन वापरण्याची अनुमती देणे सुरू ठेवा.</translation>
-<translation id="5504909642107847870">गोपनीयता आणि सुरक्षा यांचे पुनरावलोकन</translation>
 <translation id="5505264765875738116">साइट सूचना पाठवण्यास सांगू शकत नाहीत</translation>
 <translation id="5505307013568720083">शाई संपली</translation>
 <translation id="5505794066310932198">कमांडर टॉगल करा</translation>
@@ -5229,7 +5223,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - ब्लूटूथ स्कॅन सुरू आहे</translation>
 <translation id="6445450263907939268">तुम्हाला हे बदल नको असल्यास, तुम्ही आपल्या मागील सेटिंग्ज पुनर्संचयित करू शकता.</translation>
 <translation id="6446213738085045933">डेस्कटॉप शॉर्टकट तयार करा</translation>
-<translation id="6447210166804596538">सर्वात महत्त्वाची गोपनीयता आणि सुरक्षा नियंत्रणे यांचे एकाच ठिकाणी पुनरावलोकन करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6450876761651513209">आपल्या गोपनीयतेशी संबंधित सेटिंग्ज बदला</translation>
 <translation id="6451344358166983408">साइट किंवा पेज</translation>
@@ -6880,7 +6873,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="811994229154425014">पूर्णविराम टाइप करण्यासाठी दोनदा स्पेस</translation>
 <translation id="8120505434908124087">eSIM प्रोफाइल इंस्टॉल करा</translation>
 <translation id="812260729110117038">तुम्हाला साइटवर ट्रॅक करणार नाहीत, अशा प्रकारे जाहिरातदार आणि प्रकाशक जाहिरातींच्या परिणामकारकतेचा अभ्यास करू शकतात.</translation>
-<translation id="81231173274944570">स्‍पर्शाद्वारे फीडबॅक सुरू करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">पिवळे आणि पांढरे फूल</translation>
 <translation id="8124313775439841391">व्यवस्‍थापित ONC</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
@@ -7809,7 +7801,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9103868373786083162">परत जाण्‍यासाठी दाबा, इतिहास पाहण्‍यासाठी संदर्भ मेनूवर जा</translation>
 <translation id="9108035152087032312">नाव आणि विंडो...</translation>
 <translation id="9108072915170399168">सध्याचे डेटा वापर सेटिंग हे इंटरनेटशिवाय असे आहे</translation>
-<translation id="9108692355621501797">उत्पादन कोणता डेटा गोळा करते, तो का गोळा केला जातो आणि त्याचे काय केले जाते हे समजून घेण्‍यात G Suite for Education वापरकर्ते आणि पालकांना मदत व्हावी हा <ph name="LINK_BEGIN" />G Suite for Education गोपनीयता सूचना<ph name="LINK_END" /> याचा उद्देश आहे.</translation>
 <translation id="9108808586816295166">सुरक्षित DNS कदाचित प्रत्येक वेळी उपलब्ध नसेल</translation>
 <translation id="9109122242323516435">स्थान मोकळे करण्‍यासाठी, डिव्हाइस स्टोरेजमधून फाइल हटवा.</translation>
 <translation id="9109283579179481106">मोबाइल नेटवर्कशी कनेक्ट करा</translation>

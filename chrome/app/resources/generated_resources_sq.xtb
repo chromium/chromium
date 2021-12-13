@@ -1993,6 +1993,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3009300415590184725">Je i sigurt që dëshiron ta anulosh procesin e konfigurimit të shërbimit të të dhënave celulare?</translation>
 <translation id="3009779501245596802">Databazat e indeksuara</translation>
 <translation id="3010279545267083280">Fjalëkalimi u fshi</translation>
+<translation id="301080557829842765">Udhëzuesi i privatësisë</translation>
 <translation id="3011384993885886186">Gri e ngrohtë</translation>
 <translation id="3011488081941333749">Kukit nga <ph name="DOMAIN" /> do të pastrohen pas daljes</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2144,7 +2145,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3163511056918491211">Restauro të dhënat e tua ose ndërro pajisjet në çdo kohë me lehtësi. Rezervimet e tua ngarkohen te Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë sate të Google".</translation>
 <translation id="3164329792803560526">Po ndan këtë skedë në <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Disa operatorë celularë mund ta bllokojnë këtë funksion.</translation>
-<translation id="316652501498554287">Llogaritë e "G Suite për edukimin"</translation>
 <translation id="3170072451822350649">Mund ta shmangësh po ashtu identifikimin dhe <ph name="LINK_START" />të shfletosh si "Vizitor"<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Skedë e re në të majtë</translation>
 <translation id="3177909033752230686">Gjuha e faqes:</translation>
@@ -2174,7 +2174,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="321084946921799184">E verdhë dhe e bardhë</translation>
 <translation id="321356136776075234">Pajisja OU (p.sh. OU=Chromebook,DC=shembull,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Administratorët e "G Suite për edukimin" përcaktojnë se te cilat shërbime të Google mund të qasen përdoruesit e tyre ndërkohë që janë identifikuar në një llogari të "G Suite për edukimin". Kjo mund të përfshijë disa veçori ose shërbime ku fëmija yt nuk mund të kishte qasje më parë me këtë llogari të mbikëqyrur. Administratorëve të shkollave u kërkohet të japin ose të marrin miratimin për përdorimin e shërbimeve nga përdoruesit e tyre të mitur.</translation>
 <translation id="3217843140356091325">Të krijohet një shkurtore?</translation>
 <translation id="321834671654278338">Çinstaluesi i Linux</translation>
 <translation id="3220586366024592812">Procesi i bashkuesit <ph name="CLOUD_PRINT_NAME" /> ka pësuar ndërprerje aksidentale. Dëshiron ta rinisësh?</translation>
@@ -3470,9 +3469,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4573515936045019911">Kërkohet një lidhje rrjeti për përmirësimin e Linux. Lidhu me internetin dhe provo përsëri.</translation>
 <translation id="457386861538956877">Më shumë...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Shtimi i një llogarie shkolle bën të mundur identifikimin me lehtësi si student në faqe interneti, shtesa dhe aplikacione ndërkohë që vepron nën kontrollet prindërore. Kjo nuk i jep një fëmije qasje te faqeshënuesit, fjalëkalimet ose të dhëna të tjera të shfletuesit të sinkronizuara me llogarinë e shkollës.&lt;br&gt;&lt;br&gt;
-    Nëse fëmija yt përdor një Chromebook në shkollë dhe dëshiron ta pasqyrosh përvojën e shkollës në shtëpi për të siguruar që fëmija të ketë qasje te të gjitha detyrat e nevojshme të shkollës, dil nga kjo llogari e Family Link dhe identifikohu në llogarinë e shkollës nga faqja e llogarive të Chrome OS. (Shënim. Nuk do të zbatohen kontrollet prindërore të Family Link.)&lt;br&gt;&lt;br&gt;
-    Nëse fëmija yt nuk përdor një Chromebook në shkollë ose nëse preferon ta menaxhosh përvojën e fëmijës tënd në shtëpi duke përdorur Family Link, kliko te butoni "Para" më poshtë për të shtuar një llogari të shkollës te ky profil.</translation>
 <translation id="4576541033847873020">Çifto pajisje me "Bluetooth"</translation>
 <translation id="4576763597586015380">Për të vazhduar të ruash fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="4579453506923101210">Harro telefonin e lidhur</translation>
@@ -3781,7 +3777,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> kërkon të komunikojë me shtesën "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Prano</translation>
-<translation id="4921290200821452703">Informacione për llogarinë e shkollës për prindërit</translation>
 <translation id="4921348630401250116">Tekst-në-ligjërim</translation>
 <translation id="4921809350408880559">Dokumentet e tua të fundit dhe të sugjeruara po i shikon bazuar në aktivitetin tënd të mëparshëm duke përdorur "Diskun e Google".
         <ph name="BREAK" />
@@ -4329,7 +4324,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5502915260472117187">Një fëmijë</translation>
 <translation id="5503356662318814623">Dërgo një mesazh</translation>
 <translation id="5503982651688210506">Vazhdo të lejosh që <ph name="HOST" /> të përdorë dhe të lëvizë kamerën dhe të përdorë mikrofonin</translation>
-<translation id="5504909642107847870">Shqyrtimi i privatësisë dhe sigurisë</translation>
 <translation id="5505264765875738116">Sajtet nuk mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="5505307013568720083">Nuk ka bojë</translation>
 <translation id="5505794066310932198">Aktivizo/çaktivizo Commander</translation>
@@ -5206,7 +5200,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Skanimi i Bluetooth-it është aktiv</translation>
 <translation id="6445450263907939268">Nëse nuk i dëshiron këto ndryshime, mund të restaurosh cilësimet e mëparshme.</translation>
 <translation id="6446213738085045933">Krijo shkurtoren në desktop</translation>
-<translation id="6447210166804596538">Shqyrtoji komandat më të rëndësishme të privatësisë dhe të sigurisë në një vend</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6450876761651513209">Ndrysho cilësimet që lidhen me privatësinë</translation>
 <translation id="6451344358166983408">Sajti ose faqja</translation>
@@ -6853,7 +6846,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="811994229154425014">Hapësirë e dyfishtë për të shkruar pikë</translation>
 <translation id="8120505434908124087">Instalo profilin e kartës eSIM</translation>
 <translation id="812260729110117038">Reklamuesit dhe botuesit mund të studiojnë efikasitetin e reklamave në një mënyrë që nuk të gjurmon nëpër sajtet e uebit.</translation>
-<translation id="81231173274944570">Aktivizo reagimin me prekje. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Lule e verdhë dhe e bardhë</translation>
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
@@ -7779,7 +7771,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9103868373786083162">Shtyp për t'u kthyer prapa. Historiku mund të shihet nga menyja kontekstuale.</translation>
 <translation id="9108035152087032312">Dritarja e &amp;emrit...</translation>
 <translation id="9108072915170399168">Cilësimi aktual i përdorimit të të dhënave është "Pa internet"</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Njoftimi i privatësisë së "G Suite për edukimin"<ph name="LINK_END" /> ka për qëllim të ndihmojë përdoruesit e "G Suite për edukimin" dhe prindërit të kuptojnë se çfarë të dhënash grumbullon produkti, pse grumbullohen dhe çfarë bëhet me to.</translation>
 <translation id="9108808586816295166">DNS-ja e sigurt mund të mos jetë e disponueshme në çdo kohë</translation>
 <translation id="9109122242323516435">Për të liruar hapësirë, fshi skedarë nga hapësira ruajtëse e pajisjes.</translation>
 <translation id="9109283579179481106">Lidhu me rrjetin celular</translation>

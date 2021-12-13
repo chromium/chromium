@@ -831,11 +831,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Impressoras conectadas ao <ph name="CLOUD_PRINT_NAME" /> são consideradas <ph name="PRINTER_TYPE_CLOUD" />, e as restantes são classificadas como <ph name="PRINTER_TYPE_LOCAL" />.
 
       Observação: a omissão de um campo significa que todos os valores correspondem. Por exemplo, a não especificação da conectividade faz com que a visualização da impressão inicie a detecção de todos os tipos de impressoras, <ph name="PRINTER_TYPE_LOCAL" /> e <ph name="PRINTER_TYPE_CLOUD" />. Os padrões de expressão regular precisam seguir a sintaxe RegExp do JavaScript. As correspondências diferenciam maiúsculas de minúsculas.</translation>
-<translation id="2003441790537575907">Se a política for ativada ou deixada sem definição, a <ph name="LEGACY_EXTENSION_DISABLE_API" /> será ativada para bloquear pontos de extensão legados no processo do navegador.
-
-      Se a política for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, uma vez que códigos desconhecidos e potencialmente hostis poderão ser carregados nos processos do navegador <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos do navegador <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
-
-      Observação: leia mais sobre políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="2005506794355327448">Ação a ser tomada quando a tampa for fechada.</translation>
 <translation id="2006530844219044261">Gerenciamento de energia</translation>
 <translation id="2008514891623783266">A política de processamento de IPs do WebRTC</translation>

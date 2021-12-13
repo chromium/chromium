@@ -832,11 +832,6 @@
       已連上 <ph name="CLOUD_PRINT_NAME" />的印表機屬於 <ph name="PRINTER_TYPE_CLOUD" /> 類型，其他印表機則是 <ph name="PRINTER_TYPE_LOCAL" /> 類型。
 
       注意：略過欄位即表示對相關值不設限。舉例來說，如果不指定連線能力，系統在執行預覽列印時會尋找所有類型的印表機，包括 <ph name="PRINTER_TYPE_LOCAL" /> 和 <ph name="PRINTER_TYPE_CLOUD" /> 印表機。規則運算式模式須符合 JavaScript RegExp 語法，且比對機制須區分大小寫。</translation>
-<translation id="2003441790537575907">如果將這項政策設為 Enabled 或不設定，<ph name="LEGACY_EXTENSION_DISABLE_API" /> 將獲准封鎖瀏覽器程序中的舊版擴充點。
-
-      將這項政策設為 Disabled 會對 <ph name="PRODUCT_NAME" /> 的安全性和穩定性造成負面影響，因為這樣一來，<ph name="PRODUCT_NAME" /> 會允許瀏覽器程序載入可能具有惡意的未知程式碼。建議只有必須在 <ph name="PRODUCT_NAME" /> 的瀏覽器程序中執行的第三方軟體發生相容性問題時，才停用這項政策。
-
-      注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="2005506794355327448">機蓋蓋上時採取的動作</translation>
 <translation id="2006530844219044261">電源管理</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 處理政策</translation>

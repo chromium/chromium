@@ -826,6 +826,7 @@
 <translation id="5854512288214985237">До Google не се изпращат статистика и сигнали за сривове</translation>
 <translation id="5855546874025048181">Прецизиране: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Нещо се обърка. Проследяваните цени не се актуализираха.</translation>
+<translation id="5859968346865909126">Можете да я включите или изключите от настройките</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5862731021271217234">Включете синхронизирането, за да получите разделите си от другите си устройства</translation>
@@ -1100,6 +1101,7 @@
 <translation id="7359002509206457351">Достъп до начините на плащане</translation>
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">С включването на повече текст от страницата може да виждате по-добри резултати, когато използвате функцията за търсене чрез докосване. Винаги можете да отворите <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />, за да промените това.</translation>
+<translation id="7379900596734708416">Налице е тъмна тема за сайтовете</translation>
 <translation id="7386842512861524348">Връзката със сайта е защитена, освен ако Chrome не ви съобщи друго.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL адрес</translation>

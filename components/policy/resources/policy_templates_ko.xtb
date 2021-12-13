@@ -836,11 +836,6 @@
       <ph name="CLOUD_PRINT_NAME" />에 연결된 프린터는 <ph name="PRINTER_TYPE_CLOUD" />로 간주되며 나머지 프린터는 <ph name="PRINTER_TYPE_LOCAL" />로 분류됩니다.
 
       참고: 필드를 누락하면 모든 값이 일치한다는 의미입니다. 예를 들어, 연결을 지정하지 않으면 인쇄 미리보기에서 <ph name="PRINTER_TYPE_LOCAL" />, <ph name="PRINTER_TYPE_CLOUD" /> 등 모든 종류의 프린터를 검색하기 시작합니다. 정규 표현식 패턴은 자바스크립트 RegExp 구문을 따라야 하며 일치하는 항목은 대소문자를 구분합니다.</translation>
-<translation id="2003441790537575907">정책을 사용 설정하거나 설정하지 않으면 <ph name="LEGACY_EXTENSION_DISABLE_API" />가 브라우저 프로세스에서 기존 확장 프로그램 포인트를 차단할 수 있습니다.
-
-      정책을 사용 중지하면 알려져 있지 않고 악성일 가능성이 있는 코드가 <ph name="PRODUCT_NAME" />의 브라우저 프로세스 내에서 로드될 수 있으므로 <ph name="PRODUCT_NAME" />의 보안 및 안정성에 부정적인 영향을 미칩니다. <ph name="PRODUCT_NAME" />의 브라우저 프로세스 내에서 실행되어야 하는 타사 소프트웨어에 호환성 문제가 발생하는 경우에만 정책을 사용 중지하세요.
-
-      참고: 프로세스 완화 정책(https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)에 관해 자세히 읽어 보세요.</translation>
 <translation id="2005506794355327448">덮개를 닫을 경우 취할 작업입니다.</translation>
 <translation id="2006530844219044261">전력 관리</translation>
 <translation id="2008514891623783266">WebRTC의 IP 처리 정책</translation>

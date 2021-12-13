@@ -2017,6 +2017,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
 <translation id="3010279545267083280">Password deleted</translation>
+<translation id="301080557829842765">Privacy guide</translation>
 <translation id="3011384993885886186">Warm grey</translation>
 <translation id="3011488081941333749">Cookies from <ph name="DOMAIN" /> will be cleared on exit</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2169,7 +2170,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3163511056918491211">Easily restore your data or switch devices at any time. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="3164329792803560526">Sharing this tab to <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Some operators might block this feature.</translation>
-<translation id="316652501498554287">G Suite for Education accounts</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page language:</translation>
@@ -2199,7 +2199,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="321084946921799184">Yellow and white</translation>
 <translation id="321356136776075234">Device OU (e.g. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results.</translation>
-<translation id="3216825226035747725">G Suite for Education administrators determine which Google services their users can access while signed in to a G Suite for Education account. This may include some features or services that your child was previously unable to access using this supervised account. School administrators are required to provide or obtain consent for the use of the services by users who are minors.</translation>
 <translation id="3217843140356091325">Create shortcut?</translation>
 <translation id="321834671654278338">Linux uninstaller</translation>
 <translation id="3220586366024592812">The <ph name="CLOUD_PRINT_NAME" /> connector process has crashed. Restart?</translation>
@@ -3499,9 +3498,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4573515936045019911">A network connection is required to upgrade Linux. Please connect to the Internet and try again.</translation>
 <translation id="457386861538956877">More...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Adding a school account to a profile enables easy sign-in to websites, extensions and apps as a student while operating under parental controls. It does not give a child access to bookmarks, passwords or other browser data synced with the school account.&lt;br&gt;&lt;br&gt;
-    If your child uses a Chromebook in school and you wish to mirror the school experience at home to ensure that your child has access to all necessary schoolwork, please sign out of this Family Link account and sign in to the school account from the Chrome OS accounts page (note: Family Link parental controls will not apply).&lt;br&gt;&lt;br&gt;
-    If your child does not use a Chromebook in school or if you prefer to manage your child’s experience at home using Family Link, please click the Next button below to add a school account to this profile.</translation>
 <translation id="4576541033847873020">Pair Bluetooth device</translation>
 <translation id="4576763597586015380">To continue saving passwords in your Google Account, verify that it’s you</translation>
 <translation id="4579453506923101210">Forget connected phone</translation>
@@ -3812,7 +3808,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wants to communicate with the extension "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accept</translation>
-<translation id="4921290200821452703">School account information for parents</translation>
 <translation id="4921348630401250116">Text-to-speech</translation>
 <translation id="4921809350408880559">You’re seeing your recent and suggested documents based on your previous activity using Google Drive.
         <ph name="BREAK" />
@@ -4361,7 +4356,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5502915260472117187">A child</translation>
 <translation id="5503356662318814623">Send a message</translation>
 <translation id="5503982651688210506">Continue allowing <ph name="HOST" /> to use and move your camera, and use your microphone</translation>
-<translation id="5504909642107847870">Privacy and security review</translation>
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
 <translation id="5505307013568720083">Out of ink</translation>
 <translation id="5505794066310932198">Toggle Commander</translation>
@@ -5241,7 +5235,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth scan active</translation>
 <translation id="6445450263907939268">If you didn't want these changes, you can restore your previous settings.</translation>
 <translation id="6446213738085045933">Create desktop shortcut</translation>
-<translation id="6447210166804596538">Review the most important privacy and security controls in one place</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Change your privacy-related settings</translation>
 <translation id="6451344358166983408">Site or page</translation>
@@ -6898,7 +6891,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="811994229154425014">Double-space to type full stop</translation>
 <translation id="8120505434908124087">Install eSIM profile</translation>
 <translation id="812260729110117038">Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.</translation>
-<translation id="81231173274944570">Enable haptic feedback. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Yellow and white flower</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
 <translation id="813082847718468539">View site information</translation>
@@ -7830,7 +7822,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9103868373786083162">Press to go back, context menu to see history</translation>
 <translation id="9108035152087032312">Name &amp;window…</translation>
 <translation id="9108072915170399168">Current data usage setting is Without Internet</translation>
-<translation id="9108692355621501797">The <ph name="LINK_BEGIN" />G Suite for Education privacy notice<ph name="LINK_END" /> is meant to help G Suite for Education users and parents understand what data the product collects, why it is collected and what is done with it.</translation>
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>
 <translation id="9109122242323516435">To free up space, delete files from device storage.</translation>
 <translation id="9109283579179481106">Connect to mobile network</translation>

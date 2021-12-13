@@ -1996,6 +1996,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3009300415590184725">Da li ste sigurni da želite da otkažete proces podešavanja usluge mobilnog prenosa podataka?</translation>
 <translation id="3009779501245596802">Indeksirane baze podataka</translation>
 <translation id="3010279545267083280">Lozinka je izbrisana</translation>
+<translation id="301080557829842765">Vodič za privatnost</translation>
 <translation id="3011384993885886186">Topla nijansa sive</translation>
 <translation id="3011488081941333749">Kolačići sa domena <ph name="DOMAIN" /> će biti obrisani pri zatvaranju</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2148,7 +2149,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3163511056918491211">Lako vraćajte podatke ili menjajte uređaje u bilo kom trenutku. Rezervne kopije se otpremaju na Google i šifruju pomoću lozinke za Google nalog.</translation>
 <translation id="3164329792803560526">Ova kartica se deli sa aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Neki mobilni operateri mogu da blokiraju ovu funkciju.</translation>
-<translation id="316652501498554287">G Suite for Education nalozi</translation>
 <translation id="3170072451822350649">Možete i da preskočite prijavljivanje i da <ph name="LINK_START" />pregledate kao gost<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nova kartica na levoj strani</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>
@@ -2178,7 +2178,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="321084946921799184">Žuta i bela</translation>
 <translation id="321356136776075234">OJ uređaja (npr. OJ = Chromebook-ovi, DC = primer, DC = com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: Neko sa sličnim glasom ili snimkom možda može da pristupa ličnim rezultatima deteta <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">G Suite for Education administratori određuju kojim Google uslugama njihovi korisnici mogu da pristupaju dok su prijavljeni na G Suite for Education nalog. To može da obuhvata neke funkcije ili usluge kojima dete ranije nije moglo da pristupa pomoću naloga pod nadzorom. Administratori u školama moraju da navedu ili dobiju saglasnost kada maloletni korisnici koriste usluge.</translation>
 <translation id="3217843140356091325">Želite li da napravite prečicu?</translation>
 <translation id="321834671654278338">Linux program za deinstaliranje</translation>
 <translation id="3220586366024592812">Proces konektora za <ph name="CLOUD_PRINT_NAME" /> je otkazao. Želite li ponovo da ga pokrenete?</translation>
@@ -3475,9 +3474,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4573515936045019911">Treba vam mrežna veza da biste nadogradili Linux. Povežite se na internet i probajte ponovo.</translation>
 <translation id="457386861538956877">Još...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Dodavanje školskog naloga omogućava da se dete lako prijavljuje na veb-sajtove, u dodatke i u aplikacije kao učenik, a da i dalje radi pod roditeljskim nadzorom. Time se detetu ne daje pristup obeleživačima, lozinkama ili drugim podacima pregledača koji se sinhronizuju sa školskim nalogom.&lt;br&gt;&lt;br&gt;
-    Ako dete koristi Chromebook u školi i želite da preslikate taj doživljaj kod kuće kako biste obezbedili da ono ima pristup svim neophodnim školskim zadacima, odjavite se sa ovog Family Link naloga i prijavite se na školski nalog sa stranice Chrome OS naloga (napomena: Family Link roditeljski nadzor se neće primenjivati).&lt;br&gt;&lt;br&gt;
-    Ako dete ne koristi Chromebook u školi ili biste radije da upravljate detetovim doživljajem kod kuće koristeći Family Link, kliknite na dugme Dalje u nastavku da biste dodali školski nalog ovom profilu.</translation>
 <translation id="4576541033847873020">Uparite Bluetooth uređaj</translation>
 <translation id="4576763597586015380">Da biste nastavili da čuvate lozinke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="4579453506923101210">Zaboravite povezani telefon</translation>
@@ -3787,7 +3783,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi da komunicira sa dodatkom „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Prihvati</translation>
-<translation id="4921290200821452703">Informacije o školskom nalogu za roditelje</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
 <translation id="4921809350408880559">Nedavni i predloženi dokumenti vam se prikazuju na osnovu prethodnih aktivnosti pomoću Google diska.
         <ph name="BREAK" />
@@ -4334,7 +4329,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5502915260472117187">Dete</translation>
 <translation id="5503356662318814623">Pošalji poruku</translation>
 <translation id="5503982651688210506">Nastavite da dozvoljavate sajtu <ph name="HOST" /> da koristi i pomera kameru i koristi mikrofon</translation>
-<translation id="5504909642107847870">Pregled privatnosti i bezbednosti</translation>
 <translation id="5505264765875738116">Sajtovi ne mogu da traže da šalju obaveštenja</translation>
 <translation id="5505307013568720083">Nema mastila</translation>
 <translation id="5505794066310932198">Uključi/isključi Commander</translation>
@@ -5214,7 +5208,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth skeniranje je aktivno</translation>
 <translation id="6445450263907939268">Ako niste želeli ove promene, možete da vratite prethodna podešavanja.</translation>
 <translation id="6446213738085045933">Napravi prečicu na radnoj površini</translation>
-<translation id="6447210166804596538">Pregledajte najvažnije kontrole privatnosti i bezbednosti na jednom mestu</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6450876761651513209">Promenite podešavanja privatnosti</translation>
 <translation id="6451344358166983408">Sajt ili stranica</translation>
@@ -6866,7 +6859,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="811994229154425014">Dupli razmak za tačku</translation>
 <translation id="8120505434908124087">Instalirajte eSIM profil</translation>
 <translation id="812260729110117038">Oglašavači i objavljivači mogu da proučavaju efikasnost oglasa na način koji vas ne prati na sajtovima.</translation>
-<translation id="81231173274944570">Omogućite dodirne povratne informacije. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Žuti i beli cvet</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>
@@ -7796,7 +7788,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9103868373786083162">Pritisnite da biste se vratili ili otvorite kontekstualni meni da biste videli istoriju</translation>
 <translation id="9108035152087032312">Daj naziv prozoru...</translation>
 <translation id="9108072915170399168">Aktuelno podešavanje potrošnje podataka je „Bez interneta“</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />Obaveštenje o privatnosti za G Suite for Education<ph name="LINK_END" /> treba da pomogne korisnicima proizvoda G Suite for Education i roditeljima da razumeju koje podatke proizvod prikuplja, zašto ih prikuplja i šta radi sa njima.</translation>
 <translation id="9108808586816295166">Bezbedni DNS možda neće uvek biti dostupan</translation>
 <translation id="9109122242323516435">Da biste oslobodili prostor, izbrišite datoteke iz memorijskog prostora uređaja.</translation>
 <translation id="9109283579179481106">Povežite se sa mobilnom mrežom</translation>

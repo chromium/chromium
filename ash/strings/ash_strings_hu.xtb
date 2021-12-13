@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Görgetés</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
+<translation id="118437560755358292">A nagyobb biztonság érdekében adja meg a jelszót vagy a PIN-kódot</translation>
 <translation id="118532027333893379">Koppintson bárhova teljes képernyőkép készítéséhez</translation>
 <translation id="1190609913194133056">Értesítési központ</translation>
 <translation id="1190678134285018527">Az eszköznek vissza kell térnie a korábbi verzióhoz</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">Visszaváltott laptop módra</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> később be tud jelentkezni.</translation>
 <translation id="3321628682574733415">Érvénytelen szülői kód</translation>
+<translation id="3339826665088060472">Képernyőfelvétel funkció és eszközök képernyőképek és képernyőfelvételek készítéséhez</translation>
 <translation id="3341303451326249809">Képernyőkép létrehozva</translation>
 <translation id="334252345105450327">Képernyőkép készítése</translation>
 <translation id="3351879221545518001">Folyamatban van a képernyő átküldése.</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">Braille-kijelző csatlakoztatva.</translation>
 <translation id="3615926715408477684">A mobiladat-kapcsolat engedélyezésével a Bluetooth is bekapcsol.</translation>
 <translation id="3616883743181209306">A menü a képernyő jobb felső sarkába került.</translation>
+<translation id="3619536907358025872">Képernyőfelvétel beállításai</translation>
 <translation id="3621202678540785336">Bemenet</translation>
 <translation id="3621712662352432595">Hangbeállítások</translation>
 <translation id="3626281679859535460">Fényerő</translation>
@@ -493,6 +496,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4269883910223712419">Az eszköz rendszergazdája a következőket végezheti el:</translation>
 <translation id="4274537685965975248">A Ctrl + Alt + Lefelé nyíl billentyűparancs módosult. Az End billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Jobbra nyíl.</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
+<translation id="4283888303416325161">A nagyobb biztonság érdekében adja meg a jelszót</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="429402653707266969">Eszköztár helyének kapcsolója</translation>
 <translation id="4294319844246081198">Jó reggelt, <ph name="GIVEN_NAME" />!</translation>
@@ -762,6 +766,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="607652042414456612">Számítógépét felfedezhetik a közeli Bluetooth-eszközök. Számítógépe „<ph name="NAME" />” néven, <ph name="ADDRESS" /> címmel lesz látható</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nyelvű beszédfájlok letöltve</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">A(z) <ph name="FILENAME" /> fájl letöltésének megerősítése</translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
 <translation id="6134259848159370930">Kereshet az eszközén, az alkalmazások és a beállítások között, valamint az interneten.</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>

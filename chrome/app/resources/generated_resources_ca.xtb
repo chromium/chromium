@@ -1995,6 +1995,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3009300415590184725">Confirmeu que voleu cancel·lar el procés de configuració del servei de dades mòbils?</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
 <translation id="3010279545267083280">La contrasenya s'ha suprimit.</translation>
+<translation id="301080557829842765">Guia de privadesa</translation>
 <translation id="3011384993885886186">Gris càlid</translation>
 <translation id="3011488081941333749">Les galetes del domini <ph name="DOMAIN" /> s'esborraran en sortir-ne</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2146,7 +2147,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3163511056918491211">Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del teu Compte de Google.</translation>
 <translation id="3164329792803560526">S'està compartint aquesta pestanya amb <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Alguns operadors de telefonia mòbil poden bloquejar aquesta funció.</translation>
-<translation id="316652501498554287">Comptes de G Suite for Education</translation>
 <translation id="3170072451822350649">També podeu <ph name="LINK_START" />navegar com a convidat<ph name="LINK_END" /> sense iniciar sessió.</translation>
 <translation id="31774765611822736">Pestanya nova a l'esquerra</translation>
 <translation id="3177909033752230686">Idioma de la pàgina:</translation>
@@ -2176,7 +2176,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="321084946921799184">Groc i blanc</translation>
 <translation id="321356136776075234">UO del dispositiu (per exemple, UO = dispositius Chromebook, CD = example, CD = com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o una gravació puguin accedir als seus resultats personals.</translation>
-<translation id="3216825226035747725">Els administradors de G Suite for Education determinen a quins serveis de Google poden accedir els usuaris mentre tenen la sessió iniciada en un compte d'aquest producte. Això pot incloure algunes funcions o serveis a què el teu fill no podia accedir anteriorment utilitzant aquest compte supervisat. Els administradors dels centres educatius han de proporcionar o obtenir consentiment perquè els usuaris menors d'edat puguin utilitzar els serveis.</translation>
 <translation id="3217843140356091325">Vols crear una drecera?</translation>
 <translation id="321834671654278338">Programa de desinstal·lació de Linux</translation>
 <translation id="3220586366024592812">El procés del connector <ph name="CLOUD_PRINT_NAME" /> s'ha bloquejat. Voleu reiniciar-lo?</translation>
@@ -3471,9 +3470,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4573515936045019911">Cal tenir connexió a la xarxa per actualitzar Linux. Connecta't a Internet i torna-ho a provar.</translation>
 <translation id="457386861538956877">Més...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Afegir un compte de centre educatiu a un perfil permet iniciar fàcilment la sessió en llocs web, extensions i aplicacions com a alumne alhora que els controls parentals es continuen aplicant. No dona accés al nen a adreces d'interès, contrasenyes ni altres dades de navegació sincronitzades amb el compte de centre educatiu.&lt;br&gt;&lt;br&gt;
-    Si el teu fill fa servir un Chromebook a l'escola i vols replicar-ne l'experiència a casa per assegurar-te que tingui accés a tots els deures necessaris, tanca la sessió en aquest compte de Family Link i inicia-la al compte de centre educatiu des de la pàgina de comptes de Chrome OS. Nota: no s'aplicaran els controls parentals de Family Link.&lt;br&gt;&lt;br&gt;
-    Si el teu fill no fa servir un Chromebook a l'escola o si prefereixes gestionar l'experiència del teu fill a casa mitjançant Family Link, fes clic al botó Següent de sota per afegir un compte de centre educatiu a aquest perfil.</translation>
 <translation id="4576541033847873020">Vincula un dispositiu Bluetooth</translation>
 <translation id="4576763597586015380">Per continuar desant contrasenyes al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="4579453506923101210">Oblida el telèfon connectat</translation>
@@ -3782,7 +3778,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> es vol comunicar amb l'extensió "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accepta</translation>
-<translation id="4921290200821452703">Informació per als pares sobre el compte de centre educatiu</translation>
 <translation id="4921348630401250116">Text a parla</translation>
 <translation id="4921809350408880559">Veus els documents recents i suggerits en funció de la teva activitat anterior a Google Drive.
         <ph name="BREAK" />
@@ -4331,7 +4326,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5502915260472117187">Un nen</translation>
 <translation id="5503356662318814623">Envia un missatge</translation>
 <translation id="5503982651688210506">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera i utilitzi el micròfon</translation>
-<translation id="5504909642107847870">Revisió de privadesa i seguretat</translation>
 <translation id="5505264765875738116">Els llocs web no poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="5505307013568720083">No queda tinta</translation>
 <translation id="5505794066310932198">Commuta l'eina d'ordres</translation>
@@ -5209,7 +5203,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" />: s'estan cercant dispositius Bluetooth</translation>
 <translation id="6445450263907939268">Si no volíeu aplicar aquests canvis, podeu restaurar la configuració anterior.</translation>
 <translation id="6446213738085045933">Crea una drecera de l'escriptori</translation>
-<translation id="6447210166804596538">Revisa els controls de privadesa i seguretat més importants en un sol lloc</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6450876761651513209">Canvieu la configuració relacionada amb la privadesa.</translation>
 <translation id="6451344358166983408">Lloc web o pàgina</translation>
@@ -6859,7 +6852,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="811994229154425014">Espai doble per introduir un punt</translation>
 <translation id="8120505434908124087">Instal·la el perfil de l'eSIM</translation>
 <translation id="812260729110117038">Els anunciants i els editors poden estudiar l'efectivitat dels anuncis sense fer un seguiment del que fas als llocs web.</translation>
-<translation id="81231173274944570">Activa la resposta hàptica. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Flor groga i blanca</translation>
 <translation id="8124313775439841391">ONC gestionat</translation>
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
@@ -7786,7 +7778,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9103868373786083162">Premeu per anar cap enrere, menú contextual per veure l'historial</translation>
 <translation id="9108035152087032312">&amp;Anomena la finestra...</translation>
 <translation id="9108072915170399168">L'opció de configuració d'ús de dades actual és Sense Internet</translation>
-<translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />avís de privadesa de G Suite for Education<ph name="LINK_END" /> està dissenyat per ajudar els pares i els usuaris a entendre quines dades recull el producte, per què les recull i què s'hi fa.</translation>
 <translation id="9108808586816295166">És possible que el DNS segur no estigui disponible en tot moment</translation>
 <translation id="9109122242323516435">Per alliberar espai, suprimeix fitxers de l'emmagatzematge del dispositiu.</translation>
 <translation id="9109283579179481106">Connecta't a la xarxa mòbil</translation>

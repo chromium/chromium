@@ -836,11 +836,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Printers die aan <ph name="CLOUD_PRINT_NAME" /> zijn gekoppeld, worden als printers van het type <ph name="PRINTER_TYPE_CLOUD" /> beschouwd. De overige printers worden geclassificeerd als <ph name="PRINTER_TYPE_LOCAL" />.
 
       Opmerking: Als een veld wordt overgeslagen, betekent dit dat alle waarden overeenkomen. Als je bijvoorbeeld geen connectiviteit specificeert, wordt bij een afdrukvoorbeeld gezocht naar alle soorten printers, <ph name="PRINTER_TYPE_LOCAL" /> en <ph name="PRINTER_TYPE_CLOUD" />. Reguliere-expressiepatronen moeten de RegExp-syntaxis voor JavaScript volgen en namen komen alleen overeen als ook het hoofdlettergebruik klopt (hoofdlettergevoelig).</translation>
-<translation id="2003441790537575907">Als je het beleid aanzet of niet instelt, kan <ph name="LEGACY_EXTENSION_DISABLE_API" /> verouderde extensiepunten in het browserproces blokkeren.
-
-      Als je dit beleid uitzet, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" />, omdat onbekende en potentieel schadelijke code kan worden geladen in het browserproces van <ph name="PRODUCT_NAME" />. Zet het beleid alleen uit als er compatibiliteitsproblemen zijn met software van derden die in het browserproces van <ph name="PRODUCT_NAME" /> moet worden uitgevoerd.
-
-      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="2005506794355327448">Actie die moet worden ondernomen als de klep wordt gesloten</translation>
 <translation id="2006530844219044261">Energiebeheer</translation>
 <translation id="2008514891623783266">Het IP-gebruiksbeleid van WebRTC</translation>

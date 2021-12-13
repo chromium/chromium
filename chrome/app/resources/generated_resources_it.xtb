@@ -251,6 +251,7 @@
 <translation id="1244265436519979884">È in corso il ripristino di Linux</translation>
 <translation id="1244303850296295656">Errore delle estensioni</translation>
 <translation id="1246863218384630739">Impossibile installare <ph name="VM_NAME" />: l'URL dell'immagine ha restituito un codice di errore <ph name="HTTP_ERROR" />. Contatta l'amministratore.</translation>
+<translation id="1247071602516579380">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, tablet chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
 <translation id="1251578593170406502">Ricerca di reti di dati mobili in corso…</translation>
@@ -437,6 +438,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selezionati</translation>
 <translation id="1442851588227551435">Impostare richiesta di Kerberos attiva</translation>
 <translation id="1444628761356461360">Questa impostazione è controllata dal proprietario del dispositivo, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, telefono chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Impossibile caricare "<ph name="IMAGE_PATH" />" per il tema.</translation>
 <translation id="1449191289887455076">Premi di nuovo "<ph name="CURRENTKEY" />" per confermare l'assegnazione e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Pagina web, singolo file</translation>
@@ -860,6 +862,7 @@
 <translation id="1855079636134697549">La fotocamera è attivata</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
 <translation id="1858585891038687145">Considera attendibile questo certificato per l'identificazione dei creatori di software</translation>
+<translation id="1859787252990099899">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, dispositivo sconosciuto chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1862311223300693744">Hai installato VPN, proxy, firewall o software NAS particolari?</translation>
 <translation id="1863182668524159459">Nessuna porta seriale trovata</translation>
@@ -1234,6 +1237,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2242687258748107519">Info sul file</translation>
 <translation id="2246549592927364792">Vuoi recuperare le descrizioni delle immagini da Google?</translation>
 <translation id="2247738527273549923">Il dispositivo è gestito dalla tua organizzazione</translation>
+<translation id="2249061317998743208">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, controller di gioco chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Apri come finestra a schede</translation>
 <translation id="2249605167705922988">ad es. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Apri con visualizzatore di sistema</translation>
@@ -1994,10 +1998,12 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3007771295016901659">Duplica scheda</translation>
 <translation id="3008232374986381779">Esegui strumenti, editor e IDE di Linux sul dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
+<translation id="3008396025115884998">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, dispositivo audio chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento oggi stesso. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}one{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}other{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}}</translation>
 <translation id="3009300415590184725">Annullare la procedura di configurazione del servizio dati mobile?</translation>
 <translation id="3009779501245596802">Indexed databases</translation>
 <translation id="3010279545267083280">Password eliminata</translation>
+<translation id="301080557829842765">Guida alla privacy</translation>
 <translation id="3011384993885886186">Grigio</translation>
 <translation id="3011488081941333749">I cookie di <ph name="DOMAIN" /> verranno cancellati all'uscita</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2150,7 +2156,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3163511056918491211">Ripristina i dati o cambia dispositivo facilmente in qualsiasi momento. Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
 <translation id="3164329792803560526">Condivisione di questa scheda con <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">La funzione potrebbe essere bloccata da alcuni operatori.</translation>
-<translation id="316652501498554287">Account G Suite for Education</translation>
 <translation id="3170072451822350649">Puoi anche saltare l'accesso e <ph name="LINK_START" />navigare come ospite<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Posizionamento nuova scheda a sinistra</translation>
 <translation id="3177909033752230686">Lingua della pagina:</translation>
@@ -2180,7 +2185,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="321084946921799184">Giallo e bianco</translation>
 <translation id="321356136776075234">UO dispositivo (esempio: UO=Chromebooks,DC=example,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai risultati personali di <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Gli amministratori di G Suite for Education stabiliscono a quali servizi Google possono accedere i loro utenti quando sono collegati a un account G Suite for Education. Questi possono includere funzionalità o servizi a cui tuo figlio non poteva accedere in precedenza utilizzando questo account supervisionato. Gli amministratori scolastici devono fornire o ottenere il consenso per l'utilizzo dei servizi da parte degli utenti minorenni.</translation>
 <translation id="3217843140356091325">Vuoi creare una scorciatoia?</translation>
 <translation id="321834671654278338">Programma di disinstallazione di Linux</translation>
 <translation id="3220586366024592812">Il processo del connettore <ph name="CLOUD_PRINT_NAME" /> si è bloccato. Riavviarlo?</translation>
@@ -2300,6 +2304,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3348038390189153836">Dispositivo rimovibile rilevato</translation>
 <translation id="3348131053948466246">Emoji suggerite. Premi la freccia Su o Giù per spostarti e Invio per inserire l'emoji desiderata.</translation>
 <translation id="3349933790966648062">Footprint di memoria</translation>
+<translation id="3354972872297836698">Impossibile eseguire l'accoppiamento con il dispositivo <ph name="DEVICE_NAME" />; seleziona il dispositivo per riprovare</translation>
 <translation id="3355936511340229503">Errore di connessione</translation>
 <translation id="3356580349448036450">Fine</translation>
 <translation id="3359256513598016054">Vincoli criteri certificati</translation>
@@ -3131,6 +3136,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4200689466366162458">Parole del dizionario personale</translation>
 <translation id="4200983522494130825">Nuova &amp;scheda</translation>
 <translation id="4201546031411513170">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle impostazioni.</translation>
+<translation id="4202417625268941299">Con Navigazione sicura avanzata, otterrai la sicurezza più efficace di Chrome</translation>
 <translation id="420283545744377356">Disattiva salvaschermo</translation>
 <translation id="4206144641569145248">Alieno</translation>
 <translation id="4206323443866416204">Report di feedback</translation>
@@ -3477,9 +3483,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4573515936045019911">Per eseguire l'upgrade di Linux è necessaria una connessione di rete. Connettiti a Internet e riprova.</translation>
 <translation id="457386861538956877">Altro...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">L'aggiunta di un account della scuola a un profilo consente di accedere facilmente ai siti web, alle estensioni e alle app come studente, applicando al tempo stesso il Controllo genitori. Non consente a un minore di accedere a preferiti, password o altri dati di navigazione sincronizzati con l'account della scuola.&lt;br&gt;&lt;br&gt;
-    Se tuo figlio usa un Chromebook a scuola e vuoi rispecchiare l'esperienza scolastica a casa per assicurarti che abbia accesso a tutti i compiti necessari, esci da questo account Family Link e accedi all'account della scuola dalla pagina degli account di Chrome OS (tieni però presente che non sarà applicato il Controllo genitori di Family Link).&lt;br&gt;&lt;br&gt;
-    Se tuo figlio non usa un Chromebook a scuola o se preferisci gestire la sua esperienza domestica con Family Link, fai clic sul pulsante Avanti qui sotto per aggiungere un account della scuola a questo profilo.</translation>
 <translation id="4576541033847873020">Accoppia dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Verifica la tua identità per continuare a salvare le password nel tuo Account Google</translation>
 <translation id="4579453506923101210">Eliminare un telefono connesso</translation>
@@ -3638,6 +3641,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4761104368405085019">Utilizzare il microfono</translation>
 <translation id="4762718786438001384">Lo spazio sul disco del dispositivo sta per esaurirsi</translation>
+<translation id="4762898026821161650">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, computer chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Durante la visualizzazione della pagina sono stati impostati i seguenti cookie</translation>
 <translation id="4765582662863429759">Consenti ad Android Messaggi di trasmettere gli SMS dal telefono al Chromebook</translation>
 <translation id="4768332406694066911">Hai certificati da queste organizzazioni che ti identificano</translation>
@@ -3789,7 +3793,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vuole comunicare con l'estensione "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accetto</translation>
-<translation id="4921290200821452703">Informazioni relative all'account della scuola per i genitori</translation>
 <translation id="4921348630401250116">Sintesi vocale</translation>
 <translation id="4921809350408880559">Stai visualizzando i tuoi documenti recenti e i documenti suggeriti in base alla tua precedente attività su Google Drive.
         <ph name="BREAK" />
@@ -3820,6 +3823,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" vuole collegarsi a una porta seriale</translation>
 <translation id="4944310289250773232">Questo servizio di autenticazione è in hosting su <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Per configurare l'impronta, chiedi a tuo figlio di toccare il tasto di accensione. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946459324029651239">Otterrai la protezione standard</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un file}one{# file}other{# file}}</translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953808748584563296">Avatar arancione predefinito</translation>
@@ -4337,7 +4341,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5502915260472117187">Bambino</translation>
 <translation id="5503356662318814623">Invia un messaggio</translation>
 <translation id="5503982651688210506">Continua a consentire a <ph name="HOST" /> di utilizzare e spostare la videocamera e di usare il microfono</translation>
-<translation id="5504909642107847870">Controllo di privacy e sicurezza</translation>
 <translation id="5505264765875738116">I siti non possono chiedere di inviare notifiche</translation>
 <translation id="5505307013568720083">Inchiostro esaurito</translation>
 <translation id="5505794066310932198">Attiva/disattiva Commander</translation>
@@ -4404,6 +4407,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5575528586625653441">Si è verificato un problema con la richiesta di registrazione alla modalità demo.</translation>
 <translation id="557722062034137776">Il ripristino del dispositivo non influirà sui tuoi Account Google o sui dati sincronizzati con tali account. Tuttavia, tutti i file salvati localmente sul dispositivo verranno eliminati.</translation>
 <translation id="5578059481725149024">Accesso automatico</translation>
+<translation id="5581134892342029705">Traduzione verso la lingua <ph name="LANGUAGE" /> completata</translation>
 <translation id="558170650521898289">Verifica driver hardware Microsoft Windows</translation>
 <translation id="5581972110672966454">Impossibile aggiungere il dispositivo al dominio. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principale</translation>
@@ -5216,7 +5220,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Ricerca Bluetooth attiva</translation>
 <translation id="6445450263907939268">Se non volevi apportare queste modifiche, puoi ripristinare le impostazioni precedenti.</translation>
 <translation id="6446213738085045933">Crea collegamento sul desktop</translation>
-<translation id="6447210166804596538">Esamina i controlli per la privacy e la sicurezza più importanti in un unico posto</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">Modifica delle impostazioni relative alla privacy</translation>
 <translation id="6451344358166983408">Sito o pagina</translation>
@@ -5818,6 +5821,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Il controllo di sicurezza è stato eseguito 1 minuto fa}one{Il controllo di sicurezza è stato eseguito {NUM_MINS} minuti fa}other{Il controllo di sicurezza è stato eseguito {NUM_MINS} minuti fa}}</translation>
 <translation id="7057767408836081338">Impossibile recuperare i dati dell'app, tentativo di esecuzione dell'app comunque in corso…</translation>
 <translation id="7058024590501568315">Rete nascosta</translation>
+<translation id="70582545822664495">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, mouse chiamato <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Imposta avvio automatico</translation>
 <translation id="7062222374113411376">Consenti ai siti chiusi di recente di terminare l'invio e la ricezione di dati (opzione consigliata)</translation>
 <translation id="7063129466199351735">Elaborazione delle scorciatoie...</translation>
@@ -5981,6 +5985,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7257173066616499747">Reti Wi-Fi</translation>
 <translation id="725758059478686223">Servizio di stampa</translation>
 <translation id="7257666756905341374">Lettura dei dati copiati e incollati</translation>
+<translation id="7258006747130724016">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, videocamera chiamata <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Trasformazioni</translation>
 <translation id="7258225044283673131">L'applicazione non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7262004276116528033">Questo servizio di accesso è in hosting su <ph name="SAML_DOMAIN" /></translation>
@@ -6777,6 +6782,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8037117027592400564">Lettura di tutto il testo pronunciato utilizzando la sintesi vocale</translation>
 <translation id="8037357227543935929">Chiedi (predefinita)</translation>
 <translation id="803771048473350947">Archivio</translation>
+<translation id="8038399858950372766">Dispositivo <ph name="DEVICE_INDEX" /> di <ph name="DEVICE_COUNT" />, tastiera chiamata <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8042142357103597104">Opacità testo</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> non risponde.</translation>
@@ -6800,6 +6806,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8054563304616131773">Inserisci un indirizzo email valido</translation>
 <translation id="8054883179223321715">Disponibile per siti di video specifici</translation>
 <translation id="8054921503121346576">Tastiera USB collegata</translation>
+<translation id="8057414620575339583">Ricerca laterale</translation>
 <translation id="8058655154417507695">Anno di scadenza</translation>
 <translation id="8058986560951482265">Discontinua</translation>
 <translation id="8059417245945632445">&amp;Ispeziona dispositivi</translation>
@@ -6869,7 +6876,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="811994229154425014">Doppio spazio per digitare il punto</translation>
 <translation id="8120505434908124087">Installa profilo eSIM</translation>
 <translation id="812260729110117038">Gli inserzionisti e i publisher possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
-<translation id="81231173274944570">Attiva il feedback aptico. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Fiore bianco e giallo</translation>
 <translation id="8124313775439841391">ONC gestito</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
@@ -6916,6 +6922,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8168071266284693455">I preferiti, le password, la cronologia e altri dati vengono sincronizzati su tutti i tuoi dispositivi</translation>
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Aggiungi scheda all'elenco di lettura}one{Aggiungi schede all'elenco di lettura}other{Aggiungi schede all'elenco di lettura}}</translation>
+<translation id="8169849063724750395">Riattiva</translation>
 <translation id="8171334254070436367">Nascondi tutte le schede</translation>
 <translation id="8174047975335711832">Informazioni del dispositivo</translation>
 <translation id="8174876712881364124">Effettua il backup su Google Drive. Ripristina i dati o cambia facilmente dispositivo in qualsiasi momento. Il backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
@@ -6989,6 +6996,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8249615410597138718">Invia ai tuoi dispositivi</translation>
 <translation id="8249672078237421304">Consenti di tradurre pagine in lingue che non conosci</translation>
 <translation id="8251441930213048644">Aggiorna ora</translation>
+<translation id="8251509999076836464">Accoppiamento con <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8251578425305135684">Miniatura rimossa.</translation>
 <translation id="825238165904109940">Mostra sempre URL completi</translation>
 <translation id="8252569384384439529">Caricamento...</translation>
@@ -7226,9 +7234,11 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8528074251912154910">Aggiungi lingue</translation>
 <translation id="8528962588711550376">Accesso in corso.</translation>
 <translation id="8529925957403338845">Connessione in tethering istantaneo non riuscita</translation>
+<translation id="8531701051932785007">Navigazione sicura avanzata è disattivata</translation>
 <translation id="8534656636775144800">Spiacenti. Si è verificato un problema durante il tentativo di aggiunta al dominio. Riprova.</translation>
 <translation id="8535005006684281994">URL di rinnovo certificato Netscape</translation>
 <translation id="8536956381488731905">Suono tasti</translation>
+<translation id="8538718737588735385">Riattiva</translation>
 <translation id="8539727552378197395">No (solo Http)</translation>
 <translation id="8539766201049804895">Esegui l'upgrade</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
@@ -7798,7 +7808,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9103868373786083162">Premi per tornare indietro, menu contestuale per visualizzare la cronologia</translation>
 <translation id="9108035152087032312">Assegna nome alla &amp;finestra…</translation>
 <translation id="9108072915170399168">Impostazione di utilizzo dei dati corrente: Senza Internet</translation>
-<translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />Informativa sulla privacy di G Suite for Education<ph name="LINK_END" /> ha lo scopo di aiutare gli utenti di G Suite for Education e i genitori a comprendere quali dati vengono raccolti dal prodotto, perché vengono raccolti e come vengono utilizzati.</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="9109122242323516435">Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>
 <translation id="9109283579179481106">Connettiti alla rete mobile</translation>

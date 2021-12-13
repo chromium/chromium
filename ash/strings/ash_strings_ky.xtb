@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Сыдыруу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
+<translation id="118437560755358292">Коопсуздукту бекемдөө үчүн сырсөздү же PIN кодду киргизиңиз</translation>
 <translation id="118532027333893379">Толук экранды cүрөткө тартуу үчүн каалаган жерин басыңыз</translation>
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
 <translation id="1190678134285018527">Түзмөктү мурунку версияга кайтаруу керек</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">Ноутбук режимине которулду</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> аккаунтка кийинчерээк дагы кире алат.</translation>
 <translation id="3321628682574733415">Ата-эненин кирүү коду туура эмес</translation>
+<translation id="3339826665088060472">Экранды тартып алуу, скриншотторду тартуу жана экрандан видео жаздырып алуу куралдары</translation>
 <translation id="3341303451326249809">Скриншот тартылды</translation>
 <translation id="334252345105450327">Скриншот тартып алуу</translation>
 <translation id="3351879221545518001">Учурда экраныңызды бөлүшүп жатасыз.</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">Брайль дисплеи туташты.</translation>
 <translation id="3615926715408477684">Мобилдик трафик иштетилсе, Bluetooth да иштетилет</translation>
 <translation id="3616883743181209306">Меню экрандын жогорку оң бурчуна жылдырылды.</translation>
+<translation id="3619536907358025872">Экранды тартып алуу жөндөөлөрү</translation>
 <translation id="3621202678540785336">Киргизүү</translation>
 <translation id="3621712662352432595">Аудио жөндөөлөрү</translation>
 <translation id="3626281679859535460">Жарыктыгы</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">Бул түзмөктүн администратору төмөнкүлөрдү аткара алат:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + ылдый жебе ыкчам баскычы өзгөртүлдү. Аягы баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + oңго жебени басыңыз.</translation>
 <translation id="4279490309300973883">Чагылыштыруу</translation>
+<translation id="4283888303416325161">Коопсуздукту бекемдөө үчүн сырсөздү киргизиңиз</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
 <translation id="429402653707266969">Куралдар тилкесинин жайгашкан жерин өчүрүү/күйгүзүү</translation>
 <translation id="4294319844246081198">Кутмандуу таңыңыз менен, <ph name="GIVEN_NAME" />,</translation>
@@ -761,6 +765,7 @@
 <translation id="607652042414456612">Компьютериңиз жакын арадагы Bluetooth түзмөктөрүнө көрүнүп, <ph name="ADDRESS" /> дарегиндеги "<ph name="NAME" />" катары күйүп турат.</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
 <translation id="6134259848159370930">Түзмөктөн, колдонмолордон, жөндөөлөрдөн жана Интернеттен издеңиз.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтун өчүрүү диалогун ачуу</translation>

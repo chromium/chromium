@@ -836,11 +836,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       <ph name="CLOUD_PRINT_NAME" /> bağlantılı yazıcılar <ph name="PRINTER_TYPE_CLOUD" /> yazıcı sayılır, geri kalan yazıcılar <ph name="PRINTER_TYPE_LOCAL" /> olarak sınıflandırılır.
 
       Not: Bir alanın atlanması, tüm değerlerin eşleştiği anlamına gelir. Örneğin, bağlantının belirtilmemesi, Baskı Önizleme'nin <ph name="PRINTER_TYPE_LOCAL" /> ve <ph name="PRINTER_TYPE_CLOUD" /> üzerindeki her tür yazıcının bulunması için işlem başlatmasına neden olur. Normal ifade kalıpları JavaScript RegExp söz dizimine uygun olmalıdır. Eşleşmeler büyük/küçük harfe duyarlıdır.</translation>
-<translation id="2003441790537575907">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="LEGACY_EXTENSION_DISABLE_API" />, Tarayıcı işlemindeki eski uzantı noktalarını engelleyebilir.
-
-      Bilinmeyen ve zararlı olabilecek kod, <ph name="PRODUCT_NAME" /> ürününün tarayıcı işlemine yüklenebileceğinden, politikanın Devre Dışı değerine ayarlanması, <ph name="PRODUCT_NAME" /> ürününün güvenliğini ve kararlılığını olumsuz yönde etkiler. Politika yalnızca <ph name="PRODUCT_NAME" /> ürününün tarayıcı işleminin içinde çalışması gereken üçüncü taraf yazılımı ile uyumluluk sorunları varsa devre dışı bırakılmalıdır.
-
-      Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="2005506794355327448">Kapak kapalıyken yapılacak işlem</translation>
 <translation id="2006530844219044261">Güç yönetimi</translation>
 <translation id="2008514891623783266">WebRTC'nin IP işleme politikası</translation>

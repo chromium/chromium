@@ -192,6 +192,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2224075387478458881">A gravação de ecrã não é permitida quando existe conteúdo protegido visível.</translation>
 <translation id="225680501294068881">A procurar dispositivos...</translation>
+<translation id="2257486738914982088">Algo correu mal ao transferir o ficheiro <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268813581635650749">Term. sess. de todos</translation>
 <translation id="2269016722240250274">Uma aplicação está a utilizar o seu microfone.</translation>
@@ -587,6 +588,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4831034276697007977">Tem a certeza de que pretende desativar os cliques automáticos?</translation>
 <translation id="4849058404725798627">Realçar objeto com foco do teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (colocar em pausa)</translation>
+<translation id="4860284199500934869">Verifique a sua ligação de rede para transferir o ficheiro <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Tentar-se-á a transferência mais tarde. A voz será enviada para a Google para processamento até à conclusão da transferência.</translation>
 <translation id="4868492592575313542">ativada</translation>
 <translation id="4872237917498892622">Alt + Pesquisar ou Shift</translation>
@@ -804,6 +806,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
 <translation id="6453179446719226835">O idioma foi alterado</translation>
 <translation id="6459472438155181876">A prolongar ecrã para <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Não é possível transferir o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige que atualize o dispositivo <ph name="DEVICE_TYPE" /> antes do prazo</translation>
@@ -816,6 +819,8 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nova instalação</translation>
 <translation id="6559976592393364813">Peça ao administrador.</translation>
 <translation id="6565007273808762236">Ligação eSIM indisponível</translation>
 <translation id="6570831796530454248">{0,plural, =1{Atualize o dispositivo dentro de uma hora}one{Atualize o dispositivo dentro de # hora(s)}other{Atualize o dispositivo dentro de # horas}}</translation>
@@ -847,6 +852,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6727969043791803658">Ligado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ACEDER ÀS DEFINIÇÕES</translation>
 <translation id="6751052314767925245">Aplicada pelo seu administrador.</translation>
 <translation id="6751826523481687655">O rastreio do desempenho está ativado.</translation>
 <translation id="6752912906630585008">O espaço de trabalho <ph name="REMOVED_DESK" /> foi removido e unido ao espaço de trabalho <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +988,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adicionar nova rede móvel</translation>
+<translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notifications}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar apps na prateleira</translation>
@@ -1168,6 +1175,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">A utilizar <ph name="IME_NAME" />…</translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo como <ph name="LOGIN_ID" /> para realizar a ação de notificação.</translation>
+<translation id="9000771174482730261">GERIR ARMAZENAMENTO</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
 <translation id="9024331582947483881">ecrã inteiro</translation>
 <translation id="9047624247355796468">Abrir as definições de <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1221,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="951991426597076286">Recusar</translation>
+<translation id="954052413789300507">Não existe espaço suficiente para o ficheiro <ph name="FILENAME" />. Liberte espaço.</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">A janela <ph name="WINDOW_TITILE" /> está fechada.</translation>

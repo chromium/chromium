@@ -1999,6 +1999,7 @@ Pretende pará-lo?</translation>
 <translation id="3009300415590184725">Tem a certeza de que pretende cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bases de dados indexadas</translation>
 <translation id="3010279545267083280">Palavra-passe eliminada</translation>
+<translation id="301080557829842765">Guia de privacidade</translation>
 <translation id="3011384993885886186">Cinzento quente</translation>
 <translation id="3011488081941333749">Os cookies de <ph name="DOMAIN" /> serão apagados à saída.</translation>
 <translation id="3012631534724231212">(iFrame)</translation>
@@ -2151,7 +2152,6 @@ Pretende pará-lo?</translation>
 <translation id="3163511056918491211">Restaure os dados ou troque de dispositivo facilmente em qualquer altura. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="3164329792803560526">A partilhar este separador com o <ph name="APP_NAME" />…</translation>
 <translation id="3165390001037658081">Alguns operadores podem bloquear esta funcionalidade.</translation>
-<translation id="316652501498554287">Contas do G Suite for Education</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Novo separador à esquerda</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
@@ -2181,7 +2181,6 @@ Pretende pará-lo?</translation>
 <translation id="321084946921799184">Amarelo e branco</translation>
 <translation id="321356136776075234">UO do dispositivo (por exemplo, UO=Chromebooks, DC=exemplo, DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos resultados pessoais de <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Os administradores do G Suite for Education determinam a que Serviços Google os respetivos utilizadores podem aceder enquanto tiverem sessão iniciada numa conta do G Suite for Education. Isto pode incluir algumas funcionalidades ou serviços aos quais a criança não tinha anteriormente acesso com esta conta supervisionada. Os administradores da escola são obrigados a fornecer ou obter o consentimento para a utilização dos serviços por parte dos respetivos utilizadores menores.</translation>
 <translation id="3217843140356091325">Pretende criar um atalho?</translation>
 <translation id="321834671654278338">Desinstalador para o Linux</translation>
 <translation id="3220586366024592812">O processo do conector <ph name="CLOUD_PRINT_NAME" /> falhou. Reiniciar?</translation>
@@ -3478,9 +3477,6 @@ Pretende pará-lo?</translation>
 <translation id="4573515936045019911">É necessária uma ligação de rede para atualizar o Linux. Ligue-se à Internet e tente novamente.</translation>
 <translation id="457386861538956877">Mais...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Adicionar uma conta escolar a um perfil permite iniciar sessão facilmente em Websites, extensões e apps como aluno e continuar a trabalhar sob controlo parental. Não confere a uma criança acesso a marcadores, palavras-passe ou outros dados do navegador sincronizados com a conta escolar.&lt;br&gt;&lt;br&gt;
-    Se a criança utilizar um Chromebook na escola e pretender reproduzir a experiência escolar em casa para se assegurar de que a criança tem acesso a todos os trabalhos escolares necessários, termine sessão nesta conta do Family Link e inicie sessão na conta escolar na página de contas do Chrome OS (nota: não se aplica o controlo parental do Family Link).&lt;br&gt;&lt;br&gt;
-    Se a criança não utilizar um Chromebook na escola ou se preferir gerir a experiência da criança em casa através do Family Link, clique no botão Seguinte abaixo para adicionar uma conta escolar a este perfil.</translation>
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Para continuar a guardar palavras-passe na sua Conta Google, valide a sua identidade</translation>
 <translation id="4579453506923101210">Esquecer telemóvel associado</translation>
@@ -3790,7 +3786,6 @@ Pretende pará-lo?</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> pretende comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceitar</translation>
-<translation id="4921290200821452703">Informações da conta escolar para pais</translation>
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="4921809350408880559">Está a ver os seus documentos recentes e sugeridos com base na sua atividade anterior de utilização do Google Drive.
         <ph name="BREAK" />
@@ -4338,7 +4333,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5502915260472117187">Uma criança</translation>
 <translation id="5503356662318814623">Enviar uma mensagem</translation>
 <translation id="5503982651688210506">Continuar a permitir que <ph name="HOST" /> utilize e mova a câmara e utilize o microfone</translation>
-<translation id="5504909642107847870">Análise de privacidade e segurança</translation>
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações.</translation>
 <translation id="5505307013568720083">Sem tinta</translation>
 <translation id="5505794066310932198">Ativar/desativar Commander</translation>
@@ -5218,7 +5212,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Procura de Bluetooth ativa</translation>
 <translation id="6445450263907939268">Se não pretendia efetuar estas alterações, pode restaurar as definições anteriores.</translation>
 <translation id="6446213738085045933">Criar atalho no ambiente de trabalho</translation>
-<translation id="6447210166804596538">Analise os controlos de privacidade e segurança mais importantes num só lugar</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Alterar as suas definições relacionadas com privacidade</translation>
 <translation id="6451344358166983408">Site ou página</translation>
@@ -6802,6 +6795,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8054563304616131773">Introduza um endereço de email válido</translation>
 <translation id="8054883179223321715">Disponível para sites de vídeo específicos</translation>
 <translation id="8054921503121346576">Teclado USB ligado</translation>
+<translation id="8057414620575339583">Pesquisa lateral</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058986560951482265">Irregular</translation>
 <translation id="8059417245945632445">&amp;Inspecionar dispositivos</translation>
@@ -6871,7 +6865,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="811994229154425014">Premir Espaço duas vezes para inserir ponto final</translation>
 <translation id="8120505434908124087">Instalar perfil eSIM</translation>
 <translation id="812260729110117038">Os anunciantes e os publicadores podem estudar a eficácia dos anúncios sem monitorizar a sua navegação em sites.</translation>
-<translation id="81231173274944570">Ative a resposta tátil. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8124313775439841391">ONC gerido</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
@@ -7800,7 +7793,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9103868373786083162">Premir para voltar, menu de contexto para ver o histórico</translation>
 <translation id="9108035152087032312">Nome da &amp;janela…</translation>
 <translation id="9108072915170399168">A definição de utilização de dados atual é Sem Internet.</translation>
-<translation id="9108692355621501797">O <ph name="LINK_BEGIN" />Aviso de Privacidade do G Suite for Education<ph name="LINK_END" /> destina-se a ajudar os utilizadores do G Suite for Education e os pais a compreender que dados são recolhidos pelo produto, o motivo da recolha e o que é feito com esses dados.</translation>
 <translation id="9108808586816295166">O DNS seguro pode não estar sempre disponível.</translation>
 <translation id="9109122242323516435">Para libertar espaço, elimine ficheiros do armazenamento do dispositivo.</translation>
 <translation id="9109283579179481106">Ligue-se à rede móvel</translation>

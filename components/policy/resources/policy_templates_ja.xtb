@@ -822,11 +822,6 @@
       <ph name="CLOUD_PRINT_NAME" /> に接続されるプリンタは <ph name="PRINTER_TYPE_CLOUD" /> と見なされ、それ以外のプリンタは <ph name="PRINTER_TYPE_LOCAL" /> に分類されます。
 
       注: フィールドを省略すると、すべての値に一致することになります。たとえば、接続の種類を指定しない場合、印刷プレビューは <ph name="PRINTER_TYPE_LOCAL" /> か <ph name="PRINTER_TYPE_CLOUD" /> かを問わず、あらゆる種類のプリンタの検出を開始することになります。正規表現は JavaScript RegExp 構文で指定する必要があり、大文字と小文字が区別されます。</translation>
-<translation id="2003441790537575907">このポリシーを有効に設定するか未設定のままにした場合、<ph name="LEGACY_EXTENSION_DISABLE_API" /> によりブラウザ プロセスで従来の拡張機能ポイントをブロックできます。
-
-      このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のブラウザ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のブラウザ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
-
-      注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="2005506794355327448">ディスプレイを閉じたときに行うアクション</translation>
 <translation id="2006530844219044261">電源管理</translation>
 <translation id="2008514891623783266">WebRTC の IP 取り扱いポリシー</translation>

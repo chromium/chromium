@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4588090240171750605">Прокрутка вправо</translation>
 <translation id="4724120544754982507">Центр уведомлений. Непрочитанных: <ph name="UNREAD_NOTIFICATION_COUNT" />.</translation>
+<translation id="4746179598275229723">Расширение откреплено</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{остался 1 месяц}one{остался # месяц}few{осталось # месяца}many{осталось # месяцев}other{осталось # месяца}}</translation>
 <translation id="4888938634149558681">Позвонить</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунды}many{# секунд}other{# секунды}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Осталась 1 секунда}one{Осталась # секунда}few{Осталось # секунды}many{Осталось # секунд}other{Осталось # секунды}}</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
+<translation id="6007284015834422026">Расширение закреплено</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6117103120090651229">Кнопка по центру</translation>
 <translation id="6129953537138746214">Пробел</translation>

@@ -2013,6 +2013,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3009300415590184725">Sigurado ka bang gusto mong kanselahin ang proseso ng pag-setup ng serbisyo ng mobile data?</translation>
 <translation id="3009779501245596802">Mga naka-index na database</translation>
 <translation id="3010279545267083280">Tinanggal ang password</translation>
+<translation id="301080557829842765">Gabay sa privacy</translation>
 <translation id="3011384993885886186">Warm grey</translation>
 <translation id="3011488081941333749">Iki-clear ang cookies mula sa <ph name="DOMAIN" /> sa paglabas</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2165,7 +2166,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3163511056918491211">I-restore ang iyong data o magpalit ng device sa madaling paraan anumang oras. Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
 <translation id="3164329792803560526">Ibinabahagi ang tab na ito sa <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Maaaring i-block ng ilang carrier ang feature na ito.</translation>
-<translation id="316652501498554287">Mga G Suite for Education account</translation>
 <translation id="3170072451822350649">Maaari mo ring laktawan ang pag-sign in at <ph name="LINK_START" />mag-browse bilang Bisita<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Bagong tab sa kaliwa</translation>
 <translation id="3177909033752230686">Wika ng Page:</translation>
@@ -2195,7 +2195,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="321084946921799184">Dilaw at puti</translation>
 <translation id="321356136776075234">Device OU (hal. OU=Mga Chromebook,DC=halimbawa,DC=com)</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />.</translation>
-<translation id="3216825226035747725">Tinutukoy ng mga administrator ng G Suite for Education kung aling mga serbisyo ng Google ang maa-access ng mga user nito habang naka-sign in sa G Suite for Education account. Posibleng kasama rito ang ilang feature o serbisyo na hindi ma-access dati ng iyong anak gamit ang sinusubaybayang account na ito. Kinakailangan ng mga administrator ng paaralan na magbigay o kumuha ng pahintulot kaugnay ng paggamit ng mga menor de edad na user nito sa mga serbisyo.</translation>
 <translation id="3217843140356091325">Gumawa ng shortcut?</translation>
 <translation id="321834671654278338">Uninstaller ng Linux</translation>
 <translation id="3220586366024592812">Nag-crash ang proseso ng tagakonekta ng <ph name="CLOUD_PRINT_NAME" />. I-restart?</translation>
@@ -3493,9 +3492,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4573515936045019911">Kinakailangan ng koneksyon ng network para ma-upgrade ang Linux. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="457386861538956877">Higit pa...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Kapag nagdagdag ng pampaaralang account sa isang profile, madaling makakapag-sign in sa mga website, extension, at app bilang mag-aaral habang tumatakbo sa ilalim ng parental controls. Hindi ito nagbibigay sa isang bata ng access sa mga bookmark, password, o iba pang data ng browser na naka-sync sa pampaaralang account.&lt;br&gt;&lt;br&gt;
-    Kung gumagamit ng Chromebook sa paaralan ang iyong anak at gusto mong ipareho ang karanasan sa bahay sa karanasan sa paaralan para matiyak na may access ang iyong anak sa lahat ng kinakailangang gawaing pampaaralan, mag-sign out sa Family Link account na ito at mag-sign in sa pampaaralang account mula sa page ng mga Chrome OS account (tandaan: hindi malalapat ang parental controls ng Family Link).&lt;br&gt;&lt;br&gt;
-    Kung hindi gumagamit ng Chromebook sa paaralan ang iyong anak o kung mas gusto mong pamahalaan ang karanasan ng iyong anak sa bahay gamit ang Family Link, paki-click ang button na Susunod sa ibaba para magdagdag ng pampaaralang account sa profile na ito.</translation>
 <translation id="4576541033847873020">Magpares ng Bluetooth device</translation>
 <translation id="4576763597586015380">Para ipagpatuloy ang pag-save ng mga password sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="4579453506923101210">Kalimutan ang nakakonektang telepono</translation>
@@ -3805,7 +3801,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918021164741308375">Gusto ng <ph name="ORIGIN" /> na makipag-ugnayan sa extension na "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
-<translation id="4921290200821452703">Impormasyon ng pampaaralang account para sa mga magulang</translation>
 <translation id="4921348630401250116">Text-to-speech</translation>
 <translation id="4921809350408880559">Nakikita mo ang iyong mga kamakailan at iminumungkahing dokumento batay sa nakaraang aktibidad mo gamit ang Google Drive.
         <ph name="BREAK" />
@@ -4353,7 +4348,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5502915260472117187">Bata</translation>
 <translation id="5503356662318814623">Magpadala ng mensahe</translation>
 <translation id="5503982651688210506">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera, at gamitin ang mikropono mo</translation>
-<translation id="5504909642107847870">Pagsusuri sa privacy at seguridad</translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5505307013568720083">Wala nang ink</translation>
 <translation id="5505794066310932198">I-toggle ang Commander</translation>
@@ -5232,7 +5226,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Aktibong nagsa-scan para sa mga Bluetooth device</translation>
 <translation id="6445450263907939268">Kung hindi mo gusto ang mga pagbabagong ito, maaari mong ipanumbalik ang mga dati mong setting.</translation>
 <translation id="6446213738085045933">Lumikha ng shortcut sa desktop</translation>
-<translation id="6447210166804596538">Suriin ang pinakamahahalagang kontrol sa privacy at seguridad sa iisang lugar</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Baguhin ang iyong mga setting na nauugnay sa privacy</translation>
 <translation id="6451344358166983408">Site o page</translation>
@@ -6885,7 +6878,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="811994229154425014">Dobleng puwang para mag-type ng tuldok</translation>
 <translation id="8120505434908124087">I-install ang profile ng eSIM</translation>
 <translation id="812260729110117038">Mapag-aaralan ng mga advertiser at publisher ang bisa ng mga ad sa paraang hindi nangangailangan ng pagsubaybay sa iyo sa lahat ng site.</translation>
-<translation id="81231173274944570">I-enable ang haptic na feedback. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Dilaw at puting bulaklak</translation>
 <translation id="8124313775439841391">Pinamamahalaang ONC</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
@@ -7816,7 +7808,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9103868373786083162">Pindutin upang bumalik, gamitin ang menu ng konteksto upang makita ang history</translation>
 <translation id="9108035152087032312">Pangalanan ang &amp;window...</translation>
 <translation id="9108072915170399168">Walang internet ang kasalukuyang setting ng paggamit ng data</translation>
-<translation id="9108692355621501797">Ang <ph name="LINK_BEGIN" />Notification ng Privacy ng G Suite for Education<ph name="LINK_END" /> ay naglalayong makatulong sa mga user ng at magulang sa G Suite for Education na maunawaan kung anong data ang kinokolekta ng produkto, bakit ito kinokolekta, at ano ang ginagawa rito.</translation>
 <translation id="9108808586816295166">Posibleng hindi available sa lahat ng oras ang secure na DNS</translation>
 <translation id="9109122242323516435">Upang magbakante ng espasyo, mag-delete ng mga file mula sa storage ng device.</translation>
 <translation id="9109283579179481106">Kumonekta sa mobile network</translation>

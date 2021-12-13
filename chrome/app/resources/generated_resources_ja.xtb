@@ -1994,6 +1994,7 @@
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
 <translation id="3010279545267083280">パスワードを削除しました</translation>
+<translation id="301080557829842765">プライバシー ガイド</translation>
 <translation id="3011384993885886186">暖色グレー</translation>
 <translation id="3011488081941333749">終了時に <ph name="DOMAIN" /> からの Cookie が削除されます</translation>
 <translation id="3012631534724231212">（iframe）</translation>
@@ -2146,7 +2147,6 @@
 <translation id="3163511056918491211">データの復元やデバイスの切り替えがいつでも簡単にできます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使用して暗号化されます。</translation>
 <translation id="3164329792803560526">このタブを <ph name="APP_NAME" /> に共有しています</translation>
 <translation id="3165390001037658081">携帯通信会社によってはこの機能を利用できない場合があります。</translation>
-<translation id="316652501498554287">G Suite for Education アカウント</translation>
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
 <translation id="31774765611822736">左側の新しいタブ</translation>
 <translation id="3177909033752230686">ページの言語:</translation>
@@ -2176,7 +2176,6 @@
 <translation id="321084946921799184">黄色と白</translation>
 <translation id="321356136776075234">デバイスの組織部門（例: OU=Chromebooks,DC=example,DC=com）</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。</translation>
-<translation id="3216825226035747725">G Suite for Education の管理者は、ユーザーが G Suite for Education アカウントにログインしているときにアクセスできる Google サービスを管理します。これには、お子様がこの管理対象のアカウントを使用してアクセスできなかった機能やサービスも含まれる可能性があります。学校の管理者は、未成年のユーザーがサービスを利用することについて、管理者自身が同意するか、保護者から同意を得る必要があります。</translation>
 <translation id="3217843140356091325">ショートカットを作成しますか？</translation>
 <translation id="321834671654278338">Linux アンインストーラ</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> コネクタのプロセスで問題が発生しました。再起動しますか？</translation>
@@ -3468,9 +3467,6 @@
 <translation id="4573515936045019911">Linux のアップグレードには、ネットワーク接続が必要です。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">学校用アカウントをプロファイルに追加すると、保護者による使用制限のもとで、生徒としてウェブサイト、拡張機能、アプリに簡単にログインできるようになります。学校用アカウントと同期しているブックマークやパスワードなどのブラウザデータへのアクセス権がお子様に付与されることはありません。&lt;br&gt;&lt;br&gt;
-    お子様が学校で Chromebook を使用している場合に、自宅で学校の使用環境を再現して、お子様が必要な学習用コンテンツすべてにアクセスできるようにするには、このファミリー リンク アカウントからログアウトしてください。その後、Chrome OS のアカウント ページから学校用アカウントにログインしてください（注: ファミリー リンクの保護者による使用制限は適用されなくなります）。&lt;br&gt;&lt;br&gt;
-    お子様が学校で Chromebook を使用していない場合、またはファミリー リンクを使用してお子様の自宅での使用環境を管理したい場合は、下の [次へ] ボタンをクリックして、学校用アカウントをこのプロファイルに追加してください。</translation>
 <translation id="4576541033847873020">Bluetooth デバイスのペア設定</translation>
 <translation id="4576763597586015380">Google アカウントでパスワードの保存を続行するには、本人確認を行ってください</translation>
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
@@ -3780,7 +3776,6 @@
 <translation id="4917385247580444890">強い</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
-<translation id="4921290200821452703">学校用アカウントについての保護者の方向けの情報</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="4921809350408880559">最近使用したドキュメントやおすすめのドキュメントは、Google ドライブでの過去のアクティビティに基づいて表示されています。
         <ph name="BREAK" />
@@ -4324,7 +4319,6 @@
 <translation id="5502915260472117187">お子様</translation>
 <translation id="5503356662318814623">メッセージを送信する</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> によるカメラの使用と移動、およびマイクの使用を引き続き許可する</translation>
-<translation id="5504909642107847870">プライバシーとセキュリティの確認</translation>
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5505307013568720083">インクがありません</translation>
 <translation id="5505794066310932198">コマンダーを切り替え</translation>
@@ -5197,7 +5191,6 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth のスキャンを実行中です</translation>
 <translation id="6445450263907939268">この変更を受け入れない場合は、以前の設定を復元できます。</translation>
 <translation id="6446213738085045933">デスクトップにショートカットを作成する</translation>
-<translation id="6447210166804596538">プライバシーとセキュリティに関する最も重要な設定をまとめて確認できます</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">プライバシー関連の設定の変更</translation>
 <translation id="6451344358166983408">サイトまたはページ</translation>
@@ -6846,7 +6839,6 @@
 <translation id="811994229154425014">スペース 2 つでピリオドを入力</translation>
 <translation id="8120505434908124087">eSIM プロファイルのインストール</translation>
 <translation id="812260729110117038">広告主やパブリッシャーは、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。</translation>
-<translation id="81231173274944570">触覚フィードバックを有効にする。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">黄色と白の花</translation>
 <translation id="8124313775439841391">管理対象 ONC</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
@@ -7774,7 +7766,6 @@
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="9108035152087032312">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="9108072915170399168">現在のデータ使用設定は「インターネットを使用しない」です</translation>
-<translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education のプライバシーに関するお知らせ<ph name="LINK_END" />は、G Suite for Education のユーザーとパートナーの皆様に、このサービスで収集されるデータと収集する理由、Google でのデータの取り扱いについて理解を深めていただくためのものです。</translation>
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>
 <translation id="9109122242323516435">空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="9109283579179481106">モバイル ネットワークへの接続</translation>

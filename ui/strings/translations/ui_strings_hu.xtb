@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4588090240171750605">Görgetés jobbra</translation>
 <translation id="4724120544754982507">Értesítési központ, <ph name="UNREAD_NOTIFICATION_COUNT" /> olvasatlan értesítés</translation>
+<translation id="4746179598275229723">Bővítmény kitűzése feloldva</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{hátralévő idő: 1 hónap}other{hátralévő idő: # hónap}}</translation>
 <translation id="4888938634149558681">Hívás indítása</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 másodperc}other{# másodperc}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 másodperc van hátra}other{# másodperc van hátra}}</translation>
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 óra}other{# óra}}</translation>
+<translation id="6007284015834422026">Bővítmény kitűzve</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6117103120090651229">Középső gomb</translation>
 <translation id="6129953537138746214">Szóköz</translation>

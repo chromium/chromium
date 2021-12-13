@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4588090240171750605">Keri paremale</translation>
 <translation id="4724120544754982507">Märguandekeskus, <ph name="UNREAD_NOTIFICATION_COUNT" /> lugemata märguannet</translation>
+<translation id="4746179598275229723">Laiendus on vabastatud</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 kuu jäänud}other{# kuud jäänud}}</translation>
 <translation id="4888938634149558681">Helista</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}other{# sekundit}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekund on jäänud}other{# sekundit on jäänud}}</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 tund}other{# tundi}}</translation>
+<translation id="6007284015834422026">Laiendus on kinnitatud</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6117103120090651229">Keskmine nupp</translation>
 <translation id="6129953537138746214">Tühik</translation>
