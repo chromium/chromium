@@ -1033,9 +1033,6 @@ crbug.com/1270480 external/wpt/css/css-lists/marker-webkit-text-fill-color.html 
 crbug.com/1270483 external/wpt/css/css-lists/li-value-counter-reset-001.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
 crbug.com/1270481 [ Win7 ] external/wpt/css/css-lists/content-property/marker-text-matches-armenian.html [ Failure ]
-crbug.com/1270481 external/wpt/css/css-lists/content-property/marker-text-matches-disc.html [ Failure ]
-crbug.com/1270481 external/wpt/css/css-lists/content-property/marker-text-matches-square.html [ Failure ]
-crbug.com/1270481 external/wpt/css/css-lists/content-property/marker-text-matches-circle.html [ Failure ]
 
 # [css-counter-styles-3]
 crbug.com/1176323 external/wpt/css/css-counter-styles/counter-style-prefix-suffix-syntax.html [ Failure ]
