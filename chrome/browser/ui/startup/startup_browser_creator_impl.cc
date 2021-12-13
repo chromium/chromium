@@ -734,14 +734,10 @@ bool StartupBrowserCreatorImpl::ShouldLaunch(
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Don't open any browser windows if Ash requested that Lacros not do so. The
-  // implicit assumption is that some other code is responsible for keeping
-  // Lacros running in the background
-  if (chromeos::LacrosService::Get() &&
-      chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
-          crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
-    return false;
-  }
+    // Don't open any browser windows if Ash requested that Lacros not do so.
+    // The implicit assumption is that some other code is responsible for
+    // keeping Lacros running in the background.
+    // Temporarily remove this logic to deal with https://crbug.com/1278549.
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
