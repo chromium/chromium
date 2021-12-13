@@ -56,7 +56,6 @@ extern const char kStabilityLaunchCount[];
 extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererCrashCount[];
 extern const char kStabilityRendererFailedLaunchCount[];
-extern const char kStabilityRendererHangCount[];
 extern const char kStabilityRendererLaunchCount[];
 extern const char kStabilitySavedSystemProfile[];
 extern const char kStabilitySavedSystemProfileHash[];

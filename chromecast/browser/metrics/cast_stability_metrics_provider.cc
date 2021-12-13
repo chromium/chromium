@@ -50,7 +50,6 @@ int MapCrashExitCodeForHistogram(int exit_code) {
 void CastStabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererFailedLaunchCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityChildProcessCrashCount, 0);
 }
 
@@ -101,12 +100,6 @@ void CastStabilityMetricsProvider::ProvideStabilityMetrics(
   if (count) {
     stability_proto->set_renderer_failed_launch_count(count);
     pref_service_->SetInteger(prefs::kStabilityRendererFailedLaunchCount, 0);
-  }
-
-  count = pref_service_->GetInteger(prefs::kStabilityRendererHangCount);
-  if (count) {
-    stability_proto->set_renderer_hang_count(count);
-    pref_service_->SetInteger(prefs::kStabilityRendererHangCount, 0);
   }
 }
 
@@ -187,7 +180,6 @@ void CastStabilityMetricsProvider::LogRendererCrash(
 }
 
 void CastStabilityMetricsProvider::LogRendererHang() {
-  IncrementPrefValue(prefs::kStabilityRendererHangCount);
   ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
       ::metrics::StabilityEventType::kRendererHang);
 }
