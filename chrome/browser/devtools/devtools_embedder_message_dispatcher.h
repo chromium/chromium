@@ -85,6 +85,8 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RegisterPreference(const std::string& name,
                                     const RegisterOptions& options) = 0;
     virtual void GetPreferences(DispatchCallback callback) = 0;
+    virtual void GetPreference(DispatchCallback callback,
+                               const std::string& name) = 0;
     virtual void SetPreference(const std::string& name,
                                const std::string& value) = 0;
     virtual void RemovePreference(const std::string& name) = 0;

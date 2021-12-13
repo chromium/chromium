@@ -68,13 +68,30 @@ base::Value DevToolsSettings::Get() {
   base::Value settings(base::Value::Type::DICTIONARY);
 
   PrefService* prefs = profile_->GetPrefs();
-  settings.SetBoolKey(kSyncDevToolsPreferencesFrontendName,
-                      prefs->GetBoolean(prefs::kDevToolsSyncPreferences));
+  // DevTools expects any kind of preference to be a string. Parsing is
+  // happening on the frontend.
+  settings.SetStringKey(
+      kSyncDevToolsPreferencesFrontendName,
+      prefs->GetBoolean(prefs::kDevToolsSyncPreferences) ? "true" : "false");
   settings.MergeDictionary(prefs->GetDictionary(prefs::kDevToolsPreferences));
   settings.MergeDictionary(
       prefs->GetDictionary(GetDictionaryNameForSyncedPrefs()));
 
   return settings;
+}
+
+absl::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
+  PrefService* prefs = profile_->GetPrefs();
+  if (name == kSyncDevToolsPreferencesFrontendName) {
+    // DevTools expects any kind of preference to be a string. Parsing is
+    // happening on the frontend.
+    bool result = prefs->GetBoolean(prefs::kDevToolsSyncPreferences);
+    return base::Value(result ? "true" : "false");
+  }
+  const char* dict_name = GetDictionaryNameForSettingsName(name);
+  const base::DictionaryValue* dict = prefs->GetDictionary(dict_name);
+  const base::Value* value = dict->FindKey(name);
+  return value ? absl::optional<base::Value>(value->Clone()) : absl::nullopt;
 }
 
 void DevToolsSettings::Set(const std::string& name, const std::string& value) {
