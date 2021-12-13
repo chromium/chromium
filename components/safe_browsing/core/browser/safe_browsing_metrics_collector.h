@@ -154,6 +154,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // MetricsCollectorTimesDisabledEnabledDuration in histograms.xml.
   std::string GetTimesDisabledSuffix();
 
+  // Temporary functions used for debugging crbug/1270521#c8
+  void LogTemporaryDebugInfo();
+  absl::optional<SafeBrowsingMetricsCollector::Event>
+  GetEarliestEventFromEventType(UserState user_state, EventType event_type);
+
   // Gets the latest event timestamp for events filtered by |event_type_filter|.
   // Returns nullopt if none of the events happened in the past.
   absl::optional<base::Time> GetLatestEventTimestamp(

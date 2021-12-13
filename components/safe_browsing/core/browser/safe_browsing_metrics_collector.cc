@@ -4,11 +4,13 @@
 
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -246,6 +248,8 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
 }
 
 void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
+  LogTemporaryDebugInfo();
+
   // Pref changed by policy is not initiated by users, so this case is ignored.
   if (IsSafeBrowsingPolicyManaged(*pref_service_)) {
     return;
@@ -284,6 +288,27 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
 
   if (timestamps && timestamps->GetList().size() > 0) {
     base::Time time = PrefValueToTime(timestamps->GetList().back());
+    return Event(event_type, time);
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<SafeBrowsingMetricsCollector::Event>
+SafeBrowsingMetricsCollector::GetEarliestEventFromEventType(
+    UserState user_state,
+    EventType event_type) {
+  const base::Value* event_dict = GetSafeBrowsingEventDictionary(user_state);
+
+  if (!event_dict) {
+    return absl::nullopt;
+  }
+
+  const base::Value* timestamps =
+      event_dict->FindListKey(EventTypeToPrefKey(event_type));
+
+  if (timestamps && timestamps->GetList().size() > 0) {
+    base::Time time = PrefValueToTime(timestamps->GetList().front());
     return Event(event_type, time);
   }
 
@@ -545,6 +570,94 @@ std::string SafeBrowsingMetricsCollector::GetTimesDisabledSuffix() {
              : hours_since_enabled < kEsbLongEnabledLowerBoundHours
                    ? "MediumEnabled"
                    : "LongEnabled";
+}
+
+void SafeBrowsingMetricsCollector::LogTemporaryDebugInfo() {
+  auto bool_to_string = [](bool value) { return value ? "T" : "F"; };
+
+  auto get_timestamp = [](absl::optional<Event> event) {
+    return event
+               ? base::NumberToString(event.value()
+                                          .timestamp.ToDeltaSinceWindowsEpoch()
+                                          .InSeconds())
+               : "N/A";
+  };
+
+  std::string latest_enabled_timestamp =
+      get_timestamp(GetLatestEventFromEventType(UserState::kEnhancedProtection,
+                                                EventType::USER_STATE_ENABLED));
+  std::string latest_disabled_timestamp =
+      get_timestamp(GetLatestEventFromEventType(
+          UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED));
+  std::string earliest_enabled_timestamp =
+      get_timestamp(GetEarliestEventFromEventType(
+          UserState::kEnhancedProtection, EventType::USER_STATE_ENABLED));
+  std::string earliest_disabled_timestamp =
+      get_timestamp(GetEarliestEventFromEventType(
+          UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED));
+
+  std::string disabled_times_ever = base::NumberToString(GetEventCountSince(
+      UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED,
+      base::Time::Now() - base::Days(3650)));
+  std::string enabled_times_ever = base::NumberToString(GetEventCountSince(
+      UserState::kEnhancedProtection, EventType::USER_STATE_ENABLED,
+      base::Time::Now() - base::Days(3650)));
+  std::string disabled_times_last_28_days =
+      base::NumberToString(GetEventCountSince(
+          UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED,
+          base::Time::Now() - base::Days(28)));
+  std::string enabled_times_last_28_days =
+      base::NumberToString(GetEventCountSince(
+          UserState::kEnhancedProtection, EventType::USER_STATE_ENABLED,
+          base::Time::Now() - base::Days(28)));
+
+  static crash_reporter::CrashKeyString<4> is_safe_browsing_policy_managed_cks(
+      "is_safe_browsing_policy_managed");
+  static crash_reporter::CrashKeyString<4> is_safe_browsing_enhanced_cks(
+      "is_safe_browsing_enhanced");
+  static crash_reporter::CrashKeyString<32> latest_enabled_timestamp_cks(
+      "latest_enabled_timestamp");
+  static crash_reporter::CrashKeyString<32> latest_disabled_timestamp_cks(
+      "latest_disabled_timestamp");
+  static crash_reporter::CrashKeyString<32> earliest_enabled_timestamp_cks(
+      "earliest_enabled_timestamp");
+  static crash_reporter::CrashKeyString<32> earliest_disabled_timestamp_cks(
+      "earliest_disabled_timestamp");
+  static crash_reporter::CrashKeyString<4> disabled_times_ever_cks(
+      "disabled_times_ever");
+  static crash_reporter::CrashKeyString<4> enabled_times_ever_cks(
+      "enabled_times_ever");
+  static crash_reporter::CrashKeyString<4> disabled_times_last_28_days_cks(
+      "disabled_times_last_28_days");
+  static crash_reporter::CrashKeyString<4> enabled_times_last_28_days_cks(
+      "enabled_times_last_28_days");
+
+  // Wrap setting the values in a ScopedCrashKeyString so the values get cleared
+  // once the variables are out of scope.
+  crash_reporter::ScopedCrashKeyString scope_0(
+      &is_safe_browsing_policy_managed_cks,
+      bool_to_string(IsSafeBrowsingPolicyManaged(*pref_service_)));
+  crash_reporter::ScopedCrashKeyString scope_1(
+      &is_safe_browsing_enhanced_cks,
+      bool_to_string(pref_service_->GetBoolean(prefs::kSafeBrowsingEnhanced)));
+  crash_reporter::ScopedCrashKeyString scope_2(&latest_enabled_timestamp_cks,
+                                               latest_enabled_timestamp);
+  crash_reporter::ScopedCrashKeyString scope_3(&latest_disabled_timestamp_cks,
+                                               latest_disabled_timestamp);
+  crash_reporter::ScopedCrashKeyString scope_4(&earliest_enabled_timestamp_cks,
+                                               earliest_enabled_timestamp);
+  crash_reporter::ScopedCrashKeyString scope_5(&earliest_disabled_timestamp_cks,
+                                               earliest_disabled_timestamp);
+  crash_reporter::ScopedCrashKeyString scope_6(&disabled_times_ever_cks,
+                                               disabled_times_ever);
+  crash_reporter::ScopedCrashKeyString scope_7(&enabled_times_ever_cks,
+                                               enabled_times_ever);
+  crash_reporter::ScopedCrashKeyString scope_8(&disabled_times_last_28_days_cks,
+                                               disabled_times_last_28_days);
+  crash_reporter::ScopedCrashKeyString scope_9(&enabled_times_last_28_days_cks,
+                                               enabled_times_last_28_days);
+
+  base::debug::DumpWithoutCrashing();
 }
 
 SafeBrowsingMetricsCollector::Event::Event(EventType type, base::Time timestamp)
