@@ -275,6 +275,13 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     return kGpuFeatureStatusDisabled;
   }
 
+  // VDA video decoder on ChromeOS uses legacy mailboxes which is not compatible
+  // with OOP-C
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!gpu_preferences.enable_chromeos_direct_video_decoder)
+    return kGpuFeatureStatusDisabled;
+#endif
+
   // Canvas OOP Rasterization on platforms that are not fully enabled is
   // controlled by a finch experiment.
   if (!base::FeatureList::IsEnabled(features::kCanvasOopRasterization))
