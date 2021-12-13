@@ -1739,9 +1739,9 @@ ci.chromium_builder(
         category = "mac",
         short_name = "off",
     ),
-    # TODO: Change this back down to something reasonable once these builders
-    # have populated their cached by getting through the compile step
-    execution_timeout = 10 * time.hour,
+    # TODO(crbug.com/1279290):
+    # builds with PGO change take long time.
+    execution_timeout = 30 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = False,
     os = os.MAC_ANY,
