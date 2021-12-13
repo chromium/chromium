@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
 // Validate that OOPIFs receive presentation feedbacks.
 // TODO(crbug.com/1270981): Flaky.
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_ANDROID)
 #define MAYBE_PresentationFeedback DISABLED_PresentationFeedback
 #else
 #define MAYBE_PresentationFeedback PresentationFeedback
