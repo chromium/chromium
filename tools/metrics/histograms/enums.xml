@@ -35882,6 +35882,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4092" label="PrivateNetworkAccessIgnoredPreflightError"/>
   <int value="4093" label="AbortPaymentRespondWithTrue"/>
   <int value="4094" label="AllowPaymentRequestAttributeHasEffect"/>
+  <int value="4095" label="V8PaymentResponse_Retry_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
