@@ -42,14 +42,18 @@ public class AccessibilityNodeInfoUtils {
         builder.append(classNameParts[classNameParts.length - 1]);
 
         // Print text unless it is empty (null is allowed).
-        if (node.getText() == null || !node.getText().toString().isEmpty()) {
-            builder.append(" text:\"").append(node.getText()).append("\"");
+        if (node.getText() == null) {
+            builder.append(" text:\"null\"");
+        } else if (!node.getText().toString().isEmpty()) {
+            builder.append(" text:\"")
+                    .append(node.getText().toString().replace("\n", "\\n"))
+                    .append("\"");
         }
 
         // Text properties - Only print when non-null.
         if (node.getContentDescription() != null) {
             builder.append(" contentDescription:\"")
-                    .append(node.getContentDescription())
+                    .append(node.getContentDescription().toString().replace("\n", "\\n"))
                     .append("\"");
         }
         if (node.getViewIdResourceName() != null) {

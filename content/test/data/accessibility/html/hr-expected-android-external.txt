@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Before." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View text:"Dividing line" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
+++TextView text:"Middle." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
+++TextView text:"After." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

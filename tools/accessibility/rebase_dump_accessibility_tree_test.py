@@ -48,13 +48,13 @@ def Fix(line):
       line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ':
-    result = re.search('I  \d+\.\d+s run_tests_on_device\([0-9a-f]+\)  (.*)',
+    result = re.search('I  \d+\.\d+s run_tests_on_device\([0-9a-f]+\)\s+(.*)',
                        line)
     if result:
-      line = group(1)
+      line = result.group(1)
   # For Android content_shell_test_apk tests:
   elif line[:2] == 'C ':
-    result = re.search('C \d+\.\d+s Main  ([T|E|A|W|\+](.*))', line)
+    result = re.search('C \d+\.\d+s Main\s+([T|E|A|W|\+](.*))', line)
 
     if result:
       line = result.group(1)
