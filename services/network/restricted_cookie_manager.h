@@ -132,6 +132,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // Should only be called in the constructor or in ...ForTesting methods.
   void ComputeCookiePartitionKey();
 
+  // Returns true if the RCM instance can read and/or set partitioned cookies.
+  bool IsPartitionedCookiesEnabled() const;
+
   // Feeds a net::CookieList to a GetAllForUrl() callback.
   void CookieListToGetAllForUrlCallback(
       const GURL& url,

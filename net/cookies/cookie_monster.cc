@@ -2225,7 +2225,6 @@ void CookieMonster::RecordPeriodicStats(const base::Time& current_time) {
     last_statistic_record_time_ = current_time;
 }
 
-// TODO(crbug.com/1225444): Record periodic stats for Partitioned cookies.
 bool CookieMonster::DoRecordPeriodicStats() {
   // These values are all bogus if we have only partially loaded the cookies.
   if (started_fetching_all_cookies_ && !finished_fetching_all_cookies_)
@@ -2252,6 +2251,14 @@ bool CookieMonster::DoRecordPeriodicStats() {
                            domain_purged_keys_.size());
   // Can be up to kMaxCookies.
   UMA_HISTOGRAM_COUNTS_10000("Cookie.NumKeys", num_keys_);
+
+  // Collect stats for partitioned cookies if they are enabled.
+  if (base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
+    base::UmaHistogramCounts1000("Cookie.PartitionCount",
+                                 partitioned_cookies_.size());
+    base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount",
+                                   num_partitioned_cookies_);
+  }
 
   return true;
 }

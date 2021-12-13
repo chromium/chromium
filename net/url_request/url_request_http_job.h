@@ -214,6 +214,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // cookie store.
   void ComputeCookiePartitionKey();
 
+  // Returns true if partitioned cookies are enabled and can be accessed and/or
+  // set.
+  bool IsPartitionedCookiesEnabled() const;
+
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;

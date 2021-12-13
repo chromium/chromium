@@ -356,6 +356,10 @@ void RestrictedCookieManager::ComputeCookiePartitionKey() {
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
 }
 
+bool RestrictedCookieManager::IsPartitionedCookiesEnabled() const {
+  return cookie_partition_key_.has_value();
+}
+
 void RestrictedCookieManager::GetAllForUrl(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
@@ -479,6 +483,15 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     return;
   }
 
+  if (IsPartitionedCookiesEnabled()) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Net.RestrictedCookieManager.PartitionedCookiesInScript",
+        base::ranges::count_if(result,
+                               [](const net::CookieWithAccessResult& c) {
+                                 return c.cookie.IsPartitioned();
+                               }));
+  }
+
   std::move(callback).Run(std::move(result));
 }
 
@@ -564,6 +577,11 @@ void RestrictedCookieManager::SetCanonicalCookie(
         cookie_partition_key = cookie_partition_key_;
       }
     }
+  }
+
+  if (IsPartitionedCookiesEnabled()) {
+    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SetPartitionedCookie",
+                          cookie_partition_key.has_value());
   }
 
   auto sanitized_cookie = net::CanonicalCookie::FromStorage(
