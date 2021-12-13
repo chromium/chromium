@@ -189,8 +189,10 @@ class AutocompleteProvider
   // otherwise, starting each provider running would result in a flurry of
   // notifications).
   //
-  // Once Stop() has been called, usually no more notifications should be sent.
-  // (See comments on Stop() below.)
+  // Providers should invalidate any in-progress requests and make sure *not* to
+  // call the controller's OnProviderUpdate() method for invalidated requests by
+  // calling Stop(). Once Stop() has been called, usually no more notifications
+  // should be sent. (See comments on Stop() below.)
   //
   // |minimal_changes| is an optimization that lets the provider do less work
   // when the |input|'s text hasn't changed.  See the body of

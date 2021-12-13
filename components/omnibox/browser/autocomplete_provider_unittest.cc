@@ -274,8 +274,13 @@ class TestPrefetchProvider : public TestProvider {
 void TestPrefetchProvider::StartPrefetch(const AutocompleteInput& input) {
   matches_.clear();
   done_ = false;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&TestPrefetchProvider::RunPrefetch, this));
+
+  if (input.want_asynchronous_matches()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&TestPrefetchProvider::RunPrefetch, this));
+  } else {
+    RunPrefetch();
+  }
 }
 
 void TestPrefetchProvider::RunPrefetch() {
@@ -1288,9 +1293,13 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_NonPrefetch) {
                           TestingSchemeClassifier());
   controller_->Start(input);
 
+  ASSERT_FALSE(provider->done());
+  ASSERT_FALSE(controller_->done());
+
   // Wait for the provider to finish asynchronously.
   run_loop.Run();
-  DCHECK(provider->done());
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
 
   // The results are expected to be non-empty as the provider did notify the
   // controller of the non-prefetch request results.
@@ -1312,14 +1321,56 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
                           TestingSchemeClassifier());
   controller_->StartPrefetch(input);
 
+  ASSERT_FALSE(provider->done());
+  // Prefetch requests do not affect the state of the controller.
+  ASSERT_TRUE(controller_->done());
+
   // Wait for the provider to finish asynchronously.
   run_loop.Run();
-  DCHECK(provider->done());
+  ASSERT_TRUE(provider->done());
 
   // The results are expected to be empty as the provider did not notify the
   // controller of the prefetch request results.
   CopyResults();
   EXPECT_TRUE(result_.empty());
+}
+
+TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
+  // Add a test provider that supports prefetch requests.
+  TestPrefetchProvider* provider = new TestPrefetchProvider(
+      kResultsPerProvider, u"http://a", kTestTemplateURLKeyword, client_);
+  controller_->providers_.push_back(provider);
+
+  base::RunLoop run_loop;
+  provider_listener_->set_closure(run_loop.QuitClosure());
+  provider->set_listener(provider_listener_.get());
+
+  AutocompleteInput input(u"bar", metrics::OmniboxEventProto::OTHER,
+                          TestingSchemeClassifier());
+  controller_->Start(input);
+
+  ASSERT_FALSE(provider->done());
+  ASSERT_FALSE(controller_->done());
+
+  // Try to start a prefetch request while a non-prefetch request is still in
+  // progress. We expect this not to call StartPrefetch() on the provider.
+  // We test this by requesting synchronous matches from TestPrefetchProvider
+  // which notifies the provider listener synchronously and calls the quit
+  // closure of `run_loop` before `run_loop` is run. This prevents the provider
+  // from being able to notify the controller of finishing the non-prefetch
+  // request resulting in the controller to remain in an invalid state.
+  input.set_want_asynchronous_matches(false);
+  controller_->StartPrefetch(input);
+
+  // Wait for the provider to finish asynchronously.
+  run_loop.Run();
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
+
+  // The results are expected to be non-empty as the provider did notify the
+  // controller of the non-prefetch request results.
+  CopyResults();
+  EXPECT_EQ(kResultsPerProvider, result_.size());
 }
 
 TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
@@ -1333,7 +1384,8 @@ TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
   controller_->StartPrefetch(input);
 
   // The provider is expected to finish synchronously.
-  DCHECK(provider->done());
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
 
   // The results are expected to be empty since the provider did a no-op for the
   // prefetch request.

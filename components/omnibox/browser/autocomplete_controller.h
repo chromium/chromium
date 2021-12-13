@@ -208,6 +208,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            SupportedProvider_Prefetch);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
+                           SupportedProvider_OngoingNonPrefetch);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            UnsupportedProvider_Prefetch);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
                            EmitAccessibilityEvents);

@@ -495,6 +495,17 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 }
 
 void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
+  // Start prefetch requests iff no non-prefetch request is in progress. Though
+  // not likely, it is possible for the providers to have an active non-prefetch
+  // request when a prefetch request is about to be started. In such scenarios,
+  // starting a prefetch request will cause the providers to invalidate their
+  // active non-prefetch requests and never get a chance to notify the
+  // controller of their status; thus resulting in the controller to remain in
+  // an invalid state.
+  if (!done_) {
+    return;
+  }
+
   for (auto provider : providers_) {
     provider->StartPrefetch(input);
   }
