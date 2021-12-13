@@ -100,9 +100,7 @@ BrowserContext* WorkerDevToolsAgentHost::GetBrowserContext() {
 }
 
 RenderProcessHost* WorkerDevToolsAgentHost::GetProcessHost() {
-  DedicatedWorkerHost* host = GetDedicatedWorkerHost();
-  DCHECK(host);
-  return host->GetProcessHost();
+  return RenderProcessHost::FromID(process_id_);
 }
 
 std::string WorkerDevToolsAgentHost::GetType() {
