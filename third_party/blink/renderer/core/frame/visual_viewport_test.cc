@@ -41,8 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
@@ -54,8 +53,8 @@
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -173,62 +172,10 @@ class VisualViewportTest : public testing::Test,
     settings->SetMainFrameResizesAreOrientationChanges(true);
   }
 
-  const GraphicsLayer* MainGraphicsLayer(const Document* document) {
-    const auto* layer = document->GetLayoutView()->Layer();
-    return layer->GetCompositedLayerMapping()
-               ? layer->GetCompositedLayerMapping()->MainGraphicsLayer()
-               : nullptr;
-  }
-
-  const GraphicsLayer* ScrollingContentsLayer(const Document* document) {
-    const auto* layer = document->GetLayoutView()->Layer();
-    return layer->GetCompositedLayerMapping()
-               ? layer->GetCompositedLayerMapping()->ScrollingContentsLayer()
-               : nullptr;
-  }
-
   const DisplayItemClient& ScrollingBackgroundClient(const Document* document) {
     return document->GetLayoutView()
         ->GetScrollableArea()
         ->GetScrollingBackgroundDisplayItemClient();
-  }
-
-  const RasterInvalidationTracking* MainGraphicsLayerRasterInvalidationTracking(
-      const Document* document) {
-    const auto* layer = MainGraphicsLayer(document);
-    return layer ? layer->GetRasterInvalidationTracking() : nullptr;
-  }
-
-  const RasterInvalidationTracking*
-  ScrollingContentsLayerRasterInvalidationTracking(const Document* document) {
-    const auto* layer = ScrollingContentsLayer(document);
-    return layer ? layer->GetRasterInvalidationTracking() : nullptr;
-  }
-
-  bool MainGraphicsLayerHasRasterInvalidations(const Document* document) {
-    const auto* tracking =
-        MainGraphicsLayerRasterInvalidationTracking(document);
-    return tracking && tracking->HasInvalidations();
-  }
-
-  bool ScrollingContentsLayerHasRasterInvalidations(const Document* document) {
-    const auto* tracking =
-        ScrollingContentsLayerRasterInvalidationTracking(document);
-    return tracking && tracking->HasInvalidations();
-  }
-
-  const Vector<RasterInvalidationInfo>& MainGraphicsLayerRasterInvalidations(
-      const Document* document) {
-    DCHECK(MainGraphicsLayerHasRasterInvalidations(document));
-    return MainGraphicsLayerRasterInvalidationTracking(document)
-        ->Invalidations();
-  }
-
-  const Vector<RasterInvalidationInfo>&
-  ScrollingContentsLayerRasterInvalidations(const Document* document) {
-    DCHECK(ScrollingContentsLayerHasRasterInvalidations(document));
-    return ScrollingContentsLayerRasterInvalidationTracking(document)
-        ->Invalidations();
   }
 
  protected:
@@ -2093,9 +2040,6 @@ TEST_P(VisualViewportTest, ResizeWithScrollAnchoring) {
 // Make sure a composited background-attachment:fixed background gets resized
 // by browser controls.
 TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   WebViewImpl* web_view_impl =
       helper_.InitializeWithSettings(&ConfigureAndroidCompositing);
 
@@ -2127,14 +2071,13 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
   UpdateAllLifecyclePhases();
   Document* document =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
-  GraphicsLayer* background_layer = document->GetLayoutView()
-                                        ->Layer()
-                                        ->GetCompositedLayerMapping()
-                                        ->MainGraphicsLayer();
+  VisualViewport& visual_viewport =
+      web_view_impl->GetPage()->GetVisualViewport();
+  auto* background_layer = visual_viewport.LayerForScrolling();
   ASSERT_TRUE(background_layer);
 
-  ASSERT_EQ(page_width, background_layer->Size().width());
-  ASSERT_EQ(page_height, background_layer->Size().height());
+  ASSERT_EQ(page_width, background_layer->bounds().width());
+  ASSERT_EQ(page_height, background_layer->bounds().height());
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().width());
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().height());
 
@@ -2147,16 +2090,16 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().height());
 
   // The background layer's size should have changed though.
-  EXPECT_EQ(page_width, background_layer->Size().width());
-  EXPECT_EQ(smallest_height, background_layer->Size().height());
+  EXPECT_EQ(page_width, background_layer->bounds().width());
+  EXPECT_EQ(smallest_height, background_layer->bounds().height());
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, true);
   UpdateAllLifecyclePhases();
 
   // The background layer's size should change again.
-  EXPECT_EQ(page_width, background_layer->Size().width());
-  EXPECT_EQ(page_height, background_layer->Size().height());
+  EXPECT_EQ(page_width, background_layer->bounds().width());
+  EXPECT_EQ(page_height, background_layer->bounds().height());
 }
 
 static void ConfigureAndroidNonCompositing(WebSettings* settings) {
@@ -2170,9 +2113,6 @@ static void ConfigureAndroidNonCompositing(WebSettings* settings) {
 // Make sure a non-composited background-attachment:fixed background gets
 // resized by browser controls.
 TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   WebViewImpl* web_view_impl =
       helper_.InitializeWithSettings(&ConfigureAndroidNonCompositing);
 
@@ -2214,14 +2154,16 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().height());
 
   // Fixed-attachment background is affected by viewport size.
-  EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
-  ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
-  EXPECT_THAT(
-      ScrollingContentsLayerRasterInvalidations(document),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          ScrollingBackgroundClient(document).Id(),
-          ScrollingBackgroundClient(document).DebugName(),
-          gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+  {
+    const auto& raster_invalidations =
+        GetRasterInvalidationTracking(*GetFrame()->View())->Invalidations();
+    EXPECT_THAT(
+        raster_invalidations,
+        UnorderedElementsAre(RasterInvalidationInfo{
+            ScrollingBackgroundClient(document).Id(),
+            ScrollingBackgroundClient(document).DebugName(),
+            gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+  }
 
   document->View()->SetTracksRasterInvalidations(false);
 
@@ -2231,14 +2173,16 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   UpdateAllLifecyclePhases();
 
   // Fixed-attachment background is affected by viewport size.
-  EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
-  ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
-  EXPECT_THAT(
-      ScrollingContentsLayerRasterInvalidations(document),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          ScrollingBackgroundClient(document).Id(),
-          ScrollingBackgroundClient(document).DebugName(),
-          gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+  {
+    const auto& raster_invalidations =
+        GetRasterInvalidationTracking(*GetFrame()->View())->Invalidations();
+    EXPECT_THAT(
+        raster_invalidations,
+        UnorderedElementsAre(RasterInvalidationInfo{
+            ScrollingBackgroundClient(document).Id(),
+            ScrollingBackgroundClient(document).DebugName(),
+            gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+  }
 
   document->View()->SetTracksRasterInvalidations(false);
 }
@@ -2300,12 +2244,8 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().width());
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().height());
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // No invalidations should have occurred on either main layer or scrolling
-    // contents layer.
-    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
-    EXPECT_FALSE(ScrollingContentsLayerHasRasterInvalidations(document));
-  }
+  EXPECT_FALSE(
+      GetRasterInvalidationTracking(*GetFrame()->View())->HasInvalidations());
 
   document->View()->SetTracksRasterInvalidations(false);
 }
@@ -2338,12 +2278,12 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().width());
   ASSERT_EQ(page_height, document->View()->GetLayoutSize().height());
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Incremental raster invalidation is needed because the resize exposes
-    // unpainted area of background.
-    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
-    ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
-    EXPECT_THAT(ScrollingContentsLayerRasterInvalidations(document),
+  // Incremental raster invalidation is needed because the resize exposes
+  // unpainted area of background.
+  {
+    const auto& raster_invalidations =
+        GetRasterInvalidationTracking(*GetFrame()->View())->Invalidations();
+    EXPECT_THAT(raster_invalidations,
                 UnorderedElementsAre(RasterInvalidationInfo{
                     ScrollingBackgroundClient(document).Id(),
                     ScrollingBackgroundClient(document).DebugName(),
@@ -2359,12 +2299,10 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
                                            browser_controls_height, 0, false);
   UpdateAllLifecyclePhases();
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // No raster invalidation is needed because of no change within the root
-    // scrolling layer.
-    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
-    EXPECT_FALSE(ScrollingContentsLayerHasRasterInvalidations(document));
-  }
+  // No raster invalidation is needed because of no change within the root
+  // scrolling layer.
+  EXPECT_FALSE(
+      GetRasterInvalidationTracking(*GetFrame()->View())->HasInvalidations());
 
   document->View()->SetTracksRasterInvalidations(false);
 }
