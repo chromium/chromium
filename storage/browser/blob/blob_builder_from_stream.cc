@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -88,10 +89,28 @@ class DataPipeConsumerHelper {
 
  private:
   void DataPipeReady(MojoResult result, const mojo::HandleSignalsState& state) {
+    if (result != MOJO_RESULT_OK) {
+      // We requested a trap on a condition that can never occur. The state of
+      // `pipe_` likely changed.
+      DCHECK(result == MOJO_RESULT_FAILED_PRECONDITION);
+      InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
+                 /*success=*/true, current_offset_);
+      delete this;
+      return;
+    }
+
     while (current_offset_ < max_bytes_to_read_) {
       const void* data;
       uint32_t size;
       result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      if (result == MOJO_RESULT_INVALID_ARGUMENT) {
+        // `pipe_` is not actually a ScopedDataPipeConsumerHandle.
+        InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
+                   /*success=*/false, /*bytes_written=*/0);
+        delete this;
+        return;
+      }
+
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         watcher_.ArmOrNotify();
         return;
