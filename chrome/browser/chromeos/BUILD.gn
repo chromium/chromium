@@ -614,6 +614,8 @@ source_set("chromeos") {
     "../ash/app_mode/arc/arc_kiosk_app_service_factory.h",
     "../ash/app_mode/certificate_manager_dialog.cc",
     "../ash/app_mode/certificate_manager_dialog.h",
+    "../ash/app_mode/chrome_app_kiosk_app_installer.cc",
+    "../ash/app_mode/chrome_app_kiosk_app_installer.h",
     "../ash/app_mode/kiosk_app_data.cc",
     "../ash/app_mode/kiosk_app_data.h",
     "../ash/app_mode/kiosk_app_data_base.cc",

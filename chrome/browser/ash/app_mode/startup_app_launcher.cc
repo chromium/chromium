@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -51,7 +52,10 @@ const int kMaxLaunchAttempt = 5;
 StartupAppLauncher::StartupAppLauncher(Profile* profile,
                                        const std::string& app_id,
                                        StartupAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate), profile_(profile), app_id_(app_id) {
+    : KioskAppLauncher(delegate),
+      profile_(profile),
+      app_id_(app_id),
+      installer_(profile, app_id, delegate) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
   kiosk_app_manager_observation_.Observe(KioskAppManager::Get());
@@ -69,9 +73,9 @@ void StartupAppLauncher::Initialize() {
 void StartupAppLauncher::ContinueWithNetworkReady() {
   SYSLOG(INFO) << "ContinueWithNetworkReady"
                << ", network_ready_handled_=" << network_ready_handled_
-               << ", ready_to_launch_=" << ready_to_launch_;
+               << ", ready_to_launch_=" << installer_.install_complete();
 
-  if (ready_to_launch_ || network_ready_handled_)
+  if (installer_.install_complete() || network_ready_handled_)
     return;
 
   network_ready_handled_ = true;
@@ -92,7 +96,7 @@ void StartupAppLauncher::RestartLauncher() {
   // Do not allow restarts after the launcher finishes kiosk apps installation -
   // notify the delegate that kiosk app is ready to launch, in case the launch
   // was delayed, for example by network config dialog.
-  if (ready_to_launch_) {
+  if (installer_.install_complete()) {
     delegate_->OnAppPrepared();
     return;
   }
@@ -112,7 +116,7 @@ void StartupAppLauncher::RestartLauncher() {
 }
 
 void StartupAppLauncher::MaybeInitializeNetwork() {
-  DCHECK(!ready_to_launch_);
+  DCHECK(!installer_.install_complete());
 
   network_ready_handled_ = false;
 
@@ -182,7 +186,7 @@ void StartupAppLauncher::SetSecondaryAppsEnabledState(
 }
 
 void StartupAppLauncher::MaybeLaunchApp() {
-  DCHECK(!ready_to_launch_);
+  DCHECK(!installer_.install_complete());
 
   SYSLOG(INFO) << "MaybeLaunchApp";
   const Extension* extension = GetPrimaryAppExtension();
@@ -200,7 +204,7 @@ void StartupAppLauncher::MaybeLaunchApp() {
   // If the app is not offline enabled, make sure the network is ready before
   // launching.
   if (offline_enabled || delegate_->IsNetworkReady()) {
-    ready_to_launch_ = true;
+    installer_.SetInstallComplete();
     // Updates to cached primary app crx will be ignored after this point, so
     // there is no need to observe the kiosk app manager any longer.
     kiosk_app_manager_observation_.Reset();
@@ -222,96 +226,6 @@ void StartupAppLauncher::MaybeLaunchApp() {
   }
 }
 
-void StartupAppLauncher::MaybeCheckExtensionUpdate() {
-  DCHECK(!ready_to_launch_);
-
-  SYSLOG(INFO) << "MaybeCheckExtensionUpdate";
-  if (!delegate_->IsNetworkReady()) {
-    MaybeLaunchApp();
-    return;
-  }
-
-  // Enforce an immediate version update check for all extensions before
-  // launching the primary app. After the chromeos is updated, the shared
-  // module(e.g. ARC runtime) may need to be updated to a newer version
-  // compatible with the new chromeos. See crbug.com/555083.
-  update_checker_ = std::make_unique<StartupAppLauncherUpdateChecker>(profile_);
-  if (!update_checker_->Run(
-          base::BindOnce(&StartupAppLauncher::OnExtensionUpdateCheckFinished,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    update_checker_.reset();
-    MaybeLaunchApp();
-    return;
-  }
-
-  SYSLOG(INFO) << "Extension update check run.";
-}
-
-void StartupAppLauncher::OnExtensionUpdateCheckFinished(bool update_found) {
-  DCHECK(!ready_to_launch_);
-
-  SYSLOG(INFO) << "OnExtensionUpdateCheckFinished";
-  update_checker_.reset();
-  if (update_found) {
-    SYSLOG(INFO) << "Start to reload extension with id " << app_id_;
-
-    // Reload the primary app to make sure any reference to the previous version
-    // of the shared module, extension, etc will be cleaned up andthe new
-    // version will be loaded.
-    extensions::ExtensionSystem::Get(profile_)
-        ->extension_service()
-        ->ReloadExtension(app_id_);
-
-    SYSLOG(INFO) << "Finish to reload extension with id " << app_id_;
-  }
-
-  MaybeLaunchApp();
-}
-
-void StartupAppLauncher::OnFinishCrxInstall(const std::string& extension_id,
-                                            bool success) {
-  DCHECK(!ready_to_launch_);
-
-  SYSLOG(INFO) << "OnFinishCrxInstall, id=" << extension_id
-               << ", success=" << success;
-
-  if (DidPrimaryOrSecondaryAppFailedToInstall(success, extension_id)) {
-    install_observation_.Reset();
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
-    return;
-  }
-
-  // Wait for pending updates or dependent extensions to download.
-  if (extensions::ExtensionSystem::Get(profile_)
-          ->extension_service()
-          ->pending_extension_manager()
-          ->HasPendingExtensions()) {
-    return;
-  }
-
-  install_observation_.Reset();
-  if (delegate_->IsShowingNetworkConfigScreen()) {
-    SYSLOG(WARNING) << "Showing network config screen";
-    return;
-  }
-
-  const extensions::Extension* primary_app = GetPrimaryAppExtension();
-  if (!primary_app) {
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
-    return;
-  }
-
-  if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
-    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
-    return;
-  }
-
-  if (!secondary_apps_installed_)
-    MaybeInstallSecondaryApps();
-  else
-    MaybeCheckExtensionUpdate();
-}
-
 void StartupAppLauncher::OnKioskExtensionLoadedInCache(
     const std::string& app_id) {
   OnKioskAppDataLoadStatusChanged(app_id);
@@ -324,7 +238,7 @@ void StartupAppLauncher::OnKioskExtensionDownloadFailed(
 
 void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
-  DCHECK(!ready_to_launch_);
+  DCHECK(!installer_.install_complete());
 
   if (app_id != app_id_ || !wait_for_crx_update_)
     return;
@@ -334,21 +248,6 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     BeginInstall();
   else
     OnLaunchFailure(KioskAppLaunchError::Error::kUnableToDownload);
-}
-
-bool StartupAppLauncher::IsAnySecondaryAppPending() const {
-  const extensions::Extension* extension = GetPrimaryAppExtension();
-  DCHECK(extension);
-  extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
-  for (const auto& app : info->secondary_apps) {
-    if (extensions::ExtensionSystem::Get(profile_)
-            ->extension_service()
-            ->pending_extension_manager()
-            ->IsIdPending(app.id)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool StartupAppLauncher::AreSecondaryAppsInstalled() const {
@@ -364,43 +263,10 @@ bool StartupAppLauncher::AreSecondaryAppsInstalled() const {
   return true;
 }
 
-bool StartupAppLauncher::HasSecondaryApps() const {
-  const extensions::Extension* extension = GetPrimaryAppExtension();
-  DCHECK(extension);
-  return extensions::KioskModeInfo::HasSecondaryApps(extension);
-}
-
 bool StartupAppLauncher::PrimaryAppHasPendingUpdate() const {
   return !!extensions::ExtensionSystem::Get(profile_)
                ->extension_service()
                ->GetPendingExtensionUpdate(app_id_);
-}
-
-bool StartupAppLauncher::DidPrimaryOrSecondaryAppFailedToInstall(
-    bool success,
-    const std::string& id) const {
-  if (success)
-    return false;
-
-  if (id == app_id_) {
-    SYSLOG(ERROR) << "Failed to install crx file of the primary app id=" << id;
-    return true;
-  }
-
-  const extensions::Extension* extension = GetPrimaryAppExtension();
-  if (!extension)
-    return false;
-
-  extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
-  for (const auto& app : info->secondary_apps) {
-    if (app.id == id) {
-      SYSLOG(ERROR) << "Failed to install a secondary app id=" << id;
-      return true;
-    }
-  }
-
-  SYSLOG(WARNING) << "Failed to install crx file for an app id=" << id;
-  return false;
 }
 
 const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
@@ -410,7 +276,7 @@ const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
 }
 
 void StartupAppLauncher::LaunchApp() {
-  if (!ready_to_launch_) {
+  if (!installer_.install_complete()) {
     NOTREACHED();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
@@ -468,78 +334,20 @@ void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
 }
 
 void StartupAppLauncher::BeginInstall() {
-  DCHECK(!ready_to_launch_);
-
-  SYSLOG(INFO) << "BeginInstall";
-  extensions::file_util::SetUseSafeInstallation(true);
-  KioskAppManager::Get()->UpdatePrimaryAppLoaderPrefs(app_id_);
-  if (extensions::ExtensionSystem::Get(profile_)
-          ->extension_service()
-          ->pending_extension_manager()
-          ->IsIdPending(app_id_)) {
-    delegate_->OnAppInstalling();
-    // Observe the crx installation events.
-    install_observation_.Observe(
-        extensions::InstallTrackerFactory::GetForBrowserContext(profile_));
-    return;
-  }
-
-  const extensions::Extension* primary_app = GetPrimaryAppExtension();
-  if (!primary_app) {
-    // The extension is skipped for installation due to some error.
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
-    return;
-  }
-
-  if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
-    // The installed primary app is not kiosk enabled.
-    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
-    return;
-  }
-
-  // Install secondary apps.
-  MaybeInstallSecondaryApps();
+  installer_.BeginInstall(base::BindOnce(&StartupAppLauncher::OnInstallComplete,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StartupAppLauncher::MaybeInstallSecondaryApps() {
-  if (ready_to_launch_)
-    return;
-
-  if (!AreSecondaryAppsInstalled() && !delegate_->IsNetworkReady()) {
-    DelayNetworkCall(
-        base::Milliseconds(kDefaultNetworkRetryDelayMS),
-        base::BindOnce(&StartupAppLauncher::MaybeInstallSecondaryApps,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  secondary_apps_installed_ = true;
-  extensions::KioskModeInfo* info =
-      extensions::KioskModeInfo::Get(GetPrimaryAppExtension());
-
-  std::vector<std::string> secondary_app_ids;
-  for (const auto& app : info->secondary_apps)
-    secondary_app_ids.push_back(app.id);
-
-  KioskAppManager::Get()->UpdateSecondaryAppsLoaderPrefs(secondary_app_ids);
-  if (IsAnySecondaryAppPending()) {
-    delegate_->OnAppInstalling();
-    // Observe the crx installation events.
-    install_observation_.Observe(
-        extensions::InstallTrackerFactory::GetForBrowserContext(profile_));
-    return;
-  }
-
-  if (AreSecondaryAppsInstalled()) {
-    // Check extension update before launching the primary kiosk app.
-    MaybeCheckExtensionUpdate();
+void StartupAppLauncher::OnInstallComplete(KioskAppLaunchError::Error error) {
+  if (error == KioskAppLaunchError::Error::kNone) {
+    MaybeLaunchApp();
   } else {
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
+    OnLaunchFailure(error);
   }
 }
 
 void StartupAppLauncher::OnReadyToLaunch() {
-  DCHECK(ready_to_launch_);
+  DCHECK(installer_.install_complete());
   SYSLOG(INFO) << "Kiosk app is ready to launch.";
   MaybeUpdateAppData();
   delegate_->OnAppPrepared();
