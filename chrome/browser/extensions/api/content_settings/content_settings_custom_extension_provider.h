@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+#include "extensions/browser/api/content_settings/content_settings_store.h"
 
 namespace content_settings {
 

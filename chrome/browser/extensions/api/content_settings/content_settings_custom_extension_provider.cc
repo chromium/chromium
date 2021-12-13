@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

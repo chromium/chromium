@@ -6813,7 +6813,6 @@ test("unit_tests") {
       "../browser/extensions/api/bookmarks/bookmarks_api_unittest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_unittest.cc",
       "../browser/extensions/api/chrome_extensions_api_client_unittest.cc",
-      "../browser/extensions/api/content_settings/content_settings_store_unittest.cc",
       "../browser/extensions/api/cookies/cookies_helpers_unittest.cc",
       "../browser/extensions/api/cookies/cookies_unittest.cc",
       "../browser/extensions/api/cryptotoken_private/cryptotoken_private_api_unittest.cc",
