@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -31,6 +32,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private @Nullable Context mContext;
     private final PropertyProvider<AutofillSuggestion[]> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
+    private final Callback<ManualFillingComponent> mFillingComponentObserver =
+            this::connectToFillingComponent;
 
     private AutofillKeyboardAccessoryViewBridge() {}
 
@@ -86,7 +89,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
-                    mManualFillingComponentSupplier.addObserver(this::connectToFillingComponent);
+                    mManualFillingComponentSupplier.addObserver(mFillingComponentObserver);
             connectToFillingComponent(currentFillingComponent);
         }
 
@@ -107,9 +110,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void dismiss() {
         if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.removeObserver(this::connectToFillingComponent);
+            mChipProvider.notifyObservers(new AutofillSuggestion[0]);
+            mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
-        mChipProvider.notifyObservers(new AutofillSuggestion[0]);
+        dismissed();
         mContext = null;
     }
 
