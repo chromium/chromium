@@ -169,6 +169,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Boolean auto_dark_mode_override_;
   InspectorAgentState::String timezone_id_override_;
   InspectorAgentState::BooleanMap disabled_image_types_;
+  InspectorAgentState::Double cpu_throttling_rate_;
 };
 
 }  // namespace blink

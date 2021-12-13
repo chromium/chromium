@@ -66,7 +66,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       emulate_auto_dark_mode_(&agent_state_, /*default_value=*/false),
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
       timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
-      disabled_image_types_(&agent_state_, /*default_value=*/false) {}
+      disabled_image_types_(&agent_state_, /*default_value=*/false),
+      cpu_throttling_rate_(&agent_state_, /*default_value=*/1) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -88,6 +89,7 @@ void InspectorEmulationAgent::Restore() {
       reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
       save_serialized_ua_metadata_override.size()));
   serialized_ua_metadata_override_.Set(save_serialized_ua_metadata_override);
+  setCPUThrottlingRate(cpu_throttling_rate_.Get());
 
   if (!locale_override_.Get().IsEmpty())
     setLocaleOverride(locale_override_.Get());
@@ -378,6 +380,7 @@ Response InspectorEmulationAgent::setCPUThrottlingRate(double rate) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
+  cpu_throttling_rate_.Set(rate);
   scheduler::ThreadCPUThrottler::GetInstance()->SetThrottlingRate(rate);
   return response;
 }
