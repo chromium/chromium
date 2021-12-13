@@ -77,6 +77,7 @@ generate_grd("build_grdp") {
 group("preprocess") {
   public_deps = [
     ":preprocess_generated",
+    ":preprocess_generated_ts",
     ":preprocess_mojom",
     ":preprocess_src",
   ]
@@ -122,10 +123,9 @@ preprocess_if_expr("preprocess_mojom") {
 preprocess_if_expr("preprocess_generated") {
   deps = [ ":polymer3_elements" ]
   in_folder = target_gen_dir
-  out_folder = "$preprocess_folder"
+  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "iph_bubble/iph_bubble.ts",
     "most_visited/most_visited.mojom-lite.js",
     "most_visited/most_visited.js",
     "managed_dialog/managed_dialog.js",
@@ -228,6 +228,15 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/traffic_counters/traffic_counters.js",
     ]
   }
+}
+
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_generated_ts") {
+  deps = [ ":polymer3_elements" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  in_files = [ "iph_bubble/iph_bubble.ts" ]
 }
 
 if (is_chromeos_ash) {
