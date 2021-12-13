@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +19,8 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
 class FakeSupervisedUserManager;

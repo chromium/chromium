@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/browser.h"
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -15,10 +15,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
@@ -27,19 +23,30 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
+#endif
+
 using content::SiteInstance;
 using content::WebContents;
 using content::WebContentsTester;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using session_manager::SessionState;
+#endif
 
 class BrowserUnitTest : public BrowserWithTestWindowTest {
  public:
-  BrowserUnitTest() {}
+  BrowserUnitTest() = default;
 
   BrowserUnitTest(const BrowserUnitTest&) = delete;
   BrowserUnitTest& operator=(const BrowserUnitTest&) = delete;
 
-  ~BrowserUnitTest() override {}
+  ~BrowserUnitTest() override = default;
 
   // Caller owns the memory.
   std::unique_ptr<WebContents> CreateTestWebContents() {

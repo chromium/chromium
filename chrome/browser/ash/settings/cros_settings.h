@@ -17,8 +17,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 class PrefService;
 

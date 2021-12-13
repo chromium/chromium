@@ -31,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -21,6 +22,8 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ui {
 struct CompositionText;
