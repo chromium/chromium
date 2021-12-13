@@ -64,9 +64,6 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
 
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
@@ -88,7 +85,7 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
  private:
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {

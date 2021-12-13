@@ -257,8 +257,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   PageActionIconView* pwa_install_view();
   PageActionIconView* intent_picker_view();
 
-  ScopedOsHooksSuppress os_hooks_suppress_;
-
   // Variables used to facilitate waiting for manifest updates, as there isn't
   // a formal 'action' that a user can take to wait for this, as it happens
   // behind the scenes.

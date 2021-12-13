@@ -235,14 +235,12 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  protected:
   static const char kManifest[];
   static const char kAppManifest[];
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   void SetUpOnMainThread() override {
     ExtensionManagementApiTest::SetUpOnMainThread();
     https_test_server_.ServeFilesFromDirectory(test_data_dir_);
     ASSERT_TRUE(https_test_server_.Start());
 
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
   }

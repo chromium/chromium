@@ -74,9 +74,6 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server_.Start());
 
-    // Suppress globally to avoid OS hooks deployed.
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     InProcessBrowserTest::SetUp();
   }
 
@@ -139,7 +136,7 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer embedded_test_server_;
   net::EmbeddedTestServer::HandleRequestCallback request_override_;
 
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kRecordWebAppDebugInfo};

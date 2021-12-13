@@ -165,9 +165,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-
     pwa_install_view_ =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
@@ -303,7 +300,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   raw_ptr<webapps::TestAppBannerManagerDesktop> app_banner_manager_ = nullptr;
 
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList features_;
 };
 

@@ -94,8 +94,6 @@ class AppLauncherHandlerTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     testing_profile_ = builder.Build();
 
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     extension_service_ = CreateTestExtensionService();
 
     auto* const provider = web_app::FakeWebAppProvider::Get(profile());
@@ -179,7 +177,7 @@ class AppLauncherHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   raw_ptr<extensions::ExtensionService> extension_service_;
 };
 

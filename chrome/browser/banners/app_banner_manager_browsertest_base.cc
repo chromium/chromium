@@ -21,8 +21,6 @@ void AppBannerManagerBrowserTestBase::SetUpOnMainThread() {
 
   InProcessBrowserTest::SetUpOnMainThread();
 
-  os_hooks_suppress_ =
-      web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
 }

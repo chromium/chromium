@@ -45,6 +45,21 @@ bool g_suppress_os_hooks_for_testing_ = false;
 
 namespace web_app {
 
+OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
+    :
+// Creating OS hooks on ChromeOS doesn't write files to disk, so it's
+// unnecessary to suppress and it provides better crash coverage.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+      scope_(&g_suppress_os_hooks_for_testing_, true)
+#else
+      scope_(&g_suppress_os_hooks_for_testing_, false)
+#endif
+{
+}
+
+OsIntegrationManager::ScopedSuppressForTesting::~ScopedSuppressForTesting() =
+    default;
+
 // This barrier is designed to accumulate errors from calls to OS hook
 // operations, and call the completion callback when all OS hook operations
 // have completed. The |callback| is called when all copies of this object and
@@ -383,18 +398,6 @@ WebAppProtocolHandlerManager&
 OsIntegrationManager::protocol_handler_manager_for_testing() {
   DCHECK(protocol_handler_manager_);
   return *protocol_handler_manager_;
-}
-
-ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
-// Creating OS hooks on ChromeOS doesn't write files to disk, so it's
-// unnecessary to suppress and it provides better crash coverage.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_suppress_os_hooks_for_testing_, true);
-#else
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_suppress_os_hooks_for_testing_, false);
-#endif
 }
 
 FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {

@@ -1078,7 +1078,6 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
   // check RegisterWebAppOsUninstallation is called
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager;
-  manager.ScopedSuppressOsHooksForTesting();
   // InstallOsHooks from MaybeRegisterOsUninstall
   // sets only kUninstallationViaOsSettings that will async call from
   // InstallOsHooks. Test ends before async is called so we test against
@@ -1116,7 +1115,6 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
   // check RegisterWebAppOsUninstallation is not called
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager;
-  manager.ScopedSuppressOsHooksForTesting();
   // InstallOsHooks from MaybeRegisterOsUninstall
   // sets only kUninstallationViaOsSettings that will async call from
   // InstallOsHooks. Test ends before async is called so we test against
@@ -1151,7 +1149,6 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
   // check UnregisterWebAppOsUninstallation is called
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager;
-  manager.ScopedSuppressOsHooksForTesting();
   // InstallOsHooks from MaybeRegisterOsUninstall
   // sets only kUninstallationViaOsSettings that will async call from
   // InstallOsHooks. Test ends before async is called so we test against
@@ -1180,7 +1177,6 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
   // check UnregisterWebAppOsUninstallation is not called
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager;
-  manager.ScopedSuppressOsHooksForTesting();
   // InstallOsHooks from MaybeRegisterOsUninstall
   // sets only kUninstallationViaOsSettings that will async call from
   // InstallOsHooks. Test ends before async is called so we test against

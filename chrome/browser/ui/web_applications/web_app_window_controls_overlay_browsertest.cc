@@ -30,12 +30,7 @@ namespace web_app {
 class WebAppWindowControlsOverlayBrowserTest
     : public WebAppNavigationBrowserTest {
  public:
-  WebAppWindowControlsOverlayBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
-  }
-
+  WebAppWindowControlsOverlayBrowserTest() = default;
   ~WebAppWindowControlsOverlayBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -67,8 +62,9 @@ class WebAppWindowControlsOverlayBrowserTest
   base::HistogramTester histogram_tester_;
 
  private:
-  ScopedOsHooksSuppress os_hooks_supress_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAppWindowControlsOverlay};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,

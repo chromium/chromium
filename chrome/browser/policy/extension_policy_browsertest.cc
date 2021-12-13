@@ -228,9 +228,6 @@ class ExtensionPolicyTest : public PolicyTest {
       extension_service()->updater()->SetExtensionCacheForTesting(
           test_extension_cache_.get());
     }
-
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -341,7 +338,7 @@ class ExtensionPolicyTest : public PolicyTest {
       skip_scheduled_extension_checks_;
 
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 }  // namespace

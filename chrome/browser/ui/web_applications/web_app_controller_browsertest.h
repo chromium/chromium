@@ -75,7 +75,8 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   absl::optional<AppId> FindAppWithUrlInScope(const GURL& url);
 
  protected:
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      os_hooks_suppress_;
 
   content::WebContents* OpenApplication(const AppId&);
 

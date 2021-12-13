@@ -112,8 +112,7 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kWebAppEnableLaunchHandler};
-  ScopedOsHooksSuppress os_hooks_suppress_{
-      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToEmpty) {
@@ -312,8 +311,7 @@ class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedOsHooksSuppress os_hooks_suppress_{
-      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest, NoLaunchQueue) {
@@ -352,8 +350,7 @@ class WebAppLaunchHandlerOriginTrialBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedOsHooksSuppress os_hooks_suppress_{
-      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 namespace {
 

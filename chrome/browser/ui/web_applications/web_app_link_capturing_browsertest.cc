@@ -85,10 +85,7 @@ using NavigateExistingClient = LaunchHandler::NavigateExistingClient;
 // 'tabbed' display mode, which allows the webapp window to have multiple tabs.
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
  public:
-  WebAppLinkCapturingBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
-
+  WebAppLinkCapturingBrowserTest() = default;
   ~WebAppLinkCapturingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -220,7 +217,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 
   const GURL about_blank_{"about:blank"};
 
-  ScopedOsHooksSuppress os_hooks_supress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 class WebAppTabStripLinkCapturingBrowserTest
@@ -650,8 +647,7 @@ class WebAppLaunchHandlerLinkCaptureBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedOsHooksSuppress os_hooks_suppress_{
-      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerLinkCaptureBrowserTest,

@@ -132,12 +132,6 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
  public:
   ContextMenuBrowserTest() {}
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Tests in this suite make use of documents with no significant
     // rendered content, and such documents do not accept input for 500ms
@@ -328,7 +322,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {

@@ -351,7 +351,6 @@ void WebAppIntegrationTestDriver::SetUp() {
 }
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
-  os_hooks_suppress_.reset();
   shortcut_override_ = OverrideShortcutsForTesting();
 
   // Only support manifest updates on non-sync tests, as the current

@@ -273,7 +273,7 @@ class PreinstalledWebAppManagerBrowserTest
 
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList feature_list_;
 };
 

@@ -47,14 +47,8 @@ AppId InstallTestWebApp(Profile* profile) {
 }  // namespace
 
 class WebAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
-
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 // Test that WebAppUninstallDialog cancels the uninstall if the Window

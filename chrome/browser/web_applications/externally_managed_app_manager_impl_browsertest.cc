@@ -41,8 +41,6 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
   }
@@ -86,7 +84,7 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   absl::optional<InstallResultCode> result_code_;
 
  private:
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 // Basic integration test to make sure the whole flow works. Each step in the

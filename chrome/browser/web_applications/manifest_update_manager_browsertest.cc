@@ -240,8 +240,6 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     // Suppress globally to avoid OS hooks deployed for system web app during
     // WebAppProvider setup.
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
     InProcessBrowserTest::SetUp();
   }
@@ -452,7 +450,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<base::RunLoop> shortcut_run_loop_;
   absl::optional<SkColor> updated_shortcut_top_left_color_;
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 enum class UpdateDialogParam {

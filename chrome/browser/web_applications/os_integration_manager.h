@@ -72,9 +72,6 @@ using UninstallOsHooksCallback =
 using UpdateOsHooksCallback =
     base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
-// Used to suppress OS hooks within this object's lifetime.
-using ScopedOsHooksSuppress = std::unique_ptr<base::AutoReset<bool>>;
-
 using BarrierCallback =
     base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>;
 
@@ -84,6 +81,16 @@ using BarrierCallback =
 // care of inter-dependencies among them.
 class OsIntegrationManager : public AppRegistrarObserver {
  public:
+  // Used to suppress OS hooks during this object's lifetime.
+  class ScopedSuppressForTesting {
+   public:
+    ScopedSuppressForTesting();
+    ~ScopedSuppressForTesting();
+
+   private:
+    base::AutoReset<bool> scope_;
+  };
+
   explicit OsIntegrationManager(
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
@@ -168,8 +175,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
   UrlHandlerManager& url_handler_manager_for_testing();
 
   WebAppProtocolHandlerManager& protocol_handler_manager_for_testing();
-
-  static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
   virtual FakeOsIntegrationManager* AsTestOsIntegrationManager();
 

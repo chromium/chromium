@@ -469,8 +469,6 @@ class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
     ASSERT_TRUE(https_server()->Start());
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(browser()->profile()));
   }
@@ -478,7 +476,7 @@ class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
  private:
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 // Test that we can launch a platform app and get a running item.

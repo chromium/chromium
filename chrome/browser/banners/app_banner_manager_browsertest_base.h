@@ -48,7 +48,7 @@ class AppBannerManagerBrowserTestBase : public InProcessBrowserTest {
   GURL GetBannerURLWithManifestAndQuery(const std::string& manifest_url,
                                         const std::string& key,
                                         const std::string& value);
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_BROWSERTEST_BASE_H_

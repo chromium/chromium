@@ -101,8 +101,6 @@ class PreinstalledWebAppMigrationBrowserTest
     SetUpExtensionTestExternalProvider();
 
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
   }
@@ -244,7 +242,7 @@ class PreinstalledWebAppMigrationBrowserTest
   base::test::ScopedFeatureList features_;
   absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

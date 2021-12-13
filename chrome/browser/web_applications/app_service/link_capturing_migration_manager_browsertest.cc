@@ -17,9 +17,7 @@ namespace web_app {
 
 class LinkCapturingMigrationManagerBrowserTest : public InProcessBrowserTest {
  public:
-  LinkCapturingMigrationManagerBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
+  LinkCapturingMigrationManagerBrowserTest() = default;
   ~LinkCapturingMigrationManagerBrowserTest() override = default;
 
   // InProcessBrowserTest:
@@ -30,7 +28,7 @@ class LinkCapturingMigrationManagerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  ScopedOsHooksSuppress os_hooks_supress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(LinkCapturingMigrationManagerBrowserTest,

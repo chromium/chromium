@@ -30,12 +30,7 @@ blink::mojom::WebFeature url_handling_feature =
 
 class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
  public:
-  WebAppUrlHandlingBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableUrlHandlers);
-  }
-
+  WebAppUrlHandlingBrowserTest() = default;
   ~WebAppUrlHandlingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -67,8 +62,9 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  ScopedOsHooksSuppress os_hooks_supress_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableUrlHandlers};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, BasicUrlHandlers) {

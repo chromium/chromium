@@ -39,6 +39,7 @@ namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  os_hooks_suppress_.emplace();
   scoped_feature_list_.InitWithFeatures({}, {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
@@ -208,8 +209,6 @@ void WebAppControllerBrowserTest::SetUpOnMainThread() {
 
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-
-  os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
