@@ -2864,10 +2864,9 @@ IN_PROC_BROWSER_TEST_F(
                /*expect_probe=*/true);
 }
 
-// Flaky test. See crbug.com/1278069.
 IN_PROC_BROWSER_TEST_F(
     ProbingEnabled_CanaryOn_TLSCanaryBadDisabled_DNSCanaryGood_PrefetchProxyBrowserTest,
-    DISABLED_NoProbe) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoProbe)) {
   RunProbeTest(/*wait_for_tls=*/false,
                /*probe_success=*/false,
                /*expect_successful_tls_probe=*/false,

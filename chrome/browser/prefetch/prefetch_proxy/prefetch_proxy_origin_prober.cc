@@ -144,14 +144,6 @@ class TLSProber {
   base::WeakPtrFactory<TLSProber> weak_factory_{this};
 };
 
-// Allows probing to start after a delay so that browser start isn't slowed.
-void StartCanaryCheck(
-    base::WeakPtr<PrefetchProxyCanaryChecker> canary_checker) {
-  // This will trigger canary check if there is no previously cached result
-  // for this network if if the cached result is stale.
-  canary_checker->RunChecksIfNeeded();
-}
-
 }  // namespace
 
 PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
@@ -170,15 +162,6 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
         PrefetchProxyTLSCanaryCheckURL(), retry_policy,
         PrefetchProxyCanaryCheckTimeout(),
         PrefetchProxyCanaryCheckCacheLifetime());
-
-    // This code is running at browser startup. Start the canary checks when we
-    // get the chance, but there's no point in it being ready for the first
-    // navigation since the check won't be done by then anyways.
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&StartCanaryCheck, tls_canary_check_->AsWeakPtr()),
-            base::Seconds(1));
   }
 
   dns_canary_check_ = std::make_unique<PrefetchProxyCanaryChecker>(
@@ -186,15 +169,6 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
       PrefetchProxyDNSCanaryCheckURL(), retry_policy,
       PrefetchProxyCanaryCheckTimeout(),
       PrefetchProxyCanaryCheckCacheLifetime());
-
-  // This code is running at browser startup. Start the canary checks when we
-  // get the chance, but there's no point in it being ready for the first
-  // navigation since the check won't be done by then anyways.
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&StartCanaryCheck, dns_canary_check_->AsWeakPtr()),
-          base::Seconds(1));
 }
 
 PrefetchProxyOriginProber::~PrefetchProxyOriginProber() = default;
