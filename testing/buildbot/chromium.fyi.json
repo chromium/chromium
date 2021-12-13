@@ -89849,6 +89849,7 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -90191,6 +90192,7 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -90401,6 +90403,7 @@
         "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
       },
       {
+        "experiment_percentage": 0,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -90948,6 +90951,7 @@
         "args": [
           "--num-retries=3"
         ],
+        "experiment_percentage": 0,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [

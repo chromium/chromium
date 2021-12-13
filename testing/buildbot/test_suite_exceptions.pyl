@@ -476,6 +476,10 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
       },
+      # TODO (crbug.com/1254971) Re-enable once fixed
+      'mac-osxbeta-rel': {
+        'experiment_percentage': 0,
+      },
       'mac10.12-blink-rel-dummy': {
         'swarming': {
           'shards': 20,
@@ -1443,6 +1447,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.crashpad_tests.filter',
         ],
       },
+      # TODO (crbug.com/1254975) Re-enable once fixed
+      'mac-osxbeta-rel': {
+        'experiment_percentage': 100,
+      },
     },
   },
   'cronet_sizes': {
@@ -1881,6 +1889,10 @@
           '--coverage-continuous-mode=1',
         ],
       },
+      # TODO (crbug.com/1278617) Re-enable once fixed
+      'mac-osxbeta-rel': {
+        'experiment_percentage': 100,
+      },
     },
   },
   'interactive_ui_tests_amd64-generic': {
@@ -2278,6 +2290,10 @@
         'swarming': {
           'shards': 2,
         },
+      },
+      # TODO (crbug.com/1278618) Re-enable once fixed
+      'mac-osxbeta-rel': {
+        'experiment_percentage': 0,
       },
       'win-asan': {
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
