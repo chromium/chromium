@@ -213,7 +213,10 @@ class DragAndDropSimulator {
     active_drag_event_->set_root_location_f(gfx::PointF(location));
 
     delegate->OnDragUpdated(*active_drag_event_);
-    delegate->OnPerformDrop(*active_drag_event_, std::move(os_exchange_data_));
+    auto drop_cb = delegate->GetDropCallback(*active_drag_event_);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(*active_drag_event_, std::move(os_exchange_data_),
+                           output_drag_op);
     return true;
   }
 

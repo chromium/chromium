@@ -1101,14 +1101,6 @@ void NativeWidgetAura::OnDragExited() {
   drop_helper_->OnDragExit();
 }
 
-ui::mojom::DragOperation NativeWidgetAura::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  DCHECK(drop_helper_.get() != nullptr);
-  return drop_helper_->OnDrop(event.data(), event.location(),
-                              last_drop_operation_);
-}
-
 aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(drop_helper_);
