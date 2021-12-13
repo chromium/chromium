@@ -22,6 +22,8 @@ namespace test {
 void SetEnvForTestWindows(Env* env);
 Env* GetEnvForTestWindows();
 
+// Creates a test window. If parent window is nullptr, then the caller must take
+// ownership of the created window.
 Window* CreateTestWindowWithId(int id, Window* parent);
 Window* CreateTestWindowWithBounds(const gfx::Rect& bounds, Window* parent);
 Window* CreateTestWindow(SkColor color,
