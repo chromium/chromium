@@ -554,6 +554,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
