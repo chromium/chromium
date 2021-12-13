@@ -210,6 +210,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   views::Button* settings_button_ = nullptr;
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
+  views::View* event_list_container_ = nullptr;
   CalendarEventListView* event_list_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we

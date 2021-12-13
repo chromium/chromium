@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
@@ -60,11 +61,15 @@ class CalendarViewTest : public AshTestBase {
   }
 
   CalendarView* calendar_view() { return calendar_view_; }
-  views::ScrollView* scroll_view_() { return calendar_view_->scroll_view_; }
+  views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
 
   views::View* previous_label() { return calendar_view_->previous_label_; }
   views::View* current_label() { return calendar_view_->current_label_; }
   views::View* next_label() { return calendar_view_->next_label_; }
+
+  views::ScrollView::ScrollBarMode GetScrollBarMode() {
+    return scroll_view()->GetVerticalScrollBarMode();
+  }
 
   // The position of the `next_month_`.
   int NextMonthPosition() {
@@ -116,6 +121,9 @@ class CalendarViewTest : public AshTestBase {
   views::Button* settings_button() { return calendar_view_->settings_button_; }
   IconButton* up_button() { return calendar_view_->up_button_; }
   IconButton* down_button() { return calendar_view_->down_button_; }
+  views::ImageButton* close_button() {
+    return calendar_view_->event_list_->close_button_;
+  }
 
   void ScrollUpOneMonth() { calendar_view_->ScrollUpOneMonthAndAutoScroll(); }
   void ScrollDownOneMonth() {
@@ -126,6 +134,11 @@ class CalendarViewTest : public AshTestBase {
   void PressTab() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+  }
+
+  void PressEnter() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EventFlags::EF_NONE);
   }
 
   void PressUp() {
@@ -242,8 +255,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 
   // Scrolls to the next month.
-  scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
-                                   NextMonthPosition());
+  scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
+                                  NextMonthPosition());
 
   EXPECT_EQ(u"October", GetPreviousLabelText());
   EXPECT_EQ(u"November", GetCurrentLabelText());
@@ -251,8 +264,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"November", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
-  scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
-                                   NextMonthPosition());
+  scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
+                                  NextMonthPosition());
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
@@ -260,8 +273,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"December", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
-  scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
-                                   NextMonthPosition());
+  scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
+                                  NextMonthPosition());
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
   EXPECT_EQ(u"January2022", GetCurrentLabelText());
@@ -403,8 +416,9 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 
   PressTab();  // Settings button.
-  PressTab();  // Moves to down button.
-  PressTab();  // Moves to up button.
+  PressTab();  // Moves to the down button.
+  PressTab();  // Moves to the up button.
+  PressTab();  // Moves to the scroll view.
 
   // Moves to the the 7th date cell, which is the date of "today".
   PressTab();
@@ -419,6 +433,7 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
   PressTab();  // Moves to settings button.
   PressTab();  // Moves to down button.
   PressTab();  // Moves to up button.
+  PressTab();  // Moves to the scroll view.
 
   // Moves to the the 7th date cell, which is the date of "today".
   PressTab();
@@ -446,6 +461,7 @@ TEST_F(CalendarViewTest, MonthViewFocusing) {
   PressTab();  // Settings button.
   PressTab();  // Moves to down button.
   PressTab();  // Moves to up button.
+  PressTab();  // Moves to the scroll view.
 
   auto* focus_manager = calendar_view()->GetFocusManager();
   // Moves to the the 7th date cell, which is the date of "today".
@@ -517,6 +533,7 @@ TEST_F(CalendarViewTest, FocusingToNavigate) {
   PressTab();  // Settings button.
   PressTab();  // Moves to down button.
   PressTab();  // Moves to up button.
+  PressTab();  // Moves to the scroll view.
 
   auto* focus_manager = calendar_view()->GetFocusManager();
   // Moves to the the 7th date cell, which is the date of "today".
@@ -559,6 +576,66 @@ TEST_F(CalendarViewTest, FocusingToNavigate) {
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
   EXPECT_EQ(u"April", GetCurrentLabelText());
+}
+
+TEST_F(CalendarViewTest, ExpandableViewFocusing) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+            GetScrollBarMode());
+
+  // Generates a tab key press.
+  PressTab();  // Focusing on the back button.
+  PressTab();  // Today's button.
+  PressTab();  // Settings button.
+  PressTab();  // Moves to down button.
+  PressTab();  // Moves to up button.
+  PressTab();  // Moves to the scroll view.
+
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+            GetScrollBarMode());
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Moves to the the 7th date cell, which is the date of "today".
+  PressTab();
+  EXPECT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  EXPECT_EQ(u"June", GetCurrentLabelText());
+
+  // Opens the event list.
+  PressEnter();
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kDisabled, GetScrollBarMode());
+
+  // Tapping on up arrow keys should go to the previous month, which mens the
+  // scroll bar is enabled during the key pressed.
+  PressUp();
+  EXPECT_EQ(u"31",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  EXPECT_EQ(u"May", GetCurrentLabelText());
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kDisabled, GetScrollBarMode());
+
+  // Moves to the event list.
+  PressTab();
+  EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
+
+  // Goes back to back button.
+  PressTab();
+
+  // Moves to the next focusable view. Today's button.
+  PressTab();
+  EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 }
 
 // A test class for testing animation. This class cannot set fake now since it's
