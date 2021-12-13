@@ -131,7 +131,7 @@ void InputMethodEngine::CandidateClicked(uint32_t index) {
 
   // Only left button click is supported at this moment.
   observer_->OnCandidateClicked(active_component_id_, candidate_ids_.at(index),
-                                InputMethodEngineBase::MOUSE_BUTTON_LEFT);
+                                MOUSE_BUTTON_LEFT);
 }
 
 void InputMethodEngine::AssistiveWindowButtonClicked(

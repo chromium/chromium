@@ -228,7 +228,7 @@ InputMethodEngine* GetEngineIfActive(Profile* profile,
 }
 
 class ImeObserverChromeOS
-    : public ash::input_method::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBaseObserver {
  public:
   ImeObserverChromeOS(const std::string& extension_id, Profile* profile)
       : extension_id_(extension_id), profile_(profile) {}
@@ -238,25 +238,24 @@ class ImeObserverChromeOS
 
   ~ImeObserverChromeOS() override = default;
 
-  void OnCandidateClicked(
-      const std::string& component_id,
-      int candidate_id,
-      InputMethodEngineBase::MouseButtonEvent button) override {
+  void OnCandidateClicked(const std::string& component_id,
+                          int candidate_id,
+                          ash::input_method::MouseButtonEvent button) override {
     if (extension_id_.empty() ||
         !HasListener(input_ime::OnCandidateClicked::kEventName))
       return;
 
     input_ime::MouseButton button_enum = input_ime::MOUSE_BUTTON_NONE;
     switch (button) {
-      case InputMethodEngineBase::MOUSE_BUTTON_MIDDLE:
+      case ash::input_method::MOUSE_BUTTON_MIDDLE:
         button_enum = input_ime::MOUSE_BUTTON_MIDDLE;
         break;
 
-      case InputMethodEngineBase::MOUSE_BUTTON_RIGHT:
+      case ash::input_method::MOUSE_BUTTON_RIGHT:
         button_enum = input_ime::MOUSE_BUTTON_RIGHT;
         break;
 
-      case InputMethodEngineBase::MOUSE_BUTTON_LEFT:
+      case ash::input_method::MOUSE_BUTTON_LEFT:
       // Default to left.
       default:
         button_enum = input_ime::MOUSE_BUTTON_LEFT;

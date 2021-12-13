@@ -57,7 +57,7 @@ InputMethodEngineBase::InputMethodEngineBase()
 InputMethodEngineBase::~InputMethodEngineBase() = default;
 
 void InputMethodEngineBase::Initialize(
-    std::unique_ptr<InputMethodEngineBase::Observer> observer,
+    std::unique_ptr<InputMethodEngineBaseObserver> observer,
     const char* extension_id,
     Profile* profile) {
   DCHECK(observer) << "Observer must not be null.";

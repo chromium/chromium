@@ -51,7 +51,7 @@ class NativeInputMethodEngine
       std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
 
   // InputMethodEngine:
-  void Initialize(std::unique_ptr<InputMethodEngineBase::Observer> observer,
+  void Initialize(std::unique_ptr<InputMethodEngineBaseObserver> observer,
                   const char* extension_id,
                   Profile* profile) override;
   void CandidateClicked(uint32_t index) override;
@@ -88,7 +88,7 @@ class NativeInputMethodEngine
                      int start_index);
 
  private:
-  class ImeObserver : public InputMethodEngineBase::Observer,
+  class ImeObserver : public InputMethodEngineBaseObserver,
                       public chromeos::ime::mojom::InputMethodHost {
    public:
     // |ime_base_observer| is to forward events to extension during this
@@ -96,14 +96,14 @@ class NativeInputMethodEngine
     // migrated.
     ImeObserver(
         PrefService* prefs,
-        std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
+        std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer,
         std::unique_ptr<AssistiveSuggester> assistive_suggester,
         std::unique_ptr<AutocorrectManager> autocorrect_manager,
         std::unique_ptr<SuggestionsCollector> suggestions_collector,
         std::unique_ptr<GrammarManager> grammar_manager);
     ~ImeObserver() override;
 
-    // InputMethodEngineBase::Observer:
+    // InputMethodEngineBaseObserver:
     void OnActivate(const std::string& engine_id) override;
     void OnFocus(
         const std::string& engine_id,
@@ -124,10 +124,9 @@ class NativeInputMethodEngine
                                   int cursor_pos,
                                   int anchor_pos,
                                   int offset_pos) override;
-    void OnCandidateClicked(
-        const std::string& component_id,
-        int candidate_id,
-        InputMethodEngineBase::MouseButtonEvent button) override;
+    void OnCandidateClicked(const std::string& component_id,
+                            int candidate_id,
+                            MouseButtonEvent button) override;
     void OnAssistiveWindowButtonClicked(
         const ui::ime::AssistiveWindowButton& button) override;
     void OnMenuItemActivated(const std::string& component_id,
@@ -192,7 +191,7 @@ class NativeInputMethodEngine
 
     PrefService* prefs_ = nullptr;
 
-    std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
+    std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer_;
     mojo::Remote<chromeos::ime::mojom::InputEngineManager> remote_manager_;
     mojo::Remote<chromeos::ime::mojom::InputMethod> input_method_;
     mojo::Receiver<chromeos::ime::mojom::InputMethodHost> host_receiver_{this};

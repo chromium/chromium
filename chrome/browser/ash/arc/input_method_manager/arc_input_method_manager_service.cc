@@ -183,7 +183,7 @@ class ArcInputMethodManagerService::ArcInputMethodBoundsObserver
 };
 
 class ArcInputMethodManagerService::InputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBaseObserver {
  public:
   explicit InputMethodEngineObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
@@ -194,7 +194,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
 
   ~InputMethodEngineObserver() override = default;
 
-  // ash::input_method::InputMethodEngineBase::Observer overrides:
+  // ash::input_method::InputMethodEngineBaseObserver overrides:
   void OnActivate(const std::string& engine_id) override {
     owner_->is_arc_ime_active_ = true;
     // TODO(yhanada): Remove this line after we migrate to SPM completely.
@@ -241,11 +241,10 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
                                 int offset_pos) override {
     owner_->UpdateTextInputState();
   }
-  void OnCandidateClicked(
-      const std::string& component_id,
-      int candidate_id,
-      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
-      override {}
+  void OnCandidateClicked(const std::string& component_id,
+                          int candidate_id,
+                          ash::input_method::MouseButtonEvent button) override {
+  }
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}

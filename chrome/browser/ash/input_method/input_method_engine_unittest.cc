@@ -166,7 +166,7 @@ class InputMethodEngineTest : public testing::Test {
   void CreateEngine(bool allowlisted) {
     engine_ = std::make_unique<InputMethodEngine>();
     observer_ = new TestObserver();
-    std::unique_ptr<InputMethodEngineBase::Observer> observer_ptr(observer_);
+    std::unique_ptr<InputMethodEngineBaseObserver> observer_ptr(observer_);
     engine_->Initialize(std::move(observer_ptr),
                         allowlisted ? kTestExtensionId : kTestExtensionId2,
                         nullptr);

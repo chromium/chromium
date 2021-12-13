@@ -473,7 +473,7 @@ NativeInputMethodEngine::NativeInputMethodEngine(
     : suggester_switch_(std::move(suggester_switch)) {}
 
 void NativeInputMethodEngine::Initialize(
-    std::unique_ptr<InputMethodEngineBase::Observer> observer,
+    std::unique_ptr<InputMethodEngineBaseObserver> observer,
     const char* extension_id,
     Profile* profile) {
   // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
@@ -518,9 +518,8 @@ void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
   // The native Mojo engine doesn't use candidate IDs, so we just treat `index`
   // as the ID, without doing a mapping.
   if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
-    GetNativeObserver()->OnCandidateClicked(
-        GetActiveComponentId(), index,
-        InputMethodEngineBase::MOUSE_BUTTON_LEFT);
+    GetNativeObserver()->OnCandidateClicked(GetActiveComponentId(), index,
+                                            MOUSE_BUTTON_LEFT);
   } else {
     InputMethodEngine::CandidateClicked(index);
   }
@@ -561,7 +560,7 @@ NativeInputMethodEngine::GetNativeObserver() const {
 
 NativeInputMethodEngine::ImeObserver::ImeObserver(
     PrefService* prefs,
-    std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
+    std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
     std::unique_ptr<SuggestionsCollector> suggestions_collector,
@@ -836,7 +835,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
 void NativeInputMethodEngine::ImeObserver::OnCandidateClicked(
     const std::string& component_id,
     int candidate_id,
-    InputMethodEngineBase::MouseButtonEvent button) {
+    MouseButtonEvent button) {
   if (ShouldRouteToNativeMojoEngine(component_id)) {
     if (input_method_.is_bound()) {
       input_method_->OnCandidateSelected(candidate_id);

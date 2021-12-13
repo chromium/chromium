@@ -21,7 +21,7 @@ namespace arc {
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBaseObserver {
  public:
   DummyInputMethodEngineObserver() = default;
 
@@ -52,11 +52,10 @@ class DummyInputMethodEngineObserver
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset_pos) override {}
-  void OnCandidateClicked(
-      const std::string& component_id,
-      int candidate_id,
-      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
-      override {}
+  void OnCandidateClicked(const std::string& component_id,
+                          int candidate_id,
+                          ash::input_method::MouseButtonEvent button) override {
+  }
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
