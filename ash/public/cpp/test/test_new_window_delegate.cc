@@ -36,6 +36,7 @@ void TestNewWindowDelegate::ShowTaskManager() {}
 void TestNewWindowDelegate::OpenFeedbackPage(
     FeedbackSource source,
     const std::string& description_template) {}
+void TestNewWindowDelegate::OpenPersonalizationHub() {}
 
 TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
     std::unique_ptr<TestNewWindowDelegate> delegate)

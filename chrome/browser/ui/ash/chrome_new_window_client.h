@@ -58,6 +58,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenDiagnostics() override;
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
+  void OpenPersonalizationHub() override;
 
   // arc::OpenUrlDelegate:
   void OpenUrlFromArc(const GURL& url) override;

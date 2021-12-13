@@ -104,6 +104,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
       FeedbackSource source = kFeedbackSourceAsh,
       const std::string& description_template = std::string()) = 0;
 
+  // Show the Personalization hub.
+  virtual void OpenPersonalizationHub() = 0;
+
  protected:
   NewWindowDelegate();
   NewWindowDelegate(const NewWindowDelegate&) = delete;

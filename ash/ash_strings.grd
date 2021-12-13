@@ -2286,6 +2286,9 @@ This file contains the strings for ash.
         Live Caption is off.
       </message>
 
+      <message name="IDS_AURA_OPEN_PERSONALIZATION_HUB" desc="The label used to open personalization hub in context menu">
+        Personalize
+      </message>
       <message name="IDS_AURA_SET_DESKTOP_WALLPAPER" desc="The label used for change wallpaper in context menu">
         Set wallpaper
       </message>

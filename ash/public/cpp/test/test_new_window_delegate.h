@@ -39,6 +39,7 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void ShowTaskManager() override;
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
+  void OpenPersonalizationHub() override;
 };
 
 // NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.

@@ -10,8 +10,10 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
@@ -113,7 +115,12 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       SetShelfAlignmentPref(prefs, display_id_, ShelfAlignment::kBottom);
       break;
     case MENU_CHANGE_WALLPAPER:
+      DCHECK(!ash::features::IsPersonalizationHubEnabled());
       shell->wallpaper_controller()->OpenWallpaperPickerIfAllowed();
+      break;
+    case MENU_PERSONALIZATION_HUB:
+      DCHECK(ash::features::IsPersonalizationHubEnabled());
+      NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
       break;
     default:
       if (delegate_) {
@@ -172,7 +179,11 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
         ui::ImageModel::FromVectorIcon(kShelfPositionIcon));
   }
 
-  if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    AddItemWithStringIdAndIcon(MENU_PERSONALIZATION_HUB,
+                               IDS_AURA_OPEN_PERSONALIZATION_HUB,
+                               ui::ImageModel::FromVectorIcon(kPaintBrushIcon));
+  } else if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
     AddItemWithStringIdAndIcon(MENU_CHANGE_WALLPAPER,
                                IDS_AURA_SET_DESKTOP_WALLPAPER,
                                ui::ImageModel::FromVectorIcon(kWallpaperIcon));

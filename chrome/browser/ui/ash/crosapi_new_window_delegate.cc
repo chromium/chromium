@@ -169,6 +169,10 @@ void CrosapiNewWindowDelegate::OpenFeedbackPage(
   delegate_->OpenFeedbackPage(source, description_template);
 }
 
+void CrosapiNewWindowDelegate::OpenPersonalizationHub() {
+  delegate_->OpenPersonalizationHub();
+}
+
 void CrosapiNewWindowDelegate::DestroyWindowObserver() {
   window_observer_.reset();
 }

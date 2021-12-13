@@ -583,6 +583,12 @@ void ChromeNewWindowClient::OpenFeedbackPage(
                              MapToChromeSource(source), description_template);
 }
 
+void ChromeNewWindowClient::OpenPersonalizationHub() {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  web_app::LaunchSystemWebAppAsync(profile,
+                                   web_app::SystemAppType::PERSONALIZATION);
+}
+
 void ChromeNewWindowClient::OpenUrlFromArc(const GURL& url) {
   if (!url.is_valid())
     return;

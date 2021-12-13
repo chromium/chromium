@@ -33,6 +33,7 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
     MENU_ALIGNMENT_RIGHT = 503,
     MENU_ALIGNMENT_BOTTOM = 504,
     MENU_CHANGE_WALLPAPER = 505,
+    MENU_PERSONALIZATION_HUB = 506,
     MENU_ASH_END
   };
 

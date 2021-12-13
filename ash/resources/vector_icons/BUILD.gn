@@ -168,6 +168,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "overflow_shelf_right.icon",
     "overview_drop_target_plus.icon",
     "overview_window_close.icon",
+    "paint_brush.icon",
     "palette_action_create_note.icon",
     "palette_mode_laser_pointer.icon",
     "palette_mode_magnify.icon",
