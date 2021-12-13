@@ -8,7 +8,7 @@ compile_js_files = [
   "assert.ts",
   "async_job_queue.js",
   "barcode_chip.js",
-  "css.js",
+  "css.ts",
   "device/camera3_device_info.js",
   "device/constraints_preferrer.js",
   "device/device_info_updater.js",

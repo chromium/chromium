@@ -9,11 +9,10 @@ import {
 
 /**
  * CSS rules.
- * @type {!Array<!CSSStyleRule>}
  */
-const cssRules = (() => {
+const cssRules: CSSStyleRule[] = (() => {
   const ruleList = [];
-  for (const sheet of /** @type{!Iterable} */ (document.styleSheets)) {
+  for (const sheet of document.styleSheets) {
     ruleList.push(...sheet.cssRules);
   }
   return ruleList;
@@ -21,10 +20,9 @@ const cssRules = (() => {
 
 /**
  * Gets the CSS style by the given selector.
- * @param {string} selector Selector text.
- * @return {!CSSStyleDeclaration}
+ * @param selector Selector text.
  */
-export function cssStyle(selector) {
+export function cssStyle(selector: string): CSSStyleDeclaration {
   const rule = cssRules.find((rule) => rule.selectorText === selector);
   assert(rule !== undefined);
   return assertInstanceof(rule.style, CSSStyleDeclaration);
