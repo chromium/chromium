@@ -179,8 +179,7 @@ static CompositingReasons SubtreeReasonsForCompositing(
   // When a layer has composited descendants, some effects, like 2d transforms,
   // filters, masks etc must be implemented via compositing so that they also
   // apply to those composited descendants.
-  subtree_reasons |= layer->PotentialCompositingReasonsFromStyle() &
-                     CompositingReason::kComboCompositedDescendants;
+  subtree_reasons |= CompositingReason::kNone;
 
   if (layer->ShouldIsolateCompositedDescendants()) {
     DCHECK(layer->GetLayoutObject().IsStackingContext());
@@ -247,8 +246,7 @@ static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
   PaintLayerPaintOrderIterator iterator(layer, kAllChildren);
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
-    DCHECK(!cur_layer->DirectCompositingReasons() ||
-           !cur_layer->CanBeComposited());
+    DCHECK(!cur_layer->CanBeComposited());
     CheckSubtreeHasNoCompositing(cur_layer);
   }
 }
@@ -273,20 +271,6 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   const bool layer_can_be_composited = layer->CanBeComposited();
 
   CompositingReasons direct_from_paint_layer = 0;
-  if (layer_can_be_composited)
-    direct_from_paint_layer = layer->DirectCompositingReasons();
-
-#if DCHECK_IS_ON()
-  if (layer_can_be_composited) {
-    DCHECK(direct_from_paint_layer ==
-           CompositingReasonFinder::DirectReasons(*layer))
-        << " Expected: "
-        << CompositingReason::ToString(
-               CompositingReasonFinder::DirectReasons(*layer))
-        << " Actual: " << CompositingReason::ToString(direct_from_paint_layer);
-  }
-#endif
-
   direct_reasons |= direct_from_paint_layer;
 
   if (layer->GetScrollableArea() &&
@@ -418,9 +402,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       (!layer->DescendantHasDirectOrScrollingCompositingReason() &&
        !needs_recursion_for_composited_scrolling_plus_fixed_or_sticky &&
        !needs_recursion_for_out_of_flow_descendant &&
-       layer->GetLayoutObject().ShouldClipOverflowAlongEitherAxis() &&
-       !layer->HasCompositingDescendant() &&
-       !layer->DescendantMayNeedCompositingRequirementsUpdate());
+       layer->GetLayoutObject().ShouldClipOverflowAlongEitherAxis());
   bool skip_children =
       recursion_blocked_by_display_lock || skip_children_ignoring_display_lock;
 
@@ -507,11 +489,6 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   // composite.
   if (child_recursion_data.subtree_is_compositing_ || contains_composited_layer)
     current_recursion_data.subtree_is_compositing_ = true;
-
-  // Set the flag to say that this SC has compositing children.
-  layer->SetHasCompositingDescendant(
-      child_recursion_data.subtree_is_compositing_ ||
-      contains_composited_layer);
 
   if (layer->IsRootLayer()) {
     // The root layer needs to be composited if anything else in the tree is
@@ -602,22 +579,6 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     // squash layers painted before the iframe with layers painted after it.
     layer->PropagateDescendantNeedsCompositingLayerAssignment();
   }
-
-  // At this point we have finished collecting all reasons to composite this
-  // layer.
-  layer->SetCompositingReasons(reasons_to_composite);
-  // If we've skipped recursing down to children, but we would have recursed if
-  // it were not for the display lock, remember this on the display lock
-  // context, so that we can restore the dirty bit and cause recursion when the
-  // lock is unlocked.
-  if (skip_children && !skip_children_ignoring_display_lock) {
-    auto* context = layer->GetLayoutObject().GetDisplayLockContext();
-    DCHECK(recursion_blocked_by_display_lock);
-    DCHECK(context);
-    context->NotifyCompositingRequirementsUpdateWasBlocked();
-  }
-
-  layer->ClearNeedsCompositingRequirementsUpdate();
 }
 
 }  // namespace blink

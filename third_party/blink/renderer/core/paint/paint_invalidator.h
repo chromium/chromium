@@ -24,9 +24,6 @@ struct CORE_EXPORT PaintInvalidatorContext {
   explicit PaintInvalidatorContext(const PaintInvalidatorContext& parent)
       : parent_context(&parent),
         subtree_flags(parent.subtree_flags),
-        directly_composited_container(parent.directly_composited_container),
-        directly_composited_container_for_stacked_contents(
-            parent.directly_composited_container_for_stacked_contents),
         painting_layer(parent.painting_layer) {}
 
   bool NeedsSubtreeWalk() const {
@@ -62,17 +59,6 @@ struct CORE_EXPORT PaintInvalidatorContext {
   // The following fields can be null only before
   // PaintInvalidator::updateContext().
 
-  // The current directly composited  container for normal flow objects.
-  // It is the enclosing composited object.
-  const LayoutBoxModelObject* directly_composited_container = nullptr;
-
-  // The current directly composited container for stacked contents (stacking
-  // contexts or positioned objects). It is the nearest ancestor composited
-  // object which establishes a stacking context. For more information, see:
-  // https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md#Stacked-elements-and-stacking-contexts
-  const LayoutBoxModelObject*
-      directly_composited_container_for_stacked_contents = nullptr;
-
   PaintLayer* painting_layer = nullptr;
 
   // The previous PaintOffset of FragmentData.
@@ -107,9 +93,6 @@ class PaintInvalidator final {
 
   ALWAYS_INLINE void UpdatePaintingLayer(const LayoutObject&,
                                          PaintInvalidatorContext&);
-  ALWAYS_INLINE void UpdateDirectlyCompositedContainer(
-      const LayoutObject&,
-      PaintInvalidatorContext&);
   ALWAYS_INLINE void UpdateFromTreeBuilderContext(
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);

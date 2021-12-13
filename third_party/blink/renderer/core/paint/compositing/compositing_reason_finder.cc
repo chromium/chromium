@@ -25,21 +25,6 @@
 
 namespace blink {
 
-CompositingReasons CompositingReasonFinder::DirectReasons(
-    const PaintLayer& layer) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return CompositingReason::kNone;
-
-  DCHECK_EQ(PotentialCompositingReasonsFromStyle(layer.GetLayoutObject()),
-            layer.PotentialCompositingReasonsFromStyle());
-  CompositingReasons style_determined_direct_compositing_reasons =
-      layer.PotentialCompositingReasonsFromStyle() &
-      CompositingReason::kComboAllDirectStyleDeterminedReasons;
-
-  return style_determined_direct_compositing_reasons |
-         NonStyleDeterminedDirectReasons(layer);
-}
-
 CompositingReasons
 CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
     const LayoutObject& layout_object) {
@@ -320,75 +305,6 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DSceneLeaf(
   }
 
   return CompositingReason::kNone;
-}
-
-CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
-    const PaintLayer& layer) {
-  CompositingReasons direct_reasons = CompositingReason::kNone;
-  LayoutObject& layout_object = layer.GetLayoutObject();
-
-  // TODO(chrishtr): remove this hammer in favor of something more targeted.
-  // See crbug.com/749349.
-  if (layer.ClipParent() && layer.GetLayoutObject().IsOutOfFlowPositioned())
-    direct_reasons |= CompositingReason::kOutOfFlowClipping;
-
-  if (RequiresCompositingForRootScroller(layer))
-    direct_reasons |= CompositingReason::kRootScroller;
-
-  // Composite |layer| if it is inside of an ancestor scrolling layer, but
-  // that scrolling layer is not on the stacking context ancestor chain of
-  // |layer|. See the definition of the scrollParent property in Layer for
-  // more detail.
-  if (const PaintLayer* scrolling_ancestor = layer.AncestorScrollingLayer()) {
-    if ((scrolling_ancestor->NeedsCompositedScrolling() ||
-         // If this is true, we'll force scrolling_ancestor to use composited
-         // scrolling because this layer is composited.
-         scrolling_ancestor->NeedsReorderOverlayOverflowControls()) &&
-        layer.ScrollParent()) {
-      DCHECK(!scrolling_ancestor->GetLayoutObject()
-                  .IsStackingContext());
-      direct_reasons |= CompositingReason::kOverflowScrollingParent;
-    }
-  }
-
-  direct_reasons |= CompositingReasonsForScrollDependentPosition(layer);
-
-  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(layout_object))
-    direct_reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
-
-  // Video is special. It's the only PaintLayer type that can both have
-  // PaintLayer children and whose children can't use its backing to render
-  // into. These children (the controls) always need to be promoted into their
-  // own layers to draw on top of the accelerated video.
-  if (layer.CompositingContainer() &&
-      IsA<LayoutVideo>(layer.CompositingContainer()->GetLayoutObject()))
-    direct_reasons |= CompositingReason::kVideoOverlay;
-
-  // Special case for immersive-ar DOM overlay mode, see also
-  // PaintLayerCompositor::GetXrOverlayLayer()
-  if (const Node* node = layer.GetLayoutObject().GetNode()) {
-    if (node->IsElementNode() && node->GetDocument().IsXrOverlay() &&
-        node == Fullscreen::FullscreenElementFrom(node->GetDocument())) {
-      direct_reasons |= CompositingReason::kXrOverlay;
-    }
-  }
-
-  if (layer.IsRootLayer() && layout_object.GetFrame()->IsLocalRoot())
-    direct_reasons |= CompositingReason::kRoot;
-
-  if (layout_object.CanHaveAdditionalCompositingReasons())
-    direct_reasons |= layout_object.AdditionalCompositingReasons();
-
-  if (auto* element = DynamicTo<Element>(layout_object.GetNode())) {
-    if (element->ShouldCompositeForDocumentTransition())
-      direct_reasons |= CompositingReason::kDocumentTransitionSharedElement;
-  }
-
-  direct_reasons |= BackfaceInvisibility3DAncestorReason(layer);
-
-  DCHECK(
-      !(direct_reasons & CompositingReason::kComboAllStyleDeterminedReasons));
-  return direct_reasons;
 }
 
 static bool ObjectTypeSupportsCompositedTransformAnimation(

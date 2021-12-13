@@ -124,8 +124,6 @@ class CORE_EXPORT PaintLayerCompositor final
 
   DocumentLifecycle& Lifecycle() const;
 
-  void UpdatePotentialCompositingReasonsFromStyle(PaintLayer&);
-
   void ClearRootLayerAttachmentDirty() { root_layer_attachment_dirty_ = false; }
 
   // FIXME: Move allocateOrClearCompositedLayerMapping to

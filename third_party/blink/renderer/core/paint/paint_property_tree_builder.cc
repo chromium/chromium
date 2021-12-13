@@ -635,11 +635,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
 
   ResetPaintOffset(new_paint_offset + subpixel_accumulation);
 
-  bool can_be_directly_composited =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? full_context_.direct_compositing_reasons != CompositingReason::kNone
-          : object_.CanBeCompositedForDirectReasons();
-  if (!can_be_directly_composited)
+  if (full_context_.direct_compositing_reasons == CompositingReason::kNone)
     return;
 
   if (paint_offset_translation && properties_ &&
@@ -3131,22 +3127,14 @@ void PaintPropertyTreeBuilder::UpdateCompositedLayerPaginationOffset() {
   FragmentData& first_fragment =
       object_.GetMutableForPainting().FirstFragment();
   bool may_use_self_pagination_offset = false;
-  const PaintLayer* parent_pagination_offset_layer = nullptr;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+  const PaintLayer* parent_pagination_offset_layer =
+      context_.painting_layer->EnclosingCompositedScrollingLayerUnderPagination(
+          kIncludeSelf);
+  if (parent_pagination_offset_layer->GetLayoutObject() == object_) {
+    may_use_self_pagination_offset = true;
     parent_pagination_offset_layer =
-        context_.painting_layer
-            ->EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
-    if (parent_pagination_offset_layer->GetLayoutObject() == object_) {
-      may_use_self_pagination_offset = true;
-      parent_pagination_offset_layer =
-          parent_pagination_offset_layer
-              ->EnclosingCompositedScrollingLayerUnderPagination(kExcludeSelf);
-    }
-  } else {
-    may_use_self_pagination_offset = object_.CanBeCompositedForDirectReasons();
-    parent_pagination_offset_layer =
-        context_.painting_layer->EnclosingDirectlyCompositableLayer(
-            may_use_self_pagination_offset ? kExcludeSelf : kIncludeSelf);
+        parent_pagination_offset_layer
+            ->EnclosingCompositedScrollingLayerUnderPagination(kExcludeSelf);
   }
 
   if (may_use_self_pagination_offset &&

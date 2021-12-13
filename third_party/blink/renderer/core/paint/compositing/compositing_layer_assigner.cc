@@ -312,8 +312,6 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
       SquashingDisallowedReasons reasons_preventing_squashing =
           GetReasonsPreventingSquashing(layer, squashing_state);
       if (reasons_preventing_squashing) {
-        layer->SetCompositingReasons(layer->GetCompositingReasons() |
-                                     CompositingReason::kSquashingDisallowed);
         layer->SetSquashingDisallowedReasons(reasons_preventing_squashing);
         squashing_state.next_layer_may_squash_into_scrolling_contents = false;
       }

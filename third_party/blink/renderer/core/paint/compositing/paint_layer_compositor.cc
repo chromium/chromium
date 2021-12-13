@@ -454,20 +454,11 @@ GraphicsLayer* PaintLayerCompositor::PaintRootGraphicsLayer() const {
   return RootGraphicsLayer();
 }
 
-void PaintLayerCompositor::UpdatePotentialCompositingReasonsFromStyle(
-    PaintLayer& layer) {
-  auto reasons = CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
-      layer.GetLayoutObject());
-  layer.SetPotentialCompositingReasonsFromStyle(reasons);
-}
-
 // If an element has composited negative z-index children, those children paint
 // in front of the layer background, so we need an extra 'contents' layer for
 // the foreground of the layer object.
 bool PaintLayerCompositor::NeedsContentsCompositingLayer(
     const PaintLayer* layer) const {
-  if (!layer->HasCompositingDescendant())
-    return false;
   return layer->IsStackingContextWithNegativeZOrderChildren();
 }
 

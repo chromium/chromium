@@ -41,8 +41,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
   DCHECK(object.IsLayoutNGObject() || !object.FirstFragment().NextFragment() ||
          // We create multiple fragments for composited repeating fixed-position
          // during printing.
-         object.GetDocument().Printing() ||
-         !object.CanBeCompositedForDirectReasons());
+         object.GetDocument().Printing());
 
   PhysicalOffset layout_snapped_paint_offset =
       fragment_data.PaintOffset() - paint_layer->SubpixelAccumulation();

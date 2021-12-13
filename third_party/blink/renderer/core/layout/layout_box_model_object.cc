@@ -374,9 +374,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && HasLayer() && !Layer()->SelfNeedsRepaint() &&
-      diff.TransformChanged() &&
-      (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-       !Layer()->HasStyleDeterminedDirectCompositingReasons())) {
+      diff.TransformChanged()) {
     // PaintLayerPainter::PaintLayerWithAdjustedRoot skips painting of a layer
     // whose transform is not invertible, so we need to repaint the layer when
     // invertible status changes.

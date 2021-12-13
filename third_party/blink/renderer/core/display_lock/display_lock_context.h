@@ -147,9 +147,6 @@ class CORE_EXPORT DisplayLockContext final
 
   void NotifyChildLayoutWasBlocked() { child_layout_was_blocked_ = true; }
 
-  void NotifyCompositingRequirementsUpdateWasBlocked() {
-    needs_compositing_requirements_update_ = true;
-  }
   void NotifyCompositingDescendantDependentFlagUpdateWasBlocked() {
     needs_compositing_dependent_flag_update_ = true;
   }
@@ -415,7 +412,6 @@ class CORE_EXPORT DisplayLockContext final
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_blocking_wheel_event_handler_update_ = false;
   bool needs_prepaint_subtree_walk_ = false;
-  bool needs_compositing_requirements_update_ = false;
   bool needs_compositing_dependent_flag_update_ = false;
 
   // Will be true if child traversal was blocked on a previous layout run on the

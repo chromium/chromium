@@ -1706,40 +1706,6 @@ void LayoutObject::Paint(const PaintInfo&) const {
   NOT_DESTROYED();
 }
 
-const LayoutBoxModelObject& LayoutObject::DirectlyCompositableContainer()
-    const {
-  NOT_DESTROYED();
-  CHECK(IsRooted());
-
-  if (const LayoutBoxModelObject* container =
-          EnclosingDirectlyCompositableContainer())
-    return *container;
-
-  // If the current frame is not composited, we send just return the main
-  // frame's LayoutView so that we generate invalidations on the window.
-  const LayoutView* layout_view = View();
-  while (const LayoutObject* owner_object =
-             layout_view->GetFrame()->OwnerLayoutObject())
-    layout_view = owner_object->View();
-
-  DCHECK(layout_view);
-  return *layout_view;
-}
-
-const LayoutBoxModelObject*
-LayoutObject::EnclosingDirectlyCompositableContainer() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  LayoutBoxModelObject* container = nullptr;
-  if (PaintLayer* painting_layer = PaintingLayer()) {
-    if (PaintLayer* compositing_layer =
-            painting_layer
-                ->EnclosingDirectlyCompositableLayerCrossingFrameBoundaries())
-      container = &compositing_layer->GetLayoutObject();
-  }
-  return container;
-}
-
 RecalcLayoutOverflowResult LayoutObject::RecalcLayoutOverflow() {
   NOT_DESTROYED();
   ClearSelfNeedsLayoutOverflowRecalc();
@@ -1889,13 +1855,6 @@ bool LayoutObject::IsPaintInvalidationContainer() const {
   return HasLayer() && To<LayoutBoxModelObject>(this)
                            ->Layer()
                            ->IsPaintInvalidationContainer();
-}
-
-bool LayoutObject::CanBeCompositedForDirectReasons() const {
-  NOT_DESTROYED();
-  return HasLayer() && To<LayoutBoxModelObject>(this)
-                           ->Layer()
-                           ->CanBeCompositedForDirectReasons();
 }
 
 void LayoutObject::InvalidateDisplayItemClients(

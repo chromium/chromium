@@ -314,8 +314,6 @@ bool PaintLayerStackingNode::StyleDidChange(PaintLayer& paint_layer,
       old_z_index == new_style.EffectiveZIndex())
     return false;
 
-  // Need to force requirements update, due to change of stacking order.
-  paint_layer.SetNeedsCompositingRequirementsUpdate();
   paint_layer.DirtyStackingContextZOrderLists();
 
   if (paint_layer.StackingNode())

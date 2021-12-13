@@ -318,8 +318,6 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   ASSERT_TRUE(iframe_layout_view);
   PaintLayer* iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
-  EXPECT_REASONS(CompositingReason::kNone,
-                 iframe_layer->DirectCompositingReasons());
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
   EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*iframe_layout_view));
@@ -337,10 +335,6 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
   ASSERT_TRUE(iframe->ContentFrame()->IsCrossOriginToMainFrame());
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_REASONS(CompositingReason::kIFrame,
-                   iframe_layer->DirectCompositingReasons());
-  }
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
   EXPECT_REASONS(CompositingReason::kIFrame,
                  DirectReasonsForPaintProperties(*iframe_layout_view));
@@ -369,15 +363,6 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-    // This likely doesn't pass anymore, but I'm going to skip updating the
-    // non-CAP codepath.
-    EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_EQ(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
-
   EXPECT_REASONS(
       CompositingReason::kBackfaceInvisibility3DAncestor |
           CompositingReason::kTransform3DSceneLeaf,
@@ -397,14 +382,6 @@ TEST_P(CompositingReasonFinderTest,
       <div id=target style="transform-style: preserve-3d"></div>
     </div>
   )HTML");
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // completely untested non-CAP test
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-    EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_EQ(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
 
   EXPECT_REASONS(
       CompositingReason::kBackfaceInvisibility3DAncestor,
@@ -427,12 +404,6 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-    EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_EQ(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::kBackfaceInvisibility3DAncestor,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
@@ -453,22 +424,6 @@ TEST_P(CompositingReasonFinderTest,
       </div>
     </div>
   )HTML");
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* intermediate_layer = GetPaintLayerByElementId("intermediate");
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-
-    // This likely doesn't pass anymore, but I'm going to skip updating the
-    // non-CAP codepath.
-    EXPECT_REASONS(
-        CompositingReason::kBackfaceInvisibility3DAncestor,
-        intermediate_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_EQ(kPaintsIntoOwnBacking, intermediate_layer->GetCompositingState());
-
-    EXPECT_REASONS(CompositingReason::kNone,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_NE(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
 
   EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor |
                      CompositingReason::kTransform3DSceneLeaf,
@@ -493,13 +448,6 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-
-    EXPECT_REASONS(CompositingReason::kNone,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_NE(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
@@ -518,13 +466,6 @@ TEST_P(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
     </div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* target_layer = GetPaintLayerByElementId("target");
-
-    EXPECT_REASONS(CompositingReason::kNone,
-                   target_layer->PotentialCompositingReasonsFromNonStyle());
-    EXPECT_EQ(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));

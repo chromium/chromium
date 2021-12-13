@@ -40,7 +40,6 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
                    .FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation());
-  EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
 
   EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
   EXPECT_FALSE(layer->SelfNeedsRepaint());

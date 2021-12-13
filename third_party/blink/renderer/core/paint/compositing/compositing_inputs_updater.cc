@@ -40,8 +40,7 @@ bool CompositingInputsUpdater::LayerOrDescendantShouldBeComposited(
   }
   DCHECK(!layer->GetLayoutObject().GetFrameView()->ShouldThrottleRendering());
   return layer->DescendantHasDirectOrScrollingCompositingReason() ||
-         layer->NeedsCompositedScrolling() ||
-         (layer->CanBeComposited() && layer->DirectCompositingReasons());
+         layer->NeedsCompositedScrolling();
 }
 
 void CompositingInputsUpdater::Update() {
@@ -112,14 +111,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   // 6. If |layer| is the root, composite if
   //    DescendantHasDirectCompositingReason is true for |layer|.
 
-  layer->SetPotentialCompositingReasonsFromNonStyle(
-      CompositingReasonFinder::NonStyleDeterminedDirectReasons(*layer));
-
-  if (layer->GetScrollableArea()) {
-    layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(
-        layer->CanBeComposited() && layer->DirectCompositingReasons());
-  }
-
   // Note that prepaint may use the compositing information, so only skip
   // recursing it if we're skipping prepaint.
   bool recursion_blocked_by_display_lock =
@@ -161,23 +152,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
 
 bool CompositingInputsUpdater::NeedsPaintOffsetTranslationForCompositing(
     PaintLayer* layer) {
-  /// Allocate when the developer indicated compositing via a direct
-  // method.
-  if ((layer->CanBeComposited() && layer->DirectCompositingReasons()) ||
-      layer->NeedsCompositedScrolling())
-    return true;
-
-  // Allocate when there is a need for a cc effect that applies to
-  // descendants.
-  // TODO(chrishtr): this should not be necessary, but currently at least
-  // cc mask layers don't apply correctly otherwise.
-  // compositing/clip-path-with-composited-descendants.html is one test
-  // that demonstrates this.
-  if ((layer->PotentialCompositingReasonsFromStyle() &
-       CompositingReason::kComboCompositedDescendants) &&
-      layer->DescendantHasDirectOrScrollingCompositingReason())
-    return true;
-
   return false;
 }
 

@@ -703,10 +703,6 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
 
   auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
   if (layout_box && layout_box->HasSelfPaintingLayer()) {
-    if (needs_compositing_requirements_update_)
-      layout_box->Layer()->SetNeedsCompositingRequirementsUpdate();
-    needs_compositing_requirements_update_ = false;
-
     if (needs_compositing_dependent_flag_update_)
       layout_box->Layer()->SetNeedsCompositingInputsUpdate();
     needs_compositing_dependent_flag_update_ = false;
@@ -765,8 +761,7 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
-           needs_blocking_wheel_event_handler_update_ ||
-           needs_compositing_requirements_update_;
+           needs_blocking_wheel_event_handler_update_;
   }
   return false;
 }

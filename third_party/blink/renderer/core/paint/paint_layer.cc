@@ -165,9 +165,6 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
 
 PaintLayerRareData::PaintLayerRareData()
     : enclosing_pagination_layer(nullptr),
-      potential_compositing_reasons_from_style(CompositingReason::kNone),
-      potential_compositing_reasons_from_non_style(CompositingReason::kNone),
-      compositing_reasons(CompositingReason::kNone),
       squashing_disallowed_reasons(SquashingDisallowedReason::kNone),
       grouped_mapping(nullptr) {}
 
@@ -192,7 +189,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_position_update_(!IsRootLayer()),
 #endif
       has3d_transformed_descendant_(false),
-      has_compositing_descendant_(false),
       should_isolate_composited_descendants_(false),
       lost_grouped_mapping_(false),
       self_needs_repaint_(false),
@@ -213,9 +209,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       has_filter_that_moves_pixels_(false),
       is_under_svg_hidden_container_(false),
       descendant_has_direct_or_scrolling_compositing_reason_(false),
-      needs_compositing_reasons_update_(
-          !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()),
-      descendant_may_need_compositing_requirements_update_(false),
       needs_compositing_layer_assignment_(false),
       descendant_needs_compositing_layer_assignment_(false),
       has_self_painting_layer_descendant_(false),
@@ -1029,10 +1022,6 @@ PaintLayer* PaintLayer::EnclosingLayerForPaintInvalidation() const {
   return nullptr;
 }
 
-bool PaintLayer::CanBeCompositedForDirectReasons() const {
-  return DirectCompositingReasons() && IsSelfPaintingLayer();
-}
-
 bool PaintLayer::CanBeComposited() const {
   LocalFrameView* frame_view = GetLayoutObject().GetFrameView();
   // Elements within an invisible frame must not be composited because they are
@@ -1058,38 +1047,6 @@ bool PaintLayer::CanBeComposited() const {
          // Composited descendants of foreignObject will still break painting
          // order which will be fixed in CompositeAfterPaint.
          !GetLayoutObject().IsSVGForeignObject();
-}
-
-PaintLayer*
-PaintLayer::EnclosingDirectlyCompositableLayerCrossingFrameBoundaries() const {
-  const PaintLayer* layer = this;
-  PaintLayer* composited_layer = nullptr;
-  while (!composited_layer) {
-    composited_layer = layer->EnclosingDirectlyCompositableLayer(kIncludeSelf);
-    if (!composited_layer) {
-      CHECK(layer->GetLayoutObject().GetFrame());
-      auto* owner = layer->GetLayoutObject().GetFrame()->OwnerLayoutObject();
-      if (!owner)
-        break;
-      layer = owner->EnclosingLayer();
-    }
-  }
-  return composited_layer;
-}
-
-PaintLayer* PaintLayer::EnclosingDirectlyCompositableLayer(
-    IncludeSelfOrNot include_self_or_not) const {
-  DCHECK(IsAllowedToQueryCompositingInputs());
-  if (include_self_or_not == kIncludeSelf && CanBeCompositedForDirectReasons())
-    return const_cast<PaintLayer*>(this);
-
-  for (PaintLayer* curr = CompositingContainer(); curr;
-       curr = curr->CompositingContainer()) {
-    if (curr->CanBeCompositedForDirectReasons())
-      return curr;
-  }
-
-  return nullptr;
 }
 
 const PaintLayer* PaintLayer::EnclosingCompositedScrollingLayerUnderPagination(
@@ -1163,17 +1120,6 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   return false;
 }
 
-void PaintLayer::SetCompositingReasons(CompositingReasons reasons,
-                                       CompositingReasons mask) {
-  CompositingReasons old_reasons =
-      rare_data_ ? rare_data_->compositing_reasons : CompositingReason::kNone;
-  if ((old_reasons & mask) == (reasons & mask))
-    return;
-  CompositingReasons new_reasons = (reasons & mask) | (old_reasons & ~mask);
-  if (rare_data_ || new_reasons != CompositingReason::kNone)
-    EnsureRareData().compositing_reasons = new_reasons;
-}
-
 void PaintLayer::SetSquashingDisallowedReasons(
     SquashingDisallowedReasons reasons) {
   SquashingDisallowedReasons old_reasons =
@@ -1183,18 +1129,6 @@ void PaintLayer::SetSquashingDisallowedReasons(
     return;
   if (rare_data_ || reasons != SquashingDisallowedReason::kNone)
     EnsureRareData().squashing_disallowed_reasons = reasons;
-}
-
-void PaintLayer::SetHasCompositingDescendant(bool has_compositing_descendant) {
-  if (has_compositing_descendant_ ==
-      static_cast<unsigned>(has_compositing_descendant))
-    return;
-
-  has_compositing_descendant_ = has_compositing_descendant;
-
-  if (HasCompositedLayerMapping())
-    GetCompositedLayerMapping()->SetNeedsGraphicsLayerUpdate(
-        kGraphicsLayerUpdateLocal);
 }
 
 void PaintLayer::SetShouldIsolateCompositedDescendants(
@@ -1270,9 +1204,6 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
     DirtyVisibleContentStatus();
 
   MarkAncestorChainForFlagsUpdate();
-
-  // Need to force requirements update, due to change of stacking order.
-  SetNeedsCompositingRequirementsUpdate();
 
   // TODO(wangxianzhu): Change this to the same pattern as cull rect update
   // when removing pre-CAP code.
@@ -1619,23 +1550,10 @@ bool PaintLayer::ShouldFragmentCompositedBounds(
     const PaintLayer* compositing_layer) const {
   if (!EnclosingPaginationLayer())
     return false;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // We should not fragment composited scrolling layers and descendants, which
-    // is not only to render the scroller correctly, but also to prevent
-    // multiple cc::Layers with the same scrolling element id.
-    return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
-  }
-  if (Transform() &&
-      !PaintsWithDirectReasonIntoOwnBacking(kGlobalPaintNormalPhase))
-    return true;
-  if (!compositing_layer) {
-    compositing_layer =
-        EnclosingDirectlyCompositableLayerCrossingFrameBoundaries();
-  }
-  if (!compositing_layer)
-    return true;
-  // Composited layers may not be fragmented.
-  return !compositing_layer->EnclosingPaginationLayer();
+  // We should not fragment composited scrolling layers and descendants, which
+  // is not only to render the scroller correctly, but also to prevent multiple
+  // cc::Layers with the same scrolling element id.
+  return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
 }
 
 void PaintLayer::CollectFragments(
@@ -2484,14 +2402,6 @@ void PaintLayer::ClearNeedsCompositingLayerAssignment() {
   descendant_needs_compositing_layer_assignment_ = false;
 }
 
-void PaintLayer::SetNeedsCompositingRequirementsUpdate() {
-  for (PaintLayer* curr = this;
-       curr && !curr->DescendantMayNeedCompositingRequirementsUpdate();
-       curr = curr->Parent()) {
-    curr->descendant_may_need_compositing_requirements_update_ = true;
-  }
-}
-
 PaintLayer* PaintLayer::HitTestChildren(
     PaintLayerIteration children_to_visit,
     const PaintLayer& transform_container,
@@ -3061,12 +2971,6 @@ bool PaintLayer::PaintsIntoOwnBacking(
          GetCompositingState() == kPaintsIntoOwnBacking;
 }
 
-bool PaintLayer::PaintsWithDirectReasonIntoOwnBacking(
-    GlobalPaintFlags global_paint_flags) const {
-  return !(global_paint_flags & kGlobalPaintFlattenCompositingLayers) &&
-         CanBeCompositedForDirectReasons();
-}
-
 bool PaintLayer::PaintsIntoOwnOrGroupedBacking(
     GlobalPaintFlags global_paint_flags) const {
   return !(global_paint_flags & kGlobalPaintFlattenCompositingLayers) &&
@@ -3232,13 +3136,6 @@ void PaintLayer::UpdateClipPath(const ComputedStyle* old_style,
 bool PaintLayer::AttemptDirectCompositingUpdate(
     const StyleDifference& diff,
     const ComputedStyle* old_style) {
-  CompositingReasons old_potential_compositing_reasons_from_style =
-      PotentialCompositingReasonsFromStyle();
-  if (Compositor() &&
-      (diff.HasDifference() || needs_compositing_reasons_update_))
-    Compositor()->UpdatePotentialCompositingReasonsFromStyle(*this);
-  needs_compositing_reasons_update_ = false;
-
   // This function implements an optimization for transforms and opacity.
   // A common pattern is for a touchmove handler to update the transform
   // and/or an opacity of an element every frame while the user moves their
@@ -3249,11 +3146,6 @@ bool PaintLayer::AttemptDirectCompositingUpdate(
   if (!diff.HasAtMostPropertySpecificDifferences(
           StyleDifference::kTransformChanged |
           StyleDifference::kOpacityChanged))
-    return false;
-  // The potentialCompositingReasonsFromStyle could have changed without
-  // a corresponding StyleDifference if an animation started or ended.
-  if (PotentialCompositingReasonsFromStyle() !=
-      old_potential_compositing_reasons_from_style)
     return false;
   if (!rare_data_ || !rare_data_->composited_layer_mapping)
     return false;
