@@ -196,7 +196,9 @@ DragOperation ExtendedDragSource::OnToplevelWindowDragDropped() {
 
 void ExtendedDragSource::OnToplevelWindowDragCancelled() {
   DVLOG(1) << "OnDragCancelled()";
-  // TODO(crbug.com/1099418): Handle cancellation/revert.
+  auto* handler = ash::Shell::Get()->toplevel_window_event_handler();
+  handler->RevertDrag();
+
   Cleanup();
 }
 
