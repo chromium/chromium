@@ -305,9 +305,11 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     return nullptr;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    if (attributes.color_space != kSRGBCanvasColorSpaceName ||
-        attributes.pixel_format != kUint8CanvasPixelFormatName) {
-      UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
+    {
+      PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
+      ParsePredefinedColorSpace(attributes.color_space, color_space);
+      if (color_space != PredefinedColorSpace::kSRGB)
+        UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
     }
 
     if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext()))

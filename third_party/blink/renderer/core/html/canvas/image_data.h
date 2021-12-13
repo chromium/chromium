@@ -163,7 +163,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
     bool zero_initialize = true;
     // If no color space is specified, then use this value for the resulting
     // ImageData.
-    CanvasColorSpace default_color_space = CanvasColorSpace::kSRGB;
+    PredefinedColorSpace default_color_space = PredefinedColorSpace::kSRGB;
   };
   static ImageData* ValidateAndCreate(
       unsigned width,
@@ -178,12 +178,12 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* CreateForTest(const gfx::Size&);
   static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
-                                  CanvasColorSpace,
+                                  PredefinedColorSpace,
                                   ImageDataStorageFormat);
 
   ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
-            CanvasColorSpace,
+            PredefinedColorSpace,
             ImageDataStorageFormat);
 
   gfx::Size Size() const { return size_; }
@@ -198,7 +198,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   const V8ImageDataArray* data() const { return data_; }
 
   bool IsBufferBaseDetached() const;
-  CanvasColorSpace GetCanvasColorSpace() const;
+  PredefinedColorSpace GetPredefinedColorSpace() const;
   ImageDataStorageFormat GetImageDataStorageFormat() const;
 
   // Return an SkPixmap that references this data directly.
@@ -226,7 +226,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
-  CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
+  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
   ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(

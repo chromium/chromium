@@ -749,7 +749,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
           static_cast<WGPUTextureUsage>(WGPUTextureUsage_CopyDst |
                                         WGPUTextureUsage_CopySrc |
                                         WGPUTextureUsage_TextureBinding),
-          image, CanvasColorSpace::kSRGB, image_info.colorType());
+          image, PredefinedColorSpace::kSRGB, image_info.colorType());
 
   // Fail to associate staticBitmapImage to dawn resource.
   if (!mailbox_texture) {

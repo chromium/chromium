@@ -336,9 +336,12 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
              !!result)
         .Record(doc.UkmRecorder());
   }
-  if (attributes.color_space != kSRGBCanvasColorSpaceName ||
-      attributes.pixel_format != kUint8CanvasPixelFormatName) {
-    UseCounter::Count(doc, WebFeature::kCanvasUseColorSpace);
+
+  {
+    PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
+    ParsePredefinedColorSpace(attributes.color_space, color_space);
+    if (color_space != PredefinedColorSpace::kSRGB)
+      UseCounter::Count(doc, WebFeature::kCanvasUseColorSpace);
   }
 
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetExecutionContext()))

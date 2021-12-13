@@ -1042,7 +1042,7 @@ TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
 // first created context 2D. Therefore, we have to test different canvas color
 // space settings for CanvasRenderingContext2D::putImageData() in different
 // tests.
-enum class CanvasColorSpaceSettings : uint8_t {
+enum class PredefinedColorSpaceSettings : uint8_t {
   CANVAS_SRGB = 0,
   CANVAS_REC2020 = 1,
   CANVAS_P3 = 2,
@@ -1054,12 +1054,12 @@ enum class CanvasColorSpaceSettings : uint8_t {
 // color managed mode.
 void TestPutImageDataOnCanvasWithColorSpaceSettings(
     HTMLCanvasElement& canvas_element,
-    CanvasColorSpaceSettings canvas_colorspace_setting) {
+    PredefinedColorSpaceSettings canvas_colorspace_setting) {
   unsigned num_image_data_color_spaces = 3;
-  CanvasColorSpace image_data_color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  PredefinedColorSpace image_data_color_spaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
 
   unsigned num_image_data_storage_formats = 3;
@@ -1069,16 +1069,12 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       ImageDataStorageFormat::kFloat32,
   };
 
-  CanvasColorSpace canvas_color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  PredefinedColorSpace canvas_color_spaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
-
-  String canvas_color_space_names[] = {
-      kSRGBCanvasColorSpaceName, kSRGBCanvasColorSpaceName,
-      kRec2020CanvasColorSpaceName, kP3CanvasColorSpaceName};
 
   CanvasPixelFormat canvas_pixel_formats[] = {
       CanvasPixelFormat::kUint8,
@@ -1152,7 +1148,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
-          CanvasColorSpaceToName(canvas_color_spaces[k]));
+          PredefinedColorSpaceName(canvas_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
         case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(
@@ -1180,7 +1176,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       // the conversion is done correctly.
       CanvasContextCreationAttributesCore attributes;
       attributes.alpha = true;
-      attributes.color_space = canvas_color_space_names[k];
+      attributes.color_space = PredefinedColorSpaceName(canvas_color_spaces[k]);
       attributes.pixel_format = canvas_pixel_format_names[k];
       CanvasRenderingContext2D* context =
           static_cast<CanvasRenderingContext2D*>(
@@ -1209,17 +1205,17 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
 // Test disabled due to crbug.com/780925
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnSRGBCanvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_SRGB);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_SRGB);
 }
 
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnRec2020Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_REC2020);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_REC2020);
 }
 
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnP3Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_P3);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_P3);
 }
 
 TEST_P(CanvasRenderingContext2DTest,

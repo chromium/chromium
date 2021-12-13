@@ -2093,8 +2093,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kPutImageData, data->width(), data->height(),
-        data->GetCanvasColorSpace(), data->GetImageDataStorageFormat(), dx, dy,
-        dirty_x, dirty_y, dirty_width, dirty_height);
+        data->GetPredefinedColorSpace(), data->GetImageDataStorageFormat(), dx,
+        dy, dirty_x, dirty_y, dirty_width, dirty_height);
     identifiability_study_helper_.set_encountered_partially_digested_image();
   }
 
@@ -2136,7 +2136,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // additional swizzling is needed.
   SkPixmap data_pixmap = data->GetSkPixmap();
   CanvasColorParams data_color_params(
-      data->GetCanvasColorSpace(),
+      data->GetPredefinedColorSpace(),
       data->GetImageDataStorageFormat() != ImageDataStorageFormat::kUint8
           ? CanvasPixelFormat::kF16
           : CanvasPixelFormat::kUint8,

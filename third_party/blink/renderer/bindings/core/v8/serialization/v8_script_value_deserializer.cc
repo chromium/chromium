@@ -325,7 +325,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
             case ImageSerializationTag::kEndTag:
               is_done = true;
               break;
-            case ImageSerializationTag::kCanvasColorSpaceTag:
+            case ImageSerializationTag::kPredefinedColorSpaceTag:
               if (!ReadUint32Enum<SerializedColorSpace>(&canvas_color_space))
                 return nullptr;
               break;
@@ -399,7 +399,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
             case ImageSerializationTag::kEndTag:
               is_done = true;
               break;
-            case ImageSerializationTag::kCanvasColorSpaceTag:
+            case ImageSerializationTag::kPredefinedColorSpaceTag:
               if (!ReadUint32Enum<SerializedColorSpace>(&canvas_color_space))
                 return nullptr;
               break;

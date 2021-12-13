@@ -30,7 +30,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       WGPUDevice device,
       WGPUTextureUsage usage,
       scoped_refptr<StaticBitmapImage> image,
-      CanvasColorSpace color_space,
+      PredefinedColorSpace color_space,
       SkColorType color_type);
 
   static scoped_refptr<WebGPUMailboxTexture> FromCanvasResource(

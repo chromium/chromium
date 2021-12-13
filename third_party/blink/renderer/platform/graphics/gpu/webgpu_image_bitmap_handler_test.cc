@@ -271,10 +271,10 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyColorConvert) {
       WGPUTextureFormat_RGBA8UnormSrgb, WGPUTextureFormat_BGRA8UnormSrgb,
   };
 
-  const CanvasColorSpace kColorSpaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  const PredefinedColorSpace kColorSpaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
 
   uint64_t kImageWidth = 3;
@@ -284,11 +284,11 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyColorConvert) {
 
   for (SkColorType src_color_type : srcSkColorFormat) {
     for (WGPUTextureFormat dst_color_type : kDstWebGPUTextureFormat) {
-      for (CanvasColorSpace color_space : kColorSpaces) {
+      for (PredefinedColorSpace color_space : kColorSpaces) {
         SkImageInfo info =
             SkImageInfo::Make(kImageWidth, kImageHeight, src_color_type,
                               SkAlphaType::kUnpremul_SkAlphaType,
-                              CanvasColorSpaceToSkColorSpace(color_space));
+                              PredefinedColorSpaceToSkColorSpace(color_space));
         VerifyCopyBytes(kImageWidth, kImageHeight, info, image_data_rect,
                         dst_color_type, GetSrcPixelContent(src_color_type),
                         GetDstContent(dst_color_type));
@@ -408,7 +408,7 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap,
-          CanvasColorSpace::kSRGB, image_info.colorType());
+          PredefinedColorSpace::kSRGB, image_info.colorType());
 
   EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
   EXPECT_EQ(mailbox_texture->GetTextureIdForTest(), 1u);

@@ -43,6 +43,12 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
+enum class PredefinedColorSpace {
+  kSRGB,
+  kRec2020,
+  kP3,
+};
+
 enum DataU8ColorType {
   kRGBAColorType,
   kN32ColorType,
@@ -219,6 +225,12 @@ PLATFORM_EXPORT bool ParseTextAlign(const String&, TextAlign&);
 
 PLATFORM_EXPORT String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
+
+PLATFORM_EXPORT String PredefinedColorSpaceName(PredefinedColorSpace);
+
+// TODO(https://crbug.com/1274220): Remove the need for this function.
+PLATFORM_EXPORT bool ParsePredefinedColorSpace(const String&,
+                                               PredefinedColorSpace&);
 
 PLATFORM_EXPORT String ImageDataStorageFormatName(ImageDataStorageFormat);
 

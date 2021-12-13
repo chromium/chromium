@@ -231,4 +231,33 @@ String ImageDataStorageFormatName(ImageDataStorageFormat format) {
   return String();
 }
 
+String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
+  switch (color_space) {
+    case PredefinedColorSpace::kSRGB:
+      return "srgb";
+    case PredefinedColorSpace::kRec2020:
+      return "rec2020";
+    case PredefinedColorSpace::kP3:
+      return "display-p3";
+  };
+  NOTREACHED();
+  return String();
+}
+
+bool ParsePredefinedColorSpace(const String& s, PredefinedColorSpace& format) {
+  if (s == "srgb") {
+    format = PredefinedColorSpace::kSRGB;
+    return true;
+  }
+  if (s == "rec2020") {
+    format = PredefinedColorSpace::kRec2020;
+    return true;
+  }
+  if (s == "display-p3") {
+    format = PredefinedColorSpace::kP3;
+    return true;
+  }
+  return false;
+}
+
 }  // namespace blink
