@@ -219,6 +219,23 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteFileURLWithSwitch) {
   EXPECT_EQ(data(), "file: devtools_app.html");
 }
 
+TEST_F(DevToolsUIDataSourceTest,
+       TestDevToolsRemoteFileURLWithSwitchAndParameters) {
+#if defined(OS_WIN)
+  const char* flag_value = "file://C:/tmp/";
+#else
+  const char* flag_value = "file://tmp/";
+#endif
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kCustomDevtoolsFrontend, flag_value);
+  const GURL path = DevToolsUrl().Resolve(
+      DevToolsRemotePath("/serve_rev/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/"
+                         "devtools_app.html"));
+  StartRequest(path.path());
+  EXPECT_TRUE(data_received());
+  EXPECT_EQ(data(), "file: devtools_app.html");
+}
+
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURL) {
   const GURL path =
       DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));

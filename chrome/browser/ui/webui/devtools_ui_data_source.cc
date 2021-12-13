@@ -109,12 +109,27 @@ bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
   GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
   if (!custom_devtools_frontend.is_valid())
     return false;
+  std::string serve_rev_prefix("serve_rev/");
+  std::string stripped_path = path;
+  // Check if a service a remote revision request.
+  // In this case, we need to strip the revision prefix.
+  if (base::StartsWith(path, serve_rev_prefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    // Strip revision prefix. For example:
+    // "serve_rev/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/inspector.html"
+    // becomes "inspector.html".
+    std::size_t found = path.find("/", serve_rev_prefix.length() + 1);
+    if (found != std::string::npos)
+      stripped_path = path.substr(found + 1);
+    else
+      DLOG(ERROR) << "Unexpected URL format, falling back to the original URL.";
+  }
   if (custom_devtools_frontend.SchemeIsFile()) {
-    // Fetch from file system.
-    StartFileRequest(path, std::move(*callback));
+    // Fetch from file system but strip all the params.
+    StartFileRequest(PathWithoutParams(stripped_path), std::move(*callback));
     return true;
   }
-  GURL remote_url(custom_devtools_frontend.spec() + path);
+  GURL remote_url(custom_devtools_frontend.spec() + stripped_path);
   // Fetch from remote URL.
   StartCustomDataRequest(remote_url, std::move(*callback));
   return true;
