@@ -11,10 +11,6 @@
 #include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/interceptors.h"
-#include "sandbox/win/src/internal_types.h"
-#include "sandbox/win/src/nt_internals.h"
-#include "sandbox/win/src/process_thread_interception.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace {
@@ -155,31 +151,6 @@ bool HandleCloser::SetupHandleList(void* buffer, size_t buffer_bytes) {
 
   DCHECK_EQ(reinterpret_cast<size_t>(output), reinterpret_cast<size_t>(end));
   return output <= end;
-}
-
-bool GetHandleName(HANDLE handle, std::wstring* handle_name) {
-  static NtQueryObject QueryObject = nullptr;
-  if (!QueryObject)
-    ResolveNTFunctionPtr("NtQueryObject", &QueryObject);
-
-  ULONG size = MAX_PATH;
-  std::unique_ptr<UNICODE_STRING, base::FreeDeleter> name;
-  NTSTATUS result;
-
-  do {
-    name.reset(static_cast<UNICODE_STRING*>(malloc(size)));
-    DCHECK(name.get());
-    result =
-        QueryObject(handle, ObjectNameInformation, name.get(), size, &size);
-  } while (result == STATUS_INFO_LENGTH_MISMATCH ||
-           result == STATUS_BUFFER_OVERFLOW);
-
-  if (NT_SUCCESS(result) && name->Buffer && name->Length)
-    handle_name->assign(name->Buffer, name->Length / sizeof(wchar_t));
-  else
-    handle_name->clear();
-
-  return NT_SUCCESS(result);
 }
 
 }  // namespace sandbox

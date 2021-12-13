@@ -15,6 +15,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
+#include "base/strings/string_util_win.h"
+#include "base/strings/stringprintf.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -56,6 +59,25 @@ bool GetModuleList(HANDLE process, std::vector<HMODULE>* result) {
     return true;
   }
   return false;
+}
+
+std::wstring GetRandomName() {
+  return base::StringPrintf(L"chrome_%08X%08X", base::RandUint64(),
+                            base::RandUint64());
+}
+
+void CompareHandlePath(const base::win::ScopedHandle& handle,
+                       const std::wstring& expected_path) {
+  std::wstring path;
+  ASSERT_TRUE(GetPathFromHandle(handle.Get(), &path));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(path, expected_path));
+}
+
+void CompareHandleType(const base::win::ScopedHandle& handle,
+                       const std::wstring& expected_type) {
+  std::wstring type_name;
+  ASSERT_TRUE(GetTypeNameFromHandle(handle.Get(), &type_name));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(type_name, expected_type));
 }
 
 }  // namespace
@@ -249,6 +271,29 @@ TEST(WinUtils, ConvertToLongPath) {
   expected_result.append(temp_path.value().substr(3));
   EXPECT_TRUE(::wcsicmp(expected_result.c_str(), test2.c_str()) == 0);
   // Expected result: "\Device\HarddiskVolumeX\ProgramData\%TEMP%\test_calc.exe"
+}
+
+TEST(WinUtils, GetPathAndTypeFromHandle) {
+  std::wstring invalid_handle;
+  EXPECT_FALSE(GetPathFromHandle(nullptr, &invalid_handle));
+  EXPECT_TRUE(invalid_handle.empty());
+  EXPECT_FALSE(GetTypeNameFromHandle(nullptr, &invalid_handle));
+  EXPECT_TRUE(invalid_handle.empty());
+  std::wstring random_name = GetRandomName();
+  ASSERT_FALSE(random_name.empty());
+  std::wstring event_name = L"Global\\" + random_name;
+  base::win::ScopedHandle event_handle(
+      ::CreateEvent(nullptr, FALSE, FALSE, event_name.c_str()));
+  ASSERT_TRUE(event_handle.IsValid());
+  CompareHandlePath(event_handle, L"\\BaseNamedObjects\\" + random_name);
+  CompareHandleType(event_handle, L"Event");
+  std::wstring pipe_name = L"\\\\.\\pipe\\" + random_name;
+  base::win::ScopedHandle pipe_handle(::CreateNamedPipe(
+      pipe_name.c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
+      PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
+  ASSERT_TRUE(pipe_handle.IsValid());
+  CompareHandlePath(pipe_handle, L"\\Device\\NamedPipe\\" + random_name);
+  CompareHandleType(pipe_handle, L"File");
 }
 
 }  // namespace sandbox

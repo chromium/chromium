@@ -723,13 +723,6 @@ typedef NTSTATUS(WINAPI* NtQuerySystemInformation)(
     IN ULONG SystemInformationLength,
     OUT PULONG ReturnLength);
 
-typedef NTSTATUS(WINAPI* NtQueryObject)(IN HANDLE Handle,
-                                        IN OBJECT_INFORMATION_CLASS
-                                            ObjectInformationClass,
-                                        OUT PVOID ObjectInformation,
-                                        IN ULONG ObjectInformationLength,
-                                        OUT PULONG ReturnLength);
-
 // -----------------------------------------------------------------------
 // Strings
 
