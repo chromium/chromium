@@ -13,6 +13,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_outcome.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -33,9 +34,16 @@ namespace safe_browsing {
 
 namespace {
 
-void LogMessageOutcome(TailoredSecurityOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.TailoredSecurityUnconsentedMessageOutcome", outcome);
+void LogMessageOutcome(TailoredSecurityOutcome outcome, bool is_in_flow) {
+  if (is_in_flow) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageOutcome",
+        outcome);
+  } else {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.TailoredSecurityUnconsentedOutOfFlowMessageOutcome",
+        outcome);
+  }
 }
 
 const int kAvatarSize = 256;
@@ -69,72 +77,82 @@ void CircleImageSource::Draw(gfx::Canvas* canvas) {
 
 }  // namespace
 
-TailoredSecurityUnconsentedModalAndroid::
-    TailoredSecurityUnconsentedModalAndroid(content::WebContents* web_contents,
-                                            base::OnceClosure dismiss_callback_)
-    : dismiss_callback_(std::move(dismiss_callback_)),
-      web_contents_(web_contents) {
+TailoredSecurityUnconsentedMessageAndroid::
+    TailoredSecurityUnconsentedMessageAndroid(
+        content::WebContents* web_contents,
+        base::OnceClosure dismiss_callback,
+        bool is_in_flow)
+    : dismiss_callback_(std::move(dismiss_callback)),
+      web_contents_(web_contents),
+      is_in_flow_(is_in_flow) {
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::TAILORED_SECURITY_ENABLED,
       base::BindOnce(
-          &TailoredSecurityUnconsentedModalAndroid::HandleMessageAccepted,
+          &TailoredSecurityUnconsentedMessageAndroid::HandleMessageAccepted,
           base::Unretained(this)),
       base::BindOnce(
-          &TailoredSecurityUnconsentedModalAndroid::HandleMessageDismissed,
+          &TailoredSecurityUnconsentedMessageAndroid::HandleMessageDismissed,
           base::Unretained(this)));
 
-  message_->SetTitle(l10n_util::GetStringUTF16(
-      IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_TITLE));
-  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_ACCEPT));
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    gfx::ImageSkia avatar_image = identity_manager
-                                      ->FindExtendedAccountInfoByAccountId(
-                                          identity_manager->GetPrimaryAccountId(
-                                              signin::ConsentLevel::kSignin))
-                                      .account_image.AsImageSkia();
-
-    gfx::ImageSkia sized_avatar_image =
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            avatar_image, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kAvatarSize, kAvatarSize));
-    gfx::ImageSkia cropped_avatar_image =
-        gfx::ImageSkiaOperations::CreateMaskedImage(
-            sized_avatar_image,
-            gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-                sized_avatar_image.width(), SK_ColorWHITE));
-    gfx::ImageSkia final_avatar_image =
-        gfx::ImageSkiaOperations::CreateSuperimposedImage(
-            gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-                kAvatarWithBorderSize, gfx::kGoogleBlue400),
-            cropped_avatar_image);
-    gfx::ImageSkia badge = gfx::CreateVectorIcon(kSafetyCheckIcon, kBadgeSize,
-                                                 gfx::kGoogleBlue500);
-    icon_ = gfx::ImageSkiaOperations::CreateIconWithBadge(final_avatar_image,
-                                                          badge);
-    message_->SetIcon(*icon_.bitmap());
-    message_->EnableLargeIcon(true);
-    message_->DisableIconTint();
+  int message_title =
+      is_in_flow_ ? IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_TITLE
+                  : IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_TITLE;
+  int primary_button =
+      is_in_flow_ ? IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_ACCEPT
+                  : IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT;
+  message_->SetTitle(l10n_util::GetStringUTF16(message_title));
+  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(primary_button));
+  if (!is_in_flow_) {
+    message_->SetDescription(l10n_util::GetStringUTF16(
+        IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION));
   }
 
-  message_->SetSecondaryIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message_->SetSecondaryActionCallback(base::BindOnce(
-      &TailoredSecurityUnconsentedModalAndroid::HandleSettingsClicked,
-      base::Unretained(this)));
+  if (is_in_flow_) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+    if (identity_manager &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      gfx::ImageSkia avatar_image =
+          identity_manager
+              ->FindExtendedAccountInfoByAccountId(
+                  identity_manager->GetPrimaryAccountId(
+                      signin::ConsentLevel::kSignin))
+              .account_image.AsImageSkia();
+
+      gfx::ImageSkia sized_avatar_image =
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              avatar_image, skia::ImageOperations::RESIZE_BEST,
+              gfx::Size(kAvatarSize, kAvatarSize));
+      gfx::ImageSkia cropped_avatar_image =
+          gfx::ImageSkiaOperations::CreateMaskedImage(
+              sized_avatar_image,
+              gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
+                  sized_avatar_image.width(), SK_ColorWHITE));
+      gfx::ImageSkia final_avatar_image =
+          gfx::ImageSkiaOperations::CreateSuperimposedImage(
+              gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
+                  kAvatarWithBorderSize, gfx::kGoogleBlue400),
+              cropped_avatar_image);
+      gfx::ImageSkia badge = gfx::CreateVectorIcon(kSafetyCheckIcon, kBadgeSize,
+                                                   gfx::kGoogleBlue500);
+      icon_ = gfx::ImageSkiaOperations::CreateIconWithBadge(final_avatar_image,
+                                                            badge);
+      message_->SetIcon(*icon_.bitmap());
+      message_->DisableIconTint();
+    }
+  } else {
+    message_->SetIconResourceId(
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SAFETY_CHECK));
+  }
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
 }
 
-TailoredSecurityUnconsentedModalAndroid::
-    ~TailoredSecurityUnconsentedModalAndroid() {
+TailoredSecurityUnconsentedMessageAndroid::
+    ~TailoredSecurityUnconsentedMessageAndroid() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), messages::DismissReason::UNKNOWN);
@@ -143,39 +161,37 @@ TailoredSecurityUnconsentedModalAndroid::
   }
 }
 
-void TailoredSecurityUnconsentedModalAndroid::HandleMessageAccepted() {
-  LogMessageOutcome(TailoredSecurityOutcome::kAccepted);
-
+void TailoredSecurityUnconsentedMessageAndroid::HandleMessageAccepted() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  SetSafeBrowsingState(profile->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/false);
-  ShowSafeBrowsingSettings(web_contents_);
+  if (is_in_flow_) {
+    LogMessageOutcome(TailoredSecurityOutcome::kAccepted, is_in_flow_);
+    SetSafeBrowsingState(profile->GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+  } else {
+    LogMessageOutcome(TailoredSecurityOutcome::kSettings, is_in_flow_);
+  }
+
+  ShowSafeBrowsingSettings(web_contents_,
+                           SettingsAccessPoint::kTailoredSecurity);
 }
 
-void TailoredSecurityUnconsentedModalAndroid::HandleMessageDismissed(
+void TailoredSecurityUnconsentedMessageAndroid::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
-  LogMessageOutcome(TailoredSecurityOutcome::kDismissed);
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.TailoredSecurityUnconsentedMessageDismissReason",
-      dismiss_reason, messages::DismissReason::COUNT);
+  LogMessageOutcome(TailoredSecurityOutcome::kDismissed, is_in_flow_);
+  if (is_in_flow_) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageDismissReason",
+        dismiss_reason, messages::DismissReason::COUNT);
+  } else {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.TailoredSecurityUnconsentedOutOfFlowMessageDismissReason",
+        dismiss_reason, messages::DismissReason::COUNT);
+  }
   message_.reset();
   // `dismiss_callback_` may delete `this`.
   if (dismiss_callback_)
     std::move(dismiss_callback_).Run();
-}
-
-void TailoredSecurityUnconsentedModalAndroid::HandleSettingsClicked() {
-  LogMessageOutcome(TailoredSecurityOutcome::kSettings);
-  ShowSafeBrowsingSettings(web_contents_);
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::SECONDARY_ACTION);
-    // `dismiss_callback_` may delete `this`.
-    if (dismiss_callback_)
-      std::move(dismiss_callback_).Run();
-  }
 }
 
 }  // namespace safe_browsing

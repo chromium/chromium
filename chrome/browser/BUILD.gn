@@ -3407,6 +3407,7 @@ static_library("browser") {
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy_sandbox/android:jni_headers",
       "//chrome/browser/reading_list/android",
+      "//chrome/browser/safe_browsing/android:safe_browsing_enums",
       "//chrome/browser/safety_check/android",
       "//chrome/browser/share/android:jni_headers",
       "//chrome/browser/signin/services/android:jni_headers",

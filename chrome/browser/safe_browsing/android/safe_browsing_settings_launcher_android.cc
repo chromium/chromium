@@ -10,9 +10,11 @@
 
 namespace safe_browsing {
 
-void ShowSafeBrowsingSettings(content::WebContents* web_contents) {
+void ShowSafeBrowsingSettings(content::WebContents* web_contents,
+                              SettingsAccessPoint access_point) {
   Java_SafeBrowsingSettingsLauncher_showSafeBrowsingSettings(
-      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
+      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents(),
+      static_cast<int>(access_point));
 }
 
 }  // namespace safe_browsing

@@ -1801,6 +1801,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.TailoredSecurityUnconsentedMessageOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-11">
+  <obsolete>
+    Removed 12-2021 and replaced with
+    SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageOutcome
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1818,6 +1822,21 @@ chromium-metrics-reviews@google.com.
     user changes their account tailored security setting and dismisses the
     corresponding message.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TailoredSecurityUnconsented{Flow}MessageOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of displaying the message when a signed-in, non-syncing
+    user changes their account tailored security setting and is {Flow} of
+    consenting.
+  </summary>
+  <token key="Flow">
+    <variant name="InFlow" summary="in the flow"/>
+    <variant name="OutOfFlow" summary="not in the flow"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.TokenFetcher.ErrorType"

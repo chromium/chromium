@@ -61,11 +61,12 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
     if (base::Time::Now() - previous_update <=
         base::Minutes(kThresholdForInFlowNotificationMinutes)) {
 #if defined(OS_ANDROID)
-      message_ = std::make_unique<TailoredSecurityUnconsentedModalAndroid>(
+      message_ = std::make_unique<TailoredSecurityUnconsentedMessageAndroid>(
           web_contents(),
           base::BindOnce(&TailoredSecurityUrlObserver::MessageDismissed,
                          // Unretained is safe because |this| owns |message_|.
-                         base::Unretained(this)));
+                         base::Unretained(this)),
+          /*is_in_flow=*/true);
 #else
       TailoredSecurityUnconsentedModal::ShowForWebContents(web_contents());
 #endif

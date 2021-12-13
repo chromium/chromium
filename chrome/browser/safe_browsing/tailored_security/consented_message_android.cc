@@ -97,7 +97,8 @@ void TailoredSecurityConsentedModalAndroid::DismissMessageInternal(
 }
 
 void TailoredSecurityConsentedModalAndroid::HandleSettingsClicked() {
-  ShowSafeBrowsingSettings(web_contents_);
+  ShowSafeBrowsingSettings(web_contents_,
+                           SettingsAccessPoint::kTailoredSecurity);
   LogOutcome(TailoredSecurityOutcome::kSettings, is_enable_message_);
   DismissMessageInternal(messages::DismissReason::SECONDARY_ACTION);
 }

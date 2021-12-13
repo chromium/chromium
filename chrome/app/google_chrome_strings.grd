@@ -1387,6 +1387,17 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
         Google Chrome needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
       </message>
+
+      <!-- Tailored Security -->
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_TITLE" desc="Title shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Get Chrome's strongest security
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Enhanced protection does more to block phishing and malware
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT" desc="Accept button shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Continue
+      </message>
     </messages>
   </release>
 </grit>

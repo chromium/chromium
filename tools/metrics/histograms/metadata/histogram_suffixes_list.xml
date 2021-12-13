@@ -9945,9 +9945,9 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="NotificationSchedulerClientType" separator=".">
   <suffix name="__Test__" label=""/>
   <suffix name="ChromeUpdate" label=""/>
+  <suffix name="FeatureGuide" label=""/>
   <suffix name="Prefetch" label=""/>
   <suffix name="ReadingList" label=""/>
-  <suffix name="FeatureGuide" label=""/>
   <suffix name="Unknown" label=""/>
   <suffix name="WebUI" label=""/>
   <affected-histogram name="Notifications.Scheduler.IhnrActionButtonEvent"/>
@@ -14697,6 +14697,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="SurfaceExplorerPromoSlinger"
       label="The user enters the Safe Browsing settings page from the Surface
              Explorer page."/>
+  <suffix name="TailoredSecurity"
+      label="The user enters the Safe Browsing settings page from the UX
+             shown due to a change in the Tailored Security setting"/>
   <affected-histogram name="SafeBrowsing.Settings.UserAction"/>
 </histogram_suffixes>
 
