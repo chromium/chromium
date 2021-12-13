@@ -4,6 +4,13 @@
 
 #include "chrome/browser/headless/headless_mode_util.h"
 
+#include "build/build_config.h"
+
+// Native headless is currently available only on Linux and Windows platforms.
+// More platforms will be added later, so avoid function level clutter by
+// providing a compile time condition over the entire file.
+#if defined(OS_LINUX) || defined(OS_WIN)
+
 #include <memory>
 #include <string>
 
@@ -123,10 +130,8 @@ class MockChromeProcessSingleton : public ChromeProcessSingleton {
   }
 };
 
-// This test currently fails on ChromeOS and Mac, see https://crbug.com/1278540
-// and https://crbug.com/1278603
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
-                       DISABLED_ChromeProcessSingletonExists) {
+                       ChromeProcessSingletonExists) {
   // Pass the user data dir to the child process which will try
   // to create a mock ChromeProcessSingleton in it that is
   // expected to fail.
@@ -161,3 +166,5 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
 
   return static_cast<int>(notify_result);
 }
+
+#endif  // defined(OS_LINUX) || defined(OS_WIN)
