@@ -88,6 +88,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
 
   void SetSuspendWhenOffline(bool suspend);
 
+  // Calculates buffer len to pass to network transaction Read call.
+  int GetReadBufLen(int buf_len) const;
+
  private:
   struct ThrottleRecord {
    public:
