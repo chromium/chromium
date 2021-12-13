@@ -65,14 +65,8 @@ void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
   if (data.NoBlockingErrors())
     WebApkUkmRecorder::RecordWebApkableVisit(data.manifest_url);
-  screenshots_ = data.screenshots;
 
   AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(data);
-}
-
-void ChromeAppBannerManagerAndroid::ResetCurrentPageData() {
-  AppBannerManagerAndroid::ResetCurrentPageData();
-  screenshots_.clear();
 }
 
 void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
@@ -112,25 +106,6 @@ void ChromeAppBannerManagerAndroid::ShowBannerUi(
   }
 
   ReportStatus(SHOWING_WEB_APP_BANNER);
-}
-
-bool ChromeAppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
-    bool expand_sheet,
-    WebappInstallSource install_source) {
-  // Do not show the peeked bottom sheet if it was recently dismissed.
-  if (!expand_sheet && AppBannerSettingsHelper::WasBannerRecentlyBlocked(
-                           web_contents(), validated_url_, GetAppIdentifier(),
-                           GetCurrentTime())) {
-    return false;
-  }
-
-  auto a2hs_params = CreateAddToHomescreenParams(install_source);
-  return PwaBottomSheetController::MaybeShow(
-      web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
-      manifest().start_url, screenshots_, manifest().description.value_or(u""),
-      expand_sheet, std::move(a2hs_params),
-      base::BindRepeating(&ChromeAppBannerManagerAndroid::OnInstallEvent,
-                          ChromeAppBannerManagerAndroid::GetAndroidWeakPtr()));
 }
 
 void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

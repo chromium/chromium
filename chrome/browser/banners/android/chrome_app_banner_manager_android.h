@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_BANNERS_ANDROID_CHROME_APP_BANNER_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_BANNERS_ANDROID_CHROME_APP_BANNER_MANAGER_ANDROID_H_
 
-#include <vector>
-
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,18 +26,11 @@ class ChromeAppBannerManagerAndroid
   using content::WebContentsUserData<
       ChromeAppBannerManagerAndroid>::FromWebContents;
 
-  // Returns false if the bottom sheet can't be shown. In that case an
-  // alternative UI should be shown.
-  bool MaybeShowPwaBottomSheetController(
-      bool expand_sheet,
-      WebappInstallSource install_source) override;
-
  protected:
   // AppBannerManagerAndroid:
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
-  void ResetCurrentPageData() override;
   void MaybeShowAmbientBadge() override;
   void ShowAmbientBadge() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
@@ -54,9 +45,6 @@ class ChromeAppBannerManagerAndroid
   // show it was made, but false if conditions (e.g. engagement score) for
   // showing where not deemed adequate.
   bool MaybeShowInProductHelp() const;
-
-  // The screenshots to show in the install UI.
-  std::vector<SkBitmap> screenshots_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -98,9 +98,10 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;
 
-  virtual bool MaybeShowPwaBottomSheetController(
-      bool expand_sheet,
-      WebappInstallSource install_source);
+  // Returns false if the bottom sheet can't be shown. In that case an
+  // alternative UI should be shown.
+  bool MaybeShowPwaBottomSheetController(bool expand_sheet,
+                                         WebappInstallSource install_source);
 
  protected:
   // AppBannerManager overrides.
@@ -139,6 +140,9 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // being cancelled or an app being installed has occurred.
   void OnInstallEvent(AddToHomescreenInstaller::Event event,
                       const AddToHomescreenParams& a2hs_params);
+
+  void OnDidPerformInstallableWebAppCheck(
+      const InstallableData& result) override;
 
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
 
@@ -183,13 +187,16 @@ class AppBannerManagerAndroid : public AppBannerManager,
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
 
   // Message controller for the ambient badge.
-  InstallableAmbientBadgeMessageController message_controller_;
+  InstallableAmbientBadgeMessageController message_controller_{this};
 
   // App package name for a native app banner.
   std::string native_app_package_;
 
   // Title to display in the banner for native app.
   std::u16string native_app_title_;
+
+  // The screenshots to show in the install UI.
+  std::vector<SkBitmap> screenshots_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 };
