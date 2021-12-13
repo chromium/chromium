@@ -422,6 +422,20 @@ ProtectedBufferManager::GetProtectedNativePixmapHandleFor(
   return iter->second->DuplicateNativePixmapHandle();
 }
 
+void ProtectedBufferManager::GetProtectedSharedMemoryRegionFor(
+    base::ScopedFD dummy_fd,
+    GetProtectedSharedMemoryRegionForResponseCB response_cb) {
+  std::move(response_cb)
+      .Run(GetProtectedSharedMemoryRegionFor(std::move(dummy_fd)));
+}
+
+void ProtectedBufferManager::GetProtectedNativePixmapHandleFor(
+    base::ScopedFD dummy_fd,
+    GetProtectedNativePixmapHandleForResponseCB response_cb) {
+  std::move(response_cb)
+      .Run(GetProtectedNativePixmapHandleFor(std::move(dummy_fd)));
+}
+
 scoped_refptr<gfx::NativePixmap>
 ProtectedBufferManager::GetProtectedNativePixmapFor(
     const gfx::NativePixmapHandle& handle) {

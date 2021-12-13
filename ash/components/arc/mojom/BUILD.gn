@@ -393,7 +393,10 @@ mojom("oemcrypto") {
 
 mojom("protected_buffer_manager") {
   sources = [ "protected_buffer_manager.mojom" ]
-  public_deps = [ "//sandbox/policy/mojom" ]
+  public_deps = [
+    "//media/mojo/mojom/stable:native_pixmap_handle",
+    "//sandbox/policy/mojom",
+  ]
 }
 
 source_set("mojom_traits") {

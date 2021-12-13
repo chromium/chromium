@@ -19,9 +19,10 @@ GpuArcProtectedBufferManagerProxy::GpuArcProtectedBufferManagerProxy(
 
 GpuArcProtectedBufferManagerProxy::~GpuArcProtectedBufferManagerProxy() {}
 
-void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
-    mojo::ScopedHandle dummy_handle,
-    GetProtectedSharedMemoryFromHandleCallback callback) {
+void GpuArcProtectedBufferManagerProxy::
+    DeprecatedGetProtectedSharedMemoryFromHandle(
+        mojo::ScopedHandle dummy_handle,
+        DeprecatedGetProtectedSharedMemoryFromHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
 
   auto region = protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
@@ -29,6 +30,38 @@ void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
   // This ScopedFDPair dance is chromeos-specific.
   base::subtle::ScopedFDPair fd_pair = region.PassPlatformHandle();
   std::move(callback).Run(mojo::WrapPlatformFile(std::move(fd_pair.fd)));
+}
+
+void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
+    mojo::ScopedHandle dummy_handle,
+    GetProtectedSharedMemoryFromHandleCallback callback) {
+  base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
+
+  auto region_platform_handle =
+      protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
+          std::move(unwrapped_fd));
+  if (!region_platform_handle.IsValid())
+    return std::move(callback).Run(mojo::ScopedSharedBufferHandle());
+
+  base::UnsafeSharedMemoryRegion unsafe_shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Deserialize(
+          std::move(region_platform_handle));
+  CHECK(unsafe_shared_memory_region.IsValid());
+  std::move(callback).Run(mojo::WrapUnsafeSharedMemoryRegion(
+      std::move(unsafe_shared_memory_region)));
+}
+
+void GpuArcProtectedBufferManagerProxy::
+    GetProtectedNativePixmapHandleFromHandle(
+        mojo::ScopedHandle dummy_handle,
+        GetProtectedNativePixmapHandleFromHandleCallback callback) {
+  base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
+  gfx::NativePixmapHandle native_pixmap_handle =
+      protected_buffer_manager_->GetProtectedNativePixmapHandleFor(
+          std::move(unwrapped_fd));
+  if (native_pixmap_handle.planes.empty())
+    return std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::move(native_pixmap_handle));
 }
 
 }  // namespace arc

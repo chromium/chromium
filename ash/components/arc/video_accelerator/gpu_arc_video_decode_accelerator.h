@@ -23,7 +23,7 @@
 
 namespace arc {
 
-class ProtectedBufferManager;
+class DecoderProtectedBufferManager;
 
 // GpuArcVideoDecodeAccelerator is executed in the GPU process.
 // It takes decoding requests from ARC via IPC channels and translates and
@@ -42,7 +42,7 @@ class GpuArcVideoDecodeAccelerator
   GpuArcVideoDecodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      scoped_refptr<ProtectedBufferManager> protected_buffer_manager);
+      scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager);
 
   GpuArcVideoDecodeAccelerator(const GpuArcVideoDecodeAccelerator&) = delete;
   GpuArcVideoDecodeAccelerator& operator=(const GpuArcVideoDecodeAccelerator&) =
@@ -100,6 +100,26 @@ class GpuArcVideoDecodeAccelerator
   void InitializeTask(mojom::VideoDecodeAcceleratorConfigPtr config);
   // Called when initialization is done.
   void OnInitializeDone(mojom::VideoDecodeAccelerator::Result result);
+
+  // Called after getting the input shared memory region from the
+  // |protected_buffer_manager_|, if required. Otherwise, Decode() calls this
+  // directly.
+  void ContinueDecode(mojom::BitstreamBufferPtr bitstream_buffer,
+                      base::ScopedFD handle_fd,
+                      base::subtle::PlatformSharedMemoryRegion shm_region);
+
+  // Posted as a task after getting the result of the first query to the
+  // |protected_buffer_manager_| in order to resume decode tasks that were
+  // waiting for that result.
+  void ResumeDecodingAfterFirstSecureBuffer();
+
+  // Called after getting the output native pixmap handle from the
+  // |protected_buffer_manager_|, if required. Otherwise,
+  // ImportBufferForPicture() calls this directly.
+  void ContinueImportBufferForPicture(
+      int32_t picture_buffer_id,
+      media::VideoPixelFormat pixel_format,
+      gfx::NativePixmapHandle native_pixmap_handle);
 
   // Execute all pending requests until a VDA::Reset() request is encountered.
   // When that happens, we need to explicitly wait for NotifyResetDone().
@@ -177,7 +197,7 @@ class GpuArcVideoDecodeAccelerator
   gfx::Size coded_size_;
   gfx::Size pending_coded_size_;
 
-  scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
+  scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager_;
 
   absl::optional<bool> secure_mode_ = absl::nullopt;
   size_t output_buffer_count_ = 0;
@@ -192,7 +212,20 @@ class GpuArcVideoDecodeAccelerator
   // Set to true when the last ProvidePictureBuffers() is replied.
   bool awaiting_first_import_ = false;
 
+  // Set to true when we're waiting for the |protected_buffer_manager_| to reply
+  // to the first query for the shared memory region corresponding to a dummy
+  // FD. When true, we queue incoming Decode() requests in
+  // |decode_requests_waiting_for_first_secure_buffer_| for later use.
+  bool awaiting_first_secure_buffer_ = false;
+  std::queue<base::OnceClosure>
+      decode_requests_waiting_for_first_secure_buffer_;
+
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<GpuArcVideoDecodeAccelerator>
+      weak_ptr_factory_for_querying_protected_input_buffers_{this};
+  base::WeakPtrFactory<GpuArcVideoDecodeAccelerator>
+      weak_ptr_factory_for_querying_protected_output_buffers_{this};
 };
 
 }  // namespace arc

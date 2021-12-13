@@ -13,6 +13,7 @@
 
 namespace arc {
 
+class DecoderProtectedBufferManager;
 class GpuArcVideoDecodeAccelerator;
 
 // An OOPArcVideoAcceleratorFactory runs in its own process and wraps a single
@@ -33,7 +34,9 @@ class OOPArcVideoAcceleratorFactory
 
   // arc::mojom:::VideoAcceleratorFactory implementation.
   void CreateDecodeAccelerator(
-      mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver) override;
+      mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver,
+      mojo::PendingRemote<mojom::ProtectedBufferManager>
+          protected_buffer_manager) override;
   void CreateEncodeAccelerator(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) override;
   void CreateProtectedBufferAllocator(
@@ -44,6 +47,7 @@ class OOPArcVideoAcceleratorFactory
   void OnDecoderDisconnected();
 
   mojo::Receiver<mojom::VideoAcceleratorFactory> receiver_;
+  scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

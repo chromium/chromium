@@ -91,7 +91,7 @@ int GpuArcVideoDecodeAccelerator::initialized_instance_count_ = 0;
 GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    scoped_refptr<ProtectedBufferManager> protected_buffer_manager)
+    scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager)
     : gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       protected_buffer_manager_(std::move(protected_buffer_manager)) {
@@ -111,6 +111,9 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  weak_ptr_factory_for_querying_protected_input_buffers_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_querying_protected_output_buffers_.InvalidateWeakPtrs();
+
   if (vda_) {
     // Destroy |vda_| now in case it needs to use *|this| during tear-down.
     vda_.reset();
@@ -274,6 +277,10 @@ void GpuArcVideoDecodeAccelerator::ResetRequest(
     media::VideoDecodeAccelerator* vda) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(vda);
+  // Invalidating the WeakPtrs here ensures that after a Reset, we don't run
+  // decode tasks that were queued up waiting for the result of a query to the
+  // |protected_buffer_manager_|.
+  weak_ptr_factory_for_querying_protected_input_buffers_.InvalidateWeakPtrs();
   pending_reset_callback_ = std::move(cb);
   vda->Reset();
 }
@@ -421,8 +428,19 @@ void GpuArcVideoDecodeAccelerator::Decode(
     mojom::BitstreamBufferPtr bitstream_buffer) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!vda_) {
-    VLOGF(1) << "VDA not initialized.";
+
+  // We may be waiting on the first query to the |protected_buffer_manager_|,
+  // i.e., |awaiting_first_secure_buffer_| is true. In that case, we need to
+  // queue the current Decode() request in order to keep the ordering of input
+  // buffers. Additionally, it's possible that we're no longer waiting on the
+  // |protected_buffer_manager_|, but incoming Decode() tasks still need to run
+  // after the ones that have been queued up so far.
+  if (awaiting_first_secure_buffer_ ||
+      !decode_requests_waiting_for_first_secure_buffer_.empty()) {
+    decode_requests_waiting_for_first_secure_buffer_.push(base::BindOnce(
+        &GpuArcVideoDecodeAccelerator::Decode,
+        weak_ptr_factory_for_querying_protected_input_buffers_.GetWeakPtr(),
+        std::move(bitstream_buffer)));
     return;
   }
 
@@ -439,44 +457,81 @@ void GpuArcVideoDecodeAccelerator::Decode(
   // querying ProtectedBufferManager. If we can get the corresponding protected
   // buffer, then we consider the playback as secure. Otherwise, we consider it
   // as a normal playback.
-  if (!secure_mode_.has_value()) {
-    if (!protected_buffer_manager_) {
-      DVLOGF(3) << "ProtectedBufferManager is null, treat as normal playback";
-      secure_mode_ = false;
-    } else {
-      secure_mode_ = IsBufferSecure(protected_buffer_manager_.get(), handle_fd);
-      VLOGF(2) << "First input buffer is secure buffer? " << *secure_mode_;
-    }
+  if (!secure_mode_.has_value() && !protected_buffer_manager_) {
+    DVLOGF(3) << "ProtectedBufferManager is null, treat as normal playback";
+    secure_mode_ = false;
   }
-
-  base::subtle::PlatformSharedMemoryRegion shm_region;
-  if (*secure_mode_) {
-    // Use protected shared memory associated with the given file descriptor.
-    shm_region = protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
-        std::move(handle_fd));
-    if (!shm_region.IsValid()) {
-      VLOGF(1) << "No protected shared memory found for handle";
+  if (!secure_mode_.has_value() || *secure_mode_) {
+    base::ScopedFD dup_fd(HANDLE_EINTR(dup(handle_fd.get())));
+    if (!dup_fd.is_valid()) {
+      VLOGF(1) << "Could not dup() input fd";
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
-  } else {
+    awaiting_first_secure_buffer_ = !secure_mode_.has_value();
+    protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
+        std::move(dup_fd),
+        base::BindOnce(
+            &GpuArcVideoDecodeAccelerator::ContinueDecode,
+            weak_ptr_factory_for_querying_protected_input_buffers_.GetWeakPtr(),
+            std::move(bitstream_buffer), std::move(handle_fd)));
+    return;
+  }
+
+  DCHECK(secure_mode_);
+  DCHECK(!*secure_mode_);
+  ContinueDecode(std::move(bitstream_buffer), std::move(handle_fd),
+                 base::subtle::PlatformSharedMemoryRegion());
+}
+
+void GpuArcVideoDecodeAccelerator::ContinueDecode(
+    mojom::BitstreamBufferPtr bitstream_buffer,
+    base::ScopedFD handle_fd,
+    base::subtle::PlatformSharedMemoryRegion shm_region) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!vda_) {
+    VLOGF(1) << "VDA not initialized.";
+    return;
+  }
+
+  if (!secure_mode_.has_value()) {
+    secure_mode_ = shm_region.IsValid();
+    VLOGF(2) << "Input buffer is secure buffer? " << *secure_mode_;
+    awaiting_first_secure_buffer_ = false;
+    if (!decode_requests_waiting_for_first_secure_buffer_.empty()) {
+      // Note: we PostTask() in order to keep the right order of input buffers
+      // and to avoid having to reason about the re-entrancy of Decode() and/or
+      // ContinueDecode().
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&GpuArcVideoDecodeAccelerator::
+                             ResumeDecodingAfterFirstSecureBuffer,
+                         weak_ptr_factory_for_querying_protected_input_buffers_
+                             .GetWeakPtr()));
+    }
+  }
+
+  if (!*secure_mode_) {
     size_t handle_size;
     if (!media::GetFileSize(handle_fd.get(), &handle_size)) {
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
+    DCHECK(!shm_region.IsValid());
     shm_region = base::subtle::PlatformSharedMemoryRegion::Take(
         std::move(handle_fd),
         base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, handle_size,
         base::UnguessableToken::Create());
-    if (!shm_region.IsValid()) {
-      VLOGF(1) << "Cannot take file descriptor based shared memory";
-      client_->NotifyError(
-          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
-      return;
-    }
+  }
+
+  if (!shm_region.IsValid()) {
+    VLOGF(1) << "Could not extract shared memory region from input handle";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
   }
 
   // Use Unretained(this) is safe, this callback will be executed in
@@ -491,6 +546,23 @@ void GpuArcVideoDecodeAccelerator::Decode(
                bitstream_buffer->bitstream_id, std::move(shm_region),
                bitstream_buffer->bytes_used, bitstream_buffer->offset)),
        PendingCallback()});
+}
+
+void GpuArcVideoDecodeAccelerator::ResumeDecodingAfterFirstSecureBuffer() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!awaiting_first_secure_buffer_);
+
+  // Note: we move into |callbacks_to_call| so that
+  // |decode_requests_waiting_for_first_secure_buffer_| is emptied out. This is
+  // important: if |decode_requests_waiting_for_first_secure_buffer_| is not
+  // empty by the time Decode() is called, we'll just continue queueing tasks
+  // into that queue because of the condition at the beginning of Decode().
+  auto callbacks_to_call =
+      std::move(decode_requests_waiting_for_first_secure_buffer_);
+  while (!callbacks_to_call.empty()) {
+    std::move(callbacks_to_call.front()).Run();
+    callbacks_to_call.pop();
+  }
 }
 
 void GpuArcVideoDecodeAccelerator::HandleProvidePictureBuffers(
@@ -577,23 +649,6 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     mojom::BufferModifierPtr modifier_ptr) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!vda_) {
-    VLOGF(1) << "VDA not initialized.";
-    return;
-  }
-  if (current_provide_picture_buffers_cb_) {
-    DVLOGF(3) << "AssignPictureBuffers() for the last "
-              << "Client::ProvidePictureBuffers() hasn't been called, ignored.";
-    return;
-  }
-
-  if (picture_buffer_id < 0 ||
-      static_cast<size_t>(picture_buffer_id) >= output_buffer_count_) {
-    VLOGF(1) << "Invalid picture_buffer_id=" << picture_buffer_id;
-    client_->NotifyError(
-        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
-    return;
-  }
 
   base::ScopedFD handle_fd = UnwrapFdFromMojoHandle(std::move(handle));
   if (!handle_fd.is_valid()) {
@@ -621,34 +676,22 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     modifier = modifier_ptr->val;
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  DCHECK(secure_mode_.has_value());
-  if (*secure_mode_) {
-    // Get protected output buffer associated with |handle_fd|.
-    // Duplicating handle here is needed as ownership of passed fd is
-    // transferred to AllocateProtectedNativePixmap().
-    auto protected_native_pixmap =
-        protected_buffer_manager_->GetProtectedNativePixmapHandleFor(
-            std::move(handle_fd));
-    if (protected_native_pixmap.planes.size() == 0) {
-      VLOGF(1) << "No protected native pixmap found for handle";
-      client_->NotifyError(
-          mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
-      return;
-    }
-    gmb_handle.native_pixmap_handle = std::move(protected_native_pixmap);
+  if (!secure_mode_.has_value()) {
+    VLOGF(1) << "Received buffer for picture without first having determined "
+                "whether we're decoding protected content";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
+    return;
+  }
 
-    // Explicitly verify the GPU Memory Buffer Handle here. Note that we do not
-    // do this for non-protected content because the verification happens on
-    // creation in that path.
-    if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
-                                            gmb_handle)) {
-      VLOGF(1) << "Invalid GpuMemoryBufferHandle for protected content";
-      client_->NotifyError(
-          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
-      return;
-    }
+  if (*secure_mode_) {
+    protected_buffer_manager_->GetProtectedNativePixmapHandleFor(
+        std::move(handle_fd),
+        base::BindOnce(
+            &GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture,
+            weak_ptr_factory_for_querying_protected_output_buffers_
+                .GetWeakPtr(),
+            picture_buffer_id, pixel_format));
   } else {
     std::vector<base::ScopedFD> handle_fds =
         DuplicateFD(std::move(handle_fd), planes.size());
@@ -669,9 +712,57 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
-    gmb_handle = std::move(buffer_handle).value();
+
+    ContinueImportBufferForPicture(
+        picture_buffer_id, pixel_format,
+        std::move(buffer_handle->native_pixmap_handle));
   }
+}
+
+void GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture(
+    int32_t picture_buffer_id,
+    media::VideoPixelFormat pixel_format,
+    gfx::NativePixmapHandle native_pixmap_handle) {
+  DVLOGF(3);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!vda_) {
+    VLOGF(1) << "VDA not initialized.";
+    return;
+  }
+
+  if (current_provide_picture_buffers_cb_) {
+    DVLOGF(3) << "AssignPictureBuffers() for the last "
+              << "Client::ProvidePictureBuffers() hasn't been called, ignored.";
+    return;
+  }
+
+  if (picture_buffer_id < 0 ||
+      static_cast<size_t>(picture_buffer_id) >= output_buffer_count_) {
+    VLOGF(1) << "Invalid picture_buffer_id=" << picture_buffer_id;
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
+  }
+
+  if (native_pixmap_handle.planes.empty()) {
+    VLOGF(1) << "Received an invalid NativePixmapHandle";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
+  }
+
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
   gmb_handle.id = media::GetNextGpuMemoryBufferId();
+  // Explicitly verify the GPU Memory Buffer Handle here.
+  if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                          gmb_handle)) {
+    VLOGF(1) << "Invalid GpuMemoryBufferHandle for protected content";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
+  }
 
   // This is the first time of ImportBufferForPicture() after
   // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.

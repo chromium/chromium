@@ -6,6 +6,7 @@
 
 module arc.mojom;
 
+import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
@@ -55,7 +56,9 @@ interface VideoAcceleratorFactory {
 
   [MinVersion=6]
   CreateDecodeAccelerator@2(
-      pending_receiver<VideoDecodeAccelerator> video_decoder);
+      pending_receiver<VideoDecodeAccelerator> video_decoder,
+      [MinVersion=8] pending_remote<ProtectedBufferManager>?
+           protected_buffer_manager);
 
   [Minversion=7]
   CreateProtectedBufferAllocator@3(

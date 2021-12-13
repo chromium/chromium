@@ -22,8 +22,41 @@
 namespace arc {
 class ProtectedBufferAllocator;
 
-class ProtectedBufferManager
-    : public base::RefCountedThreadSafe<ProtectedBufferManager> {
+// A DecoderProtectedBufferManager provides functionality for a decoder to
+// translate dummy handles into usable handles that can be used as the input and
+// output for the decoder.
+class DecoderProtectedBufferManager
+    : public base::RefCountedThreadSafe<DecoderProtectedBufferManager> {
+ public:
+  // Calls |response_cb| with a duplicate of the PlatformSharedMemoryRegion
+  // associated with |dummy_fd| if one exists, or an invalid handle otherwise
+  // (or if an error occurs). The client is responsible for closing the handle
+  // after use. |response_cb| is called on the calling sequence and may be
+  // called before this method returns.
+  using GetProtectedSharedMemoryRegionForResponseCB =
+      base::OnceCallback<void(base::subtle::PlatformSharedMemoryRegion)>;
+  virtual void GetProtectedSharedMemoryRegionFor(
+      base::ScopedFD dummy_fd,
+      GetProtectedSharedMemoryRegionForResponseCB response_cb) = 0;
+
+  // Calls |response_cb| with a duplicate of the NativePixmapHandle associated
+  // with |dummy_fd| if one exists, or an empty handle otherwise (or if an error
+  // occurs). The client is responsible for closing the handle after use.
+  // |response_cb| is called on the calling sequence and may be called before
+  // this method returns.
+  using GetProtectedNativePixmapHandleForResponseCB =
+      base::OnceCallback<void(gfx::NativePixmapHandle)>;
+  virtual void GetProtectedNativePixmapHandleFor(
+      base::ScopedFD dummy_fd,
+      GetProtectedNativePixmapHandleForResponseCB response_cb) = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<DecoderProtectedBufferManager>;
+
+  virtual ~DecoderProtectedBufferManager() {}
+};
+
+class ProtectedBufferManager : public DecoderProtectedBufferManager {
  public:
   ProtectedBufferManager();
 
@@ -49,6 +82,16 @@ class ProtectedBufferManager
   gfx::NativePixmapHandle GetProtectedNativePixmapHandleFor(
       base::ScopedFD dummy_fd);
 
+  // DecoderProtectedBufferManager implementation.
+  // TODO(b/195769334): remove the synchronous versions above and migrate all
+  // callers to use these asynchronous methods.
+  void GetProtectedSharedMemoryRegionFor(
+      base::ScopedFD dummy_fd,
+      GetProtectedSharedMemoryRegionForResponseCB response_cb) override;
+  void GetProtectedNativePixmapHandleFor(
+      base::ScopedFD dummy_fd,
+      GetProtectedNativePixmapHandleForResponseCB response_cb) override;
+
   // Return a protected NativePixmap for a dummy |handle|, if one exists, or
   // nullptr otherwise.
   scoped_refptr<gfx::NativePixmap> GetProtectedNativePixmapFor(
@@ -66,9 +109,8 @@ class ProtectedBufferManager
   // be called in ProtectedBufferAllocatorImpl.
   friend class ProtectedBufferAllocatorImpl;
 
-  friend class base::RefCountedThreadSafe<ProtectedBufferManager>;
   // Destructor must be private for base::RefCounted class.
-  ~ProtectedBufferManager();
+  ~ProtectedBufferManager() override;
 
   // Returns whether the number of active protected buffer allocators is less
   // than the predetermined threshold (kMaxConcurrentProtectedBufferAllocators).
