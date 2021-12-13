@@ -19,11 +19,9 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class Widget;
@@ -577,7 +575,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   aura::Window* dragged_window_ = nullptr;
 
   // The widget that contains the view for all the existing templates.
-  views::UniqueWidgetPtr desks_templates_grid_widget_;
+  std::unique_ptr<views::Widget> desks_templates_grid_widget_;
 
   // The contents view of the above `desks_templates_grid_widget_` if created.
   DesksTemplatesGridView* desks_templates_grid_view_ = nullptr;
