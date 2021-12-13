@@ -83,7 +83,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Parameter provider for enabling/disabling triggering-related Features.
      */
-    public static class FeatureParamProvider implements ParameterProvider {
+    public static class BaseFeatureParamProvider implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
@@ -134,6 +134,21 @@ public class ContextualSearchInstrumentationBase {
                     ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
+    /**
+     * This is the privacy-neutral-engagement feature set.
+     * Currently only one Feature but we'd like to add another.
+     */
+    private static final ImmutableMap<String, Boolean> ENABLE_PRIVACY_NEUTRAL =
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
+
+    /**
+     * This is the contextual triggers feature set that alters tap selection.
+     * Currently with two Features but a third is in development and should be added soon.
+     */
+    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS =
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true,
+                    ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_MENU, true);
+
     //--------------------------------------------------------------------------------------------
     // Feature maps that we use for individual tests.
     //--------------------------------------------------------------------------------------------
@@ -159,18 +174,21 @@ public class ContextualSearchInstrumentationBase {
     // State for an individual test.
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
-    @IntDef({EnabledFeature.NONE, EnabledFeature.LONGPRESS, EnabledFeature.TRANSLATIONS})
+    @IntDef({EnabledFeature.NONE, EnabledFeature.LONGPRESS, EnabledFeature.TRANSLATIONS,
+            EnabledFeature.PRIVACY_NEUTRAL, EnabledFeature.CONTEXTUAL_TRIGGERS})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
         int LONGPRESS = 1;
         int TRANSLATIONS = 2;
+        int PRIVACY_NEUTRAL = 3;
+        int CONTEXTUAL_TRIGGERS = 4;
     }
 
     // Tracks whether a long-press triggering experiment is active.
     private @EnabledFeature int mEnabledFeature;
 
-    @ParameterAnnotations.UseMethodParameterBefore(FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameterBefore(BaseFeatureParamProvider.class)
     public void setFeatureParameterForTest(@EnabledFeature int enabledFeature) {
         mEnabledFeature = enabledFeature;
     }
@@ -233,6 +251,12 @@ public class ContextualSearchInstrumentationBase {
                 break;
             case EnabledFeature.TRANSLATIONS:
                 whichFeature = ENABLE_TRANSLATIONS;
+                break;
+            case EnabledFeature.PRIVACY_NEUTRAL:
+                whichFeature = ENABLE_PRIVACY_NEUTRAL;
+                break;
+            case EnabledFeature.CONTEXTUAL_TRIGGERS:
+                whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;
                 break;
         }
         Assert.assertNotNull(

@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -21,6 +23,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+
+import java.util.Arrays;
 
 /**
  * Tests the Contextual Search Manager using instrumentation tests.
@@ -35,6 +39,28 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchInstrumentationTest extends ContextualSearchInstrumentationBase {
+    /**
+     * Parameter provider for enabling/disabling Features under development.
+     */
+    public static class FeatureParamProvider implements ParameterProvider {
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
+                    new ParameterSet().value(EnabledFeature.LONGPRESS).name("enableLongpress"),
+                    new ParameterSet()
+                            .value(EnabledFeature.TRANSLATIONS)
+                            .name("enableTranslations"),
+                    new ParameterSet()
+                            .value(EnabledFeature.PRIVACY_NEUTRAL)
+                            .name("enablePrivacyNeutralEngagement"),
+                    new ParameterSet()
+                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
+                            .name("enableContextualTriggers"));
+        }
+    }
+
+    //    @ParameterAnnotations.UseMethodParameterBefore(BaseFeatureParamProvider.class)
+
     @Override
     @Before
     public void setUp() throws Exception {
