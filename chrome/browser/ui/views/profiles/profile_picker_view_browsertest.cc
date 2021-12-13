@@ -658,6 +658,28 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(entry, nullptr);
 }
 
+// Regression test for crbug.com/1278726.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CancelWhileSigningInBeforeProfileCreated) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  // Wait until webUI is fully initialized.
+  WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run).Times(0);
+  ProfilePicker::SwitchToDiceSignIn(kProfileColor,
+                                    switch_finished_callback.Get());
+
+  // Close the flow immediately with the [X] button before
+  // `switch_finished_callback` gets called (and before the respective profile
+  // gets created).
+  widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  // The flow should not crash.
+  WaitForPickerClosed();
+}
+
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CancelWhileSigningInWithNoOtherWindow) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
