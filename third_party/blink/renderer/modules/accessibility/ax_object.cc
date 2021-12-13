@@ -3606,7 +3606,7 @@ String AXObject::AriaTextAlternative(
         // calculations.
         AXObjectSet visited_copy = visited;
         text_alternative = TextFromElements(
-            true, visited, elements_from_attribute, related_objects);
+            true, visited_copy, elements_from_attribute, related_objects);
         if (!ids.IsEmpty())
           AXObjectCache().UpdateReverseRelations(this, ids);
         if (!text_alternative.IsNull()) {
