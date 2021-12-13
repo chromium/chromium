@@ -239,23 +239,12 @@ class PermissionPromptBubbleViewBrowserTest
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-// TODO(https://crbug.com/1278398): fix the disabled test.
-#if defined(OS_MAC)
-#define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
-#else
-#define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
-#endif
-
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
-                       MAYBE_AlertAccessibleEvent) {
+                       AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
 
-// AnnounceText is called when permission requests are announced. But on Mac,
-// AnnounceText doesn't go through the path that uses Event::kAlert. Therefore
-// we can't test it.
-#if !defined(OS_MAC)
   PermissionChip* chip = GetChip();
   // If chip UI is used, two notifications will be announced: one that
   // permission was requested and second when bubble is opened.
@@ -264,9 +253,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   } else {
     EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
   }
-#else
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-#endif
 }
 
 // Test bubbles showing when tabs move between windows. Simulates a situation
