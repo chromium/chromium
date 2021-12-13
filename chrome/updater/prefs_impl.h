@@ -49,6 +49,8 @@ class UpdaterPrefsImpl : public LocalPrefs, public GlobalPrefs {
   void SetActiveVersion(std::string value) override;
   bool GetSwapping() const override;
   void SetSwapping(bool value) override;
+  bool GetMigratedLegacyUpdaters() const override;
+  void SetMigratedLegacyUpdaters() override;
   int CountServerStarts() override;
 
  protected:

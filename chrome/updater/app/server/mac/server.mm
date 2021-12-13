@@ -94,7 +94,7 @@ bool AppServerMac::SwapInNewVersion() {
   return PromoteCandidate(updater_scope()) == setup_exit_codes::kSuccess;
 }
 
-bool AppServerMac::ConvertLegacyUpdaters(
+bool AppServerMac::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   return ConvertKeystone(updater_scope(), register_callback);

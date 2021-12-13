@@ -53,9 +53,8 @@ class AppServer : public App {
   // Sets up all non-side-by-side registration to point to the new version.
   virtual bool SwapInNewVersion() = 0;
 
-  // Ingests metadata from incompatible legacy updaters, then replaces those
-  // updaters with shims.
-  virtual bool ConvertLegacyUpdaters(
+  // Imports metadata from legacy updaters, then replaces them with shims.
+  virtual bool MigrateLegacyUpdaters(
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) = 0;
 

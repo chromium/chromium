@@ -212,7 +212,7 @@ bool ComServerApp::SwapInNewVersion() {
   return list->Do();
 }
 
-bool ComServerApp::ConvertLegacyUpdaters(
+bool ComServerApp::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   // TODO(crbug.com/1250524): Implement. Note we will need both user and system

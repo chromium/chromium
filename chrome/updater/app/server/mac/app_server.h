@@ -49,7 +49,7 @@ class AppServerMac : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;
-  bool ConvertLegacyUpdaters(
+  bool MigrateLegacyUpdaters(
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) override;
   void UninstallSelf() override;

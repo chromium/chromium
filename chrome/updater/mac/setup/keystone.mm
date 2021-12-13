@@ -246,9 +246,6 @@ bool ConvertKeystone(UpdaterScope scope,
                          register_callback) {
   // TODO(crbug.com/1250524): This must not run concurrently with Keystone.
   MigrateKeystoneTickets(scope, register_callback);
-  // TODO(crbug.com/1250524): Flush prefs, then delete the tickets to mitigate
-  // duplicate imports.
-
   return CopyKeystoneBundle(scope) && CreateKeystoneLaunchCtlPlistFiles(scope);
 }
 

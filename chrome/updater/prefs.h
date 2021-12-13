@@ -47,6 +47,8 @@ class GlobalPrefs : virtual public UpdaterPrefs {
   virtual void SetActiveVersion(std::string value) = 0;
   virtual bool GetSwapping() const = 0;
   virtual void SetSwapping(bool value) = 0;
+  virtual bool GetMigratedLegacyUpdaters() const = 0;
+  virtual void SetMigratedLegacyUpdaters() = 0;
 
   // The server starts counter is a global pref value that counts the number of
   // active server starts for the updater. If there are no apps registered by

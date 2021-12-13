@@ -156,10 +156,14 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   if (!SwapInNewVersion())
     return false;
-  if (!ConvertLegacyUpdaters(base::BindRepeating(
-          &PersistedData::RegisterApp, base::MakeRefCounted<PersistedData>(
-                                           global_prefs->GetPrefService())))) {
-    return false;
+  if (!global_prefs->GetMigratedLegacyUpdaters()) {
+    if (!MigrateLegacyUpdaters(
+            base::BindRepeating(&PersistedData::RegisterApp,
+                                base::MakeRefCounted<PersistedData>(
+                                    global_prefs->GetPrefService())))) {
+      return false;
+    }
+    global_prefs->SetMigratedLegacyUpdaters();
   }
   global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);

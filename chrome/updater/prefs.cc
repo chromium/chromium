@@ -28,6 +28,7 @@ namespace {
 
 const char kPrefQualified[] = "qualified";
 const char kPrefSwapping[] = "swapping";
+const char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
 const char kPrefActiveVersion[] = "active_version";
 const char kPrefServerStarts[] = "server_starts";
 
@@ -69,6 +70,14 @@ void UpdaterPrefsImpl::SetSwapping(bool value) {
   prefs_->SetBoolean(kPrefSwapping, value);
 }
 
+bool UpdaterPrefsImpl::GetMigratedLegacyUpdaters() const {
+  return prefs_->GetBoolean(kPrefMigratedLegacyUpdaters);
+}
+
+void UpdaterPrefsImpl::SetMigratedLegacyUpdaters() {
+  prefs_->SetBoolean(kPrefMigratedLegacyUpdaters, true);
+}
+
 int UpdaterPrefsImpl::CountServerStarts() {
   int starts = prefs_->GetInteger(kPrefServerStarts);
   if (starts <= kMaxServerStartsBeforeFirstReg)
@@ -95,6 +104,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   update_client::RegisterPrefs(pref_registry.get());
   pref_registry->RegisterBooleanPref(kPrefSwapping, false);
+  pref_registry->RegisterBooleanPref(kPrefMigratedLegacyUpdaters, false);
   pref_registry->RegisterStringPref(kPrefActiveVersion, "0");
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
   pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
