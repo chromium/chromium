@@ -2524,9 +2524,6 @@ if (enable_java_templates) {
         assert(!defined(resource_ids_provider_dep))
         resource_ids_provider_dep = invoker.apk_under_test
 
-        include_resource =
-            get_label_info(invoker.apk_under_test, "target_out_dir") + "/" +
-            get_label_info(invoker.apk_under_test, "name") + ".ap_"
         _link_against = invoker.apk_under_test
       }
 
@@ -2535,9 +2532,6 @@ if (enable_java_templates) {
         proto_output = _proto_resources_path
 
         if (defined(invoker.base_module_target)) {
-          include_resource =
-              get_label_info(invoker.base_module_target, "target_out_dir") +
-              "/" + get_label_info(invoker.base_module_target, "name") + ".ap_"
           _link_against = invoker.base_module_target
         }
       }

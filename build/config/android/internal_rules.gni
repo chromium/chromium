@@ -2398,6 +2398,7 @@ if (enable_java_templates) {
     }
 
     if (defined(invoker.include_resource)) {
+      _inputs += [ invoker.include_resource ]
       _rebased_include_resources =
           rebase_path(invoker.include_resource, root_build_dir)
       _args += [ "--include-resources=$_rebased_include_resources" ]
