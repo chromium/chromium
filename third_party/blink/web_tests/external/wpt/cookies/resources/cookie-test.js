@@ -1,20 +1,19 @@
-// getDefaultPathCookies is a helper method to get and delete cookies on the
-// "default path" (which for these tests will be at `/cookies/resources`),
-// determined by the path portion of the request-uri.
-async function getDefaultPathCookies(path = '/cookies/resources') {
+// getAndExpireCookiesForDefaultPathTest is a helper method to get and delete
+// cookies using echo-cookie.html.
+async function getAndExpireCookiesForDefaultPathTest() {
   return new Promise((resolve, reject) => {
     try {
       const iframe = document.createElement('iframe');
       iframe.style = 'display: none';
-      iframe.src = `${path}/echo-cookie.html`;
-
+      iframe.src = '/cookies/resources/echo-cookie.html';
       iframe.addEventListener('load', (e) => {
         const win = e.target.contentWindow;
         const iframeCookies = win.getCookies();
-        win.expireCookie('test', path);
-        resolve(iframeCookies);
+        win.expireCookies().then(() => {
+          document.documentElement.removeChild(iframe);
+          resolve(iframeCookies);
+        });
       }, {once: true});
-
       document.documentElement.appendChild(iframe);
     } catch (e) {
       reject(e);
@@ -49,14 +48,22 @@ async function getAndExpireCookiesForRedirectTest(location) {
 }
 
 // httpCookieTest sets a `cookie` (via HTTP), then asserts it was or was not set
-// via `expectedValue` (via the DOM). Then cleans it up (via HTTP). Most tests
-// do not set a Path attribute, so `defaultPath` defaults to true.
+// via `expectedValue` (via the DOM). Then cleans it up (via test driver). Most
+// tests do not set a Path attribute, so `defaultPath` defaults to true.
 //
 // `cookie` may be a single cookie string, or an array of cookie strings, where
 // the order of the array items represents the order of the Set-Cookie headers
 // sent by the server.
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
   return promise_test(async (t) => {
+    // The result is ignored as we're expiring cookies for cleaning here.
+    await getAndExpireCookiesForDefaultPathTest();
+    await test_driver.delete_all_cookies();
+    t.add_cleanup(test_driver.delete_all_cookies);
+
     let encodedCookie = encodeURIComponent(JSON.stringify(cookie));
     await fetch(`/cookies/resources/cookie.py?set=${encodedCookie}`);
     let cookies = document.cookie;
@@ -64,14 +71,13 @@ function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
       // for the tests where a Path is set from the request-uri
       // path, we need to go look for cookies in an iframe at that
       // default path.
-      cookies = await getDefaultPathCookies();
+      cookies = await getAndExpireCookiesForDefaultPathTest();
     }
     if (Boolean(expectedValue)) {
       assert_equals(cookies, expectedValue, 'The cookie was set as expected.');
     } else {
       assert_equals(cookies, expectedValue, 'The cookie was rejected.');
     }
-    await fetch(`/cookies/resources/cookie.py?drop=${encodedCookie}`);
   }, name);
 }
 
