@@ -710,7 +710,7 @@
 <translation id="3360103848165129075">Лист с обработчиком платежа</translation>
 <translation id="3361596688432910856">В Chrome <ph name="BEGIN_EMPHASIS" />не будет сохраняться<ph name="END_EMPHASIS" /> следующая информация:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />история просмотров;
+          <ph name="LIST_ITEM" />история браузера;
           <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
           <ph name="LIST_ITEM" />сведения, которые вы указываете в формах.
         <ph name="END_LIST" /></translation>
