@@ -30,6 +30,7 @@ source_set("infobar_banner") {
     "//base",
     "//components/autofill/core/browser",
     "//components/infobars/core",
+    "//components/password_manager/core/common",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars",
@@ -40,6 +41,8 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/reading_list:infobar",
+    "//ios/chrome/browser/ui/resources:legacy_password_key",
+    "//ios/chrome/browser/ui/resources:password_key",
     "//ui/base",
   ]
 }

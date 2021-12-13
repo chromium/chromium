@@ -71,6 +71,6 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
+  EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"], consumer.iconImage);
   EXPECT_TRUE(consumer.presentsModal);
 }
