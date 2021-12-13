@@ -1373,11 +1373,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
   sm_.ExpectSpeech(
-      "This improves privacy by turning off your screen so it isn’t visible to "
-      "others.");
-  sm_.ExpectSpeech(
-      "You can always turn the screen back on by pressing Search plus "
-      "Brightness up.");
+      "Turn off screen? This improves privacy by turning off your screen so it "
+      "isn’t visible to others. You can always turn the screen back on by "
+      "pressing Search plus Brightness up. Cancel Continue");
   sm_.ExpectSpeech("Continue");
   sm_.ExpectSpeech("default");
   sm_.ExpectSpeech("Button");
