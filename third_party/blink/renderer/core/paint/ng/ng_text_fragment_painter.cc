@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 
-#include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"

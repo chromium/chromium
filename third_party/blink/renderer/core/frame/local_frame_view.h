@@ -927,7 +927,6 @@ class CORE_EXPORT LocalFrameView final
   void UpdatePluginsTimerFired(TimerBase*);
   bool UpdatePlugins();
 
-  void UpdateCompositedSelectionIfNeeded();
   void SetNeedsCompositingUpdate(CompositingUpdateType);
 
   AXObjectCache* ExistingAXObjectCache() const;

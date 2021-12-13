@@ -860,8 +860,7 @@ void PaintArtifactCompositor::Update(
     }
   }
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
+  root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
 
   property_tree_manager.Finalize();
   content_layer_clients_.swap(new_content_layer_clients);

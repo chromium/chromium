@@ -104,8 +104,6 @@ blink_core_sources_editing = [
   "commands/unlink_command.h",
   "commands/wrap_contents_in_dummy_span_command.cc",
   "commands/wrap_contents_in_dummy_span_command.h",
-  "compute_layer_selection.cc",
-  "compute_layer_selection.h",
   "dom_selection.cc",
   "dom_selection.h",
   "drag_caret.cc",

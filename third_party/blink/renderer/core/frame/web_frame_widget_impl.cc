@@ -1236,12 +1236,6 @@ void WebFrameWidgetImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {
       prefers_reduced_motion);
 }
 
-void WebFrameWidgetImpl::RegisterSelection(cc::LayerSelection selection) {
-  if (!View()->does_composite())
-    return;
-  widget_base_->LayerTreeHost()->RegisterSelection(selection);
-}
-
 void WebFrameWidgetImpl::StartPageScaleAnimation(const gfx::Point& destination,
                                                  bool use_anchor,
                                                  float new_page_scale,

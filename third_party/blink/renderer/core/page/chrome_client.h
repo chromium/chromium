@@ -27,7 +27,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "cc/input/event_listener_properties.h"
-#include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
@@ -423,9 +422,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void AnimateDoubleTapZoom(const gfx::Point& point,
                                     const gfx::Rect& rect) {}
-
-  virtual void ClearLayerSelection(LocalFrame*) {}
-  virtual void UpdateLayerSelection(LocalFrame*, const cc::LayerSelection&) {}
 
   // The client keeps track of which touch/mousewheel event types have handlers,
   // and if they do, whether the handlers are passive and/or blocking. This
