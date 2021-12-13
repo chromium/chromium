@@ -622,19 +622,24 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       const target = evt.target;
 
       // Desktop tabs get "selection" when there's a focused webview during
-      // tab switching. Read it, but don't steal focus which is on the
-      // omnibox. We have to resort to this check to get tab switching read out
-      // because on switching to a new tab, focus actually remains on the *same*
-      // omnibox.
-      const currentRange = ChromeVoxState.instance.currentRange;
+      // tab switching.
       if (target.role === RoleType.TAB &&
-          target.root.role === RoleType.DESKTOP && currentRange &&
-          currentRange.start && currentRange.start.node &&
-          currentRange.start.node.className === 'OmniboxViewViews') {
-        const range = cursors.Range.fromNode(target);
-        new Output()
-            .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
-            .go();
+          target.root.role === RoleType.DESKTOP) {
+        // Read it only if focus is on the
+        // omnibox. We have to resort to this check to get tab switching read
+        // out because on switching to a new tab, focus actually remains on the
+        // *same* omnibox.
+        const currentRange = ChromeVoxState.instance.currentRange;
+        if (currentRange && currentRange.start && currentRange.start.node &&
+            currentRange.start.node.className === 'OmniboxViewViews') {
+          const range = cursors.Range.fromNode(target);
+          new Output()
+              .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
+              .go();
+        }
+
+        // This also suppresses tab selection output when ChromeVox is not on
+        // the omnibox.
         return;
       }
 
