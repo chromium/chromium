@@ -343,7 +343,14 @@ void MediaDialogView::OnLiveCaptionButtonPressed() {
 
 void MediaDialogView::ToggleLiveCaption(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
-  live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+
+  // Do not update the title if SODA is currently downloading.
+  if (!speech::SodaInstaller::GetInstance()->IsSodaDownloading(
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs())))) {
+    live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+  }
+
   live_caption_button_->SetIsOn(enabled);
 }
 

@@ -538,16 +538,18 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void OnSodaProgress(int progress) {
-    MediaDialogView::GetDialogViewForTesting()->OnSodaProgress(progress);
+    speech::SodaInstaller::GetInstance()->NotifySodaDownloadProgressForTesting(
+        progress);
   }
 
   void OnSodaInstalled() {
-    MediaDialogView::GetDialogViewForTesting()->OnSodaInstalled();
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   void OnSodaLanguagePackInstalled() {
-    MediaDialogView::GetDialogViewForTesting()->OnSodaLanguagePackInstalled(
-        speech::LanguageCode::kEnUs);
+    speech::SodaInstaller::GetInstance()
+        ->NotifyOnSodaLanguagePackInstalledForTesting(
+            speech::LanguageCode::kEnUs);
   }
 
  protected:
@@ -995,6 +997,28 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   OnSodaProgress(12);
   EXPECT_EQ("Downloading… 12%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  // Click the Live Caption toggle again to toggle it off.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ("Downloading… 12%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  // Download progress should continue to update when the Live Caption toggle is
+  // off.
+  OnSodaProgress(42);
+  EXPECT_EQ("Downloading… 42%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  // Click the Live Caption toggle again to toggle it on.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ("Downloading… 42%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   OnSodaProgress(100);
