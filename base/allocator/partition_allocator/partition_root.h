@@ -665,6 +665,10 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 #endif
   }
 
+  ALWAYS_INLINE bool uses_configurable_pool() const {
+    return use_configurable_pool;
+  }
+
   // To make tests deterministic, it is necessary to uncap the amount of memory
   // waste incurred by empty slot spans. Otherwise, the size of various
   // freelists, and committed memory becomes harder to reason about (and

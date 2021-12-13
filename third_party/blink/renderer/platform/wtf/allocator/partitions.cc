@@ -61,6 +61,7 @@ const base::Feature kPCScanBlinkPartitions{
 #endif
 
 bool Partitions::initialized_ = false;
+bool Partitions::scan_is_enabled_ = false;
 
 // These statics are inlined, so cannot be LazyInstances. We create the values,
 // and then set the pointers correctly in Initialize().
@@ -94,7 +95,7 @@ bool Partitions::InitializeOnce() {
           ? base::PartitionOptions::LazyCommit::kEnabled
           : base::PartitionOptions::LazyCommit::kDisabled;
 
-  const bool enable_scan_on_blink_partitions =
+  scan_is_enabled_ =
       !enable_brp &&
 #if defined(PA_ALLOW_PCSCAN)
       (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
@@ -113,8 +114,7 @@ bool Partitions::InitializeOnce() {
   //
   // In addition, enable the FastMalloc partition if
   // --enable-features=PartitionAllocPCScanBlinkPartitions is specified.
-  if (enable_scan_on_blink_partitions ||
-      !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
+  if (scan_is_enabled_ || !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
     static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
     fast_malloc_allocator->init({
       base::PartitionOptions::AlignedAlloc::kDisallowed,
@@ -149,7 +149,7 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
 
 #if defined(PA_ALLOW_PCSCAN)
-  if (enable_scan_on_blink_partitions) {
+  if (scan_is_enabled_) {
     if (!base::internal::PCScan::IsInitialized()) {
       base::internal::PCScan::Initialize(
           {base::internal::PCScan::InitConfig::WantedWriteProtectionMode::
@@ -167,6 +167,7 @@ bool Partitions::InitializeOnce() {
 
 // static
 void Partitions::InitializeArrayBufferPartition() {
+  CHECK(initialized_);
   CHECK(!ArrayBufferPartitionInitialized());
 
   static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
@@ -195,8 +196,9 @@ void Partitions::InitializeArrayBufferPartition() {
   array_buffer_root_ = array_buffer_allocator->root();
 
 #if defined(PA_ALLOW_PCSCAN)
-  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
-      base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
+  // PCScan relies on the fact that quarantinable allocations go to PA's
+  // giga-cage. This is not the case if configurable pool is available.
+  if (scan_is_enabled_ && !array_buffer_root_->uses_configurable_pool()) {
     base::internal::PCScan::RegisterNonScannableRoot(array_buffer_root_);
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
