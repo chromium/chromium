@@ -354,8 +354,9 @@ enum IOTaskState {
 
 enum IOTaskType {
   copy,
-  move,
   delete,
+  extract,
+  move,
   zip
 };
 

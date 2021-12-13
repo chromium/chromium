@@ -38,8 +38,9 @@ enum class State {
 
 enum class OperationType {
   kCopy,
-  kMove,
   kDelete,
+  kExtract,
+  kMove,
   kZip,
 };
 

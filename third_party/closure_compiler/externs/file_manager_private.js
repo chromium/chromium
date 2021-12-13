@@ -315,8 +315,9 @@ chrome.fileManagerPrivate.IOTaskState = {
 /** @enum {string} */
 chrome.fileManagerPrivate.IOTaskType = {
   COPY: 'copy',
-  MOVE: 'move',
   DELETE: 'delete',
+  EXTRACT: 'extract',
+  MOVE: 'move',
   ZIP: 'zip',
 };
 
