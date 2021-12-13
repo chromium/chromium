@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PROFILES_PROFILE_KEEP_ALIVE_TYPES_H_
-#define CHROME_BROWSER_PROFILES_PROFILE_KEEP_ALIVE_TYPES_H_
+#ifndef CHROME_BROWSER_PROFILES_KEEP_ALIVE_PROFILE_KEEP_ALIVE_TYPES_H_
+#define CHROME_BROWSER_PROFILES_KEEP_ALIVE_PROFILE_KEEP_ALIVE_TYPES_H_
 
 #include <ostream>
 
@@ -106,4 +106,4 @@ enum class ProfileKeepAliveOrigin {
 std::ostream& operator<<(std::ostream& out,
                          const ProfileKeepAliveOrigin& origin);
 
-#endif  // CHROME_BROWSER_PROFILES_PROFILE_KEEP_ALIVE_TYPES_H_
+#endif  // CHROME_BROWSER_PROFILES_KEEP_ALIVE_PROFILE_KEEP_ALIVE_TYPES_H_

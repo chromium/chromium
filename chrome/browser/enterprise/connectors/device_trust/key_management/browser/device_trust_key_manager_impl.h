@@ -24,6 +24,8 @@ class SigningKeyPair;
 
 class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
  public:
+  using RotateKeyCallback =
+      base::OnceCallback<void(DeviceTrustKeyManager::KeyRotationResult)>;
   using ExportPublicKeyCallback =
       base::OnceCallback<void(absl::optional<std::string>)>;
   using SignStringCallback =
@@ -35,7 +37,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
 
   // DeviceTrustKeyManager:
   void StartInitialization() override;
-  void StartKeyRotation(const std::string& nonce) override;
+  void RotateKey(const std::string& nonce, RotateKeyCallback callback) override;
   void ExportPublicKeyAsync(ExportPublicKeyCallback callback) override;
   void SignStringAsync(const std::string& str,
                        SignStringCallback callback) override;
@@ -43,6 +45,15 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
 
  private:
   enum class InitializationState { kDefault, kLoadingKey, kRotatingKey };
+
+  struct RotateKeyRequest {
+    RotateKeyRequest(const std::string& nonce_param,
+                     RotateKeyCallback callback_param);
+    ~RotateKeyRequest();
+
+    std::string nonce;
+    RotateKeyCallback callback;
+  };
 
   // Starts a background task to try and load the key. If `create_on_fail` is
   // true, a key-creation task will be started if key loading fails. If it's
@@ -55,12 +66,14 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // the process in charge of handling the key rotation and upload. An empty
   // nonce can be used to represent a key creation task, which means no key
   // previously existed.
-  void StartKeyRotationInner(const std::string& nonce);
+  void StartKeyRotationInner(const std::string& nonce,
+                             RotateKeyCallback callback);
 
   // Invoked when the background key rotation tasks completes with a
   // `result_status`. `nonce` captures the parameter given to that process
   // when it was started.
   void OnKeyRotationFinished(const std::string& nonce,
+                             RotateKeyCallback callback,
                              KeyRotationCommand::Status result_status);
 
   // Adds `pending_request` to the list of pending client requests. Also calls
@@ -78,6 +91,11 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void ResumePendingCallbacks();
   void ResumeExportPublicKey(ExportPublicKeyCallback callback);
   void ResumeSignString(const std::string& str, SignStringCallback callback);
+
+  // Resumes pending key rotation requests currently stored in
+  // `pending_rotation_request_`. Returns true if there was a pending request
+  // and it was resumed, false if not.
+  bool TryResumePendingRotationRequest();
 
   bool IsFullyInitialized() const;
 
@@ -98,10 +116,10 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // Represents whether the last key rotation process was successful or not.
   bool key_rotation_succeeded_{false};
 
-  // Potentially holds the nonce value for a remote key rotation request.
+  // Potentially holds a remote key rotation request parameters.
   // Whenever the key manager is done doing what it is currently doing, it will
-  // start a key rotation process with it.
-  absl::optional<std::string> pending_rotation_nonce_;
+  // start a key rotation process with them.
+  std::unique_ptr<RotateKeyRequest> pending_rotation_request_;
 
   // Runner for tasks needed to be run in the background.
   // TODO(b/210108864): Add background tasks counter to allow DCHECKing that

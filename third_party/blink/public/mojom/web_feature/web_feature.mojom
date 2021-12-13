@@ -3401,6 +3401,7 @@ enum WebFeature {
   kPrivateNetworkAccessIgnoredPreflightError = 4092,
   kAbortPaymentRespondWithTrue = 4093,
   kAllowPaymentRequestAttributeHasEffect = 4094,
+  kV8PaymentResponse_Retry_Method = 4095,
 
 
   // Add new features immediately above this line. Don't change assigned

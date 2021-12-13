@@ -267,9 +267,9 @@ void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
   }
 
   auto separator_type = ui::DOUBLE_SEPARATOR;
+  const int crosapi_menu_items_size = crosapi_menu_items->items.size();
 
-  for (int item_index = 0; item_index < crosapi_menu_items->items.size();
-       item_index++) {
+  for (int item_index = 0; item_index < crosapi_menu_items_size; item_index++) {
     const auto& crosapi_menu_item = crosapi_menu_items->items[item_index];
     apps::AddSeparator(std::exchange(separator_type, ui::PADDED_SEPARATOR),
                        &menu_items);

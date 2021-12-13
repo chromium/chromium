@@ -37,13 +37,13 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_impl.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -2898,11 +2898,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
       InstallWebAppWithProtocolHandlers({protocol_handler}, {file_handler});
 
   // Skip the file handler dialog by simulating prior user approval of the API.
-  {
-    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->UpdateApp(app_id)->SetFileHandlerApprovalState(
-        web_app::ApiApprovalState::kAllowed);
-  }
+  provider()->sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, web_app::ApiApprovalState::kAllowed);
 
   // Pass a file:// url on the command line.
   SetUpCommandlineAndStart("file:///C:/test.txt", app_id);

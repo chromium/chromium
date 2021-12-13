@@ -309,7 +309,7 @@ def _run_benchmark(*, kind: str, use_emulator: bool,
                    **kwargs: Dict) -> Iterator[float]:
     if kind == 'incremental_build':
         assert not use_emulator, f'Install not supported for {kwargs}.'
-        return _run_incremental_benchmark(**kwargs)
+        return _run_incremental_benchmark(use_emulator=False, **kwargs)
     elif kind == 'incremental_build_and_install':
         return _run_incremental_benchmark(use_emulator=use_emulator, **kwargs)
     else:

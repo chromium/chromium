@@ -569,8 +569,64 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram
+    name="Power.ForegroundBatteryDrain.30SecondsAvg2{Exclusive}{DarkeningType}"
+    units="uAh" expires_after="2022-11-07">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <summary>
+    Periodically samples the battery capacity drained while Chrome is the
+    foreground app and the device is on battery power {DarkeningType}. Sampled
+    every 30 seconds while foregrounded. Also sampled when Chrome is
+    backgrounded or the device connects to a charger. {Exclusive}
+
+    Sample values are reported in microampere-hours and averaged over successive
+    sampling points without a change in capacity counter values. Since the
+    capacity counter resolution differs between device models, averaging the
+    values allows us to make comparisons between frequent small capacity drops
+    and infrequent large drops. For example, a 20,000 uAh drop over two
+    successive periods of 30 seconds will be reported as two samples of 10,000
+    uAh.
+
+    For more details, see http://bit.ly/chrome-android-foreground-battery-drain.
+
+    Only supported on Android. For WebView, the metric considers the time during
+    in which at least one WebView is visible on the screen as
+    &quot;foreground&quot; time.
+  </summary>
+  <token key="Exclusive">
+    <variant name="" summary=""/>
+    <variant name=".Exclusive"
+        summary="However, only battery drain that can be attributed
+                 exclusively to Chrome is reported: The first drain after
+                 becoming the foreground app is not reported. As a result,
+                 this metric typically doesn't include drain related to app
+                 startup. Similarly, no values are reported for the time
+                 after the last capacity drop in a session, since these would
+                 likely under-account the actual battery drain in that time."/>
+  </token>
+  <token key="DarkeningType">
+    <variant name="" summary=""/>
+    <variant name=".DarkMode"
+        summary="and the browser has dark theme preferred (web page darkening
+                 only) for all WebContents"/>
+    <variant name=".ForcedDarkMode"
+        summary="and the browser has forced dark mode (user-agent darkening)
+                 enabled for all WebContents"/>
+    <variant name=".LightMode"
+        summary="and the browser has forced dark mode disabled and light
+                 theme preferred for all WebContents"/>
+    <variant name=".MixedMode"
+        summary="and there is a mix of WebContents that have forced dark mode
+                 enabled, dark theme preferred, or light theme preferred"/>
+  </token>
+</histogram>
+
+<histogram
     name="Power.ForegroundBatteryDrain.30SecondsAvg{Exclusive}{DarkeningType}"
     units="uAh" expires_after="2022-11-07">
+  <obsolete>
+    Replaced with Power.ForegroundBatteryDrain.30SecondsAvg2.* in Dec 2021.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -592,6 +648,12 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
     Only supported on Android. For WebView, the metric considers the time during
     in which at least one WebView is visible on the screen as
     &quot;foreground&quot; time.
+
+    This histogram was superseded by the corresponding histogram under
+    Power.ForegroundBatteryDrain.30SecondsAvg2 in Dec 2021. The new histograms
+    also emit zero values for the time after the last capacity drop but before
+    sampling was stopped due to Chrome leaving foreground / the device being
+    connected to a charger, fixing an oversight in the original metrics.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>

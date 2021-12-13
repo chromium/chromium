@@ -678,6 +678,8 @@ const char kAvailabilityProberTLSCanaryCheck[] =
     "Availability.Prober.cache.IsolatedPrerenderTLSCanaryCheck";
 const char kAvailabilityProberDNSCanaryCheck[] =
     "Availability.Prober.cache.IsolatedPrerenderDNSCanaryCheck";
+const char kStabilityRendererHangCount[] =
+    "user_experience_metrics.stability.renderer_hang_count";
 const char kStabilityIncompleteSessionEndCount[] =
     "user_experience_metrics.stability.incomplete_session_end_count";
 const char kStabilitySessionEndCompleted[] =
@@ -730,6 +732,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
   registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
 
+  registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
   registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
 }
@@ -1522,6 +1525,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kTabStripStackedLayout);
 
   // Added 12/2021.
+  local_state->ClearPref(kStabilityRendererHangCount);
   local_state->ClearPref(kStabilityIncompleteSessionEndCount);
   local_state->ClearPref(kStabilitySessionEndCompleted);
 

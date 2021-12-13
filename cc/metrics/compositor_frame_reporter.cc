@@ -304,8 +304,8 @@ constexpr int kCompositorLatencyHistogramBucketCount = 50;
 constexpr int kEventLatencyEventTypeCount =
     static_cast<int>(EventMetrics::EventType::kMaxValue) + 1;
 constexpr int kEventLatencyGestureTypeCount =
-    std::max(static_cast<int>(EventMetrics::ScrollType::kMaxValue),
-             static_cast<int>(EventMetrics::PinchType::kMaxValue)) +
+    std::max(static_cast<int>(ScrollEventMetrics::ScrollType::kMaxValue),
+             static_cast<int>(PinchEventMetrics::PinchType::kMaxValue)) +
     1;
 constexpr int kMaxEventLatencyHistogramIndex =
     kEventLatencyEventTypeCount * kEventLatencyGestureTypeCount;
@@ -333,13 +333,14 @@ std::string GetCompositorLatencyHistogramName(
 
 std::string GetEventLatencyHistogramBaseName(
     const EventMetrics& event_metrics) {
-  const bool is_scroll = event_metrics.scroll_type().has_value();
-  const bool is_pinch = event_metrics.pinch_type().has_value();
-  return base::StrCat({"EventLatency.", event_metrics.GetTypeName(),
-                       is_scroll || is_pinch ? "." : "",
-                       is_scroll
-                           ? event_metrics.GetScrollTypeName()
-                           : is_pinch ? event_metrics.GetPinchTypeName() : ""});
+  auto* scroll_metrics = event_metrics.AsScroll();
+  auto* pinch_metrics = event_metrics.AsPinch();
+  return base::StrCat(
+      {"EventLatency.", event_metrics.GetTypeName(),
+       scroll_metrics || pinch_metrics ? "." : "",
+       scroll_metrics
+           ? scroll_metrics->GetScrollTypeName()
+           : pinch_metrics ? pinch_metrics->GetPinchTypeName() : ""});
 }
 
 constexpr char kTraceCategory[] =
@@ -974,12 +975,12 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     const std::string histogram_base_name =
         GetEventLatencyHistogramBaseName(*event_metrics);
     const int event_type_index = static_cast<int>(event_metrics->type());
+    auto* scroll_metrics = event_metrics->AsScroll();
+    auto* pinch_metrics = event_metrics->AsPinch();
     const int gesture_type_index =
-        event_metrics->scroll_type()
-            ? static_cast<int>(*event_metrics->scroll_type())
-            : event_metrics->pinch_type()
-                  ? static_cast<int>(*event_metrics->pinch_type())
-                  : 0;
+        scroll_metrics
+            ? static_cast<int>(scroll_metrics->scroll_type())
+            : pinch_metrics ? static_cast<int>(pinch_metrics->pinch_type()) : 0;
     const int event_histogram_index =
         event_type_index * kEventLatencyGestureTypeCount + gesture_type_index;
 
@@ -991,8 +992,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     // For scroll events, report total latency up to gpu-swap-begin. This is
     // useful in comparing new EventLatency metrics with LatencyInfo-based
     // scroll event latency metrics.
-    if (event_metrics->scroll_type() &&
-        !viz_breakdown_.swap_timings.is_null()) {
+    if (event_metrics->AsScroll() && !viz_breakdown_.swap_timings.is_null()) {
       const base::TimeDelta swap_begin_latency =
           viz_breakdown_.swap_timings.swap_start - generated_timestamp;
       const std::string event_swap_begin_histogram_name =

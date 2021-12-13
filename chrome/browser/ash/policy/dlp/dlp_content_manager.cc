@@ -243,7 +243,7 @@ void DlpContentManager::CheckScreenShareRestriction(
     std::move(callback).Run(false);
     return;
   }
-  if (IsWarn(info.restriction_info)) {
+  if (is_screen_share_warning_mode_enabled_ && IsWarn(info.restriction_info)) {
     // Check which of the contents were already allowed and don't warn for
     // those.
     RemoveAllowedContents(info.confidential_contents,
@@ -751,7 +751,8 @@ void DlpContentManager::CheckRunningScreenShares() {
       }
       return;
     }
-    if (IsWarn(info.restriction_info)) {
+    if (is_screen_share_warning_mode_enabled_ &&
+        IsWarn(info.restriction_info)) {
       // Check which of the contents were already allowed and don't warn for
       // those.
       RemoveAllowedContents(info.confidential_contents,

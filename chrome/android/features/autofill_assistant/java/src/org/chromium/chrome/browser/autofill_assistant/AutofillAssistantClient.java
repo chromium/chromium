@@ -16,7 +16,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -338,10 +337,10 @@ public class AutofillAssistantClient {
             return;
         }
 
-        Activity activity = ActivityUtils.getActivityFromWebContents(
+        Activity activity =
                 AutofillAssistantClientJni.get()
                         .getDependencies(mNativeClientAndroid, AutofillAssistantClient.this)
-                        .getWebContents());
+                        .getActivity();
         if (activity == null) {
             // We require an activity to retrieve the token.
             AutofillAssistantClientJni.get().onPaymentsClientToken(

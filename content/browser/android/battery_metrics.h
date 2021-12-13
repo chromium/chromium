@@ -38,7 +38,7 @@ class AndroidBatteryMetrics
   void OnPowerStateChange(bool on_battery_power) override;
 
   void UpdateMetricsEnabled();
-  void CaptureAndReportMetrics();
+  void CaptureAndReportMetrics(bool disabling);
   void UpdateAndReportRadio();
   void MonitorRadioState();
 

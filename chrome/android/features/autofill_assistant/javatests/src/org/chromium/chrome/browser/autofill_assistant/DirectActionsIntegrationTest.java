@@ -96,8 +96,9 @@ public class DirectActionsIntegrationTest {
             mModuleEntry =
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
-            AssistantDependencies dependencies = AutofillAssistantFacade.createDependencies(
-                    mTestRule.getActivity(), mModuleEntry);
+            AssistantDependencies dependencies =
+                    mModuleEntry.createDependenciesFactory().createDependencies(
+                            mTestRule.getActivity());
             mDirectActionHandler = AutofillAssistantFacade.createDirectActionHandler(
                     mTestRule.getActivity(), dependencies.getBottomSheetController(),
                     dependencies.getBrowserControls(), dependencies.getRootView(),

@@ -105,7 +105,7 @@ public class AutofillAssistantHeaderUiTest {
     private AssistantHeaderCoordinator createCoordinator(AssistantHeaderModel model) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             AssistantDependencies dependencies =
-                    new AssistantDependenciesChrome(mCustomTabActivityTestRule.getWebContents());
+                    new AssistantDependenciesChrome(mCustomTabActivityTestRule.getActivity());
             AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(
                     getActivity(), model, dependencies.getAccessibilityUtil());
 

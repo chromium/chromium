@@ -42,11 +42,6 @@ const char kStabilityRendererCrashCount[] =
 const char kStabilityRendererFailedLaunchCount[] =
     "user_experience_metrics.stability.renderer_failed_launch_count";
 
-// Number of times the renderer has become non-responsive since the last
-// report.
-const char kStabilityRendererHangCount[] =
-    "user_experience_metrics.stability.renderer_hang_count";
-
 // Total number of unclean system shutdowns since the last report.
 const char kStabilitySystemUncleanShutdownCount[] =
     "user_experience_metrics.stability.system_unclean_shutdowns";

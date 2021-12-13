@@ -478,6 +478,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   bool use_occlusion_query_ = false;
   bool use_swap_with_bounds_ = false;
   bool use_fast_path_solid_color_quad_ = false;
+  bool supports_multi_sampling_ = false;
 
   // If true, tints all the composited content to red.
   bool tint_gl_composited_content_ = true;

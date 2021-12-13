@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.content_public.browser.WebContents;
+import android.app.Activity;
 
 /**
  * Factory for creating dependencies. Implementations might differ depending on where Autofill
@@ -12,12 +12,12 @@ import org.chromium.content_public.browser.WebContents;
  */
 public interface AssistantDependenciesFactory {
     /**
-     * Create the WebContents specific dependencies.
+     * Create the Activity specific dependencies.
      * */
-    AssistantDependencies createDependencies(WebContents webContents);
+    AssistantDependencies createDependencies(Activity activity);
 
     /**
-     * Create the static dependencies that are independent of WebContents.
+     * Create the static dependencies that are independent of Activity.
      * */
     AssistantStaticDependencies createStaticDependencies();
 }

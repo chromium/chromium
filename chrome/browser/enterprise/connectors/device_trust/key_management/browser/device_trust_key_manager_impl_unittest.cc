@@ -31,6 +31,8 @@ using testing::StrictMock;
 namespace enterprise_connectors {
 
 using test::MockKeyRotationLauncher;
+using RotateKeyCallback = DeviceTrustKeyManagerImpl::RotateKeyCallback;
+using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 namespace {
 
@@ -440,7 +442,12 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Success) {
             rotate_key_loop.Quit();
           }));
 
-  key_manager()->StartKeyRotation(kFakeNonce);
+  absl::optional<KeyRotationResult> captured_result;
+  auto completion_callback =
+      base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
+        captured_result = result;
+      });
+  key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
 
   rotate_key_loop.Run();
 
@@ -457,6 +464,9 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Success) {
 
   // The manager should have loaded a total of two keys.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/2);
+
+  ASSERT_TRUE(captured_result.has_value());
+  ASSERT_EQ(captured_result.value(), KeyRotationResult::SUCCESS);
 }
 
 // Tests that a properly initialized key manager handles a failing rotate key
@@ -474,7 +484,12 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed) {
             rotate_key_loop.Quit();
           }));
 
-  key_manager()->StartKeyRotation(kFakeNonce);
+  absl::optional<KeyRotationResult> captured_result;
+  auto completion_callback =
+      base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
+        captured_result = result;
+      });
+  key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
 
   rotate_key_loop.Run();
 
@@ -489,11 +504,15 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed) {
 
   // The manager should have loaded a total of one key, the initial one.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/1);
+
+  ASSERT_TRUE(captured_result.has_value());
+  ASSERT_EQ(captured_result.value(), KeyRotationResult::FAILURE);
 }
 
 // Tests that a properly initialized key manager handles concurrent successful
-// rotate key request properly.
-TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Success) {
+// rotate key request properly, which includes cancelling pending requests when
+// another one is coming in.
+TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Cancel_Success) {
   // A key already exists and the manager already loaded it.
   InitializeWithKey();
 
@@ -506,9 +525,29 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Success) {
             first_rotate_key_loop.Quit();
           }));
 
+  // Create callback parameters for all calls.
+  absl::optional<KeyRotationResult> first_captured_result;
+  auto first_completion_callback = base::BindLambdaForTesting(
+      [&first_captured_result](KeyRotationResult result) {
+        first_captured_result = result;
+      });
+  absl::optional<KeyRotationResult> second_captured_result;
+  auto second_completion_callback = base::BindLambdaForTesting(
+      [&second_captured_result](KeyRotationResult result) {
+        second_captured_result = result;
+      });
+  absl::optional<KeyRotationResult> third_captured_result;
+  auto third_completion_callback = base::BindLambdaForTesting(
+      [&third_captured_result](KeyRotationResult result) {
+        third_captured_result = result;
+      });
+
   // Kick off the concurrent rotation requests.
-  key_manager()->StartKeyRotation(kFakeNonce);
-  key_manager()->StartKeyRotation(kOtherFakeNonce);
+  key_manager()->RotateKey(kFakeNonce, std::move(first_completion_callback));
+  key_manager()->RotateKey("irrelevant, random nonce.",
+                           std::move(second_completion_callback));
+  key_manager()->RotateKey(kOtherFakeNonce,
+                           std::move(third_completion_callback));
 
   first_rotate_key_loop.Run();
 
@@ -545,6 +584,13 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Success) {
 
   // The manager should have loaded a total of three keys.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/3);
+
+  ASSERT_TRUE(first_captured_result.has_value());
+  ASSERT_TRUE(second_captured_result.has_value());
+  ASSERT_TRUE(third_captured_result.has_value());
+  ASSERT_EQ(first_captured_result.value(), KeyRotationResult::SUCCESS);
+  ASSERT_EQ(second_captured_result.value(), KeyRotationResult::CANCELLATION);
+  ASSERT_EQ(third_captured_result.value(), KeyRotationResult::SUCCESS);
 }
 
 // Tests that a properly initialized key manager handles concurrent rotate key
@@ -562,9 +608,22 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
             first_rotate_key_loop.Quit();
           }));
 
+  // Create callback parameters for all calls.
+  absl::optional<KeyRotationResult> first_captured_result;
+  auto first_completion_callback = base::BindLambdaForTesting(
+      [&first_captured_result](KeyRotationResult result) {
+        first_captured_result = result;
+      });
+  absl::optional<KeyRotationResult> second_captured_result;
+  auto second_completion_callback = base::BindLambdaForTesting(
+      [&second_captured_result](KeyRotationResult result) {
+        second_captured_result = result;
+      });
+
   // Kick off the concurrent rotation requests.
-  key_manager()->StartKeyRotation(kFakeNonce);
-  key_manager()->StartKeyRotation(kOtherFakeNonce);
+  key_manager()->RotateKey(kFakeNonce, std::move(first_completion_callback));
+  key_manager()->RotateKey(kOtherFakeNonce,
+                           std::move(second_completion_callback));
 
   first_rotate_key_loop.Run();
 
@@ -602,6 +661,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
 
   // The manager should have loaded a total of two keys.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/2);
+
+  ASSERT_TRUE(first_captured_result.has_value());
+  ASSERT_TRUE(second_captured_result.has_value());
+  ASSERT_EQ(first_captured_result.value(), KeyRotationResult::SUCCESS);
+  ASSERT_EQ(second_captured_result.value(), KeyRotationResult::FAILURE);
 }
 
 // Tests that a properly initialized key manager handles a successful rotate key
@@ -618,9 +682,14 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
+  absl::optional<KeyRotationResult> captured_result;
+  auto completion_callback =
+      base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
+        captured_result = result;
+      });
   base::RepeatingClosure start_rotate = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(), base::BindLambdaForTesting([&]() {
-        key_manager()->StartKeyRotation(kFakeNonce);
+        key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 
   // Setup so that a key is loadable, but a rotate request is received at the
@@ -652,6 +721,9 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
 
   // The manager should have loaded a total of two keys.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/2);
+
+  ASSERT_TRUE(captured_result.has_value());
+  ASSERT_EQ(captured_result.value(), KeyRotationResult::SUCCESS);
 }
 
 // Tests that a properly initialized key manager handles a failed rotate key
@@ -668,9 +740,14 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
+  absl::optional<KeyRotationResult> captured_result;
+  auto completion_callback =
+      base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
+        captured_result = result;
+      });
   base::RepeatingClosure start_rotate = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(), base::BindLambdaForTesting([&]() {
-        key_manager()->StartKeyRotation(kFakeNonce);
+        key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 
   // Setup so that a key is loadable, but a rotate request is received at the
@@ -700,6 +777,9 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
 
   // The manager should have loaded a total of one key.
   ExpectLoadedTpmKeyMetrics(/*times_loaded=*/1);
+
+  ASSERT_TRUE(captured_result.has_value());
+  ASSERT_EQ(captured_result.value(), KeyRotationResult::FAILURE);
 }
 
 }  // namespace enterprise_connectors

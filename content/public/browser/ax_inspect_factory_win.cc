@@ -49,7 +49,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       base::win::AssertComInitialized();
       return std::make_unique<AccessibilityTreeFormatterUia>();
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
 }
@@ -78,9 +78,14 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
                                                              selector.pattern);
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
+}
+
+std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
+  return {ui::AXApiType::kBlink, ui::AXApiType::kWinIA2,
+          ui::AXApiType::kWinUIA};
 }
 
 }  // namespace content

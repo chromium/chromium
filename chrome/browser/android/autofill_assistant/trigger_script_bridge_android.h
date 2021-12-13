@@ -20,6 +20,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
  public:
   TriggerScriptBridgeAndroid(
       JNIEnv* env,
+      const base::android::JavaRef<jobject>& jweb_contents,
       const base::android::JavaRef<jobject>& jassistant_deps);
   ~TriggerScriptBridgeAndroid() override;
   TriggerScriptBridgeAndroid(const TriggerScriptBridgeAndroid&) = delete;

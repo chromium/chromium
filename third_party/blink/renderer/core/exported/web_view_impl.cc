@@ -2646,7 +2646,7 @@ PageScaleConstraintsSet& WebViewImpl::GetPageScaleConstraintsSet() const {
 
 void WebViewImpl::RefreshPageScaleFactor() {
   if (!MainFrame() || !GetPage() || !GetPage()->MainFrame() ||
-      !GetPage()->MainFrame()->IsLocalFrame() ||
+      !GetPage()->MainFrame()->IsLocalFrame() || IsFencedFrameRoot() ||
       !GetPage()->DeprecatedLocalMainFrame()->View())
     return;
   UpdatePageDefinedViewportConstraints(MainFrameImpl()

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cup.h"
+#include "cup_impl.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -11,13 +11,13 @@
 
 namespace {
 
-class CUPTest : public testing::Test {
+class CUPImplTest : public testing::Test {
  public:
-  CUPTest() : cup_{autofill_assistant::CUP::CreateQuerySigner()} {}
-  ~CUPTest() override = default;
+  CUPImplTest() : cup_{autofill_assistant::CUPImpl::CreateQuerySigner()} {}
+  ~CUPImplTest() override = default;
 
  protected:
-  autofill_assistant::CUP cup_;
+  autofill_assistant::CUPImpl cup_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   void InitCupFeatures(bool enableSigning, bool enableVerifying) {
@@ -47,56 +47,56 @@ class CUPTest : public testing::Test {
   }
 };
 
-TEST_F(CUPTest, ShouldSignGetActionsRequestWhenFeatureActivated) {
+TEST_F(CUPImplTest, ShouldSignGetActionsRequestWhenFeatureActivated) {
   InitCupFeatures(true, false);
 
-  EXPECT_TRUE(autofill_assistant::CUP::ShouldSignRequests(
+  EXPECT_TRUE(autofill_assistant::CUPImpl::ShouldSignRequests(
       autofill_assistant::RpcType::GET_ACTIONS));
 }
 
-TEST_F(CUPTest, ShouldNotSignGetActionsRequestWhenFeatureNotActivated) {
+TEST_F(CUPImplTest, ShouldNotSignGetActionsRequestWhenFeatureNotActivated) {
   InitCupFeatures(false, false);
 
-  EXPECT_FALSE(autofill_assistant::CUP::ShouldSignRequests(
+  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldSignRequests(
       autofill_assistant::RpcType::GET_ACTIONS));
 }
 
-TEST_F(CUPTest, ShouldNotSignNotGetActionsRequest) {
+TEST_F(CUPImplTest, ShouldNotSignNotGetActionsRequest) {
   InitCupFeatures(true, false);
 
-  EXPECT_FALSE(autofill_assistant::CUP::ShouldSignRequests(
+  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldSignRequests(
       autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
 }
 
-TEST_F(CUPTest, ShouldVerifyGetActionsResponseWhenFeatureActivated) {
+TEST_F(CUPImplTest, ShouldVerifyGetActionsResponseWhenFeatureActivated) {
   InitCupFeatures(true, true);
 
-  EXPECT_TRUE(autofill_assistant::CUP::ShouldVerifyResponses(
+  EXPECT_TRUE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
       autofill_assistant::RpcType::GET_ACTIONS));
 }
 
-TEST_F(CUPTest, ShouldNotVerifyGetActionsResponseWhenFeatureNotActivated) {
+TEST_F(CUPImplTest, ShouldNotVerifyGetActionsResponseWhenFeatureNotActivated) {
   InitCupFeatures(true, false);
 
-  EXPECT_FALSE(autofill_assistant::CUP::ShouldVerifyResponses(
+  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
       autofill_assistant::RpcType::GET_ACTIONS));
 }
 
-TEST_F(CUPTest, ShouldNotVerifyGetActionsResponseWhenSigningNotActivated) {
+TEST_F(CUPImplTest, ShouldNotVerifyGetActionsResponseWhenSigningNotActivated) {
   InitCupFeatures(false, true);
 
-  EXPECT_FALSE(autofill_assistant::CUP::ShouldVerifyResponses(
+  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
       autofill_assistant::RpcType::GET_ACTIONS));
 }
 
-TEST_F(CUPTest, ShouldNotVerifyNotGetActionsResponse) {
+TEST_F(CUPImplTest, ShouldNotVerifyNotGetActionsResponse) {
   InitCupFeatures(true, true);
 
-  EXPECT_FALSE(autofill_assistant::CUP::ShouldVerifyResponses(
+  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
       autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
 }
 
-TEST_F(CUPTest, PacksAndSignsGetActionsRequest) {
+TEST_F(CUPImplTest, PacksAndSignsGetActionsRequest) {
   InitCupFeatures(true, false);
 
   autofill_assistant::ScriptActionRequestProto user_request;
@@ -120,11 +120,11 @@ TEST_F(CUPTest, PacksAndSignsGetActionsRequest) {
   EXPECT_FALSE(actual_user_request.has_cup_data());
 }
 
-TEST_F(CUPTest, UnpacksTrustedGetActionsResponse) {
+TEST_F(CUPImplTest, UnpacksTrustedGetActionsResponse) {
   // TODO(b/203031699): Write test for the successful case.
 }
 
-TEST_F(CUPTest, FailsToUnpackNonTrustedGetActionsResponse) {
+TEST_F(CUPImplTest, FailsToUnpackNonTrustedGetActionsResponse) {
   InitCupFeatures(true, true);
 
   autofill_assistant::ScriptActionRequestProto user_request;

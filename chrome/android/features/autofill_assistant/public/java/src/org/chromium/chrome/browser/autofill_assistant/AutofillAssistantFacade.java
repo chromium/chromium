@@ -113,20 +113,6 @@ public class AutofillAssistantFacade {
     }
 
     /**
-     * Asks the feature module to create a container with the required dependencies.
-     * TODO(b/173103628): move this out of the facade once we inject our dependencies in a better
-     * way.
-     */
-    public static AssistantDependencies createDependencies(
-            Activity activity, AutofillAssistantModuleEntry module) {
-        assert activity instanceof ChromeActivity;
-        ChromeActivity chromeActivity = (ChromeActivity) activity;
-
-        return module.createDependenciesFactory().createDependencies(
-                chromeActivity.getCurrentWebContents());
-    }
-
-    /**
      * Checks whether direct actions provided by Autofill Assistant should be available - assuming
      * that direct actions are available at all.
      */

@@ -212,6 +212,9 @@ ProfileImpl::~ProfileImpl() {
   web_contents_to_delete_.clear();
 
   if (browser_context_) {
+    // Needs to be called before ShutdownStoragePartitions().
+    browser_context_->NotifyWillBeDestroyed();
+
     BrowserContextDependencyManager::GetInstance()
         ->DestroyBrowserContextServices(browser_context_.get());
     browser_context_->ShutdownStoragePartitions();

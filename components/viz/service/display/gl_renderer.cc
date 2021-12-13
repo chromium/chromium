@@ -451,6 +451,7 @@ GLRenderer::GLRenderer(
   use_occlusion_query_ = context_caps.occlusion_query;
   use_timer_query_ = context_caps.timer_queries;
   use_swap_with_bounds_ = context_caps.swap_buffers_with_bounds;
+  supports_multi_sampling_ = context_caps.max_samples > 0;
   prefer_draw_to_copy_ = output_surface_->context_provider()
                              ->GetGpuFeatureInfo()
                              .IsWorkaroundEnabled(gpu::PREFER_DRAW_TO_COPY);
@@ -985,7 +986,7 @@ uint32_t GLRenderer::GetBackdropTexture(const gfx::Rect& window_rect,
   GLenum gl_format = GLDataFormat(resource_format);
   GLenum gl_type = GLDataType(resource_format);
 
-  if (scale != 1.0f) {
+  if (supports_multi_sampling_ && scale != 1.0f) {
     DCHECK(!prefer_draw_to_copy_ || !current_framebuffer_texture_);
 
     gfx::Size target_size = window_rect.size();

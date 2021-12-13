@@ -22,8 +22,8 @@ constexpr struct {
   ui::EventType ui_event_type;
   const char* name;
   absl::optional<bool> scroll_is_inertial = absl::nullopt;
-  absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type =
-      absl::nullopt;
+  absl::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
+      scroll_update_type = absl::nullopt;
 } kInterestingEvents[] = {
 #define EVENT_TYPE(name, ui_type, ...) \
   { EventMetrics::EventType::k##name, ui_type, #name, __VA_ARGS__ }
@@ -39,7 +39,7 @@ constexpr struct {
     EVENT_TYPE(GestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
                false,
-               EventMetrics::ScrollUpdateType::kContinued),
+               ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
     EVENT_TYPE(GestureScrollEnd, ui::ET_GESTURE_SCROLL_END, false),
     EVENT_TYPE(GestureDoubleTap, ui::ET_GESTURE_DOUBLE_TAP),
     EVENT_TYPE(GestureLongPress, ui::ET_GESTURE_LONG_PRESS),
@@ -53,7 +53,7 @@ constexpr struct {
     EVENT_TYPE(FirstGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
                false,
-               EventMetrics::ScrollUpdateType::kStarted),
+               ScrollUpdateEventMetrics::ScrollUpdateType::kStarted),
     EVENT_TYPE(MouseDragged, ui::ET_MOUSE_DRAGGED),
     EVENT_TYPE(GesturePinchBegin, ui::ET_GESTURE_PINCH_BEGIN),
     EVENT_TYPE(GesturePinchEnd, ui::ET_GESTURE_PINCH_END),
@@ -61,7 +61,7 @@ constexpr struct {
     EVENT_TYPE(InertialGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
                true,
-               EventMetrics::ScrollUpdateType::kContinued),
+               ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
 #undef EVENT_TYPE
 };
 static_assert(base::size(kInterestingEvents) ==
@@ -69,12 +69,15 @@ static_assert(base::size(kInterestingEvents) ==
               "EventMetrics::EventType has changed.");
 
 constexpr struct {
-  EventMetrics::ScrollType metrics_scroll_type;
+  ScrollEventMetrics::ScrollType metrics_scroll_type;
   ui::ScrollInputType ui_input_type;
   const char* name;
 } kScrollTypes[] = {
-#define SCROLL_TYPE(name) \
-  { EventMetrics::ScrollType::k##name, ui::ScrollInputType::k##name, #name }
+#define SCROLL_TYPE(name)                                                  \
+  {                                                                        \
+    ScrollEventMetrics::ScrollType::k##name, ui::ScrollInputType::k##name, \
+        #name                                                              \
+  }
     SCROLL_TYPE(Autoscroll),
     SCROLL_TYPE(Scrollbar),
     SCROLL_TYPE(Touchscreen),
@@ -82,37 +85,33 @@ constexpr struct {
 #undef SCROLL_TYPE
 };
 static_assert(base::size(kScrollTypes) ==
-                  static_cast<int>(EventMetrics::ScrollType::kMaxValue) + 1,
-              "EventMetrics::ScrollType has changed.");
+                  static_cast<int>(ScrollEventMetrics::ScrollType::kMaxValue) +
+                      1,
+              "ScrollEventMetrics::ScrollType has changed.");
 
 constexpr struct {
-  EventMetrics::PinchType metrics_pinch_type;
+  PinchEventMetrics::PinchType metrics_pinch_type;
   ui::ScrollInputType ui_input_type;
   const char* name;
 } kPinchTypes[] = {
-#define PINCH_TYPE(metrics_name, ui_name)                                      \
-  {                                                                            \
-    EventMetrics::PinchType::k##metrics_name, ui::ScrollInputType::k##ui_name, \
-        #metrics_name                                                          \
+#define PINCH_TYPE(metrics_name, ui_name)              \
+  {                                                    \
+    PinchEventMetrics::PinchType::k##metrics_name,     \
+        ui::ScrollInputType::k##ui_name, #metrics_name \
   }
     PINCH_TYPE(Touchpad, Wheel),
     PINCH_TYPE(Touchscreen, Touchscreen),
 #undef PINCH_TYPE
 };
 static_assert(base::size(kPinchTypes) ==
-                  static_cast<int>(EventMetrics::PinchType::kMaxValue) + 1,
-              "EventMetrics::PinchType has changed.");
+                  static_cast<int>(PinchEventMetrics::PinchType::kMaxValue) + 1,
+              "PinchEventMetrics::PinchType has changed.");
 
 absl::optional<EventMetrics::EventType> ToInterestingEventType(
     ui::EventType ui_event_type,
-    const absl::optional<EventMetrics::GestureParams>& gesture_params) {
-  absl::optional<bool> scroll_is_inertial;
-  absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type;
-  if (gesture_params && gesture_params->scroll_params) {
-    scroll_is_inertial = gesture_params->scroll_params->is_inertial;
-    scroll_update_type = gesture_params->scroll_params->update_type;
-  }
-
+    absl::optional<bool> scroll_is_inertial,
+    absl::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
+        scroll_update_type) {
   for (size_t i = 0; i < base::size(kInterestingEvents); i++) {
     const auto& interesting_event = kInterestingEvents[i];
     if (ui_event_type == interesting_event.ui_event_type &&
@@ -127,30 +126,28 @@ absl::optional<EventMetrics::EventType> ToInterestingEventType(
   return absl::nullopt;
 }
 
-EventMetrics::ScrollType ToScrollType(ui::ScrollInputType ui_input_type) {
+ScrollEventMetrics::ScrollType ToScrollType(ui::ScrollInputType ui_input_type) {
   for (size_t i = 0; i < base::size(kScrollTypes); i++) {
     if (ui_input_type == kScrollTypes[i].ui_input_type) {
-      EventMetrics::ScrollType metrics_scroll_type =
-          static_cast<EventMetrics::ScrollType>(i);
+      auto metrics_scroll_type = static_cast<ScrollEventMetrics::ScrollType>(i);
       DCHECK_EQ(metrics_scroll_type, kScrollTypes[i].metrics_scroll_type);
       return metrics_scroll_type;
     }
   }
   NOTREACHED();
-  return EventMetrics::ScrollType::kMaxValue;
+  return ScrollEventMetrics::ScrollType::kMaxValue;
 }
 
-EventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
+PinchEventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
   for (size_t i = 0; i < base::size(kPinchTypes); i++) {
     if (ui_input_type == kPinchTypes[i].ui_input_type) {
-      EventMetrics::PinchType metrics_pinch_type =
-          static_cast<EventMetrics::PinchType>(i);
+      auto metrics_pinch_type = static_cast<PinchEventMetrics::PinchType>(i);
       DCHECK_EQ(metrics_pinch_type, kPinchTypes[i].metrics_pinch_type);
       return metrics_pinch_type;
     }
   }
   NOTREACHED();
-  return EventMetrics::PinchType::kMaxValue;
+  return PinchEventMetrics::PinchType::kMaxValue;
 }
 
 bool IsGestureScroll(ui::EventType type) {
@@ -171,55 +168,20 @@ bool IsGestureScrollUpdate(ui::EventType type) {
 
 }  // namespace
 
-// EventMetrics::GestureParams::ScrollParams:
-
-EventMetrics::GestureParams::ScrollParams::ScrollParams(bool is_inertial)
-    : is_inertial(is_inertial) {}
-
-EventMetrics::GestureParams::ScrollParams::ScrollParams(
-    bool is_inertial,
-    ScrollUpdateType update_type)
-    : is_inertial(is_inertial), update_type(update_type) {}
-
-EventMetrics::GestureParams::ScrollParams::ScrollParams(const ScrollParams&) =
-    default;
-EventMetrics::GestureParams::ScrollParams&
-EventMetrics::GestureParams::ScrollParams::operator=(const ScrollParams&) =
-    default;
-
-// EventMetrics::GestureParams:
-EventMetrics::GestureParams::GestureParams(ui::ScrollInputType input_type)
-    : input_type(input_type) {}
-
-EventMetrics::GestureParams::GestureParams(ui::ScrollInputType input_type,
-                                           bool scroll_is_inertial)
-    : input_type(input_type),
-      scroll_params(absl::in_place, scroll_is_inertial) {}
-
-EventMetrics::GestureParams::GestureParams(ui::ScrollInputType input_type,
-                                           bool scroll_is_inertial,
-                                           ScrollUpdateType scroll_update_type)
-    : input_type(input_type),
-      scroll_params(absl::in_place, scroll_is_inertial, scroll_update_type) {}
-
-EventMetrics::GestureParams::GestureParams(const GestureParams&) = default;
-EventMetrics::GestureParams& EventMetrics::GestureParams::operator=(
-    const GestureParams&) = default;
-
 // EventMetrics:
 
 // static
-std::unique_ptr<EventMetrics> EventMetrics::Create(
-    ui::EventType type,
-    absl::optional<GestureParams> gesture_params,
-    base::TimeTicks timestamp) {
+std::unique_ptr<EventMetrics> EventMetrics::Create(ui::EventType type,
+                                                   base::TimeTicks timestamp) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
   // assert `timestamp` is not null.
 
-  std::unique_ptr<EventMetrics> metrics = CreateInternal(
-      type, gesture_params, timestamp, base::DefaultTickClock::GetInstance());
+  DCHECK(!IsGestureScroll(type) && !IsGesturePinch(type));
+
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, timestamp, base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
 
@@ -231,13 +193,12 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
     ui::EventType type,
-    absl::optional<GestureParams> gesture_params,
     base::TimeTicks timestamp,
     const base::TickClock* tick_clock) {
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, gesture_params, timestamp, tick_clock);
+      CreateInternal(type, timestamp, tick_clock);
   if (!metrics)
     return nullptr;
 
@@ -249,95 +210,59 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
     ui::EventType type,
-    absl::optional<GestureParams> gesture_params,
     DispatchStage last_dispatch_stage,
     const EventMetrics* existing) {
-  std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, gesture_params, base::TimeTicks(),
-                     existing ? existing->tick_clock_.get()
-                              : base::DefaultTickClock::GetInstance());
-  if (!metrics)
+  // Generally, if `existing` is `nullptr` (the existing event is not of an
+  // interesting type), the new event won't be of an interesting type, too, and
+  // we can immediately return `nullptr`. The only exception is some tests that
+  // are not interested in reporting metrics, in which case we can immediately
+  // return `nullptr`, too, as they are not interested in reporting metrics.
+  if (!existing)
     return nullptr;
 
-  // Since the new event is of an interesting type, we expect the existing event
-  // to be of an interesting type, too; which means `existing` should not be
-  // nullptr. However, some tests that are not interested in reporting metrics,
-  // don't create metrics objects even for events of interesting types. Return
-  // nullptr if that's the case.
-  if (!existing)
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, base::TimeTicks(), existing->tick_clock_);
+  if (!metrics)
     return nullptr;
 
   // Use timestamps of all stages (including "Generated" stage) up to
   // `last_dispatch_stage` from `existing`.
-  for (size_t stage_index = static_cast<size_t>(DispatchStage::kGenerated);
-       stage_index <= static_cast<size_t>(last_dispatch_stage); stage_index++) {
-    metrics->dispatch_stage_timestamps_[stage_index] =
-        existing->dispatch_stage_timestamps_[stage_index];
-  }
+  metrics->CopyTimestampsFrom(*existing, last_dispatch_stage);
+
   return metrics;
 }
 
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
     ui::EventType type,
-    const absl::optional<GestureParams>& gesture_params,
     base::TimeTicks timestamp,
     const base::TickClock* tick_clock) {
-  absl::optional<ScrollType> scroll_type;
-  absl::optional<PinchType> pinch_type;
-  if (IsGestureScroll(type)) {
-    DCHECK(gesture_params);
-    DCHECK(gesture_params->scroll_params);
-    DCHECK(IsGestureScrollUpdate(type) &&
-               gesture_params->scroll_params->update_type ||
-           !IsGestureScrollUpdate(type) &&
-               !gesture_params->scroll_params->update_type);
-    scroll_type = ToScrollType(gesture_params->input_type);
-  } else if (IsGesturePinch(type)) {
-    DCHECK(gesture_params);
-    DCHECK(!gesture_params->scroll_params);
-    pinch_type = ToPinchType(gesture_params->input_type);
-  } else {
-    DCHECK(!gesture_params);
-  }
-
   absl::optional<EventType> interesting_type =
-      ToInterestingEventType(type, gesture_params);
+      ToInterestingEventType(type, /*scroll_is_inertial=*/absl::nullopt,
+                             /*scroll_update_type=*/absl::nullopt);
   if (!interesting_type)
     return nullptr;
-  return base::WrapUnique(new EventMetrics(*interesting_type, scroll_type,
-                                           pinch_type, timestamp, tick_clock));
+  return base::WrapUnique(
+      new EventMetrics(*interesting_type, timestamp, tick_clock));
 }
 
 EventMetrics::EventMetrics(EventType type,
-                           absl::optional<ScrollType> scroll_type,
-                           absl::optional<PinchType> pinch_type,
                            base::TimeTicks timestamp,
                            const base::TickClock* tick_clock)
-    : type_(type),
-      scroll_type_(scroll_type),
-      pinch_type_(pinch_type),
-      tick_clock_(tick_clock) {
+    : type_(type), tick_clock_(tick_clock) {
   dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kGenerated)] =
       timestamp;
+}
+
+EventMetrics::EventMetrics(const EventMetrics& other)
+    : type_(other.type_), tick_clock_(other.tick_clock_) {
+  CopyTimestampsFrom(other, DispatchStage::kMaxValue);
 }
 
 EventMetrics::~EventMetrics() = default;
 
 const char* EventMetrics::GetTypeName() const {
   return kInterestingEvents[static_cast<int>(type_)].name;
-}
-
-const char* EventMetrics::GetScrollTypeName() const {
-  DCHECK(scroll_type_) << "Event is not a scroll event.";
-
-  return kScrollTypes[static_cast<int>(*scroll_type_)].name;
-}
-
-const char* EventMetrics::GetPinchTypeName() const {
-  DCHECK(pinch_type_) << "Event is not a pinch event.";
-
-  return kPinchTypes[static_cast<int>(*pinch_type_)].name;
 }
 
 void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage) {
@@ -364,21 +289,361 @@ bool EventMetrics::HasSmoothInputEvent() const {
   return type_ == EventType::kMouseDragged || type_ == EventType::kTouchMoved;
 }
 
-std::unique_ptr<EventMetrics> EventMetrics::Clone() const {
-  auto clone = base::WrapUnique(new EventMetrics(
-      type_, scroll_type_, pinch_type_, base::TimeTicks(), tick_clock_));
-  std::copy(std::begin(dispatch_stage_timestamps_),
-            std::end(dispatch_stage_timestamps_),
-            std::begin(clone->dispatch_stage_timestamps_));
-  return clone;
+ScrollEventMetrics* EventMetrics::AsScroll() {
+  return nullptr;
 }
 
-bool EventMetrics::operator==(const EventMetrics& other) const {
-  return type_ == other.type_ && scroll_type_ == other.scroll_type_ &&
-         pinch_type_ == other.pinch_type_ &&
-         std::equal(std::begin(dispatch_stage_timestamps_),
-                    std::end(dispatch_stage_timestamps_),
-                    std::begin(other.dispatch_stage_timestamps_));
+const ScrollEventMetrics* EventMetrics::AsScroll() const {
+  return const_cast<EventMetrics*>(this)->AsScroll();
+}
+
+ScrollUpdateEventMetrics* EventMetrics::AsScrollUpdate() {
+  return nullptr;
+}
+
+const ScrollUpdateEventMetrics* EventMetrics::AsScrollUpdate() const {
+  return const_cast<EventMetrics*>(this)->AsScrollUpdate();
+}
+
+PinchEventMetrics* EventMetrics::AsPinch() {
+  return nullptr;
+}
+
+const PinchEventMetrics* EventMetrics::AsPinch() const {
+  return const_cast<EventMetrics*>(this)->AsPinch();
+}
+
+std::unique_ptr<EventMetrics> EventMetrics::Clone() const {
+  return base::WrapUnique(new EventMetrics(*this));
+}
+
+void EventMetrics::CopyTimestampsFrom(const EventMetrics& other,
+                                      DispatchStage last_dispatch_stage) {
+  DCHECK_LE(last_dispatch_stage, DispatchStage::kMaxValue);
+  std::copy(other.dispatch_stage_timestamps_,
+            other.dispatch_stage_timestamps_ +
+                static_cast<size_t>(last_dispatch_stage) + 1,
+            dispatch_stage_timestamps_);
+}
+
+// ScrollEventMetrics
+
+// static
+std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::Create(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    base::TimeTicks timestamp) {
+  // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
+  // seems to be some tests that are emitting events with null timestamp.  We
+  // should investigate and try to fix those cases and add a `DCHECK` here to
+  // assert `timestamp` is not null.
+
+  DCHECK(IsGestureScroll(type) && !IsGestureScrollUpdate(type));
+
+  std::unique_ptr<ScrollEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, timestamp,
+                     base::DefaultTickClock::GetInstance());
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateForTesting(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
+  DCHECK(!timestamp.is_null());
+
+  std::unique_ptr<ScrollEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, timestamp, tick_clock);
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateFromExisting(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    DispatchStage last_dispatch_stage,
+    const EventMetrics* existing) {
+  // Generally, if `existing` is `nullptr` (the existing event is not of an
+  // interesting type), the new event won't be of an interesting type, too, and
+  // we can immediately return `nullptr`. The only exception is some tests that
+  // are not interested in reporting metrics, in which case we can immediately
+  // return `nullptr`, too, as they are not interested in reporting metrics.
+  if (!existing)
+    return nullptr;
+
+  std::unique_ptr<ScrollEventMetrics> metrics = CreateInternal(
+      type, input_type, is_inertial, base::TimeTicks(), existing->tick_clock_);
+  if (!metrics)
+    return nullptr;
+
+  // Use timestamps of all stages (including "Generated" stage) up to
+  // `last_dispatch_stage` from `existing`.
+  metrics->CopyTimestampsFrom(*existing, last_dispatch_stage);
+
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateInternal(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
+  absl::optional<EventType> interesting_type =
+      ToInterestingEventType(type, is_inertial,
+                             /*scroll_update_type=*/absl::nullopt);
+  if (!interesting_type)
+    return nullptr;
+  return base::WrapUnique(new ScrollEventMetrics(
+      *interesting_type, ToScrollType(input_type), timestamp, tick_clock));
+}
+
+ScrollEventMetrics::ScrollEventMetrics(EventType type,
+                                       ScrollType scroll_type,
+                                       base::TimeTicks timestamp,
+                                       const base::TickClock* tick_clock)
+    : EventMetrics(type, timestamp, tick_clock), scroll_type_(scroll_type) {}
+
+ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
+
+ScrollEventMetrics::~ScrollEventMetrics() = default;
+
+const char* ScrollEventMetrics::GetScrollTypeName() const {
+  return kScrollTypes[static_cast<int>(scroll_type_)].name;
+}
+
+ScrollEventMetrics* ScrollEventMetrics::AsScroll() {
+  return this;
+}
+
+std::unique_ptr<EventMetrics> ScrollEventMetrics::Clone() const {
+  return base::WrapUnique(new ScrollEventMetrics(*this));
+}
+
+// ScrollUpdateEventMetrics
+
+// static
+std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    ScrollUpdateType scroll_update_type,
+    float delta,
+    base::TimeTicks timestamp) {
+  // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
+  // seems to be some tests that are emitting events with null timestamp. We
+  // should investigate and try to fix those cases and add a `DCHECK` here to
+  // assert `timestamp` is not null.
+
+  DCHECK(IsGestureScrollUpdate(type));
+
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
+                     timestamp, base::DefaultTickClock::GetInstance());
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollUpdateEventMetrics>
+ScrollUpdateEventMetrics::CreateForTesting(ui::EventType type,
+                                           ui::ScrollInputType input_type,
+                                           bool is_inertial,
+                                           ScrollUpdateType scroll_update_type,
+                                           float delta,
+                                           base::TimeTicks timestamp,
+                                           const base::TickClock* tick_clock) {
+  DCHECK(!timestamp.is_null());
+
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
+                     timestamp, tick_clock);
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollUpdateEventMetrics>
+ScrollUpdateEventMetrics::CreateFromExisting(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    bool is_inertial,
+    ScrollUpdateType scroll_update_type,
+    float delta,
+    DispatchStage last_dispatch_stage,
+    const EventMetrics* existing) {
+  // Since the new event is of an interesting type, we expect the existing event
+  // to be of an interesting type, too; which means `existing` should not be
+  // `nullptr`. However, some tests that are not interested in reporting
+  // metrics, don't create metrics objects even for events of interesting types.
+  // Return `nullptr` if that's the case.
+  if (!existing)
+    return nullptr;
+
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
+                     base::TimeTicks(), existing->tick_clock_);
+  if (!metrics)
+    return nullptr;
+
+  // Use timestamps of all stages (including "Generated" stage) up to
+  // `last_dispatch_stage` from `existing`.
+  metrics->CopyTimestampsFrom(*existing, last_dispatch_stage);
+
+  return metrics;
+}
+
+// static
+std::unique_ptr<ScrollUpdateEventMetrics>
+ScrollUpdateEventMetrics::CreateInternal(ui::EventType type,
+                                         ui::ScrollInputType input_type,
+                                         bool is_inertial,
+                                         ScrollUpdateType scroll_update_type,
+                                         float delta,
+                                         base::TimeTicks timestamp,
+                                         const base::TickClock* tick_clock) {
+  absl::optional<EventType> interesting_type =
+      ToInterestingEventType(type, is_inertial, scroll_update_type);
+  if (!interesting_type)
+    return nullptr;
+  return base::WrapUnique(new ScrollUpdateEventMetrics(
+      *interesting_type, ToScrollType(input_type), scroll_update_type, delta,
+      timestamp, tick_clock));
+}
+
+ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
+    EventType type,
+    ScrollType scroll_type,
+    ScrollUpdateType scroll_update_type,
+    float delta,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock)
+    : ScrollEventMetrics(type, scroll_type, timestamp, tick_clock),
+      delta_(delta),
+      predicted_delta_(delta),
+      last_timestamp_(timestamp) {}
+
+ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
+    const ScrollUpdateEventMetrics&) = default;
+
+ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() = default;
+
+void ScrollUpdateEventMetrics::CoalesceWith(
+    const ScrollUpdateEventMetrics& newer_scroll_update) {
+  last_timestamp_ = newer_scroll_update.last_timestamp_;
+  delta_ += newer_scroll_update.delta_;
+  predicted_delta_ += newer_scroll_update.predicted_delta_;
+}
+
+ScrollUpdateEventMetrics* ScrollUpdateEventMetrics::AsScrollUpdate() {
+  return this;
+}
+
+std::unique_ptr<EventMetrics> ScrollUpdateEventMetrics::Clone() const {
+  return base::WrapUnique(new ScrollUpdateEventMetrics(*this));
+}
+
+// PinchEventMetrics
+
+// static
+std::unique_ptr<PinchEventMetrics> PinchEventMetrics::Create(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    base::TimeTicks timestamp) {
+  // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
+  // seems to be some tests that are emitting events with null timestamp.  We
+  // should investigate and try to fix those cases and add a `DCHECK` here to
+  // assert `timestamp` is not null.
+
+  DCHECK(IsGesturePinch(type));
+
+  std::unique_ptr<PinchEventMetrics> metrics = CreateInternal(
+      type, input_type, timestamp, base::DefaultTickClock::GetInstance());
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<PinchEventMetrics> PinchEventMetrics::CreateForTesting(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
+  DCHECK(!timestamp.is_null());
+
+  std::unique_ptr<PinchEventMetrics> metrics =
+      CreateInternal(type, input_type, timestamp, tick_clock);
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<PinchEventMetrics> PinchEventMetrics::CreateInternal(
+    ui::EventType type,
+    ui::ScrollInputType input_type,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
+  absl::optional<EventType> interesting_type =
+      ToInterestingEventType(type, /*scroll_is_inertial=*/absl::nullopt,
+                             /*scroll_update_type=*/absl::nullopt);
+  if (!interesting_type)
+    return nullptr;
+  return base::WrapUnique(new PinchEventMetrics(
+      *interesting_type, ToPinchType(input_type), timestamp, tick_clock));
+}
+
+PinchEventMetrics::PinchEventMetrics(EventType type,
+                                     PinchType pinch_type,
+                                     base::TimeTicks timestamp,
+                                     const base::TickClock* tick_clock)
+    : EventMetrics(type, timestamp, tick_clock), pinch_type_(pinch_type) {}
+
+PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
+
+PinchEventMetrics::~PinchEventMetrics() = default;
+
+const char* PinchEventMetrics::GetPinchTypeName() const {
+  return kPinchTypes[static_cast<int>(pinch_type_)].name;
+}
+
+PinchEventMetrics* PinchEventMetrics::AsPinch() {
+  return this;
+}
+
+std::unique_ptr<EventMetrics> PinchEventMetrics::Clone() const {
+  return base::WrapUnique(new PinchEventMetrics(*this));
 }
 
 // EventMetricsSet

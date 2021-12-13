@@ -602,6 +602,20 @@ bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
          ApiApprovalState::kDisallowed;
 }
 
+ApiApprovalState WebAppRegistrar::GetAppFileHandlerApprovalState(
+    const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return ApiApprovalState::kDisallowed;
+
+  if (web_app->IsSystemApp())
+    return ApiApprovalState::kAllowed;
+
+  // TODO(estade): also consult the policy manager when File Handler policies
+  // exist.
+  return web_app->file_handler_approval_state();
+}
+
 absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

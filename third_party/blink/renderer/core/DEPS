@@ -36,7 +36,6 @@ include_rules = [
     "+cc/base/region.h",
     "+cc/input/browser_controls_state.h",
     "+cc/input/event_listener_properties.h",
-    "+cc/input/layer_selection_bound.h",
     "+cc/input/main_thread_scrolling_reason.h",
     "+cc/input/overscroll_behavior.h",
     "+cc/input/scroll_utils.h",

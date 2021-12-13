@@ -88,8 +88,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     if (!passthrough_texture_)
       return;
 
-    if (!have_context() ||
-        !context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true))
+    if (!gl::GLContext::GetCurrent())
+      context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
+
+    if (!have_context())
       passthrough_texture_->MarkContextLost();
 
     passthrough_texture_.reset();

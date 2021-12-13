@@ -381,20 +381,19 @@ void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
   // TODO(crbug.com/1137870): Scroll-begin events should not normally be
   // inertial. Here, the scroll-begin is created from the first scroll-update
   // event of a sequence and the first scroll-update should not be inertial,
-  // either. Consider passing in `false` as `is_inertial` argument and adding
+  // either. Consider setting `is_inertial` to `false` and adding
   // DCHECKs here to make sure `gesture_event` is not inertial.
-  cc::EventMetrics::GestureParams gesture_params(
-      gesture_event->GetScrollInputType(),
-      gesture_event->InertialPhase() ==
-          WebGestureEvent::InertialPhaseState::kMomentum);
+  const bool is_inertial = gesture_event->InertialPhase() ==
+                           WebGestureEvent::InertialPhaseState::kMomentum;
+  std::unique_ptr<cc::EventMetrics> metrics =
+      cc::ScrollEventMetrics::CreateFromExisting(
+          gesture_event->GetTypeAsUiEventType(),
+          gesture_event->GetScrollInputType(), is_inertial,
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          update_metrics);
 
   auto event = std::make_unique<WebCoalescedInputEvent>(
       std::move(gesture_event), ui::LatencyInfo());
-  std::unique_ptr<cc::EventMetrics> metrics =
-      cc::EventMetrics::CreateFromExisting(
-          event->Event().GetTypeAsUiEventType(), gesture_params,
-          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-          update_metrics);
 
   DispatchNonBlockingEventToMainThread(std::move(event), attribution,
                                        std::move(metrics));
@@ -527,34 +526,38 @@ void WidgetInputHandlerManager::DispatchEvent(
     event->EventPointer()->SetTimeStamp(base::TimeTicks::Now());
   }
 
-  absl::optional<cc::EventMetrics::GestureParams> gesture_params;
-  if (event->Event().IsGestureScroll() ||
-      WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {
+  std::unique_ptr<cc::EventMetrics> metrics;
+  if (event->Event().IsGestureScroll()) {
     const auto& gesture_event =
         static_cast<const WebGestureEvent&>(event->Event());
-    gesture_params.emplace(gesture_event.GetScrollInputType());
-    if (gesture_event.IsGestureScroll()) {
-      gesture_params->scroll_params.emplace(
-          gesture_event.InertialPhase() ==
-          WebGestureEvent::InertialPhaseState::kMomentum);
-      if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
-        has_seen_first_gesture_scroll_update_after_begin_ = false;
-      } else if (gesture_event.GetType() ==
-                 WebInputEvent::Type::kGestureScrollUpdate) {
-        if (has_seen_first_gesture_scroll_update_after_begin_) {
-          gesture_params->scroll_params->update_type =
-              cc::EventMetrics::ScrollUpdateType::kContinued;
-        } else {
-          gesture_params->scroll_params->update_type =
-              cc::EventMetrics::ScrollUpdateType::kStarted;
-          has_seen_first_gesture_scroll_update_after_begin_ = true;
-        }
-      }
+    const bool is_inertial = gesture_event.InertialPhase() ==
+                             WebGestureEvent::InertialPhaseState::kMomentum;
+    if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
+      metrics = cc::ScrollUpdateEventMetrics::Create(
+          gesture_event.GetTypeAsUiEventType(),
+          gesture_event.GetScrollInputType(), is_inertial,
+          has_seen_first_gesture_scroll_update_after_begin_
+              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
+              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+          gesture_event.data.scroll_update.delta_y, event->Event().TimeStamp());
+      has_seen_first_gesture_scroll_update_after_begin_ = true;
+    } else {
+      metrics = cc::ScrollEventMetrics::Create(
+          gesture_event.GetTypeAsUiEventType(),
+          gesture_event.GetScrollInputType(), is_inertial,
+          event->Event().TimeStamp());
+      has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
+  } else if (WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {
+    const auto& gesture_event =
+        static_cast<const WebGestureEvent&>(event->Event());
+    metrics = cc::PinchEventMetrics::Create(
+        gesture_event.GetTypeAsUiEventType(),
+        gesture_event.GetScrollInputType(), event->Event().TimeStamp());
+  } else {
+    metrics = cc::EventMetrics::Create(event->Event().GetTypeAsUiEventType(),
+                                       event->Event().TimeStamp());
   }
-  std::unique_ptr<cc::EventMetrics> metrics =
-      cc::EventMetrics::Create(event->Event().GetTypeAsUiEventType(),
-                               gesture_params, event->Event().TimeStamp());
 
   if (uses_input_handler_) {
     // If the input_handler_proxy has disappeared ensure we just ack event.

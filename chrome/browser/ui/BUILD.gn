@@ -4368,6 +4368,8 @@ static_library("ui") {
       "views/page_info/page_info_bubble_view.h",
       "views/page_info/page_info_bubble_view_base.cc",
       "views/page_info/page_info_bubble_view_base.h",
+      "views/page_info/page_info_history_controller.cc",
+      "views/page_info/page_info_history_controller.h",
       "views/page_info/page_info_hover_button.cc",
       "views/page_info/page_info_hover_button.h",
       "views/page_info/page_info_main_view.cc",

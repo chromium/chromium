@@ -148,6 +148,7 @@ bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) {
 
   // TODO(almaher): Figure out which cases this should be true. (Should this
   // only be true when min-block-size is auto in the case of |is_column_|?)
+  // Also, should this be the same in the case of a row flex container?
   const auto& item_style = item.ng_input_node.Style();
   return item_style.LogicalHeight().IsAutoOrContentOrIntrinsic();
 }

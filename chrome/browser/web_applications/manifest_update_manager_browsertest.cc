@@ -1969,14 +1969,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
 
-  {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
-    WebApp* app = update->UpdateApp(app_id);
-    ASSERT_TRUE(app);
-    EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-              app->file_handler_approval_state());
-    app->SetFileHandlerApprovalState(ApiApprovalState::kAllowed);
-  }
+  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
+  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, ApiApprovalState::kAllowed);
 
   // Update manifest, adding an extension to the file handler. Permission should
   // be downgraded to ASK. The time override is necessary to make sure the
@@ -1989,16 +1985,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
-  {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
-    WebApp* app = update->UpdateApp(app_id);
-    ASSERT_TRUE(app);
-    EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-              app->file_handler_approval_state());
-
-    // Set back to allowed.
-    app->SetFileHandlerApprovalState(ApiApprovalState::kAllowed);
-  }
+  // Set back to allowed.
+  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
+  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, ApiApprovalState::kAllowed);
 
   // Update manifest, but keep same file handlers. Permission should be left on
   // ALLOW.
@@ -2010,10 +2001,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
-  {
-    EXPECT_EQ(ApiApprovalState::kAllowed,
-              web_app->file_handler_approval_state());
-  }
+  EXPECT_EQ(ApiApprovalState::kAllowed,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
 
   // Update manifest, asking for /fewer/ file types. Permission should be left
   // on ALLOW.
@@ -2024,10 +2013,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_FALSE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
-  {
-    EXPECT_EQ(ApiApprovalState::kAllowed,
-              web_app->file_handler_approval_state());
-  }
+  EXPECT_EQ(ApiApprovalState::kAllowed,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
 
 #if defined(OS_LINUX)
   // Make sure that blocking the permission also unregisters the MIME type on
@@ -2040,21 +2027,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 #endif
 
   // Block the permission, update manifest, permission should still be block.
-  {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
-    WebApp* app = update->UpdateApp(app_id);
-    ASSERT_TRUE(app);
-    app->SetFileHandlerApprovalState(ApiApprovalState::kDisallowed);
-  }
+  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, ApiApprovalState::kDisallowed);
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
   time_override += base::Days(10);
   SetTimeOverride(time_override);
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
-
-  {
-    EXPECT_EQ(ApiApprovalState::kDisallowed,
-              web_app->file_handler_approval_state());
-  }
+  EXPECT_EQ(ApiApprovalState::kDisallowed,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2091,15 +2071,12 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
-  {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
-    WebApp* app = update->UpdateApp(app_id);
-    ASSERT_TRUE(app);
-    EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-              app->file_handler_approval_state());
-    // Disallow the API.
-    app->SetFileHandlerApprovalState(ApiApprovalState::kDisallowed);
-  }
+
+  // Disallow the API.
+  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
+            GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
+  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+      app_id, ApiApprovalState::kDisallowed);
 
   // Update manifest.
   OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
@@ -2150,8 +2127,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
-  EXPECT_TRUE(web_app->file_handlers().empty());
+  EXPECT_TRUE(GetProvider().registrar().GetAppFileHandlers(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,

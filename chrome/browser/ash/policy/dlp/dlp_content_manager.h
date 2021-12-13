@@ -361,6 +361,9 @@ class DlpContentManager : public DlpContentObserver,
   DlpReportingManager* reporting_manager_;
 
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
+
+  // TODO(https://crbug.com/1278733): Remove this flag
+  const bool is_screen_share_warning_mode_enabled_ = false;
 };
 
 // Helper class to call SetDlpContentManagerForTesting and

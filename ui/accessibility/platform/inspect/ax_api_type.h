@@ -15,7 +15,8 @@ class AX_EXPORT AXApiType {
  public:
   // Inspect types for all platforms.
   enum TypeConstant {
-    kAndroid,          // For the platform specific Android tree (internal).
+    kNone,
+    kAndroid,
     kAndroidExternal,  // For the Java-side "external" Android tree.
     kBlink,
     kFuchsia,
@@ -25,10 +26,11 @@ class AX_EXPORT AXApiType {
     kWinUIA,
   };
 
-  // Inspect type.
+  // Type represents a platform-specific accessibility API.
   class AX_EXPORT Type final {
    public:
     Type(TypeConstant type) : type_(type) {}
+
     ~Type() = default;
 
     Type(const Type&) = default;
@@ -40,6 +42,9 @@ class AX_EXPORT AXApiType {
    private:
     TypeConstant type_;
   };
+
+  // Conversion from string to AXApiType::Type.
+  static Type From(std::string& type_str);
 };
 
 }  // namespace ui

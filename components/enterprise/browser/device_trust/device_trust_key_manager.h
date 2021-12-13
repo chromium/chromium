@@ -27,6 +27,12 @@ class DeviceTrustKeyManager {
     crypto::SignatureVerifier::SignatureAlgorithm algorithm;
   };
 
+  enum class KeyRotationResult {
+    SUCCESS = 0,
+    FAILURE = 1,
+    CANCELLATION = 2,
+  };
+
   // Starts the initialization of the manager which includes trying to load the
   // signing key, or kicking off its creation. This function is idempotent, so
   // only the initial call matters (subsequent calls will be ignored).
@@ -34,7 +40,11 @@ class DeviceTrustKeyManager {
 
   // Starts a key rotation sequence which will update the serialized key,
   // upload it to the server using the `nonce`, and then update the cached key.
-  virtual void StartKeyRotation(const std::string& nonce) = 0;
+  // Invokes `callback` upon completing the rotation with an enum parameter
+  // indicating the outcome for the request.
+  virtual void RotateKey(
+      const std::string& nonce,
+      base::OnceCallback<void(KeyRotationResult)> callback) = 0;
 
   // Asynchronously exports the signing key pair's public key into a string.
   // Invokes `callback` with that string when it is available.

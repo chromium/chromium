@@ -18,7 +18,10 @@ class MockDeviceTrustKeyManager : public DeviceTrustKeyManager {
 
   MOCK_METHOD(void, StartInitialization, (), (override));
 
-  MOCK_METHOD(void, StartKeyRotation, (const std::string&), (override));
+  MOCK_METHOD(void,
+              RotateKey,
+              (const std::string&, base::OnceCallback<void(KeyRotationResult)>),
+              (override));
 
   MOCK_METHOD(void,
               ExportPublicKeyAsync,

@@ -26,7 +26,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 

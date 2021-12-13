@@ -496,14 +496,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
 
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    WebApp* app = update->UpdateApp(app_id());
-    ASSERT_TRUE(app);
-    EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-              app->file_handler_approval_state());
-    app->SetFileHandlerApprovalState(ApiApprovalState::kAllowed);
-  }
+  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
+            registrar().GetAppFileHandlerApprovalState(app_id()));
+  provider()->sync_bridge().SetAppFileHandlerApprovalState(
+      app_id(), ApiApprovalState::kAllowed);
 
   // Tangentially: make sure the outparam for
   // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.

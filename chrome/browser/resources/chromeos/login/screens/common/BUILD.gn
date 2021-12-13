@@ -30,6 +30,7 @@ group("polymer3_elements") {
     ":marketing_opt_in_module",
     ":offline_ad_login_module",
     ":oobe_reset_module",
+    ":os_install_module",
     ":parental_handoff_module",
     ":pin_setup_module",
     ":signin_fatal_error_module",
@@ -41,15 +42,7 @@ group("polymer3_elements") {
 }
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "../../components:closure_compile",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  uses_legacy_modules = true
-  deps = [ ":os_install" ]
+  deps = [ "../../components:closure_compile" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -74,6 +67,7 @@ js_type_check("closure_compile_module") {
     ":marketing_opt_in.m",
     ":offline_ad_login.m",
     ":oobe_reset.m",
+    ":os_install.m",
     ":parental_handoff.m",
     ":pin_setup.m",
     ":signin_fatal_error.m",
@@ -86,17 +80,6 @@ js_type_check("closure_compile_module") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("os_install") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-  ]
-}
 
 js_library("adb_sideloading.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/adb_sideloading.m.js" ]
@@ -368,6 +351,27 @@ js_library("oobe_reset.m") {
   extra_deps = [ ":oobe_reset_module" ]
 }
 
+js_library("os_install.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_install.m.js" ]
+  deps = [
+    "../../:display_manager.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+
+  externs_list = [ "$externs_path/webview_tag.js" ]
+
+  extra_deps = [ ":os_install_module" ]
+}
+
 js_library("parental_handoff.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.m.js" ]
   deps = [
@@ -614,6 +618,14 @@ polymer_modulizer("offline_ad_login") {
 polymer_modulizer("oobe_reset") {
   js_file = "oobe_reset.js"
   html_file = "oobe_reset.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("os_install") {
+  js_file = "os_install.js"
+  html_file = "os_install.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

@@ -1347,6 +1347,8 @@ static_library("test_support") {
   sources = [
     "api/passwords_private/test_passwords_private_delegate.cc",
     "api/passwords_private/test_passwords_private_delegate.h",
+    "extension_management_test_util.cc",
+    "extension_management_test_util.h",
     "external_testing_loader.cc",
     "external_testing_loader.h",
     "menu_manager_test_observer.cc",
@@ -1357,7 +1359,9 @@ static_library("test_support") {
     ":extensions",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/crx_file:crx_file",
+    "//components/policy/core/common:test_support",
     "//content/public/browser",
-    "//extensions/browser:test_support",
+    "//extensions/browser:browser",
   ]
 }

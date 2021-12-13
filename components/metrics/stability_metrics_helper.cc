@@ -130,12 +130,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
         prefs::kStabilityExtensionRendererFailedLaunchCount, 0);
   }
 
-  count = local_state_->GetInteger(prefs::kStabilityRendererHangCount);
-  if (count) {
-    stability_proto->set_renderer_hang_count(count);
-    local_state_->SetInteger(prefs::kStabilityRendererHangCount, 0);
-  }
-
   count =
       local_state_->GetInteger(prefs::kStabilityExtensionRendererLaunchCount);
   if (count) {
@@ -155,7 +149,6 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererFailedLaunchCount, 0);
-  local_state_->SetInteger(prefs::kStabilityRendererHangCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererLaunchCount, 0);
 }
 
@@ -172,7 +165,6 @@ void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererFailedLaunchCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererLaunchCount, 0);
 }
 
@@ -199,6 +191,7 @@ void StabilityMetricsHelper::BrowserUtilityProcessCrashed(
   base::UmaHistogramSparse("ChildProcess.Crashed.UtilityProcessHash", hash);
   base::UmaHistogramSparse("ChildProcess.Crashed.UtilityProcessExitCode",
                            exit_code);
+  RecordStabilityEvent(StabilityEventType::kUtilityCrash);
 }
 
 void StabilityMetricsHelper::BrowserChildProcessCrashed() {
@@ -334,8 +327,6 @@ void StabilityMetricsHelper::LogRendererHang() {
   base::UmaHistogramMemoryMB(
       "ChildProcess.HungRendererAvailableMemoryMB",
       base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024 / 1024);
-  IncrementPrefValue(prefs::kStabilityRendererHangCount);
-  RecordStabilityEvent(StabilityEventType::kRendererHang);
 }
 
 // static

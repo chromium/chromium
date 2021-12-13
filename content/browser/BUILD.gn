@@ -2809,6 +2809,7 @@ source_set("browser") {
       "//media/capture/content/android",
       "//media/capture/video/android",
       "//third_party/blink/public/common:font_unique_name_table_proto",
+      "//third_party/blink/public/mojom:mojom_platform_blink",
       "//third_party/icu",
       "//ui/accessibility:ax_assistant",
       "//ui/accessibility/mojom",

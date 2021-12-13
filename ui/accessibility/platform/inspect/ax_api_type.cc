@@ -6,27 +6,44 @@
 
 namespace ui {
 
+namespace {
+
+struct TypeStr {
+  const char* type_str;
+  AXApiType::TypeConstant type;
+};
+
+constexpr TypeStr kTypeStringMap[] = {
+    {"android", AXApiType::kAndroid},
+    {"android_external", AXApiType::kAndroidExternal},
+    {"blink", AXApiType::kBlink},
+    {"fuchsia", AXApiType::kFuchsia},
+    {"mac", AXApiType::kMac},
+    {"linux", AXApiType::kLinux},
+    {"ia2", AXApiType::kWinIA2},
+    {"uia", AXApiType::kWinUIA},
+};
+
+}  // Namespace
+
 AXApiType::Type::operator std::string() const {
-  switch (type_) {
-    case kAndroid:
-      return "android";
-    case kAndroidExternal:
-      return "android_external";
-    case kBlink:
-      return "blink";
-    case kFuchsia:
-      return "fuchsia";
-    case kMac:
-      return "mac";
-    case kLinux:
-      return "linux";
-    case kWinIA2:
-      return "ia2";
-    case kWinUIA:
-      return "uia";
-    default:
-      return "unknown";
+  for (const auto& info : kTypeStringMap) {
+    if (info.type == type_) {
+      return info.type_str;
+    }
   }
+  return "unknown";
+}
+
+// static
+AXApiType::Type AXApiType::From(std::string& type_str) {
+  const char* c_type_str = type_str.c_str();
+  for (const auto& info : kTypeStringMap) {
+    if (std::strcmp(info.type_str, c_type_str) == 0) {
+      return info.type;
+    }
+  }
+  return AXApiType::kNone;
 }
 
 }  // namespace ui

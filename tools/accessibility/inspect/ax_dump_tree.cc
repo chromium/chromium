@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 #include <iostream>
+#include <numeric>
 #include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
 #include "tools/accessibility/inspect/ax_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
-char kHelpSwitch[] = "help";
+constexpr char kApiSwitch[] = "api";
+constexpr char kHelpSwitch[] = "help";
 
 bool AXDumpTreeLogMessageHandler(int severity,
                                  const char* file,
@@ -25,12 +28,41 @@ bool AXDumpTreeLogMessageHandler(int severity,
   return true;
 }
 
+// SupportedApis is a wrapper around content::AXInspectFactory::SupportedApis
+// to filter out the Blink formatter option, as ax_dump_tree does not support
+// outputting the chromium internal Blink tree. In the future we should support
+// outputting the Blink tree when dumping chromium or chrome.
+std::vector<ui::AXApiType::Type> SupportedApis() {
+  std::vector<ui::AXApiType::Type> apis =
+      content::AXInspectFactory::SupportedApis();
+  std::vector<ui::AXApiType::Type> filter_apis;
+  std::copy_if(
+      begin(apis), end(apis), std::back_inserter(filter_apis),
+      [](ui::AXApiType::Type t) { return t != ui::AXApiType::kBlink; });
+  return filter_apis;
+}
+
 void PrintHelp() {
+  std::vector<ui::AXApiType::Type> v = SupportedApis();
+  std::string supported_apis = std::accumulate(
+      begin(v), end(v), std::string{},
+      [](std::string r, ui::AXApiType::Type p) {
+        std::string comma;
+        if (!r.empty()) {
+          comma = ", ";
+        }
+        return std::move(r) + comma + static_cast<std::string>(p);
+      });
+
   printf(
       "ax_dump_tree is a tool designed to dump platform accessible trees "
       "of running applications.\n");
   printf("\nusage: ax_dump_tree <options>\n");
   tools::PrintHelpShared();
+  printf(
+      "  --api\t\tAccessibility API for the current platform.\n"
+      "  \t\tValid options are: %s\n",
+      supported_apis.c_str());
 }
 
 int main(int argc, char** argv) {
@@ -55,12 +87,30 @@ int main(int argc, char** argv) {
 
   absl::optional<ui::AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
+
   if (!selector || selector->empty()) {
     LOG(ERROR)
         << "Error: no accessible tree to dump. Run with --help for help.";
     return 1;
   }
 
-  auto server = absl::make_unique<content::AXTreeServer>(*selector, *scenario);
+  std::string api_str = command_line->GetSwitchValueASCII(kApiSwitch);
+  ui::AXApiType::Type api = ui::AXApiType::kNone;
+  if (!api_str.empty()) {
+    api = ui::AXApiType::From(api_str);
+    if (api == ui::AXApiType::kNone) {
+      LOG(ERROR) << "Unknown API type: " << api_str;
+      return 1;
+    }
+    auto apis = SupportedApis();
+    if (std::find(apis.begin(), apis.end(), api) == apis.end()) {
+      LOG(ERROR) << "Unsupported API for this platform: "
+                 << static_cast<std::string>(api);
+      return 1;
+    }
+  }
+
+  auto server =
+      absl::make_unique<content::AXTreeServer>(*selector, *scenario, api);
   return 0;
 }

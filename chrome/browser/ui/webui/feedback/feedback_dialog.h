@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"

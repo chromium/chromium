@@ -314,7 +314,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '0e3067f96d33d956c373562cbe2229daf70ae9ca',
+  'devtools_frontend_revision': '7f5c3ecd65d7ca4f8a62c4d61fda43be64d0cc59',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -421,7 +421,7 @@ vars = {
   'libcxx_revision':       '79a2e924d96e2fc1e4b937c42efd08898fa472d7',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:fc295f3ac7ca4fe7acc6cb5fb052d22909ef3a8f',
+  'gn_version': 'git_revision:2e56c317bd8e2bf152cfa2ead6ac5fa476fe28b4',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
@@ -799,7 +799,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'ZwN1FJVBOl4Uffy4fDLOpuNkz2AqPE9BKdRfZAw6IW0C',
+          'version': 'ii2JADPHSlhVAF0MiMM_l3jpeHy8oz-P17QozjnyGr0C',
       },
     ],
     'condition': 'checkout_android',
@@ -1018,7 +1018,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'f773c1b06736d405d6faeaa07b6d7e2d71530be4',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'fff14ebdcbb0fd75801af82d2765758efa1ec579',
       'condition': 'checkout_chromeos',
   },
 
@@ -1642,7 +1642,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'aa6dcde554d68ea68684af3e6699541ff6067793',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'a6b138d6b4ef3a5b2c87f899b67f3b5c8dd3c002',
+    Var('webrtc_git') + '/src.git' + '@' + '699d1a242ecd3ca819293cfa96f5dcf8f5e1b91a',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1700,7 +1700,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@7499f7d4e8b61b0e3d2a8b6227a55e5cd8dccee6',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@557423681afaf9d916de37ad3b89b774939e518c',
     'condition': 'checkout_src_internal',
   },
 
@@ -1730,7 +1730,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'VzElkqrRcSVJ-3KF6CDaXYxI_GsHoTVAknOitsszTtEC',
+        'version': 'Hm4ipUPiXd-gzWDEbyraNGipQikDIbxi1Xc70s6BwWQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

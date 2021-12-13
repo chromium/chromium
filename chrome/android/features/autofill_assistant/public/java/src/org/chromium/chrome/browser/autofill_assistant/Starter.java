@@ -296,12 +296,12 @@ public class Starter extends EmptyTabObserver implements UserData {
      * method to refresh them.
      * */
     @CalledByNative
-    private @Nullable Object[] getOrCreateDependenciesAndOnboardingHelper() {
+    private Object[] getOrCreateDependenciesAndOnboardingHelper() {
         if (mDependencies == null) {
             AutofillAssistantModuleEntry module = getModuleOrThrow();
-            mDependencies =
-                    AutofillAssistantFacade.createDependencies(TabUtils.getActivity(mTab), module);
-            mOnboardingHelper = module.createOnboardingHelper(mDependencies);
+            mDependencies = module.createDependenciesFactory().createDependencies(
+                    TabUtils.getActivity(mTab));
+            mOnboardingHelper = module.createOnboardingHelper(mWebContents, mDependencies);
         }
 
         return new Object[] {mDependencies, mOnboardingHelper};

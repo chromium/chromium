@@ -20,10 +20,6 @@ namespace autofill {
 class AutofillClient;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace views {
 class Combobox;
 class Textfield;
@@ -49,7 +45,7 @@ class CvcUnmaskViewController
       const autofill::CreditCard& credit_card,
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate,
-      content::WebContents* web_contents);
+      content::RenderFrameHost* render_frame_host);
 
   CvcUnmaskViewController(const CvcUnmaskViewController&) = delete;
   CvcUnmaskViewController& operator=(const CvcUnmaskViewController&) = delete;

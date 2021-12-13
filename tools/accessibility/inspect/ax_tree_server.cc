@@ -28,9 +28,12 @@ using ui::AXTreeSelector;
 namespace content {
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
-                           const ui::AXInspectScenario& scenario) {
-  std::unique_ptr<AXTreeFormatter> formatter(
-      AXInspectFactory::CreatePlatformFormatter());
+                           const ui::AXInspectScenario& scenario,
+                           ui::AXApiType::Type api) {
+  // If an API is not supplied, use the default API for this platform
+  std::unique_ptr<AXTreeFormatter> formatter =
+      api != ui::AXApiType::kNone ? AXInspectFactory::CreateFormatter(api)
+                                  : AXInspectFactory::CreatePlatformFormatter();
 
   // Use optional filters with the default filter set
   formatter->SetPropertyFilters(scenario.property_filters,

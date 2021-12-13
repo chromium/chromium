@@ -36,7 +36,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/input/event_listener_properties.h"
-#include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -201,7 +200,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       const cc::OverscrollBehavior& overscroll_behavior) final;
   void RequestAnimationAfterDelay(const base::TimeDelta&) final;
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
-  void RegisterSelection(cc::LayerSelection selection) final;
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
   void NotifyPresentationTimeInBlink(

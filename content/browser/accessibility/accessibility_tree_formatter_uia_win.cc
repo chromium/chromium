@@ -484,9 +484,11 @@ base::Value AccessibilityTreeFormatterUia::BuildTree(
 
 base::Value AccessibilityTreeFormatterUia::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  if (selector.widget) {
+  HWND hwnd = GetHWNDBySelector(selector);
+
+  if (hwnd) {
     Microsoft::WRL::ComPtr<IUIAutomationElement> root;
-    uia_->ElementFromHandle(selector.widget, &root);
+    uia_->ElementFromHandle(hwnd, &root);
     CHECK(root.Get());
 
     RECT root_bounds = {0};
@@ -497,8 +499,6 @@ base::Value AccessibilityTreeFormatterUia::BuildTreeForSelector(
     return std::move(tree);
   }
 
-  LOG(ERROR) << "Windows does not yet support building accessibility trees for "
-                "tree selectors other than hwnd";
   return base::Value(base::Value::Type::DICTIONARY);
 }
 

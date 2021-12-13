@@ -32,38 +32,35 @@ namespace {
 constexpr size_t kSamplingRate = 1024;
 constexpr size_t kAllocationSize = 42 * kSamplingRate;
 
-// Configurations of the HeapProfilerReporting feature to test.
-// The default parameters always enable reporting on all channels.
-struct HeapProfilerReportingConfig {
-  bool enabled = true;
-  double stable_probability = 1.0;
-  double nonstable_probability = 1.0;
-};
+}  // namespace
 
-// A wrapper that sets up a HeapProfilerController for testing.
-class HeapProfilerControllerTester {
+// HeapProfilerControllerTest can't be in an anonymous namespace because it is a
+// friend of SamplingHeapProfiler.
+class HeapProfilerControllerTest : public ::testing::Test {
  public:
-  HeapProfilerControllerTester(
-      version_info::Channel channel,
-      base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>
-          receiver_callback,
-      base::test::TaskEnvironment& task_environment,
-      const HeapProfilerReportingConfig& feature_config =
-          HeapProfilerReportingConfig()) {
-    // Initializing ScopedFeatureList can race with unrelated
-    // FeatureList checks on other threads: https://crbug.com/846380.
-    // Make sure there are no tasks in progress first.
-    // TODO(https://crbug.com/1275502): Remove this once ScopedFeatureList
-    // hit automatically.
-    task_environment.RunUntilIdle();
+  // Sets `sample_received_` to true if any sample is received. This will work
+  // even without stack unwinding since it doesn't check the contents of the
+  // sample. This must be public so that BindRepeating can access it from
+  // subclasses.
+  void RecordSampleReceived(base::TimeTicks, metrics::SampledProfile) {
+    sample_received_ = true;
+  }
 
-    if (feature_config.enabled) {
+ protected:
+  // The default constructor parameters enable the HeapProfilerReporting feature
+  // on all channels. Child classes can override the constructor to create test
+  // suites that test different configurations.
+  explicit HeapProfilerControllerTest(bool feature_enabled = true,
+                                      double stable_probability = 1.0,
+                                      double nonstable_probability = 1.0) {
+    // ScopedFeatureList must be initialized in the constructor, before any
+    // threads are started.
+    if (feature_enabled) {
       feature_list_.InitAndEnableFeatureWithParameters(
           HeapProfilerController::kHeapProfilerReporting,
-          {{"stable-probability",
-            base::NumberToString(feature_config.stable_probability)},
+          {{"stable-probability", base::NumberToString(stable_probability)},
            {"nonstable-probability",
-            base::NumberToString(feature_config.nonstable_probability)},
+            base::NumberToString(nonstable_probability)},
            {"sampling-rate", base::NumberToString(kSamplingRate)}});
     } else {
       feature_list_.InitAndDisableFeature(
@@ -72,44 +69,6 @@ class HeapProfilerControllerTester {
       base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
     }
 
-    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-        std::move(receiver_callback));
-
-    controller_ = std::make_unique<HeapProfilerController>(channel);
-    controller_->SuppressRandomnessForTesting();
-  }
-
-  ~HeapProfilerControllerTester() {
-    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-        base::DoNothing());
-  }
-
-  HeapProfilerControllerTester(const HeapProfilerControllerTester&) = delete;
-  HeapProfilerControllerTester& operator=(const HeapProfilerControllerTester&) =
-      delete;
-
-  HeapProfilerController& controller() { return *controller_; }
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
- private:
-  std::unique_ptr<HeapProfilerController> controller_;
-  base::test::ScopedFeatureList feature_list_;
-  base::HistogramTester histogram_tester_;
-};
-
-// A callback that fails the test if any samples are received.
-void ExpectNoSamples(base::TimeTicks, metrics::SampledProfile) {
-  ADD_FAILURE();
-}
-
-}  // namespace
-
-class HeapProfilerControllerTest : public ::testing::Test {
- protected:
-  HeapProfilerControllerTest() {
     // Clear any samples set in the global SamplingHeapProfiler before the
     // ScopedMuteHookedSamplesForTesting was created.
     base::SamplingHeapProfiler::Get()->ClearSamplesForTesting();
@@ -118,6 +77,23 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
   ~HeapProfilerControllerTest() override {
     base::PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
+
+    // Remove any callback that was set in StartHeapProfiling.
+    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+        base::DoNothing());
+  }
+
+  void StartHeapProfiling(
+      version_info::Channel channel,
+      base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>
+          receiver_callback) {
+    ASSERT_FALSE(controller_) << "StartHeapProfiling called twice";
+    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+        std::move(receiver_callback));
+
+    controller_ = std::make_unique<HeapProfilerController>(channel);
+    controller_->SuppressRandomnessForTesting();
+    controller_->Start();
   }
 
   void AddOneSampleAndWait() {
@@ -134,17 +110,29 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
   base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks_;
+  std::unique_ptr<HeapProfilerController> controller_;
+  base::HistogramTester histogram_tester_;
+  // `sample_received_` is read from the main thread and written from a
+  // background thread, but does not need to be atomic because the write happens
+  // during a scheduled sample and the read happens well after that.
+  bool sample_received_ = false;
 };
 
+namespace {
+
 TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
-  HeapProfilerControllerTester tester(version_info::Channel::STABLE,
-                                      base::BindRepeating(&ExpectNoSamples),
-                                      task_environment_);
-  tester.controller().Start();
+  StartHeapProfiling(
+      version_info::Channel::STABLE,
+      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                          base::Unretained(this)));
+
   // Advance several days to be sure the sample isn't scheduled right on the
   // boundary of the fast-forward.
   task_environment_.FastForwardBy(base::Days(2));
+
+  EXPECT_FALSE(sample_received_);
 }
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
@@ -175,10 +163,8 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
     ++profile_count;
   };
 
-  HeapProfilerControllerTester tester(version_info::Channel::STABLE,
-                                      base::BindLambdaForTesting(check_profile),
-                                      task_environment_);
-  tester.controller().Start();
+  StartHeapProfiling(version_info::Channel::STABLE,
+                     base::BindLambdaForTesting(check_profile));
 
   auto* sampler = base::PoissonAllocationSampler::Get();
   sampler->RecordAlloc(reinterpret_cast<void*>(0x1337), kAllocationSize,
@@ -200,91 +186,81 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
 }
 #endif
 
-// Test that disabling the HeapProfilerReporting feature disables metrics
-// uploading.
-TEST_F(HeapProfilerControllerTest, DisableFeature) {
-  HeapProfilerControllerTester tester(
-      version_info::Channel::STABLE, base::BindRepeating(&ExpectNoSamples),
-      task_environment_, HeapProfilerReportingConfig{.enabled = false});
-  tester.controller().Start();
-  tester.histogram_tester().ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled", false, 1);
+// Configurations of the HeapProfilerReporting feature to test.
+struct FeatureTestParams {
+  bool feature_enabled = true;
+  double stable_probability = 1.0;
+  double nonstable_probability = 1.0;
+  bool expect_stable_sample = true;
+  bool expect_nonstable_sample = true;
+};
+constexpr FeatureTestParams kAllFeatureConfigs[] = {
+    // Disabled.
+    {.feature_enabled = false,
+     .expect_stable_sample = false,
+     .expect_nonstable_sample = false},
+    // Enabled, but with probability 0 on all channels.
+    {.feature_enabled = true,
+     .stable_probability = 0.0,
+     .nonstable_probability = 0.0,
+     .expect_stable_sample = false,
+     .expect_nonstable_sample = false},
+    // Enabled on all channels.
+    {.feature_enabled = true,
+     .stable_probability = 1.0,
+     .nonstable_probability = 1.0,
+     .expect_stable_sample = true,
+     .expect_nonstable_sample = true},
+    // Enabled on stable channel only.
+    {.feature_enabled = true,
+     .stable_probability = 1.0,
+     .nonstable_probability = 0.0,
+     .expect_stable_sample = true,
+     .expect_nonstable_sample = false},
+    // Enabled on non-stable channels only.
+    {.feature_enabled = true,
+     .stable_probability = 0.0,
+     .nonstable_probability = 1.0,
+     .expect_stable_sample = false,
+     .expect_nonstable_sample = true},
+};
+
+class HeapProfilerControllerFeatureTest
+    : public HeapProfilerControllerTest,
+      public ::testing::WithParamInterface<FeatureTestParams> {
+ public:
+  HeapProfilerControllerFeatureTest()
+      : HeapProfilerControllerTest(GetParam().feature_enabled,
+                                   GetParam().stable_probability,
+                                   GetParam().nonstable_probability) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeapProfilerControllerFeatureTest,
+                         ::testing::ValuesIn(kAllFeatureConfigs));
+
+TEST_P(HeapProfilerControllerFeatureTest, StableChannel) {
+  StartHeapProfiling(
+      version_info::Channel::STABLE,
+      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                          base::Unretained(this)));
+  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
+                                       GetParam().expect_stable_sample, 1);
   AddOneSampleAndWait();
+  EXPECT_EQ(sample_received_, GetParam().expect_stable_sample);
 }
 
-// Test that the "stable-probability" param can disable metrics uploading on the
-// stable channel.
-TEST_F(HeapProfilerControllerTest, StableProbability) {
-  HeapProfilerReportingConfig feature_config{
-      .enabled = true, .stable_probability = 0.0, .nonstable_probability = 1.0};
-
-  // Test stable channel.
-  {
-    HeapProfilerControllerTester tester(version_info::Channel::STABLE,
-                                        base::BindRepeating(&ExpectNoSamples),
-                                        task_environment_, feature_config);
-    tester.controller().Start();
-    tester.histogram_tester().ExpectUniqueSample(
-        "HeapProfiling.InProcess.Enabled", false, 1);
-    AddOneSampleAndWait();
-  }
-
-  // Test canary channel.
-  {
-    std::atomic<bool> got_sample;
-    auto watch_for_sample = [&](base::TimeTicks, metrics::SampledProfile) {
-      got_sample = true;
-    };
-    HeapProfilerControllerTester tester(
-        version_info::Channel::CANARY,
-        base::BindLambdaForTesting(watch_for_sample), task_environment_,
-        feature_config);
-    tester.controller().Start();
-    tester.histogram_tester().ExpectUniqueSample(
-        "HeapProfiling.InProcess.Enabled", true, 1);
-    AddOneSampleAndWait();
-    EXPECT_TRUE(got_sample);
-  }
+TEST_P(HeapProfilerControllerFeatureTest, CanaryChannel) {
+  StartHeapProfiling(
+      version_info::Channel::CANARY,
+      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                          base::Unretained(this)));
+  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
+                                       GetParam().expect_nonstable_sample, 1);
+  AddOneSampleAndWait();
+  EXPECT_EQ(sample_received_, GetParam().expect_nonstable_sample);
 }
 
-// Test that the "nonstable-probability" param can disable metrics uploading on
-// the canary channel.
-#if defined(OS_MAC) || defined(OS_IOS)
-#define MAYBE_NonStableProbability DISABLED_NonStableProbability
-#else
-#define MAYBE_NonStableProbability NonStableProbability
-#endif
-TEST_F(HeapProfilerControllerTest, MAYBE_NonStableProbability) {
-  HeapProfilerReportingConfig feature_config{
-      .enabled = true, .stable_probability = 1.0, .nonstable_probability = 0.0};
-
-  // Test stable channel.
-  {
-    std::atomic<bool> got_sample;
-    auto watch_for_sample = [&](base::TimeTicks, metrics::SampledProfile) {
-      got_sample = true;
-    };
-    HeapProfilerControllerTester tester(
-        version_info::Channel::STABLE,
-        base::BindLambdaForTesting(watch_for_sample), task_environment_,
-        feature_config);
-    tester.controller().Start();
-    tester.histogram_tester().ExpectUniqueSample(
-        "HeapProfiling.InProcess.Enabled", true, 1);
-    AddOneSampleAndWait();
-    EXPECT_TRUE(got_sample);
-  }
-
-  // Test canary channel.
-  {
-    HeapProfilerControllerTester tester(version_info::Channel::CANARY,
-                                        base::BindRepeating(&ExpectNoSamples),
-                                        task_environment_, feature_config);
-    tester.controller().Start();
-    tester.histogram_tester().ExpectUniqueSample(
-        "HeapProfiling.InProcess.Enabled", false, 1);
-    AddOneSampleAndWait();
-  }
-}
+}  // namespace
 
 }  // namespace heap_profiling

@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("path_parser") {
   sources = [ "policy_path_parser.h" ]
@@ -187,6 +188,16 @@ source_set("browser_tests") {
     "//testing/gmock",
   ]
 
+  if (enable_extensions) {
+    sources += [ "extension_policy_browsertest.cc" ]
+
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/web_applications:web_applications_test_support_minimal",
+      "//components/webapps/browser:browser",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
@@ -200,9 +211,11 @@ source_set("browser_tests") {
       "test/arc_policy_browsertest.cc",
       "test/assistant_policy_browsertest.cc",
       "test/audio_output_allowed_browsertest.cc",
+      "test/note_taking_on_lock_screen_policy_browsertest.cc",
       "test/screenshot_policy_browsertest.cc",
       "test/session_length_limit_policy_browsertest.cc",
       "test/suggested_content_policy_browsertest.cc",
+      "test/system_features_policy_browsertest.cc",
       "test/unified_desktop_enabled_browsertest.cc",
     ]
 
@@ -252,13 +265,8 @@ source_set("browser_tests") {
     ]
   }
 
-  if (!is_chromeos_ash) {
-    sources += [
-      "cloud/chrome_browser_cloud_management_browsertest.cc",
-      "cloud/chrome_browser_cloud_management_browsertest_delegate.h",
-    ]
-
-    deps += [ "//components/signin/public/identity_manager" ]
+  if (!is_android && !is_chromeos) {
+    sources += [ "test/native_messaging_policy_browsertest.cc" ]
   }
 
   if (!is_android && !is_chromeos_ash) {
@@ -271,5 +279,14 @@ source_set("browser_tests") {
 
   if (!is_android && !is_mac) {
     sources += [ "test/full_screen_allowed_policy_browsertest.cc" ]
+  }
+
+  if (!is_chromeos_ash) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest.cc",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate.h",
+    ]
+
+    deps += [ "//components/signin/public/identity_manager" ]
   }
 }

@@ -40,7 +40,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kMac:
       return std::make_unique<AccessibilityTreeFormatterMac>();
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << type;
   }
   return nullptr;
 }
@@ -61,9 +61,14 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<AccessibilityEventRecorderMac>(manager, pid,
                                                              selector);
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << type;
   }
   return nullptr;
+}
+
+// static
+std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
+  return {ui::AXApiType::kBlink, ui::AXApiType::kMac};
 }
 
 }  // namespace content

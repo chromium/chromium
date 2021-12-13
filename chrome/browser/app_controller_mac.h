@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;

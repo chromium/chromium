@@ -67,9 +67,11 @@ public class AssistantOnboardingHelperTest {
             mModuleEntry =
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
-            AssistantDependencies dependencies = AutofillAssistantFacade.createDependencies(
-                    mTestRule.getActivity(), mModuleEntry);
-            mOnboardingHelper = mModuleEntry.createOnboardingHelper(dependencies);
+            AssistantDependencies dependencies =
+                    mModuleEntry.createDependenciesFactory().createDependencies(
+                            mTestRule.getActivity());
+            mOnboardingHelper =
+                    mModuleEntry.createOnboardingHelper(mTestRule.getWebContents(), dependencies);
         });
     }
 

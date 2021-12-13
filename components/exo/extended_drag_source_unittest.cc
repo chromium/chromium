@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
@@ -22,6 +23,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -136,7 +138,8 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
 
     seat_ =
         std::make_unique<Seat>(std::make_unique<TestDataExchangeDelegate>());
-    data_source_ = std::make_unique<DataSource>(new TestDataSourceDelegate);
+    data_source_delegate_ = new TestDataSourceDelegate;
+    data_source_ = std::make_unique<DataSource>(data_source_delegate_);
     extended_drag_source_ = std::make_unique<ExtendedDragSource>(
         data_source_.get(), new TestExtendedDragSourceDelegate(
                                 /*allow_drop_no_target=*/true,
@@ -173,6 +176,9 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
+
+  // DataSource deletes it upon destruction.
+  TestDataSourceDelegate* data_source_delegate_ = nullptr;
 };
 
 }  // namespace
@@ -415,6 +421,39 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   ui::test::EventGenerator generator(GetContext());
   generator.DragMouseBy(190, 190);
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
+}
+
+TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
+  // Create and map a toplevel shell surface.
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  extended_drag_source_->Drag(surface, gfx::Vector2d());
+
+  // Start the DND + extended-drag session.
+  // Creates a mouse-pressed event before starting the drag session.
+  ui::test::EventGenerator generator(GetContext(), gfx::Point(10, 10));
+  generator.PressLeftButton();
+
+  // Start a DragDropOperation.
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kMouse);
+
+  auto task_1 = base::BindLambdaForTesting([&]() {
+    generator.MoveMouseBy(190, 190);
+
+    auto* toplevel_handler = ash::Shell::Get()->toplevel_window_event_handler();
+    EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+    drag_drop_controller_->DragCancel();
+    EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+  });
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(task_1)));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(data_source_delegate_->cancelled());
 }
 
 }  // namespace exo

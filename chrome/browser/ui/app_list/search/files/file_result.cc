@@ -141,13 +141,13 @@ FileResult::FileResult(const std::string& schema,
   if (display_type == DisplayType::kChip) {
     SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
   } else if (display_type == DisplayType::kContinue) {
-    // For Continue Section, if dark/light mode is disabled, we should use dark
-    // background as default.
-    const bool dark_continue_background =
+    // For Continue Section, if dark/light mode is disabled, we should use the
+    // icon and not the chip icon with a dark background as default.
+    const gfx::ImageSkia chip_icon =
         ash::features::IsDarkLightModeEnabled()
-            ? ash::ColorProvider::Get()->IsDarkModeEnabled()
-            : true;
-    SetChipIcon(ash::GetChipIconForPath(filepath, dark_continue_background));
+            ? ash::GetChipIconForPath(filepath, dark_background)
+            : ash::GetIconForPath(filepath, /*dark_background=*/true);
+    SetChipIcon(chip_icon);
   } else {
     switch (type) {
       case Type::kFile:

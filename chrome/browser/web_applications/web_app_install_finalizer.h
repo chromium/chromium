@@ -30,7 +30,6 @@ enum class WebappUninstallSource;
 namespace web_app {
 
 class WebAppSyncBridge;
-class FileHandlersPermissionHelper;
 class WebAppUiManager;
 class WebApp;
 class WebAppIconManager;
@@ -149,18 +148,10 @@ class WebAppInstallFinalizer {
 
   Profile* profile() { return profile_; }
 
-  WebAppRegistrar& GetWebAppRegistrar() const;
+  const WebAppRegistrar& GetWebAppRegistrar() const;
 
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
-  friend class FileHandlersPermissionHelper;
-
-  // FileHandlersPermissionHelper uses these getters.
-  WebAppRegistrar& registrar() const { return *registrar_; }
-  WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
-  OsIntegrationManager& os_integration_manager() {
-    return *os_integration_manager_;
-  }
 
   void UninstallWebAppInternal(const AppId& app_id,
                                webapps::WebappUninstallSource uninstall_source,
@@ -208,6 +199,14 @@ class WebAppInstallFinalizer {
                              std::string old_name,
                              web_app::OsHooksErrors os_hooks_errors);
 
+  // Returns a value indicating whether the file handlers registered with the OS
+  // should be updated. Used to avoid unnecessary updates. TODO(estade): why
+  // does this optimization exist when other OS hooks don't have similar
+  // optimizations?
+  FileHandlerUpdateAction GetFileHandlerUpdateAction(
+      const AppId& app_id,
+      const WebApplicationInfo& new_web_app_info);
+
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
@@ -223,8 +222,6 @@ class WebAppInstallFinalizer {
 
   base::RepeatingCallback<void(const AppId& app_id)>
       install_source_removed_callback_for_testing_;
-
-  std::unique_ptr<FileHandlersPermissionHelper> file_handlers_helper_;
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};
 };

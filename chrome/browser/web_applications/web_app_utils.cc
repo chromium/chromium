@@ -297,13 +297,9 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    base::OnceClosure update_finished_callback) {
   WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
-
-  {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
-    WebApp* app_to_update = update->UpdateApp(app_id);
-    app_to_update->SetFileHandlerApprovalState(
-        allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
-  }
+  provider->sync_bridge().SetAppFileHandlerApprovalState(
+      app_id,
+      allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
 
   if (allowed) {
     std::move(update_finished_callback).Run();

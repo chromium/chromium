@@ -120,12 +120,12 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
   EXPECT_EQ(100, api_test_utils::GetInteger(set_info.get(), "boundsOriginX"));
   EXPECT_EQ(200, api_test_utils::GetInteger(set_info.get(), "boundsOriginY"));
   EXPECT_EQ(90, api_test_utils::GetInteger(set_info.get(), "rotation"));
-  base::DictionaryValue* overscan;
-  ASSERT_TRUE(set_info->GetDictionary("overscan", &overscan));
-  EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
-  EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
-  EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));
-  EXPECT_EQ(4, api_test_utils::GetInteger(overscan, "bottom"));
+  base::Value* overscan = set_info->FindDictKey("overscan");
+  ASSERT_TRUE(overscan);
+  EXPECT_EQ(1, overscan->FindIntKey("left").value_or(-1));
+  EXPECT_EQ(2, overscan->FindIntKey("top").value_or(-1));
+  EXPECT_EQ(3, overscan->FindIntKey("right").value_or(-1));
+  EXPECT_EQ(4, overscan->FindIntKey("bottom").value_or(-1));
 
   EXPECT_EQ("display_id", provider_->GetSetInfoDisplayId());
 }

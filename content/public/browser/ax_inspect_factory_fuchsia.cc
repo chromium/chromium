@@ -40,7 +40,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kFuchsia:
       return std::make_unique<AccessibilityTreeFormatterFuchsia>();
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
 }
@@ -61,9 +61,14 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<AccessibilityEventRecorderFuchsia>(manager, pid,
                                                                  selector);
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
+}
+
+// static
+std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
+  return {ui::AXApiType::kBlink, ui::AXApiType::kFuchsia};
 }
 
 }  // namespace content

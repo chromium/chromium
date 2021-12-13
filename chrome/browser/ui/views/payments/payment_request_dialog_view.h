@@ -177,7 +177,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
       const autofill::CreditCard& credit_card,
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate,
-      content::WebContents* web_contents) override;
+      content::RenderFrameHost* render_frame_host) override;
 
   // Hides the full dialog spinner with the "processing" label.
   void HideProcessingSpinner();

@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Implementation of {@link AutofillAssistantModuleEntry}. This is the entry point into the
@@ -25,8 +26,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     }
 
     @Override
-    public AssistantOnboardingHelper createOnboardingHelper(AssistantDependencies dependencies) {
-        return new AssistantOnboardingHelperImpl(dependencies);
+    public AssistantOnboardingHelper createOnboardingHelper(
+            WebContents webContents, AssistantDependencies dependencies) {
+        return new AssistantOnboardingHelperImpl(webContents, dependencies);
     }
 
     @Override

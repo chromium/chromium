@@ -41,7 +41,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kLinux:
       return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
 }
@@ -62,9 +62,14 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
                                                                    selector);
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
+}
+
+// static
+std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
+  return {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
 }
 
 }  // namespace content

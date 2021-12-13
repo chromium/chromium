@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
-#include "cc/input/layer_selection_bound.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,10 +64,6 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
-
-  // Used to update the active selection bounds. Pass a default-constructed
-  // LayerSelection to clear it.
-  virtual void RegisterSelection(cc::LayerSelection selection) = 0;
 
   // Image decode functionality.
   virtual void RequestDecode(const cc::PaintImage&,

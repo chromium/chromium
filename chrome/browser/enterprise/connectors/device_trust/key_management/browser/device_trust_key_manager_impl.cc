@@ -62,7 +62,8 @@ void DeviceTrustKeyManagerImpl::StartInitialization() {
   }
 }
 
-void DeviceTrustKeyManagerImpl::StartKeyRotation(const std::string& nonce) {
+void DeviceTrustKeyManagerImpl::RotateKey(const std::string& nonce,
+                                          RotateKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == InitializationState::kDefault) {
     // Update the state right now to mark new client requests as pending.
@@ -78,11 +79,18 @@ void DeviceTrustKeyManagerImpl::StartKeyRotation(const std::string& nonce) {
     background_task_runner_->PostTaskAndReply(
         FROM_HERE, base::DoNothing(),
         base::BindOnce(&DeviceTrustKeyManagerImpl::StartKeyRotationInner,
-                       weak_factory_.GetWeakPtr(), nonce));
+                       weak_factory_.GetWeakPtr(), nonce, std::move(callback)));
     return;
   }
 
-  pending_rotation_nonce_ = nonce;
+  // Cancel previously pending requests and replace them with this new one.
+  if (pending_rotation_request_) {
+    std::move(pending_rotation_request_->callback)
+        .Run(DeviceTrustKeyManager::KeyRotationResult::CANCELLATION);
+  }
+  pending_rotation_request_ =
+      std::make_unique<DeviceTrustKeyManagerImpl::RotateKeyRequest>(
+          nonce, std::move(callback));
 }
 
 void DeviceTrustKeyManagerImpl::ExportPublicKeyAsync(
@@ -163,12 +171,11 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
 
   // Do this check after caching the previous key as failure to rotate will
   // restore it in persistence.
-  if (pending_rotation_nonce_.has_value()) {
+  if (TryResumePendingRotationRequest()) {
     // In this edge case, a rotate key request came in at the same time
     // as the key was being loaded. In this case, just start a rotate flow again
     // using the pending nonce. The function can be called directly as the
     // background sequence is guaranteed to be empty at this point.
-    StartKeyRotationInner(pending_rotation_nonce_.value());
     return;
   }
 
@@ -176,7 +183,8 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
     // Key loading failed, so we can kick-off the key creation. This is
     // guarded by a flag to make sure not to loop infinitely over:
     // create succeeds -> load fails -> create again...
-    StartKeyRotationInner(/*nonce=*/std::string());
+    StartKeyRotationInner(/*nonce=*/std::string(),
+                          /*callback=*/base::DoNothing());
     return;
   }
 
@@ -187,14 +195,15 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
 }
 
 void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
-    const std::string& nonce) {
+    const std::string& nonce,
+    RotateKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = InitializationState::kRotatingKey;
   key_rotation_succeeded_ = false;
 
   KeyRotationCommand::Callback rotation_finished_callback =
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationFinished,
-                     weak_factory_.GetWeakPtr(), nonce);
+                     weak_factory_.GetWeakPtr(), nonce, std::move(callback));
 
   key_rotation_launcher_->LaunchKeyRotation(
       nonce, std::move(rotation_finished_callback));
@@ -202,6 +211,7 @@ void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
 
 void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
     const std::string& nonce,
+    RotateKeyCallback callback,
     KeyRotationCommand::Status result_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -211,22 +221,21 @@ void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
       result_status == KeyRotationCommand::Status::SUCCEEDED;
   state_ = InitializationState::kDefault;
 
-  if (pending_rotation_nonce_.has_value()) {
-    if (pending_rotation_nonce_.value() == nonce) {
-      // Key rotation using the nonce completed.
-      pending_rotation_nonce_.reset();
-    } else if (!key_rotation_succeeded_) {
-      // In this edge case, another rotate key request came in at the same time
-      // as the current request was being executed. In this case, just go
-      // through the rotate flow again using the new nonce. The function can be
-      // called directly as the background sequence is guaranteed to be empty at
-      // this point.
-      // This specific case is guarded behind the current rotation process
-      // having failed because, if it had succeeded, the LoadKey below would get
-      // invoked and would eventually start the rotation as well.
-      StartKeyRotation(pending_rotation_nonce_.value());
-      return;
-    }
+  std::move(callback).Run(
+      key_rotation_succeeded_
+          ? DeviceTrustKeyManager::KeyRotationResult::SUCCESS
+          : DeviceTrustKeyManager::KeyRotationResult::FAILURE);
+
+  if (!key_rotation_succeeded_ && TryResumePendingRotationRequest()) {
+    // In this edge case, another rotate key request came in at the same time
+    // as the current request was being executed. In this case, just go
+    // through the rotate flow again using the new nonce. The rotate flow can be
+    // started directly as the background sequence is guaranteed to be empty at
+    // this point.
+    // This specific case is guarded behind the current rotation process
+    // having failed because, if it had succeeded, the LoadKey below would get
+    // invoked and would eventually start the rotation as well.
+    return;
   }
 
   if (key_rotation_succeeded_) {
@@ -251,6 +260,16 @@ void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
   // Just respond to the pending callbacks - if a key is still set, it will
   // successfully respond to them.
   ResumePendingCallbacks();
+}
+
+bool DeviceTrustKeyManagerImpl::TryResumePendingRotationRequest() {
+  if (pending_rotation_request_) {
+    StartKeyRotationInner(pending_rotation_request_->nonce,
+                          std::move(pending_rotation_request_->callback));
+    pending_rotation_request_.reset();
+    return true;
+  }
+  return false;
 }
 
 void DeviceTrustKeyManagerImpl::ResumePendingCallbacks() {
@@ -282,5 +301,12 @@ bool DeviceTrustKeyManagerImpl::IsFullyInitialized() const {
   return state_ == InitializationState::kDefault && key_pair_ &&
          key_pair_->key();
 }
+
+DeviceTrustKeyManagerImpl::RotateKeyRequest::RotateKeyRequest(
+    const std::string& nonce_param,
+    RotateKeyCallback callback_param)
+    : nonce(nonce_param), callback(std::move(callback_param)) {}
+
+DeviceTrustKeyManagerImpl::RotateKeyRequest::~RotateKeyRequest() = default;
 
 }  // namespace enterprise_connectors

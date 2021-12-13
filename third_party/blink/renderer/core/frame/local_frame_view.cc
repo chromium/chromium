@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
-#include "third_party/blink/renderer/core/editing/compute_layer_selection.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -1396,53 +1395,6 @@ void LocalFrameView::SetLayoutSizeFixedToFrameSize(bool is_fixed) {
     SetLayoutSizeInternal(Size());
 }
 
-static cc::LayerSelection ComputeLayerSelection(LocalFrame& frame) {
-  if (!frame.View() || frame.View()->ShouldThrottleRendering())
-    return {};
-
-  return ComputeLayerSelection(frame.Selection());
-}
-
-void LocalFrameView::UpdateCompositedSelectionIfNeeded() {
-  if (!RuntimeEnabledFeatures::CompositedSelectionUpdateEnabled())
-    return;
-
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  TRACE_EVENT0("blink", "LocalFrameView::updateCompositedSelectionIfNeeded");
-
-  Page* page = GetFrame().GetPage();
-  DCHECK(page);
-
-  LocalFrame* focused_frame = page->GetFocusController().FocusedFrame();
-  LocalFrame* local_frame =
-      (focused_frame &&
-       (focused_frame->LocalFrameRoot() == frame_->LocalFrameRoot()))
-          ? focused_frame
-          : nullptr;
-
-  if (local_frame) {
-    const cc::LayerSelection& selection = ComputeLayerSelection(*local_frame);
-    if (selection != cc::LayerSelection()) {
-      page->GetChromeClient().UpdateLayerSelection(local_frame, selection);
-      return;
-    }
-  }
-
-  if (!local_frame) {
-    // Clearing the mainframe when there is no focused frame (and hence
-    // no localFrame) is legacy behaviour, and implemented here to
-    // satisfy WebFrameTest.CompositedSelectionBoundsCleared's
-    // first check that the composited selection has been cleared even
-    // though no frame has focus yet. If this is not desired, then the
-    // expectation needs to be removed from the test.
-    local_frame = &frame_->LocalFrameRoot();
-  }
-  DCHECK(local_frame);
-  page->GetChromeClient().ClearLayerSelection(local_frame);
-}
-
 void LocalFrameView::SetNeedsCompositingUpdate(
     CompositingUpdateType update_type) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -2686,8 +2638,6 @@ bool LocalFrameView::RunCompositingAssignmentsLifecyclePhase(
           DocumentLifecycle::kCompositingAssignmentsClean);
     });
   }
-
-  UpdateCompositedSelectionIfNeeded();
 
   frame_->GetPage()->GetValidationMessageClient().UpdatePrePaint();
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& view) {

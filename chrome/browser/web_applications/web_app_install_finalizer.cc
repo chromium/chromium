@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/file_handlers_permission_helper.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -270,7 +269,8 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
     webapps::WebappUninstallSource webapp_uninstall_source,
     UninstallWebAppCallback callback) {
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(app_url);
+  absl::optional<AppId> app_id =
+      GetWebAppRegistrar().LookupExternalAppId(app_url);
   if (!app_id.has_value()) {
     LOG(WARNING) << "Couldn't uninstall web app with url " << app_url
                  << "; No corresponding web app for url.";
@@ -423,14 +423,11 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
   bool should_update_os_hooks = ShouldUpdateOsHooks(app_id);
 
-  FileHandlerUpdateAction file_handlers_need_os_update =
-      file_handlers_helper_->WillUpdateApp(*existing_web_app, web_app_info);
-
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
       existing_web_app->name(), should_update_os_hooks,
-      file_handlers_need_os_update, web_app_info);
+      GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info);
 
   // Prepare copy-on-write to update existing app.
   SetWebAppManifestFieldsAndWriteData(
@@ -440,13 +437,10 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
 void WebAppInstallFinalizer::Start() {
   DCHECK(!started_);
-
-  file_handlers_helper_ = std::make_unique<FileHandlersPermissionHelper>(this);
   started_ = true;
 }
 
 void WebAppInstallFinalizer::Shutdown() {
-  file_handlers_helper_.reset();
   pending_uninstalls_.clear();
   started_ = false;
 }
@@ -599,7 +593,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
-  registrar().NotifyWebAppInstalled(app_id);
+  registrar_->NotifyWebAppInstalled(app_id);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
 }
 
@@ -610,7 +604,7 @@ bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
 #else
   // If the app being updated was installed by default and not also manually
   // installed by the user or an enterprise policy, disable os integration.
-  return !registrar().WasInstalledByDefaultOnly(app_id);
+  return !GetWebAppRegistrar().WasInstalledByDefaultOnly(app_id);
 #endif  // defined(OS_CHROMEOS)
 }
 
@@ -629,7 +623,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   }
 
   if (should_update_os_hooks) {
-    os_integration_manager().UpdateOsHooks(
+    os_integration_manager_->UpdateOsHooks(
         app_id, old_name, file_handlers_need_os_update, web_app_info,
         base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -645,7 +639,7 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
     AppId app_id,
     std::string old_name,
     web_app::OsHooksErrors os_hooks_errors) {
-  registrar().NotifyWebAppManifestUpdated(app_id, old_name);
+  registrar_->NotifyWebAppManifestUpdated(app_id, old_name);
 
   std::move(callback).Run(app_id,
                           os_hooks_errors.any()
@@ -653,8 +647,30 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
                               : InstallResultCode::kSuccessAlreadyInstalled);
 }
 
-WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
-  return registrar();
+const WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
+  return *registrar_;
+}
+
+FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
+    const AppId& app_id,
+    const WebApplicationInfo& new_web_app_info) {
+  if (!os_integration_manager_->IsFileHandlingAPIAvailable(app_id))
+    return FileHandlerUpdateAction::kNoUpdate;
+
+  if (GetWebAppRegistrar().GetAppFileHandlerApprovalState(app_id) ==
+      ApiApprovalState::kDisallowed) {
+    return FileHandlerUpdateAction::kNoUpdate;
+  }
+
+  // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
+  // results from the ManifestUpdateTask.
+  const apps::FileHandlers* old_handlers =
+      GetWebAppRegistrar().GetAppFileHandlers(app_id);
+  DCHECK(old_handlers);
+  if (*old_handlers == new_web_app_info.file_handlers)
+    return FileHandlerUpdateAction::kNoUpdate;
+
+  return FileHandlerUpdateAction::kUpdate;
 }
 
 }  // namespace web_app
