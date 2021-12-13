@@ -32,6 +32,36 @@ ThunderboltSecurityLevel TranslateThunderboltSecurityLevel(
   NOTREACHED();
 }
 
+MemoryEncryptionState TranslateMemoryEncryptionState(
+    cros_healthd::EncryptionState encryption_state) {
+  switch (encryption_state) {
+    case cros_healthd::EncryptionState::kUnknown:
+      return MEMORY_ENCRYPTION_STATE_UNKNOWN;
+    case cros_healthd::EncryptionState::kEncryptionDisabled:
+      return MEMORY_ENCRYPTION_STATE_DISABLED;
+    case cros_healthd::EncryptionState::kTmeEnabled:
+      return MEMORY_ENCRYPTION_STATE_TME;
+    case cros_healthd::EncryptionState::kMktmeEnabled:
+      return MEMORY_ENCRYPTION_STATE_MKTME;
+  }
+
+  NOTREACHED();
+}
+
+MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
+    cros_healthd::CryptoAlgorithm encryption_algorithm) {
+  switch (encryption_algorithm) {
+    case cros_healthd::CryptoAlgorithm::kUnknown:
+      return MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN;
+    case cros_healthd::CryptoAlgorithm::kAesXts128:
+      return MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_128;
+    case cros_healthd::CryptoAlgorithm::kAesXts256:
+      return MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_256;
+  }
+
+  NOTREACHED();
+}
+
 void HandleBusResult(MetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
                      cros_healthd::TelemetryInfoPtr result) {
@@ -100,7 +130,7 @@ void HandleCpuResult(MetricCallback callback,
           auto* const keylocker_info_out = metric_data.mutable_info_data()
                                                ->mutable_cpu_info()
                                                ->mutable_keylocker_info();
-          auto* keylocker_info = cpu_info->keylocker_info.get();
+          const auto* const keylocker_info = cpu_info->keylocker_info.get();
           if (keylocker_info) {
             keylocker_info_out->set_supported(true);
             keylocker_info_out->set_configured(
@@ -166,27 +196,89 @@ void HandleAudioResult(MetricCallback callback,
   }
 }
 
-void OnHealthdInfoReceived(
-    MetricCallback callback,
-    cros_healthd::ProbeCategoryEnum probe_category,
-    CrosHealthdMetricSampler::MetricType metric_type,
-    chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+void HandleMemoryResult(MetricCallback callback,
+                        CrosHealthdMetricSampler::MetricType metric_type,
+                        cros_healthd::TelemetryInfoPtr result) {
+  bool anything_reported = false;
+  MetricData metric_data;
+  const auto& memory_result = result->memory_result;
+
+  if (!memory_result.is_null()) {
+    switch (memory_result->which()) {
+      case cros_healthd::MemoryResult::Tag::ERROR: {
+        DVLOG(1) << "cros_healthd: Error getting memory info: "
+                 << memory_result->get_error()->msg;
+        break;
+      }
+
+      case cros_healthd::MemoryResult::Tag::MEMORY_INFO: {
+        const auto& memory_info = memory_result->get_memory_info();
+        if (memory_result.is_null()) {
+          DVLOG(1) << "Null MemoryInfo from cros_healthd";
+          break;
+        }
+
+        // Gather memory info.
+        if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+          auto* const memory_encryption_info_out =
+              metric_data.mutable_info_data()
+                  ->mutable_memory_info()
+                  ->mutable_tme_info();
+          const auto* const memory_encryption_info =
+              memory_info->memory_encryption_info.get();
+
+          if (memory_encryption_info) {
+            memory_encryption_info_out->set_encryption_state(
+                TranslateMemoryEncryptionState(
+                    memory_encryption_info->encryption_state));
+            memory_encryption_info_out->set_encryption_algorithm(
+                TranslateMemoryEncryptionAlgorithm(
+                    memory_encryption_info->active_algorithm));
+            memory_encryption_info_out->set_max_keys(
+                memory_encryption_info->max_key_number);
+            memory_encryption_info_out->set_key_length(
+                memory_encryption_info->key_length);
+          } else {
+            // If encryption info isn't set, mark it as disabled.
+            memory_encryption_info_out->set_encryption_state(
+                MEMORY_ENCRYPTION_STATE_DISABLED);
+          }
+          anything_reported = true;
+        }
+        break;
+      }
+    }
+  }
+
+  if (anything_reported) {
+    std::move(callback).Run(metric_data);
+  }
+}
+
+void OnHealthdInfoReceived(MetricCallback callback,
+                           cros_healthd::ProbeCategoryEnum probe_category,
+                           CrosHealthdMetricSampler::MetricType metric_type,
+                           cros_healthd::TelemetryInfoPtr result) {
   if (!result) {
     DVLOG(1) << "cros_healthd: null telemetry result";
     return;
   }
 
   switch (probe_category) {
-    case cros_healthd::ProbeCategoryEnum::kCpu: {
-      HandleCpuResult(std::move(callback), metric_type, std::move(result));
+    case cros_healthd::ProbeCategoryEnum::kAudio: {
+      HandleAudioResult(std::move(callback), metric_type, std::move(result));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kBus: {
       HandleBusResult(std::move(callback), metric_type, std::move(result));
       break;
     }
-    case cros_healthd::ProbeCategoryEnum::kAudio: {
-      HandleAudioResult(std::move(callback), metric_type, std::move(result));
+    case cros_healthd::ProbeCategoryEnum::kCpu: {
+      HandleCpuResult(std::move(callback), metric_type, std::move(result));
+      break;
+    }
+    case cros_healthd::ProbeCategoryEnum::kMemory: {
+      HandleMemoryResult(std::move(callback), metric_type, std::move(result));
       break;
     }
     default: {
