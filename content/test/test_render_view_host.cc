@@ -146,7 +146,13 @@ void TestRenderWidgetHostView::RenderProcessGone() {
   delete this;
 }
 
-void TestRenderWidgetHostView::Destroy() { delete this; }
+void TestRenderWidgetHostView::Destroy() {
+  // Call this here in case any observers need access to the `this` before
+  // this derived class runs its destructor.
+  NotifyObserversAboutShutdown();
+
+  delete this;
+}
 
 gfx::Rect TestRenderWidgetHostView::GetViewBounds() {
   return gfx::Rect();
