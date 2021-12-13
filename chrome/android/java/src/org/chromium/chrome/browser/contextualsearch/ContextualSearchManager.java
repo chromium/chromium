@@ -72,6 +72,7 @@ import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -1487,7 +1488,7 @@ public class ContextualSearchManager
         }
 
         @Override
-        public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {
+        public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {
             if (mSelectAroundCaretCounter > 0) mSelectAroundCaretCounter--;
             if (mSelectAroundCaretCounter > 0
                     || !mInternalStateController.isStillWorkingOn(
@@ -1497,9 +1498,10 @@ public class ContextualSearchManager
 
             // Process normally unless something went wrong with the selection or an IPH triggered
             // on tap when promoting longpress, otherwise just finish up.
-            if (didSelect && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
+            if (result != null && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
                 assert mContext != null;
-                mContext.onSelectionAdjusted(startAdjust, endAdjust);
+                mContext.onSelectionAdjusted(
+                        result.getExtendedStartAdjust(), result.getExtendedEndAdjust());
                 // There's a race condition when we select the word between this Ack response and
                 // the onSelectionChanged call.  Update the selection in case this method won the
                 // race so we ensure that there's a valid selected word.

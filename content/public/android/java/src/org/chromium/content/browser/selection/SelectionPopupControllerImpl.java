@@ -53,6 +53,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -1500,9 +1501,18 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @CalledByNative
-    private void onSelectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {
+    private void onSelectAroundCaretSuccess(int extendedStartAdjust, int extendedEndAdjust) {
         if (mSelectionClient != null) {
-            mSelectionClient.selectWordAroundCaretAck(didSelect, startAdjust, endAdjust);
+            SelectAroundCaretResult result =
+                    new SelectAroundCaretResult(extendedStartAdjust, extendedEndAdjust);
+            mSelectionClient.selectAroundCaretAck(result);
+        }
+    }
+
+    @CalledByNative
+    private void onSelectAroundCaretFailure() {
+        if (mSelectionClient != null) {
+            mSelectionClient.selectAroundCaretAck(null);
         }
     }
 

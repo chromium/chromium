@@ -3683,27 +3683,37 @@ void WebFrameWidgetImpl::SelectAroundCaret(
     SelectAroundCaretCallback callback) {
   auto* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame) {
-    std::move(callback).Run(false, 0, 0);
+    std::move(callback).Run(std::move(nullptr));
     return;
   }
 
+  // TODO(crbug.com/1278134): Calculate extended adjustments.
   bool did_select = false;
-  int start_adjust = 0;
-  int end_adjust = 0;
+  int extended_start_adjust = 0;
+  int extended_end_adjust = 0;
   blink::WebRange initial_range = focused_frame->SelectionRange();
   SetHandlingInputEvent(true);
   if (!initial_range.IsNull()) {
     did_select = focused_frame->SelectAroundCaret(
         granularity, should_show_handle, should_show_context_menu);
   }
-  if (did_select) {
-    blink::WebRange adjusted_range = focused_frame->SelectionRange();
-    DCHECK(!adjusted_range.IsNull());
-    start_adjust = adjusted_range.StartOffset() - initial_range.StartOffset();
-    end_adjust = adjusted_range.EndOffset() - initial_range.EndOffset();
+
+  if (!did_select) {
+    std::move(callback).Run(std::move(nullptr));
+    return;
   }
+
+  blink::WebRange adjusted_range = focused_frame->SelectionRange();
+  DCHECK(!adjusted_range.IsNull());
+  extended_start_adjust =
+      adjusted_range.StartOffset() - initial_range.StartOffset();
+  extended_end_adjust = adjusted_range.EndOffset() - initial_range.EndOffset();
+
   SetHandlingInputEvent(false);
-  std::move(callback).Run(did_select, start_adjust, end_adjust);
+  auto result = mojom::blink::SelectAroundCaretResult::New();
+  result->extended_start_adjust = extended_start_adjust;
+  result->extended_end_adjust = extended_end_adjust;
+  std::move(callback).Run(std::move(result));
 }
 #endif
 
