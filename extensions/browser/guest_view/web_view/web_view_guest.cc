@@ -907,7 +907,10 @@ void WebViewGuest::UserAgentOverrideSet(
 
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,
                                     const std::string& name) {
-  if (render_frame_host->GetParent())
+  // WebViewGuest does not support back/forward cache or prerendering so
+  // |render_frame_host| should always be active.
+  DCHECK(render_frame_host->IsActive());
+  if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   if (name_ == name)
