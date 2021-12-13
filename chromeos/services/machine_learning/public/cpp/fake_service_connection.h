@@ -131,13 +131,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       override;
 
   // mojom::Model:
-  void CreateGraphExecutor(
-      mojo::PendingReceiver<mojom::GraphExecutor> receiver,
-      mojom::Model::CreateGraphExecutorCallback callback) override;
+  void REMOVED_0(mojo::PendingReceiver<mojom::GraphExecutor> receiver,
+                 mojom::Model::REMOVED_0Callback callback) override;
   void CreateGraphExecutorWithOptions(
       mojom::GraphExecutorOptionsPtr options,
       mojo::PendingReceiver<mojom::GraphExecutor> receiver,
-      mojom::Model::CreateGraphExecutorCallback callback) override;
+      mojom::Model::CreateGraphExecutorWithOptionsCallback callback) override;
 
   // mojom::GraphExecutor:
   // Execute() will return the tensor set by SetOutputValue() as the output.
@@ -279,9 +278,10 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void HandleLoadFlatBufferModelCall(
       mojo::PendingReceiver<mojom::Model> receiver,
       mojom::MachineLearningService::LoadFlatBufferModelCallback callback);
-  void HandleCreateGraphExecutorCall(
+  void HandleCreateGraphExecutorWithOptionsCall(
+      mojom::GraphExecutorOptionsPtr options,
       mojo::PendingReceiver<mojom::GraphExecutor> receiver,
-      mojom::Model::CreateGraphExecutorCallback callback);
+      mojom::Model::CreateGraphExecutorWithOptionsCallback callback);
   void HandleExecuteCall(mojom::GraphExecutor::ExecuteCallback callback);
   void HandleLoadTextClassifierCall(
       mojo::PendingReceiver<mojom::TextClassifier> receiver,

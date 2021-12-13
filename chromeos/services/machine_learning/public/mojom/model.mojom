@@ -94,7 +94,8 @@ struct FlatBufferModelSpec {
 // Next ordinal: 2
 [Stable]
 interface Model {
-  CreateGraphExecutor@0(pending_receiver<GraphExecutor> receiver) =>
+// Deprecated messages:
+  REMOVED_0@0(pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 
   // This function is temporary. We plan to rationalize this interface and

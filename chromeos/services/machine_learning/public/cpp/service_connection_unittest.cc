@@ -277,8 +277,8 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
   callback_done = false;
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
-  model->CreateGraphExecutor(
-      graph.BindNewPipeAndPassReceiver(),
+  model->CreateGraphExecutorWithOptions(
+      mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {
             EXPECT_EQ(result, mojom::CreateGraphExecutorResult::OK);
@@ -347,8 +347,8 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForFlatBufferModel) {
   callback_done = false;
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
-  model->CreateGraphExecutor(
-      graph.BindNewPipeAndPassReceiver(),
+  model->CreateGraphExecutorWithOptions(
+      mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {
             EXPECT_EQ(result, mojom::CreateGraphExecutorResult::OK);
