@@ -4,8 +4,7 @@
 
 /**
  * Name of the chrome flags.
- * @enum {string}
  */
-export const Flag = {
-  DOCUMENT_MANUAL_CROP: 'cameraAppDocumentManualCrop',
-};
+export enum Flag {
+  DOCUMENT_MANUAL_CROP = 'cameraAppDocumentManualCrop',
+}
