@@ -433,7 +433,8 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // label is made of Latin. Checking with lgc_letters set here should be fine
   // because script mixing of LGC is already rejected.
   if (non_ascii_latin_letters_.containsSome(label_string) &&
-      !skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string)) {
+      !(skeleton_generator_ &&
+        skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string))) {
     return Result::kNonAsciiLatinCharMixedWithNonLatin;
   }
 
@@ -554,8 +555,6 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
 }
 
 Skeletons IDNSpoofChecker::GetSkeletons(base::StringPiece16 hostname) const {
-  // skeleton_generator_ may be null if uspoof_open fails. It's unclear why this
-  // happens, see crbug.com/1169079.
   return skeleton_generator_ ? skeleton_generator_->GetSkeletons(hostname)
                              : Skeletons();
 }
@@ -600,7 +599,9 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
 
 std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
     const std::u16string& hostname) {
-  return skeleton_generator_->MaybeRemoveDiacritics(hostname);
+  return skeleton_generator_
+             ? skeleton_generator_->MaybeRemoveDiacritics(hostname)
+             : hostname;
 }
 
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {

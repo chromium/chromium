@@ -213,6 +213,8 @@ class IDNSpoofChecker {
   icu::UnicodeSet digit_lookalikes_;
   icu::UnicodeSet icelandic_characters_;
 
+  // skeleton_generator_ may be null if uspoof_open fails. It's unclear why this
+  // happens, see crbug.com/1169079.
   std::unique_ptr<SkeletonGenerator> skeleton_generator_;
 
   // List of scripts containing whole-script-confusable information.
