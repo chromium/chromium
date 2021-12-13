@@ -226,9 +226,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                      JsReplace("registerConversion({data: 7, origin: $1})",
                                url::Origin::Create(impression_url))));
 
-  // TODO(johnidel): This API surface was removed due to
-  // https://crbug.com/1187881. This test should be updated to verify the
-  // behavior with the new surface.
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
