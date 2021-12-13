@@ -65,7 +65,8 @@ std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
 StarterAndroid::CreateTriggerScriptUiDelegate() {
   CreateJavaDependenciesIfNecessary();
   return std::make_unique<TriggerScriptBridgeAndroid>(
-      base::android::AttachCurrentThread(), java_dependencies_);
+      base::android::AttachCurrentThread(),
+      GetWebContents().GetJavaWebContents(), java_dependencies_);
 }
 
 std::unique_ptr<ServiceRequestSender>

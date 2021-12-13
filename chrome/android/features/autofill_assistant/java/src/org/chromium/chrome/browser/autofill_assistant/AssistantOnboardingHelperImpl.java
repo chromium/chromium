@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingC
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.Map;
 
@@ -33,11 +34,11 @@ public class AssistantOnboardingHelperImpl implements AssistantOnboardingHelper 
     /** The most recently shown onboarding overlay coordinator, if any. */
     private @Nullable AssistantOverlayCoordinator mOnboardingOverlayCoordinator;
 
-    AssistantOnboardingHelperImpl(AssistantDependencies dependencies) {
-        mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(dependencies.getContext(),
+    AssistantOnboardingHelperImpl(WebContents webContents, AssistantDependencies dependencies) {
+        mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(dependencies.getActivity(),
                 dependencies.getBottomSheetController(), dependencies.getBrowserControls(),
                 dependencies.getRootView(), dependencies.getAccessibilityUtil());
-        mTriggerScriptBridge = new AssistantTriggerScriptBridge(dependencies);
+        mTriggerScriptBridge = new AssistantTriggerScriptBridge(webContents, dependencies);
     }
 
     /**

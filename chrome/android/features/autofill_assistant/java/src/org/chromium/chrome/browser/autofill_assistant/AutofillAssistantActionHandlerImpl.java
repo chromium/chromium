@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoord
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,12 +128,29 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         client.showFatalError();
     }
 
+    @Nullable
     private WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) {
             return null;
         }
+
         return tab.getWebContents();
+    }
+
+    @Nullable
+    private Activity getActivity() {
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null) {
+            return null;
+        }
+
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) {
+            return null;
+        }
+
+        return windowAndroid.getActivity().get();
     }
 
     /**
@@ -141,12 +160,15 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     @Nullable
     private AutofillAssistantClient getOrCreateClient() {
         ThreadUtils.assertOnUiThread();
+
         WebContents webContents = getWebContents();
-        if (webContents == null) {
+        Activity activity = getActivity();
+        if (webContents == null || activity == null) {
             return null;
         }
+
         return AutofillAssistantClient.createForWebContents(
-                webContents, mDependenciesFactory.createDependencies(webContents));
+                webContents, mDependenciesFactory.createDependencies(activity));
     }
 
     /** Extracts string arguments from a bundle. */

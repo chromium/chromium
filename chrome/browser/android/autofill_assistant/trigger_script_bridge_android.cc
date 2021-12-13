@@ -20,9 +20,10 @@ namespace autofill_assistant {
 
 TriggerScriptBridgeAndroid::TriggerScriptBridgeAndroid(
     JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents,
     const base::android::JavaRef<jobject>& jassistant_deps) {
-  java_object_ =
-      Java_AssistantTriggerScriptBridge_Constructor(env, jassistant_deps);
+  java_object_ = Java_AssistantTriggerScriptBridge_Constructor(
+      env, jweb_contents, jassistant_deps);
   Java_AssistantTriggerScriptBridge_setNativePtr(
       AttachCurrentThread(), java_object_, reinterpret_cast<intptr_t>(this));
 }

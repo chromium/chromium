@@ -5,19 +5,14 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
-
-import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
@@ -26,10 +21,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
  */
 public class AssistantDependenciesChrome
         implements AssistantDependencies, AssistantStaticDependenciesChrome {
-    private final WebContents mWebContents;
-
-    // Dependencies tied to the activity.
-    private Context mContext;
+    private Activity mActivity;
     private BottomSheetController mBottomSheetController;
     private BrowserControlsStateProvider mBrowserControls;
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -38,19 +30,17 @@ public class AssistantDependenciesChrome
     private View mRootView;
     private AssistantSnackbarFactory mSnackbarFactory;
 
-    public AssistantDependenciesChrome(@NonNull WebContents webContents) {
-        mWebContents = webContents;
-        onActivityAttachmentChanged();
+    public AssistantDependenciesChrome(Activity activity) {
+        onActivityAttachmentChanged(activity);
     }
 
-    public boolean onActivityAttachmentChanged() {
-        Activity activity = ActivityUtils.getActivityFromWebContents(mWebContents);
+    public boolean onActivityAttachmentChanged(Activity activity) {
         if (!(activity instanceof ChromeActivity)) return false;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
         Supplier<View> rootView = chromeActivity.getCompositorViewHolderSupplier();
 
-        mContext = chromeActivity;
+        mActivity = chromeActivity;
         mBottomSheetController =
                 BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid());
         mBrowserControls = chromeActivity.getBrowserControlsManager();
@@ -60,18 +50,13 @@ public class AssistantDependenciesChrome
         mActivityTabProvider = chromeActivity.getActivityTabProvider();
         mRootView = rootView.get();
         mSnackbarFactory =
-                new AssistantSnackbarFactoryChrome(mContext, chromeActivity.getSnackbarManager());
+                new AssistantSnackbarFactoryChrome(mActivity, chromeActivity.getSnackbarManager());
         return true;
     }
 
     @Override
-    public WebContents getWebContents() {
-        return mWebContents;
-    }
-
-    @Override
-    public Context getContext() {
-        return mContext;
+    public Activity getActivity() {
+        return mActivity;
     }
 
     @Override

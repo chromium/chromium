@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.builder.ModuleInterface;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Interface between base module and assistant DFM.
@@ -28,7 +29,8 @@ public interface AutofillAssistantModuleEntry {
      * Creates a concrete {@code AssistantOnboardingHelper} object. Its contents are opaque to
      * the outside of the module.
      */
-    AssistantOnboardingHelper createOnboardingHelper(AssistantDependencies dependencies);
+    AssistantOnboardingHelper createOnboardingHelper(
+            WebContents webContents, AssistantDependencies dependencies);
 
     /**
      * Returns a {@link AutofillAssistantActionHandler} instance tied to the activity owning the
