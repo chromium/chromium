@@ -4039,18 +4039,14 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
   }
 };
 
-// This test is flaky on Linux.
-// See https://crbug.com/1253200
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CacheWhenMediaSessionServiceIsNotUsed \
-  DISABLED_CacheWhenMediaSessionServiceIsNotUsed
-#else
-#define MAYBE_CacheWhenMediaSessionServiceIsNotUsed \
-  CacheWhenMediaSessionServiceIsNotUsed
-#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
-    MAYBE_CacheWhenMediaSessionServiceIsNotUsed) {
+    CacheWhenMediaSessionServiceIsNotUsed) {
+  // There are sometimes unexpected messages from a renderer to the browser,
+  // which caused test flakiness.
+  // TODO(crbug.com/1253200): Fix the test flakiness.
+  DoNotFailForUnexpectedMessagesWhileCached();
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page using MediaSession.
