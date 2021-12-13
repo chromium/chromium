@@ -117,10 +117,6 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       !render_pass_backdrop_filters.empty())
     return false;
 
-  // Wayland overlay forwarding mechanism does not (yet) support putting the
-  // same buffer on multiple surfaces. We use this |candidate_ids| for best
-  // effort service and simply skip duplicate resource id quads.
-  std::set<ResourceId> candidate_ids;
   std::vector<QuadList::Iterator> candidate_quads;
 
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
@@ -169,15 +165,9 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         continue;
       }
 
-      if (candidate_ids.find(candidate.resource_id) == candidate_ids.end()) {
-        candidate_ids.insert(candidate.resource_id);
-        DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
-      } else {
-        DBG_DRAW_RECT("delegated.overlay.dupskip", candidate.display_rect);
-      }
-
+      DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
+      candidates->push_back(candidate);
+      candidate_quads.push_back(it);
     } else {
       DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
 
