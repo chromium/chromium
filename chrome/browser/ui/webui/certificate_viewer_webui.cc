@@ -204,11 +204,6 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
   base::DictionaryValue cert_info;
   CERTCertificate* cert_hnd = nss_certs_.front().get();
 
-  // Certificate usage.
-  std::vector<std::string> usages;
-  x509_certificate_model::GetUsageStrings(cert_hnd, &usages);
-  cert_info.SetString("general.usages", base::JoinString(usages, "\n"));
-
   // Standard certificate details.
   const std::string alternative_text =
       l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
