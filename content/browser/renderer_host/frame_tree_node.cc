@@ -119,27 +119,16 @@ FrameTreeNode::FrameTreeNode(
       parent_(parent),
       frame_owner_element_type_(owner_type),
       tree_scope_type_(tree_scope_type),
-      replication_state_(blink::mojom::FrameReplicationState::New(
-          url::Origin(),
-          name,
-          unique_name,
-          blink::ParsedPermissionsPolicy(),
-          network::mojom::WebSandboxFlags::kNone,
-          frame_policy,
-          // should enforce strict mixed content checking
-          blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-          // hashes of hosts for insecure request upgrades
-          std::vector<uint32_t>(),
-          false /* is a potentially trustworthy unique origin */,
-          false /* has an active user gesture */,
-          false /* has received a user gesture before nav */,
-          false /* is_ad_subframe */)),
       pending_frame_policy_(frame_policy),
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
       blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)),
-      render_manager_(this, frame_tree->manager_delegate()) {
+      render_manager_(this,
+                      frame_tree->manager_delegate(),
+                      name,
+                      unique_name,
+                      frame_policy) {
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
       g_frame_tree_node_id_map.Get().insert(
           std::make_pair(frame_tree_node_id_, this));
@@ -364,15 +353,18 @@ void FrameTreeNode::DidCommitNonInitialEmptyDocument() {
 void FrameTreeNode::SetCurrentOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {
-  if (!origin.IsSameOriginWith(replication_state_->origin) ||
-      replication_state_->has_potentially_trustworthy_unique_origin !=
+  if (!origin.IsSameOriginWith(
+          render_manager_.current_replication_state().origin) ||
+      render_manager_.current_replication_state()
+              .has_potentially_trustworthy_unique_origin !=
           is_potentially_trustworthy_unique_origin) {
     render_manager_.OnDidUpdateOrigin(origin,
                                       is_potentially_trustworthy_unique_origin);
   }
-  replication_state_->origin = origin;
-  replication_state_->has_potentially_trustworthy_unique_origin =
-      is_potentially_trustworthy_unique_origin;
+  render_manager_.browsing_context_state()->set_origin(origin);
+  render_manager_.browsing_context_state()
+      ->set_has_potentially_trustworthy_unique_origin(
+          is_potentially_trustworthy_unique_origin);
 }
 
 void FrameTreeNode::SetCollapsed(bool collapsed) {
@@ -397,9 +389,10 @@ void FrameTreeNode::SetFrameTree(FrameTree& frame_tree) {
 
 void FrameTreeNode::SetFrameName(const std::string& name,
                                  const std::string& unique_name) {
-  if (name == replication_state_->name) {
+  if (name == render_manager_.current_replication_state().name) {
     // |unique_name| shouldn't change unless |name| changes.
-    DCHECK_EQ(unique_name, replication_state_->unique_name);
+    DCHECK_EQ(unique_name,
+              render_manager_.current_replication_state().unique_name);
     return;
   }
 
@@ -414,26 +407,28 @@ void FrameTreeNode::SetFrameName(const std::string& name,
   // Note the unique name should only be able to change before the first real
   // load is committed, but that's not strongly enforced here.
   render_manager_.OnDidUpdateName(name, unique_name);
-  replication_state_->name = name;
-  replication_state_->unique_name = unique_name;
+  render_manager_.browsing_context_state()->set_frame_name(unique_name, name);
 }
 
 void FrameTreeNode::SetInsecureRequestPolicy(
     blink::mojom::InsecureRequestPolicy policy) {
-  if (policy == replication_state_->insecure_request_policy)
+  if (policy ==
+      render_manager_.current_replication_state().insecure_request_policy)
     return;
   render_manager_.OnEnforceInsecureRequestPolicy(policy);
-  replication_state_->insecure_request_policy = policy;
+  render_manager_.browsing_context_state()->set_insecure_request_policy(policy);
 }
 
 void FrameTreeNode::SetInsecureNavigationsSet(
     const std::vector<uint32_t>& insecure_navigations_set) {
   DCHECK(std::is_sorted(insecure_navigations_set.begin(),
                         insecure_navigations_set.end()));
-  if (insecure_navigations_set == replication_state_->insecure_navigations_set)
+  if (insecure_navigations_set ==
+      render_manager_.current_replication_state().insecure_navigations_set)
     return;
   render_manager_.OnEnforceInsecureNavigationsSet(insecure_navigations_set);
-  replication_state_->insecure_navigations_set = insecure_navigations_set;
+  render_manager_.browsing_context_state()->set_insecure_navigations_set(
+      insecure_navigations_set);
 }
 
 void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
@@ -452,7 +447,7 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   if (parent()) {
     // Subframes should always inherit their parent's sandbox flags.
     pending_frame_policy_.sandbox_flags |=
-        parent()->frame_tree_node()->active_sandbox_flags();
+        parent()->browsing_context_state()->active_sandbox_flags();
     // This is only applied on subframes; container policy and required document
     // policy are not mutable on main frame.
     pending_frame_policy_.container_policy = frame_policy.container_policy;
@@ -504,31 +499,26 @@ bool FrameTreeNode::CommitFramePolicy(
   // TODO(https://crbug.com/1262061). Enforce the invariant mentioned above,
   // once the interactions with FencedIframe has been tested and clarified.
 
+  const blink::mojom::FrameReplicationState& replication_state =
+      render_manager_.current_replication_state();
+
   bool did_change_flags = new_frame_policy.sandbox_flags !=
-                          replication_state_->frame_policy.sandbox_flags;
+                          replication_state.frame_policy.sandbox_flags;
   bool did_change_container_policy =
       new_frame_policy.container_policy !=
-      replication_state_->frame_policy.container_policy;
+      replication_state.frame_policy.container_policy;
   bool did_change_required_document_policy =
       pending_frame_policy_.required_document_policy !=
-      replication_state_->frame_policy.required_document_policy;
+      replication_state.frame_policy.required_document_policy;
   DCHECK_EQ(new_frame_policy.is_fenced,
-            replication_state_->frame_policy.is_fenced);
-  if (did_change_flags) {
-    replication_state_->frame_policy.sandbox_flags =
-        new_frame_policy.sandbox_flags;
-  }
-  if (did_change_container_policy) {
-    replication_state_->frame_policy.container_policy =
-        new_frame_policy.container_policy;
-  }
-  if (did_change_required_document_policy) {
-    replication_state_->frame_policy.required_document_policy =
-        new_frame_policy.required_document_policy;
-  }
+            replication_state.frame_policy.is_fenced);
+
+  render_manager_.browsing_context_state()->UpdateFramePolicy(
+      new_frame_policy, did_change_flags, did_change_container_policy,
+      did_change_required_document_policy);
 
   UpdateFramePolicyHeaders(new_frame_policy.sandbox_flags,
-                           replication_state_->permissions_policy_header);
+                           replication_state.permissions_policy_header);
   return did_change_flags || did_change_container_policy ||
          did_change_required_document_policy;
 }
@@ -682,7 +672,7 @@ bool FrameTreeNode::NotifyUserActivation(
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
   }
 
-  replication_state_->has_active_user_gesture = true;
+  render_manager_.browsing_context_state()->set_has_active_user_gesture(true);
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
@@ -708,14 +698,14 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
   bool was_active = user_activation_state_.IsActive();
   for (FrameTreeNode* node : frame_tree()->Nodes())
     node->user_activation_state_.ConsumeIfActive();
-  replication_state_->has_active_user_gesture = false;
+  render_manager_.browsing_context_state()->set_has_active_user_gesture(false);
   return was_active;
 }
 
 bool FrameTreeNode::ClearUserActivation() {
   for (FrameTreeNode* node : frame_tree()->SubtreeNodes(this))
     node->user_activation_state_.Clear();
-  replication_state_->has_active_user_gesture = false;
+  render_manager_.browsing_context_state()->set_has_active_user_gesture(false);
   return true;
 }
 
@@ -768,23 +758,28 @@ bool FrameTreeNode::UpdateUserActivationState(
 
 void FrameTreeNode::OnSetHadStickyUserActivationBeforeNavigation(bool value) {
   render_manager_.OnSetHadStickyUserActivationBeforeNavigation(value);
-  replication_state_->has_received_user_gesture_before_nav = value;
+  render_manager_.browsing_context_state()
+      ->set_has_received_active_user_gesture_before_nav(value);
 }
 
 bool FrameTreeNode::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& parsed_header) {
   bool changed = false;
-  if (replication_state_->permissions_policy_header != parsed_header) {
-    replication_state_->permissions_policy_header = parsed_header;
+  if (render_manager_.current_replication_state().permissions_policy_header !=
+      parsed_header) {
+    render_manager_.browsing_context_state()->set_permissions_policy_header(
+        parsed_header);
     changed = true;
   }
   // TODO(iclelland): Kill the renderer if sandbox flags is not a subset of the
   // currently effective sandbox flags from the frame. https://crbug.com/740556
   network::mojom::WebSandboxFlags updated_flags =
       sandbox_flags | effective_frame_policy().sandbox_flags;
-  if (replication_state_->active_sandbox_flags != updated_flags) {
-    replication_state_->active_sandbox_flags = updated_flags;
+  if (render_manager_.current_replication_state().active_sandbox_flags !=
+      updated_flags) {
+    render_manager_.browsing_context_state()->set_active_sandbox_flags(
+        updated_flags);
     changed = true;
   }
   // Notify any proxies if the policies have been changed.
@@ -807,10 +802,12 @@ void FrameTreeNode::PruneChildFrameNavigationEntries(
 }
 
 void FrameTreeNode::SetIsAdSubframe(bool is_ad_subframe) {
-  if (is_ad_subframe == replication_state_->is_ad_subframe)
+  if (is_ad_subframe ==
+      render_manager_.current_replication_state().is_ad_subframe)
     return;
 
-  replication_state_->is_ad_subframe = is_ad_subframe;
+  render_manager()->browsing_context_state()->set_is_ad_subframe(
+      is_ad_subframe);
   render_manager()->OnDidSetIsAdSubframe(is_ad_subframe);
 }
 

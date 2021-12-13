@@ -66,13 +66,97 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
                          std::unique_ptr<RenderFrameProxyHost>,
                          SiteInstanceGroupId::Hasher>;
 
-  explicit BrowsingContextState();
+  explicit BrowsingContextState(
+      blink::mojom::FrameReplicationStatePtr replication_state);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
   const RenderFrameProxyHostMap& proxy_hosts() const { return proxy_hosts_; }
 
   RenderFrameProxyHostMap& proxy_hosts() { return proxy_hosts_; }
+
+  const blink::mojom::FrameReplicationState& current_replication_state() const {
+    return *replication_state_;
+  }
+
+  const std::string& frame_name() const { return replication_state_->name; }
+
+  // Returns the currently active frame policy for this frame, including the
+  // sandbox flags which were present at the time the document was loaded, and
+  // the permissions policy container policy, which is set by the iframe's
+  // allowfullscreen, allowpaymentrequest, and allow attributes, along with the
+  // origin of the iframe's src attribute (which may be different from the URL
+  // of the document currently loaded into the frame). This does not include
+  // policy changes that have been made by updating the containing iframe
+  // element attributes since the frame was last navigated; use
+  // pending_frame_policy() for those.
+  const blink::FramePolicy& effective_frame_policy() const {
+    return replication_state_->frame_policy;
+  }
+
+  // Returns the sandbox flags currently in effect for this frame. This includes
+  // flags inherited from parent frames, the currently active flags from the
+  // <iframe> element hosting this frame, as well as any flags set from a
+  // Content-Security-Policy HTTP header. This does not include flags that have
+  // have been updated in an <iframe> element but have not taken effect yet; use
+  // pending_frame_policy() for those. To see the flags which will take effect
+  // on navigation (which does not include the CSP-set flags), use
+  // effective_frame_policy().
+  network::mojom::WebSandboxFlags active_sandbox_flags() const {
+    return replication_state_->active_sandbox_flags;
+  }
+
+  void set_frame_name(const std::string& unique_name, const std::string& name) {
+    replication_state_->unique_name = unique_name;
+    replication_state_->name = name;
+  }
+
+  void set_is_ad_subframe(bool is_ad_subframe) {
+    replication_state_->is_ad_subframe = is_ad_subframe;
+  }
+
+  void set_origin(const url::Origin& origin) {
+    replication_state_->origin = origin;
+  }
+
+  void set_has_potentially_trustworthy_unique_origin(
+      bool is_potentially_trustworthy_unique_origin) {
+    replication_state_->has_potentially_trustworthy_unique_origin =
+        is_potentially_trustworthy_unique_origin;
+  }
+
+  void set_insecure_request_policy(blink::mojom::InsecureRequestPolicy policy) {
+    replication_state_->insecure_request_policy = policy;
+  }
+
+  void set_insecure_navigations_set(
+      const std::vector<uint32_t>& insecure_navigations_set) {
+    replication_state_->insecure_navigations_set = insecure_navigations_set;
+  }
+
+  void set_has_active_user_gesture(bool has_active_user_gesture) {
+    replication_state_->has_active_user_gesture = has_active_user_gesture;
+  }
+
+  void set_has_received_active_user_gesture_before_nav(
+      bool has_received_user_gesture_before_nav) {
+    replication_state_->has_received_user_gesture_before_nav =
+        has_received_user_gesture_before_nav;
+  }
+
+  void set_permissions_policy_header(
+      const blink::ParsedPermissionsPolicy& parsed_header) {
+    replication_state_->permissions_policy_header = parsed_header;
+  }
+
+  void set_active_sandbox_flags(network::mojom::WebSandboxFlags updated_flags) {
+    replication_state_->active_sandbox_flags = updated_flags;
+  }
+
+  void UpdateFramePolicy(const blink::FramePolicy& new_frame_policy,
+                         bool did_change_flags,
+                         bool did_change_container_policy,
+                         bool did_change_required_document_policy);
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;
@@ -82,6 +166,10 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
  private:
   // Proxy hosts, indexed by SiteInstanceGroup ID.
   RenderFrameProxyHostMap proxy_hosts_;
+
+  // Track information that needs to be replicated to processes that have
+  // proxies for this frame.
+  blink::mojom::FrameReplicationStatePtr replication_state_;
 };
 
 }  // namespace content

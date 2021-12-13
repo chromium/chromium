@@ -23,7 +23,28 @@ BrowsingContextStateImplementationType GetBrowsingContextMode() {
 
 namespace content {
 
-BrowsingContextState::BrowsingContextState() = default;
+BrowsingContextState::BrowsingContextState(
+    blink::mojom::FrameReplicationStatePtr replication_state)
+    : replication_state_(std::move(replication_state)) {}
 
 BrowsingContextState::~BrowsingContextState() = default;
+
+void BrowsingContextState::UpdateFramePolicy(
+    const blink::FramePolicy& new_frame_policy,
+    bool did_change_flags,
+    bool did_change_container_policy,
+    bool did_change_required_document_policy) {
+  if (did_change_flags) {
+    replication_state_->frame_policy.sandbox_flags =
+        new_frame_policy.sandbox_flags;
+  }
+  if (did_change_container_policy) {
+    replication_state_->frame_policy.container_policy =
+        new_frame_policy.container_policy;
+  }
+  if (did_change_required_document_policy) {
+    replication_state_->frame_policy.required_document_policy =
+        new_frame_policy.required_document_policy;
+  }
+}
 }  // namespace content

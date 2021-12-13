@@ -1439,7 +1439,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     //
     // Both are already computed and stored in the FrameTreeNode. So only a copy
     // is needed here.
-    active_sandbox_flags_ = frame_tree_node_->active_sandbox_flags();
+    active_sandbox_flags_ = browsing_context_state_->active_sandbox_flags();
   }
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
@@ -2047,7 +2047,7 @@ RenderFrameHostImpl::GetEmbeddingToken() {
 }
 
 const std::string& RenderFrameHostImpl::GetFrameName() {
-  return frame_tree_node_->frame_name();
+  return browsing_context_state_->frame_name();
 }
 
 bool RenderFrameHostImpl::IsFrameDisplayNone() {
@@ -2926,7 +2926,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->previous_sibling_routing_id = previous_sibling_routing_id;
   params->tree_scope_type = frame_tree_node()->tree_scope_type();
   params->replication_state =
-      frame_tree_node()->current_replication_state().Clone();
+      browsing_context_state_->current_replication_state().Clone();
   params->token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
 
@@ -3513,8 +3513,8 @@ void RenderFrameHostImpl::DidNavigate(
   //
   // This includes new documents. It also includes documents restored from the
   // BackForwardCache. This is because the cached state in
-  // FrameTreeNode::replication_state_ needs to be refreshed with the actual
-  // values.
+  // BrowsingContextState::replication_state_ needs to be refreshed with the
+  // actual values.
   if (!navigation_request->IsSameDocument()) {
     // Permissions policy's inheritance from parent frame's permissions policy
     // is through accessing parent frame's security context(either remote or
@@ -3671,7 +3671,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
       network::mojom::WebSandboxFlags::kOrigin ==
-      (frame_tree_node()->active_sandbox_flags() &
+      (browsing_context_state_->active_sandbox_flags() &
        network::mojom::WebSandboxFlags::kOrigin);
   url::Origin new_frame_origin = new_frame_should_be_sandboxed
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
@@ -4100,6 +4100,7 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     // activation, so we need to ensure that the new frame replication being
     // stored in the browser is the same as the old and consistent with the
     // state we've sent to the renderers.
+    // TODO - can we check main frame replication state?
     DCHECK(prerender_main_frame_replication_state ==
            frame_tree()->root()->current_replication_state());
   }
@@ -4344,7 +4345,7 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
   GetMojomFrameInRenderer()->Unload(
       proxy->GetRoutingID(), /*is_loading=*/false,
-      frame_tree_node()->current_replication_state().Clone(),
+      browsing_context_state_->current_replication_state().Clone(),
       proxy->GetFrameToken(), proxy->CreateAndBindRemoteMainFrameInterfaces());
 }
 
@@ -5269,7 +5270,7 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::OnDidChangeName",
                "render_frame_host", this, "name", name);
 
-  std::string old_name = frame_tree_node()->frame_name();
+  std::string old_name = browsing_context_state_->frame_name();
   frame_tree_node()->SetFrameName(name, unique_name);
   if (old_name.empty() && !name.empty())
     frame_tree_node_->render_manager()->CreateProxiesForNewNamedFrame();
@@ -9286,7 +9287,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
   blink::ParsedPermissionsPolicy container_policy =
-      frame_tree_node()->effective_frame_policy().container_policy;
+      browsing_context_state_->effective_frame_policy().container_policy;
   permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);
 }
@@ -10199,7 +10200,8 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // supposed to be compatible with required_document_policy. If not, kill the
   // renderer.
   if (!blink::DocumentPolicy::IsPolicyCompatible(
-          frame_tree_node()->effective_frame_policy().required_document_policy,
+          browsing_context_state_->effective_frame_policy()
+              .required_document_policy,
           params->document_policy_header)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_BAD_DOCUMENT_POLICY_HEADER);

@@ -168,7 +168,11 @@ class CONTENT_EXPORT RenderFrameHostManager
   // must outlive this class.
   //
   // You must call one of the Init*() methods before using this class.
-  RenderFrameHostManager(FrameTreeNode* frame_tree_node, Delegate* delegate);
+  RenderFrameHostManager(FrameTreeNode* frame_tree_node,
+                         Delegate* delegate,
+                         const std::string& name,
+                         const std::string& unique_name,
+                         const blink::FramePolicy& frame_policy);
 
   RenderFrameHostManager(const RenderFrameHostManager&) = delete;
   RenderFrameHostManager& operator=(const RenderFrameHostManager&) = delete;
@@ -573,6 +577,10 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   const scoped_refptr<BrowsingContextState>& browsing_context_state() {
     return browsing_context_state_;
+  }
+
+  const blink::mojom::FrameReplicationState& current_replication_state() const {
+    return browsing_context_state_->current_replication_state();
   }
 
  private:

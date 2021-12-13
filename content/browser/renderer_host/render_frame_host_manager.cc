@@ -292,11 +292,30 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
 
 }  // namespace
 
-RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
-                                               Delegate* delegate)
+RenderFrameHostManager::RenderFrameHostManager(
+    FrameTreeNode* frame_tree_node,
+    Delegate* delegate,
+    const std::string& name,
+    const std::string& unique_name,
+    const blink::FramePolicy& frame_policy)
     : frame_tree_node_(frame_tree_node),
       delegate_(delegate),
-      browsing_context_state_(base::MakeRefCounted<BrowsingContextState>()) {
+      browsing_context_state_(base::MakeRefCounted<BrowsingContextState>(
+          blink::mojom::FrameReplicationState::New(
+              url::Origin(),
+              name,
+              unique_name,
+              blink::ParsedPermissionsPolicy(),
+              network::mojom::WebSandboxFlags::kNone,
+              frame_policy,
+              // should enforce strict mixed content checking
+              blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+              // hashes of hosts for insecure request upgrades
+              std::vector<uint32_t>(),
+              false /* has_potentially_trustworthy_unique_origin */,
+              false /* has_active_user_gesture */,
+              false /* has_received_user_gesture_before_nav */,
+              false /* is_ad_subframe */))) {
   DCHECK(frame_tree_node_);
 }
 
@@ -585,8 +604,8 @@ void RenderFrameHostManager::CommitFramePolicy(
 void RenderFrameHostManager::OnDidSetFramePolicyHeaders() {
   for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     pair.second->GetAssociatedRemoteFrame()->DidSetFramePolicyHeaders(
-        frame_tree_node_->active_sandbox_flags(),
-        frame_tree_node_->current_replication_state()
+        browsing_context_state_->active_sandbox_flags(),
+        browsing_context_state_->current_replication_state()
             .permissions_policy_header);
   }
 }
@@ -2781,10 +2800,16 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     // For speculative frame hosts, we will need to create a new
     // BrowsingContextState when we have a cross-BrowsingInstance navigation,
     // as the browsing context + BrowsingInstance combination changes.
+    // TODO(crbug.com/1179502): FrameReplicationState is a mix of things that
+    // are per-frame, per-browsing context and per-document. Currently, we pass
+    // the entire FrameReplicationState to match the old behaviour of storing
+    // FrameReplicationState on FrameTreeNode. We should consider splitting
+    // FrameReplicationState into multiple structs with different lifetimes.
     browsing_context_state =
         render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(instance)
             ? render_frame_host_->browsing_context_state()
-            : base::MakeRefCounted<BrowsingContextState>();
+            : base::MakeRefCounted<BrowsingContextState>(
+                  browsing_context_state_->current_replication_state().Clone());
   }
 
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
