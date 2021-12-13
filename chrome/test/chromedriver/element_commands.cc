@@ -534,7 +534,7 @@ Status ExecuteSendKeysToElement(Session* session,
     text = params.FindKey("text");
     if (text == nullptr || !text->is_string())
       return Status(kInvalidArgument, "'text' must be a string");
-    key_list_local.Set(0, std::make_unique<base::Value>(text->Clone()));
+    key_list_local.Append(text->Clone());
     key_list = &key_list_local;
   } else {
     if (!params.GetList("value", &key_list))

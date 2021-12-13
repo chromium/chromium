@@ -182,12 +182,12 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   // Each entry must be a JSON object
   base::ListValue* list_ptr;
   ASSERT_TRUE(params.GetList("capabilities.firstMatch", &list_ptr));
-  list_ptr->Set(0, std::make_unique<base::ListValue>());
+  list_ptr->Append(base::ListValue());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Empty JSON object allowed as an entry
-  list_ptr->Set(0, std::make_unique<base::DictionaryValue>());
+  list_ptr->GetList()[0] = base::DictionaryValue();
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_TRUE(result.DictEmpty());
@@ -209,7 +209,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   ASSERT_EQ(result_string, "eager");
 
   // Multiple entries, the first one should be selected.
-  list_ptr->Set(1, std::make_unique<base::DictionaryValue>());
+  list_ptr->Append(base::DictionaryValue());
   ASSERT_TRUE(list_ptr->GetDictionary(1, &entry_ptr));
   entry_ptr->SetString("pageLoadStrategy", "normal");
   entry_ptr->SetString("browserName", "chrome");
