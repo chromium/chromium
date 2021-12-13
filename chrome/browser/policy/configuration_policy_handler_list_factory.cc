@@ -1562,6 +1562,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kOriginAgentClusterDefaultEnabled,
     prefs::kOriginAgentClusterDefaultEnabled,
     base::Value::Type::BOOLEAN},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kDeviceLoginScreenWebUILazyLoading,
+    ash::prefs::kLoginScreenWebUILazyLoading,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 // clang-format on
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -103,6 +104,36 @@ bool AllAllowlistedUsersPresent() {
   return true;
 }
 
+bool IsLazyWebUILoadingEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::chromeos::switches::kEnableOobeTestAPI)) {
+    // Load WebUI for the test API explicitly because it's Web API.
+    return false;
+  }
+
+  // Policy override.
+  if (g_browser_process->local_state()->IsManagedPreference(
+          prefs::kLoginScreenWebUILazyLoading)) {
+    return g_browser_process->local_state()->GetBoolean(
+        ash::prefs::kLoginScreenWebUILazyLoading);
+  }
+
+  // Feature override.
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kEnableLazyLoginWebUILoading.name)) {
+    return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
+  }
+
+  // Disable for stable and beta.
+  if ((chrome::GetChannel() == version_info::Channel::STABLE) ||
+      (chrome::GetChannel() == version_info::Channel::BETA)) {
+    return false;
+  }
+
+  // Enable for dev builds.
+  return true;
+}
+
 }  // namespace
 
 LoginDisplayHostMojo::AuthState::AuthState(
@@ -120,22 +151,9 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   user_selection_screen_->SetView(user_board_view_mojo_.get());
 
-  // Do not load WebUI before it is needed if feature permits.
-  bool enable_lazy_webui_loading = false;
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kEnableLazyLoginWebUILoading.name)) {
-    enable_lazy_webui_loading =
-        base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
-  } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                 ::chromeos::switches::kEnableOobeTestAPI)) {
-    // Load WebUI for the test API explicitly because it's Web API.
-    enable_lazy_webui_loading = false;
-  } else if ((chrome::GetChannel() != version_info::Channel::STABLE) &&
-             (chrome::GetChannel() != version_info::Channel::BETA)) {
-    enable_lazy_webui_loading = true;
-  }
+  // Do not load WebUI before it is needed if policy and feature permit.
   // Force load WebUI if feature is not enabled.
-  if (!enable_lazy_webui_loading &&
+  if (!IsLazyWebUILoadingEnabled() &&
       displayed_screen == DisplayedScreen::SIGN_IN_SCREEN) {
     EnsureOobeDialogLoaded();
   }

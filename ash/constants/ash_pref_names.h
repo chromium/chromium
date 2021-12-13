@@ -415,6 +415,9 @@ extern const char kProjectorGalleryOnboardingShowCount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorViewerOnboardingShowCount[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLoginScreenWebUILazyLoading[];
+
 }  // namespace prefs
 }  // namespace ash
 

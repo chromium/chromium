@@ -27530,6 +27530,7 @@ Called by update_document_policy_enum.py.-->
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
+  <int value="934" label="DeviceLoginWebUILazyLoading"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
