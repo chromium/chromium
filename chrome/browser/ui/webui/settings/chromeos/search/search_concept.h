@@ -25,14 +25,6 @@ struct SearchConcept {
   static constexpr size_t kMaxAltTagsPerConcept = 5;
   static constexpr int kAltTagEnd = 0;
 
-  // Identifier for the concept; each concept describes one section, subpage, or
-  // setting.
-  union Identifier {
-    mojom::Section section;
-    mojom::Subpage subpage;
-    mojom::Setting setting;
-  };
-
   SearchConcept(const SearchConcept& other) = default;
   SearchConcept& operator=(const SearchConcept& other) = default;
 
