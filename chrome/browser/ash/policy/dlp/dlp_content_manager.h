@@ -58,6 +58,7 @@ class DlpContentManager : public DlpContentObserver,
 
   // DlpWindowObserver::Delegate overrides:
   void OnWindowOcclusionChanged(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // Returns which restrictions are applied to the |web_contents| according to
   // the policy.
@@ -136,6 +137,10 @@ class DlpContentManager : public DlpContentObserver,
   // Called when screen capture is stopped.
   void OnScreenCaptureStopped(const std::string& label,
                               const content::DesktopMediaID& media_id);
+
+  // Called when an updated restrictions are received for Lacros window.
+  void OnWindowRestrictionChanged(aura::Window* window,
+                                  const DlpContentRestrictionSet& restrictions);
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
@@ -343,6 +348,13 @@ class DlpContentManager : public DlpContentObserver,
 
   // Map of window observers for the current confidential WebContents.
   base::flat_map<content::WebContents*, std::unique_ptr<DlpWindowObserver>>
+      web_contents_window_observers_;
+
+  // Map from currently known Lacros Windows to their restrictions.
+  base::flat_map<aura::Window*, DlpContentRestrictionSet> confidential_windows_;
+
+  // Map of observers for currently known Lacros Windows.
+  base::flat_map<aura::Window*, std::unique_ptr<DlpWindowObserver>>
       window_observers_;
 
   // Set of restriction applied to the currently visible content.

@@ -62,6 +62,11 @@ DlpRulesManager::Level DlpContentRestrictionSet::GetRestrictionLevel(
   return restrictions_[restriction].level;
 }
 
+const GURL& DlpContentRestrictionSet::GetRestrictionUrl(
+    DlpContentRestriction restriction) const {
+  return restrictions_[restriction].url;
+}
+
 RestrictionLevelAndUrl DlpContentRestrictionSet::GetRestrictionLevelAndUrl(
     DlpContentRestriction restriction) const {
   return restrictions_[restriction];
