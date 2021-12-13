@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -89,6 +90,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getDomain());
+        SelectableListUtils.setContentDescriptionContext(getContext(), mRemoveButton,
+                item.getTitle(), SelectableListUtils.ContentDescriptionSource.REMOVE_BUTTON);
         mIsItemRemoved = false;
 
         if (item.wasBlockedVisit()) {

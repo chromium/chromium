@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMe
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.lang.annotation.Retention;
@@ -81,7 +82,9 @@ public abstract class BookmarkRow
         mBookmarkId = bookmarkId;
         BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(bookmarkId);
         mMoreIcon.dismiss();
-        mMoreIcon.setContentDescriptionContext(bookmarkItem.getTitle());
+        SelectableListUtils.setContentDescriptionContext(getContext(), mMoreIcon,
+                bookmarkItem.getTitle(), SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
+
         setChecked(isItemSelected());
         updateVisualState();
 

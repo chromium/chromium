@@ -97,6 +97,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableItemViewHolder.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListToolbar.java",
+    "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegate.java",
     "java/src/org/chromium/components/browser_ui/widget/text/AccessibleTextView.java",
     "java/src/org/chromium/components/browser_ui/widget/text/AlertDialogEditText.java",
