@@ -442,7 +442,9 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
     AppListState state) const {
   if (state == AppListState::kStateSearchResults && app_list_view_ &&
       !app_list_view_->is_in_drag()) {
-    return kSearchBoxBorderCornerRadiusSearchResult;
+    return features::IsProductivityLauncherEnabled()
+               ? kExpandedSearchBoxCornerRadiusForProductivityLauncher
+               : kSearchBoxBorderCornerRadiusSearchResult;
   }
   return kSearchBoxBorderCornerRadius;
 }
