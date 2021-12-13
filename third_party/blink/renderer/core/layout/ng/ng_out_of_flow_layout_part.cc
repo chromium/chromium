@@ -113,8 +113,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
   // items to be placed in grid areas, which is complex to maintain a cache for.
   const NGBoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
-  allow_first_tier_oof_cache_ =
-      border_scrollbar.IsEmpty() && !is_grid_container;
+  allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty() &&
+                                !is_grid_container && !has_block_fragmentation_;
   default_containing_block_info_for_absolute_.writing_direction =
       default_writing_direction_;
   default_containing_block_info_for_fixed_.writing_direction =
@@ -1085,6 +1085,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           descendant.containing_block.fragment.get();
       node_to_layout.offset_info.original_offset =
           node_to_layout.offset_info.offset;
+
+      DCHECK(node_to_layout.offset_info.block_estimate);
 
       // Determine in which fragmentainer this OOF element will start its layout
       // and adjust the offset to be relative to that fragmentainer.
