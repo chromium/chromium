@@ -129,52 +129,48 @@ void DecodeProtoFields(
     PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
 
-  // Access arrays are terminated by a struct that contains only nullptrs.
-  for (const BooleanPolicyAccess* access = &kBooleanPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!PerProfileMatches(access->per_profile, per_profile) ||
-        !(policy.*access->has_proto)())
+  for (const BooleanPolicyAccess& access : GetBooleanPolicyAccess()) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::BooleanPolicyProto& proto = (policy.*access->get_proto)();
+    const em::BooleanPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
-    map->Set(access->policy_key, level, scope, source,
-             DecodeBooleanProto(proto), nullptr);
+    map->Set(access.policy_key, level, scope, source, DecodeBooleanProto(proto),
+             nullptr);
   }
 
-  for (const IntegerPolicyAccess* access = &kIntegerPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!PerProfileMatches(access->per_profile, per_profile) ||
-        !(policy.*access->has_proto)())
+  for (const IntegerPolicyAccess& access : GetIntegerPolicyAccess()) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::IntegerPolicyProto& proto = (policy.*access->get_proto)();
+    const em::IntegerPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
     std::string error;
-    map->Set(access->policy_key, level, scope, source,
+    map->Set(access.policy_key, level, scope, source,
              DecodeIntegerProto(proto, &error), nullptr);
     if (!error.empty())
-      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+      map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringPolicyAccess* access = &kStringPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!PerProfileMatches(access->per_profile, per_profile) ||
-        !(policy.*access->has_proto)())
+  for (const StringPolicyAccess& access : GetStringPolicyAccess()) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::StringPolicyProto& proto = (policy.*access->get_proto)();
+    const em::StringPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
     std::string error;
-    base::Value value = (access->type == StringPolicyType::STRING)
+    base::Value value = (access.type == StringPolicyType::STRING)
                             ? DecodeStringProto(proto)
                             : DecodeJsonProto(proto, &error);
 
@@ -186,31 +182,30 @@ void DecodeProtoFields(
     // needs an ExternalDataFetcher. If we ever create a second such policy,
     // create a new type for it instead of special-casing the policies here.
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher =
-        (access->type == StringPolicyType::EXTERNAL ||
-         strcmp(access->policy_key, key::kWebAppInstallForceList) == 0)
+        (access.type == StringPolicyType::EXTERNAL ||
+         strcmp(access.policy_key, key::kWebAppInstallForceList) == 0)
             ? std::make_unique<ExternalDataFetcher>(external_data_manager,
-                                                    access->policy_key)
+                                                    access.policy_key)
             : nullptr;
 
-    map->Set(access->policy_key, level, scope, source, std::move(value),
+    map->Set(access.policy_key, level, scope, source, std::move(value),
              std::move(external_data_fetcher));
     if (!error.empty())
-      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+      map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringListPolicyAccess* access = &kStringListPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!PerProfileMatches(access->per_profile, per_profile) ||
-        !(policy.*access->has_proto)())
+  for (const StringListPolicyAccess& access : GetStringListPolicyAccess()) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::StringListPolicyProto& proto = (policy.*access->get_proto)();
+    const em::StringListPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
-    map->Set(access->policy_key, level, scope, source,
+    map->Set(access.policy_key, level, scope, source,
              DecodeStringListProto(proto), nullptr);
   }
 }

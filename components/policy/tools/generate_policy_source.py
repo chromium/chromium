@@ -476,6 +476,13 @@ def _LoadJSONFile(json_file):
   return ast.literal_eval(text)
 
 
+def _GetSupportedChromeUserPolicies(policies, protobuf_type):
+  return [
+      p for p in policies if p.is_supported and not p.is_device_only
+      and p.policy_protobuf_type == protobuf_type
+  ]
+
+
 #------------------ policy constants header ------------------------#
 
 
@@ -495,9 +502,12 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
 #include <cstdint>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+
+namespace em = enterprise_management;
 
 namespace policy {
 
@@ -570,7 +580,7 @@ const internal::SchemaData* GetChromeSchemaData();
   # User policy proto pointers, one struct for each protobuf type.
   protobuf_types = _GetProtobufTypes()
   for protobuf_type in protobuf_types:
-    _WriteChromePolicyAccessHeader(f, protobuf_type)
+    _WriteChromePolicyAccessHeader(policies, f, protobuf_type)
 
   f.write('constexpr int64_t kDevicePolicyExternalDataResourceCacheSize = %d;\n'
           % _ComputeTotalDevicePolicyExternalDataMaxSize(policies))
@@ -579,22 +589,24 @@ const internal::SchemaData* GetChromeSchemaData();
           '#endif  // COMPONENTS_POLICY_POLICY_CONSTANTS_H_\n')
 
 
-def _WriteChromePolicyAccessHeader(f, protobuf_type):
+def _WriteChromePolicyAccessHeader(policies, f, protobuf_type):
+  supported_user_policies = _GetSupportedChromeUserPolicies(
+      policies, protobuf_type)
   f.write('// Read access to the protobufs of all supported %s user policies.\n'
           % protobuf_type.lower())
   f.write('struct %sPolicyAccess {\n' % protobuf_type)
   f.write('  const char* policy_key;\n'
           '  bool per_profile;\n'
-          '  bool (enterprise_management::CloudPolicySettings::'
-          '*has_proto)() const;\n'
-          '  const enterprise_management::%sPolicyProto&\n'
-          '      (enterprise_management::CloudPolicySettings::'
-          '*get_proto)() const;\n' % protobuf_type)
+          '  std::function<bool(const em::CloudPolicySettings& policy)>\n'
+          '      has_proto;\n'
+          '  std::function<const em::%sPolicyProto&(\n'
+          '      const em::CloudPolicySettings& policy)>\n'
+          '      get_proto;\n' % protobuf_type)
   if protobuf_type == 'String':
     f.write('  const StringPolicyType type;\n')
   f.write('};\n')
-  f.write('extern const %sPolicyAccess k%sPolicyAccess[];\n\n' %
-          (protobuf_type, protobuf_type))
+  f.write('const std::array<%sPolicyAccess, %d>& Get%sPolicyAccess();\n\n' %
+          (protobuf_type, len(supported_user_policies), protobuf_type))
 
 
 def _ComputeTotalDevicePolicyExternalDataMaxSize(policies):
@@ -1084,8 +1096,6 @@ def _WritePolicyConstantSource(policies, policy_atomic_groups, target_platform,
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/risk_tag.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 ''')
@@ -1308,12 +1318,9 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   f.write('};\n\n')
   f.write('}  // namespace metapolicy\n\n')
 
-  supported_user_policies = [
-      p for p in policies if p.is_supported and not p.is_device_only
-  ]
   protobuf_types = _GetProtobufTypes()
   for protobuf_type in protobuf_types:
-    _WriteChromePolicyAccessSource(supported_user_policies, f, protobuf_type)
+    _WriteChromePolicyAccessSource(policies, f, protobuf_type)
 
   f.write('\n}  // namespace policy\n')
 
@@ -1332,22 +1339,32 @@ def _GetStringPolicyType(policy_type):
 # Writes an array that contains the pointers to the proto field for each policy
 # in |policies| of the given |protobuf_type|.
 def _WriteChromePolicyAccessSource(policies, f, protobuf_type):
-  f.write('const %sPolicyAccess k%sPolicyAccess[] = {\n' % (protobuf_type,
-                                                            protobuf_type))
+  supported_user_policies = _GetSupportedChromeUserPolicies(
+      policies, protobuf_type)
+  f.write('const std::array<%sPolicyAccess, %d>& Get%sPolicyAccess() {\n' %
+          (protobuf_type, len(supported_user_policies), protobuf_type))
+  f.write('  static const base::NoDestructor<std::array<%sPolicyAccess, %d>>\n'
+          '      k%sPolicyAccess({{\n' %
+          (protobuf_type, len(supported_user_policies), protobuf_type))
   extra_args = ''
-  for policy in policies:
-    if policy.policy_protobuf_type == protobuf_type:
-      name = policy.name
-      if protobuf_type == 'String':
-        extra_args = ',\n   ' + _GetStringPolicyType(policy.policy_type)
-      f.write('  {key::k%s,\n'
-              '   %s,\n'
-              '   &em::CloudPolicySettings::has_%s,\n'
-              '   &em::CloudPolicySettings::%s%s},\n' %
-              (name, str(policy.per_profile).lower(), name.lower(),
-               name.lower(), extra_args))
-  # The list is nullptr-terminated.
-  f.write('  {nullptr, false, nullptr, nullptr},\n' '};\n\n')
+  for policy in supported_user_policies:
+    name = policy.name
+    if protobuf_type == 'String':
+      extra_args = ',\n     ' + _GetStringPolicyType(policy.policy_type)
+    f.write('    {key::k%s,\n'
+            '     %s,\n'
+            '     [](const em::CloudPolicySettings& policy) {\n'
+            '       return policy.has_%s();\n'
+            '     },\n'
+            '     [](const em::CloudPolicySettings& policy)\n'
+            '         -> const em::%sPolicyProto& {\n'
+            '       return policy.%s();\n'
+            '     }%s\n'
+            '    },\n' % (name, str(policy.per_profile).lower(), name.lower(),
+                          protobuf_type, name.lower(), extra_args))
+  f.write('  }});\n\n')
+  f.write('  return *k%sPolicyAccess;\n' % protobuf_type)
+  f.write('}\n\n')
 
 
 #------------------ policy risk tag header -------------------------#

@@ -121,9 +121,12 @@ EXPECTED_POLICY_CONSTANTS_HEADER = '''
 #include <cstdint>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+
+namespace em = enterprise_management;
 
 namespace policy {
 
@@ -193,42 +196,50 @@ enum class StringPolicyType {
 struct BooleanPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  bool (enterprise_management::CloudPolicySettings::*has_proto)() const;
-  const enterprise_management::BooleanPolicyProto&
-      (enterprise_management::CloudPolicySettings::*get_proto)() const;
+  std::function<bool(const em::CloudPolicySettings& policy)>
+      has_proto;
+  std::function<const em::BooleanPolicyProto&(
+      const em::CloudPolicySettings& policy)>
+      get_proto;
 };
-extern const BooleanPolicyAccess kBooleanPolicyAccess[];
+const std::array<BooleanPolicyAccess, 4>& GetBooleanPolicyAccess();
 
 // Read access to the protobufs of all supported integer user policies.
 struct IntegerPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  bool (enterprise_management::CloudPolicySettings::*has_proto)() const;
-  const enterprise_management::IntegerPolicyProto&
-      (enterprise_management::CloudPolicySettings::*get_proto)() const;
+  std::function<bool(const em::CloudPolicySettings& policy)>
+      has_proto;
+  std::function<const em::IntegerPolicyProto&(
+      const em::CloudPolicySettings& policy)>
+      get_proto;
 };
-extern const IntegerPolicyAccess kIntegerPolicyAccess[];
+const std::array<IntegerPolicyAccess, 0>& GetIntegerPolicyAccess();
 
 // Read access to the protobufs of all supported string user policies.
 struct StringPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  bool (enterprise_management::CloudPolicySettings::*has_proto)() const;
-  const enterprise_management::StringPolicyProto&
-      (enterprise_management::CloudPolicySettings::*get_proto)() const;
+  std::function<bool(const em::CloudPolicySettings& policy)>
+      has_proto;
+  std::function<const em::StringPolicyProto&(
+      const em::CloudPolicySettings& policy)>
+      get_proto;
   const StringPolicyType type;
 };
-extern const StringPolicyAccess kStringPolicyAccess[];
+const std::array<StringPolicyAccess, 1>& GetStringPolicyAccess();
 
 // Read access to the protobufs of all supported stringlist user policies.
 struct StringListPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  bool (enterprise_management::CloudPolicySettings::*has_proto)() const;
-  const enterprise_management::StringListPolicyProto&
-      (enterprise_management::CloudPolicySettings::*get_proto)() const;
+  std::function<bool(const em::CloudPolicySettings& policy)>
+      has_proto;
+  std::function<const em::StringListPolicyProto&(
+      const em::CloudPolicySettings& policy)>
+      get_proto;
 };
-extern const StringListPolicyAccess kStringListPolicyAccess[];
+const std::array<StringListPolicyAccess, 0>& GetStringListPolicyAccess();
 
 constexpr int64_t kDevicePolicyExternalDataResourceCacheSize = 0;
 
@@ -256,8 +267,6 @@ EXPECTED_POLICY_CONSTANTS_SOURCE = '''\
 #include "components/policy/core/common/schema_internal.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/risk_tag.h"
-
-namespace em = enterprise_management;
 
 namespace policy {
 
@@ -399,42 +408,88 @@ const char* const kPrecedence[1] = {
 
 }  // namespace metapolicy
 
-const BooleanPolicyAccess kBooleanPolicyAccess[] = {
-  {key::kExampleBoolPolicy,
-   false,
-   &em::CloudPolicySettings::has_exampleboolpolicy,
-   &em::CloudPolicySettings::exampleboolpolicy},
-  {key::kExampleBoolMergeMetapolicy,
-   false,
-   &em::CloudPolicySettings::has_exampleboolmergemetapolicy,
-   &em::CloudPolicySettings::exampleboolmergemetapolicy},
-  {key::kExampleBoolPrecedenceMetapolicy,
-   false,
-   &em::CloudPolicySettings::has_exampleboolprecedencemetapolicy,
-   &em::CloudPolicySettings::exampleboolprecedencemetapolicy},
-  {key::kCloudOnlyPolicy,
-   false,
-   &em::CloudPolicySettings::has_cloudonlypolicy,
-   &em::CloudPolicySettings::cloudonlypolicy},
-  {nullptr, false, nullptr, nullptr},
-};
+const std::array<BooleanPolicyAccess, 4>& GetBooleanPolicyAccess() {
+  static const base::NoDestructor<std::array<BooleanPolicyAccess, 4>>
+      kBooleanPolicyAccess({{
+    {key::kExampleBoolPolicy,
+     false,
+     [](const em::CloudPolicySettings& policy) {
+       return policy.has_exampleboolpolicy();
+     },
+     [](const em::CloudPolicySettings& policy)
+         -> const em::BooleanPolicyProto& {
+       return policy.exampleboolpolicy();
+     }
+    },
+    {key::kExampleBoolMergeMetapolicy,
+     false,
+     [](const em::CloudPolicySettings& policy) {
+       return policy.has_exampleboolmergemetapolicy();
+     },
+     [](const em::CloudPolicySettings& policy)
+         -> const em::BooleanPolicyProto& {
+       return policy.exampleboolmergemetapolicy();
+     }
+    },
+    {key::kExampleBoolPrecedenceMetapolicy,
+     false,
+     [](const em::CloudPolicySettings& policy) {
+       return policy.has_exampleboolprecedencemetapolicy();
+     },
+     [](const em::CloudPolicySettings& policy)
+         -> const em::BooleanPolicyProto& {
+       return policy.exampleboolprecedencemetapolicy();
+     }
+    },
+    {key::kCloudOnlyPolicy,
+     false,
+     [](const em::CloudPolicySettings& policy) {
+       return policy.has_cloudonlypolicy();
+     },
+     [](const em::CloudPolicySettings& policy)
+         -> const em::BooleanPolicyProto& {
+       return policy.cloudonlypolicy();
+     }
+    },
+  }});
 
-const IntegerPolicyAccess kIntegerPolicyAccess[] = {
-  {nullptr, false, nullptr, nullptr},
-};
+  return *kBooleanPolicyAccess;
+}
 
-const StringPolicyAccess kStringPolicyAccess[] = {
-  {key::kExampleStringPolicy,
-   false,
-   &em::CloudPolicySettings::has_examplestringpolicy,
-   &em::CloudPolicySettings::examplestringpolicy,
-   StringPolicyType::STRING},
-  {nullptr, false, nullptr, nullptr},
-};
+const std::array<IntegerPolicyAccess, 0>& GetIntegerPolicyAccess() {
+  static const base::NoDestructor<std::array<IntegerPolicyAccess, 0>>
+      kIntegerPolicyAccess({{
+  }});
 
-const StringListPolicyAccess kStringListPolicyAccess[] = {
-  {nullptr, false, nullptr, nullptr},
-};
+  return *kIntegerPolicyAccess;
+}
+
+const std::array<StringPolicyAccess, 1>& GetStringPolicyAccess() {
+  static const base::NoDestructor<std::array<StringPolicyAccess, 1>>
+      kStringPolicyAccess({{
+    {key::kExampleStringPolicy,
+     false,
+     [](const em::CloudPolicySettings& policy) {
+       return policy.has_examplestringpolicy();
+     },
+     [](const em::CloudPolicySettings& policy)
+         -> const em::StringPolicyProto& {
+       return policy.examplestringpolicy();
+     },
+     StringPolicyType::STRING
+    },
+  }});
+
+  return *kStringPolicyAccess;
+}
+
+const std::array<StringListPolicyAccess, 0>& GetStringListPolicyAccess() {
+  static const base::NoDestructor<std::array<StringListPolicyAccess, 0>>
+      kStringListPolicyAccess({{
+  }});
+
+  return *kStringListPolicyAccess;
+}
 
 
 }  // namespace policy
