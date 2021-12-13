@@ -1272,6 +1272,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private void scrollToMakeNodeVisible(int virtualViewId) {
         if (mDelegate.scrollToMakeNodeVisible(getAbsolutePositionForNode(virtualViewId))) return;
 
+        mPendingScrollToMakeNodeVisible = true;
         WebContentsAccessibilityImplJni.get().scrollToMakeNodeVisible(
                 mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId);
     }
@@ -1396,12 +1397,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                         mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId)) {
             return null;
         }
-
-        // This is currently needed if we want Android to visually highlight
-        // the item that has accessibility focus. In practice, this doesn't seem to slow
-        // things down, because it's only called when the accessibility focus moves.
-        // TODO(dmazzoni): remove this if/when Android framework fixes bug.
-        mView.postInvalidate();
 
         final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
         event.setPackageName(mContext.getPackageName());
@@ -1560,6 +1555,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @CalledByNative
     protected void handleScrollPositionChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_SCROLLED);
+        if (mPendingScrollToMakeNodeVisible) {
+            sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            mPendingScrollToMakeNodeVisible = false;
+        }
     }
 
     @CalledByNative
@@ -1992,20 +1991,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             // In case of a cached node, remove the offscreen extra if it is there.
             if (node.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN)) {
                 node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
-            }
-        }
-
-        // Work around a bug in the Android framework where if the object with accessibility
-        // focus moves, the accessibility focus rect is not updated - both the visual highlight,
-        // and the location on the screen that's clicked if you double-tap. To work around this,
-        // when we know the object with accessibility focus moved, move focus away and then
-        // move focus right back to it, which tricks Android into updating its bounds.
-        if (virtualViewId == mAccessibilityFocusId && virtualViewId != mCurrentRootId) {
-            if (mAccessibilityFocusRect == null) {
-                mAccessibilityFocusRect = rect;
-            } else if (!mAccessibilityFocusRect.equals(rect)) {
-                mAccessibilityFocusRect = rect;
-                moveAccessibilityFocusToIdAndRefocusIfNeeded(virtualViewId);
             }
         }
     }
