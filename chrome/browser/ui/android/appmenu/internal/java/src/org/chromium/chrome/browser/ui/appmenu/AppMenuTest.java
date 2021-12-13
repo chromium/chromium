@@ -808,6 +808,20 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         Assert.assertEquals(15, height);
     }
 
+    @Test
+    @SmallTest
+    public void testCalculateHeightForItems_nagativeSpaceForZeroItems() throws Exception {
+        showMenuAndAssert();
+
+        List<Integer> menuItemIds = new ArrayList<Integer>();
+        List<Integer> heightList = new ArrayList<Integer>();
+
+        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
+                1 /* groupDividerResourceId */, -1 /* availableScreenSpace */);
+        // Make sure there are no crashes.
+        Assert.assertEquals(0, height);
+    }
+
     private void createMenuItem(
             List<Integer> menuItemIds, List<Integer> heightList, int id, int height) {
         menuItemIds.add(id);

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.appmenu;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
@@ -33,5 +34,10 @@ public class AppMenuCoordinatorFactory {
             View hardwareButtonAnchorView) {
         return new AppMenuCoordinatorImpl(context, activityLifecycleDispatcher, buttonDelegate,
                 appMenuDelegate, decorView, hardwareButtonAnchorView);
+    }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    public static void setExceptionReporter(Callback<Throwable> reporter) {
+        AppMenuCoordinatorImpl.setExceptionReporter(reporter);
     }
 }

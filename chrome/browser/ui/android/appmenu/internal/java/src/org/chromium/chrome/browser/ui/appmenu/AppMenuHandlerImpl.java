@@ -453,4 +453,9 @@ class AppMenuHandlerImpl
         }
         return CustomViewBinder.NOT_HANDLED;
     }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    static void setExceptionReporter(Callback<Throwable> reporter) {
+        AppMenu.setExceptionReporter(reporter);
+    }
 }

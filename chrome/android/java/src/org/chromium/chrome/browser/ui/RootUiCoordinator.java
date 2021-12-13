@@ -1041,6 +1041,10 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
+            AppMenuCoordinatorFactory.setExceptionReporter(
+                    (throwable)
+                            -> PureJavaExceptionReporter.reportJavaException(
+                                    (Throwable) throwable));
 
             mAppMenuCoordinator.registerAppMenuBlocker(this);
             mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
