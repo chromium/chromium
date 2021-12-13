@@ -6,9 +6,12 @@
 
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "device/gamepad/test_support/fake_igamepad.h"
+#include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 
 namespace device {
 
@@ -28,8 +31,10 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadAdded(
     ABI::Windows::Foundation::IEventHandler<
         ABI::Windows::Gaming::Input::Gamepad*>* event_handler,
     EventRegistrationToken* token) {
-  if (add_gamepad_added_status_ != S_OK)
-    return add_gamepad_added_status_;
+  if (FakeWinrtWgiEnvironment::GetError() ==
+      ErrorCode::kGamepadAddGamepadAddedFailed) {
+    return E_FAIL;
+  }
 
   token->value = next_event_registration_token_++;
 
@@ -46,8 +51,10 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
     ABI::Windows::Foundation::IEventHandler<
         ABI::Windows::Gaming::Input::Gamepad*>* event_handler,
     EventRegistrationToken* token) {
-  if (add_gamepad_removed_status_ != S_OK)
-    return add_gamepad_removed_status_;
+  if (FakeWinrtWgiEnvironment::GetError() ==
+      ErrorCode::kGamepadAddGamepadRemovedFailed) {
+    return E_FAIL;
+  }
 
   token->value = next_event_registration_token_++;
 
@@ -62,6 +69,10 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
 
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
+  if (FakeWinrtWgiEnvironment::GetError() ==
+      ErrorCode::kGamepadRemoveGamepadAddedFailed) {
+    return E_FAIL;
+  }
   size_t items_removed = base::EraseIf(
       gamepad_added_event_handler_map_,
       [=](const auto& entry) { return entry.first == token.value; });
@@ -72,6 +83,10 @@ FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
 
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadRemoved(EventRegistrationToken token) {
+  if (FakeWinrtWgiEnvironment::GetError() ==
+      ErrorCode::kGamepadRemoveGamepadRemovedFailed) {
+    return E_FAIL;
+  }
   size_t items_removed = base::EraseIf(
       gamepad_removed_event_handler_map_,
       [=](const auto& entry) { return entry.first == token.value; });
@@ -87,6 +102,56 @@ HRESULT WINAPI FakeIGamepadStatics::get_Gamepads(
   return E_NOTIMPL;
 }
 
+HRESULT FakeIGamepadStatics::add_RawGameControllerAdded(
+    ABI::Windows::Foundation::IEventHandler<
+        ABI::Windows::Gaming::Input::RawGameController*>* value,
+    EventRegistrationToken* token) {
+  NOTIMPLEMENTED();
+  return E_NOTIMPL;
+}
+
+HRESULT FakeIGamepadStatics::remove_RawGameControllerAdded(
+    EventRegistrationToken token) {
+  NOTIMPLEMENTED();
+  return E_NOTIMPL;
+}
+
+HRESULT FakeIGamepadStatics::add_RawGameControllerRemoved(
+    ABI::Windows::Foundation::IEventHandler<
+        ABI::Windows::Gaming::Input::RawGameController*>* value,
+    EventRegistrationToken* token) {
+  NOTIMPLEMENTED();
+  return E_NOTIMPL;
+}
+
+HRESULT FakeIGamepadStatics::remove_RawGameControllerRemoved(
+    EventRegistrationToken token) {
+  NOTIMPLEMENTED();
+  return E_NOTIMPL;
+}
+
+HRESULT FakeIGamepadStatics::get_RawGameControllers(
+    ABI::Windows::Foundation::Collections::IVectorView<
+        ABI::Windows::Gaming::Input::RawGameController*>** value) {
+  NOTIMPLEMENTED();
+  return E_NOTIMPL;
+}
+
+HRESULT FakeIGamepadStatics::FromGameController(
+    ABI::Windows::Gaming::Input::IGameController* gameController,
+    ABI::Windows::Gaming::Input::IRawGameController** value) {
+  if (FakeWinrtWgiEnvironment::GetError() ==
+      ErrorCode::kErrorWgiRawGameControllerFromGameControllerFailed) {
+    return E_FAIL;
+  }
+
+  Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad;
+  gameController->QueryInterface(IID_PPV_ARGS(&gamepad));
+  Microsoft::WRL::ComPtr<device::FakeIGamepad> fake_gamepad;
+  fake_gamepad = static_cast<FakeIGamepad*>(gamepad.Get());
+  fake_raw_game_controller_map_[fake_gamepad->GetId()].CopyTo(value);
+  return S_OK;
+}
 void FakeIGamepadStatics::SimulateGamepadEvent(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
         gamepad,
@@ -101,27 +166,22 @@ void FakeIGamepadStatics::SimulateGamepadEvent(
 }
 
 void FakeIGamepadStatics::SimulateGamepadAdded(
-    const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
-        gamepad_to_add) {
+    const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_add,
+    uint16_t hardware_product_id,
+    uint16_t hardware_vendor_id,
+    base::StringPiece display_name) {
+  CacheGamepad(gamepad_to_add, hardware_product_id, hardware_vendor_id,
+               display_name);
   SimulateGamepadEvent(
       gamepad_to_add,
       &FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread);
 }
 
 void FakeIGamepadStatics::SimulateGamepadRemoved(
-    const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
-        gamepad_to_remove) {
+    const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_remove) {
   SimulateGamepadEvent(
       gamepad_to_remove,
       &FakeIGamepadStatics::TriggerGamepadRemovedCallbackOnRandomThread);
-}
-
-void FakeIGamepadStatics::SetAddGamepadAddedStatus(HRESULT value) {
-  add_gamepad_added_status_ = value;
-}
-
-void FakeIGamepadStatics::SetAddGamepadRemovedStatus(HRESULT value) {
-  add_gamepad_removed_status_ = value;
 }
 
 size_t FakeIGamepadStatics::GetGamepadAddedEventHandlerCount() const {
@@ -152,6 +212,32 @@ void FakeIGamepadStatics::TriggerGamepadRemovedCallbackOnRandomThread(
         static_cast<ABI::Windows::Gaming::Input::IGamepadStatics*>(this),
         gamepad_to_remove.Get());
   }
+}
+
+void FakeIGamepadStatics::CacheGamepad(
+    Microsoft::WRL::ComPtr<FakeIGamepad> fake_gamepad_to_add,
+    uint16_t hardware_product_id,
+    uint16_t hardware_vendor_id,
+    base::StringPiece display_name) {
+  uint64_t gamepad_id = next_gamepad_id_++;
+
+  fake_gamepad_to_add->SetId(gamepad_id);
+  fake_gamepad_map_[gamepad_id] = fake_gamepad_to_add;
+
+  Microsoft::WRL::ComPtr<FakeIRawGameController>
+      fake_raw_game_controller_to_add =
+          Microsoft::WRL::Make<FakeIRawGameController>(
+              gamepad_id, hardware_product_id, hardware_vendor_id,
+              display_name);
+  fake_raw_game_controller_to_add->set_id(gamepad_id);
+  fake_raw_game_controller_map_[gamepad_id] = fake_raw_game_controller_to_add;
+}
+
+void FakeIGamepadStatics::RemoveCachedGamepad(
+    const Microsoft::WRL::ComPtr<FakeIGamepad>& fake_gamepad_to_remove) {
+  uint64_t gamepad_id = fake_gamepad_to_remove->GetId();
+  fake_gamepad_map_.erase(gamepad_id);
+  fake_raw_game_controller_map_.erase(gamepad_id);
 }
 
 }  // namespace device

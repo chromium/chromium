@@ -181,8 +181,10 @@ static_library("test_helpers") {
       "test_support/fake_igamepad.h",
       "test_support/fake_igamepad_statics.cc",
       "test_support/fake_igamepad_statics.h",
-      "test_support/fake_ro_get_activation_factory.cc",
-      "test_support/fake_ro_get_activation_factory.h",
+      "test_support/fake_iraw_game_controller.cc",
+      "test_support/fake_iraw_game_controller.h",
+      "test_support/fake_winrt_wgi_environment.cc",
+      "test_support/fake_winrt_wgi_environment.h",
     ]
   }
 }

@@ -10,7 +10,13 @@
 #include <windows.foundation.collections.h>
 #include <wrl.h>
 
+#include <unordered_map>
+
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/strings/string_piece_forward.h"
+#include "device/gamepad/test_support/fake_igamepad.h"
+#include "device/gamepad/test_support/fake_iraw_game_controller.h"
 
 namespace device {
 
@@ -18,7 +24,8 @@ class FakeIGamepadStatics final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<
               Microsoft::WRL::WinRt | Microsoft::WRL::InhibitRoOriginateError>,
-          ABI::Windows::Gaming::Input::IGamepadStatics> {
+          ABI::Windows::Gaming::Input::IGamepadStatics,
+          ABI::Windows::Gaming::Input::IRawGameControllerStatics> {
  public:
   FakeIGamepadStatics();
 
@@ -31,16 +38,36 @@ class FakeIGamepadStatics final
   HRESULT WINAPI
   add_GamepadAdded(ABI::Windows::Foundation::IEventHandler<
                        ABI::Windows::Gaming::Input::Gamepad*>* value,
-                   EventRegistrationToken* token) final;
+                   EventRegistrationToken* token) override;
   HRESULT WINAPI
   add_GamepadRemoved(ABI::Windows::Foundation::IEventHandler<
                          ABI::Windows::Gaming::Input::Gamepad*>* value,
-                     EventRegistrationToken* token) final;
-  HRESULT WINAPI remove_GamepadAdded(EventRegistrationToken token) final;
-  HRESULT WINAPI remove_GamepadRemoved(EventRegistrationToken token) final;
+                     EventRegistrationToken* token) override;
+  HRESULT WINAPI remove_GamepadAdded(EventRegistrationToken token) override;
+  HRESULT WINAPI remove_GamepadRemoved(EventRegistrationToken token) override;
   HRESULT WINAPI
   get_Gamepads(ABI::Windows::Foundation::Collections::IVectorView<
-               ABI::Windows::Gaming::Input::Gamepad*>** value) final;
+               ABI::Windows::Gaming::Input::Gamepad*>** value) override;
+
+  // ABI::Windows::Gaming::Input::IRawGameControllerStatics fake implementation.
+  HRESULT __stdcall add_RawGameControllerAdded(
+      ABI::Windows::Foundation::IEventHandler<
+          ABI::Windows::Gaming::Input::RawGameController*>* value,
+      EventRegistrationToken* token) override;
+  HRESULT __stdcall remove_RawGameControllerAdded(
+      EventRegistrationToken token) override;
+  HRESULT __stdcall add_RawGameControllerRemoved(
+      ABI::Windows::Foundation::IEventHandler<
+          ABI::Windows::Gaming::Input::RawGameController*>* value,
+      EventRegistrationToken* token) override;
+  HRESULT __stdcall remove_RawGameControllerRemoved(
+      EventRegistrationToken token) override;
+  HRESULT __stdcall get_RawGameControllers(
+      ABI::Windows::Foundation::Collections::IVectorView<
+          ABI::Windows::Gaming::Input::RawGameController*>** value) override;
+  HRESULT __stdcall FromGameController(
+      ABI::Windows::Gaming::Input::IGameController* gameController,
+      ABI::Windows::Gaming::Input::IRawGameController** value) override;
 
   // Adds a fake gamepad to simulate a gamepad connection operation for test.
   // Due to the multi-threaded apartment nature of IGamepadStatics COM API, the
@@ -48,8 +75,10 @@ class FakeIGamepadStatics final
   // `SequencedTaskRunner` in this fake implementation to simulate this
   // behavior.
   void SimulateGamepadAdded(
-      const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
-          gamepad_to_add);
+      const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_add,
+      uint16_t hardware_product_id,
+      uint16_t hardware_vendor_id,
+      base::StringPiece display_name);
 
   // Uses a fake gamepad to simulate a gamepad disconnection operation for test.
   // Due to the multi-threaded apartment nature of IGamepadStatics COM API, the
@@ -57,13 +86,7 @@ class FakeIGamepadStatics final
   // `SequencedTaskRunner` in this fake implementation to simulate this
   // behavior.
   void SimulateGamepadRemoved(
-      const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
-          gamepad_to_remove);
-
-  // Sets |add_gamepad_added_status_| and |add_gamepad_removed_status_| to test
-  // Windows.Gaming.Input error handling logics in tests.
-  void SetAddGamepadAddedStatus(HRESULT value);
-  void SetAddGamepadRemovedStatus(HRESULT value);
+      const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_remove);
 
   size_t GetGamepadAddedEventHandlerCount() const;
   size_t GetGamepadRemovedEventHandlerCount() const;
@@ -79,7 +102,7 @@ class FakeIGamepadStatics final
       const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
           gamepad);
 
-  ~FakeIGamepadStatics() final;
+  ~FakeIGamepadStatics() override;
 
   void SimulateGamepadEvent(const Microsoft::WRL::ComPtr<
                                 ABI::Windows::Gaming::Input::IGamepad>& gamepad,
@@ -93,16 +116,23 @@ class FakeIGamepadStatics final
       const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
           gamepad_to_remove);
 
-  int64_t next_event_registration_token_ = 0;
+  void CacheGamepad(Microsoft::WRL::ComPtr<FakeIGamepad> fake_gamepad_to_add,
+                    uint16_t hardware_product_id,
+                    uint16_t hardware_vendor_id,
+                    base::StringPiece display_name);
+  void RemoveCachedGamepad(
+      const Microsoft::WRL::ComPtr<FakeIGamepad>& fake_gamepad_to_remove);
 
-  // Status variable to direct tests to test Windows.Gaming.Input error
-  // handling. If set to E_FAIL, add_GamepadAdded and add_GamepadRemoved would
-  // return E_FAIL error code directly.
-  HRESULT add_gamepad_added_status_ = S_OK;
-  HRESULT add_gamepad_removed_status_ = S_OK;
+  int64_t next_event_registration_token_ = 0;
+  uint64_t next_gamepad_id_ = 0;
 
   EventHandlerMap gamepad_added_event_handler_map_;
   EventHandlerMap gamepad_removed_event_handler_map_;
+
+  std::unordered_map<uint64_t, Microsoft::WRL::ComPtr<FakeIGamepad>>
+      fake_gamepad_map_;
+  std::unordered_map<uint64_t, Microsoft::WRL::ComPtr<FakeIRawGameController>>
+      fake_raw_game_controller_map_;
 };
 
 }  // namespace device

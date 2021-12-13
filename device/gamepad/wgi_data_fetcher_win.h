@@ -10,6 +10,8 @@
 #include <Windows.Gaming.Input.h>
 #include <wrl/event.h>
 
+#include "base/callback_forward.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,7 +74,10 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   void GetGamepadData(bool devices_changed_hint) override;
 
   // Set fake ActivationFunction for test to avoid dependencies on the OS API.
-  void SetGetActivationFunctionForTesting(GetActivationFactoryFunction value);
+  using ActivationFactoryFunctionCallback =
+      base::RepeatingCallback<GetActivationFactoryFunction()>;
+  static void OverrideActivationFactoryFunctionForTesting(
+      ActivationFactoryFunctionCallback callback);
 
   const std::vector<WindowsGamingInputControllerMapping>&
   GetGamepadsForTesting() const;
@@ -90,6 +95,15 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   // on gamepad polling thread.
   void OnGamepadRemoved(IInspectable* /* sender */,
                         ABI::Windows::Gaming::Input::IGamepad* gamepad);
+
+  static ActivationFactoryFunctionCallback&
+  GetActivationFactoryFunctionCallback();
+
+  std::u16string GetGamepadDisplayName(
+      ABI::Windows::Gaming::Input::IGamepad* gamepad);
+
+  Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IRawGameController>
+  GetRawGameController(ABI::Windows::Gaming::Input::IGamepad* gamepad);
 
   void UnregisterEventHandlers();
 
