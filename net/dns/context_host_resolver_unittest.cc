@@ -72,8 +72,8 @@ class ContextHostResolverTest : public ::testing::Test,
     DnsConfig config;
     config.nameservers.push_back(
         IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
-    config.dns_over_https_servers.emplace_back("example.com",
-                                               true /* use_post */);
+    config.dns_over_https_servers.push_back(
+        *net::DnsOverHttpsServerConfig::FromString("https://example.com"));
     EXPECT_TRUE(config.IsValid());
 
     auto dns_client =

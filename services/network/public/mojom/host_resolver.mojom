@@ -12,14 +12,9 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 
 // An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
-// spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
 struct DnsOverHttpsServer {
-  // DNS over HTTPS server URI template. Must be HTTPS.
+  // DNS over HTTPS server URI template. Must be valid.
   string server_template;
-
-  // Whether to use POST to do DNS lookups. Otherwise, GET is used. See spec
-  // for more details.
-  bool use_post = false;
 };
 
 // The secure DNS mode specifies what types of lookups (secure/insecure) should
@@ -85,8 +80,7 @@ struct DnsConfigOverrides {
   // as it may cause them to return incorrect results.
   Tristate use_local_ipv6 = Tristate.NO_OVERRIDE;
 
-  // List of servers to query over HTTPS, queried in order
-  // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
+  // List of DNS over HTTPS servers to query, in order.
   array<DnsOverHttpsServer>? dns_over_https_servers;
 
   // The SecureDnsMode to use when resolving queries. If set, it overrides

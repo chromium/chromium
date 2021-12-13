@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
@@ -27,6 +28,7 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/resolve_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -770,6 +772,18 @@ scoped_refptr<DnsSession> MockDnsClient::BuildSession() {
   return base::MakeRefCounted<DnsSession>(
       effective_config_.value(), std::move(socket_allocator),
       null_random_callback, nullptr /* net_log */);
+}
+
+std::vector<DnsOverHttpsServerConfig> ParseDohTemplates(
+    std::vector<std::string> server_templates) {
+  std::vector<DnsOverHttpsServerConfig> out;
+  out.reserve(server_templates.size());
+  base::ranges::transform(server_templates, std::back_inserter(out),
+                          [](std::string& server_template) {
+                            return *DnsOverHttpsServerConfig::FromString(
+                                std::move(server_template));
+                          });
+  return out;
 }
 
 }  // namespace net

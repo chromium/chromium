@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
   EXPECT_TRUE(resolver_list.GetList()[0].FindKey("value")->GetString().empty());
   for (const auto* entry : entries) {
     EXPECT_TRUE(FindDropdownItem(resolver_list, entry->ui_name,
-                                 entry->dns_over_https_template,
+                                 entry->doh_server_config.server_template(),
                                  entry->privacy_policy));
   }
 }

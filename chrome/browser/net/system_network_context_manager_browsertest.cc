@@ -27,7 +27,6 @@
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/test_cert_verifier_service_factory.h"
 #include "services/network/public/cpp/features.h"

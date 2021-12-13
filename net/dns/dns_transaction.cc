@@ -620,10 +620,10 @@ void ConstructDnsHTTPAttempt(DnsSession* session,
   const DnsOverHttpsServerConfig& doh_config =
       session->config().dns_over_https_servers[doh_server_index];
   GURL gurl_without_parameters(
-      GetURLFromTemplateWithoutParameters(doh_config.server_template));
+      GetURLFromTemplateWithoutParameters(doh_config.server_template()));
   attempts->push_back(std::make_unique<DnsHTTPAttempt>(
-      doh_server_index, std::move(query), doh_config.server_template,
-      gurl_without_parameters, doh_config.use_post, url_request_context,
+      doh_server_index, std::move(query), doh_config.server_template(),
+      gurl_without_parameters, doh_config.use_post(), url_request_context,
       isolation_info, request_priority));
 }
 

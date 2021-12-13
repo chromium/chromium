@@ -197,7 +197,7 @@ interface NetworkService {
   // https://tools.ietf.org/html/rfc1034#section-5.3.1 for definition of a stub
   // resolver.
   //
-  // `dns_over_https_servers` is an optional list of DNS over HTTPS servers.
+  // `dns_over_https_servers` is a list of DNS over HTTPS servers.
   // DnsTransactions will by default follow the behavior of `secure_dns_mode`.
   // In SECURE mode, only DoH lookups will be performed. In AUTOMATIC mode,
   // DoH lookups to available servers will be performed first, and insecure
@@ -218,7 +218,7 @@ interface NetworkService {
   // Secure DNS which always allows additional types.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             SecureDnsMode secure_dns_mode,
-                            array<DnsOverHttpsServer>? dns_over_https_servers,
+                            array<DnsOverHttpsServer> dns_over_https_servers,
                             bool additional_dns_types_enabled);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,

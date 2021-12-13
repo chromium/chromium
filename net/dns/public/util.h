@@ -21,8 +21,8 @@ namespace dns_util {
 // the |server_method| is set to "GET" if the template contains a "dns" variable
 // and to "POST" otherwise. Any "dns" variable may not be part of the hostname,
 // and the expanded template must parse to a valid HTTPS URL.
-NET_EXPORT bool IsValidDohTemplate(base::StringPiece server_template,
-                                   std::string* server_method);
+NET_EXPORT_PRIVATE bool IsValidDohTemplate(base::StringPiece server_template,
+                                           std::string* server_method);
 
 // Gets the endpoint for the multicast group a socket should join to receive
 // MDNS messages. Such sockets should also bind to the endpoint from

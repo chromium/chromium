@@ -93,13 +93,14 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   net::DohProviderEntry::List providers = GetFilteredProviders();
   std::vector<std::vector<std::u16string>> ret;
   ret.reserve(providers.size());
-  std::transform(providers.begin(), providers.end(), std::back_inserter(ret),
-                 [](const auto* entry) {
-                   return std::vector<std::u16string>{
-                       {base::UTF8ToUTF16(entry->ui_name),
-                        base::UTF8ToUTF16(entry->dns_over_https_template),
-                        base::UTF8ToUTF16(entry->privacy_policy)}};
-                 });
+  std::transform(
+      providers.begin(), providers.end(), std::back_inserter(ret),
+      [](const auto* entry) {
+        return std::vector<std::u16string>{
+            {base::UTF8ToUTF16(entry->ui_name),
+             base::UTF8ToUTF16(entry->doh_server_config.server_template()),
+             base::UTF8ToUTF16(entry->privacy_policy)}};
+      });
   return base::android::ToJavaArrayOfStringArray(env, ret);
 }
 

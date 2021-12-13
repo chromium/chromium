@@ -630,9 +630,9 @@ class DnsTransactionTestBase : public testing::Test {
     for (size_t i = 0; i < num_doh_servers; ++i) {
       std::string server_template(URLRequestMockDohJob::GetMockHttpsUrl(
                                       base::StringPrintf("doh_test_%zu", i)) +
-                                  "{?dns}");
+                                  (use_post ? "" : "{?dns}"));
       config_.dns_over_https_servers.push_back(
-          DnsOverHttpsServerConfig(server_template, use_post));
+          *net::DnsOverHttpsServerConfig::FromString(server_template));
     }
     ConfigureFactory();
 
@@ -803,13 +803,13 @@ class DnsTransactionTestBase : public testing::Test {
       if (server_found)
         break;
       std::string url_base =
-          GetURLFromTemplateWithoutParameters(server.server_template);
-      if (server.use_post && request->method() == "POST") {
+          GetURLFromTemplateWithoutParameters(server.server_template());
+      if (server.use_post() && request->method() == "POST") {
         if (url_base == request->url().spec()) {
           server_found = true;
           socket_factory_->remote_endpoints_.emplace_back(server);
         }
-      } else if (!server.use_post && request->method() == "GET") {
+      } else if (!server.use_post() && request->method() == "GET") {
         std::string prefix = url_base + "?dns=";
         auto mispair = std::mismatch(prefix.begin(), prefix.end(),
                                      request->url().spec().begin());
@@ -2409,7 +2409,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   CookieCallback callback;
   request_context_->cookie_store()->GetCookieListWithOptionsAsync(
       GURL(GetURLFromTemplateWithoutParameters(
-          config_.dns_over_https_servers[0].server_template)),
+          config_.dns_over_https_servers[0].server_template())),
       CookieOptions::MakeAllInclusive(), CookiePartitionKeyCollection(),
       base::BindOnce(&CookieCallback::GetCookieListCallback,
                      base::Unretained(&callback)));
@@ -2417,7 +2417,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   EXPECT_EQ(0u, callback.cookie_list_size());
   callback.Reset();
   GURL cookie_url(GetURLFromTemplateWithoutParameters(
-      config_.dns_over_https_servers[0].server_template));
+      config_.dns_over_https_servers[0].server_template()));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
       absl::nullopt /* server_time */,

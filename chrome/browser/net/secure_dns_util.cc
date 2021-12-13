@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
@@ -128,8 +130,8 @@ bool IsValidGroup(base::StringPiece group) {
   // All templates must be valid for the group to be considered valid.
   std::vector<base::StringPiece> templates = SplitGroup(group);
   return std::all_of(templates.begin(), templates.end(), [](auto t) {
-    std::string method;
-    return net::dns_util::IsValidDohTemplate(t, &method);
+    return net::DnsOverHttpsServerConfig::FromString(std::string(t))
+        .has_value();
   });
 }
 
@@ -139,8 +141,8 @@ void UpdateDropdownHistograms(
     base::StringPiece new_template) {
   for (const auto* entry : providers) {
     IncrementDropdownHistogram(entry->provider_id_for_histogram.value(),
-                               entry->dns_over_https_template, old_template,
-                               new_template);
+                               entry->doh_server_config.server_template(),
+                               old_template, new_template);
   }
   // An empty template indicates a custom provider.
   IncrementDropdownHistogram(net::DohProviderIdForHistogram::kCustom,
@@ -156,13 +158,12 @@ void UpdateProbeHistogram(bool success) {
 }
 
 void ApplyTemplate(net::DnsConfigOverrides* overrides,
-                   base::StringPiece server_template) {
-  std::string server_method;
+                   std::string server_template) {
   // We only allow use of templates that have already passed a format
   // validation check.
-  CHECK(net::dns_util::IsValidDohTemplate(server_template, &server_method));
-  overrides->dns_over_https_servers.emplace({net::DnsOverHttpsServerConfig(
-      std::string(server_template), server_method == "POST")});
+  auto config =
+      net::DnsOverHttpsServerConfig::FromString(std::move(server_template));
+  overrides->dns_over_https_servers.emplace({std::move(*config)});
 }
 
 }  // namespace secure_dns

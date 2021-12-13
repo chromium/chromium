@@ -45,7 +45,7 @@ std::unique_ptr<base::DictionaryValue> CreateSecureDnsSettingDict() {
 
   auto secure_dns_templates = std::make_unique<base::ListValue>();
   for (const auto& doh_server : config.servers()) {
-    secure_dns_templates->Append(doh_server.server_template);
+    secure_dns_templates->Append(doh_server.server_template());
   }
 
   auto dict = std::make_unique<base::DictionaryValue>();
@@ -115,7 +115,7 @@ base::Value SecureDnsHandler::GetSecureDnsResolverList() {
   for (const auto* entry : providers_) {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetStringKey("name", entry->ui_name);
-    dict.SetStringKey("value", entry->dns_over_https_template);
+    dict.SetStringKey("value", entry->doh_server_config.server_template());
     dict.SetStringKey("policy", entry->privacy_policy);
     resolvers.Append(std::move(dict));
   }

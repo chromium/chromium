@@ -95,8 +95,8 @@ TEST(SecureDnsUtil, ApplyDohTemplatePost) {
   ApplyTemplate(&overrides, post_template);
 
   EXPECT_THAT(overrides.dns_over_https_servers,
-              testing::Optional(ElementsAre(net::DnsOverHttpsServerConfig(
-                  {post_template, true /* use_post */}))));
+              testing::Optional(ElementsAre(
+                  *net::DnsOverHttpsServerConfig::FromString(post_template))));
 }
 
 TEST(SecureDnsUtil, ApplyDohTemplateGet) {
@@ -105,8 +105,8 @@ TEST(SecureDnsUtil, ApplyDohTemplateGet) {
   ApplyTemplate(&overrides, get_template);
 
   EXPECT_THAT(overrides.dns_over_https_servers,
-              testing::Optional(ElementsAre(net::DnsOverHttpsServerConfig(
-                  {get_template, false /* use_post */}))));
+              testing::Optional(ElementsAre(
+                  *net::DnsOverHttpsServerConfig::FromString(get_template))));
 }
 
 net::DohProviderEntry::List GetProvidersForTesting() {
@@ -186,8 +186,9 @@ TEST(SecureDnsUtil, UpdateDropdownHistograms) {
   base::HistogramTester histograms;
 
   const auto providers = GetProvidersForTesting();
-  UpdateDropdownHistograms(providers, providers[4]->dns_over_https_template,
-                           providers[0]->dns_over_https_template);
+  UpdateDropdownHistograms(providers,
+                           providers[4]->doh_server_config.server_template(),
+                           providers[0]->doh_server_config.server_template());
 
   const std::string kUmaBase = "Net.DNS.UI.DropdownSelectionEvent";
   histograms.ExpectTotalCount(kUmaBase + ".Ignored", 4u);
@@ -200,7 +201,7 @@ TEST(SecureDnsUtil, UpdateDropdownHistogramsCustom) {
 
   const auto providers = GetProvidersForTesting();
   UpdateDropdownHistograms(providers, std::string(),
-                           providers[2]->dns_over_https_template);
+                           providers[2]->doh_server_config.server_template());
 
   const std::string kUmaBase = "Net.DNS.UI.DropdownSelectionEvent";
   histograms.ExpectTotalCount(kUmaBase + ".Ignored", 4u);

@@ -38,7 +38,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.rotate = true;
   original.use_local_ipv6 = false;
   original.dns_over_https_servers.emplace(
-      {net::DnsOverHttpsServerConfig("example.com", false)});
+      {*net::DnsOverHttpsServerConfig::FromString("https://example.com/")});
   original.secure_dns_mode = net::SecureDnsMode::kSecure;
   original.allow_dns_over_https_upgrade = true;
   original.disabled_upgrade_providers.emplace({std::string("provider_name")});
@@ -66,7 +66,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_BadInt) {
 TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyDnsOverHttpsServers) {
   net::DnsConfigOverrides original;
   original.dns_over_https_servers.emplace(
-      {net::DnsOverHttpsServerConfig("example.com", false)});
+      {*net::DnsOverHttpsServerConfig::FromString("https://example.com/")});
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(

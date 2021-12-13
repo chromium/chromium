@@ -485,11 +485,8 @@ void NetworkService::CreateNetworkContext(
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
     net::SecureDnsMode secure_dns_mode,
-    absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-        dns_over_https_servers,
+    const std::vector<net::DnsOverHttpsServerConfig>& dns_over_https_servers,
     bool additional_dns_types_enabled) {
-  DCHECK(!dns_over_https_servers || !dns_over_https_servers->empty());
-
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
   host_resolver_manager_->SetInsecureDnsClientEnabled(
@@ -497,13 +494,7 @@ void NetworkService::ConfigureStubHostResolver(
 
   // Configure DNS over HTTPS.
   net::DnsConfigOverrides overrides;
-  if (dns_over_https_servers && !dns_over_https_servers.value().empty()) {
-    overrides.dns_over_https_servers.emplace();
-    for (const auto& doh_server : *dns_over_https_servers) {
-      overrides.dns_over_https_servers.value().emplace_back(
-          doh_server->server_template, doh_server->use_post);
-    }
-  }
+  overrides.dns_over_https_servers = dns_over_https_servers;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade =
       base::FeatureList::IsEnabled(features::kDnsOverHttpsUpgrade);

@@ -31,6 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -366,38 +367,23 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
 
   std::string doh_templates =
       local_state_->GetString(prefs::kDnsOverHttpsTemplates);
-  std::string server_method;
   std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers;
-  absl::optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
-      servers_mojo;
   if (!doh_templates.empty() && secure_dns_mode != net::SecureDnsMode::kOff) {
     for (base::StringPiece server_template :
          chrome_browser_net::secure_dns::SplitGroup(doh_templates)) {
-      if (!net::dns_util::IsValidDohTemplate(server_template, &server_method)) {
+      auto server_config = net::DnsOverHttpsServerConfig::FromString(
+          std::string(server_template));
+      if (!server_config)
         continue;
-      }
 
-      bool use_post = server_method == "POST";
-      dns_over_https_servers.emplace_back(std::string(server_template),
-                                          use_post);
-
-      if (!servers_mojo.has_value()) {
-        servers_mojo = absl::make_optional<
-            std::vector<network::mojom::DnsOverHttpsServerPtr>>();
-      }
-
-      network::mojom::DnsOverHttpsServerPtr server_mojo =
-          network::mojom::DnsOverHttpsServer::New();
-      server_mojo->server_template = std::string(server_template);
-      server_mojo->use_post = use_post;
-      servers_mojo->emplace_back(std::move(server_mojo));
+      dns_over_https_servers.push_back(std::move(*server_config));
     }
   }
 
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
         GetInsecureStubResolverEnabled(), secure_dns_mode,
-        std::move(servers_mojo), additional_dns_query_types_enabled);
+        dns_over_https_servers, additional_dns_query_types_enabled);
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(dns_over_https_servers),

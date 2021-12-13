@@ -140,8 +140,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureStubHostResolver(
       bool insecure_dns_client_enabled,
       net::SecureDnsMode secure_dns_mode,
-      absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-          dns_over_https_servers,
+      const std::vector<net::DnsOverHttpsServerConfig>& dns_over_https_servers,
       bool additional_dns_types_enabled) override;
   void DisableQuic() override;
   void SetUpHttpAuth(

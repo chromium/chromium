@@ -9,15 +9,21 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/third_party/uri_template/uri_template.h"
-#include "url/gurl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
+#include "url/url_canon_stdstring.h"
+#include "url/url_constants.h"
 
 namespace net {
 
 namespace {
+
 IPEndPoint GetMdnsIPEndPoint(const char* address) {
   IPAddress multicast_group_number;
   bool success = multicast_group_number.AssignFromIPLiteral(address);
@@ -25,6 +31,31 @@ IPEndPoint GetMdnsIPEndPoint(const char* address) {
   return IPEndPoint(multicast_group_number,
                     dns_protocol::kDefaultPortMulticast);
 }
+
+absl::optional<std::string> GetHttpsHost(const std::string& url) {
+  // This code is used to compute a static initializer, so it runs before GURL's
+  // scheme registry is initialized.  Since GURL is not ready yet, we need to
+  // duplicate some of its functionality here.
+  url::Parsed parsed;
+  url::ParseStandardURL(url.data(), url.size(), &parsed);
+  std::string canonical;
+  url::StdStringCanonOutput output(&canonical);
+  url::Parsed canonical_parsed;
+  bool is_valid =
+      url::CanonicalizeStandardURL(url.data(), url.size(), parsed,
+                                   url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
+                                   nullptr, &output, &canonical_parsed);
+  if (!is_valid)
+    return absl::nullopt;
+  const url::Component& scheme_range = canonical_parsed.scheme;
+  base::StringPiece scheme =
+      base::StringPiece(canonical).substr(scheme_range.begin, scheme_range.len);
+  if (scheme != url::kHttpsScheme)
+    return absl::nullopt;
+  const url::Component& host_range = canonical_parsed.host;
+  return canonical.substr(host_range.begin, host_range.len);
+}
+
 }  // namespace
 
 namespace dns_util {
@@ -42,12 +73,12 @@ bool IsValidDohTemplate(base::StringPiece server_template,
     // The URI template is malformed.
     return false;
   }
-  GURL url(url_string);
-  if (!url.is_valid() || !url.SchemeIs("https")) {
+  absl::optional<std::string> host = GetHttpsHost(url_string);
+  if (!host) {
     // The expanded template must be a valid HTTPS URL.
     return false;
   }
-  if (url.host().find(test_query) != std::string::npos) {
+  if (host->find(test_query) != std::string::npos) {
     // The dns variable may not be part of the hostname.
     return false;
   }

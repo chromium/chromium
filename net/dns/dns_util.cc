@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <limits.h>
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 #include <unordered_map>
@@ -336,11 +337,7 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
       continue;
 
     if (base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
-      std::string server_method;
-      CHECK(dns_util::IsValidDohTemplate(entry->dns_over_https_template,
-                                         &server_method));
-      doh_servers.emplace_back(entry->dns_over_https_template,
-                               server_method == "POST");
+      doh_servers.emplace_back(entry->doh_server_config);
     }
   }
   return doh_servers;
@@ -354,13 +351,8 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
   std::transform(entries.begin(), entries.end(),
-                 std::back_inserter(doh_servers), [](const auto* entry) {
-                   std::string server_method;
-                   CHECK(dns_util::IsValidDohTemplate(
-                       entry->dns_over_https_template, &server_method));
-                   return DnsOverHttpsServerConfig(
-                       entry->dns_over_https_template, server_method == "POST");
-                 });
+                 std::back_inserter(doh_servers),
+                 [](const auto* entry) { return entry->doh_server_config; });
   return doh_servers;
 }
 
@@ -369,7 +361,7 @@ std::string GetDohProviderIdForHistogramFromDohConfig(
   const auto& entries = DohProviderEntry::GetList();
   const auto it =
       std::find_if(entries.begin(), entries.end(), [&](const auto* entry) {
-        return entry->dns_over_https_template == doh_server.server_template;
+        return entry->doh_server_config == doh_server;
       });
   return it != entries.end() ? (*it)->provider : "Other";
 }

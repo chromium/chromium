@@ -65,6 +65,7 @@ if (is_android) {
 source_set("tests") {
   testonly = true
   sources = [
+    "dns_over_https_server_config_unittest.cc",
     "doh_provider_entry_unittest.cc",
     "util_unittest.cc",
   ]

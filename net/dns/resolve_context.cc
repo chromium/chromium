@@ -54,7 +54,7 @@ DohProviderEntry::List FindDohProvidersMatchingServerConfig(
     DnsOverHttpsServerConfig server_config) {
   DohProviderEntry::List matching_entries;
   for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
-    if (entry->dns_over_https_template == server_config.server_template)
+    if (entry->doh_server_config == server_config)
       matching_entries.push_back(entry);
   }
 

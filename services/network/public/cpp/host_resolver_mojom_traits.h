@@ -18,6 +18,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
@@ -33,6 +34,19 @@ namespace mojo {
 // used elsewhere.
 absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     network::mojom::OptionalSecureDnsMode mode);
+
+template <>
+class StructTraits<network::mojom::DnsOverHttpsServerDataView,
+                   net::DnsOverHttpsServerConfig> {
+ public:
+  static const std::string& server_template(
+      const net::DnsOverHttpsServerConfig& server_config) {
+    DCHECK(!server_config.server_template().empty());
+    return server_config.server_template();
+  }
+  static bool Read(network::mojom::DnsOverHttpsServerDataView data,
+                   net::DnsOverHttpsServerConfig* out_config);
+};
 
 template <>
 struct StructTraits<network::mojom::DnsConfigOverridesDataView,
@@ -68,8 +82,10 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
   static network::mojom::DnsConfigOverrides_Tristate use_local_ipv6(
       const net::DnsConfigOverrides& overrides);
 
-  static absl::optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
-  dns_over_https_servers(const net::DnsConfigOverrides& overrides);
+  static const absl::optional<std::vector<net::DnsOverHttpsServerConfig>>&
+  dns_over_https_servers(const net::DnsConfigOverrides& overrides) {
+    return overrides.dns_over_https_servers;
+  }
 
   static network::mojom::OptionalSecureDnsMode secure_dns_mode(
       const net::DnsConfigOverrides& overrides);

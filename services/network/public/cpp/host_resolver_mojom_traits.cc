@@ -13,6 +13,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
+#include "services/network/public/mojom/host_resolver.mojom-shared.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace mojo {
@@ -48,30 +49,6 @@ absl::optional<bool> FromTristate(DnsConfigOverrides::Tristate tristate) {
   }
 }
 
-bool ReadDnsOverHttpsServerData(
-    mojo::ArrayDataView<DnsOverHttpsServerDataView> data,
-    absl::optional<std::vector<net::DnsOverHttpsServerConfig>>* out) {
-  if (data.is_null()) {
-    out->reset();
-    return true;
-  }
-
-  out->emplace();
-  for (size_t i = 0; i < data.size(); ++i) {
-    DnsOverHttpsServerDataView server_data;
-    data.GetDataView(i, &server_data);
-
-    std::string server_template;
-    if (!server_data.ReadServerTemplate(&server_template))
-      return false;
-
-    out->value().emplace_back(std::move(server_template),
-                              server_data.use_post());
-  }
-
-  return true;
-}
-
 OptionalSecureDnsMode ToOptionalSecureDnsMode(
     absl::optional<net::SecureDnsMode> optional) {
   if (!optional)
@@ -103,6 +80,22 @@ absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
 }
 
 // static
+bool StructTraits<network::mojom::DnsOverHttpsServerDataView,
+                  net::DnsOverHttpsServerConfig>::
+    Read(network::mojom::DnsOverHttpsServerDataView data,
+         net::DnsOverHttpsServerConfig* out_config) {
+  std::string server_template;
+  if (!data.ReadServerTemplate(&server_template))
+    return false;
+  auto parsed =
+      net::DnsOverHttpsServerConfig::FromString(std::move(server_template));
+  if (!parsed)
+    return false;
+  *out_config = std::move(*parsed);
+  return true;
+}
+
+// static
 DnsConfigOverrides::Tristate
 StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
     append_to_multi_label_name(const net::DnsConfigOverrides& overrides) {
@@ -121,23 +114,6 @@ DnsConfigOverrides::Tristate
 StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
     use_local_ipv6(const net::DnsConfigOverrides& overrides) {
   return ToTristate(overrides.use_local_ipv6);
-}
-
-// static
-absl::optional<std::vector<DnsOverHttpsServerPtr>>
-StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
-    dns_over_https_servers(const net::DnsConfigOverrides& overrides) {
-  if (!overrides.dns_over_https_servers)
-    return absl::nullopt;
-
-  std::vector<DnsOverHttpsServerPtr> out_servers;
-  for (net::DnsOverHttpsServerConfig server :
-       overrides.dns_over_https_servers.value()) {
-    out_servers.push_back(
-        DnsOverHttpsServer::New(server.server_template, server.use_post));
-  }
-
-  return absl::make_optional(std::move(out_servers));
 }
 
 // static
@@ -184,12 +160,8 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
   out->rotate = FromTristate(data.rotate());
   out->use_local_ipv6 = FromTristate(data.use_local_ipv6());
 
-  mojo::ArrayDataView<DnsOverHttpsServerDataView> dns_over_https_servers_data;
-  data.GetDnsOverHttpsServersDataView(&dns_over_https_servers_data);
-  if (!ReadDnsOverHttpsServerData(dns_over_https_servers_data,
-                                  &out->dns_over_https_servers)) {
+  if (!data.ReadDnsOverHttpsServers(&out->dns_over_https_servers))
     return false;
-  }
 
   out->secure_dns_mode = FromOptionalSecureDnsMode(data.secure_dns_mode());
 

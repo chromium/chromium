@@ -112,8 +112,7 @@ base::Value DnsConfig::ToValue() const {
   list = base::Value(base::Value::Type::LIST);
   for (auto& server : dns_over_https_servers) {
     base::Value val(base::Value::Type::DICTIONARY);
-    val.SetStringKey("server_template", server.server_template);
-    val.SetBoolKey("use_post", server.use_post);
+    val.SetStringKey("server_template", server.server_template());
     list.Append(std::move(val));
   }
   dict.SetKey("doh_servers", std::move(list));

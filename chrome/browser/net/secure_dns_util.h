@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"
@@ -57,7 +58,7 @@ void UpdateProbeHistogram(bool success);
 
 // Modifies |overrides| to use the DoH server specified by |server_template|.
 void ApplyTemplate(net::DnsConfigOverrides* overrides,
-                   base::StringPiece server_template);
+                   std::string server_template);
 
 // Registers the backup preference required for the DNS probes setting reset.
 // TODO(crbug.com/1062698): Remove this once the privacy settings redesign

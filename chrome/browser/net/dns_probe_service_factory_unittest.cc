@@ -345,11 +345,11 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
   EXPECT_TRUE(overrides.dns_over_https_servers.has_value());
   ASSERT_EQ(2u, overrides.dns_over_https_servers->size());
   EXPECT_EQ(kDohTemplateGet,
-            overrides.dns_over_https_servers->at(0).server_template);
-  EXPECT_FALSE(overrides.dns_over_https_servers->at(0).use_post);
+            overrides.dns_over_https_servers->at(0).server_template());
+  EXPECT_FALSE(overrides.dns_over_https_servers->at(0).use_post());
   EXPECT_EQ(kDohTemplatePost,
-            overrides.dns_over_https_servers->at(1).server_template);
-  EXPECT_TRUE(overrides.dns_over_https_servers->at(1).use_post);
+            overrides.dns_over_https_servers->at(1).server_template());
+  EXPECT_TRUE(overrides.dns_over_https_servers->at(1).use_post());
 }
 
 }  // namespace

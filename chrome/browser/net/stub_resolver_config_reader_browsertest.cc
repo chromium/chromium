@@ -40,12 +40,10 @@
 namespace {
 
 // A custom matcher to validate a DnsOverHttpsServerConfig instance.
-MATCHER_P2(DnsOverHttpsServerConfigMatcher, server_template, use_post, "") {
+MATCHER_P(DnsOverHttpsServerConfigMatcher, server_template, "") {
   return testing::ExplainMatchResult(
-      testing::AllOf(
-          testing::Field(&net::DnsOverHttpsServerConfig::server_template,
-                         server_template),
-          testing::Field(&net::DnsOverHttpsServerConfig::use_post, use_post)),
+      testing::Property(&net::DnsOverHttpsServerConfig::server_template,
+                        server_template),
       arg, result_listener);
 }
 
@@ -154,9 +152,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
-              }));
+              testing::ElementsAre(
+                  DnsOverHttpsServerConfigMatcher(good_post_template)));
 
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -174,10 +171,9 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-              }));
+  EXPECT_THAT(
+      secure_dns_config.servers(),
+      testing::ElementsAre(DnsOverHttpsServerConfigMatcher(good_get_template)));
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, bad_then_good_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
@@ -185,10 +181,9 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-              }));
+  EXPECT_THAT(
+      secure_dns_config.servers(),
+      testing::ElementsAre(DnsOverHttpsServerConfigMatcher(good_get_template)));
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          multiple_good_templates);
@@ -198,10 +193,9 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
-              }));
+              testing::ElementsAre(
+                  DnsOverHttpsServerConfigMatcher(good_get_template),
+                  DnsOverHttpsServerConfigMatcher(good_post_template)));
 
   local_state->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_get_template);
@@ -290,8 +284,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
   EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(DnsOverHttpsServerConfigMatcher(
-                  "https://doh.test/", /*use_post=*/true)));
+              testing::ElementsAre(
+                  DnsOverHttpsServerConfigMatcher("https://doh.test/")));
 
   // Invalid template policy
   SetSecureDnsModePolicy("secure");

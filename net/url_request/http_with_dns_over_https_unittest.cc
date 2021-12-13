@@ -105,7 +105,8 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
     manager_options.dns_config_overrides.secure_dns_mode =
         SecureDnsMode::kSecure;
     manager_options.dns_config_overrides.dns_over_https_servers = {
-        {doh_server_.GetPostOnlyTemplate(), /*use_post=*/true}};
+        *DnsOverHttpsServerConfig::FromString(
+            doh_server_.GetPostOnlyTemplate())};
     manager_options.dns_config_overrides.use_local_ipv6 = true;
     resolver_ = HostResolver::CreateStandaloneContextResolver(
         /*net_log=*/nullptr, manager_options);

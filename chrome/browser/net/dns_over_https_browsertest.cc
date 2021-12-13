@@ -34,8 +34,8 @@ struct DohParameter {
 std::vector<DohParameter> GetDohServerTestCases() {
   std::vector<DohParameter> doh_test_cases;
   for (const auto* entry : net::DohProviderEntry::GetList()) {
-    doh_test_cases.emplace_back(entry->provider, entry->dns_over_https_template,
-                                true);
+    doh_test_cases.emplace_back(
+        entry->provider, entry->doh_server_config.server_template(), true);
   }
   // Negative test-case
   doh_test_cases.emplace_back("NegativeTestExampleCom",

@@ -52,7 +52,7 @@ void SecureDnsManager::LoadProviders() {
     std::transform(provider->ip_addresses.begin(), provider->ip_addresses.end(),
                    std::back_inserter(ip_addrs),
                    [](const net::IPAddress& addr) { return addr.ToString(); });
-    local_doh_providers_[provider->dns_over_https_template] =
+    local_doh_providers_[provider->doh_server_config] =
         base::JoinString(ip_addrs, ",");
   }
 }
@@ -79,8 +79,9 @@ base::Value SecureDnsManager::GetProviders(const std::string& mode,
 
   const bool want_all = doh_providers.DictEmpty();
   for (const auto& provider : local_doh_providers_) {
-    if (want_all || doh_providers.FindKey(provider.first)) {
-      doh_providers.SetKey(provider.first, base::Value(provider.second));
+    const std::string& server_template = provider.first.server_template();
+    if (want_all || doh_providers.FindKey(server_template)) {
+      doh_providers.SetKey(server_template, base::Value(provider.second));
     }
   }
   return doh_providers.Clone();

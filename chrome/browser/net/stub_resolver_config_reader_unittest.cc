@@ -24,6 +24,10 @@ namespace {
 
 constexpr char kDohServerTemplate[] =
     "https://doh1.test https://doh2.test/query{?dns}";
+const std::vector<net::DnsOverHttpsServerConfig> kDohServerConfigs{
+    *net::DnsOverHttpsServerConfig::FromString("https://doh1.test"),
+    *net::DnsOverHttpsServerConfig::FromString("https://doh2.test/query{?dns}"),
+};
 
 // Override the reader to mock out the ShouldDisableDohFor...() methods.
 class MockedStubResolverConfigReader : public StubResolverConfigReader {
@@ -95,12 +99,7 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled) {
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(
-                  net::DnsOverHttpsServerConfig("https://doh1.test",
-                                                true /* use_post */),
-                  net::DnsOverHttpsServerConfig("https://doh2.test/query{?dns}",
-                                                false /* use_post */)));
+  EXPECT_EQ(kDohServerConfigs, secure_dns_config.servers());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
 }
@@ -118,12 +117,7 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled_Secure) {
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(
-                  net::DnsOverHttpsServerConfig("https://doh1.test",
-                                                true /* use_post */),
-                  net::DnsOverHttpsServerConfig("https://doh2.test/query{?dns}",
-                                                false /* use_post */)));
+  EXPECT_EQ(kDohServerConfigs, secure_dns_config.servers());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
 }
@@ -222,12 +216,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck) {
   // Parental controls check initially skipped.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(
-                  net::DnsOverHttpsServerConfig("https://doh1.test",
-                                                true /* use_post */),
-                  net::DnsOverHttpsServerConfig("https://doh2.test/query{?dns}",
-                                                false /* use_post */)));
+  EXPECT_EQ(kDohServerConfigs, secure_dns_config.servers());
   EXPECT_FALSE(config_reader_->parental_controls_checked());
 
   task_environment_.AdvanceClock(
@@ -263,12 +252,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   // precedence over disables.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(
-                  net::DnsOverHttpsServerConfig("https://doh1.test",
-                                                true /* use_post */),
-                  net::DnsOverHttpsServerConfig("https://doh2.test/query{?dns}",
-                                                false /* use_post */)));
+  EXPECT_EQ(kDohServerConfigs, secure_dns_config.servers());
   EXPECT_FALSE(config_reader_->parental_controls_checked());
 
   task_environment_.AdvanceClock(
@@ -284,12 +268,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   // prefs have precedence.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(
-                  net::DnsOverHttpsServerConfig("https://doh1.test",
-                                                true /* use_post */),
-                  net::DnsOverHttpsServerConfig("https://doh2.test/query{?dns}",
-                                                false /* use_post */)));
+  EXPECT_EQ(kDohServerConfigs, secure_dns_config.servers());
 }
 
 }  // namespace

@@ -3739,8 +3739,8 @@ DnsConfig CreateValidDnsConfig() {
   IPAddress dns_ip(192, 168, 1, 0);
   DnsConfig config;
   config.nameservers.push_back(IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
-  config.dns_over_https_servers.push_back({DnsOverHttpsServerConfig(
-      "https://dns.example.com/", true /* use_post */)});
+  config.dns_over_https_servers.push_back(
+      *DnsOverHttpsServerConfig::FromString("https://dns.example.com/"));
   config.secure_dns_mode = SecureDnsMode::kOff;
   EXPECT_TRUE(config.IsValid());
   return config;
@@ -7864,8 +7864,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAfterConfig) {
 
   std::string server("https://dnsserver.example.net/dns-query{?dns}");
   DnsConfigOverrides overrides;
-  overrides.dns_over_https_servers.emplace(
-      {DnsOverHttpsServerConfig(server, true)});
+  overrides.dns_over_https_servers.emplace(ParseDohTemplates({server}));
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   base::Value config = resolver_->GetDnsConfigAsValue();
@@ -7876,8 +7875,6 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAfterConfig) {
   EXPECT_EQ(doh_servers->GetList().size(), 1u);
   base::Value& server_method = doh_servers->GetList()[0];
   EXPECT_TRUE(server_method.is_dict());
-  absl::optional<bool> use_post = server_method.FindBoolKey("use_post");
-  EXPECT_TRUE(use_post);
   const std::string* server_template =
       server_method.FindStringKey("server_template");
   EXPECT_TRUE(server_template);
@@ -7892,8 +7889,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
   CreateSerialResolver();  // To guarantee order of resolutions.
   std::string server("https://dnsserver.example.net/dns-query{?dns}");
   DnsConfigOverrides overrides;
-  overrides.dns_over_https_servers.emplace(
-      {DnsOverHttpsServerConfig(server, true)});
+  overrides.dns_over_https_servers.emplace(ParseDohTemplates({server}));
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
@@ -7909,8 +7905,6 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
   EXPECT_EQ(doh_servers->GetList().size(), 1u);
   base::Value& server_method = doh_servers->GetList()[0];
   EXPECT_TRUE(server_method.is_dict());
-  absl::optional<bool> use_post = server_method.FindBoolKey("use_post");
-  EXPECT_TRUE(use_post);
   const std::string* server_template =
       server_method.FindStringKey("server_template");
   EXPECT_TRUE(server_template);
@@ -7925,8 +7919,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
   CreateSerialResolver();  // To guarantee order of resolutions.
   std::string server("https://dnsserver.example.net/dns-query{?dns}");
   DnsConfigOverrides overrides;
-  overrides.dns_over_https_servers.emplace(
-      {DnsOverHttpsServerConfig(server, true)});
+  overrides.dns_over_https_servers.emplace(ParseDohTemplates({server}));
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
@@ -7942,8 +7935,6 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
   EXPECT_EQ(doh_servers->GetList().size(), 1u);
   base::Value& server_method = doh_servers->GetList()[0];
   EXPECT_TRUE(server_method.is_dict());
-  absl::optional<bool> use_post = server_method.FindBoolKey("use_post");
-  EXPECT_TRUE(use_post);
   const std::string* server_template =
       server_method.FindStringKey("server_template");
   EXPECT_TRUE(server_template);
@@ -7958,8 +7949,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
   CreateSerialResolver();  // To guarantee order of resolutions.
   std::string server("https://dns.example.com/");
   DnsConfigOverrides overrides;
-  overrides.dns_over_https_servers.emplace(
-      {DnsOverHttpsServerConfig(server, true)});
+  overrides.dns_over_https_servers.emplace(ParseDohTemplates({server}));
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
@@ -7977,8 +7967,6 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
   EXPECT_EQ(doh_servers->GetList().size(), 1u);
   base::Value& server_method = doh_servers->GetList()[0];
   EXPECT_TRUE(server_method.is_dict());
-  absl::optional<bool> use_post = server_method.FindBoolKey("use_post");
-  EXPECT_TRUE(use_post);
   const std::string* server_template =
       server_method.FindStringKey("server_template");
   EXPECT_TRUE(server_template);
@@ -8059,8 +8047,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   overrides.doh_attempts = doh_attempts;
   overrides.rotate = true;
   overrides.use_local_ipv6 = true;
-  const std::vector<DnsOverHttpsServerConfig> dns_over_https_servers = {
-      DnsOverHttpsServerConfig("dns.example.com", true)};
+  const auto dns_over_https_servers =
+      ParseDohTemplates({"https://dns.example.com/"});
   overrides.dns_over_https_servers = dns_over_https_servers;
   const SecureDnsMode secure_dns_mode = SecureDnsMode::kSecure;
   overrides.secure_dns_mode = secure_dns_mode;
@@ -8348,12 +8336,10 @@ TEST_F(HostResolverManagerDnsTest, DohMapping) {
 
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  std::vector<DnsOverHttpsServerConfig> expected_doh_servers = {
-      {"https://chrome.cloudflare-dns.com/dns-query", true /* use-post */},
-      {"https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-       false /* use_post */},
-      {"https://doh.cleanbrowsing.org/doh/security-filter{?dns}",
-       false /* use_post */}};
+  auto expected_doh_servers = ParseDohTemplates(
+      {"https://chrome.cloudflare-dns.com/dns-query",
+       "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
+       "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
   EXPECT_EQ(expected_doh_servers, fetched_config->dns_over_https_servers);
 }
 
@@ -8442,9 +8428,8 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithExclusion) {
   // only for permitted providers.
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  std::vector<DnsOverHttpsServerConfig> expected_doh_servers = {
-      {"https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-       false /* use_post */}};
+  const auto expected_doh_servers = ParseDohTemplates(
+      {"https://doh.cleanbrowsing.org/doh/family-filter{?dns}"});
   EXPECT_EQ(expected_doh_servers, fetched_config->dns_over_https_servers);
 }
 
@@ -8465,8 +8450,8 @@ TEST_F(HostResolverManagerDnsTest, DohMappingIgnoredIfTemplateSpecified) {
 
   // If the overrides contains DoH servers, no DoH upgrade should be attempted.
   DnsConfigOverrides overrides;
-  const std::vector<DnsOverHttpsServerConfig> dns_over_https_servers_overrides =
-      {DnsOverHttpsServerConfig("doh.server.override.com", true)};
+  const auto dns_over_https_servers_overrides =
+      ParseDohTemplates({"https://doh.server.override.com/"});
   overrides.dns_over_https_servers = dns_over_https_servers_overrides;
   resolver_->SetDnsConfigOverrides(overrides);
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
@@ -8494,8 +8479,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   // If the overrides contains DoH servers, no DoH upgrade should be attempted.
   DnsConfigOverrides overrides;
-  const std::vector<DnsOverHttpsServerConfig> dns_over_https_servers_overrides =
-      {DnsOverHttpsServerConfig("doh.server.override.com", true)};
+  const auto dns_over_https_servers_overrides =
+      ParseDohTemplates({"https://doh.server.override.com/"});
   overrides.dns_over_https_servers = dns_over_https_servers_overrides;
   resolver_->SetDnsConfigOverrides(overrides);
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
@@ -8524,12 +8509,10 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithAutomaticDot) {
 
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  std::vector<DnsOverHttpsServerConfig> expected_doh_servers = {
-      {"https://chrome.cloudflare-dns.com/dns-query", true /* use-post */},
-      {"https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-       false /* use_post */},
-      {"https://doh.cleanbrowsing.org/doh/security-filter{?dns}",
-       false /* use_post */}};
+  auto expected_doh_servers = ParseDohTemplates(
+      {"https://chrome.cloudflare-dns.com/dns-query",
+       "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
+       "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
   EXPECT_EQ(expected_doh_servers, fetched_config->dns_over_https_servers);
 }
 
@@ -8554,8 +8537,8 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithStrictDot) {
   ChangeDnsConfig(original_config);
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  std::vector<DnsOverHttpsServerConfig> expected_doh_servers = {
-      {"https://dns.google/dns-query{?dns}", false /* use_post */}};
+  const auto expected_doh_servers =
+      ParseDohTemplates({"https://dns.google/dns-query{?dns}"});
   EXPECT_EQ(expected_doh_servers, fetched_config->dns_over_https_servers);
 }
 

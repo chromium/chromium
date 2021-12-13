@@ -972,6 +972,10 @@ mojom("mojom") {
           cpp = "::net::DnsConfigOverrides"
         },
         {
+          mojom = "network.mojom.DnsOverHttpsServer"
+          cpp = "::net::DnsOverHttpsServerConfig"
+        },
+        {
           mojom = "network.mojom.DnsQueryType"
           cpp = "::net::DnsQueryType"
         },

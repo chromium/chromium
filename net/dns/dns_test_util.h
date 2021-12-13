@@ -24,6 +24,7 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/socket/socket_test_util.h"
@@ -447,6 +448,11 @@ class MockDnsClient : public DnsClient {
   std::unique_ptr<MockDnsTransactionFactory> factory_;
   std::unique_ptr<AddressSorter> address_sorter_;
 };
+
+// Convert a list of templates into a list of server configs.
+// All templates in the list must be valid.
+std::vector<DnsOverHttpsServerConfig> ParseDohTemplates(
+    std::vector<std::string> server_templates);
 
 }  // namespace net
 

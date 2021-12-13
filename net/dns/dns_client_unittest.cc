@@ -62,7 +62,7 @@ class DnsClientTest : public TestWithTaskEnvironment {
       config = BasicValidConfig();
     }
     config.dns_over_https_servers = {
-        DnsOverHttpsServerConfig("www.doh.com", true /* use_post */)};
+        *net::DnsOverHttpsServerConfig::FromString("https://www.doh.com/")};
     return config;
   }
 
