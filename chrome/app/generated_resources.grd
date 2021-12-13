@@ -3101,33 +3101,17 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_INFO_DETAILS_TAB_LABEL" desc="Title of the notebook page displaying the details about the certificate">
           &amp;Details
         </message>
-        <message name="IDS_CERT_INFO_VERIFIED_USAGES_GROUP" desc="The label of the group in the general page of the certificate info dialog which lists the usages that the certificate is verified for">
-          This certificate has been verified for the following usages:
-        </message>
         <message name="IDS_CERT_USAGE_SSL_CLIENT" desc="The description of a certificate that is verified for use as an SSL client">
           SSL Client Certificate
         </message>
         <message name="IDS_CERT_USAGE_SSL_SERVER" desc="The description of a certificate that is verified for use as an SSL server">
           SSL Server Certificate
         </message>
-        <message name="IDS_CERT_USAGE_SSL_SERVER_WITH_STEPUP" desc="The description of a certificate that is verified for use as an SSL server with step up">
-          SSL Server with Step-up
-        </message>
-        <message name="IDS_CERT_USAGE_EMAIL_SIGNER" desc="The description of a certificate that is verified for signing emails">
-          Email Signer Certificate
-        </message>
-        <message name="IDS_CERT_USAGE_EMAIL_RECEIVER" desc="The description of a
-          certificate that is verified for encrypting email">
-          Email Encryption Certificate
-        </message>
         <message name="IDS_CERT_USAGE_OBJECT_SIGNER" desc="The description of a certificate that is verified for signing executable code">
           Code Signer
         </message>
         <message name="IDS_CERT_USAGE_SSL_CA" desc="The description of a certificate that is verified for use by an SSL certification authority">
           SSL Certification Authority
-        </message>
-        <message name="IDS_CERT_USAGE_STATUS_RESPONDER" desc="The description of a certificate that is verified for use as a status responder">
-          Status Responder Certificate
         </message>
         <message name="IDS_CERT_INFO_IDN_VALUE_FORMAT" desc="The format of values for Common Name and SubjectAltName fields in the certificate info dialog when a name is an Internationalized Domain Name (eg, παράδειγμα.δοκιμή).">
           <ph name="ASCII_NAME">$1<ex>xn--hxajbheg2az3al.xn--jxalpdlp</ex></ph> (<ph name="UNICODE_NAME">$2<ex>see desc; only ASCII allowed in ph.</ex></ph>)
