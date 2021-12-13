@@ -174,7 +174,7 @@ AccountAppsAvailability::AccountAppsAvailability(
   identity_manager_observation_.Observe(identity_manager_);
 
   if (IsPrefInitialized(prefs_)) {
-    initialization_state_ = InitializationState::kInitialized;
+    is_initialized_ = true;
     return;
   }
 
@@ -199,16 +199,19 @@ void AccountAppsAvailability::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void AccountAppsAvailability::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.AddObserver(observer);
 }
 
 void AccountAppsAvailability::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.RemoveObserver(observer);
 }
 
 void AccountAppsAvailability::SetIsAccountAvailableInArc(
     const account_manager::Account& account,
     bool is_available) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
 
   if (!IsInitialized()) {
@@ -238,6 +241,7 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
 void AccountAppsAvailability::GetAccountsAvailableInArc(
     base::OnceCallback<void(const base::flat_set<account_manager::Account>&)>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsInitialized()) {
     // Using base::Unretained(this) is fine because `initialization_callbacks_`
     // is owned by this.
@@ -254,6 +258,7 @@ void AccountAppsAvailability::GetAccountsAvailableInArc(
 
 void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsInitialized()) {
     // Using base::Unretained(this) is fine because `initialization_callbacks_`
     // is owned by this.
@@ -268,8 +273,8 @@ void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
 
 void AccountAppsAvailability::OnAccountUpserted(
     const account_manager::Account& account) {
-  if (initialization_state_ == InitializationState::kInitialized ||
-      initialization_state_ == InitializationState::kInProgress)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsInitialized())
     return;
 
   // Initialize the prefs list:
@@ -280,6 +285,7 @@ void AccountAppsAvailability::OnAccountUpserted(
 
 void AccountAppsAvailability::OnAccountRemoved(
     const account_manager::Account& account) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsInitialized()) {
     // Using base::Unretained(this) is fine because `initialization_callbacks_`
     // is owned by this.
@@ -293,20 +299,21 @@ void AccountAppsAvailability::OnAccountRemoved(
 }
 
 bool AccountAppsAvailability::IsInitialized() const {
-  return initialization_state_ == InitializationState::kInitialized;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_initialized_;
 }
 
 void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     const std::vector<account_manager::Account>& accounts) {
-  if (initialization_state_ != InitializationState::kUninitialized)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsInitialized())
     return;
 
   // If there are no accounts in Account Manager at the moment,
   // `OnAccountUpserted` will be called when the primary account is added.
   if (accounts.size() == 0)
     return;
-
-  initialization_state_ = InitializationState::kInProgress;
 
   prefs_->Set(account_manager::prefs::kAccountAppsAvailability,
               base::Value(base::Value::Type::DICTIONARY));
@@ -335,7 +342,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     DCHECK(!update->DictEmpty());
   }
 
-  initialization_state_ = InitializationState::kInitialized;
+  is_initialized_ = true;
 
   for (auto& callback : initialization_callbacks_)
     std::move(callback).Run();
@@ -345,6 +352,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
 void AccountAppsAvailability::NotifyObservers(
     const account_manager::Account& account,
     bool is_available_in_arc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_available_in_arc) {
     for (auto& observer : observer_list_) {
       observer.OnAccountAvailableInArc(account);

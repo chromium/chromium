@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -89,12 +90,6 @@ class AccountAppsAvailability
   bool IsInitialized() const;
 
  private:
-  enum InitializationState {
-    kUninitialized,
-    kInProgress,
-    kInitialized,
-  };
-
   // `IdentityManager::Observer`:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
@@ -113,8 +108,7 @@ class AccountAppsAvailability
   void NotifyObservers(const account_manager::Account& account,
                        bool is_available_in_arc);
 
-  InitializationState initialization_state_ =
-      InitializationState::kUninitialized;
+  bool is_initialized_ = false;
 
   // Callbacks waiting on class initialization.
   std::vector<base::OnceClosure> initialization_callbacks_;
@@ -138,6 +132,8 @@ class AccountAppsAvailability
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AccountAppsAvailability> weak_factory_{this};
 };
