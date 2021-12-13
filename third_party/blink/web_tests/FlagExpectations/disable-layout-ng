@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
@@ -738,13 +739,13 @@ crbug.com/591099 external/wpt/css/css-content/quotes-033.html [ Failure ]
 crbug.com/886592 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-margin-002.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-pad.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-range.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-extends.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-pad.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-range.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/system-extends.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/selectors4/
-crbug.com/576815 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/selectors4/dir-style-01a.html [ Failure ]
-crbug.com/576815 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/selectors4/dir-style-01b.html [ Failure ]
+crbug.com/576815 external/wpt/css/selectors/dir-style-01a.html [ Failure ]
+crbug.com/576815 external/wpt/css/selectors/dir-style-01b.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/
 crbug.com/591099 external/wpt/css/css-sizing/block-size-with-min-or-max-content-1a.html [ Failure ]
@@ -756,7 +757,7 @@ crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-tha
 crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/
-crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-break-inside-001a.html [ Failure ]
+crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-break-inside-001a.html [ Failure ]
 
 ### external/wpt/quirks/
 crbug.com/591099 external/wpt/quirks/body-fills-html-quirk-vertical.html [ Failure ]
@@ -1350,8 +1351,8 @@ crbug.com/1178754 external/wpt/html/semantics/interactive-elements/the-popup-ele
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
 ### external/wpt/css/css-counter-styles/
-crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-fallbacks-in-shadow-dom.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-counter-styles/counter-styles-override-in-shadow-dom.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/fallbacks-in-shadow-dom.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/override-in-shadow-dom.html [ Failure ]
 
 ### wpt_internal/webcodecs/
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.https.any.html [ Failure ]

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS willValidate
+PASS willValidate after upgrade
+PASS willValidate should throw NotSupportedError if the target element is not a form-associated custom element
+PASS validity and setValidity()
+FAIL "anchor" argument of setValidity() assert_throws_js: Not a HTMLElement function "() => {
+    control.i.setValidity(flags, m, notHTMLElement);
+  }" did not throw
+PASS checkValidity() should throw NotSupportedError if the target element is not a form-associated custom element
+PASS checkValidity()
+PASS reportValidity() should throw NotSupportedError if the target element is not a form-associated custom element
+PASS reportValidity()
+PASS Custom control affects validation at the owner form
+PASS Custom control affects :valid :invalid for FORM and FIELDSET
+Harness: the test ran to completion.
+

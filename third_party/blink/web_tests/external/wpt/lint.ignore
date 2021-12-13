@@ -84,6 +84,8 @@ CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-cr.html
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-crlf.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
+CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
+CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
 
 # Intentional use of tabs
 INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html

@@ -2052,7 +2052,7 @@
     /**
      * Assert a DOMException with the expected type is thrown.
      *
-     * There are two ways of calling promise_rejects_dom:
+     * There are two ways of calling assert_throws_dom:
      *
      * 1) If the DOMException is expected to come from the current global, the
      * second argument should be the function expected to throw and a third,

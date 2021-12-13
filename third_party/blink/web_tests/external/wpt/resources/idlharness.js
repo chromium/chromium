@@ -637,10 +637,16 @@ function exposure_set(object, default_set) {
     if (exposed && exposed.length) {
         const { rhs } = exposed[0];
         // Could be a list or a string.
-        const set = rhs.type === "identifier-list" ?
+        const set =
+            rhs.type === "*" ?
+            [ "*" ] :
+            rhs.type === "identifier-list" ?
             rhs.value.map(id => id.value) :
             [ rhs.value ];
         result = new Set(set);
+    }
+    if (result && result.has("*")) {
+        return "*";
     }
     if (result && result.has("Worker")) {
         result.delete("Worker");
@@ -652,6 +658,9 @@ function exposure_set(object, default_set) {
 }
 
 function exposed_in(globals) {
+    if (globals === "*") {
+        return true;
+    }
     if ('Window' in self) {
         return globals.has("Window");
     }
@@ -666,6 +675,10 @@ function exposed_in(globals) {
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
         return globals.has("ServiceWorker");
+    }
+    if (Object.getPrototypeOf(self) === Object.prototype) {
+        // ShadowRealm - only exposed with `"*"`.
+        return false;
     }
     throw new IdlHarnessError("Unexpected global object");
 }
@@ -3332,9 +3345,9 @@ IdlNamespace.prototype.test = function ()
  * idl_test is a promise_test wrapper that handles the fetching of the IDL,
  * avoiding repetitive boilerplate.
  *
- * @param {String|String[]} srcs Spec name(s) for source idl files (fetched from
+ * @param {String[]} srcs Spec name(s) for source idl files (fetched from
  *      /interfaces/{name}.idl).
- * @param {String|String[]} deps Spec name(s) for dependency idl files (fetched
+ * @param {String[]} deps Spec name(s) for dependency idl files (fetched
  *      from /interfaces/{name}.idl). Order is important - dependencies from
  *      each source will only be included if they're already know to be a
  *      dependency (i.e. have already been seen).

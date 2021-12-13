@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL self.reportError() dispatches an "error" event for this's relevant global object assert_unreached: 'error' event should not be dispatched for top window! Reached unreachable code
+Harness: the test ran to completion.
+

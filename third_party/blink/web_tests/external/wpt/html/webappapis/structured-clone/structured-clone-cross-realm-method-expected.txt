@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Object instance assert_true: expected true got false
+FAIL Array instance assert_true: expected true got false
+FAIL Date instance assert_true: expected true got false
+FAIL RegExp instance assert_true: expected true got false
+Harness: the test ran to completion.
+

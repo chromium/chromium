@@ -14,6 +14,14 @@ promise_test(async t => {
   document.head.appendChild(meta);
 
   let wt = new WebTransport(webtransport_url('custom-response.py?:status=200'));
-  await promise_rejects_dom(t, 'SecurityError', wt.ready, 'ready promise should be rejected');
-  await promise_rejects_dom(t, 'SecurityError', wt.closed, 'closed promise should be rejected');
+
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException.
+  const e = await wt.ready.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.ready, 'ready promise should be rejected');
+  await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
+  assert_equals(e.name, 'WebTransportError', 'WebTransportError');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport connection should fail when CSP connect-src is set to none and reject the promises');
