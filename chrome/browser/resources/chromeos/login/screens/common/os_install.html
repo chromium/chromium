@@ -5,19 +5,20 @@ found in the LICENSE file. -->
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://oobe/custom_elements.html">
 
-<link rel="import" href="/components/html_echo.html">
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/multi_step_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_back_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/dialogs/oobe_modal_dialog.html">
+<link rel="import" href="../../components/html_echo.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
 
 <dom-module id="os-install-element">
   <template>
@@ -145,7 +146,7 @@ found in the LICENSE file. -->
       </div>
       <div slot="content" for-step="failed"
           class="flex layout vertical center center-justified">
-        <img src="../../images/error.svg"
+        <img src="images/error.svg"
             class="oobe-illustration" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
@@ -169,7 +170,7 @@ found in the LICENSE file. -->
       <div slot="subtitle" id="osInstallDialogSuccessSubtitile">
           [[osInstallDialogSuccessSubtitile_]]</div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img src="../../images/os-install-success.svg"
+        <img src="images/os-install-success.svg"
             class="oobe-illustration" aria-hidden="true">
       </div>
     </oobe-adaptive-dialog>
@@ -187,4 +188,5 @@ found in the LICENSE file. -->
       </oobe-text-button>
     </oobe-modal-dialog>
   </template>
+  <script src="os_install.js"></script>
 </dom-module>
