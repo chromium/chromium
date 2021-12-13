@@ -4471,15 +4471,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput");
+      web_contents_impl()->StartPrerendering(kPrerenderingUrl,
+                                             PrerenderTriggerType::kEmbedder,
+                                             "EmbedderSuffixForTest");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
   ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected, 1);
 }
 
@@ -4498,15 +4500,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput");
+      web_contents_impl()->StartPrerendering(kPrerenderingUrl,
+                                             PrerenderTriggerType::kEmbedder,
+                                             "EmbedderSuffixForTest");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
   ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected,
       1);
 }

@@ -27,6 +27,15 @@
 
 namespace {
 
+namespace {
+
+// This is equal to content::PrerenderHost::FinalStatus::kActivated.
+// TODO(crbug.com/1274021): Replace this with the FinalStatus enum value
+// once it is exposed.
+const int kFinalStatusActivated = 0;
+
+}  // namespace
+
 class PrerenderBrowserTest : public PlatformBrowserTest {
  public:
   PrerenderBrowserTest()
@@ -64,6 +73,8 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 
 // An end-to-end test of prerendering and activating.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
+  base::HistogramTester histogram_tester;
+
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
@@ -81,6 +92,44 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
   navigation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(navigation_manager.was_prerendered_page_activation());
   EXPECT_TRUE(navigation_manager.was_successful());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusActivated, 1);
+}
+
+// An end-to-end test of prerendering triggered by an embedder and activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderTriggeredByEmbedderAndActivate) {
+  base::HistogramTester histogram_tester;
+
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+
+  // Start embedder triggered prerendering.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetActiveWebContents()->StartPrerendering(
+          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          "DirectURLInput");
+  EXPECT_TRUE(prerender_handle);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  // Activate.
+  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  // Simulate a browser-initiated navigation.
+  GetActiveWebContents()->OpenURL(content::OpenURLParams(
+      prerender_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(navigation_manager.was_successful());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kFinalStatusActivated, 1);
 }
 
 // Tests that UseCounter for SpeculationRules-triggered prerender is recorded.
