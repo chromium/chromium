@@ -29089,8 +29089,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       - changes in M101 from site-keyed to origin-keyed. If this policy
       is enabled or not set, the browser will follow this new default from that
       version on. If this policy is disabled this change is reversed and
-      documents will wihotu Origin-Agent-Csluter: header will be assigned to
-      site-keyed agent clusters. As a consquence, the document.domain accessor
+      documents without Origin-Agent-Cluster: headers will be assigned to
+      site-keyed agent clusters. As a consequence, the document.domain accessor
       remains settable by default. This matches the legacy behaviour.
       '''
     }
