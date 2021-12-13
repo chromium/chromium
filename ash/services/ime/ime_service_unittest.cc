@@ -121,8 +121,14 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
                   mojom::CommitTextCursorBehavior cursor_behavior) override {
     last_commit = text;
   }
+  void DEPRECATED_SetComposition(
+      const std::u16string& text,
+      std::vector<mojom::CompositionSpanPtr> spans) override {
+    last_composition = text;
+  }
   void SetComposition(const std::u16string& text,
-                      std::vector<mojom::CompositionSpanPtr> spans) override {
+                      std::vector<mojom::CompositionSpanPtr> spans,
+                      uint32_t new_cursor_position) override {
     last_composition = text;
   }
   void SetCompositionRange(uint32_t start_index, uint32_t end_index) override {}
@@ -154,8 +160,12 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
   void CommitText(const std::u16string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
+  void DEPRECATED_SetComposition(
+      const std::u16string& text,
+      std::vector<mojom::CompositionSpanPtr> spans) override {}
   void SetComposition(const std::u16string& text,
-                      std::vector<mojom::CompositionSpanPtr> spans) override {}
+                      std::vector<mojom::CompositionSpanPtr> spans,
+                      uint32_t new_cursor_position) override {}
   void SetCompositionRange(uint32_t start_index, uint32_t end_index) override {}
   void FinishComposition() override {}
   void DeleteSurroundingText(uint32_t num_before_cursor,

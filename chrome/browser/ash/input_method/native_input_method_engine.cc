@@ -930,9 +930,20 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
                 kMoveCursorAfterText);
 }
 
-void NativeInputMethodEngine::ImeObserver::SetComposition(
+void NativeInputMethodEngine::ImeObserver::DEPRECATED_SetComposition(
     const std::u16string& text,
     std::vector<mojom::CompositionSpanPtr> spans) {
+  SetComposition(text, std::move(spans), text.length());
+}
+
+void NativeInputMethodEngine::ImeObserver::SetComposition(
+    const std::u16string& text,
+    std::vector<mojom::CompositionSpanPtr> spans,
+    uint32_t new_cursor_position) {
+  if (new_cursor_position > text.length()) {
+    return;
+  }
+
   ui::CompositionText composition;
   composition.text = text;
 
@@ -941,9 +952,9 @@ void NativeInputMethodEngine::ImeObserver::SetComposition(
     composition.ime_text_spans.push_back(CompositionSpanToImeTextSpan(*span));
   }
 
-  GetInputContext()->UpdateCompositionText(
-      std::move(composition), /*cursor_pos=*/composition.text.length(),
-      /*visible=*/true);
+  GetInputContext()->UpdateCompositionText(std::move(composition),
+                                           /*cursor_pos=*/new_cursor_position,
+                                           /*visible=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::SetCompositionRange(

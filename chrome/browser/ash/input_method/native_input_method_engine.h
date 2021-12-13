@@ -141,9 +141,13 @@ class NativeInputMethodEngine
     void CommitText(const std::u16string& text,
                     chromeos::ime::mojom::CommitTextCursorBehavior
                         cursor_behavior) override;
-    void SetComposition(
+    void DEPRECATED_SetComposition(
         const std::u16string& text,
         std::vector<chromeos::ime::mojom::CompositionSpanPtr> spans) override;
+    void SetComposition(
+        const std::u16string& text,
+        std::vector<chromeos::ime::mojom::CompositionSpanPtr> spans,
+        uint32_t new_cursor_position) override;
     void SetCompositionRange(uint32_t start_index, uint32_t end_index) override;
     void FinishComposition() override;
     void DeleteSurroundingText(uint32_t num_before_cursor,
