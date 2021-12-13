@@ -1850,6 +1850,7 @@ test("content_browsertests") {
 
   if (is_fuchsia) {
     additional_manifest_fragments = [
+      "//build/config/fuchsia/test/audio_capabilities.test-cmx",
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
       "//build/config/fuchsia/test/network_capabilities.test-cmx",

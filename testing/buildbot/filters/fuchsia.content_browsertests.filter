@@ -5,14 +5,10 @@
 -All/RenderFrameHostManagerTest.IgnoreRendererDebugURLsWhenCrashed/*
 -All/SitePerProcessBrowserTest.RenderFrameProxyNotRecreatedDuringProcessShutdown/*
 -All/StartupTracingTest.TestEnableTracing/*
--All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/*
 -All/WorkerFromAnonymousIframeNikBrowserTest.SharedWorkerRequestIsDoneWithPartitionedNetworkState/*
 -All/WorkerTest.WebSocketSharedWorker/*
--AudioContextManagerTest.AudioContextPlaybackRecorded
--AudioContextManagerTest.AudioContextPlaybackTimeUkm
 -AutoPictureInPictureContentBrowserTest.AutoPictureInPictureTriggeredWhenFullscreen
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
--BackForwardCacheBrowserTest.VideoSuspendAndResume
 -BackForwardCacheBrowserTest.WebSocketCachedIfClosed
 -BackForwardCacheBrowserTest.WebSocketNotCached
 -ContentBrowserTest.BrowserCrashCallStack
@@ -23,15 +19,8 @@
 -DataDecoderBrowserTest.LaunchIsolated
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
 -DnsHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
--File/MediaTest.*
--Http/MediaTest.*
 -MHTMLGenerationSitePerProcessTest/*
 -MHTMLGenerationTest/*
--MSE_ClearKey/EncryptedMediaTest.*
--MediaRedirectTest.CanPlayHiddenWebm
--MediaSourceTest.*
--MediaSuspendTest.ForcedSrcSuspend
--MediaTest.Navigate
 -MemoryTracingTest.BrowserInitiatedDump
 -MidiBrowserTest.RequestMIDIAccess
 -MidiBrowserTest.SubscribeAll
@@ -41,11 +30,9 @@
 -NetworkServiceDataMigrationBrowserTest.MigratedPreviouslyAndMigrateAgain
 -NetworkServiceDataMigrationBrowserTest.NewDataDirWithMigrationTest
 -NetworkServiceDataMigrationBrowserTest.NewDataDirWithNoMigrationTest
--OpenCodec/WebRtcMediaRecorderTest.PeerConnection/*
 -OutOfProcess/NetworkServiceDataMigrationBrowserTestWithFailures.MigrateDataTest/*
 -PrerenderBrowserTest.AbandonIfRendererProcessCrashes
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/*
--RenderProcessHostTest.KillProcessZerosAudioStreams
 -SRC_ClearKey/EncryptedMediaTest.*
 -SavePackageWebBundleBrowserTest.OnePageSimple
 -SavePageAsWebBundleBrowserTest.GenerateOnePageSimpleWebBundle
@@ -67,10 +54,7 @@
 -WebIdBrowserTest.FastLoginFlow
 -WebIdBrowserTest.FullLoginFlow
 -WebIdBrowserTest.TokenExchangePermissionDeclined
--WebRtcAudioBrowserTest.*
--WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
 -WebRtcCaptureFromElementBrowserTest.VerifyCanvasCaptureWebGLFrames
--WebRtcMediaRecorderTest.TwoChannelAudioRecording
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 
 # crbug.com/1254563: run-test-component specific issues
