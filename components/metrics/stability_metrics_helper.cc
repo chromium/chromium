@@ -191,6 +191,7 @@ void StabilityMetricsHelper::BrowserUtilityProcessCrashed(
   base::UmaHistogramSparse("ChildProcess.Crashed.UtilityProcessHash", hash);
   base::UmaHistogramSparse("ChildProcess.Crashed.UtilityProcessExitCode",
                            exit_code);
+  RecordStabilityEvent(StabilityEventType::kUtilityCrash);
 }
 
 void StabilityMetricsHelper::BrowserChildProcessCrashed() {

@@ -33,7 +33,8 @@ enum class StabilityEventType {
   kRendererLaunch = 26,
   kExtensionRendererLaunch = 27,
   kGpuCrash = 31,
-  kMaxValue = kGpuCrash
+  kUtilityCrash = 32,
+  kMaxValue = kUtilityCrash
 };
 
 class SystemProfileProto;
