@@ -52,7 +52,7 @@ const absl::optional<AttributionReport>& CreateReportResult::dropped_report()
 absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()
     const {
   if (dropped_report_source_deactivation_reason_) {
-    return DeactivatedSource(dropped_report_->impression,
+    return DeactivatedSource(dropped_report_->impression(),
                              *dropped_report_source_deactivation_reason_);
   }
   return absl::nullopt;

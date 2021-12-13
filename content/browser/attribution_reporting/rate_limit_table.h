@@ -32,7 +32,7 @@ class Origin;
 
 namespace content {
 
-struct AttributionReport;
+class AttributionReport;
 
 struct AggregateHistogramContribution {
   std::string bucket;

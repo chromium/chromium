@@ -32,8 +32,8 @@ using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 
 using ::testing::ElementsAre;
-using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::SizeIs;
 
 class AttributionStorageSqlTest : public testing::Test {
@@ -518,8 +518,9 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
               .SetReportingOrigin(impression.reporting_origin())
               .Build()));
 
-  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
-              ElementsAre(Field(&AttributionReport::trigger_data, kMaxUint64)));
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(clock()->Now()),
+      ElementsAre(Property(&AttributionReport::trigger_data, kMaxUint64)));
 }
 
 TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
@@ -618,7 +619,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(clock()->Now());
   EXPECT_THAT(reports, SizeIs(1));
-  EXPECT_TRUE(storage()->DeleteReport(*reports[0].conversion_id));
+  EXPECT_TRUE(storage()->DeleteReport(*reports[0].report_id()));
   // Store another impression to trigger the expiry logic.
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetExpiry(base::Milliseconds(3)).Build());

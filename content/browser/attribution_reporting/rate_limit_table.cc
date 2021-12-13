@@ -117,21 +117,21 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimit(sql::Database* db,
                                   const AttributionReport& report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(report.impression.impression_id().has_value());
+  DCHECK(report.impression().impression_id().has_value());
 
-  return AddRow(db,
-                AttributionTypeFromSourceType(report.impression.source_type()),
-                *report.impression.impression_id(),
-                report.impression.ImpressionSite().Serialize(),
-                SerializeOrigin(report.impression.impression_origin()),
-                report.impression.ConversionDestination().Serialize(),
-                SerializeOrigin(report.impression.conversion_origin()),
-                report.conversion_time,
-                // Rate limits for the event-level API do not have a bucket.
-                /*bucket=*/"",
-                // By supplying 1 here, rate limits for the event-level API act
-                // as a count.
-                /*value=*/1u);
+  return AddRow(
+      db, AttributionTypeFromSourceType(report.impression().source_type()),
+      *report.impression().impression_id(),
+      report.impression().ImpressionSite().Serialize(),
+      SerializeOrigin(report.impression().impression_origin()),
+      report.impression().ConversionDestination().Serialize(),
+      SerializeOrigin(report.impression().conversion_origin()),
+      report.conversion_time(),
+      // Rate limits for the event-level API do not have a bucket.
+      /*bucket=*/"",
+      // By supplying 1 here, rate limits for the event-level API act
+      // as a count.
+      /*value=*/1u);
 }
 
 bool RateLimitTable::AddRow(
@@ -183,12 +183,12 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::string serialized_impression_site =
-      report.impression.ImpressionSite().Serialize();
+      report.impression().ImpressionSite().Serialize();
   const std::string serialized_conversion_destination =
-      report.impression.ConversionDestination().Serialize();
+      report.impression().ConversionDestination().Serialize();
 
   const int64_t capacity = GetCapacity(
-      db, AttributionTypeFromSourceType(report.impression.source_type()),
+      db, AttributionTypeFromSourceType(report.impression().source_type()),
       serialized_impression_site, serialized_conversion_destination, now);
   // This should only be possible if there is DB corruption.
   if (capacity < 0)

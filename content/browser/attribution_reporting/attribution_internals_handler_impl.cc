@@ -91,11 +91,12 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
     int http_response_code,
     mojom::WebUIAttributionReport::Status status) {
   return mojom::WebUIAttributionReport::New(
-      report.impression.ConversionDestination().Serialize(), report.ReportURL(),
-      /*trigger_time=*/report.conversion_time.ToJsTime(),
-      /*report_time=*/report.report_time.ToJsTime(), report.priority,
+      report.impression().ConversionDestination().Serialize(),
+      report.ReportURL(),
+      /*trigger_time=*/report.conversion_time().ToJsTime(),
+      /*report_time=*/report.report_time().ToJsTime(), report.priority(),
       report.ReportBody(/*pretty_print=*/true),
-      /*attributed_truthfully=*/report.impression.attribution_logic() ==
+      /*attributed_truthfully=*/report.impression().attribution_logic() ==
           StorableSource::AttributionLogic::kTruthfully,
       status, http_response_code);
 }

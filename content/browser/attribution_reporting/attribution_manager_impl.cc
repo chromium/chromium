@@ -356,11 +356,11 @@ void AttributionManagerImpl::OnGetReportsToSend(
   // send reports (or not running) so they are not temporally joinable.
   base::Time current_time = clock_->Now();
   for (AttributionReport& report : reports) {
-    if (report.report_time >= current_time)
+    if (report.report_time() >= current_time)
       continue;
 
-    report.report_time =
-        attribution_policy_->GetReportTimeForReportPastSendTime(current_time);
+    report.set_report_time(
+        attribution_policy_->GetReportTimeForReportPastSendTime(current_time));
   }
 
   AddReportsToReporter(std::move(reports));
@@ -382,9 +382,9 @@ void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
   base::Time now = clock_->Now();
   // All reports should be sent immediately.
   for (AttributionReport& report : reports) {
-    report.report_time = now;
-    DCHECK(report.conversion_id.has_value());
-    report_ids.push_back(*report.conversion_id);
+    report.set_report_time(now);
+    DCHECK(report.report_id().has_value());
+    report_ids.push_back(*report.report_id());
   }
 
   pending_report_ids_for_internals_ui_ =
@@ -399,8 +399,8 @@ void AttributionManagerImpl::RemoveAlreadyQueuedReports(
   reports.erase(base::ranges::remove_if(
                     reports,
                     [&](const AttributionReport& report) {
-                      DCHECK(report.conversion_id.has_value());
-                      return queued_reports_.contains(*report.conversion_id);
+                      DCHECK(report.report_id().has_value());
+                      return queued_reports_.contains(*report.report_id());
                     }),
                 reports.end());
 }
@@ -408,8 +408,8 @@ void AttributionManagerImpl::RemoveAlreadyQueuedReports(
 void AttributionManagerImpl::AddReportsToReporter(
     std::vector<AttributionReport> reports) {
   DCHECK(base::ranges::none_of(reports, [&](const AttributionReport& report) {
-    DCHECK(report.conversion_id.has_value());
-    return queued_reports_.contains(*report.conversion_id);
+    DCHECK(report.report_id().has_value());
+    return queued_reports_.contains(*report.report_id());
   }));
 
   // This is more efficient than calling `flat_set::insert()` repeatedly.
@@ -417,7 +417,7 @@ void AttributionManagerImpl::AddReportsToReporter(
       std::move(queued_reports_).extract();
   queued_reports.reserve(queued_reports.size() + reports.size());
   for (const auto& report : reports) {
-    queued_reports.push_back(*report.conversion_id);
+    queued_reports.push_back(*report.report_id());
   }
   queued_reports_ =
       base::flat_set<AttributionReport::Id>(std::move(queued_reports));
@@ -426,7 +426,7 @@ void AttributionManagerImpl::AddReportsToReporter(
 }
 
 void AttributionManagerImpl::OnReportSent(SentReport info) {
-  DCHECK(info.report.conversion_id.has_value());
+  DCHECK(info.report.report_id().has_value());
 
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
@@ -434,13 +434,14 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
 
   bool should_retry = false;
   if (info.status == SentReport::Status::kTransientFailure) {
-    info.report.failed_send_attempts++;
+    info.report.set_failed_send_attempts(info.report.failed_send_attempts() +
+                                         1);
     const absl::optional<base::TimeDelta> delay =
         attribution_policy_->GetFailedReportDelay(
-            info.report.failed_send_attempts);
+            info.report.failed_send_attempts());
     if (delay.has_value()) {
       should_retry = true;
-      info.report.report_time += *delay;
+      info.report.set_report_time(info.report.report_time() + *delay);
     }
   }
 
@@ -451,7 +452,7 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
     // occur.
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(*info.report.conversion_id, info.report.report_time)
+        .WithArgs(*info.report.report_id(), info.report.report_time())
         .Then(base::BindOnce(
             [](base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport report, bool success) {
@@ -469,12 +470,12 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
              info.status == SentReport::Status::kRemovedFromQueue) {
     // Remove the ID from the set so that subsequent attempts will not be
     // deduplicated.
-    size_t num_removed = queued_reports_.erase(info.report.conversion_id);
+    size_t num_removed = queued_reports_.erase(*info.report.report_id());
     DCHECK_EQ(num_removed, 1u);
   } else {
     RecordDeleteEvent(DeleteEvent::kStarted);
     attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-        .WithArgs(*info.report.conversion_id)
+        .WithArgs(*info.report.report_id())
         .Then(base::BindOnce(
             [](base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport::Id report_id, bool succeeded) {
@@ -490,7 +491,7 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
                 manager->NotifyReportsChanged();
               }
             },
-            weak_factory_.GetWeakPtr(), *info.report.conversion_id));
+            weak_factory_.GetWeakPtr(), *info.report.report_id()));
 
     base::UmaHistogramEnumeration(
         "Conversion.ReportSendOutcome",
@@ -504,7 +505,7 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
   // ID, remove the ID from the wait-set; if it was the last such ID,
   // run the callback.
   if (!send_reports_for_web_ui_callback_.is_null() &&
-      pending_report_ids_for_internals_ui_.erase(*info.report.conversion_id) >
+      pending_report_ids_for_internals_ui_.erase(*info.report.report_id()) >
           0 &&
       pending_report_ids_for_internals_ui_.empty()) {
     std::move(send_reports_for_web_ui_callback_).Run();

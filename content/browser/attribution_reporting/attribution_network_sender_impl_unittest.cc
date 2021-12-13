@@ -421,7 +421,7 @@ TEST_F(AttributionNetworkSenderTest, ErrorHistogram) {
 TEST_F(AttributionNetworkSenderTest, TimeFromConversionToReportSendHistogram) {
   base::HistogramTester histograms;
   auto report = DefaultReport();
-  report.report_time = base::Time() + base::Hours(5);
+  report.set_report_time(base::Time() + base::Hours(5));
   network_sender_->SendReport(std::move(report), base::DoNothing());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));

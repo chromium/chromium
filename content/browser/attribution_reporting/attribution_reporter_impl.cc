@@ -94,9 +94,9 @@ void AttributionReporterImpl::SendNextReport() {
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
-          &report.impression.impression_origin(),
-          &report.impression.conversion_origin(),
-          &report.impression.reporting_origin())) {
+          &report.impression().impression_origin(),
+          &report.impression().conversion_origin(),
+          &report.impression().reporting_origin())) {
     if (!network_connection_tracker_)
       SetNetworkConnectionTracker(content::GetNetworkConnectionTracker());
 
@@ -125,7 +125,7 @@ void AttributionReporterImpl::MaybeScheduleNextReport() {
 
   send_report_timer_.Stop();
   base::Time current_time = clock_->Now();
-  base::Time report_time = report_queue_.top().report_time;
+  base::Time report_time = report_queue_.top().report_time();
 
   // Start a timer to wait until the next report is ready to be sent. This
   // purposefully yields the thread for every report that gets scheduled.
@@ -145,7 +145,7 @@ bool AttributionReporterImpl::ReportComparator::operator()(
   // Returns whether a should appear before b in ordering. Because
   // std::priority_queue is max priority queue, we used greater then to make a
   // min priority queue.
-  return a.report_time > b.report_time;
+  return a.report_time() > b.report_time();
 }
 
 }  // namespace content

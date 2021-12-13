@@ -38,7 +38,7 @@ TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
       GetReport(impression_time, /*conversion_time=*/impression_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -49,7 +49,7 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(impression_time, conversion_time);
   EXPECT_EQ(impression_time + base::Days(7),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -63,7 +63,7 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(impression_time, conversion_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -76,7 +76,7 @@ TEST(AttributionStorageDelegateImplTest,
                                              /*expiry=*/base::Hours(2));
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -91,7 +91,7 @@ TEST(AttributionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -106,7 +106,7 @@ TEST(AttributionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(9) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -118,7 +118,7 @@ TEST(AttributionStorageDelegateImplTest,
                 /*expiry=*/base::Days(1), StorableSource::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -130,7 +130,7 @@ TEST(AttributionStorageDelegateImplTest,
                 /*expiry=*/base::Days(4), StorableSource::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.impression(), report.conversion_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {

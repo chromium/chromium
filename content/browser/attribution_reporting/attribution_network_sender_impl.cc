@@ -46,7 +46,7 @@ enum class Status {
 // Called when a network request is started for |report|, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report) {
   // Reports sent from the WebUI should not log metrics.
-  if (report.report_time == base::Time::Min())
+  if (report.report_time() == base::Time::Min())
     return;
 
   // Use a large time range to capture users that might not open the browser for
@@ -54,14 +54,14 @@ void LogMetricsOnReportSend(const AttributionReport& report) {
   // is non-ideal for real world data.
   base::Time now = base::Time::Now();
   base::Time original_report_time =
-      ComputeReportTime(report.impression, report.conversion_time);
+      ComputeReportTime(report.impression(), report.conversion_time());
   base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
       base::Seconds(1), base::Days(24), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
-      report.report_time - report.conversion_time;
+      report.report_time() - report.conversion_time();
   UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                             time_from_conversion_to_report_send.InHours());
 }

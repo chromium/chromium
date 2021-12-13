@@ -26,7 +26,7 @@ namespace content {
 
 class StoragePartition;
 
-struct AttributionReport;
+class AttributionReport;
 
 // Implemented a NetworkSender capable of issuing POST requests for complete
 // conversions. Maintains a set of all ongoing UrlLoaders used for posting

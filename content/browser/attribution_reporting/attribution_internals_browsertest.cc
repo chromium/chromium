@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   EXPECT_CALL(manager_, GetPendingReportsForWebUI)
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({report}));
 
-  report.report_time += base::Hours(1);
+  report.set_report_time(report.report_time() + base::Hours(1));
   manager_.NotifyReportSent(SentReport(report, SentReport::Status::kSent,
                                        /*http_response_code=*/200));
 

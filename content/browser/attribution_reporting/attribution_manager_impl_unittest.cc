@@ -271,7 +271,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   // so zero it out here to avoid flakiness.
   std::vector<AttributionReport> reports = StoredReports();
   for (auto& report : reports) {
-    report.external_report_id = DefaultExternalReportID();
+    report.SetExternalReportIdForTesting(DefaultExternalReportID());
   }
   EXPECT_THAT(reports, ElementsAre(expected_report));
 }
@@ -377,8 +377,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   // The report is first in the queuing window.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(test_reporter_->added_reports(),
-              ElementsAre(Field(&AttributionReport::report_time,
-                                expected_report_time)));
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   expected_report_time)));
 
   // Simulate the reporter sending the report only once the actual report time
   // has been reached.
@@ -390,29 +390,29 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   // updated report time of +5 minutes.
   expected_report_time += base::Minutes(5);
   EXPECT_THAT(test_reporter_->added_reports(),
-              ElementsAre(_, Field(&AttributionReport::report_time,
-                                   expected_report_time)));
+              ElementsAre(_, Property(&AttributionReport::report_time,
+                                      expected_report_time)));
 
   task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_THAT(test_reporter_->added_reports(),
-              ElementsAre(_, Field(&AttributionReport::report_time,
-                                   expected_report_time)));
+              ElementsAre(_, Property(&AttributionReport::report_time,
+                                      expected_report_time)));
   test_reporter_->RunDeferredCallbacks();
 
   test_reporter_->WaitForNumReports(3);
   // At this point, the report has been added directly to the reporter with the
   // updated report time of +15 minutes.
   expected_report_time += base::Minutes(15);
-  EXPECT_THAT(
-      test_reporter_->added_reports(),
-      ElementsAre(
-          _, _, Field(&AttributionReport::report_time, expected_report_time)));
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(_, _,
+                          Property(&AttributionReport::report_time,
+                                   expected_report_time)));
 
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_THAT(
-      test_reporter_->added_reports(),
-      ElementsAre(
-          _, _, Field(&AttributionReport::report_time, expected_report_time)));
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(_, _,
+                          Property(&AttributionReport::report_time,
+                                   expected_report_time)));
   test_reporter_->RunDeferredCallbacks();
 
   // At this point, the report has reached the maximum number of attempts and it
@@ -498,18 +498,18 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   EXPECT_CALL(observer,
               OnReportSent(Field(
                   &SentReport::report,
-                  Field(&AttributionReport::impression,
-                        Property(&StorableSource::source_event_id, 1u)))));
+                  Property(&AttributionReport::impression,
+                           Property(&StorableSource::source_event_id, 1u)))));
   EXPECT_CALL(observer,
               OnReportSent(Field(
                   &SentReport::report,
-                  Field(&AttributionReport::impression,
-                        Property(&StorableSource::source_event_id, 2u)))));
+                  Property(&AttributionReport::impression,
+                           Property(&StorableSource::source_event_id, 2u)))));
   EXPECT_CALL(observer,
               OnReportSent(Field(
                   &SentReport::report,
-                  Field(&AttributionReport::impression,
-                        Property(&StorableSource::source_event_id, 3u)))));
+                  Property(&AttributionReport::impression,
+                           Property(&StorableSource::source_event_id, 3u)))));
 
   test_reporter_->SetSentReportStatus(SentReport::Status::kSent);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
@@ -575,18 +575,19 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
         observer,
         OnReportDropped(
             AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Field(&AttributionReport::priority, 1))),
+                           Optional(Property(&AttributionReport::priority, 1))),
                   Property(&CreateReportResult::status,
                            CreateReportStatus::kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(observer,
-                OnReportDropped(AllOf(
-                    Property(&CreateReportResult::dropped_report,
-                             Optional(Field(&AttributionReport::priority, -5))),
-                    Property(&CreateReportResult::status,
-                             CreateReportStatus::kPriorityTooLow))));
+    EXPECT_CALL(
+        observer,
+        OnReportDropped(AllOf(
+            Property(&CreateReportResult::dropped_report,
+                     Optional(Property(&AttributionReport::priority, -5))),
+            Property(&CreateReportResult::status,
+                     CreateReportStatus::kPriorityTooLow))));
 
     EXPECT_CALL(checkpoint, Call(3));
 
@@ -594,14 +595,14 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
         observer,
         OnReportDropped(
             AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Field(&AttributionReport::priority, 2))),
+                           Optional(Property(&AttributionReport::priority, 2))),
                   Property(&CreateReportResult::status,
                            CreateReportStatus::kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
         OnReportDropped(
             AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Field(&AttributionReport::priority, 3))),
+                           Optional(Property(&AttributionReport::priority, 3))),
                   Property(&CreateReportResult::status,
                            CreateReportStatus::kSuccessDroppedLowerPriority))));
   }
@@ -748,10 +749,11 @@ TEST_F(AttributionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
 
   // Ensure that the expired report is delayed based on the time the browser
   // started.
-  EXPECT_THAT(test_reporter_->added_reports(),
-              ElementsAre(Field(&AttributionReport::report_time,
-                                start_time + kFirstReportingWindow +
-                                    base::Minutes(1) + kExpiredReportOffset)));
+  EXPECT_THAT(
+      test_reporter_->added_reports(),
+      ElementsAre(Property(&AttributionReport::report_time,
+                           start_time + kFirstReportingWindow +
+                               base::Minutes(1) + kExpiredReportOffset)));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -773,8 +775,8 @@ TEST_F(AttributionManagerImplTest,
   CreateManager();
   test_reporter_->WaitForNumReports(1);
   EXPECT_THAT(test_reporter_->added_reports(),
-              ElementsAre(Field(&AttributionReport::report_time,
-                                start_time + kFirstReportingWindow)));
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   start_time + kFirstReportingWindow)));
 }
 
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
