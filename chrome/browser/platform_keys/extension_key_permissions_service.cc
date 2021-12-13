@@ -108,7 +108,7 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
   bool allow_corporate_key_usage =
       GetCorporateKeyUsageFromPref(key_permissions_for_ext);
 
-  VLOG_IF(allow_corporate_key_usage, 2)
+  VLOG_IF(2, allow_corporate_key_usage)
       << "Policy allows usage of corporate keys by extension " << extension_id;
   return allow_corporate_key_usage;
 }
