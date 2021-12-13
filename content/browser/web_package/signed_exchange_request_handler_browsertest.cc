@@ -915,7 +915,7 @@ class SignedExchangeRequestHandlerRealCertVerifierBrowserTest
 // by running generate-test-certs.sh and generate-test-sxgs.sh in
 // src/content/test/data/sxg.
 IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
-                       Basic) {
+                       DISABLED_Basic) {
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
       "content/test/data/sxg/test.example.org-long-validity.public.pem.cbor");
