@@ -22,8 +22,6 @@ class DlpWindowObserver : public aura::WindowObserver {
     virtual ~Delegate() = default;
 
     virtual void OnWindowOcclusionChanged(aura::Window* window) = 0;
-
-    virtual void OnWindowDestroying(aura::Window* window) = 0;
   };
 
   DlpWindowObserver(aura::Window* window, Delegate* delegate);

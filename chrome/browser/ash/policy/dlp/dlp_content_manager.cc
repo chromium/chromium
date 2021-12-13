@@ -127,11 +127,6 @@ void DlpContentManager::OnWindowOcclusionChanged(aura::Window* window) {
   CheckRunningVideoCapture();
 }
 
-void DlpContentManager::OnWindowDestroying(aura::Window* window) {
-  window_observers_.erase(window);
-  MaybeChangeOnScreenRestrictions();
-}
-
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
   if (!base::Contains(confidential_web_contents_, web_contents))
@@ -346,14 +341,6 @@ void DlpContentManager::OnScreenCaptureStopped(
       });
 }
 
-void DlpContentManager::OnWindowRestrictionChanged(
-    aura::Window* window,
-    const DlpContentRestrictionSet& restrictions) {
-  confidential_windows_[window] = restrictions;
-  window_observers_[window] = std::make_unique<DlpWindowObserver>(window, this);
-  MaybeChangeOnScreenRestrictions();
-}
-
 /* static */
 void DlpContentManager::SetDlpContentManagerForTesting(
     DlpContentManager* dlp_content_manager) {
@@ -488,9 +475,8 @@ void DlpContentManager::OnConfidentialityChanged(
     RemoveFromConfidential(web_contents);
   } else {
     confidential_web_contents_[web_contents] = restriction_set;
-    web_contents_window_observers_[web_contents] =
-        std::make_unique<DlpWindowObserver>(web_contents->GetNativeView(),
-                                            this);
+    window_observers_[web_contents] = std::make_unique<DlpWindowObserver>(
+        web_contents->GetNativeView(), this);
     if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
       MaybeChangeOnScreenRestrictions();
     }
@@ -511,21 +497,14 @@ void DlpContentManager::OnVisibilityChanged(
 void DlpContentManager::RemoveFromConfidential(
     content::WebContents* web_contents) {
   confidential_web_contents_.erase(web_contents);
-  web_contents_window_observers_.erase(web_contents);
+  window_observers_.erase(web_contents);
   MaybeChangeOnScreenRestrictions();
 }
 
 void DlpContentManager::MaybeChangeOnScreenRestrictions() {
   DlpContentRestrictionSet new_restriction_set;
-  // Check each visible WebContents.
   for (const auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() == content::Visibility::VISIBLE) {
-      new_restriction_set.UnionWith(entry.second);
-    }
-  }
-  // Check each visible Lacros window.
-  for (const auto& entry : confidential_windows_) {
-    if (entry.first->IsVisible()) {
       new_restriction_set.UnionWith(entry.second);
     }
   }
@@ -624,7 +603,6 @@ DlpContentManager::GetAreaConfidentialContentsInfo(
   // Window - restricted if the window contains confidential data.
   if (area.type == ScreenshotType::kWindow) {
     DCHECK(area.window);
-    // Check whether the captured window contains any confidential WebContents.
     for (auto& entry : confidential_web_contents_) {
       aura::Window* web_contents_window = entry.first->GetNativeView();
       if (area.window->Contains(web_contents_window)) {
@@ -639,31 +617,14 @@ DlpContentManager::GetAreaConfidentialContentsInfo(
         }
       }
     }
-    // Check whether the captured window is a confidential Lacros window.
-    if (auto entry = confidential_windows_.find(area.window);
-        entry != confidential_windows_.end()) {
-      if (entry->second.GetRestrictionLevel(restriction) ==
-          info.restriction_info.level) {
-        info.confidential_contents.Add(
-            entry->first, entry->second.GetRestrictionUrl(restriction));
-      } else if (entry->second.GetRestrictionLevel(restriction) >
-                 info.restriction_info.level) {
-        info.restriction_info =
-            entry->second.GetRestrictionLevelAndUrl(restriction);
-        info.confidential_contents.ClearAndAdd(
-            entry->first, entry->second.GetRestrictionUrl(restriction));
-      }
-    }
     return info;
   }
 
   DCHECK_EQ(area.type, ScreenshotType::kPartialWindow);
   DCHECK(area.rect);
   DCHECK(area.window);
-  // Partial - restricted if any visible confidential content intersects
+  // Partial - restricted if any visible confidential WebContents intersects
   // with the area.
-
-  // Intersect the captured area with all confidential WebContents.
   for (auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() != content::Visibility::VISIBLE ||
         entry.second.GetRestrictionLevel(restriction) ==
@@ -700,44 +661,6 @@ DlpContentManager::GetAreaConfidentialContentsInfo(
       info.confidential_contents.ClearAndAdd(entry.first);
     }
   }
-
-  // Intersect the captured area with all confidential Lacros windows.
-  for (auto& entry : confidential_windows_) {
-    if (!entry.first->IsVisible() ||
-        entry.first->GetOcclusionState() ==
-            aura::Window::OcclusionState::OCCLUDED ||
-        entry.second.GetRestrictionLevel(restriction) ==
-            DlpRulesManager::Level::kNotSet) {
-      continue;
-    }
-    aura::Window* root_window = entry.first->GetRootWindow();
-    // If no root window, then the Window shouldn't be visible.
-    if (!root_window)
-      continue;
-    // Not allowing if the area intersects with confidential Window,
-    // but the intersection doesn't belong to occluded area.
-    gfx::Rect intersection(*area.rect);
-    aura::Window::ConvertRectToTarget(area.window, root_window, &intersection);
-    intersection.Intersect(entry.first->GetBoundsInRootWindow());
-
-    if (intersection.IsEmpty() ||
-        entry.first->occluded_region_in_root().contains(
-            gfx::RectToSkIRect(intersection)))
-      continue;
-
-    if (entry.second.GetRestrictionLevel(restriction) ==
-        info.restriction_info.level) {
-      info.confidential_contents.Add(
-          entry.first, entry.second.GetRestrictionUrl(restriction));
-    } else if (entry.second.GetRestrictionLevel(restriction) >
-               info.restriction_info.level) {
-      info.restriction_info =
-          entry.second.GetRestrictionLevelAndUrl(restriction);
-      info.confidential_contents.ClearAndAdd(
-          entry.first, entry.second.GetRestrictionUrl(restriction));
-    }
-  }
-
   return info;
 }
 
@@ -768,7 +691,6 @@ DlpContentManager::GetScreenShareConfidentialContentsInfo(
   ConfidentialContentsInfo info;
   aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
   if (window) {
-    // Check whether the captured window contains any confidential WebContents.
     for (auto& entry : confidential_web_contents_) {
       aura::Window* web_contents_window = entry.first->GetNativeView();
       if (!window->Contains(web_contents_window))
@@ -783,25 +705,6 @@ DlpContentManager::GetScreenShareConfidentialContentsInfo(
         info.restriction_info = entry.second.GetRestrictionLevelAndUrl(
             DlpContentRestriction::kScreenShare);
         info.confidential_contents.ClearAndAdd(entry.first);
-      }
-    }
-    // Check whether the captured window is a confidential Lacros window.
-    if (auto entry = confidential_windows_.find(window);
-        entry != confidential_windows_.end()) {
-      if (entry->second.GetRestrictionLevel(
-              DlpContentRestriction::kScreenShare) ==
-          info.restriction_info.level) {
-        info.confidential_contents.Add(
-            entry->first, entry->second.GetRestrictionUrl(
-                              DlpContentRestriction::kScreenShare));
-      } else if (entry->second.GetRestrictionLevel(
-                     DlpContentRestriction::kScreenShare) >
-                 info.restriction_info.level) {
-        info.restriction_info = entry->second.GetRestrictionLevelAndUrl(
-            DlpContentRestriction::kScreenShare);
-        info.confidential_contents.ClearAndAdd(
-            entry->first, entry->second.GetRestrictionUrl(
-                              DlpContentRestriction::kScreenShare));
       }
     }
   }
