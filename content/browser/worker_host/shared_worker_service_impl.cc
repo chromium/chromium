@@ -145,9 +145,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   if (!GetContentClient()->browser()->AllowSharedWorker(
           info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
-          storage_key,
-          WebContentsImpl::FromRenderFrameHostID(client_render_frame_host_id)
-              ->GetBrowserContext(),
+          storage_key, render_frame_host->GetBrowserContext(),
           client_render_frame_host_id.child_id,
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
