@@ -814,6 +814,7 @@ static_library("ui") {
       "android/simple_message_box_android.cc",
       "android/ssl_client_certificate_selector.cc",
       "android/start_surface/start_surface_android.cc",
+      "android/start_surface/start_surface_android.h",
       "android/status_tray_android.cc",
       "android/tab_contents/chrome_web_contents_view_delegate_android.cc",
       "android/tab_contents/chrome_web_contents_view_delegate_android.h",
