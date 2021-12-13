@@ -23,14 +23,6 @@
 
 namespace chrome_test_util {
 
-// TODO(crbug.com/788813): Evaluate if JS helpers can be consolidated.
-// Execute |javascript| on current web state, and wait for either the completion
-// of execution or timeout. If |out_error| is not nil, it is set to the
-// error resulting from the execution, if one occurs. The return value is the
-// result of the JavaScript execution. If the request is timed out, then nil is
-// returned.
-id ExecuteJavaScript(NSString* javascript, NSError** out_error);
-
 // Returns current keyWindow, from the list of all of the remote application
 // windows. Use only for single window tests.
 UIWindow* GetAnyKeyWindow();
