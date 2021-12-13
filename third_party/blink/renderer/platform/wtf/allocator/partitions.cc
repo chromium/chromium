@@ -80,12 +80,12 @@ bool Partitions::InitializeOnce() {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
+      base::features::kBackupRefPtrModeParam.Get() ==
+          base::features::BackupRefPtrMode::kEnabled &&
       (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
            base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
        base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-           base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) &&
-      base::features::kBackupRefPtrModeParam.Get() ==
-          base::features::BackupRefPtrMode::kEnabled;
+           base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer);
 #else
       false;
 #endif

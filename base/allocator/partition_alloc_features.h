@@ -38,6 +38,10 @@ enum class BackupRefPtrEnabledProcesses {
 };
 
 enum class BackupRefPtrMode {
+  // BRP is disabled across all partitions. Equivalent to the Finch flag being
+  // disabled.
+  kDisabled,
+
   // BRP is enabled in the main partition, as well as certain Renderer-only
   // partitions (if enabled in Renderer at all).
   // This entails splitting the main partition.

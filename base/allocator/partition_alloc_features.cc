@@ -52,6 +52,7 @@ const base::FeatureParam<BackupRefPtrEnabledProcesses>
         &kBackupRefPtrEnabledProcessesOptions};
 
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
+    {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
     {BackupRefPtrMode::kDisabledButSplitPartitions2Way,
      "disabled-but-2-way-split"},

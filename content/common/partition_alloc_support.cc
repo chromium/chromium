@@ -265,6 +265,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   if (process_affected_by_brp_flag) {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
+      case base::features::BackupRefPtrMode::kDisabled:
+        // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
+        break;
+
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
         split_main_partition = true;
@@ -280,9 +284,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         use_dedicated_aligned_partition = true;
 #endif
         break;
+
       case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
         split_main_partition = true;
         break;
+
       case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
         split_main_partition = true;
         use_dedicated_aligned_partition = true;

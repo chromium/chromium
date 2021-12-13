@@ -646,9 +646,18 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   std::string brp_group_name;
   if (pcscan_enabled) {
     // If PCScan is enabled, just ignore the population.
-    brp_group_name = "Ignore";
-  } else if (brp_finch_enabled) {
+    brp_group_name = "Ignore_PCScanIsOn";
+  } else if (!brp_finch_enabled) {
+    // The control group is actually disguised as "enabled", but in fact it's
+    // disabled using a param. This is to differentiate the population that
+    // participates in the control group, from the population that isn't in any
+    // group.
+    brp_group_name = "Ignore_NoGroup";
+  } else {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
+      case base::features::BackupRefPtrMode::kDisabled:
+        brp_group_name = "Disabled";
+        break;
       case base::features::BackupRefPtrMode::kEnabled:
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
         brp_group_name = "EnabledPrevSlot";
@@ -664,25 +673,26 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
         break;
     }
 
-    std::string process_selector;
-    switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
-        process_selector = "BrowserOnly";
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
-        process_selector = "BrowserAndRenderer";
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
-        process_selector = "NonRenderer";
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
-        process_selector = "AllProcesses";
-        break;
-    }
+    if (base::features::kBackupRefPtrModeParam.Get() !=
+        base::features::BackupRefPtrMode::kDisabled) {
+      std::string process_selector;
+      switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
+        case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
+          process_selector = "BrowserOnly";
+          break;
+        case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
+          process_selector = "BrowserAndRenderer";
+          break;
+        case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
+          process_selector = "NonRenderer";
+          break;
+        case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
+          process_selector = "AllProcesses";
+          break;
+      }
 
-    brp_group_name += ("_" + process_selector);
-  } else {
-    brp_group_name = "Disabled";
+      brp_group_name += ("_" + process_selector);
+    }
   }
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtr_Effective", brp_group_name);
@@ -693,7 +703,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
     // If BRP is enabled, just ignore the population. Check brp_truly_enabled,
     // not brp_finch_enabled, because there are certain modes where BRP is
     // actually disabled.
-    pcscan_group_name = "Ignore";
+    pcscan_group_name = "Ignore_BRPIsOn";
   } else {
     pcscan_group_name = (pcscan_enabled ? "Enabled" : "Disabled");
   }
