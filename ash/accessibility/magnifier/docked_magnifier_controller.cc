@@ -11,6 +11,7 @@
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/host/ash_window_tree_host.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -279,6 +280,15 @@ void DockedMagnifierController::OnTouchEvent(ui::TouchEvent* event) {
   aura::Window* event_root = target->GetRootWindow();
   gfx::Point event_screen_point = event->root_location();
   ::wm::ConvertPointToScreen(event_root, &event_screen_point);
+
+  // Ignore touch events on virtual Keyboard, to stabilize docked magnifier.
+  if (keyboard::KeyboardUIController::Get()->IsEnabled() &&
+      keyboard::KeyboardUIController::Get()
+          ->GetKeyboardWindow()
+          ->GetBoundsInScreen()
+          .Contains(event_screen_point))
+    return;
+
   CenterOnPoint(event_screen_point);
 }
 
