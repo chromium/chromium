@@ -5330,4 +5330,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NavigationHandleFrameType) {
   }
 }
 
+// Tests that NavigationHandle::IsRendererInitiated() returns RendererInitiated
+// = true correctly.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       NavigationHandleIsRendererInitiatedTrue) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrerenderedMainFrame());
+          EXPECT_TRUE(navigation_handle->IsRendererInitiated());
+        }));
+    // Start prerendering.
+    AddPrerender(kPrerenderingUrl);
+  }
+  NavigatePrimaryPage(kPrerenderingUrl);
+}
+
 }  // namespace content

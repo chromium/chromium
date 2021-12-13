@@ -900,10 +900,6 @@ void NavigationSimulatorImpl::SetInitiatorFrame(
     // TODO(https://crbug.com/1072790): Support cross-process initiators here by
     // using NavigationRequest::CreateBrowserInitiated() (like
     // RenderFrameProxyHost does) for the navigation.
-    CHECK_EQ(render_frame_host_->GetProcess(),
-             initiator_frame_host->GetProcess())
-        << "The initiator frame must belong to the same process as the frame "
-           "you are navigating";
     set_initiator_origin(initiator_frame_host->GetLastCommittedOrigin());
   }
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
@@ -82,7 +83,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   bool IsPrerenderingNavigation() { return is_prerendering_page_; }
 
  protected:
-  void StartOmniboxPrerenderingAndWaitForActivation(const GURL& url) {
+  void StartOmniboxNavigationAndWaitForActivation(const GURL& url) {
     SetOmniboxText(url.spec());
     PressEnterAndWaitForActivation(url);
   }
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       embedded_test_server()->GetURL("/empty.html?prerender");
   GetAutocompleteActionPredictor()->StartPrerendering(
       kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
-  StartOmniboxPrerenderingAndWaitForActivation(kPrerenderingUrl);
+  StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
   EXPECT_EQ(static_cast<int>(GetLastPageTransitionType()),
             static_cast<int>(ui::PAGE_TRANSITION_TYPED |
                              ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       kNewUrl, *GetActiveWebContents(), gfx::Size(50, 50));
 
   old_prerender_observer.WaitForDestroyed();
-  StartOmniboxPrerenderingAndWaitForActivation(kNewUrl);
+  StartOmniboxNavigationAndWaitForActivation(kNewUrl);
 
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kNewUrl);
@@ -231,9 +232,36 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       "Prerender.Experimental.PrerenderHostFinalStatus",
       /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 1, 0);
 
-  StartOmniboxPrerenderingAndWaitForActivation(kPrerenderingUrl);
+  StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
 
   EXPECT_TRUE(IsPrerenderingNavigation());
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
+}
+
+// Tests that NavigationHandle::IsRendererInitiated() returns RendererInitiated
+// = false correctly.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
+                       NavigationHandleIsRendererInitiatedFalse) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+  {
+    base::RunLoop run_loop;
+    content::DidFinishNavigationObserver observer(
+        GetActiveWebContents(),
+        base::BindLambdaForTesting(
+            [&run_loop](content::NavigationHandle* navigation_handle) {
+              EXPECT_TRUE(navigation_handle->IsInPrerenderedMainFrame());
+              EXPECT_FALSE(navigation_handle->IsRendererInitiated());
+              run_loop.Quit();
+            }));
+    GetAutocompleteActionPredictor()->StartPrerendering(
+        kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+    run_loop.Run();
+  }
+  StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 

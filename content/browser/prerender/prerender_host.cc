@@ -337,6 +337,7 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.initiator_origin = attributes_.initiator_origin;
   load_url_params.initiator_process_id = attributes_.initiator_process_id;
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
+  load_url_params.is_renderer_initiated = !attributes_.IsBrowserInitiated();
   load_url_params.transition_type =
       ui::PageTransitionFromInt(attributes_.transition_type);
 
