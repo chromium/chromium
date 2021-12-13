@@ -476,9 +476,6 @@ extern const char kDesktopPWAsRemoveStatusBarDescription[];
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 
-extern const char kDesktopPWAsFlashAppNameInsteadOfOriginName[];
-extern const char kDesktopPWAsFlashAppNameInsteadOfOriginDescription[];
-
 extern const char kDesktopPWAsNotificationIconAndTitleName[];
 extern const char kDesktopPWAsNotificationIconAndTitleDescription[];
 

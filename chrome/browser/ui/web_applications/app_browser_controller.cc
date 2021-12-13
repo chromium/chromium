@@ -244,10 +244,6 @@ const SystemWebAppDelegate* AppBrowserController::system_app() const {
 }
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFlashAppNameInsteadOfOrigin)) {
-    return GetAppShortName();
-  }
   return GetFormattedUrlOrigin();
 }
 

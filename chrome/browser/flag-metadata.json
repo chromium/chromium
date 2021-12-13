@@ -1809,11 +1809,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "enable-desktop-pwas-flash-app-name-instead-of-origin",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "enable-desktop-pwas-launch-handler",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 100

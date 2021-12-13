@@ -283,12 +283,6 @@ const base::Feature kDesktopPWAsElidedExtensionsMenu{
 #endif
 };
 
-// Replaces the origin text flash in web app titlebars with the name of
-// the app.
-const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
-    "DesktopPWAsFlashAppNameInsteadOfOrigin",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Replaces the origin text flash and the icon in web app notifications with
 // the name of the app and the icon of the app.
 const base::Feature kDesktopPWAsNotificationIconAndTitle {
