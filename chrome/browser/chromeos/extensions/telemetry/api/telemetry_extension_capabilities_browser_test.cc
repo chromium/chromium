@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
 // command line switch |kTelemetryExtensionPwaOriginOverrideForTesting|. The
 // test also makes sure the command line switch is copied across processes.
 IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
-                       CanOverridePwaOriginForTesting) {
+                       DISABLED_CanOverridePwaOriginForTesting) {
   constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
