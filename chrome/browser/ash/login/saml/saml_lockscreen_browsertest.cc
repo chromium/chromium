@@ -177,6 +177,8 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
 
   // Click on the actual button to close the dialog.
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
@@ -204,6 +206,8 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
 
   // Click on the actual button to close the dialog.
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that both dialogs are closed.
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
@@ -236,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
       /*state=*/shill::kStateOnline, /*visible=*/true);
   base::RunLoop().RunUntilIdle();
 
-  // Ensures that the re-auth dialog is visible.
+  // Ensures that the network dialog is closed.
   reauth_dialog_helper->ExpectNetworkDialogHidden();
 }
 

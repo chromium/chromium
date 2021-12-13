@@ -35,6 +35,14 @@ namespace chromeos {
 namespace {
 LockScreenStartReauthDialog* g_dialog = nullptr;
 
+InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+
+  return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+}
+
 }  // namespace
 
 // static
@@ -107,10 +115,14 @@ int LockScreenStartReauthDialog::GetDialogWidth() {
 }
 
 void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {
-  is_network_dialog_visible_ = false;
   if (!lock_screen_network_dialog_)
     return;
   lock_screen_network_dialog_.reset();
+  if (is_network_dialog_visible_) {
+    is_network_dialog_visible_ = false;
+    auto* password_sync_manager = GetInSessionPasswordSyncManager();
+    password_sync_manager->DismissDialog();
+  }
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
