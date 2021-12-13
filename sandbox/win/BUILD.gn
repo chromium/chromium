@@ -184,7 +184,6 @@ test("sbox_integration_tests") {
     "src/policy_target_test.cc",
     "src/process_mitigations_dyncode_unittest.cc",
     "src/process_mitigations_extensionpoints_unittest.cc",
-    "src/process_mitigations_imageload_unittest.cc",
     "src/process_mitigations_unittest.cc",
     "src/process_mitigations_win32k_unittest.cc",
     "src/process_policy_test.cc",
@@ -207,8 +206,6 @@ test("sbox_integration_tests") {
   ]
 
   data_deps = [
-    ":sbox_integration_test_hijack_dll",
-    ":sbox_integration_test_hijack_shim_dll",
     ":sbox_integration_test_hooking_dll",
     ":sbox_integration_test_win_proc",
   ]
@@ -217,15 +214,6 @@ test("sbox_integration_tests") {
     "ktmw32.lib",
     "iphlpapi.lib",
   ]
-}
-
-shared_library("sbox_integration_test_hijack_dll") {
-  sources = [
-    "tests/integration_tests/hijack_dll.cc",
-    "tests/integration_tests/hijack_dll.def",
-  ]
-
-  deps = [ ":maybe_set_appcontainer_acls" ]
 }
 
 group("maybe_set_appcontainer_acls") {
@@ -249,20 +237,6 @@ if (current_cpu == target_cpu && host_os == "win") {
       "--dir=" + rebase_path(root_out_dir, root_out_dir),
     ]
   }
-}
-
-shared_library("sbox_integration_test_hijack_shim_dll") {
-  sources = [
-    "tests/integration_tests/hijack_shim_dll.cc",
-    "tests/integration_tests/hijack_shim_dll.def",
-  ]
-
-  # Implicitly linking hijack_dll as loader import resolution required.
-  deps = [
-    ":common",
-    ":sbox_integration_test_hijack_dll",
-    "//base",
-  ]
 }
 
 shared_library("sbox_integration_test_hooking_dll") {
@@ -344,7 +318,6 @@ source_set("common") {
     "src/sandbox_types.h",
     "src/security_level.h",
     "tests/common/controller.h",
-    "tests/integration_tests/hijack_shim_dll.h",
   ]
 
   deps = [ "//base" ]

@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/win/scoped_handle.h"
@@ -61,7 +62,6 @@ bool GetModuleList(HANDLE process, std::vector<HMODULE>* result) {
 
 TEST(WinUtils, IsReparsePoint) {
   using sandbox::IsReparsePoint;
-
   // Create a temp file because we need write access to it.
   wchar_t temp_directory[MAX_PATH];
   wchar_t my_folder[MAX_PATH];
@@ -84,7 +84,7 @@ TEST(WinUtils, IsReparsePoint) {
             IsReparsePoint(new_file));
 
   // Replace the directory with a reparse point to %temp%.
-  HANDLE dir = ::CreateFile(my_folder, FILE_ALL_ACCESS,
+  HANDLE dir = ::CreateFile(my_folder, FILE_WRITE_DATA,
                             FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
                             OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
   EXPECT_NE(INVALID_HANDLE_VALUE, dir);
@@ -207,19 +207,20 @@ TEST(WinUtils, ConvertToLongPath) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &orig_path));
   orig_path = orig_path.Append(L"calc.exe");
 
-  base::FilePath temp_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_PROGRAM_FILES, &temp_path));
-  temp_path = temp_path.Append(L"test_calc.exe");
+  base::ScopedTempDir temp_dir;
+  base::FilePath base_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_COMMON_APP_DATA, &base_path));
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(base_path));
 
+  base::FilePath temp_path = temp_dir.GetPath().Append(L"test_calc.exe");
   ASSERT_TRUE(base::CopyFile(orig_path, temp_path));
-  // No more asserts until cleanup.
 
-  // WIN32 long path: "c:\Program Files\test_calc.exe"
+  // WIN32 long path: "C:\ProgramData\%TEMP%\test_calc.exe"
   wchar_t short_path[MAX_PATH] = {};
   DWORD size =
       ::GetShortPathNameW(temp_path.value().c_str(), short_path, MAX_PATH);
   EXPECT_TRUE(size > 0 && size < MAX_PATH);
-  // WIN32 short path: "C:\PROGRA~1\TEST_C~1.exe"
+  // WIN32 short path: "C:\PROGRA~3\%TEMP%\TEST_C~1.exe"
 
   // Sanity check that we actually got a short path above!  Small chance
   // it was disabled in the filesystem setup.
@@ -228,13 +229,13 @@ TEST(WinUtils, ConvertToLongPath) {
   std::wstring short_form_native_path;
   EXPECT_TRUE(sandbox::GetNtPathFromWin32Path(std::wstring(short_path),
                                               &short_form_native_path));
-  // NT short path: "\Device\HarddiskVolume4\PROGRA~1\TEST_C~1.EXE"
+  // NT short path: "\Device\HarddiskVolume4\PROGRA~3\%TEMP%\TEST_C~1.EXE"
 
   // Test 1: convert win32 short path to long:
   std::wstring test1(short_path);
   EXPECT_TRUE(sandbox::ConvertToLongPath(&test1));
   EXPECT_TRUE(::wcsicmp(temp_path.value().c_str(), test1.c_str()) == 0);
-  // Expected result: "c:\Program Files\test_calc.exe"
+  // Expected result: "C:\ProgramData\%TEMP%\test_calc.exe"
 
   // Test 2: convert native short path to long:
   std::wstring drive_letter = temp_path.value().substr(0, 3);
@@ -247,10 +248,7 @@ TEST(WinUtils, ConvertToLongPath) {
   std::wstring expected_result = short_form_native_path.substr(0, index + 1);
   expected_result.append(temp_path.value().substr(3));
   EXPECT_TRUE(::wcsicmp(expected_result.c_str(), test2.c_str()) == 0);
-  // Expected result: "\Device\HarddiskVolumeX\Program Files\test_calc.exe"
-
-  // clean up
-  EXPECT_TRUE(base::DeleteFile(temp_path));
+  // Expected result: "\Device\HarddiskVolumeX\ProgramData\%TEMP%\test_calc.exe"
 }
 
 }  // namespace sandbox

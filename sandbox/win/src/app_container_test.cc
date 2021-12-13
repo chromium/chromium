@@ -631,10 +631,10 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
 }
 
 SBOX_TESTS_COMMAND int LoadDLL(int argc, wchar_t** argv) {
-  // DLL here doesn't matter as long as it's in the output directory: re-use one
-  // from another sbox test.
-  base::ScopedNativeLibrary test_dll(base::FilePath(
-      FILE_PATH_LITERAL("sbox_integration_test_hijack_dll.dll")));
+  // Library here doesn't matter as long as it's in the output directory: re-use
+  // one from another sbox test.
+  base::ScopedNativeLibrary test_dll(
+      base::FilePath(FILE_PATH_LITERAL("sbox_integration_test_win_proc.exe")));
   if (test_dll.is_valid())
     return SBOX_TEST_SUCCEEDED;
   return SBOX_TEST_FAILED;
