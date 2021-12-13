@@ -637,7 +637,10 @@ test("gl_unittests") {
     "//ui/platform_window:platform_impls",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [
+    "//testing/buildbot/filters:gl_unittests_filters",
+    "//third_party/mesa_headers",
+  ]
 
   # TODO(https://crbug.com/789065): this must be moved to Ozone.
   if (ozone_platform_x11) {

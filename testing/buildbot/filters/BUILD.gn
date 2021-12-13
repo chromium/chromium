@@ -208,6 +208,12 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
   ]
 }
+source_set("gl_unittests_filters") {
+  testonly = true
+
+  data =
+      [ "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter" ]
+}
 
 source_set("interactive_ui_tests_filters") {
   testonly = true

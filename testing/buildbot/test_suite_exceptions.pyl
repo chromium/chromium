@@ -1700,6 +1700,13 @@
       # which isn't instrumented.
       'Linux MSan Tests',
     ],
+    'modifications': {
+      'android-12-x64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',
+        ],
+      },
+    },
   },
   'gl_unittests_ozone': {
     'remove_from': [
