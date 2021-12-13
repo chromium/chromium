@@ -27,6 +27,11 @@ extern const base::Feature kPageInfoAboutThisSite;
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;
 
+#if !defined(OS_ANDROID)
+// Enables the history section for Page Info on desktop.
+extern const base::Feature kPageInfoHistoryDesktop;
+#endif
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_FEATURES_H_

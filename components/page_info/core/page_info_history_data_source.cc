@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/page_info/core/page_info_history_data_source.h"
+
+#include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/i18n/number_formatting.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
+#include "components/history/core/browser/history_service.h"
+
+namespace page_info {
+
+PageInfoHistoryDataSource::PageInfoHistoryDataSource(
+    history::HistoryService* history_service,
+    const GURL& site_url)
+    : history_service_(history_service), site_url_(site_url) {}
+
+PageInfoHistoryDataSource::~PageInfoHistoryDataSource() = default;
+
+// static
+std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
+    base::Time last_visit) {
+  if (last_visit.is_null())
+    return std::u16string();
+
+  constexpr base::TimeDelta kDay = base::Days(1);
+
+  const base::Time midnight_today = base::Time::Now().LocalMidnight();
+  const base::Time mightnight_last_visited = last_visit.LocalMidnight();
+  const base::TimeDelta delta = midnight_today - mightnight_last_visited;
+
+  // TODO(crbug.com/1275042): Use actual strings.
+  if (delta == base::Milliseconds(0))
+    return u"Last visited today";
+
+  if (delta == kDay)
+    return u"Last visited yesterday";
+
+  if (delta > kDay && delta <= kDay * 7)
+    return base::ReplaceStringPlaceholders(u"Last visited $1 days ago",
+                                           {base::FormatNumber(delta.InDays())},
+                                           nullptr);
+
+  return base::ReplaceStringPlaceholders(
+      u"Last visited $1", {base::TimeFormatShortDate(last_visit)}, nullptr);
+}
+
+void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
+    base::OnceCallback<void(base::Time)> callback) {
+  // TODO(crbug.com/1275042): Use the data source in Android implementation.
+  base::Time now = base::Time::Now();
+  history_service_->GetLastVisitToHost(
+      site_url_.host(), base::Time() /* before_time */, now /* end_time */,
+      base::BindOnce(&PageInfoHistoryDataSource::
+                         OnLastVisitBeforeRecentNavigationsComplete,
+                     weak_factory_.GetWeakPtr(), site_url_.host(), now,
+                     std::move(callback)),
+      &query_task_tracker_);
+}
+
+void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
+    const std::string& host_name,
+    base::Time query_start_time,
+    base::OnceCallback<void(base::Time)> callback,
+    history::HistoryLastVisitResult result) {
+  if (!result.success || result.last_visit.is_null()) {
+    std::move(callback).Run(base::Time());
+    return;
+  }
+
+  base::Time end_time =
+      result.last_visit < (query_start_time - base::Minutes(1))
+          ? result.last_visit
+          : query_start_time - base::Minutes(1);
+  history_service_->GetLastVisitToHost(
+      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      base::BindOnce(&PageInfoHistoryDataSource::
+                         OnLastVisitBeforeRecentNavigationsComplete2,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      &query_task_tracker_);
+}
+
+void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete2(
+    base::OnceCallback<void(base::Time)> callback,
+    history::HistoryLastVisitResult result) {
+  std::move(callback).Run(result.last_visit);
+}
+
+}  // namespace page_info

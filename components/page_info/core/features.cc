@@ -22,4 +22,9 @@ const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
                                                   "ShowSampleContent", true};
 
+#if !defined(OS_ANDROID)
+const base::Feature kPageInfoHistoryDesktop{"PageInfoHistoryDesktop",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace page_info
