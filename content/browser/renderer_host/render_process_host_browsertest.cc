@@ -1813,4 +1813,98 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, HandleNestedFrameDeletion) {
   EXPECT_EQ(1, host_destructions_);
 }
 
+namespace {
+
+// Observer that listens for RenderFrameDeleted and iterates over the remaining
+// RenderFrameHosts in the process at the time. This catches a case where a
+// parent RenderFrameHost might not be found via RenderFrameHost::FromID because
+// of nested frame deletion, which used to cause a CHECK failure.
+class RenderFrameDeletionObserver : public WebContentsObserver {
+ public:
+  explicit RenderFrameDeletionObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~RenderFrameDeletionObserver() override = default;
+
+  // WebContentsObserver:
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
+    render_frame_deleted_count_++;
+
+    // Find all other RenderFrameHosts in the process, which should exclude the
+    // one being deleted.
+    auto rfh_collector = [](std::vector<RenderFrameHost*>& results,
+                            RenderFrameHost* rfh) { results.push_back(rfh); };
+    RenderProcessHostImpl* process =
+        static_cast<RenderProcessHostImpl*>(render_frame_host->GetProcess());
+    std::vector<RenderFrameHost*> all_rfhs;
+    process->ForEachRenderFrameHost(
+        base::BindRepeating(rfh_collector, std::ref(all_rfhs)));
+
+    // Update the cumulative count of other RenderFrameHosts in the process.
+    render_frame_host_iterator_count_ += all_rfhs.size();
+  }
+
+  // Returns how many time RenderFrameDeleted was called.
+  int render_frame_deleted_count() { return render_frame_deleted_count_; }
+
+  // Returns a cumulative count of how many remaining RenderFrameHosts were
+  // found in the process at the time of any RenderFrameDeleted calls.
+  int render_frame_host_iterator_count() {
+    return render_frame_host_iterator_count_;
+  }
+
+ private:
+  int render_frame_deleted_count_ = 0;
+  int render_frame_host_iterator_count_ = 0;
+};
+
+}  // namespace
+
+// Test that RenderProcessHost::ForEachRenderFrameHost can handle nested
+// deletions of RenderFrameHost objects, when we might encounter a parent RFH
+// that is no longer discoverable via FromID, while handling the deletion of a
+// subframe. One way this can occur is during bfcache eviction.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure all sites get dedicated processes during the test.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Navigate to a page with a same-process subframe.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* rfh_a = root->current_frame_host();
+  RenderProcessHost* process_a = rfh_a->GetProcess();
+  int process_a_id = process_a->GetID();
+
+  // Listen for RenderFrameDeleted and count the other RenderFrameHosts in the
+  // process at the time.
+  RenderFrameDeletionObserver rfh_deletion_observer(shell()->web_contents());
+
+  // Navigate cross-process and evict process A from the back-forward cache.
+  // This should not cause a crash when iterating over RenderFrameHosts.
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  RenderProcessHostWatcher cleanup_observer(
+      process_a, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  cleanup_observer.Wait();
+  RenderFrameHostImpl* rfh_b = root->current_frame_host();
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+
+  // RenderFrameDeleted should have been called for both the main frame and
+  // subframe in process A.
+  EXPECT_EQ(2, rfh_deletion_observer.render_frame_deleted_count());
+
+  // The subframe's RenderFrameDeleted happens after both the main frame and
+  // subframe have become undiscoverable by FromID (i.e., removed from
+  // g_routing_id_frame_map). The subframe isn't expected to be found during its
+  // own RenderFrameDeleted (since it has been removed from
+  // render_frame_host_id_set_), but the partially destructed main frame also
+  // isn't found at that time when iterating over other frames in the process.
+  EXPECT_EQ(0, rfh_deletion_observer.render_frame_host_iterator_count());
+}
+
 }  // namespace content
