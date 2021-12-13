@@ -47,8 +47,8 @@ void DictionaryValueUpdate::Clear() {
 
 void DictionaryValueUpdate::Set(base::StringPiece path,
                                 std::unique_ptr<base::Value> in_value) {
-  const base::Value* old_value = nullptr;
-  if (value_->Get(path, &old_value) && *old_value == *in_value)
+  const base::Value* old_value = value_->FindPath(path);
+  if (old_value != nullptr && *old_value == *in_value)
     return;
 
   RecordPath(path);

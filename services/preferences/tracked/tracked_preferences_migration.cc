@@ -149,7 +149,6 @@ void MigratePrefsFromOldToNewStore(const std::set<std::string>& pref_names,
   for (std::set<std::string>::const_iterator it = pref_names.begin();
        it != pref_names.end(); ++it) {
     const std::string& pref_name = *it;
-    const base::Value* value_in_old_store = NULL;
 
     // If the destination does not have a hash for this pref we will
     // unconditionally attempt to move it.
@@ -157,12 +156,13 @@ void MigratePrefsFromOldToNewStore(const std::set<std::string>& pref_names,
         !new_hash_store_transaction->HasHash(pref_name);
     // If we migrate the value we will also attempt to migrate the hash.
     bool migrated_value = false;
-    if (old_store->Get(pref_name, &value_in_old_store)) {
+    if (const base::Value* value_in_old_store =
+            old_store->FindPath(pref_name)) {
       // Whether this value ends up being copied below or was left behind by a
       // previous incomplete migration, it should be cleaned up.
       *old_store_needs_cleanup = true;
 
-      if (!new_store->Get(pref_name, NULL)) {
+      if (!new_store->FindPath(pref_name)) {
         // Copy the value from |old_store| to |new_store| rather than moving it
         // to avoid data loss should |old_store| be flushed to disk without
         // |new_store| having equivalently been successfully flushed to disk
@@ -175,9 +175,9 @@ void MigratePrefsFromOldToNewStore(const std::set<std::string>& pref_names,
     }
 
     if (destination_hash_missing || migrated_value) {
-      const base::Value* old_hash = NULL;
+      const base::Value* old_hash = nullptr;
       if (old_hash_store_contents)
-        old_hash_store_contents->Get(pref_name, &old_hash);
+        old_hash = old_hash_store_contents->FindPath(pref_name);
       if (old_hash) {
         new_hash_store_transaction->ImportHash(pref_name, old_hash);
         *new_store_altered = true;
