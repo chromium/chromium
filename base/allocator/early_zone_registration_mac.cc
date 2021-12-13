@@ -19,6 +19,7 @@ namespace partition_alloc {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EarlyMallocZoneRegistration() {}
+void AllowDoublePartitionAllocZoneRegistration() {}
 
 #else
 
@@ -229,5 +230,27 @@ void EarlyMallocZoneRegistration() {
   if (GetDefaultMallocZone() != &g_delegating_zone)
     abort_report_np("Failed to install the delegating zone as default.");
 }
+
+void AllowDoublePartitionAllocZoneRegistration() {
+  unsigned int zone_count = 0;
+  vm_address_t* zones = nullptr;
+  kern_return_t result =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  if (result != KERN_SUCCESS)
+    abort_report_np("Cannot enumerate malloc() zones");
+
+  // If PartitionAlloc is one of the zones, *change* its name so that
+  // registration can happen multiple times. This works because zone
+  // registration only keeps a pointer to the struct, it does not copy the data.
+  for (unsigned int i = 0; i < zone_count; i++) {
+    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+    if (zone->zone_name &&
+        strcmp(zone->zone_name, kPartitionAllocZoneName) == 0) {
+      zone->zone_name = "RenamedPartitionAlloc";
+      break;
+    }
+  }
+}
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }  // namespace partition_alloc

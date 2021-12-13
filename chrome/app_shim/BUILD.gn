@@ -20,6 +20,7 @@ source_set("app_shim") {
   ]
 
   deps = [
+    "//base/allocator:early_zone_registration_mac",
     "//build:chromeos_buildflags",
     "//chrome:strings",
     "//chrome/app:command_ids",
@@ -77,6 +78,7 @@ executable("app_mode_loader") {
 
   deps = [
     "//base",
+    "//base/allocator:early_zone_registration_mac",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
