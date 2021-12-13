@@ -145,6 +145,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             @Override
             public void onSheetContentChanged(BottomSheetContent bottomSheet) {
                 super.onSheetContentChanged(bottomSheet);
+                if (mBottomSheet == null) {
+                    return;
+                }
                 if (bottomSheet == mBottomSheet) {
                     mBottomSheet.getContentView().addOnLayoutChangeListener(
                             ShareSheetCoordinator.this::onLayoutChange);
@@ -182,6 +185,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         if (mLifecycleDispatcher != null) {
             mLifecycleDispatcher.unregister(this);
             mLifecycleDispatcher = null;
+        }
+        if (mBottomSheetController != null) {
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
         }
     }
 
