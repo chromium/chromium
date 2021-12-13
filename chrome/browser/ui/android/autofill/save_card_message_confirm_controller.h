@@ -36,8 +36,9 @@ class SaveCardMessageConfirmController {
                const std::u16string& card_label);
   void FixDate(const std::u16string& card_label);
 
-  // Legal Message should be set before confirm* is called.
-  void SetLegalMessageLine(const LegalMessageLine& line);
+  // Legal Message should be added before `ConfirmSaveCard`, `FixName`
+  // and `FixDate` is called.
+  void AddLegalMessageLine(const LegalMessageLine& line);
 
   void DismissDialog();
 

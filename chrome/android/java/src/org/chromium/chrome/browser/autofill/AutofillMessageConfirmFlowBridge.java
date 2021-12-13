@@ -19,6 +19,8 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
+import java.util.LinkedList;
+
 /**
  * Bridge for SaveCardMessageControllerAndroid to show a confirmation dialog of name or expiration
  * date.
@@ -32,7 +34,7 @@ public class AutofillMessageConfirmFlowBridge
 
     private long mNativeSaveCardMessageConfirmDelegate;
     private final WindowAndroid mWindowAndroid;
-    private LegalMessageLine mLegalMessageLine;
+    private LinkedList<LegalMessageLine> mLegalMessageLines = new LinkedList<>();
 
     private AutofillMessageConfirmFlowBridge(
             long nativeSaveCardMessageConfirmDelegate, WindowAndroid windowAndroid) {
@@ -106,7 +108,9 @@ public class AutofillMessageConfirmFlowBridge
         if (mSaveCardPrompt == null) {
             mSaveCardPrompt = AutofillExpirationDateFixFlowPrompt.createAsMessageFixFlowPrompt(
                     activity, this, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
@@ -119,7 +123,9 @@ public class AutofillMessageConfirmFlowBridge
         if (mSaveCardPrompt == null) {
             mSaveCardPrompt = AutofillNameFixFlowPrompt.createAsMessageFixFlowPrompt(
                     activity, this, inferredName, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
@@ -131,7 +137,9 @@ public class AutofillMessageConfirmFlowBridge
         if (mSaveCardPrompt == null) {
             mSaveCardPrompt = AutofillSaveCardConfirmFlowPrompt.createPrompt(
                     activity, this, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
@@ -149,13 +157,13 @@ public class AutofillMessageConfirmFlowBridge
     }
 
     /**
-     * Sets a line of legal message plain text to the dialog.
+     * Adds a line of legal message plain text to the dialog.
      *
      * @param text The legal message plain text.
      */
     @CalledByNative
-    private void setLegalMessageLine(String text) {
-        mLegalMessageLine = new LegalMessageLine(text);
+    private void addLegalMessageLine(String text) {
+        mLegalMessageLines.add(new LegalMessageLine(text));
     }
 
     /**
@@ -167,7 +175,7 @@ public class AutofillMessageConfirmFlowBridge
      */
     @CalledByNative
     private void addLinkToLastLegalMessageLine(int start, int end, String url) {
-        mLegalMessageLine.links.add(new LegalMessageLine.Link(start, end, url));
+        mLegalMessageLines.getLast().links.add(new LegalMessageLine.Link(start, end, url));
     }
 
     @NativeMethods
