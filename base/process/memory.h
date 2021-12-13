@@ -77,11 +77,19 @@ const DWORD kOomExceptionCode = 0xe0000008;
 // specifically ASan and other sanitizers.
 // Return value tells whether the allocation succeeded. If it fails |result| is
 // set to NULL, otherwise it holds the memory address.
-BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedMalloc(size_t size,
-                                                    void** result);
+//
+// Note: You *must* use UncheckedFree() to free() the memory allocated, not
+// regular free(). This also means that this a pointer allocated below cannot be
+// passed to realloc().
+BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedMalloc(size_t size, void** result);
 BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedCalloc(size_t num_items,
                                                     size_t size,
                                                     void** result);
+
+// *Must* be used to free memory allocated with base::UncheckedMalloc() and
+// base::UncheckedCalloc().
+// TODO(crbug.com/1279371): Enforce it, when all callers are converted.
+BASE_EXPORT void UncheckedFree(void* ptr);
 
 }  // namespace base
 

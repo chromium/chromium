@@ -127,4 +127,17 @@ bool UncheckedMalloc(size_t size, void** result) {
   return *result != nullptr;
 }
 
+void UncheckedFree(void* ptr) {
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator::UncheckedFree(ptr);
+#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || \
+    (!defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC))
+  free(ptr);
+#elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
+  __libc_free(ptr);
+#elif BUILDFLAG(USE_TCMALLOC)
+  tc_free(ptr);
+#endif
+}
+
 }  // namespace base

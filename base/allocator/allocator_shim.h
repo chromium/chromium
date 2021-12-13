@@ -140,6 +140,9 @@ BASE_EXPORT void SetCallNewHandlerOnMallocFailure(bool value);
 // regardless of SetCallNewHandlerOnMallocFailure().
 BASE_EXPORT void* UncheckedAlloc(size_t size);
 
+// Frees memory allocated with UncheckedAlloc().
+BASE_EXPORT void UncheckedFree(void* ptr);
+
 // Inserts |dispatch| in front of the allocator chain. This method is
 // thread-safe w.r.t concurrent invocations of InsertAllocatorDispatch().
 // The callers have responsibility for inserting a single dispatch no more

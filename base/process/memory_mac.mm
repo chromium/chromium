@@ -59,4 +59,14 @@ void EnableTerminationOnOutOfMemory() {
   allocator::InterceptAllocationsMac();
 }
 
+void UncheckedFree(void* ptr) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Important: might be different from free(), because in some cases, free()
+  // does not necessarily know about allocator::* functions.
+  allocator::UncheckedFree(ptr);
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  free(ptr);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
 }  // namespace base

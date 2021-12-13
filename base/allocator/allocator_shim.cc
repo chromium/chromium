@@ -82,6 +82,11 @@ void* UncheckedAlloc(size_t size) {
   return chain_head->alloc_unchecked_function(chain_head, size, nullptr);
 }
 
+void UncheckedFree(void* ptr) {
+  const allocator::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->free_function(chain_head, ptr, nullptr);
+}
+
 void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
   // Loop in case of (an unlikely) race on setting the list head.
   size_t kMaxRetries = 7;

@@ -652,7 +652,7 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
 TEST_F(OutOfMemoryHandledTest, UncheckedMalloc) {
   EXPECT_TRUE(base::UncheckedMalloc(kSafeMallocSize, &value_));
   EXPECT_TRUE(value_ != nullptr);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_FALSE(base::UncheckedMalloc(test_size_, &value_));
   EXPECT_TRUE(value_ == nullptr);
@@ -664,7 +664,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   const char* bytes = static_cast<const char*>(value_);
   for (size_t i = 0; i < kSafeMallocSize; ++i)
     EXPECT_EQ(0, bytes[i]);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_TRUE(
       base::UncheckedCalloc(kSafeCallocItems, kSafeCallocSize, &value_));
@@ -672,7 +672,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   bytes = static_cast<const char*>(value_);
   for (size_t i = 0; i < (kSafeCallocItems * kSafeCallocSize); ++i)
     EXPECT_EQ(0, bytes[i]);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_FALSE(base::UncheckedCalloc(1, test_size_, &value_));
   EXPECT_TRUE(value_ == nullptr);
