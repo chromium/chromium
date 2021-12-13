@@ -456,8 +456,11 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   // since those include effective URLs which may differ even if the actual
   // document origins match. We use process_lock_url() comparisons to account
   // for this.
+  //
+  // TODO(wjmaclean, alexmos): Figure out why including `is_jit_disabled_` here
+  // leads to crashes in https://crbug.com/1279453.
   return std::tie(process_lock_url_, requires_origin_keyed_process_, is_pdf_,
-                  is_jit_disabled_, is_guest_, web_exposed_isolation_info_,
+                  is_guest_, web_exposed_isolation_info_,
                   storage_partition_config_);
 }
 
