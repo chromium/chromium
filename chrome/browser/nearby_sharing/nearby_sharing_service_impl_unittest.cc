@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -58,9 +61,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"

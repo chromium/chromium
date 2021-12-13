@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
 
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

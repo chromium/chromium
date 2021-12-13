@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
@@ -43,8 +45,6 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "net/base/network_change_notifier.h"

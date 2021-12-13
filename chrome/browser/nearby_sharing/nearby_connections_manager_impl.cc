@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"

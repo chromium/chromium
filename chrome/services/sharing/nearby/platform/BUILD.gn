@@ -69,9 +69,9 @@ source_set("platform") {
 
   deps = [
     "//ash/constants",
+    "//ash/services/nearby/public/mojom",
     "//base",
     "//chrome/services/sharing/webrtc",
-    "//chromeos/services/nearby/public/mojom",
     "//crypto",
     "//jingle:webrtc_glue",
     "//mojo/public/cpp/bindings",
@@ -119,9 +119,9 @@ source_set("unit_tests") {
 
   deps = [
     ":platform",
+    "//ash/services/nearby/public/mojom",
     "//base/test:test_support",
     "//chrome/services/sharing/nearby/test_support",
-    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//services/network/public/mojom",

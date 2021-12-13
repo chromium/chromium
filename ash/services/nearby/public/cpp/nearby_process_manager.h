@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
-#define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
 
 #include <memory>
 
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -83,4 +83,4 @@ using ::chromeos::nearby::NearbyProcessManager;
 }
 }  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_

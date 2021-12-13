@@ -4,8 +4,8 @@
 
 module sharing.mojom;
 
-import "chromeos/services/nearby/public/mojom/nearby_connections.mojom";
-import "chromeos/services/nearby/public/mojom/nearby_decoder.mojom";
+import "ash/services/nearby/public/mojom/nearby_connections.mojom";
+import "ash/services/nearby/public/mojom/nearby_decoder.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/mdns_responder.mojom";
 import "services/network/public/mojom/p2p.mojom";

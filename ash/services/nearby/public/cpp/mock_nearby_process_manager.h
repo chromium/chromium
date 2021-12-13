@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
-#define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
 
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -50,4 +50,4 @@ class MockNearbyProcessManager : public NearbyProcessManager {
 }  // namespace nearby
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_

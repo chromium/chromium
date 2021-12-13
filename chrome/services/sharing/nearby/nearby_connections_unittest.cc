@@ -10,6 +10,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -22,7 +23,6 @@
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

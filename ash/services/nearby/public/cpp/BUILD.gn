@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
 static_library("cpp") {
   sources = [
     "nearby_client_uuids.cc",
@@ -11,8 +15,8 @@ static_library("cpp") {
   ]
 
   deps = [
+    "//ash/services/nearby/public/mojom",
     "//base",
-    "//chromeos/services/nearby/public/mojom",
     "//components/keyed_service/core",
   ]
 }
@@ -33,8 +37,8 @@ static_library("test_support") {
 
   deps = [
     ":cpp",
+    "//ash/services/nearby/public/mojom",
     "//base",
-    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings/",
     "//testing/gmock",
   ]

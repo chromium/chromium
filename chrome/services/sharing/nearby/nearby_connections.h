@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -19,8 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/nearby_connections_stream_buffer_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_
-#define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_
 
 #include <memory>
 
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 
 namespace chromeos {
 namespace nearby {
@@ -97,4 +97,4 @@ using ::chromeos::nearby::FakeNearbyProcessManager;
 }
 }  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_

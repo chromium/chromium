@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/services/nearby",
+  "+ash/services/nearby",
   "+device/bluetooth/public/mojom",
   "+jingle/glue",
   "+services/network/public/cpp",

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;

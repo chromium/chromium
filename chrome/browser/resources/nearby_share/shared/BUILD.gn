@@ -93,9 +93,9 @@ js_library("nearby_contact_visibility") {
 
 js_library("nearby_device_icon") {
   deps = [
+    "//ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
   ]
 }
@@ -117,9 +117,9 @@ js_library("nearby_page_template") {
 
 js_library("nearby_preview") {
   deps = [
+    "//ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
@@ -210,10 +210,10 @@ group("polymer3_elements") {
     ":nearby_shared_icons_module",
     ":nearby_shared_share_type_icons_module",
     ":nearby_visibility_page_module",
+    "//ash/services/nearby/public/mojom:nearby_share_target_types_js",
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
     "//chrome/browser/ui/webui/nearby_share:share_type_js",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js",
   ]
 }
 
@@ -245,9 +245,9 @@ js_library("nearby_contact_visibility.m") {
 js_library("nearby_device_icon.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_device_icon.m.js" ]
   deps = [
+    "//ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":nearby_device_icon_module" ]
@@ -284,9 +284,9 @@ js_library("nearby_page_template.m") {
 js_library("nearby_preview.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_preview.m.js" ]
   deps = [
+    "//ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 
 #include <set>
 #include <string>

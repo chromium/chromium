@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/nearby/public/mojom/nearby_connections_mojom_traits.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_mojom_traits.h"
 
 namespace mojo {
 

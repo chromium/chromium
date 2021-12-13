@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace ash {
 namespace secure_channel {

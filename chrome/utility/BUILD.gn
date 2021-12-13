@@ -165,6 +165,7 @@ static_library("utility") {
     deps += [
       "//ash/services/ime:lib",
       "//ash/services/ime/public/mojom",
+      "//ash/services/nearby/public/mojom:mojom",
       "//ash/services/quick_pair",
       "//ash/services/recording",
       "//chrome/services/file_util",
@@ -172,7 +173,6 @@ static_library("utility") {
       "//chromeos/assistant:buildflags",
       "//chromeos/components/local_search_service:local_search_service",
       "//chromeos/components/local_search_service/public/mojom",
-      "//chromeos/services/nearby/public/mojom:mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

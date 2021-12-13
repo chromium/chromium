@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/nearby/src/cpp/platform/base/exception.h"
 

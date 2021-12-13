@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
-#define CHROMEOS_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
 
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/nearby/src/cpp/platform/api/log_message.h"
 
 namespace mojo {
@@ -22,4 +22,4 @@ class EnumTraits<location::nearby::connections::mojom::LogSeverity,
 
 }  // namespace mojo
 
-#endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_

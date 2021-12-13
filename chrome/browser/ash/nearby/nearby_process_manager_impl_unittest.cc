@@ -7,6 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
+#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -23,13 +30,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,7 +19,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
