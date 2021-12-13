@@ -194,4 +194,21 @@ TEST_F(DeskActivationAnimationTest, AnimatingAfterFastSwipe) {
                   ->is_animating());
 }
 
+// Tests that there is no use-after-free when starting and ending a swipe before
+// the screenshots are taken. Regression test for https://crbug.com/1276203.
+TEST_F(DeskActivationAnimationTest, StartAndEndSwipeBeforeScreenshotsTaken) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  // Start and finish a animation without waiting for the screenshots to be
+  // taken.
+  desks_controller->StartSwipeAnimation(/*moving_left=*/false);
+  ASSERT_TRUE(desks_controller->animation());
+
+  desks_controller->UpdateSwipeAnimation(10);
+  desks_controller->EndSwipeAnimation();
+  EXPECT_FALSE(desks_controller->animation());
+}
+
 }  // namespace ash
