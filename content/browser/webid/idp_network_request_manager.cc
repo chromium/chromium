@@ -54,7 +54,7 @@ constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
 // Token request body keys
-constexpr char kAccountKey[] = "sub";
+constexpr char kAccountKey[] = "account_id";
 constexpr char kRequestKey[] = "request";
 
 // Revoke request body keys.
@@ -127,17 +127,17 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
 
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account) {
-  auto* sub = account.FindStringKey("sub");
+  auto* account_id = account.FindStringKey("account_id");
   auto* email = account.FindStringKey("email");
   auto* name = account.FindStringKey("name");
   auto* given_name = account.FindStringKey("given_name");
   auto* picture = account.FindStringKey("picture");
 
   // required fields
-  if (!(sub && email && name))
+  if (!(account_id && email && name))
     return absl::nullopt;
 
-  return content::IdentityRequestAccount(*sub, *email, *name,
+  return content::IdentityRequestAccount(*account_id, *email, *name,
                                          given_name ? *given_name : "",
                                          picture ? GURL(*picture) : GURL());
 }
@@ -297,7 +297,7 @@ std::string CreateTokenRequestBody(const std::string& account,
   // Given account and id_request creates the following JSON
   // ```json
   // {
-  //   "sub": "1234",
+  //   "account_id": "1234",
   //   "request": "nonce=abc987987cba&client_id=89898"
   //   }
   // }```
@@ -344,7 +344,7 @@ std::string CreateRevokeRequestBody(const std::string& client_id,
   // Given account and id_request creates the following JSON
   // ```json
   // {
-  //   "sub": "123",
+  //   "account_id": "123",
   //   "request": {
   //     "client_id": "client1234"
   //   }
