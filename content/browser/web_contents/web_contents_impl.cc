@@ -7887,6 +7887,13 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   NotifyFrameSwapped(old_frame, new_frame);
 }
 
+void WebContentsImpl::NotifySwappedFromRenderManagerWithoutFallbackContent(
+    RenderFrameHostImpl* new_frame) {
+  auto* rwhv = static_cast<RenderWidgetHostViewBase*>(new_frame->GetView());
+  if (rwhv)
+    rwhv->ClearFallbackSurfaceForCommitPending();
+}
+
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
     RenderFrameHostImpl* new_frame) {

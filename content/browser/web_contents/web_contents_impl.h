@@ -986,6 +986,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void CancelModalDialogsForRenderManager() override;
   void NotifySwappedFromRenderManager(RenderFrameHostImpl* old_frame,
                                       RenderFrameHostImpl* new_frame) override;
+  void NotifySwappedFromRenderManagerWithoutFallbackContent(
+      RenderFrameHostImpl* new_frame) override;
   void NotifyMainFrameSwappedFromRenderManager(
       RenderFrameHostImpl* old_frame,
       RenderFrameHostImpl* new_frame) override;

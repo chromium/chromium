@@ -239,6 +239,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
 
+  // This method will clear any cached fallback surface. For use in response to
+  // a CommitPending where there is no content for TakeFallbackContentFrom.
+  virtual void ClearFallbackSurfaceForCommitPending() {}
   // This method will reset the fallback to the first surface after navigation.
   virtual void ResetFallbackToFirstNavigationSurface() = 0;
 
@@ -660,6 +663,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                            MojoInterfaceReboundOnDisconnect);
   FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
                            NoFallbackAfterHiddenNavigationFails);
+  FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
+                           NoFallbackIfSwapFailedBeforeNavigation);
 
   void SynchronizeVisualProperties();
 

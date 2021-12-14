@@ -142,6 +142,12 @@ class CONTENT_EXPORT RenderFrameHostManager
     virtual void NotifySwappedFromRenderManager(
         RenderFrameHostImpl* old_frame,
         RenderFrameHostImpl* new_frame) = 0;
+    // Notifies that we are swapping to a `new_frame` when there is no
+    // `old_frame` available from which to take fallback content.
+    // TODO(crbug.com/1072817): Remove this once CommitPending has more explicit
+    // shutdown, both for successful and failed navigations.
+    virtual void NotifySwappedFromRenderManagerWithoutFallbackContent(
+        RenderFrameHostImpl* new_frame) = 0;
     // TODO(nasko): This should be removed once extensions no longer use
     // NotificationService. See https://crbug.com/462682.
     virtual void NotifyMainFrameSwappedFromRenderManager(

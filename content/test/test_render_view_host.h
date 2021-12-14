@@ -91,6 +91,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       blink::mojom::ShareService::ShareCallback callback) override;
 #endif  // defined(OS_MAC)
 
+  // Notified in response to a CommitPending where there is no content for
+  // TakeFallbackContentFrom to use.
+  void ClearFallbackSurfaceForCommitPending() override;
   // Advances the fallback surface to the first surface after navigation. This
   // ensures that stale surfaces are not presented to the user for an indefinite
   // period of time.
@@ -137,6 +140,17 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 
   void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
 
+  // Clears `clear_fallback_surface_for_commit_pending_called_` and
+  // `take_fallback_content_from_called_`.
+  void ClearFallbackSurfaceCalled();
+  bool clear_fallback_surface_for_commit_pending_called() const {
+    return clear_fallback_surface_for_commit_pending_called_;
+  }
+
+  bool take_fallback_content_from_called() const {
+    return take_fallback_content_from_called_;
+  }
+
  protected:
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
@@ -162,6 +176,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   // requests surfaces be synchronized via
   // EnsureSurfaceSynchronizedForWebTest().
   uint32_t latest_capture_sequence_number_ = 0u;
+
+  bool clear_fallback_surface_for_commit_pending_called_ = false;
+  bool take_fallback_content_from_called_ = false;
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::Window> window_;

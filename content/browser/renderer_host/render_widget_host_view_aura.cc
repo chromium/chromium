@@ -930,6 +930,11 @@ RenderWidgetHostViewAura::GetParentNativeViewAccessible() {
   return nullptr;
 }
 
+void RenderWidgetHostViewAura::ClearFallbackSurfaceForCommitPending() {
+  delegated_frame_host_->ClearFallbackSurfaceForCommitPending();
+  window_->InvalidateLocalSurfaceId();
+}
+
 void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
@@ -2616,7 +2621,7 @@ void RenderWidgetHostViewAura::OnDidNavigateMainFrameToNewPage() {
 
   // Invalidate the surface so that we don't attempt to evict it multiple times.
   window_->InvalidateLocalSurfaceId();
-    delegated_frame_host_->OnNavigateToNewPage();
+  delegated_frame_host_->OnNavigateToNewPage();
   CancelActiveTouches();
 }
 

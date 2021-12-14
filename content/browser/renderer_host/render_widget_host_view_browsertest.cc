@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -384,6 +385,46 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 }
 
 #endif  // !defined(OS_MAC)
+
+// Tests that if a pending commit attempts to swap from a RenderFrameHost which
+// has no Fallback Surface, that we clear pre-existing ones in a
+// RenderWidgetHostViewBase that is being re-used. While still properly
+// allocating a new Surface if Navigation eventually succeeds.
+IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
+                       NoFallbackIfSwapFailedBeforeNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Creates the initial RenderWidgetHostViewBase, and connects to a
+  // CompositorFrameSink.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
+  ASSERT_TRUE(rwhvb);
+  viz::LocalSurfaceId initial_lsid = rwhvb->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_lsid.is_valid());
+
+  // Actually set our Fallback Surface.
+  rwhvb->ResetFallbackToFirstNavigationSurface();
+  EXPECT_TRUE(rwhvb->HasFallbackSurface());
+
+  // Perform a navigation to the same content source. This will reuse the
+  // existing RenderWidgetHostViewBase.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  // Notify that this pending commit has no RenderFrameHost with which to get a
+  // Fallback Surface. This should evict the Fallback Surface.
+  web_contents->NotifySwappedFromRenderManagerWithoutFallbackContent(
+      web_contents->GetMainFrame());
+  EXPECT_FALSE(rwhvb->HasFallbackSurface());
+
+  // Actually complete a navigation once we've removed the Fallback Surface.
+  // This should lead to a new viz::LocalSurfaceId.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  EXPECT_TRUE(rwhvb->GetLocalSurfaceId().is_valid());
+  viz::LocalSurfaceId post_nav_lsid = rwhvb->GetLocalSurfaceId();
+  EXPECT_NE(initial_lsid, post_nav_lsid);
+  EXPECT_TRUE(post_nav_lsid.IsNewerThan(initial_lsid));
+}
 
 namespace {
 

@@ -189,8 +189,13 @@ gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {
   return gfx::Rect();
 }
 
+void TestRenderWidgetHostView::ClearFallbackSurfaceForCommitPending() {
+  clear_fallback_surface_for_commit_pending_called_ = true;
+}
+
 void TestRenderWidgetHostView::TakeFallbackContentFrom(
     RenderWidgetHostView* view) {
+  take_fallback_content_from_called_ = true;
   CopyBackgroundColorIfPresentFrom(*view);
 }
 
@@ -228,6 +233,11 @@ void TestRenderWidgetHostView::OnFrameTokenChanged(
     uint32_t frame_token,
     base::TimeTicks activation_time) {
   OnFrameTokenChangedForView(frame_token, activation_time);
+}
+
+void TestRenderWidgetHostView::ClearFallbackSurfaceCalled() {
+  clear_fallback_surface_for_commit_pending_called_ = false;
+  take_fallback_content_from_called_ = false;
 }
 
 std::unique_ptr<SyntheticGestureTarget>

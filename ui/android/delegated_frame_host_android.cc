@@ -188,6 +188,19 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   client_->WasEvicted();
 }
 
+void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
+  const absl::optional<viz::SurfaceId> fallback_surface_id =
+      content_layer_->oldest_acceptable_fallback();
+
+  // CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+  // guarantee that Navigation will complete, evict our surfaces which are from
+  // a previous Navigation.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    content_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
+}
+
 void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   // Don't update the fallback if it's already newer than the first id after
   // navigation.

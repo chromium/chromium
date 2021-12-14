@@ -1166,6 +1166,12 @@ void RenderWidgetHostViewMac::FocusedNodeChanged(
   }
 }
 
+void RenderWidgetHostViewMac::ClearFallbackSurfaceForCommitPending() {
+  browser_compositor_->GetDelegatedFrameHost()
+      ->ClearFallbackSurfaceForCommitPending();
+  browser_compositor_->InvalidateLocalSurfaceIdOnEviction();
+}
+
 void RenderWidgetHostViewMac::ResetFallbackToFirstNavigationSurface() {
   browser_compositor_->GetDelegatedFrameHost()
       ->ResetFallbackToFirstNavigationSurface();

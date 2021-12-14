@@ -3459,6 +3459,19 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
+  // Notify that we have no `old_view` from which to TakeFallbackContentFrom.
+  // This will clear the current Fallback Surface, which would be from a
+  // previous Navigation. This way we do not display old content if this new
+  // PendingCommit does not lead to a successful Navigation. This must be called
+  // before NotifySwappedFromRenderManager, which will allocate a new
+  // viz::LocalSurfaceId, which will allow the Renderer to submit new content.
+  // TODO(crbug.com/1072817): Remove this once CommitPending has more explicit
+  // shutdown, both for successful and failed navigations.
+  if (!old_view) {
+    delegate_->NotifySwappedFromRenderManagerWithoutFallbackContent(
+        render_frame_host_.get());
+  }
+
   // Notify that we've swapped RenderFrameHosts. We do this before shutting down
   // the RFH so that we can clean up RendererResources related to the RFH first.
   delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),

@@ -328,6 +328,21 @@ void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,
   client_->OnFrameTokenChanged(frame_token, activation_time);
 }
 
+// CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+// guarantee that Navigation will complete, evict our surfaces which are from
+// a previous Navigation.
+void DelegatedFrameHost::ClearFallbackSurfaceForCommitPending() {
+  const viz::SurfaceId* fallback_surface_id =
+      client_->DelegatedFrameHostGetLayer()->GetOldestAcceptableFallback();
+
+  // CommitPending failed, and Navigation never completed. Evict our surfaces.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
+        viz::SurfaceId());
+  }
+}
+
 void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {
   const viz::SurfaceId* fallback_surface_id =
       client_->DelegatedFrameHostGetLayer()->GetOldestAcceptableFallback();

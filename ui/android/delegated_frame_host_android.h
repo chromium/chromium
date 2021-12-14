@@ -83,6 +83,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return TimeDeltaToFrames(ResizeTimeout());
   }
 
+  void ClearFallbackSurfaceForCommitPending();
   // Advances the fallback surface to the first surface after navigation. This
   // ensures that stale surfaces are not presented to the user for an indefinite
   // period of time.
