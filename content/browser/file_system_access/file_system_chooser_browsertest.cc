@@ -1573,9 +1573,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
                         "dangerous_extension.lnk", false});
 #endif
   // Invalid characters should be sanitized.
-  name_infos.push_back({R"(inv*l:d\\charבאמת!a<ters🤓.txt)",
+  name_infos.push_back({R"(inv*l:d\\ch%rבאמת!a<ters🤓.txt)",
                         ListValueOf(".txt"), true,
-                        R"(inv_l_d__charבאמת!a_ters🤓.txt)", true});
+                        R"(inv_l_d__ch_rבאמת!a_ters🤓.txt)", true});
 
   for (const auto& name_info : name_infos) {
     SCOPED_TRACE(name_info.suggested_name);
