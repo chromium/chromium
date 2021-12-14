@@ -682,8 +682,12 @@ void AutocompleteController::SetMatchDestinationURL(
 #endif
 }
 
-void AutocompleteController::InlineTailPrefixes() {
-  result_.InlineTailPrefixes();
+void AutocompleteController::SetTailSuggestContentPrefixes() {
+  result_.SetTailSuggestContentPrefixes();
+}
+
+void AutocompleteController::SetTailSuggestCommonPrefixes() {
+  result_.SetTailSuggestCommonPrefixes();
 }
 
 void AutocompleteController::UpdateResult(

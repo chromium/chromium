@@ -1140,11 +1140,21 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteMatch::InlineTailPrefix(const std::u16string& common_prefix) {
+void AutocompleteMatch::SetTailSuggestCommonPrefix(
+    const std::u16string& common_prefix) {
   // Prevent re-addition of prefix.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
       tail_suggest_common_prefix.empty()) {
     tail_suggest_common_prefix = common_prefix;
+  }
+}
+
+void AutocompleteMatch::SetTailSuggestContentPrefix(
+    const std::u16string& common_prefix) {
+  // Prevent re-addition of prefix.
+  if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
+      tail_suggest_common_prefix.empty()) {
+    SetTailSuggestCommonPrefix(common_prefix);
     // Insert an ellipsis before uncommon part.
     const std::u16string ellipsis = kEllipsis;
     contents = ellipsis + contents;

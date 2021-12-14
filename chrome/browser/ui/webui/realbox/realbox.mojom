@@ -69,6 +69,11 @@ struct AutocompleteMatch {
   // ID of the group the suggestion belongs to. 0 if it does not belong to any.
   int32 suggestion_group_id;
   bool supports_deletion;
+  // Holds the common part of tail suggestion. Not every match has a tail
+  // suggestion prefix. For example, the tail suggestion prefix for "hobbit
+  // holes for sale in" is "hobbit holes for sale" and the match contents
+  // would be the text following "sale".
+  mojo_base.mojom.String16? tail_suggest_common_prefix;
 };
 
 struct SuggestionGroup {

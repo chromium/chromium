@@ -1941,7 +1941,7 @@ TEST_F(AutocompleteResultTest, InlineTailPrefixes) {
                                   "this is a test");
   AutocompleteResult result;
   result.AppendMatches(AutocompleteInput(), matches);
-  result.InlineTailPrefixes();
+  result.SetTailSuggestContentPrefixes();
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(result.match_at(i)->contents,
               base::UTF8ToUTF16(cases[i].after_contents));
@@ -1949,7 +1949,7 @@ TEST_F(AutocompleteResultTest, InlineTailPrefixes) {
                                      cases[i].after_contents_class));
   }
   // Run twice and make sure that it doesn't re-prepend ellipsis.
-  result.InlineTailPrefixes();
+  result.SetTailSuggestContentPrefixes();
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(result.match_at(i)->contents,
               base::UTF8ToUTF16(cases[i].after_contents));

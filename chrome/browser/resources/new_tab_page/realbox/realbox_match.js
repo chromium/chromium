@@ -87,6 +87,15 @@ class RealboxMatchElement extends PolymerElement {
       //========================================================================
 
       /**
+       * @type {boolean}
+       * @private
+       */
+      actionIsVisible_: {
+        type: Boolean,
+        computed: `computeActionIsVisible_(match)`,
+      },
+
+      /**
        * Rendered match contents based on autocomplete provided styling.
        * @type {string}
        * @private
@@ -104,15 +113,6 @@ class RealboxMatchElement extends PolymerElement {
       descriptionHtml_: {
         type: String,
         computed: `computeDescriptionHtml_(match)`,
-      },
-
-      /**
-       * @type {boolean}
-       * @private
-       */
-      actionIsVisible_: {
-        type: Boolean,
-        computed: `computeActionIsVisible_(match)`,
       },
 
       /**
@@ -142,6 +142,16 @@ class RealboxMatchElement extends PolymerElement {
       separatorText_: {
         type: String,
         computed: `computeSeparatorText_(match)`,
+      },
+
+      /**
+       * Rendered tail suggest common prefix.
+       * @type {string}
+       * @private
+       */
+      tailSuggestPrefix_: {
+        type: String,
+        computed: `computeTailSuggestPrefix_(match)`,
       },
     };
   }
@@ -316,6 +326,23 @@ class RealboxMatchElement extends PolymerElement {
         this.renderTextWithClassifications_(
                 decodeString16(match.description), match.descriptionClass)
             .innerHTML;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeTailSuggestPrefix_() {
+    if (!this.match || !this.match.tailSuggestCommonPrefix) {
+      return '';
+    }
+    const prefix = decodeString16(this.match.tailSuggestCommonPrefix);
+    // Replace last space with non breaking space since spans collapse
+    // trailing white spaces and the prefix always ends with a white space.
+    if (prefix.slice(-1) === ' ') {
+      return prefix.slice(0, -1) + '\u00A0';
+    }
+    return prefix;
   }
 
   /**

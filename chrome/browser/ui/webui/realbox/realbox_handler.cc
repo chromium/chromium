@@ -253,6 +253,8 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                 match,
                 RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion));
 
+    mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
+
     matches.push_back(std::move(mojom_match));
     line++;
   }
@@ -682,6 +684,11 @@ void RealboxHandler::ExecuteAction(uint8_t line,
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
   DCHECK(controller == autocomplete_controller_.get());
+
+  // Prepend missing tail suggestion prefixes in results, if present.
+  if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxTailSuggest)) {
+    autocomplete_controller_->SetTailSuggestCommonPrefixes();
+  }
 
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),

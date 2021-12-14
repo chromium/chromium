@@ -514,9 +514,11 @@ struct AutocompleteMatch {
   void SetAllowedToBeDefault(const AutocompleteInput& input);
 
   // If this match is a tail suggestion, prepends the passed |common_prefix|.
-  // If not, but the prefix matches the beginning of the suggestion, dims that
-  // portion in the classification.
-  void InlineTailPrefix(const std::u16string& common_prefix);
+  void SetTailSuggestCommonPrefix(const std::u16string& common_prefix);
+
+  // If this match is a tail suggestion, prepends the passed |common_prefix|
+  // and adds ellipses to contents.
+  void SetTailSuggestContentPrefix(const std::u16string& common_prefix);
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.

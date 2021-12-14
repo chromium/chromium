@@ -214,11 +214,15 @@ function verifyMatch(match, matchEl) {
       match.answer ? match.answer.secondLine : match.description);
   const separatorText =
       matchDescription ? loadTimeData.getString('realboxSeparator') : '';
+  const contents = matchEl.$['contents'].textContent.trim();
+  const separator = matchEl.$['separator'].textContent.trim();
+  const description = matchEl.$['description'].textContent.trim();
+  const text = (contents + ' ' + separator + ' ' + description).trim();
   assertEquals(
       match.swapContentsAndDescription ?
           matchDescription + separatorText + matchContents :
           matchContents + separatorText + matchDescription,
-      matchEl.$['text-container'].textContent.trim());
+      text);
 }
 
 suite('NewTabPageRealboxTest', () => {

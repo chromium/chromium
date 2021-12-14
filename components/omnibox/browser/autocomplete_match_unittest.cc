@@ -175,7 +175,7 @@ TEST(AutocompleteMatchTest, InlineTailPrefix) {
     match.type = AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
     match.contents = base::UTF8ToUTF16(test_case.before_contents);
     match.contents_class = test_case.before_contents_class;
-    match.InlineTailPrefix(u"12345678");
+    match.SetTailSuggestContentPrefix(u"12345678");
     EXPECT_EQ(match.contents, base::UTF8ToUTF16(test_case.after_contents));
     EXPECT_TRUE(EqualClassifications(match.contents_class,
                                      test_case.after_contents_class));

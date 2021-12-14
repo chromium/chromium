@@ -449,7 +449,7 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
     const AutocompleteResult& autocomplete_result) {
   JNIEnv* env = AttachCurrentThread();
 
-  autocomplete_controller_->InlineTailPrefixes();
+  autocomplete_controller_->SetTailSuggestContentPrefixes();
 
   // Get the inline-autocomplete text.
   std::u16string inline_autocompletion;

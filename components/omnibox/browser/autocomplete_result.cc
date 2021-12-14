@@ -822,7 +822,7 @@ void AutocompleteResult::DeduplicateMatches(ACMatches* matches) {
   });
 }
 
-void AutocompleteResult::InlineTailPrefixes() {
+std::u16string AutocompleteResult::GetCommonPrefix() {
   std::u16string common_prefix;
 
   for (const auto& match : matches_) {
@@ -837,9 +837,25 @@ void AutocompleteResult::InlineTailPrefixes() {
       break;
     }
   }
-  if (common_prefix.size()) {
+  return common_prefix;
+}
+
+void AutocompleteResult::SetTailSuggestCommonPrefixes() {
+  std::u16string common_prefix = GetCommonPrefix();
+
+  if (!common_prefix.empty()) {
     for (auto& match : matches_)
-      match.InlineTailPrefix(common_prefix);
+      match.SetTailSuggestCommonPrefix(common_prefix);
+  }
+}
+
+void AutocompleteResult::SetTailSuggestContentPrefixes() {
+  std::u16string common_prefix = GetCommonPrefix();
+
+  if (!common_prefix.empty()) {
+    for (auto& match : matches_) {
+      match.SetTailSuggestContentPrefix(common_prefix);
+    }
   }
 }
 

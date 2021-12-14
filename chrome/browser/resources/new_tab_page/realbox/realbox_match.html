@@ -30,6 +30,11 @@
     text-overflow: ellipsis;
   }
 
+  #ellipsis {
+    inset-inline-end: 0;
+    position: absolute;
+  }
+
   #focus-indicator {
     background-color: var(--google-blue-600);
     border-radius: 3px;
@@ -44,8 +49,16 @@
     display: block;
   }
 
+  #prefix {
+    opacity: 0;
+  }
+
   #separator {
     white-space: pre;
+  }
+
+  #tail-suggest-prefix {
+     position: relative;
   }
 
   #text-container {
@@ -125,6 +138,12 @@
   <div id="focus-indicator"></div>
   <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
   <div id="text-container">
+    <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
+      <span id="prefix">[[tailSuggestPrefix_]]</span>
+      <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
+           prepended to the match content in other surfaces-->
+      <span id="ellipsis">...&nbsp</span>
+    </span>
     <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>

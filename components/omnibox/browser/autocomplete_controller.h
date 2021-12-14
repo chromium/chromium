@@ -167,8 +167,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Constructs and sets the final destination URL on the given match.
   void SetMatchDestinationURL(AutocompleteMatch* match) const;
 
-  // Prepend missing tail suggestion prefixes in results, if present.
-  void InlineTailPrefixes();
+  // Populates tail_suggest_common_prefix on the matches as well as prepends
+  // ellipses.
+  void SetTailSuggestContentPrefixes();
+
+  // Populates tail_suggest_common_prefix on the matches.
+  void SetTailSuggestCommonPrefixes();
 
   HistoryURLProvider* history_url_provider() const {
     return history_url_provider_;
