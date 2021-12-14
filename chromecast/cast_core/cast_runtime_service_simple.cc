@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/cast_runtime_service.h"
-
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromecast/cast_core/cast_runtime_service.h"
+#include "chromecast/cast_core/cast_runtime_service_impl.h"
 
 namespace chromecast {
 
-// static
 std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     CastWebService* web_service,
@@ -17,7 +15,8 @@ std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
     CastRuntimeService::NetworkContextGetter network_context_getter,
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller) {
-  return std::make_unique<CastRuntimeService>();
+  return std::make_unique<CastRuntimeServiceImpl>(
+      web_service, std::move(network_context_getter));
 }
 
 }  // namespace chromecast

@@ -130,72 +130,109 @@ cast_source_set("grpc_webui") {
   }
 }
 
-if (is_linux) {
-  cast_source_set("core_service_bindings") {
-    sources = [
-      "bindings_manager_web_runtime.cc",
-      "bindings_manager_web_runtime.h",
-    ]
+cast_source_set("core_service_bindings") {
+  sources = [
+    "bindings_manager_web_runtime.cc",
+    "bindings_manager_web_runtime.h",
+  ]
 
-    public_deps = [
-      ":message_port",
-      "//base",
-      "//chromecast/bindings/public/mojom",
-      "//components/cast/api_bindings:manager",
-      "//components/cast/message_port",
-      "//components/cast/message_port:blink_message_port_adapter",
-      "//mojo/public/cpp/bindings",
-      "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
-      "//third_party/cast_core/public/src/proto/web:message_channel_proto",
-    ]
+  public_deps = [
+    ":message_port",
+    "//base",
+    "//chromecast/bindings:bindings_manager",
+    "//chromecast/bindings/public/mojom",
+    "//components/cast/api_bindings:manager",
+    "//components/cast/message_port",
+    "//components/cast/message_port:blink_message_port_adapter",
+    "//mojo/public/cpp/bindings",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
+  ]
 
+  if (is_linux || is_chromeos || is_android) {
     deps = [ "//chromecast/bindings:bindings_manager_cast" ]
   }
+}
 
-  cast_source_set("application_dispatch") {
-    sources = [
-      "runtime_application_base.cc",
-      "runtime_application_base.h",
-      "runtime_application_dispatcher.cc",
-      "runtime_application_dispatcher.h",
-      "streaming_runtime_application.cc",
-      "streaming_runtime_application.h",
-      "web_runtime_application.cc",
-      "web_runtime_application.h",
-    ]
+cast_source_set("runtime_application") {
+  sources = [
+    "runtime_application.cc",
+    "runtime_application.h",
+  ]
 
-    public_deps = [
-      ":grpc_impl",
-      ":grpc_support",
-      ":grpc_webui",
-      ":metrics_recorder",
-      ":runtime_application",
-      "//base",
-      "//chromecast/browser:public",
-      "//chromecast/common:feature_constants",
-      "//components/cast_streaming/public/mojom",
-      "//components/url_rewrite/browser",
-      "//media/mojo/mojom",
-      "//third_party/cast_core/public/src/proto/common:application_config_proto",
-      "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
-      "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
-      "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
-      "//third_party/grpc:grpc++",
-    ]
+  public_deps = [
+    "//third_party/cast_core/public/src/proto/common:application_config_proto",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+    "//url",
+  ]
+}
 
-    deps = [
-      ":core_service_bindings",
-      ":streaming_receiver_session_client",
-      "//chromecast/browser:browser_base",
-      "//chromecast/cast_core/url_rewrite",
-      "//components/cast/message_port",
-      "//components/cast_streaming/browser",
-      "//components/cast_streaming/public",
-      "//content/public/browser",
-      "//mojo/public/cpp/bindings",
-      "//third_party/blink/public/common:headers",
-      "//third_party/openscreen/src/cast/common:public",
-    ]
+cast_source_set("cast_runtime_service") {
+  sources = [
+    "cast_runtime_service.cc",
+    "cast_runtime_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromecast/media/cma/backend/proxy:headers",
+    "//chromecast/service",
+  ]
+}
+
+cast_source_set("cast_runtime_service_impl") {
+  sources = [
+    "cast_runtime_service_impl.cc",
+    "cast_runtime_service_impl.h",
+    "runtime_application_base.cc",
+    "runtime_application_base.h",
+    "runtime_application_dispatcher.cc",
+    "runtime_application_dispatcher.h",
+    "streaming_runtime_application.cc",
+    "streaming_runtime_application.h",
+    "web_runtime_application.cc",
+    "web_runtime_application.h",
+  ]
+
+  public_deps = [
+    ":cast_runtime_service",
+    ":grpc_impl",
+    ":grpc_support",
+    ":grpc_webui",
+    ":metrics_recorder",
+    ":runtime_application",
+    "//base",
+    "//chromecast/browser:public",
+    "//chromecast/common:feature_constants",
+    "//components/cast_streaming/public/mojom",
+    "//components/url_rewrite/browser",
+    "//media/mojo/mojom",
+    "//third_party/cast_core/public/src/proto/common:application_config_proto",
+    "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
+    "//third_party/grpc:grpc++",
+  ]
+
+  deps = [
+    ":core_service_bindings",
+    ":streaming_receiver_session_client",
+    "//chromecast/browser:browser_base",
+    "//chromecast/cast_core/url_rewrite",
+    "//chromecast/metrics:cast_event_builder_simple",
+    "//components/cast/message_port",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/public",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common:headers",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+
+  if (chromecast_branding == "public") {
+    sources += [ "cast_runtime_service_simple.cc" ]
+  } else {
+    deps += [ "//chromecast/internal/cast_core/runtime:cast_runtime_service" ]
   }
 }
 
@@ -240,16 +277,19 @@ cast_source_set("browser") {
   ]
 
   deps = [
+    ":cast_runtime_service",
     ":cors_exempt_headers",
     ":runtime_application",
-    ":runtime_service",
     "//base",
-    "//chromecast/browser",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",
     "//content/public/common",
     "//media",
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+  ]
+
+  public_deps = [
+    "//chromecast/browser",
   ]
 
   if (enable_cast_media_runtime) {
@@ -290,62 +330,13 @@ cast_source_set("streaming_receiver_session_client") {
   ]
 }
 
-cast_source_set("runtime_application") {
-  sources = [
-    "runtime_application.cc",
-    "runtime_application.h",
-  ]
-
-  public_deps = [
-    "//third_party/cast_core/public/src/proto/common:application_config_proto",
-    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
-    "//url",
-  ]
-}
-
-cast_source_set("runtime_service") {
-  sources = [
-    "cast_runtime_service.cc",
-    "cast_runtime_service.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromecast:chromecast_buildflags",
-    "//chromecast/browser:browser_base",
-    "//chromecast/metrics:cast_event_builder_simple",
-    "//chromecast/service",
-  ]
-
-  public_deps = [ "//chromecast/media/cma/backend/proxy:headers" ]
-
-  if (!enable_cast_media_runtime) {
-    sources += [ "cast_runtime_service_simple.cc" ]
-  } else {
-    sources += [
-      "cast_runtime_service_impl.cc",
-      "cast_runtime_service_impl.h",
-    ]
-
-    public_deps += [
-      ":application_dispatch",
-      ":metrics_recorder",
-    ]
-
-    deps += [ "//chromecast/metrics:cast_event_builder_simple" ]
-
-    if (chromecast_branding == "public") {
-      sources += [ "cast_runtime_service_impl_factory.cc" ]
-    }
-  }
-}
-
 # When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_executable("core_runtime_simple") {
   sources = [ "cast_runtime_main.cc" ]
 
   deps = [
     ":browser",
+    ":cast_runtime_service_impl",
     ":renderer",
     "//chromecast:cast_shell_pak",
     "//chromecast:chromecast_locales_pak",
@@ -380,6 +371,7 @@ cast_source_set("unit_tests") {
     "cast_runtime_histogram_flattener_unittest.cc",
     "cast_runtime_metrics_test_helpers.cc",
     "cast_runtime_metrics_test_helpers.h",
+    "cast_runtime_service_dummy.cc",
     "cors_exempt_headers_unittest.cc",
     "grpc_resource_data_source_unittest.cc",
     "streaming_receiver_session_client_unittest.cc",
@@ -387,6 +379,7 @@ cast_source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":cast_runtime_service",
     ":cors_exempt_headers",
     ":grpc_webui",
     ":metrics_recorder",

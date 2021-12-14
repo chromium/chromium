@@ -28,16 +28,24 @@ class CastRuntimeServiceImpl
                          NetworkContextGetter network_context_getter);
   ~CastRuntimeServiceImpl() override;
 
-  // CastService overrides.
+ protected:
+  // CastService implementation:
+  void InitializeInternal() override;
+  void FinalizeInternal() override;
   void StartInternal() override;
   void StopInternal() override;
-  const std::string& GetAudioChannelEndpoint() override;
+
+  // CastRuntimeMetricsRecorder::EventBuilderFactory implementation:
+  std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
+
+  // CastRuntimeService implementation:
+  WebCryptoServer* GetWebCryptoServer() override;
+  receiver::MediaManager* GetMediaManager() override;
   CastWebService* GetCastWebService() override;
   RuntimeApplication* GetRuntimeApplication() override;
 
- protected:
-  // CastRuntimeMetricsRecorder::EventBuilderFactory overrides.
-  std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
+  // CastRuntimeAudioChannelEndpointManager implementation:
+  const std::string& GetAudioChannelEndpoint() override;
 
  private:
   CastWebService* const web_service_;
