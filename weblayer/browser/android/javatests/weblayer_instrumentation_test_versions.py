@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -113,7 +113,7 @@ def tests_to_skip(expectation_contents, impl_version='trunk',
             'Only "Skip" is supported in the skew test expectations.')
 
     # Iterate over the first (and only) item since can't index over a frozenset.
-    tag = iter(expectation.tags).next()
+    tag = next(iter(expectation.tags))
     if tag_matches(tag, impl_version, client_version):
       tests.append(expectation.test)
   return tests
