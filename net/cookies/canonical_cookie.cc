@@ -542,8 +542,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Get the port, this will get a default value if a port isn't provided.
   int source_port = url.EffectiveIntPort();
 
-  // TODO(crbug.com/987177) Add partition key if Partitioned is present in the
-  // cookie line.
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       parsed_cookie.Name(), parsed_cookie.Value(), cookie_domain, cookie_path,
       creation_time, cookie_expires, creation_time, parsed_cookie.IsSecure(),
