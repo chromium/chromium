@@ -501,9 +501,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedLoadBlockingTime" units="ms"
-    expires_after="2021-12-26">
-  <owner>changwan@chromium.org</owner>
+    expires_after="2022-12-13">
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time spent blocking WebView startup to wait for the variations
     seed. This is less than the entire time needed to load the seed, since
@@ -699,7 +700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobInterval" units="minutes"
-    expires_after="2022-01-20">
+    expires_after="2022-12-13">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -710,7 +711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobQueueTime" units="minutes"
-    expires_after="2022-01-20">
+    expires_after="2022-12-13">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
