@@ -306,7 +306,7 @@
   {
     "name": "ash-limit-shelf-items-to-active-desk",
     "owners": [ "afakhry", "tclaiborne" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 110
   },
   {
     "name": "ash-overview-button",
