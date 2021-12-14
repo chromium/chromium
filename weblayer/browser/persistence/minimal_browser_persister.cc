@@ -272,7 +272,7 @@ bool PersistTabStateSecondaryPass(const SessionID& browser_session_id,
     return true;
 
   const SessionID& session_id = GetSessionIDForTab(tab);
-  for (int i = 0; i < 2; ++i) {
+  for (int i = 0; i < 5; ++i) {
     // Skips the navigation that was written during the first pass.
     if (!iterator.Next())
       return true;
@@ -334,7 +334,8 @@ std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
   // . active tabs pending navigation entry, if no pending then last committed.
   // . remaining tabs pending navigation entry or last committed if no pending.
   // . active tabs last committed and one navigation before it.
-  // . remaining tabs last committed and one navigation before it.
+  // . remaining tabs last committed and a limited number of preceding
+  //   navigations.
   std::vector<Tab*> tabs = GetTabsInPersistOrder(browser);
   for (Tab* tab : tabs) {
     if (!PersistTabStatePrimaryPass(browser_session_id, tab, &builder))
