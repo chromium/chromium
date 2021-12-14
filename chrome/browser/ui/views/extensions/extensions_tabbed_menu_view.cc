@@ -102,6 +102,7 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
   SetPaintClientToLayer(true);
 
   toolbar_model_observation_.Observe(toolbar_model_.get());
+  browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -128,6 +129,9 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
 
 ExtensionsTabbedMenuView::~ExtensionsTabbedMenuView() {
   g_extensions_dialog = nullptr;
+
+  // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
+  // directly within TabStripModelObserver::~TabStripModelObserver().
 }
 
 // static
@@ -185,6 +189,19 @@ size_t ExtensionsTabbedMenuView::GetSelectedTabIndex() const {
 std::u16string ExtensionsTabbedMenuView::GetAccessibleWindowTitle() const {
   // The title is already spoken via the call to SetTitle().
   return std::u16string();
+}
+
+void ExtensionsTabbedMenuView::TabChangedAt(content::WebContents* contents,
+                                            int index,
+                                            TabChangeType change_type) {
+  Update();
+}
+
+void ExtensionsTabbedMenuView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  Update();
 }
 
 void ExtensionsTabbedMenuView::OnToolbarActionAdded(
@@ -266,6 +283,13 @@ void ExtensionsTabbedMenuView::Populate() {
   for (size_t i = 0; i < sorted_ids.size(); ++i)
     CreateAndInsertInstalledExtension(sorted_ids[i], i);
   ConsistencyCheck();
+}
+
+void ExtensionsTabbedMenuView::Update() {
+  for (views::View* view : installed_items_->children()) {
+    auto* item_view = GetAsMenuItemView(view);
+    UpdateMenuItemView(item_view, installed_items_);
+  }
 }
 
 void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(

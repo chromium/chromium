@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,6 +24,7 @@ class ExtensionsContainer;
 // TODO(crbug.com/1263311): Brief explanation of each tabs goal after
 // implementing them.
 class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
+                                 public TabStripModelObserver,
                                  public ToolbarActionsModel::Observer {
  public:
   METADATA_HEADER(ExtensionsTabbedMenuView);
@@ -66,6 +68,15 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
 
+  // TabStripModelObserver:
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(
       const ToolbarActionsModel::ActionId& action_id) override;
@@ -79,6 +90,9 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
  private:
   // Initially creates the tabs.
   void Populate();
+
+  // Updates the menu.
+  void Update();
 
   // Adds a menu item in the installed extensions for a newly-added extension.
   void CreateAndInsertInstalledExtension(
