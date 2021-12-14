@@ -32,10 +32,17 @@ generate_grd("build_grd") {
     "firmware_update_types.js",
     "index.html",
     "mojo_interface_provider.js",
+    "mojo_utils.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":preprocess_generated" ]
-  manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
+  deps = [
+    ":preprocess_firmware_update_mojom",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocessed_gen_manifest",
+    "$target_gen_dir/manifest_preprocess_mojo.json",
+  ]
   grd_prefix = "ash_firmware_update_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
@@ -50,17 +57,22 @@ js_type_check("closure_compile") {
     ":firmware_update_app",
     ":firmware_update_types",
     ":mojo_interface_provider",
+    ":mojo_utils",
     ":peripheral_updates_list",
     ":update_card",
   ]
 }
 
 js_library("fake_data") {
-  deps = [ ":firmware_update_types" ]
+  deps = [
+    ":firmware_update_types",
+    ":mojo_utils",
+  ]
 }
 
 js_library("fake_update_controller") {
   deps = [
+    ":firmware_update_types",
     "//ash/webui/common/resources:fake_observables",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -85,12 +97,15 @@ js_library("firmware_update_app") {
 js_library("firmware_update_dialog") {
   deps = [
     ":firmware_update_types",
+    ":mojo_utils",
+    "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
 js_library("firmware_update_types") {
+  deps = [ "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile" ]
 }
 
 js_library("mojo_interface_provider") {
@@ -103,11 +118,15 @@ js_library("mojo_interface_provider") {
   ]
 }
 
+js_library("mojo_utils") {
+}
+
 js_library("peripheral_updates_list") {
   deps = [
     ":firmware_update_types",
     ":mojo_interface_provider",
     ":update_card",
+    "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -115,6 +134,7 @@ js_library("peripheral_updates_list") {
 js_library("update_card") {
   deps = [
     ":firmware_update_types",
+    "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -126,6 +146,14 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
   in_files = polymer_element_files
+}
+
+preprocess_if_expr("preprocess_firmware_update_mojom") {
+  deps = [ "//ash/webui/firmware_update_ui/mojom:mojom_js" ]
+  in_folder = "$root_gen_dir/ash/webui/firmware_update_ui/"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
+  in_files = [ "mojom/firmware_update.mojom-lite.js" ]
 }
 
 html_to_js("web_components") {

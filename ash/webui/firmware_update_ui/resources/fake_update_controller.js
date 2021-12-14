@@ -7,8 +7,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress} from './fake_data.js';
-import {InstallationProgress, UpdateControllerInterface, UpdateProgressObserver, UpdateProviderInterface} from './firmware_update_types.js';
-import {getUpdateProvider} from './mojo_interface_provider.js';
+import {FakeUpdateProviderInterface, FirmwareUpdate, InstallationProgress, UpdateControllerInterface, UpdateProgressObserver, UpdateProviderInterface} from './firmware_update_types.js';
+import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
 export const ON_PROGRESS_CHANGED = 'UpdateProgressObserver_onProgressChanged';
@@ -21,9 +21,10 @@ export const ON_PROGRESS_CHANGED = 'UpdateProgressObserver_onProgressChanged';
 /** @implements {UpdateControllerInterface} */
 export class FakeUpdateController {
   constructor() {
+    setUseFakeProviders(true);
     this.observables_ = new FakeObservables();
 
-    /** @private {UpdateProviderInterface} */
+    /** @private {UpdateProviderInterface|FakeUpdateProviderInterface} */
     this.fakeUpdateProvider_ = getUpdateProvider();
 
     /** @private {!Set<string>} */

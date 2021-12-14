@@ -46,6 +46,7 @@ js_library("firmware_update_dialog_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -64,6 +65,7 @@ js_library("firmware_update_test") {
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:update_card",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -79,6 +81,7 @@ js_library("peripheral_updates_list_test") {
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
     "//ash/webui/firmware_update_ui/resources:update_card",
   ]
@@ -89,7 +92,9 @@ js_library("update_card_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:update_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

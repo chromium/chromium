@@ -3,39 +3,35 @@
 // found in the LICENSE file.
 
 import {FirmwareUpdate, InstallationProgress, UpdatePriority} from './firmware_update_types.js';
+import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!Array<!FirmwareUpdate>>} */
 export const fakeFirmwareUpdates = [[
   {
     deviceId: '1',
-    deviceName: 'HP dock',
-    version: '5.4.3',
-    description:
+    deviceName: stringToMojoString16('HP dock'),
+    deviceVersion: '5.4.3',
+    deviceDescription: stringToMojoString16(
         `Update the firmware to the latest to enhance the security of your HP
-         dock device`,
+         dock device`),
     priority: UpdatePriority.kCritical,
-    updateModeInstructions: 'Do a backflip before updating.',
-    screenshotUrl: '',
   },
   {
     deviceId: '2',
-    deviceName: 'ColorHugALS',
-    version: '3.0.2',
-    description:
+    deviceName: stringToMojoString16('ColorHugALS'),
+    deviceVersion: '3.0.2',
+    deviceDescription: stringToMojoString16(
         `Updating your ColorHugALS device firmware improves performance and
-         adds new features`,
+         adds new features`),
     priority: UpdatePriority.kMedium,
-    updateModeInstructions: '',
-    screenshotUrl: '',
   },
   {
     deviceId: '3',
-    deviceName: 'Logitech keyboard',
-    version: '2.1.12',
-    description: 'Update firmware for Logitech keyboard to improve performance',
+    deviceName: stringToMojoString16('Logitech keyboard'),
+    deviceVersion: '2.1.12',
+    deviceDescription: stringToMojoString16(
+        'Update firmware for Logitech keyboard to improve performance'),
     priority: UpdatePriority.kLow,
-    updateModeInstructions: 'Do a cartwheel before updating.',
-    screenshotUrl: '',
   },
 ]];
 
@@ -54,3 +50,23 @@ export const fakeInstallationProgress = [
     percentage: 100,
   },
 ];
+
+/** @type {!FirmwareUpdate} */
+export const fakeFirmwareUpdate = {
+  deviceId: '1',
+  deviceName: stringToMojoString16('Logitech keyboard'),
+  deviceVersion: '2.1.12',
+  deviceDescription: stringToMojoString16(
+      'Update firmware for Logitech keyboard to improve performance'),
+  priority: UpdatePriority.kLow,
+};
+
+/** @type {!FirmwareUpdate} */
+export const fakeCriticalFirmwareUpdate = {
+  deviceId: '1',
+  deviceName: stringToMojoString16('Logitech keyboard'),
+  deviceVersion: '2.1.12',
+  deviceDescription: stringToMojoString16(
+      'Update firmware for Logitech keyboard to improve performance'),
+  priority: UpdatePriority.kCritical,
+};

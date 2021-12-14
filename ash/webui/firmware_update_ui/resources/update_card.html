@@ -34,17 +34,17 @@
 <div id="container">
   <div class="update-info">
     <div id="name" class="firmware-name-font">
-      [[update.deviceName]]
+      [[computeDeviceName_(update.deviceName)]]
     </div>
     <div id="version" class="firmware-version-font">
-      <span>[[computeVersionText_(update.version)]]</span>
+      <span>[[computeVersionText_(update.deviceVersion)]]</span>
       <span id ="priorityText"
           hidden$="[[!isCriticalUpdate_(update.priority)]]">
         [[i18n('criticalUpdate')]]
       </span>
     </div>
     <div id="description" class="firmware-description-font">
-      [[update.description]]
+      [[computeDeviceDescription_(update.deviceDescription)]]
     </div>
   </div>
   <cr-button id="updateButton" on-click="onUpdateButtonClicked_">

@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './mojom/firmware_update.mojom-lite.js';
 import './strings.m.js';
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
@@ -12,11 +16,11 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FirmwareUpdate, InstallationProgress, UpdateControllerInterface} from './firmware_update_types.js';
 import {getUpdateController} from './mojo_interface_provider.js';
+import {mojoString16ToString} from './mojo_utils.js';
 
 /** @enum {number} */
 export const DialogState = {
   CLOSED: 0,
-  DEVICE_PREP: 1,
   UPDATING: 2,
   UPDATE_DONE: 3,
 };
@@ -73,16 +77,6 @@ export class FirmwareUpdateDialogElement extends
     this.updateController_ = getUpdateController();
 
     /**
-     * Event callback for 'open-device-prep-dialog'.
-     * @param {!Event} e
-     * @private
-     */
-    this.openDevicePrepDialog_ = (e) => {
-      this.update = e.detail.update;
-      this.dialogState = DialogState.DEVICE_PREP;
-    };
-
-    /**
      * Event callback for 'open-update-dialog'.
      * @param {!Event} e
      * @private
@@ -98,9 +92,6 @@ export class FirmwareUpdateDialogElement extends
     super.connectedCallback();
 
     window.addEventListener(
-        'open-device-prep-dialog', (e) => this.openDevicePrepDialog_(e));
-
-    window.addEventListener(
         'open-update-dialog', (e) => this.openUpdateDialog_(e));
   }
 
@@ -113,14 +104,6 @@ export class FirmwareUpdateDialogElement extends
     if (installationProgress.percentage === 100) {
       this.dialogState = DialogState.UPDATE_DONE;
     }
-  }
-
-  /**
-   * @protected
-   * @return {boolean}
-   */
-  shouldShowDevicePrepDialog_() {
-    return this.dialogState === DialogState.DEVICE_PREP;
   }
 
   /** @protected */
@@ -169,8 +152,9 @@ export class FirmwareUpdateDialogElement extends
    */
   computeUpdateDialogTitle_() {
     return this.isUpdateInProgress_() ?
-        this.i18n('updating', this.update.deviceName) :
-        this.i18n('deviceUpToDate', this.update.deviceName);
+        this.i18n('updating', mojoString16ToString(this.update.deviceName)) :
+        this.i18n(
+            'deviceUpToDate', mojoString16ToString(this.update.deviceName));
   }
 
   /**
@@ -186,9 +170,10 @@ export class FirmwareUpdateDialogElement extends
    * @return {string}
    */
   computeUpdateDialogBodyText_() {
-    const {deviceName, version} = this.update;
+    const {deviceName, deviceVersion} = this.update;
     return this.dialogState === DialogState.UPDATE_DONE ?
-        this.i18n('hasBeenUpdated', deviceName, version) :
+        this.i18n(
+            'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion) :
         this.i18n('updatingInfo');
   }
 }

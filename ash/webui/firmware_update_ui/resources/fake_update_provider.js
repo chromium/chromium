@@ -5,6 +5,7 @@
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
 import {FirmwareUpdate, UpdateObserver, UpdateProviderInterface} from './firmware_update_types.js';
+import {setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
 export const ON_UPDATE_LIST_CHANGED = 'UpdateObserver_onUpdateListChanged';
@@ -17,6 +18,7 @@ export const ON_UPDATE_LIST_CHANGED = 'UpdateObserver_onUpdateListChanged';
 /** @implements {UpdateProviderInterface} */
 export class FakeUpdateProvider {
   constructor() {
+    setUseFakeProviders(true);
     this.observables_ = new FakeObservables();
 
     /** @private {?Promise} */

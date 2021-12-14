@@ -3,10 +3,6 @@
     --cr-dialog-width: 416px;
   }
 
-  #cancelButton {
-    margin-inline-end: 12px;
-  }
-
   [slot='button-container'] {
     display: flex;
     justify-content: flex-end;
@@ -31,31 +27,6 @@
     width: 95%;
   }
 </style>
-<template is="dom-if"
-    if="[[shouldShowDevicePrepDialog_(dialogState)]]"
-    restamp>
-  <cr-dialog id="devicePrepDialog" show-on-attach
-    on-close="closeDialog_">
-  <div slot="title" class="firmware-dialog-title-font">
-    [[i18n('prepareDevice')]]
-  </div>
-  <div slot="body" class="firmware-dialog-body-font">
-    <div id="updateInstructions" hidden$="[[!update.updateModeInstructions]]">
-      [[update.updateModeInstructions]]
-    </div>
-  </div>
-  <div slot="button-container">
-    <cr-button id="cancelButton" on-click="closeDialog_">
-      [[i18n('cancelButton')]]
-    </cr-button>
-    <cr-button class="action-button"
-        id="nextButton"
-        on-click="startUpdate_">
-      [[i18n('nextButton')]]
-    </cr-button>
-  </div>
-  </cr-dialog>
-</template>
 <template is="dom-if" if="[[shouldShowUpdateDialog_(dialogState)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
       on-close="closeDialog_">

@@ -11,6 +11,7 @@ import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_updat
 import {DialogState} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {FirmwareUpdate, UpdateProviderInterface} from 'chrome://accessory-update/firmware_update_types.js';
 import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
+import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -47,12 +48,6 @@ export function firmwareUpdateAppTest() {
     page.remove();
     page = null;
   });
-
-  /** @return {!CrDialogElement} */
-  function getDevicePrepDialog() {
-    return page.shadowRoot.querySelector('firmware-update-dialog')
-        .shadowRoot.querySelector('#devicePrepDialog');
-  }
 
   /** @return {!CrDialogElement} */
   function getUpdateDialog() {
@@ -105,41 +100,31 @@ export function firmwareUpdateAppTest() {
     assertEquals(fake_provider, getUpdateProvider());
   });
 
-  test('OpenDevicePrepDialog', async () => {
-    await flushTasks();
-    assertFalse(!!getDevicePrepDialog());
-    // Open dialog for first firmware update card.
-    getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
-    await flushTasks();
-    assertTrue(getDevicePrepDialog().open);
-  });
-
   test('OpenUpdateDialog', async () => {
     await flushTasks();
     // Open dialog for first firmware update card.
     getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
-    await flushTasks();
-    getNextButton(getDevicePrepDialog()).click();
     await flushTasks();
     assertTrue(getUpdateDialog().open);
   });
 
   test('SuccessfulUpdate', async () => {
     await flushTasks();
-    // Open dialog for second firmware update card with no prep instructions.
+    // Open dialog for firmware update.
     getUpdateCards()[1].shadowRoot.querySelector(`#updateButton`).click();
     await flushTasks();
     assertEquals(DialogState.UPDATING, getDialogState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
     assertEquals(
-        `Updating ${fakeFirmwareUpdate.deviceName}`,
+        `Updating ${mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
     assertEquals(DialogState.UPDATE_DONE, getDialogState());
     assertTrue(getUpdateDialog().open);
     assertEquals(
-        `Your ${fakeFirmwareUpdate.deviceName} is up to date`,
+        `Your ${
+            mojoString16ToString(fakeFirmwareUpdate.deviceName)} is up to date`,
         getUpdateDialogTitle().innerText.trim());
   });
 }

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
+import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -46,43 +48,22 @@ export function updateCardTest() {
   }
 
   test('UpdateCardPopulated', () => {
-    /** @type {!FirmwareUpdate} */
-    const fakeFirmwareUpdate = {
-      deviceId: '1',
-      deviceName: 'Logitech keyboard',
-      version: '2.1.12',
-      description:
-          'Update firmware for Logitech keyboard to improve performance',
-      priority: UpdatePriority.kLow,
-      updateModeInstructions: 'Do a backflip before updating.',
-      screenshotUrl: '',
-    };
     return initializeUpdateList(fakeFirmwareUpdate).then(() => {
       assertEquals(
-          fakeFirmwareUpdate.deviceName, updateCardElement.$.name.innerText);
+          mojoString16ToString(fakeFirmwareUpdate.deviceName),
+          updateCardElement.$.name.innerText);
       assertEquals(
-          `Version ${fakeFirmwareUpdate.version}`,
+          `Version ${fakeFirmwareUpdate.deviceVersion}`,
           updateCardElement.$.version.innerText);
       assertEquals(
-          fakeFirmwareUpdate.description,
+          mojoString16ToString(fakeFirmwareUpdate.deviceDescription),
           updateCardElement.$.description.innerText);
       assertFalse(isVisible(getPriorityTextElement()));
     });
   });
 
   test('PriorityTextVisibleForCriticalUpdate', () => {
-    /** @type {!FirmwareUpdate} */
-    const fakeFirmwareUpdate = {
-      deviceId: '1',
-      deviceName: 'Logitech keyboard',
-      version: '2.1.12',
-      description:
-          'Update firmware for Logitech keyboard to improve performance',
-      priority: UpdatePriority.kCritical,
-      updateModeInstructions: 'Do a backflip before updating.',
-      screenshotUrl: '',
-    };
-    return initializeUpdateList(fakeFirmwareUpdate).then(() => {
+    return initializeUpdateList(fakeCriticalFirmwareUpdate).then(() => {
       assertTrue(isVisible(getPriorityTextElement()));
       assertEquals(
           'Critical update', getPriorityTextElement().innerText.trim());

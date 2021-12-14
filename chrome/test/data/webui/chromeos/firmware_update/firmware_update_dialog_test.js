@@ -23,34 +23,4 @@ export function firmwareUpdateDialogTest() {
     updateDialog.remove();
     updateDialog = null;
   });
-
-  test('LoadDevicePrepDialog', async () => {
-    /** @type {!FirmwareUpdate} */
-    const fakeFirmwareUpdate = {
-      deviceId: '1',
-      deviceName: 'Logitech keyboard',
-      version: '2.1.12',
-      description:
-          'Update firmware for Logitech keyboard to improve performance',
-      priority: UpdatePriority.kLow,
-      updateModeInstructions: 'Do a backflip before updating.',
-      screenshotUrl: '',
-    };
-
-    updateDialog.update = fakeFirmwareUpdate;
-    updateDialog.dialogState = DialogState.DEVICE_PREP;
-    await flush();
-    const dialog = updateDialog.shadowRoot.querySelector('cr-dialog');
-    assertTrue(dialog.open);
-
-    assertEquals(
-        fakeFirmwareUpdate.updateModeInstructions,
-        dialog.querySelector('#updateInstructions').textContent.trim());
-
-    // Clicking on "Cancel" button will close the dialog.
-    const button = dialog.querySelector('#cancelButton');
-    button.click();
-    await flush();
-    assertFalse(isVisible(dialog));
-  });
 }
