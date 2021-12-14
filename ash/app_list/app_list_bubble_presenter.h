@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,6 +41,9 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
   AppListBubblePresenter& operator=(const AppListBubblePresenter&) = delete;
   ~AppListBubblePresenter() override;
+
+  // Closes the bubble if it is open and prepares for shutdown.
+  void Shutdown();
 
   // Shows the bubble on the display with `display_id`. The bubble is shown
   // asynchronously (after a delay) because the continue suggestions need to be
@@ -86,9 +90,6 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
  private:
-  // The code doesn't need a value for the search page.
-  enum class Page { kApps, kAssistant };
-
   // Callback for zero state search update. Builds the bubble widget and views
   // on display `display_id` and triggers the show animation.
   void OnZeroStateSearchDone(int64_t display_id);
@@ -106,17 +107,18 @@ class ASH_EXPORT AppListBubblePresenter
 
   AppListControllerImpl* const controller_;
 
+  // Whether the view is showing or animating to shown. If true,
+  // `bubble_widget_` is not null.
+  bool is_target_visibility_show_ = false;
+
   // Owned by native widget.
   views::Widget* bubble_widget_ = nullptr;
 
   // Owned by views.
   AppListBubbleView* bubble_view_ = nullptr;
 
-  // Whether the bubble hide animation is playing.
-  bool in_hide_animation_ = false;
-
   // The page to show after the views are constructed.
-  Page initial_page_ = Page::kApps;
+  AppListBubblePage target_page_ = AppListBubblePage::kApps;
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;

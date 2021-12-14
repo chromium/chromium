@@ -187,6 +187,9 @@ enum class AppListState {
   kStateLast = kInvalidState,  // Don't use over IPC
 };
 
+// Sub-pages of the app list bubble (with ProductivityLauncher).
+enum class AppListBubblePage { kApps, kSearch, kAssistant };
+
 // All possible states of the app list view.
 enum class AppListViewState {
   // Closes |app_list_main_view_| and dismisses the delegate.

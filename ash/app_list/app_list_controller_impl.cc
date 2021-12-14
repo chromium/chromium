@@ -930,6 +930,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
 
   switch (new_visibility) {
     case AssistantVisibility::kVisible:
+      DVLOG(1) << "Assistant becoming visible";
       if (!IsVisible() || is_old_visibility_closing) {
         absl::optional<AppListView::ScopedContentsResetDisabler> disabler;
         if (is_old_visibility_closing) {
@@ -1081,8 +1082,12 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   if (bubble_presenter_ && bubble_presenter_->IsShowing())
     return;
 
+  AppListView* app_list_view = fullscreen_presenter_->GetView();
+  // May be null in tests of bubble presenter.
+  if (!app_list_view)
+    return;
   views::View* focused_view =
-      fullscreen_presenter_->GetView()->GetFocusManager()->GetFocusedView();
+      app_list_view->GetFocusManager()->GetFocusedView();
 
   if (!focused_view)
     return;
@@ -1940,6 +1945,9 @@ int AppListControllerImpl::GetLastQueryLength() {
 void AppListControllerImpl::Shutdown() {
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
+
+  if (bubble_presenter_)
+    bubble_presenter_->Shutdown();
 
   Shell* shell = Shell::Get();
   AssistantController::Get()->RemoveObserver(this);

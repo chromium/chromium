@@ -9,8 +9,10 @@
 
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -41,11 +43,16 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
 
+  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
+  // operations outside the app list (e.g. to the shelf).
+  void SetDragAndDropHostOfCurrentAppList(
+      ApplicationDragAndDropHost* drag_and_drop_host);
+
   // Starts the bubble show animation.
   void StartShowAnimation();
 
   // Starts the bubble hide animation.
-  void StartHideAnimation(base::RepeatingClosure on_animation_ended);
+  void StartHideAnimation(base::OnceClosure on_hide_animation_ended);
 
   // Aborts all layer animations started by StartShowAnimation() or
   // StartHideAnimation(). This invokes their cleanup callbacks.
@@ -54,8 +61,8 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Handles back action if it we have a use for it besides dismissing.
   bool Back();
 
-  // Focuses the search box text input field.
-  void FocusSearchBox();
+  // Shows a sub-page.
+  void ShowPage(AppListBubblePage page);
 
   // Returns true if the assistant page is showing.
   bool IsShowingEmbeddedAssistantUI() const;
@@ -108,6 +115,12 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // `disabled` is true, such that focus is contained in the folder view.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Called when the show animation ends or aborts.
+  void OnShowAnimationEnded(const gfx::Rect& layer_bounds);
+
+  // Called when the hide animation ends or aborts.
+  void OnHideAnimationEnded(const gfx::Rect& layer_bounds);
+
   AppListViewDelegate* const view_delegate_;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
@@ -132,6 +145,11 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // folder_view_->GetVisible() because the view is "visible" but hidden when
   // dragging an item out of a folder.
   bool showing_folder_ = false;
+
+  // Called after the hide animation ends or aborts.
+  base::OnceClosure on_hide_animation_ended_;
+
+  base::WeakPtrFactory<AppListBubbleView> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -21,13 +21,16 @@ AppListBubbleEventFilter::AppListBubbleEventFilter(
     base::RepeatingCallback<void()> on_click_outside)
     : widget_(widget), button_(button), on_click_outside_(on_click_outside) {
   DCHECK(widget_);
-  DCHECK(button_);
   DCHECK(on_click_outside_);
   Shell::Get()->AddPreTargetHandler(this);
 }
 
 AppListBubbleEventFilter::~AppListBubbleEventFilter() {
   Shell::Get()->RemovePreTargetHandler(this);
+}
+
+void AppListBubbleEventFilter::SetButton(views::View* button) {
+  button_ = button;
 }
 
 void AppListBubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
@@ -56,10 +59,12 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
   // Ignore clicks that hit the button (which usually spawned the widget).
   // Use HitTestPoint() because the shelf home button has a custom view targeter
   // that handles clicks outside its bounds, like in the corner of the screen.
-  gfx::Point point_in_button = event_location;
-  views::View::ConvertPointFromScreen(button_, &point_in_button);
-  if (button_->HitTestPoint(point_in_button))
-    return;
+  if (button_) {
+    gfx::Point point_in_button = event_location;
+    views::View::ConvertPointFromScreen(button_, &point_in_button);
+    if (button_->HitTestPoint(point_in_button))
+      return;
+  }
 
   on_click_outside_.Run();
 }

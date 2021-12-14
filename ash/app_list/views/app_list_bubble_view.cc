@@ -30,6 +30,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
@@ -41,6 +42,7 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -147,6 +149,15 @@ AppListBubbleView::~AppListBubbleView() {
   folder_view_ = nullptr;
 }
 
+void AppListBubbleView::SetDragAndDropHostOfCurrentAppList(
+    ApplicationDragAndDropHost* drag_and_drop_host) {
+  DCHECK(drag_and_drop_host);
+  apps_page_->scrollable_apps_grid_view()->SetDragAndDropHostOfCurrentAppList(
+      drag_and_drop_host);
+  folder_view_->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
+      drag_and_drop_host);
+}
+
 void AppListBubbleView::InitContentsView(
     ApplicationDragAndDropHost* drag_and_drop_host) {
   auto* contents = AddChildView(std::make_unique<views::View>());
@@ -232,6 +243,10 @@ void AppListBubbleView::StartShowAnimation() {
 
   // Animate the layer to fully opaque at its target bounds.
   views::AnimationBuilder()
+      .OnEnded(base::BindOnce(&AppListBubbleView::OnShowAnimationEnded,
+                              weak_factory_.GetWeakPtr(), target_bounds))
+      .OnAborted(base::BindOnce(&AppListBubbleView::OnShowAnimationEnded,
+                                weak_factory_.GetWeakPtr(), target_bounds))
       .Once()
       .SetDuration(base::Milliseconds(150))
       .SetBounds(layer(), target_bounds, gfx::Tween::LINEAR_OUT_SLOW_IN)
@@ -247,7 +262,9 @@ void AppListBubbleView::StartShowAnimation() {
 }
 
 void AppListBubbleView::StartHideAnimation(
-    base::RepeatingClosure on_animation_ended) {
+    base::OnceClosure on_animation_ended) {
+  on_hide_animation_ended_ = std::move(on_animation_ended);
+
   // Ensure any in-progress animations have their cleanup callbacks called.
   AbortAllAnimations();
 
@@ -278,8 +295,10 @@ void AppListBubbleView::StartHideAnimation(
     apps_page_->StartHideAnimation();
 
   views::AnimationBuilder()
-      .OnEnded(on_animation_ended)
-      .OnAborted(on_animation_ended)
+      .OnEnded(base::BindOnce(&AppListBubbleView::OnHideAnimationEnded,
+                              weak_factory_.GetWeakPtr(), target_bounds))
+      .OnAborted(base::BindOnce(&AppListBubbleView::OnHideAnimationEnded,
+                                weak_factory_.GetWeakPtr(), target_bounds))
       .Once()
       .SetDuration(base::Milliseconds(100))
       .SetBounds(layer(), final_bounds, gfx::Tween::FAST_OUT_LINEAR_IN)
@@ -304,9 +323,30 @@ bool AppListBubbleView::Back() {
   return false;
 }
 
-void AppListBubbleView::FocusSearchBox() {
-  DCHECK(GetWidget());
-  search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+void AppListBubbleView::ShowPage(AppListBubblePage page) {
+  DVLOG(1) << __PRETTY_FUNCTION__ << " page " << static_cast<int>(page);
+  // The assistant has its own text input field.
+  search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
+  separator_->SetVisible(page != AppListBubblePage::kAssistant);
+
+  apps_page_->SetVisible(page == AppListBubblePage::kApps);
+  search_page_->SetVisible(page == AppListBubblePage::kSearch);
+  search_page_dialog_controller_->SetEnabled(page ==
+                                             AppListBubblePage::kSearch);
+  assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
+  switch (page) {
+    case AppListBubblePage::kApps:
+    case AppListBubblePage::kSearch:
+      search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+      break;
+    case AppListBubblePage::kAssistant:
+      // Explicitly set search box inactive so the next attempt to active it
+      // will succeed.
+      search_box_view_->SetSearchBoxActive(false,
+                                           /*event_type=*/ui::ET_UNKNOWN);
+      assistant_page_->RequestFocus();
+      break;
+  }
 }
 
 bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
@@ -316,16 +356,7 @@ bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
   if (IsShowingEmbeddedAssistantUI())
     return;
-
-  // The assistant has its own text input field.
-  search_box_view_->SetVisible(false);
-  separator_->SetVisible(false);
-
-  apps_page_->SetVisible(false);
-  search_page_->SetVisible(false);
-  search_page_dialog_controller_->SetEnabled(false);
-  assistant_page_->SetVisible(true);
-  assistant_page_->RequestFocus();
+  ShowPage(AppListBubblePage::kAssistant);
 }
 
 int AppListBubbleView::GetHeightToFitAllApps() const {
@@ -493,6 +524,21 @@ void AppListBubbleView::DisableFocusForShowingActiveFolder(bool disabled) {
   SetViewIgnoredForAccessibility(search_box_view_, disabled);
 
   apps_page_->DisableFocusForShowingActiveFolder(disabled);
+}
+
+void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
+  // Restore the layer bounds. If the animation completed normally, this isn't
+  // visible because the bounds won't change. If the animation was aborted, this
+  // is needed to reset state before starting the hide animation.
+  layer()->SetBounds(layer_bounds);
+}
+
+void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
+  // Restore the layer bounds. This isn't visible because opacity is 0.
+  layer()->SetBounds(layer_bounds);
+
+  if (on_hide_animation_ended_)
+    std::move(on_hide_animation_ended_).Run();
 }
 
 }  // namespace ash
