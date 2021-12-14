@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -47,6 +48,8 @@ constexpr char kFastPairPairTimeMetricInitial[] =
 constexpr char kFastPairPairTimeMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
+const char kRetroactivePairingResultMetric[] =
+    "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
@@ -248,6 +251,37 @@ class QuickPairMetricsLoggerTest : public testing::Test {
   void SimulateAssociateAccountUiLearnMorePressed() {
     mock_ui_broker_->NotifyAssociateAccountAction(
         retroactive_device_, AssociateAccountAction::kLearnMore);
+  }
+
+  void SimulateAccountKeyWritten(Protocol protocol) {
+    switch (protocol) {
+      case Protocol::kFastPairInitial:
+        mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
+                                                   absl::nullopt);
+        break;
+      case Protocol::kFastPairSubsequent:
+        break;
+      case Protocol::kFastPairRetroactive:
+        mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
+                                                   absl::nullopt);
+        break;
+    }
+  }
+
+  void SimulateAccountKeyFailure(Protocol protocol) {
+    switch (protocol) {
+      case Protocol::kFastPairInitial:
+        mock_pairer_broker_->NotifyAccountKeyWrite(
+            initial_device_, AccountKeyFailure::kAccountKeyCharacteristicWrite);
+        break;
+      case Protocol::kFastPairSubsequent:
+        break;
+      case Protocol::kFastPairRetroactive:
+        mock_pairer_broker_->NotifyAccountKeyWrite(
+            retroactive_device_,
+            AccountKeyFailure::kAccountKeyCharacteristicWrite);
+        break;
+    }
   }
 
   void PairFastPairDeviceWithFastPair(std::string address) {
@@ -1190,6 +1224,24 @@ TEST_F(QuickPairMetricsLoggerTest, DevicePaired) {
   EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
                                               PairingMethod::kSystemPairingUi),
             1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Initial) {
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  SimulateAccountKeyWritten(Protocol::kFastPairInitial);
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Retroactive) {
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  SimulateAccountKeyWritten(Protocol::kFastPairRetroactive);
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Retroactive) {
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  SimulateAccountKeyFailure(Protocol::kFastPairRetroactive);
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 1);
 }
 
 }  // namespace quick_pair

@@ -23,6 +23,8 @@ const char kTotalUxPairTimeSubsequentMetric[] =
 const char kRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
+const char kRetroactivePairingResultMetric[] =
+    "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
 
 }  // namespace
 
@@ -76,6 +78,10 @@ void AttemptRecordingFastPairRetroactiveEngagementFlow(
 
 void RecordPairingMethod(PairingMethod method) {
   base::UmaHistogramEnumeration(kPairingMethodMetric, method);
+}
+
+void RecordRetroactivePairingResult(bool success) {
+  base::UmaHistogramBoolean(kRetroactivePairingResultMetric, success);
 }
 
 }  // namespace quick_pair

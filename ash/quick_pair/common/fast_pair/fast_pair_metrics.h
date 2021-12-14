@@ -70,6 +70,9 @@ void AttemptRecordingFastPairRetroactiveEngagementFlow(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairingMethod(PairingMethod method);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordRetroactivePairingResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

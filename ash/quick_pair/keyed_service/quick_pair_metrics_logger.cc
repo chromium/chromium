@@ -199,7 +199,12 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
 
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
-    absl::optional<AccountKeyFailure> error) {}
+    absl::optional<AccountKeyFailure> error) {
+  if (device->protocol != Protocol::kFastPairRetroactive)
+    return;
+
+  RecordRetroactivePairingResult(/*success=*/!error.has_value());
+}
 
 void QuickPairMetricsLogger::OnCompanionAppAction(scoped_refptr<Device> device,
                                                   CompanionAppAction action) {}
