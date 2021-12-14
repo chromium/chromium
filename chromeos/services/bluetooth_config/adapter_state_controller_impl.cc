@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -104,8 +105,7 @@ void AdapterStateControllerImpl::AttemptSetEnabled(bool enabled) {
                      weak_ptr_factory_.GetWeakPtr(), enabled),
       base::BindOnce(&AdapterStateControllerImpl::OnSetPoweredError,
                      weak_ptr_factory_.GetWeakPtr(), enabled));
-  // TODO(gordonseto): Add power metric here.
-
+  device::RecordPoweredState(enabled);
   // State has changed to kEnabling or kDisabling; notify observers.
   NotifyAdapterStateChanged();
 }
@@ -114,6 +114,10 @@ void AdapterStateControllerImpl::OnSetPoweredSuccess(bool enabled) {
   BLUETOOTH_LOG(EVENT) << "Bluetooth " << (enabled ? "enabled" : "disabled")
                        << " successfully";
   in_progress_state_change_ = PowerStateChange::kNoChange;
+  device::PoweredStateOperation power_operation =
+      enabled ? device::PoweredStateOperation::kEnable
+              : device::PoweredStateOperation::kDisable;
+  device::RecordPoweredStateOperationResult(power_operation, /*success=*/true);
 
   // Adapter->IsPowered() won't immediately be updated to the new value when
   // SetPowered() finishes and this method is called. Don't call
@@ -125,7 +129,10 @@ void AdapterStateControllerImpl::OnSetPoweredSuccess(bool enabled) {
 void AdapterStateControllerImpl::OnSetPoweredError(bool enabled) {
   BLUETOOTH_LOG(ERROR) << "Error attempting to "
                        << (enabled ? "enable" : "disable") << " Bluetooth";
-  // TODO(gordonseto): Add power metric here.
+  device::PoweredStateOperation power_operation =
+      enabled ? device::PoweredStateOperation::kEnable
+              : device::PoweredStateOperation::kDisable;
+  device::RecordPoweredStateOperationResult(power_operation, /*success=*/false);
   in_progress_state_change_ = PowerStateChange::kNoChange;
 
   // State is no longer kEnabling or kDisabling; notify observers.
