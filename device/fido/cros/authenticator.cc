@@ -75,8 +75,9 @@ void ChromeOSAuthenticator::MakeCredential(
     MakeCredentialOptions request_options,
     MakeCredentialCallback callback) {
   u2f::MakeCredentialRequest req;
-  // Requests will be UserPresence if uv is not available or discouraged,
-  // and be UserVerification otherwise.
+  // Only allow skipping user verification if user presence checks via power
+  // button press have been configured. This is only the case when running with
+  // the "DeviceSecondFactorAuthentication" enterprise policy.
   req.set_verification_type(
       (request.user_verification == UserVerificationRequirement::kDiscouraged &&
        config_.power_button_enabled)
@@ -188,8 +189,9 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                          CtapGetAssertionOptions options,
                                          GetAssertionCallback callback) {
   u2f::GetAssertionRequest req;
-  // Requests will be UserPresence if uv is not available or discouraged,
-  // and be UserVerification otherwise.
+  // Only allow skipping user verification if user presence checks via power
+  // button press have been configured. This is only the case when running with
+  // the "DeviceSecondFactorAuthentication" enterprise policy.
   req.set_verification_type(
       (request.user_verification == UserVerificationRequirement::kDiscouraged &&
        config_.power_button_enabled)
