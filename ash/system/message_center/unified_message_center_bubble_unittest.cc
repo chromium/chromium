@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,7 +17,9 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
@@ -394,6 +397,81 @@ TEST_F(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
   EXPECT_FALSE(message_center_widget->IsActive());
   EXPECT_EQ(quick_settings_widget->GetFocusManager()->GetFocusedView(),
             GetFirstQuickSettingsFocusable());
+}
+
+// Tests with NotificationsRefresh enabled and disabled.
+class ParameterizedMessageCenterBubbleTest
+    : public UnifiedMessageCenterBubbleTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ParameterizedMessageCenterBubbleTest() = default;
+
+  ParameterizedMessageCenterBubbleTest(
+      const ParameterizedMessageCenterBubbleTest&) = delete;
+  ParameterizedMessageCenterBubbleTest& operator=(
+      const ParameterizedMessageCenterBubbleTest&) = delete;
+
+  ~ParameterizedMessageCenterBubbleTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
+    UnifiedMessageCenterBubbleTest::SetUp();
+  }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedMessageCenterBubbleTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(ParameterizedMessageCenterBubbleTest, BubbleBounds) {
+  // Set display size where the message center is not collapsed.
+  UpdateDisplay("0+0-1280×1024");
+
+  // Ensure message center is not collapsed.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  ASSERT_FALSE(GetMessageCenterBubble()->IsMessageCenterCollapsed());
+
+  // Add enough notifications so that the scroll bar is visible.
+  while (!GetMessageCenterBubble()->message_center_view()->IsScrollBarVisible())
+    AddNotification();
+
+  // The message center bubble should be positioned above the system tray
+  // bubble.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSystemTrayBubble()->GetBoundsInScreen().y());
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Go into overview mode, check bounds again.
+  EnterOverview();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSystemTrayBubble()->GetBoundsInScreen().y());
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  ExitOverview();
+
+  // Go into tablet mode, check bounds again.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSystemTrayBubble()->GetBoundsInScreen().y());
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Go into overview mode inside tablet mode, check bounds again.
+  EnterOverview();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSystemTrayBubble()->GetBoundsInScreen().y());
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
 }
 
 }  // namespace ash

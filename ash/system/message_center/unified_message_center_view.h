@@ -130,6 +130,9 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Returns true if the notification bar is visible.
   bool IsNotificationBarVisible() const;
 
+  // Returns true if the scroll bar is visible.
+  bool IsScrollBarVisible() const;
+
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;

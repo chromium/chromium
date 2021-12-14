@@ -129,8 +129,12 @@ void UnifiedMessageCenterView::Init() {
 
 void UnifiedMessageCenterView::SetMaxHeight(int max_height) {
   int max_scroller_height = max_height;
-  if (notification_bar_->GetVisible())
+  if (notification_bar_->GetVisible()) {
     max_scroller_height -= kStackedNotificationBarHeight;
+    if (is_notifications_refresh_enabled_)
+      max_scroller_height -=
+          2 * kNotificationBarVerticalPadding + kMessageCenterBottomPadding;
+  }
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
 
@@ -181,6 +185,10 @@ void UnifiedMessageCenterView::ExpandMessageCenter() {
 
 bool UnifiedMessageCenterView::IsNotificationBarVisible() const {
   return notification_bar_->GetVisible();
+}
+
+bool UnifiedMessageCenterView::IsScrollBarVisible() const {
+  return scroll_bar_->GetVisible();
 }
 
 void UnifiedMessageCenterView::OnNotificationSlidOut() {

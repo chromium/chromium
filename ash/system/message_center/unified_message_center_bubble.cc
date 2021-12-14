@@ -127,6 +127,11 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
+gfx::Rect UnifiedMessageCenterBubble::GetBoundsInScreen() const {
+  DCHECK(bubble_view_);
+  return bubble_view_->GetBoundsInScreen();
+}
+
 void UnifiedMessageCenterBubble::CollapseMessageCenter() {
   if (message_center_view_->collapsed())
     return;

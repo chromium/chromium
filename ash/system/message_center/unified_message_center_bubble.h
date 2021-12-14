@@ -39,6 +39,9 @@ class ASH_EXPORT UnifiedMessageCenterBubble
 
   ~UnifiedMessageCenterBubble() override;
 
+  // Return the bounds of the bubble in the screen.
+  gfx::Rect GetBoundsInScreen() const;
+
   // We need the code to show the bubble explicitly separated from the
   // contructor. This is to prevent trigerring the TrayEventFilter from within
   // the constructor. Doing so can cause a crash when the TrayEventFilter tries
