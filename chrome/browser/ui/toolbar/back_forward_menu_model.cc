@@ -292,6 +292,8 @@ void BackForwardMenuModel::OnFavIconDataAvailable(
 
 int BackForwardMenuModel::GetHistoryItemCount() const {
   WebContents* contents = GetWebContents();
+  if (!contents)
+    return 0;
 
   int items = contents->GetController().GetCurrentEntryIndex();
   if (model_type_ == ModelType::kForward) {
