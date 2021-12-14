@@ -58,9 +58,11 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -80,6 +82,7 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -164,6 +167,15 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     container_->ReportFindInPageSelection(identifier, index);
   }
 
+  void ReportFindInPageTickmarks(
+      const std::vector<gfx::Rect>& tickmarks) override {
+    blink::WebLocalFrame* frame = GetFrame();
+    if (frame) {
+      frame->SetTickmarks(blink::WebElement(),
+                          blink::WebVector<gfx::Rect>(tickmarks));
+    }
+  }
+
   float DeviceScaleFactor() override {
     // Do not reply on the device scale returned by
     // `container_->DeviceScaleFactor()`, since it doesn't always reflect the
@@ -171,6 +183,12 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     // top-level `blink::WebLocalFrame`'s screen info.
     blink::WebWidget* widget = GetFrame()->LocalRoot()->FrameWidget();
     return widget->GetOriginalScreenInfo().device_scale_factor;
+  }
+
+  gfx::PointF GetScrollPosition() override {
+    // Note that `blink::WebLocalFrame::GetScrollOffset()` actually returns a
+    // scroll position (a point relative to the top-left corner).
+    return GetFrame()->GetScrollOffset();
   }
 
   void SetReferrerForRequest(blink::WebURLRequest& request,
@@ -433,6 +451,13 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     return;
 
   OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
+
+  gfx::PointF scroll_position = container_wrapper_->GetScrollPosition();
+  if (client_->IsUseZoomForDSFEnabled()) {
+    // Convert back to CSS pixels.
+    scroll_position.Scale(1.0f / device_scale());
+  }
+  UpdateScroll(scroll_position);
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
@@ -904,21 +929,12 @@ void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
   container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
                                                  final_result);
 }
+
 void PdfViewWebPlugin::NotifyFindTickmarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  auto* service = GetPdfService();
-  if (!service)
-    return;
-
-  if (!find_remote_) {
-    mojo::PendingRemote<pdf::mojom::PdfFindInPage> pending_find_remote;
-    service->GetPdfFindInPage(&pending_find_remote);
-    if (!pending_find_remote)
-      return;
-
-    find_remote_.Bind(std::move(pending_find_remote));
-  }
-  find_remote_->SetTickmarks(tickmarks);
+  // TODO(crbug.com/1278476): Clean up `PdfFindInPage::SetTickmarks()` once
+  // plugin frame scrolling is stable.
+  container_wrapper_->ReportFindInPageTickmarks(tickmarks);
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
