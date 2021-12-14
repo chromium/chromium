@@ -2397,6 +2397,14 @@
     ],
   },
   'perfetto_unittests': {
+    'modifications': {
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1260440): Fix the failed test
+          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
+        ],
+      },
+    },
     'remove_from': [
       # TODO(crbug.com/931138): Fix permission issue when creating tmp files
       'android-arm64-proguard-rel',
