@@ -93,10 +93,17 @@ source_set("platform") {
       "fuchsia/accessibility_bridge_fuchsia.h",
       "fuchsia/accessibility_bridge_fuchsia_registry.cc",
       "fuchsia/accessibility_bridge_fuchsia_registry.h",
+      "fuchsia/semantic_provider.cc",
+      "fuchsia/semantic_provider.h",
     ]
 
-    public_deps +=
-        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+    public_deps += [
+      "//base",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
   }
 
   if (has_native_accessibility) {

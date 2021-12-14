@@ -285,6 +285,17 @@ test("accessibility_unittests") {
     "//ui/gfx:test_support",
   ]
 
+  if (is_fuchsia) {
+    sources += [ "platform/fuchsia/semantic_provider_test.cc" ]
+
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
+
   if (has_native_accessibility) {
     # This test depends heavily on NativeViewAccessible, which is only
     # implemented on these platforms.
