@@ -712,6 +712,27 @@ TEST_F(AutofillPopupControllerUnitTest, DontHideWhenWaitingForData) {
   Mock::VerifyAndClearExpectations(autofill_popup_view());
 }
 
+TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
+  // Create a new controller, because hiding destroys it and we can't destroy it
+  // twice (since we already hide it in the destructor).
+  ContentAutofillDriverFactory* factory =
+      ContentAutofillDriverFactory::FromWebContents(web_contents());
+  ContentAutofillDriver* driver =
+      factory->DriverForFrame(web_contents()->GetMainFrame());
+  NiceMock<MockAutofillExternalDelegate> delegate(
+      driver->browser_autofill_manager(), driver);
+  NiceMock<TestAutofillPopupController>* test_controller =
+      new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
+                                                gfx::RectF());
+  base::HistogramTester histogram_tester;
+  // DoHide() invokes Hide() that also deletes the object itself.
+  test_controller->DoHide(PopupHidingReason::kTabGone);
+
+  histogram_tester.ExpectTotalCount("Autofill.PopupHidingReason", 1);
+  histogram_tester.ExpectBucketCount("Autofill.PopupHidingReason",
+                                     /*kTabGone=*/8, 1);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
   StrictMock<MockAxPlatformNodeDelegate> mock_ax_platform_node_delegate;

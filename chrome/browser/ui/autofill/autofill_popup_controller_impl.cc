@@ -17,6 +17,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -217,15 +218,17 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
-      reason == PopupHidingReason::kWidgetChanged)
+      reason == PopupHidingReason::kWidgetChanged) {
     return;  // Don't close the popup because the browser window is resized.
+  }
+
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
     absl::visit([](auto* driver) { driver->UnsetKeyPressHandler(); },
                 GetDriver());
   }
-
+  AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
 }
 

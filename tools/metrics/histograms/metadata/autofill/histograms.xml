@@ -2360,6 +2360,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
+    expires_after="2022-08-01">
+  <owner>mamir@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <summary>
+    This tracks the reasons for which the Autofill popup disappers or cannot be
+    displayed. Recorded everytime an Autofill popup disappears or cannot be
+    displayed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileActionOnFormSubmitted"
     enum="AutofillProfileAction" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

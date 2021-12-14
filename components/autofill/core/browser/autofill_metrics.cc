@@ -2304,6 +2304,11 @@ void AutofillMetrics::LogAutofillSuggestionAcceptedIndex(int index,
 }
 
 // static
+void AutofillMetrics::LogAutofillPopupHidingReason(PopupHidingReason reason) {
+  base::UmaHistogramEnumeration("Autofill.PopupHidingReason", reason);
+}
+
+// static
 void AutofillMetrics::LogAutofillFormCleared() {
   base::RecordAction(base::UserMetricsAction("Autofill_ClearedForm"));
 }

@@ -1704,6 +1704,9 @@ class AutofillMetrics {
                                                  PopupType popup_type,
                                                  bool off_the_record);
 
+  // Log the reason for which the Autofill popup disappeared.
+  static void LogAutofillPopupHidingReason(PopupHidingReason reason);
+
   // Logs that the user cleared the form.
   static void LogAutofillFormCleared();
 
