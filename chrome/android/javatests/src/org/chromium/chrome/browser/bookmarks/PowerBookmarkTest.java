@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -149,6 +150,7 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1279804")
     public void testShoppingPriceDrop() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
