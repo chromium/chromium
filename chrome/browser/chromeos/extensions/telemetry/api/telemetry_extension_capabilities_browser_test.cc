@@ -118,25 +118,53 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
   EXPECT_EQ("done", listener.message());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionBrowserTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
+
+namespace {
+
+constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
+constexpr char kPwaPageUrl[] = "http://pwa.website.com";
+
+}  // namespace
+
+class TelemetryExtensionCapabilitiesWithCmdBrowserTest
+    : public BaseTelemetryExtensionBrowserTest {
+ public:
+  TelemetryExtensionCapabilitiesWithCmdBrowserTest() = default;
+  TelemetryExtensionCapabilitiesWithCmdBrowserTest(
+      const TelemetryExtensionCapabilitiesWithCmdBrowserTest&) = delete;
+  TelemetryExtensionCapabilitiesWithCmdBrowserTest& operator=(
+      const TelemetryExtensionCapabilitiesWithCmdBrowserTest&) = delete;
+  ~TelemetryExtensionCapabilitiesWithCmdBrowserTest() override = default;
+
+  // extensions::ExtensionBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(
+        chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
+        kPwaOriginOverride);
+  }
+};
+
 // Tests that the extension's PWA origin is overridden in tests using the
 // command line switch |kTelemetryExtensionPwaOriginOverrideForTesting|. The
 // test also makes sure the command line switch is copied across processes.
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
-                       DISABLED_CanOverridePwaOriginForTesting) {
-  constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
-      kPwaOriginOverride);
-
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionCapabilitiesWithCmdBrowserTest,
+                       CanOverridePwaOriginForTesting) {
   // Make sure the PWA origin is overridden.
   const auto extension_info =
       GetChromeOSExtensionInfoForId(extension_info_params().extension_id);
   EXPECT_EQ(kPwaOriginOverride, extension_info.pwa_origin);
 
   // Open the PWA page url to bypass IsPwaUiOpen() check.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://pwa.website.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kPwaPageUrl)));
 
   // Start listening on the extension.
   ExtensionTestMessageListener listener(/*will_reply=*/false);
@@ -172,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    TelemetryExtensionBrowserTest,
+    TelemetryExtensionCapabilitiesWithCmdBrowserTest,
     testing::Combine(
         testing::Bool(),
         testing::ValuesIn(
