@@ -194650,6 +194650,19 @@
        {}
       ]
      ],
+     "inline-box-orthogonal-child-with-margins.html": [
+      "dd0a596f3b725162cfd7486d062b77aab946f289",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/inline-box-orthogonal-child-with-margins-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inline-replaced-vlr-003.xht": [
       "1c33d6eb0262441f88428753cc3642fc6105f71a",
       [
@@ -268674,6 +268687,10 @@
      ],
      "inline-block-alignment-orthogonal-vrl-002-ref.xht": [
       "5766808360b42b93326a5228df72f5aae9a44c4c",
+      []
+     ],
+     "inline-box-orthogonal-child-with-margins-ref.html": [
+      "5bb6b9a95ce2d7a0e4d8ab4763a99d3034fac52d",
       []
      ],
      "inline-replaced-vrl-002-ref.xht": [
@@ -448277,14 +448294,14 @@
          {}
         ]
        ],
-       "show-picker-cross-origin-iframe.tentative.html": [
+       "show-picker-cross-origin-iframe.html": [
         "3a1c14efeeb0165596f22cddd2f3dd5f290b50cb",
         [
          null,
          {}
         ]
        ],
-       "show-picker.tentative.html": [
+       "show-picker.html": [
         "6b94b4f0f00ea71c4e5a0740e315fe4c2fbbf896",
         [
          null,
