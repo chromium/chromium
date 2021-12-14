@@ -60,7 +60,10 @@ public class UiThreadTaskTraitsImpl {
     // queues. While in the former case the priority of individual bootstrap tasks is ignored, in
     // the latter case it is used. It is thus important that these tasks have USER_BLOCKING priority
     // so that they are ordered correctly with C++ tasks of type kBootstrap in this latter case.
-    public static final TaskTraits BOOTSTRAP = TaskTraits.USER_BLOCKING.withExtension(
+    // UPDATE: We have reverted Java bootstrap task traits back to having USER_VISIBLE priority
+    // to determine whether changing them to have USER_BLOCKING priority caused a performance
+    // regression.
+    public static final TaskTraits BOOTSTRAP = TaskTraits.USER_VISIBLE.withExtension(
             DESCRIPTOR, new UiThreadTaskTraitsImpl().setTaskType(BrowserTaskType.BOOTSTRAP));
     public static final TaskTraits BEST_EFFORT = DEFAULT.taskPriority(TaskPriority.BEST_EFFORT);
     public static final TaskTraits USER_VISIBLE = DEFAULT.taskPriority(TaskPriority.USER_VISIBLE);
