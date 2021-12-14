@@ -1279,6 +1279,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Metal.ReadWriteTextureSupport"
+    enum="MetalReadWriteTextureSupportTier" expires_after="2022-05-31">
+  <owner>cwallez@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Read-write textures are not always supported on Metal. This histograms is
+    meant to gather information so that the WebGPU W3C group can decide whether
+    to require support for this feature. The reported tier is the best tier that
+    was found on the system. Meaning that if only one of the GPUs support
+    read-write textures, a non-zero tier will be reported. The histogram is
+    recorded at GPU process startup time.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Metal.TestShaderCompileTime" units="ms"
     expires_after="M85">
   <owner>ccameron@chromium.org</owner>

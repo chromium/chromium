@@ -58332,6 +58332,13 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Write failure"/>
 </enum>
 
+<enum name="MetalReadWriteTextureSupportTier">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Tier0_NoSupport"/>
+  <int value="2" label="Tier1_R32Formats"/>
+  <int value="3" label="Tier2_AdditionalFormats"/>
+</enum>
+
 <enum name="MetaTagTypeEnum">
   <int value="0" label="No viewport tag"/>
   <int value="1" label="Viewport meta with device width"/>
