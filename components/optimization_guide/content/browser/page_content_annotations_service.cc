@@ -8,6 +8,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -76,7 +78,10 @@ void MaybeRecordVisibilityUKM(
 PageContentAnnotationsService::PageContentAnnotationsService(
     const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    leveldb_proto::ProtoDatabaseProvider* database_provider,
+    const base::FilePath& database_dir,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()) {
   DCHECK(optimization_guide_model_provider);
@@ -87,6 +92,13 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       application_locale, optimization_guide_model_provider);
   annotator_ = model_manager_.get();
 #endif
+
+  if (features::UseLocalPageEntitiesMetadataProvider()) {
+    local_page_entities_metadata_provider_ =
+        std::make_unique<LocalPageEntitiesMetadataProvider>();
+    local_page_entities_metadata_provider_->Initialize(
+        database_provider, database_dir, background_task_runner);
+  }
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
@@ -258,6 +270,13 @@ void PageContentAnnotationsService::OnURLQueried(
 void PageContentAnnotationsService::GetMetadataForEntityId(
     const std::string& entity_id,
     EntityMetadataRetrievedCallback callback) {
+  if (features::UseLocalPageEntitiesMetadataProvider()) {
+    DCHECK(local_page_entities_metadata_provider_);
+    local_page_entities_metadata_provider_->GetMetadataForEntityId(
+        entity_id, std::move(callback));
+    return;
+  }
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
 #else

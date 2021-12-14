@@ -62,7 +62,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       history::HistoryService* history_service)
       : PageContentAnnotationsService("en-US",
                                       optimization_guide_model_provider,
-                                      history_service) {}
+                                      history_service,
+                                      nullptr,
+                                      base::FilePath(),
+                                      nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
   void Annotate(const HistoryVisit& visit, const std::string& text) override {

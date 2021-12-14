@@ -79,6 +79,8 @@ chromium-metrics-reviews@google.com.
       summary="Database for RemoteSuggestion snippets."/>
   <variant name="OfflinePageMetadataStore"
       summary="Databases for OfflinePageMetadataStore"/>
+  <variant name="PageEntityMetadataDatabase"
+      summary="Database for page entity metadata."/>
   <variant name="PersistedStateDatabase"
       summary="Database for NonCriticalPersistedTabData"/>
   <variant name="PreviewsHintCacheStore"

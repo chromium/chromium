@@ -24,7 +24,18 @@ message Entity {
 // entities on the page.
 //
 // It is only populated for the PAGE_ENTITIES optimization type.
+//
+// Note that the meaning of metadata here is in relation to a page load.
 message PageEntitiesMetadata {
   // A set of entities that are expected to be present on the page.
   repeated Entity entities = 1;
+}
+
+// The metadata associated with an |Entity|.
+//
+// Each |Entity| has some attached metadata about it which may be stored on
+// device for later lookup. Notably, this includes it's human-readable name as
+// opposed to the opaque entity_id.
+message EntityMetadataStorage {
+  optional string entity_name = 1;
 }

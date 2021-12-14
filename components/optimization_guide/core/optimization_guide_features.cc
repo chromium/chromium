@@ -96,6 +96,9 @@ const base::Feature kPageTopicsBatchAnnotations{
 const base::Feature kPageVisibilityBatchAnnotations{
     "PageVisibilityBatchAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kUseLocalPageEntitiesMetadataProvider{
+    "UseLocalPageEntitiesMetadataProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -506,6 +509,10 @@ bool PageTopicsBatchAnnotationsEnabled() {
 
 bool PageVisibilityBatchAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
+}
+
+bool UseLocalPageEntitiesMetadataProvider() {
+  return base::FeatureList::IsEnabled(kUseLocalPageEntitiesMetadataProvider);
 }
 
 }  // namespace features

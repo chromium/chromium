@@ -9,12 +9,14 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/lru_cache.h"
+#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
 #include "components/continuous_search/browser/search_result_extractor_client_status.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
@@ -36,8 +38,13 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
+}  // namespace leveldb_proto
+
 namespace optimization_guide {
 
+class LocalPageEntitiesMetadataProvider;
 class OptimizationGuideModelProvider;
 class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
@@ -65,7 +72,10 @@ class PageContentAnnotationsService : public KeyedService,
   PageContentAnnotationsService(
       const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      leveldb_proto::ProtoDatabaseProvider* database_provider,
+      const base::FilePath& database_dir,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
   PageContentAnnotationsService& operator=(
@@ -164,6 +174,13 @@ class PageContentAnnotationsService : public KeyedService,
   void OnURLQueried(const HistoryVisit& visit,
                     PersistAnnotationsCallback callback,
                     history::QueryURLResult url_result);
+
+  // A metadata-only provider for page entities (as opposed to |model_manager_|
+  // which does both entity model execution and metadata providing) that uses a
+  // local database to provide the metadata for a given entity id. This is only
+  // non-null and initialized when its feature flag is enabled.
+  std::unique_ptr<LocalPageEntitiesMetadataProvider>
+      local_page_entities_metadata_provider_;
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.

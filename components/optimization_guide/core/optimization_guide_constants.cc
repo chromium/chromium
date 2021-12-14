@@ -27,4 +27,7 @@ const base::FilePath::CharType
     kOptimizationGuidePredictionModelAndFeaturesStore[] =
         FILE_PATH_LITERAL("optimization_guide_model_and_features_store");
 
+const base::FilePath::CharType kPageEntitiesMetadataStore[] =
+    FILE_PATH_LITERAL("page_content_annotations_page_entities_metadata_store");
+
 }  // namespace optimization_guide
