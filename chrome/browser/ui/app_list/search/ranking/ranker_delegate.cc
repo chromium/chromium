@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 
+#include "chrome/browser/ui/app_list/search/ranking/burn_in_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_category_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_result_ranker.h"
@@ -43,6 +44,9 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   AddRanker(std::make_unique<RemovedResultsRanker>(
       PersistentProto<RemovedResultsProto>(
           state_dir.AppendASCII("removed_results.pb"), kNoWriteDelay)));
+
+  // Burn-in period for results.
+  AddRanker(std::make_unique<BurnInRanker>());
 }
 
 RankerDelegate::~RankerDelegate() {}
