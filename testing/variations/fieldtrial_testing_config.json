@@ -4789,6 +4789,21 @@
             ]
         }
     ],
+    "LightweightReactions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LightweightReactions"
+                    ]
+                }
+            ]
+        }
+    ],
     "LiteVideo": [
         {
             "platforms": [
