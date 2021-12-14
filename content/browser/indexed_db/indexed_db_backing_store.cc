@@ -665,7 +665,7 @@ IndexedDBBackingStore::RecordIdentifier::RecordIdentifier(
     std::string primary_key,
     int64_t version)
     : primary_key_(std::move(primary_key)), version_(version) {
-  DCHECK(!primary_key.empty());
+  DCHECK(!primary_key_.empty());
 }
 
 IndexedDBBackingStore::RecordIdentifier::RecordIdentifier() = default;
