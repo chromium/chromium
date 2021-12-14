@@ -87,9 +87,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   bool HasPendingKeysForTesting() const;
   KeyDerivationParams GetCustomPassphraseKeyDerivationParamsForTesting() const;
 
-  static std::string PackExplicitPassphraseKeyForTesting(
-      const CryptographerImpl& cryptographer);
-
  private:
   absl::optional<ModelError> UpdateLocalState(
       const sync_pb::NigoriSpecifics& specifics);
@@ -131,11 +128,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // If there are pending keys and depending on the passphrase type, it invokes
   // the appropriate observer methods (if any).
   void MaybeNotifyOfPendingKeys() const;
-
-  // Persists Nigori derived from explicit passphrase into preferences, in case
-  // error occurs during serialization/encryption, corresponding preference
-  // just won't be updated.
-  void MaybeNotifyBootstrapTokenUpdated() const;
 
   // Queues keystore rotation or full keystore migration if current state
   // assumes it should happen.

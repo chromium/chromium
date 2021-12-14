@@ -222,11 +222,6 @@ void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
   // Does nothing.
 }
 
-void SyncManagerImpl::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {
-  // Does nothing.
-}
-
 void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                               bool encrypt_everything) {
   sync_status_tracker_->SetEncryptedTypes(encrypted_types);

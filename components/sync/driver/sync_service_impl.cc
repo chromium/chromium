@@ -982,7 +982,7 @@ void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
   NotifyObservers();
 }
 
-void SyncServiceImpl::EncryptionBootstrapTokenChanged(
+void SyncServiceImpl::SetEncryptionBootstrapToken(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);

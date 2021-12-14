@@ -221,39 +221,12 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
-// Packs explicit passphrase key in order to persist it. Returns empty string in
-// case of errors.
-std::string PackExplicitPassphraseKey(const CryptographerImpl& cryptographer) {
-  DCHECK(cryptographer.CanEncrypt());
-
-  // Explicit passphrase key should always be default one.
-  std::string serialized_key =
-      cryptographer.ExportDefaultKey().SerializeAsString();
-
-  if (serialized_key.empty()) {
-    DLOG(ERROR) << "Failed to serialize explicit passphrase key.";
-    return std::string();
-  }
-
-  std::string encrypted_key;
-  if (!OSCrypt::EncryptString(serialized_key, &encrypted_key)) {
-    DLOG(ERROR) << "Failed to encrypt explicit passphrase key.";
-    return std::string();
-  }
-
-  std::string encoded_key;
-  base::Base64Encode(encrypted_key, &encoded_key);
-  return encoded_key;
-}
-
 }  // namespace
 
 class NigoriSyncBridgeImpl::BroadcastingObserver
     : public SyncEncryptionHandler::Observer {
  public:
-  explicit BroadcastingObserver(
-      const base::RepeatingClosure& post_passphrase_accepted_cb)
-      : post_passphrase_accepted_cb_(post_passphrase_accepted_cb) {}
+  BroadcastingObserver() = default;
 
   BroadcastingObserver(const BroadcastingObserver&) = delete;
   BroadcastingObserver& operator=(const BroadcastingObserver&) = delete;
@@ -281,7 +254,6 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     for (auto& observer : observers_) {
       observer.OnPassphraseAccepted();
     }
-    post_passphrase_accepted_cb_.Run();
   }
 
   void OnTrustedVaultKeyRequired() override {
@@ -293,12 +265,6 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   void OnTrustedVaultKeyAccepted() override {
     for (auto& observer : observers_) {
       observer.OnTrustedVaultKeyAccepted();
-    }
-  }
-
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override {
-    for (auto& observer : observers_) {
-      observer.OnBootstrapTokenUpdated(bootstrap_token);
     }
   }
 
@@ -328,8 +294,6 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   // SyncEncryptionHandlerImpl is no longer needed or consider refactoring old
   // implementation to use checked ObserverList as well.
   base::ObserverList<SyncEncryptionHandler::Observer>::Unchecked observers_;
-
-  const base::RepeatingClosure post_passphrase_accepted_cb_;
 };
 
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
@@ -337,12 +301,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     std::unique_ptr<NigoriStorage> storage)
     : processor_(std::move(processor)),
       storage_(std::move(storage)),
-      broadcasting_observer_(std::make_unique<BroadcastingObserver>(
-          // base::Unretained() legit because the observer gets destroyed
-          // together with |this|.
-          base::BindRepeating(
-              &NigoriSyncBridgeImpl::MaybeNotifyBootstrapTokenUpdated,
-              base::Unretained(this)))) {
+      broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
   // TODO(crbug.com/922900): we currently don't verify |deserialized_data|.
   // It's quite unlikely we get a corrupted data, since it was successfully
   // deserialized and decrypted. But we may want to consider some
@@ -542,7 +501,6 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
   broadcasting_observer_->OnTrustedVaultKeyAccepted();
-  MaybeNotifyBootstrapTokenUpdated();
 }
 
 base::Time NigoriSyncBridgeImpl::GetKeystoreMigrationTime() {
@@ -935,11 +893,6 @@ NigoriSyncBridgeImpl::GetCustomPassphraseKeyDerivationParamsForTesting() const {
   return *state_.custom_passphrase_key_derivation_params;
 }
 
-std::string NigoriSyncBridgeImpl::PackExplicitPassphraseKeyForTesting(
-    const CryptographerImpl& cryptographer) {
-  return PackExplicitPassphraseKey(cryptographer);
-}
-
 base::Time NigoriSyncBridgeImpl::GetExplicitPassphraseTime() const {
   switch (state_.passphrase_type) {
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
@@ -991,28 +944,6 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
       broadcasting_observer_->OnTrustedVaultKeyRequired();
       break;
-  }
-}
-
-void NigoriSyncBridgeImpl::MaybeNotifyBootstrapTokenUpdated() const {
-  switch (state_.passphrase_type) {
-    case NigoriSpecifics::UNKNOWN:
-      NOTREACHED();
-      return;
-    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
-    case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
-      return;
-    case NigoriSpecifics::IMPLICIT_PASSPHRASE:
-    case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
-    case NigoriSpecifics::CUSTOM_PASSPHRASE:
-      // |packed_custom_passphrase_key| will be empty in case serialization or
-      // encryption error occurs.
-      std::string packed_custom_passphrase_key =
-          PackExplicitPassphraseKey(*state_.cryptographer);
-      if (!packed_custom_passphrase_key.empty()) {
-        broadcasting_observer_->OnBootstrapTokenUpdated(
-            packed_custom_passphrase_key);
-      }
   }
 }
 

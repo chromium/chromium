@@ -122,14 +122,6 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
             observer_));
   }
 
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SyncEncryptionHandler::Observer::OnBootstrapTokenUpdated,
-            observer_, bootstrap_token));
-  }
-
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override {
     task_runner_->PostTask(
@@ -210,6 +202,28 @@ std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
 
   return Nigori::CreateByImport(key.deprecated_user_key(), key.encryption_key(),
                                 key.mac_key());
+}
+
+// Serializes |nigori| as bootstrap token. Returns empty string in case of
+// crypto/serialization failures.
+std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
+  sync_pb::NigoriKey proto;
+  nigori.ExportKeys(proto.mutable_deprecated_user_key(),
+                    proto.mutable_encryption_key(), proto.mutable_mac_key());
+
+  const std::string serialized_key = proto.SerializeAsString();
+  if (serialized_key.empty()) {
+    return std::string();
+  }
+
+  std::string encrypted_key;
+  if (!OSCrypt::EncryptString(serialized_key, &encrypted_key)) {
+    return std::string();
+  }
+
+  std::string encoded_key;
+  base::Base64Encode(encrypted_key, &encoded_key);
+  return encoded_key;
 }
 
 }  // namespace
@@ -345,7 +359,16 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
       state_.passphrase_key_derivation_params, passphrase);
   DCHECK(nigori);
 
-  return SetDecryptionNigoriKey(std::move(nigori));
+  std::string bootstrap_token = SerializeNigoriAsBootstrapToken(*nigori);
+  if (SetDecryptionNigoriKey(std::move(nigori))) {
+    // Update the bootstrap token immediately, even if engine has new pending
+    // keys, which aren't decryptable with |nigori|, this is harmless as
+    // bootstrap token is ignored if it doesn't contain the right key.
+    delegate_->SetEncryptionBootstrapToken(bootstrap_token);
+    return true;
+  }
+
+  return false;
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
@@ -520,13 +543,6 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
   // Make sure the data types that depend on the decryption key are started at
   // this time.
   delegate_->ReconfigureDataTypesDueToCrypto();
-}
-
-void SyncServiceCrypto::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_.engine);
-  delegate_->EncryptionBootstrapTokenChanged(bootstrap_token);
 }
 
 void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,

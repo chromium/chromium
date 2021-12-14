@@ -181,8 +181,7 @@ class SyncServiceImpl : public SyncService,
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
   void ReconfigureDataTypesDueToCrypto() override;
-  void EncryptionBootstrapTokenChanged(
-      const std::string& bootstrap_token) override;
+  void SetEncryptionBootstrapToken(const std::string& bootstrap_token) override;
   std::string GetEncryptionBootstrapToken() override;
 
   // IdentityManager::Observer implementation.

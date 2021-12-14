@@ -303,7 +303,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, PASSPHRASE_TYPE_CHANGED);
     ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_KEYSTORE_TOKEN_UPDATED);
     ENUM_CASE(sync_pb::SyncEnums, CONFIGURE_COMPLETE);
-    ENUM_CASE(sync_pb::SyncEnums, BOOTSTRAP_TOKEN_UPDATED);
+    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_BOOTSTRAP_TOKEN_UPDATED);
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_REQUIRED);
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_ACCEPTED);
   }

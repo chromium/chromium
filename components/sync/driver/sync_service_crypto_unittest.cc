@@ -82,6 +82,36 @@ std::string CreateBootstrapToken(const std::string& passphrase,
   return encoded_key;
 }
 
+MATCHER_P2(BootstrapTokenDerivedFrom,
+           expected_passphrase,
+           expected_derivation_params,
+           "") {
+  const std::string& given_bootstrap_token = arg;
+  std::string decoded_key;
+  if (!base::Base64Decode(given_bootstrap_token, &decoded_key)) {
+    return false;
+  }
+
+  std::string decrypted_key;
+  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
+    return false;
+  }
+
+  sync_pb::NigoriKey given_key;
+  if (!given_key.ParseFromString(decrypted_key)) {
+    return false;
+  }
+
+  std::unique_ptr<Nigori> expected_nigori = Nigori::CreateByDerivation(
+      expected_derivation_params, expected_passphrase);
+  sync_pb::NigoriKey expected_key;
+  expected_nigori->ExportKeys(expected_key.mutable_deprecated_user_key(),
+                              expected_key.mutable_encryption_key(),
+                              expected_key.mutable_mac_key());
+  return given_key.encryption_key() == expected_key.encryption_key() &&
+         given_key.mac_key() == expected_key.mac_key();
+}
+
 class MockDelegate : public SyncServiceCrypto::Delegate {
  public:
   MockDelegate() = default;
@@ -91,7 +121,7 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
   MOCK_METHOD(void,
-              EncryptionBootstrapTokenChanged,
+              SetEncryptionBootstrapToken,
               (const std::string&),
               (override));
   MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (override));
@@ -415,6 +445,9 @@ TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {
   // after checking the passphrase in the UI thread and a second time later when
   // the engine confirms with OnPassphraseAccepted().
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(2);
+  EXPECT_CALL(delegate_,
+              SetEncryptionBootstrapToken(BootstrapTokenDerivedFrom(
+                  kTestPassphrase, KeyDerivationParams::CreateForPbkdf2())));
   EXPECT_TRUE(crypto_.SetDecryptionPassphrase(kTestPassphrase));
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }

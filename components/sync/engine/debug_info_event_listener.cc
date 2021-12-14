@@ -82,12 +82,6 @@ void DebugInfoEventListener::OnTrustedVaultKeyAccepted() {
   CreateAndAddEvent(sync_pb::SyncEnums::TRUSTED_VAULT_KEY_ACCEPTED);
 }
 
-void DebugInfoEventListener::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CreateAndAddEvent(sync_pb::SyncEnums::BOOTSTRAP_TOKEN_UPDATED);
-}
-
 void DebugInfoEventListener::OnEncryptedTypesChanged(
     ModelTypeSet encrypted_types,
     bool encrypt_everything) {

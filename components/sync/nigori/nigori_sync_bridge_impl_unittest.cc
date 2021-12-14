@@ -194,7 +194,6 @@ class MockObserver : public SyncEncryptionHandler::Observer {
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void, OnBootstrapTokenUpdated, (const std::string&), (override));
   MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
@@ -870,7 +869,6 @@ TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/false));
   EXPECT_CALL(*observer(), OnPassphraseAccepted());
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated(Ne(std::string())));
   bridge()->SetExplicitPassphraseDecryptionKey(
       MakeNigoriKey(passphrase_key_params));
 
@@ -921,7 +919,6 @@ TEST_F(NigoriSyncBridgeImplTest,
                                /*encrypted_types=*/EncryptableUserTypes(),
                                /*encrypt_everything=*/true));
   EXPECT_CALL(*observer(), OnPassphraseAccepted());
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated(Ne(std::string())));
   EXPECT_THAT(bridge()->ApplySyncChanges(absl::nullopt), Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasCustomPassphraseNigori());
 
@@ -986,7 +983,6 @@ TEST_F(NigoriSyncBridgeImplTest,
                                /*encrypted_types=*/EncryptableUserTypes(),
                                /*encrypt_everything=*/true));
   EXPECT_CALL(*observer(), OnPassphraseAccepted());
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated(Ne(std::string())));
   EXPECT_THAT(bridge()->ApplySyncChanges(absl::nullopt), Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasCustomPassphraseNigori());
 
@@ -1154,7 +1150,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_CALL(*observer(), OnTrustedVaultKeyAccepted());
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/false));
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   bridge()->AddTrustedVaultDecryptionKeys({kTrustedVaultKey});
   EXPECT_FALSE(bridge()->HasPendingKeysForTesting());
 }
@@ -1184,7 +1179,6 @@ TEST_F(NigoriSyncBridgeImplTest,
       BuildTrustedVaultNigoriSpecifics({kTrustedVaultKey});
 
   EXPECT_CALL(*observer(), OnEncryptedTypesChanged).Times(0);
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/true));
   EXPECT_CALL(*observer(),
@@ -1201,7 +1195,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_CALL(*observer(), OnTrustedVaultKeyAccepted());
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/false));
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   bridge()->AddTrustedVaultDecryptionKeys({kTrustedVaultKey});
   EXPECT_FALSE(bridge()->HasPendingKeysForTesting());
   EXPECT_TRUE(bridge()->GetTrustedVaultDebugInfo().has_migration_time());
@@ -1235,7 +1228,6 @@ TEST_F(NigoriSyncBridgeImplTest,
       BuildTrustedVaultNigoriSpecifics(
           {kTrustedVaultKey, kRotatedTrustedVaultKey});
   EXPECT_CALL(*observer(), OnEncryptedTypesChanged).Times(0);
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   EXPECT_CALL(*observer(), OnPassphraseTypeChanged).Times(0);
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/true));
@@ -1290,7 +1282,6 @@ TEST_F(NigoriSyncBridgeImplTest,
                                /*encrypted_types=*/EncryptableUserTypes(),
                                /*encrypt_everything=*/true));
   EXPECT_CALL(*observer(), OnPassphraseAccepted());
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated(Ne(std::string())));
   EXPECT_THAT(bridge()->ApplySyncChanges(absl::nullopt), Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasCustomPassphraseNigori());
 }
@@ -1325,7 +1316,6 @@ TEST_F(NigoriSyncBridgeImplTest,
       /*keystore_key_params=*/kKeystoreKeyParams);
 
   EXPECT_CALL(*observer(), OnEncryptedTypesChanged).Times(0);
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/false));
   EXPECT_CALL(
@@ -1388,7 +1378,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/false));
   EXPECT_CALL(*observer(), OnPassphraseAccepted());
-  EXPECT_CALL(*observer(), OnBootstrapTokenUpdated(Ne(std::string())));
   bridge()->SetExplicitPassphraseDecryptionKey(
       MakeNigoriKey(kCustomPassphraseKeyParams));
 

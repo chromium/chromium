@@ -157,9 +157,6 @@ void ModelTypeRegistry::OnTrustedVaultKeyRequired() {}
 
 void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
-void ModelTypeRegistry::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {}
-
 void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
   // This does NOT support disabling encryption without reconnecting the
