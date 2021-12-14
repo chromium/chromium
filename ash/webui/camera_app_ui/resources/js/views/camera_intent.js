@@ -183,7 +183,7 @@ export class CameraIntent extends Camera {
       if (confirmed) {
         await this.intent_.finish();
 
-        const appWindow = window['appWindow'];
+        const appWindow = window.appWindow;
         if (appWindow === null) {
           window.close();
         } else {

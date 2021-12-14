@@ -33,7 +33,7 @@ let fromColdStart = true;
  * later once the window is created. This method is expected to be called in
  * Tast tests.
  */
-export function registerUnboundWindow(): AppWindow {
+export function registerUnboundWindow(): AppWindow&Comlink.ProxyMarked {
   assert(pendingAppWindow === null);
   const appWindow = new AppWindow(fromColdStart);
   pendingAppWindow = appWindow;
@@ -44,7 +44,7 @@ export function registerUnboundWindow(): AppWindow {
  * Binds the URL to pending AppWindow and exposes AppWindow using the URL.
  * @param url The URL to bind.
  */
-function bindWindow(url: string): AppWindow|null {
+function bindWindow(url: string): (AppWindow&Comlink.ProxyMarked)|null {
   fromColdStart = false;
   if (pendingAppWindow !== null) {
     const appWindow = pendingAppWindow;

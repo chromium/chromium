@@ -11,17 +11,26 @@
  */
 import '/strings.m.js';
 
+import {AppWindow} from './app_window.js';
 import * as Comlink from './lib/comlink.js';
 import {TestBridge} from './test_bridge.js';
+
+
+declare global {
+  interface Window {
+    // TODO(crbug.com/980846): Refactor to use a better way rather than window
+    // properties to pass data to other modules.
+    appWindow: Comlink.Remote<AppWindow>|null;
+  }
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   const workerPath = '/js/test_bridge.js';
   const sharedWorker = new SharedWorker(workerPath, {type: 'module'});
   const testBridge = Comlink.wrap<TestBridge>(sharedWorker.port);
   const appWindow = await testBridge.bindWindow(window.location.href);
-  // TODO(crbug.com/980846): Refactor to use a better way rather than window
-  // properties to pass data to other modules.
-  window['appWindow'] = appWindow;
+  window.appWindow = appWindow;
   window['windowCreationTime'] = performance.now();
   if (appWindow !== null) {
     await appWindow.waitUntilReadyOnTastSide();

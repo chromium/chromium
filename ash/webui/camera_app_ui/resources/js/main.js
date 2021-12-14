@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {
-  AppWindow,  // eslint-disable-line no-unused-vars
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
@@ -51,9 +50,8 @@ import {WaitableEvent} from './waitable_event.js';
 /**
  * The app window instance which is used for communication with Tast tests. For
  * non-test sessions, it should be null.
- * @type {?AppWindow}
  */
-const appWindow = window['appWindow'];
+const appWindow = window.appWindow;
 
 /**
  * Creates the Camera App main object.
