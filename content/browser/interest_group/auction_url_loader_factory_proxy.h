@@ -53,9 +53,10 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // bidder worklets. Ignored for seller worklets, since they use a
   // URLLoaderFactory with that information already attached.
   //
-  // `script_url` is the Javascript URL for the worklet, and
-  // `trusted_signals_url` is the optional JSON url for additional input to the
-  // script. No other URLs may be requested.
+  // `script_url` is the Javascript URL for the worklet, `wasm_url` is a URL
+  // for an optional WASM helper for the worklet, and `trusted_signals_url` is
+  // the optional JSON url for additional input to the script. No other URLs may
+  // be requested.
   AuctionURLLoaderFactoryProxy(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
@@ -65,6 +66,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       bool is_for_seller,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const GURL& script_url,
+      const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_signals_base_url);
   AuctionURLLoaderFactoryProxy(const AuctionURLLoaderFactoryProxy&) = delete;
   AuctionURLLoaderFactoryProxy& operator=(const AuctionURLLoaderFactoryProxy&) =
@@ -106,6 +108,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   net::IsolationInfo isolation_info_for_seller_signals_;
 
   const GURL script_url_;
+  const absl::optional<GURL> wasm_url_;
   const absl::optional<GURL> trusted_signals_base_url_;
 };
 

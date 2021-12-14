@@ -255,6 +255,7 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
                           base::Unretained(delegate_)),
       browser_signals_->top_frame_origin, frame_origin_,
       /*is_for_seller_=*/true, delegate_->GetClientSecurityState(), seller_url,
+      /*wasm_url=*/absl::nullopt,
       /*trusted_signals_base_url=*/
       auction_config_->trusted_scoring_signals_url);
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
@@ -652,6 +653,7 @@ void AuctionRunner::LoadBidderWorklet(BidState& bid_state,
                           base::Unretained(delegate_)),
       browser_signals_->top_frame_origin, frame_origin_,
       /*is_for_seller=*/false, delegate_->GetClientSecurityState(), bidding_url,
+      bid_state.bidder.bidding_group->group.bidding_wasm_helper_url,
       bidder->group.trusted_bidding_signals_url);
 
   mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>

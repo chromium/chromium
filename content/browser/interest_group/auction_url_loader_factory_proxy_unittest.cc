@@ -33,6 +33,7 @@
 namespace content {
 
 const char kScriptUrl[] = "https://host.test/script";
+const char kWasmUrl[] = "https://host.test/wasm";
 const char kTrustedSignalsBaseUrl[] = "https://host.test/trusted_signals";
 // Basic example of a trusted signals URL. Seller signals typically have URLs as
 // keys, but AuctionUrlLoaderProxy doesn't currently verify that.
@@ -43,8 +44,9 @@ const char kTrustedSignalsUrl[] =
 const char kAcceptJavascript[] = "application/javascript";
 const char kAcceptJson[] = "application/json";
 const char kAcceptOther[] = "binary/ocelot-stream";
+const char kAcceptWasm[] = "application/wasm";
 
-class ActionUrlLoaderFactoryProxyTest : public testing::Test {
+class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
  public:
   // Ways the proxy can behave in response to a request.
   enum class ExpectedResponse {
@@ -52,13 +54,13 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     kAllow,
   };
 
-  ActionUrlLoaderFactoryProxyTest() {
+  AuctionUrlLoaderFactoryProxyTest() {
     // Other defaults are all reasonable, but this should always be true for
     // FLEDGE.
     client_security_state_->is_web_secure_context = true;
   }
 
-  ~ActionUrlLoaderFactoryProxyTest() override = default;
+  ~AuctionUrlLoaderFactoryProxyTest() override = default;
 
   void CreateUrlLoaderFactoryProxy() {
     // The AuctionURLLoaderFactoryProxy should only be created if there is no
@@ -76,7 +78,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
             [](network::mojom::URLLoaderFactory* factory) { return factory; },
             &trusted_url_loader_factory_),
         top_frame_origin_, frame_origin_, is_for_seller_,
-        client_security_state_.Clone(), GURL(kScriptUrl),
+        client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,
         trusted_signals_base_url_);
   }
 
@@ -205,9 +207,11 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     EXPECT_EQ(network::mojom::RequestMode::kNoCors, observed_request.mode);
 
     if (is_for_seller_) {
-      if (original_accept_header == kAcceptJavascript) {
-        // Seller worklet Javascript requests use the renderer's untrusted
-        // URLLoaderFactory, so inherit security parameters from there.
+      if (original_accept_header == kAcceptJavascript ||
+          original_accept_header == kAcceptWasm) {
+        // Seller worklet Javascript & WASM requests use the renderer's
+        // untrusted URLLoaderFactory, so inherit security parameters from
+        // there.
         EXPECT_FALSE(trusted_factory_used);
         EXPECT_FALSE(observed_request.trusted_params);
       } else {
@@ -266,6 +270,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
   const network::mojom::ClientSecurityStatePtr client_security_state_ =
       network::mojom::ClientSecurityState::New();
   absl::optional<GURL> trusted_signals_base_url_ = GURL(kTrustedSignalsBaseUrl);
+  absl::optional<GURL> wasm_url_ = GURL(kWasmUrl);
 
   url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://top.test/"));
@@ -277,7 +282,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
 };
 
-TEST_F(ActionUrlLoaderFactoryProxyTest, Basic) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, Basic) {
   for (bool is_for_seller : {false, true}) {
     is_for_seller_ = is_for_seller;
     // Force creation of a new proxy, with correct `is_for_seller` value.
@@ -287,14 +292,22 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, Basic) {
     TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
     TryMakeRequest(kScriptUrl, kAcceptJson, ExpectedResponse::kReject);
     TryMakeRequest(kScriptUrl, kAcceptOther, ExpectedResponse::kReject);
+    TryMakeRequest(kScriptUrl, kAcceptWasm, ExpectedResponse::kReject);
     TryMakeRequest(kScriptUrl, absl::nullopt, ExpectedResponse::kReject);
 
     TryMakeRequest(kTrustedSignalsUrl, kAcceptJavascript,
                    ExpectedResponse::kReject);
     TryMakeRequest(kTrustedSignalsUrl, kAcceptJson, ExpectedResponse::kAllow);
     TryMakeRequest(kTrustedSignalsUrl, kAcceptOther, ExpectedResponse::kReject);
+    TryMakeRequest(kTrustedSignalsUrl, kAcceptWasm, ExpectedResponse::kReject);
     TryMakeRequest(kTrustedSignalsUrl, absl::nullopt,
                    ExpectedResponse::kReject);
+
+    TryMakeRequest(kWasmUrl, kAcceptJavascript, ExpectedResponse::kReject);
+    TryMakeRequest(kWasmUrl, kAcceptJson, ExpectedResponse::kReject);
+    TryMakeRequest(kWasmUrl, kAcceptOther, ExpectedResponse::kReject);
+    TryMakeRequest(kWasmUrl, kAcceptWasm, ExpectedResponse::kAllow);
+    TryMakeRequest(kWasmUrl, absl::nullopt, ExpectedResponse::kReject);
 
     TryMakeRequest("https://host.test/", kAcceptJavascript,
                    ExpectedResponse::kReject);
@@ -302,12 +315,24 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, Basic) {
                    ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/", kAcceptOther,
                    ExpectedResponse::kReject);
+    TryMakeRequest("https://host.test/", kAcceptWasm,
+                   ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/", absl::nullopt,
                    ExpectedResponse::kReject);
   }
 }
 
-TEST_F(ActionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, NoWasmUrl) {
+  wasm_url_ = absl::nullopt;
+  CreateUrlLoaderFactoryProxy();
+  TryMakeRequest(kWasmUrl, kAcceptJavascript, ExpectedResponse::kReject);
+  TryMakeRequest(kWasmUrl, kAcceptJson, ExpectedResponse::kReject);
+  TryMakeRequest(kWasmUrl, kAcceptOther, ExpectedResponse::kReject);
+  TryMakeRequest(kWasmUrl, kAcceptWasm, ExpectedResponse::kReject);
+  TryMakeRequest(kWasmUrl, absl::nullopt, ExpectedResponse::kReject);
+}
+
+TEST_F(AuctionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
   trusted_signals_base_url_ = absl::nullopt;
 
   for (bool is_for_seller : {false, true}) {
@@ -349,7 +374,7 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
 }
 
 // This test focuses on validation of the requested trusted signals URLs.
-TEST_F(ActionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
   for (bool is_for_seller : {false, true}) {
     is_for_seller_ = is_for_seller;
     // Force creation of a new proxy, with correct `is_for_seller` value.
@@ -439,7 +464,7 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
 
 // Make sure all seller signals requests use the same transient
 // NetworkIsolationKey.
-TEST_F(ActionUrlLoaderFactoryProxyTest, SellerSignalsNetworkIsolationKey) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, SellerSignalsNetworkIsolationKey) {
   is_for_seller_ = true;
   // Make 20 JSON requests, 10 with the same URL, 10 with different ones. All
   // should be plumbed through successfully.
@@ -465,7 +490,7 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, SellerSignalsNetworkIsolationKey) {
 
 // Test the case the same URL is used for trusted signals and the script (which
 // seems weird, but should still work).
-TEST_F(ActionUrlLoaderFactoryProxyTest, SameUrl) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, SameUrl) {
   trusted_signals_base_url_ = GURL(kScriptUrl);
 
   for (bool is_for_seller : {false, true}) {
@@ -501,7 +526,7 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, SameUrl) {
 // Make sure that proxies for bidder worklets pass through ClientSecurityState.
 // This test relies on the ClientSecurityState equality check in
 // TryMakeRequest().
-TEST_F(ActionUrlLoaderFactoryProxyTest, ClientSecurityState) {
+TEST_F(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
   is_for_seller_ = false;
 
   for (auto ip_address_space : {network::mojom::IPAddressSpace::kLocal,

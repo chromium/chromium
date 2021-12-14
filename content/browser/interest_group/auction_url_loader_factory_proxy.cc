@@ -41,6 +41,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     bool is_for_seller,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
+    const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& trusted_signals_base_url)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
@@ -51,6 +52,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       is_for_seller_(is_for_seller),
       client_security_state_(std::move(client_security_state)),
       script_url_(script_url),
+      wasm_url_(wasm_url),
       trusted_signals_base_url_(trusted_signals_base_url) {
   DCHECK(client_security_state_);
 }
@@ -77,6 +79,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   if (url_request.url == script_url_ &&
       accept_header == "application/javascript") {
+    is_request_allowed = true;
+  } else if (wasm_url_.has_value() && url_request.url == wasm_url_.value() &&
+             accept_header == "application/wasm") {
     is_request_allowed = true;
   } else if (CouldBeTrustedSignalsUrl(url_request.url) &&
              accept_header == "application/json") {
