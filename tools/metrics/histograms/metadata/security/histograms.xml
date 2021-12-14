@@ -195,6 +195,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.JSONParser.ChromiumExtensionUsage"
+    enum="JsonParserExtension" expires_after="2022-04-01">
+  <owner>rsesek@chromium.org</owner>
+  <owner>chrome-platform-security@google.com</owner>
+  <summary>
+    Records the usage of the base::JSONParser's non-RFC-8259-conforming
+    extensions when parsing JSON documents. This histogram is emitted each time
+    an instance of non-conforming syntax is detected in a document.
+  </summary>
+</histogram>
+
 <histogram name="Security.LegacyTLS.DownloadStarted" enum="Boolean"
     expires_after="2021-08-09">
   <obsolete>

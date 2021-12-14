@@ -208,8 +208,8 @@ void TraceEventTestFixture::OnTraceDataCollected(
   trace_buffer_.AddFragment(events_str->data());
   trace_buffer_.Finish();
 
-  absl::optional<Value> root =
-      base::JSONReader::Read(json_output_.json_output, JSON_PARSE_RFC);
+  absl::optional<Value> root = base::JSONReader::Read(
+      json_output_.json_output, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
 
   if (!root.has_value()) {
     LOG(ERROR) << json_output_.json_output;

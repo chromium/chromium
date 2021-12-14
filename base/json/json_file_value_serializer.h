@@ -12,6 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/values.h"
 
 class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
@@ -54,8 +55,9 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
 
   // |json_file_path_| is the path of a file that will be source of the
   // deserialization. |options| is a bitmask of JSONParserOptions.
-  explicit JSONFileValueDeserializer(const base::FilePath& json_file_path,
-                                     int options = 0);
+  explicit JSONFileValueDeserializer(
+      const base::FilePath& json_file_path,
+      int options = base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   JSONFileValueDeserializer(const JSONFileValueDeserializer&) = delete;
   JSONFileValueDeserializer& operator=(const JSONFileValueDeserializer&) =

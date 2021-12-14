@@ -4,19 +4,23 @@
   "action": { "type" : "block" },
   "condition" : { "urlFilter" : "blocked", "resourceTypes" : [ "sub_frame" ] }
 },
-// Add a rule to block any *main* frames with "allowed". Since the only
-// frame matching "allowed" is a fenced frame, it shouldn't match this
-// rule.
 {
+  "_comment": [
+    "Add a rule to block any *main* frames with 'allowed'. Since the only",
+    "frame matching 'allowed' is a fenced frame, it shouldn't match this",
+    "rule."
+  ],
   "id" : 2,
   "priority": 1,
   "action": { "type" : "block" },
   "condition" : { "urlFilter" : "allowed", "resourceTypes" : [ "main_frame" ] }
 },
-// Add a rule to block any thirdParty frames with "allowed". Since the only
-// frame matching "allowed" is a fenced frame and is considered firstParty
-// it shouldn't match this rule.
 {
+  "_comment": [
+    "Add a rule to block any thirdParty frames with 'allowed'. Since the only",
+    "frame matching 'allowed' is a fenced frame and is considered firstParty",
+    "it shouldn't match this rule."
+  ],
   "id" : 3,
   "priority": 2,
   "action": { "type" : "block" },

@@ -46528,6 +46528,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="YCbCr with other subsampling"/>
 </enum>
 
+<enum name="JsonParserExtension">
+  <int value="0" label="C style comment (/**/)"/>
+  <int value="1" label="C++ style comment (//)"/>
+  <int value="2" label="UTF-8 \xNN string escape"/>
+  <int value="3" label="Vertical tab string escape (\\v)"/>
+  <int value="4" label="Unescaped ASCII control character [0x00,0x1F]"/>
+</enum>
+
 <enum name="JumplisticonsDeleteCategory">
   <int value="0" label="Success"/>
   <int value="1" label="Fail as directory name length exceeds MAX_PATH"/>

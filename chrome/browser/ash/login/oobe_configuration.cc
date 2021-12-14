@@ -84,7 +84,8 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
 
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(
-          configuration, base::JSON_ALLOW_TRAILING_COMMAS);
+          configuration, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+                             base::JSON_ALLOW_TRAILING_COMMAS);
   if (!parsed_json.value) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
                << parsed_json.error_message;

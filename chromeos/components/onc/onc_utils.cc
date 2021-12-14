@@ -332,7 +332,8 @@ base::Value ReadDictionaryFromJson(const std::string& json) {
   }
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS);
+          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+                    base::JSON_ALLOW_TRAILING_COMMAS);
   if (!parsed_json.value || !parsed_json.value->is_dict()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: " << parsed_json.error_message;
     return base::Value();

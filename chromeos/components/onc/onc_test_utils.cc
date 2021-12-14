@@ -65,8 +65,9 @@ std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
     LOG(FATAL) << "Unable to get test file path for: " << filename;
     return result;
   }
-  JSONFileValueDeserializer deserializer(path,
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
+  JSONFileValueDeserializer deserializer(
+      path,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
   std::string error_message;
   result = deserializer.Deserialize(nullptr, &error_message);
   CHECK(result != nullptr) << "Couldn't json-deserialize file: " << filename

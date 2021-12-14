@@ -376,7 +376,8 @@ class ClientCertResolverTest : public testing::Test,
                                base::StringPiece policy_json) {
     base::JSONReader::ValueWithError parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(
-            policy_json, base::JSON_ALLOW_TRAILING_COMMAS);
+            policy_json,
+            base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
     base::ListValue* policy = nullptr;

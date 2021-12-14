@@ -377,7 +377,7 @@ TEST(JSONReaderTest, CompleteDictionary) {
 
   absl::optional<Value> root2 = JSONReader::Read(
       "{\"number\":9.87654321, \"null\":null , \"\\x53\" : \"str\", }",
-      JSON_ALLOW_TRAILING_COMMAS);
+      JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
   ASSERT_TRUE(root2->is_dict());
   EXPECT_EQ(*dict_val, *root2);
@@ -389,7 +389,7 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "  \"null\":null,\n"
       "  \"\\x53\":\"str\",\n"
       "}\n",
-      JSON_ALLOW_TRAILING_COMMAS);
+      JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
   ASSERT_TRUE(root2->is_dict());
   EXPECT_EQ(*dict_val, *root2);
@@ -400,7 +400,7 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "  \"null\":null,\r\n"
       "  \"\\x53\":\"str\",\r\n"
       "}\r\n",
-      JSON_ALLOW_TRAILING_COMMAS);
+      JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
   ASSERT_TRUE(root2->is_dict());
   EXPECT_EQ(*dict_val, *root2);
@@ -1014,10 +1014,53 @@ TEST(JSONReaderTest, LineColumnCounting) {
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
     JSONReader::ValueWithError root = JSONReader::ReadAndReturnValueWithError(
-        test_case.input, JSON_PARSE_RFC);
+        test_case.input, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
     EXPECT_FALSE(root.value);
     EXPECT_EQ(test_case.error_line, root.error_line);
     EXPECT_EQ(test_case.error_column, root.error_column);
+  }
+}
+
+TEST(JSONReaderTest, ChromiumExtensions) {
+  // All of these cases should parse with JSON_PARSE_CHROMIUM_EXTENSIONS but
+  // fail with JSON_PARSE_RFC.
+  const struct {
+    // The JSON input.
+    const char* input;
+    // What JSON_* option permits this extension.
+    int option;
+  } kCases[] = {
+      {"{ /* comment */ \"foo\": 3 }", JSON_ALLOW_COMMENTS},
+      {"{ // comment\n \"foo\": 3 }", JSON_ALLOW_COMMENTS},
+      {"[\"\\xAB\"]", JSON_ALLOW_X_ESCAPES},
+      {"[\"\b\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\f\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\n\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\r\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\t\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\v\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\\v\"]", JSON_ALLOW_VERT_TAB},
+  };
+
+  for (size_t i = 0; i < base::size(kCases); ++i) {
+    SCOPED_TRACE(testing::Message() << "case " << i);
+    const auto& test_case = kCases[i];
+
+    JSONReader::ValueWithError result = JSONReader::ReadAndReturnValueWithError(
+        test_case.input, JSON_PARSE_RFC);
+    EXPECT_FALSE(result.value);
+
+    result = JSONReader::ReadAndReturnValueWithError(
+        test_case.input, JSON_PARSE_RFC | test_case.option);
+    EXPECT_TRUE(result.value);
+
+    result = JSONReader::ReadAndReturnValueWithError(
+        test_case.input, JSON_PARSE_CHROMIUM_EXTENSIONS);
+    EXPECT_TRUE(result.value);
+
+    result = JSONReader::ReadAndReturnValueWithError(
+        test_case.input, JSON_PARSE_CHROMIUM_EXTENSIONS & ~test_case.option);
+    EXPECT_FALSE(result.value);
   }
 }
 
