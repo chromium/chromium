@@ -791,7 +791,6 @@ if (!is_ios) {
         "browser_ui/client_certificate/android/ssl_client_certificate_request_browsertest.cc",
         "test/android/browsertests_apk/components_browser_tests_jni_onload.cc",
       ]
-      sources -= [ "autofill/content/browser/risk/fingerprint_browsertest.cc" ]
       deps += [
         "//components/autofill_assistant/browser",
         "//components/autofill_assistant/browser:proto",
@@ -838,6 +837,15 @@ if (!is_ios) {
     # On other platforms, no components should depend on Chrome.
     if (!is_chromeos_lacros) {
       assert_no_deps = [ "//chrome/*" ]
+    }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/font_capabilities.test-cmx",
+        "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+        "//build/config/fuchsia/test/network_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+      ]
     }
   }
 

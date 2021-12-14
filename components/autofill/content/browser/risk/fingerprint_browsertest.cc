@@ -95,7 +95,13 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
         fingerprint->machine_characteristics();
     EXPECT_TRUE(machine.has_operating_system_build());
     EXPECT_TRUE(machine.has_browser_install_time_hours());
+
+#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
+    // GetFontList() returns an empty list on Fuchsia and Android.
+    EXPECT_EQ(machine.font_size(), 0);
+#else
     EXPECT_GT(machine.font_size(), 0);
+#endif  // defined(OS_FUCHSIA) || defined(OS_ANDROID)
 
     // TODO(isherman): http://crbug.com/358548 and EXPECT_EQ.
     EXPECT_GE(machine.plugin_size(), 0);
