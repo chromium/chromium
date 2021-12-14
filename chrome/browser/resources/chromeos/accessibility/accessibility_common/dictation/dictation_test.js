@@ -398,7 +398,7 @@ SYNC_TEST_F(
           assertFalse(!!this.mockInputIme.getLastCommittedParameters());
         }
 
-        // Try a command to "type delete", etc.
+        // Try to type the command e.g. "type delete".
         this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
             'type ' + command, true);
         // The command should be entered but not the word "type".

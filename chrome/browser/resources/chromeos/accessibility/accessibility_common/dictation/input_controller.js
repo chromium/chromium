@@ -133,41 +133,16 @@ export class InputController {
   }
 
   /**
-   * Shows an annotation in the candidate window.
-   * TODO(crbug.com/1252037): After implementing final UX design, remove
-   * this method from InputController.
-   * @param {string} annotation
+   * Shows the bubble UI with the given text.
+   * @param {string} text
    */
-  showAnnotation(annotation) {
-    chrome.input.ime.setCandidateWindowProperties({
-      engineID: InputController.IME_ENGINE_ID,
-      properties: {
-        cursorVisible: true,
-        currentCandidateIndex: 0,
-        vertical: false,
-        visible: true,
-        windowPosition: 'cursor',
-        pageSize: 1
-      }
-    });
-    chrome.input.ime.setCandidates(
-        {
-          candidates: [{candidate: '', annotation, id: 1}],
-          contextID: this.activeImeContextId_,
-        },
-        (success) => {});
+  showBubble(text) {
+    chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ true, text);
   }
 
-  /**
-   * Hides the annotation and candidate window.
-   * TODO(crbug.com/1252037): After implementing final UX design, remove
-   * this method from InputController.
-   */
-  hideAnnotation() {
-    chrome.input.ime.setCandidateWindowProperties({
-      engineID: InputController.IME_ENGINE_ID,
-      properties: {visible: false}
-    });
+  /** Hides the bubble UI. */
+  hideBubble() {
+    chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ false);
   }
 
   /**

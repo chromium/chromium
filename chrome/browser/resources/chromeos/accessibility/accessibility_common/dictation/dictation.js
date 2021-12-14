@@ -301,7 +301,6 @@ export class Dictation {
     }
 
     this.state_ = Dictation.DictationState.LISTENING;
-    // Display the "....".
     this.clearInterimText_();
 
     // Record metrics.
@@ -368,7 +367,6 @@ export class Dictation {
 
   /**
    * Shows the interim result in the UI.
-   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
    * @param {string} text
    * @private
    */
@@ -383,7 +381,7 @@ export class Dictation {
     // although SODA does not seem to do that. The newline character looks wrong
     // here.
     this.interimText_ = text;
-    this.inputController_.showAnnotation(this.interimText_);
+    this.inputController_.showBubble(this.interimText_);
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -391,8 +389,7 @@ export class Dictation {
   }
 
   /**
-   * Clears the interim result in the UI, replacing it with '....'.
-   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * Clears the interim result in the UI.
    * @private
    */
   clearInterimText_() {
@@ -402,7 +399,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.showAnnotation('....');
+    this.inputController_.showBubble('');
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -412,7 +409,6 @@ export class Dictation {
   /**
    * Shows that a macro was executed in the UI by putting a checkmark next to
    * the transcript.
-   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
    * @param {Macro} macro
    * @param {string} transcript
    * @private
@@ -425,12 +421,11 @@ export class Dictation {
 
     if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
         macro.getMacroName() === MacroName.NEW_LINE) {
-      // Return to the '....' UI.
       this.clearInterimText_();
       return;
     }
     this.interimText_ = '';
-    this.inputController_.showAnnotation('☑' + transcript);
+    this.inputController_.showBubble('☑' + transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
@@ -438,7 +433,6 @@ export class Dictation {
 
   /**
    * Shows a message in the UI that a command failed to execute.
-   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
    * TODO(crbug.com/1252037): Optionally use the MacroError to provide
    * additional context.
    * @param {string} transcript The user's spoken transcript, shown so they
@@ -454,7 +448,7 @@ export class Dictation {
 
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
-    this.inputController_.showAnnotation(`ⓘ Failed to execute: ` + transcript);
+    this.inputController_.showBubble(`ⓘ Failed to execute: ` + transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
@@ -462,7 +456,6 @@ export class Dictation {
 
   /**
    * Hides the commands UI bubble.
-   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
    * @private
    */
   hideCommandsUI_() {
@@ -471,7 +464,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.hideAnnotation();
+    this.inputController_.hideBubble();
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;

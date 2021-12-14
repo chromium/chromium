@@ -61,6 +61,12 @@ var MockAccessibilityPrivate = {
   /** @private {boolean} */
   dictationActivated_: false,
 
+  /** @private {boolean} */
+  dictationBubbleVisible_: false,
+
+  /** @private {?string} */
+  dictationBubbleText_: null,
+
   /** @private {Set<string>} */
   enabledFeatures_: new Set(),
 
@@ -318,6 +324,11 @@ var MockAccessibilityPrivate = {
    */
   getDictationActive() {
     return MockAccessibilityPrivate.dictationActivated_;
+  },
+
+  updateDictationBubble(visible, text) {
+    MockAccessibilityPrivate.dictationBubbleVisible_ = visible;
+    MockAccessibilityPrivate.dictationBubbleText_ = text || null;
   },
 
   /**
