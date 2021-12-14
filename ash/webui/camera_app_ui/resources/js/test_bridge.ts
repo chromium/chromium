@@ -19,9 +19,8 @@ import * as Comlink from './lib/comlink.js';
 /**
  * Pending unbound AppWindow requested by tast waiting to be bound by next
  * launched CCA window.
- * @type {?AppWindow}
  */
-let pendingAppWindow = null;
+let pendingAppWindow: AppWindow|null = null;
 
 /**
  * Whether the app is launched from a cold start. It will be set to false once
@@ -33,9 +32,8 @@ let fromColdStart = true;
  * Registers a pending unbound AppWindow which will be bound with the URL
  * later once the window is created. This method is expected to be called in
  * Tast tests.
- * @return {!AppWindow}
  */
-export function registerUnboundWindow() {
+export function registerUnboundWindow(): AppWindow {
   assert(pendingAppWindow === null);
   const appWindow = new AppWindow(fromColdStart);
   pendingAppWindow = appWindow;
@@ -44,10 +42,9 @@ export function registerUnboundWindow() {
 
 /**
  * Binds the URL to pending AppWindow and exposes AppWindow using the URL.
- * @param {string} url The URL to bind.
- * @return {?AppWindow}
+ * @param url The URL to bind.
  */
-function bindWindow(url) {
+function bindWindow(url: string): AppWindow|null {
   fromColdStart = false;
   if (pendingAppWindow !== null) {
     const appWindow = pendingAppWindow;
@@ -58,13 +55,17 @@ function bindWindow(url) {
   return null;
 }
 
-const sharedWorkerScope = /** @type {!SharedWorkerGlobalScope} */ (self);
+const sharedWorkerScope = self as SharedWorkerGlobalScope;
+
+export interface TestBridge {
+  bindWindow: typeof bindWindow;
+  registerUnboundWindow: typeof registerUnboundWindow;
+}
 
 /**
  * Triggers when the Shared Worker is connected.
- * @param {!MessageEvent} event
  */
-sharedWorkerScope.onconnect = (event) => {
+sharedWorkerScope.onconnect = (event: MessageEvent) => {
   const port = event.ports[0];
   Comlink.expose(
       {

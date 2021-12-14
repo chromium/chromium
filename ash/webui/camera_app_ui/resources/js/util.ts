@@ -203,8 +203,8 @@ export function instantiateTemplate(selector: string): DocumentFragment {
  * origin and returns its proxy.
  * @param scriptUrl The URL of the script to load.
  */
-export async function createUntrustedJSModule(scriptUrl: string):
-    Promise<unknown> {
+export async function createUntrustedJSModule<T>(scriptUrl: string):
+    Promise<Comlink.Remote<T>> {
   const untrustedPageReady = new WaitableEvent();
   const iFrame = document.createElement('iframe');
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
@@ -215,10 +215,14 @@ export async function createUntrustedJSModule(scriptUrl: string):
   document.body.appendChild(iFrame);
   await untrustedPageReady.wait();
 
+  // TODO(pihsun): actually get correct type from the function definition.
   const untrustedRemote =
-      await Comlink.wrap(Comlink.windowEndpoint(iFrame.contentWindow, self));
+      Comlink.wrap<{loadScript(url: string): Promise<void>}>(
+          Comlink.windowEndpoint(iFrame.contentWindow, self));
   await untrustedRemote.loadScript(scriptUrl);
-  return untrustedRemote;
+  // loadScript adds the script exports to what's exported by the
+  // untrustedRemote, so we manually cast it to the expected type.
+  return untrustedRemote as unknown as Comlink.Remote<T>;
 }
 
 /**

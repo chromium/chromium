@@ -251,9 +251,9 @@ type CreateScriptURLCallback = (input: string, arguments: any) => string;
 
 interface TrustedTypePolicy {
   readonly name: string;
-  createHTML(input: string, arguments: any): TrustedHTML;
-  createScript(input: string, arguments: any): TrustedScript;
-  createScriptURL(input: string, arguments: any): TrustedScriptURL;
+  createHTML(input: string, arguments?: any): TrustedHTML;
+  createScript(input: string, arguments?: any): TrustedScript;
+  createScriptURL(input: string, arguments?: any): TrustedScriptURL;
 }
 
 interface TrustedTypePolicyFactory {

@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../assert.js';
+// eslint-disable-next-line no-unused-vars
+import {AsyncWriter} from './async_writer.js';
+// eslint-disable-next-line no-unused-vars
+import {VideoProcessorArgs} from './ffmpeg/video_processor_args.js';
 
 /**
  * The interface for a video processor. All methods are marked as async since
@@ -10,6 +14,14 @@ import {assertNotReached} from '../assert.js';
  * @interface
  */
 export class VideoProcessor {
+  /**
+   * @param {!AsyncWriter} output The output writer.
+   * @param {!VideoProcessorArgs} processorArgs
+   */
+  constructor(output, processorArgs) {
+    assertNotReached();
+  }
+
   /**
    * Writes a chunk data into the processor.
    * @param {!Blob} blob

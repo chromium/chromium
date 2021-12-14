@@ -29,8 +29,8 @@ let baseDimen: Map<number, string|number>|null = null;
 
 const ready = new WaitableEvent();
 
-const gaHelper = util.createUntrustedJSModule('/js/untrusted_ga_helper.js') as
-    Promise<GAHelperInterface>;
+const gaHelper = util.createUntrustedJSModule<GAHelperInterface>(
+    '/js/untrusted_ga_helper.js');
 
 /**
  * Send the event to GA backend.

@@ -12,11 +12,12 @@
 import '/strings.m.js';
 
 import * as Comlink from './lib/comlink.js';
+import {TestBridge} from './test_bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const workerPath = '/js/test_bridge.js';
   const sharedWorker = new SharedWorker(workerPath, {type: 'module'});
-  const testBridge = Comlink.wrap(sharedWorker.port);
+  const testBridge = Comlink.wrap<TestBridge>(sharedWorker.port);
   const appWindow = await testBridge.bindWindow(window.location.href);
   // TODO(crbug.com/980846): Refactor to use a better way rather than window
   // properties to pass data to other modules.

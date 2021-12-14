@@ -193,14 +193,14 @@ def lint(args):
 # * files directly referenced by <script> tag in HTML
 TS_ENTRY_FILES = [
     "js/externs/types.d.ts",
-    "js/init.js",
+    "js/init.ts",
     "js/main.js",
     "js/models/barcode_worker.js",
     "js/models/ffmpeg/video_processor.js",
-    "js/test_bridge.js",
+    "js/test_bridge.ts",
     "js/untrusted_ga_helper.js",
     "js/untrusted_script_loader.js",
-    "js/untrusted_video_processor_helper.js",
+    "js/untrusted_video_processor_helper.ts",
 ]
 
 
