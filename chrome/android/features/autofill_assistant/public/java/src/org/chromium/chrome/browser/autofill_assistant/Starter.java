@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import android.content.Intent;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -13,8 +11,6 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -35,6 +31,8 @@ import java.util.Map;
 public class Starter extends EmptyTabObserver implements UserData {
     /** The tab that this starter tracks. */
     private final Tab mTab;
+
+    private final AssistantIsGsaFunction mIsGsaFunction;
 
     /**
      * The WebContents associated with the Tab which this starter is monitoring, unless detached.
@@ -67,8 +65,9 @@ public class Starter extends EmptyTabObserver implements UserData {
      *
      * This will wait for dependencies to become available and then create the native-side starter.
      */
-    public Starter(Tab tab) {
+    public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction) {
         mTab = tab;
+        mIsGsaFunction = isGsaFunction;
         detectWebContentsChange(tab);
     }
 
@@ -309,16 +308,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     @CalledByNative
     private boolean getIsTabCreatedByGSA() {
-        // This can fail for certain tabs (e.g., hidden background tabs).
-        if (TabUtils.getActivity(mTab) == null) {
-            return false;
-        }
-        Intent intent = TabUtils.getActivity(mTab).getIntent();
-        if (intent == null) {
-            // This should never happen, this is just a failsafe.
-            return false;
-        }
-        return IntentHandler.determineExternalIntentSource(intent) == ExternalAppId.GSA;
+        return mIsGsaFunction.apply(TabUtils.getActivity(mTab));
     }
 
     @NativeMethods
