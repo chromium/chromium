@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4588090240171750605">Vieritä oikealle</translation>
 <translation id="4724120544754982507">Ilmoituskeskus, <ph name="UNREAD_NOTIFICATION_COUNT" /> lukematonta ilmoitusta</translation>
+<translation id="4746179598275229723">Laajennus irrotettu</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 kuukausi jäljellä}other{# kuukautta jäljellä}}</translation>
 <translation id="4888938634149558681">Soita</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunti}other{# sekuntia}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekunti jäljellä}other{# sekuntia jäljellä}}</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 tunti}other{# tuntia}}</translation>
+<translation id="6007284015834422026">Laajennus kiinnitetty</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6117103120090651229">Keskipainike</translation>
 <translation id="6129953537138746214">Välilyönti</translation>

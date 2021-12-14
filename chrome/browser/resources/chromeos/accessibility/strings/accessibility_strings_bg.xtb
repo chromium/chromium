@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Област за упражнения: падащи списъци</translation>
 <translation id="1195238899008218998">Послеслов</translation>
 <translation id="1197088940767939838">оранжево</translation>
+<translation id="1198865190323699001">Жестове с докосване</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Няма следващо заглавие от четвърто ниво</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{въпросителен знак}other{# въпросителни знака}}</translation>
 <translation id="3505359110822747654">Свиване на менютата на ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{карета}other{# карети}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{бял водещ символ}other{# бели водещи символа}}</translation>
 <translation id="352577523970648069">Текстово поле, което може да се редактира</translation>
 <translation id="3538907380453898475">спис. с опис.</translation>
 <translation id="3549141990712742152">изрязване на <ph name="TEXT" />.</translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">Следващото квадратче за отметка</translation>
 <translation id="5598905979683743333">„<ph name="NAME" />“, немаркиран бутон за избор</translation>
 <translation id="5601172225407283979">Изпълняване на действие по подразбиране</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{квадратен водещ символ}other{# квадратни водещи символа}}</translation>
 <translation id="5608798115546226984">Вградено автоматично довършване</translation>
 <translation id="5616029807486814372">Следващ урок</translation>
 <translation id="561939826962581046">time</translation>
@@ -1097,6 +1100,7 @@
 <translation id="8659501358298941449">Падащи списъци</translation>
 <translation id="8666733765751421568">Край на <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Заглавие от пето ниво</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{вложено ниво #}}</translation>
 <translation id="8693391540059827073">Моят любим сезон</translation>
 <translation id="8696284982970258155">медена роса</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{вертикална черта}other{# вертикални черти}}</translation>

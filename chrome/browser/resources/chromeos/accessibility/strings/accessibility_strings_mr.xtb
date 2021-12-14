@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{प्रश्नचिन्ह}other{# प्रश्नचिन्हे}}</translation>
 <translation id="3505359110822747654">ChromeVox मेनू कोलॅप्स करा</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{कॅरेट}other{# कॅरेट}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{पांढरे बुलेट}other{# पांढरी बुलेट}}</translation>
 <translation id="352577523970648069">एक संपादन करण्यायोग्य मजकूर फील्ड</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> कट करा.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">पुढील चेकबॉक्स</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडिओ बटण निवडले नाही</translation>
 <translation id="5601172225407283979">डीफॉल्ट क्रिया करा</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{चौरस बुलेट}other{# चौरस बुलेट}}</translation>
 <translation id="5608798115546226984">ऑटोकंप्लीशन इनलाइन</translation>
 <translation id="5616029807486814372">पुढील धडा</translation>
 <translation id="561939826962581046">time</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">ड्रॉप-डाउन सूची</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> चा शेवट</translation>
 <translation id="867187640362843212">मथळा 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{नेस्ट केलेली पातळी #}}</translation>
 <translation id="8693391540059827073">माझा आवडता ऋतू</translation>
 <translation id="8696284982970258155">फिकट पिवळसर हिरवा</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}other{# अनुलंब पाइप}}</translation>

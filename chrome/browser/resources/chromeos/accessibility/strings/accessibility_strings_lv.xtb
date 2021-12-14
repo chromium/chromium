@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Vingrināšanās apgabals: nolaižamie saraksti</translation>
 <translation id="1195238899008218998">Pēcvārds</translation>
 <translation id="1197088940767939838">Oranža</translation>
+<translation id="1198865190323699001">Skārienu žesti</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1206619573307042055">slīdošais teksts</translation>
 <translation id="1207086294218137981">Nav nākamā 4. līmeņa virsraksta.</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{jautājuma zīme}zero{# jautājuma zīmju}one{# jautājuma zīme}other{# jautājuma zīmes}}</translation>
 <translation id="3505359110822747654">ChromeVox izvēlnes sakļautas</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{jumtiņš}zero{# jumtiņu}one{# jumtiņš}other{# jumtiņi}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{balta aizzīme}zero{# baltu aizzīmju}one{# balta aizzīme}other{# baltas aizzīmes}}</translation>
 <translation id="352577523970648069">Rediģējams teksta lauks</translation>
 <translation id="3538907380453898475">apraksti</translation>
 <translation id="3549141990712742152">izgriezt tekstu “<ph name="TEXT" />”.</translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">Nākamā izvēles rūtiņa</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, neatlasīta radiopoga</translation>
 <translation id="5601172225407283979">Veikt noklusējuma darbību</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadrātveida aizzīme}zero{# kvadrātveida aizzīmju}one{# kvadrātveida aizzīme}other{# kvadrātveida aizzīmes}}</translation>
 <translation id="5608798115546226984">Automātiskā pabeigšana: iekļauta</translation>
 <translation id="5616029807486814372">Nākamā nodarbība</translation>
 <translation id="561939826962581046">laiks</translation>
@@ -1097,6 +1100,7 @@
 <translation id="8659501358298941449">Nolaižamie saraksti</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> beidzas</translation>
 <translation id="867187640362843212">5. līmeņa virsraksts</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}zero{ligzdotais līmenis numur #}one{ligzdotais līmenis numur #}other{ligzdotais līmenis numur #}}</translation>
 <translation id="8693391540059827073">Mans mīļākais gadalaiks</translation>
 <translation id="8696284982970258155">Melones zaļa</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{vertikālā svītra}zero{# vertikālo svītru}one{# vertikālā svītra}other{# vertikālās svītras}}</translation>

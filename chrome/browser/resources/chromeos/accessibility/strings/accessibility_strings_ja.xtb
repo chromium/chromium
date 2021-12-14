@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{疑問符}other{# 個の疑問符}}</translation>
 <translation id="3505359110822747654">ChromeVox メニューを折りたたむ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{キャレット}other{# 個のキャレット}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{白色の箇条書き記号}other{# 個の白色の箇条書き記号}}</translation>
 <translation id="352577523970648069">編集可能なテキスト欄</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> を切り取ります。</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">次のチェックボックス</translation>
 <translation id="5598905979683743333"><ph name="NAME" />、選択されていないラジオボタン</translation>
 <translation id="5601172225407283979">デフォルトの操作を実行します</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{四角形の箇条書き記号}other{# 個の四角形の箇条書き記号}}</translation>
 <translation id="5608798115546226984">オートコンプリートはインライン表示</translation>
 <translation id="5616029807486814372">次のレッスン</translation>
 <translation id="561939826962581046">日時</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">プルダウン リスト</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ここまで</translation>
 <translation id="867187640362843212">見出し 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ネストレベル #}}</translation>
 <translation id="8693391540059827073">お気に入りの季節</translation>
 <translation id="8696284982970258155">ハニーデュー</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{パイプ}other{# 個のパイプ}}</translation>

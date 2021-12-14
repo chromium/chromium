@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4588090240171750605">גלילה ימינה</translation>
 <translation id="4724120544754982507">מרכז הודעות, <ph name="UNREAD_NOTIFICATION_COUNT" /> הודעות שלא נקראו</translation>
+<translation id="4746179598275229723">בוטלה ההצמדה של התוסף</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{נותר חודש אחד}two{נותרו חודשיים}many{נותרו # חודשים}other{נותרו # חודשים}}</translation>
 <translation id="4888938634149558681">התקשרות</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}two{# שניות}many{# שניות}other{# שניות}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{נותרה שנייה אחת}two{נותרו # שניות}many{נותרו # שניות}other{נותרו # שניות}}</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{שעה אחת}two{שעתיים}many{# שעות}other{# שעות}}</translation>
+<translation id="6007284015834422026">התוסף הוצמד</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6117103120090651229">הלחצן המרכזי</translation>
 <translation id="6129953537138746214">רווח</translation>

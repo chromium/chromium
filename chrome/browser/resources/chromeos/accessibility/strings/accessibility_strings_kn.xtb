@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆ}one{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}other{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="3505359110822747654">ChromeVox ಮೆನುಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ಕ್ಯಾರೆಟ್}one{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}other{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ಬಿಳಿ ಬುಲೆಟ್}one{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}other{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="352577523970648069">ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯ ಕ್ಷೇತ್ರ</translation>
 <translation id="3538907380453898475">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="5601172225407283979">ಡಿಫಾಲ್ಟ್ ಕ್ರಮವನ್ನು ಮಾಡಿ</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ಚೌಕದ ಬುಲೆಟ್}one{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}other{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="5608798115546226984">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಯ ಇನ್‌ಲೈನ್</translation>
 <translation id="5616029807486814372">ಮುಂದಿನ ಅಧ್ಯಾಯ</translation>
 <translation id="561939826962581046">ಸಮಯ</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8659501358298941449">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ಅಂತ್ಯ</translation>
 <translation id="867187640362843212">ಶೀರ್ಷಿಕೆ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}other{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}}</translation>
 <translation id="8693391540059827073">ನನ್ನ ನೆಚ್ಚಿನ ಋತು</translation>
 <translation id="8696284982970258155">ಹನಿಡ್ಯೂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ಪೈಪ್}one{# ಲಂಬ ಪೈಪ್‌ಗಳು}other{# ಲಂಬ ಪೈಪ್‌ಗಳು}}</translation>

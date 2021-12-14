@@ -1698,6 +1698,7 @@
 <translation id="2707024448553392710">구성요소 다운로드 중</translation>
 <translation id="270921614578699633">평균 이동</translation>
 <translation id="2709516037105925701">자동 완성</translation>
+<translation id="2710014902399506864">새 휴대전화 추가</translation>
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2712173769900027643">권한 요청</translation>
@@ -2057,6 +2058,7 @@
 <translation id="3055590424724986000">원하는 제공업체 이용</translation>
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3058517085907878899">기기 이름 지정</translation>
+<translation id="3059195548603439580">시스템 구성요소를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="3060379269883947824">텍스트 읽어주기 사용</translation>
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
@@ -2716,6 +2718,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB 기기 1개와 통신}other{USB 기기 #개와 통신}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}}</translation>
 <translation id="3765246971671567135">오프라인 데모 모드 정책을 읽을 수 없습니다.</translation>
+<translation id="3766115177661377251">새 디스플레이로 전송</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" />Hz</translation>
 <translation id="377050016711188788">아이스크림</translation>
 <translation id="3771290962915251154">자녀 보호 기능이 켜져 있어서 설정이 사용 중지됨</translation>
@@ -3503,6 +3506,7 @@
 <translation id="4590324241397107707">데이터베이스 저장소</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
+<translation id="4594577641390224176">시스템의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
 <translation id="4596295440756783523">다음 서버를 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
@@ -4888,6 +4892,7 @@
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6086004606538989567">인증한 계정은 이 기기에 액세스할 권한이 없습니다.</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
+<translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
@@ -4986,6 +4991,7 @@
 <translation id="6198102561359457428">로그아웃한 후 다시 로그인...</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6200047250927636406">파일 삭제</translation>
+<translation id="6200151268994853226">확장 프로그램 관리</translation>
 <translation id="6201608810045805374">계정을 삭제하시겠습니까?</translation>
 <translation id="6202304368170870640">PIN을 사용하여 로그인하거나 기기를 잠금 해제할 수 있습니다.</translation>
 <translation id="6206311232642889873">이미지 복사(&amp;Y)</translation>
@@ -5273,6 +5279,7 @@
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
 <translation id="6498249116389603658">모든 언어(&amp;A)</translation>
 <translation id="6499143127267478107">프록시 스크립트의 호스트 확인 중...</translation>
+<translation id="6499764981457476645">근처에서 기기를 찾을 수 없음</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" />에서 다음 파일을 열려고 합니다.</translation>
 <translation id="6501957628055559556">모든 컨테이너</translation>
 <translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
@@ -5738,6 +5745,7 @@
 <translation id="6979440798594660689">음소거(기본값)</translation>
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6981553172137913845">비공개로 탐색하려면 점 아이콘 메뉴를 클릭하여 시크릿 창을 여세요.</translation>
+<translation id="6981761993313539853">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6983507711977005608">인스턴트 테더링 네트워크 연결 해제</translation>
 <translation id="6983783921975806247">등록된 OID</translation>
@@ -6644,6 +6652,7 @@
 <translation id="7898725031477653577">항상 번역</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7901914889562552258">페이지 측정항목을 바탕으로 Chrome 성능 개선</translation>
+<translation id="7903290522161827520">브라우저 구성요소를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="7903345046358933331">페이지에서 응답이 없습니다. 페이지가 응답할 때까지 기다리거나 페이지를 닫으세요.</translation>
 <translation id="7903742244674067440">다음 인증기관을 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
@@ -7018,6 +7027,7 @@
 <translation id="8271268254812352141">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다. <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />에서 번역 언어를 맞춤 설정하세요.</translation>
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
 <translation id="8272443605911821513">'추가 도구' 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
+<translation id="8272677921396592934">카메라를 사용하여 QR 코드 스캔</translation>
 <translation id="8274332263553132018">파일 전송</translation>
 <translation id="8274921654076766238">키보드 포커스를 따라 돋보기 이동</translation>
 <translation id="8274924778568117936">업데이트가 완료될 때까지 <ph name="DEVICE_TYPE" />을(를) 끄거나 닫지 마세요. 설치가 완료되면 <ph name="DEVICE_TYPE" />이(가) 다시 시작됩니다.</translation>
@@ -7695,6 +7705,7 @@
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="9004952710076978168">알 수 없는 프린터에 대한 알림을 받았습니다.</translation>
 <translation id="9008201768610948239">무시</translation>
+<translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> 세부정보 페이지의 뒤로 버튼</translation>
 <translation id="9009369504041480176">업로드 중(<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">이 페이지를 변경하려고 하셨나요?</translation>
 <translation id="9011163749350026987">항상 아이콘 표시</translation>
@@ -7878,6 +7889,7 @@
 <translation id="917510707618656279">사이트에서 블루투스 기기에 액세스하려고 할 때 확인</translation>
 <translation id="9176476835295860688">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
+<translation id="9178061802301856367">로그인 데이터 삭제</translation>
 <translation id="9179524979050048593">로그인 화면 사용자 이름</translation>
 <translation id="9180281769944411366">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 시작합니다.</translation>
 <translation id="9180380851667544951">사이트에서 화면을 공유할 수 있습니다.</translation>

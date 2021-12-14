@@ -288,6 +288,7 @@
       이 정책이 'false'로 설정되면 <ph name="PRODUCT_NAME" />에서 게스트 프로필을 사용할 수 없습니다.</translation>
 <translation id="1361661842732478894">툴바에 홈 버튼 표시</translation>
 <translation id="1363275621236827384">하드웨어 프로필 Quirks 서버에 검색어를 사용합니다.</translation>
+<translation id="1371626834351873151">사용자 에이전트 축소가 모든 오리진에서 사용 설정됩니다.</translation>
 <translation id="1372618949173323717">자바스크립트 사용 중지</translation>
 <translation id="1376119291123231789">고급 배터리 충전 모드를 사용 설정합니다.</translation>
 <translation id="1384459581748403878">참고: <ph name="REFERENCE_URL" /></translation>
@@ -801,6 +802,7 @@
       정책을 사용 중지하거나 설정하지 않으면 빠른 전환이 사용되지 않습니다.</translation>
 <translation id="1972134432340252414">브라우저 프로세스에서 기존의 확장 프로그램 포인트를 차단합니다.</translation>
 <translation id="1977581177449752640">정책을 설정하면 원격 액세스 호스트에 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />을 인증하기 위해 특정 발급자 CN이 포함된 클라이언트 인증서가 사용됩니다. 제공되는 클라이언트 인증서를 사용하려면 <ph name="WILDCARD_VALUE" />로 설정합니다. 비어 있거나 설정되어 있지 않으면 이 기능이 사용 중지됩니다.</translation>
+<translation id="1985598967415986700">필드 트라이얼 및 오리진 트라이얼을 통해 사용자 에이전트 축소를 제어할 수 있습니다.</translation>
 <translation id="1988345404999458987">사용 가능한 인쇄 서버 구성을 제공합니다.
 
       이 정책을 사용하면 외부 인쇄 서버 구성을 JSON 파일로 <ph name="PRODUCT_OS_NAME" /> 기기에 제공할 수 있습니다.
@@ -2031,6 +2033,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
       참고: <ph name="MS_AD_NAME" /> 관리 대상 기기에서는 이 정책을 통해 <ph name="MACHINE_NAME_VARIABLE" />을(를) <ph name="MS_AD_NAME" /> 컴퓨터 이름 또는 관련 하위 문자열로 확장할 수 있습니다. 예를 들어, 컴퓨터 이름이 <ph name="MACHINE_NAME_EXAMPLE" />인 경우 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />이(가) 6번째 글자 후의 글자 4개로 대체되어 <ph name="MACHINE_NAME_PART_EXAMPLE" />이(가) 됩니다. 글자 위치는 0을 기준으로 합니다.
 
       이 정책은 지원 중단되었으므로 <ph name="PRINTERS_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
+<translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> 사용 또는 사용 중지</translation>
 <translation id="3302829897293005699">정책을 사용 설정하거나 설정하지 않으면 등록된 기기에서 애플리케이션 ID 및 버전과 같은 활성 키오스크 세션 정보를 보고합니다.
 
       정책을 사용 중지하면 등록된 기기에서 키오스크 세션 정보를 보고하지 않습니다.</translation>
@@ -2890,6 +2893,23 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 
       이 정책이 false로 설정되면 OS 업그레이드 후 처음 실행할 때 브라우저가 시작 페이지를 다시 표시하지 않습니다.</translation>
 <translation id="441686537793821907">외부 확장 프로그램 설치 차단</translation>
+<translation id="4420613474328461583"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에서 다운로드될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에서 다운로드되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 페이지 URL이 특정 태그와 연결된 패턴과 일치하면 'enable' 패턴에 해당하는 태그가 분석 요청에 포함되지만, 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 1개 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 Chrome에서 분석 서비스의 응답이 올 때까지 기다렸다가 사용자에게 다운로드된 파일에 대한 액세스 권한을 부여합니다. 다른 정숫값으로 설정되면 Chrome에서 사용자에게 파일 액세스 권한을 즉시 부여합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 필드는 Chrome에서 비밀번호로 보호된 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 Chrome에서 크기가 커서 분석하기 어려운 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 결과 부정적으로 평가되어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. message 필드에는 사용자에게 표시하는 텍스트가 포함되며 최대 200자(영문 기준)까지 포함할 수 있습니다. learn_more_url 필드에는 관리자가 제공한 URL이 포함됩니다. 사용자는 이 URL을 클릭하여 작업이 차단된 이유에 관해 고객이 제공한 정보를 자세히 확인할 수 있습니다. language 필드는 선택사항이며 여기에는 메시지의 언어가 포함됩니다. language 필드가 비어 있거나 값이 'default'이면 사용자의 언어로 된 메시지가 없는 경우에 대신 사용될 메시지를 나타냅니다. tag 필드는 메시지가 표시될 스캔 유형을 지정합니다. custom_messages 목록에는 0개 이상의 항목이 포함될 수 있으며, 각 항목에는 비어 있지 않은 message 필드와 tag 필드가 있어야 합니다.
+
+      이 정책은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서만 설정할 수 있습니다.</translation>
 <translation id="4423597592074154136">프록시 설정을 수동으로 지정</translation>
 <translation id="4424004842303301809">데이터 유출 방지 이벤트 보고 사용 안 함</translation>
 <translation id="4427173305799125784">PDF 뷰어에서 PDF에 주석 작성 불가능</translation>
@@ -2970,6 +2990,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       참고: 사용 가능한 변수를 확인해 보세요 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="4531706050939927436">Google Play를 사용해 Google 관리 콘솔에서 Android 앱을 강제 설치할 수 있습니다. Android 앱은 이 정책을 사용하지 않습니다.</translation>
 <translation id="4534500438517478692">Android 제한 이름:</translation>
+<translation id="4537906430022369840">사용자 에이전트 축소가 사용 중지되고 필드 트라이얼 또는 오리진 트라이얼을 통해 이를 사용 설정할 수 없습니다.</translation>
 <translation id="4541530620466526913">기기 로컬 계정</translation>
 <translation id="4543502256674577024">기기 업데이트 설정</translation>
 <translation id="454585952814397564">오디오 프로세스에 일반적인 우선순위 사용</translation>
@@ -3011,6 +3032,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       자세한 내용은 https://www.chromestatus.com/feature/5675755719622656 페이지를 참고하시기 바랍니다.
       이 정책을 사용 설정하면 사이트에서 새로운 창/탭을 동시에 탐색하고 열 수 있습니다.
       이 정책을 사용 중지하거나 설정하지 않으면 사이트에서 새로운 창/탭을 동시에 탐색하고 열 수 없습니다.</translation>
+<translation id="457430673056611745">OnPrint <ph name="PRODUCT_NAME" /> Enterprise 커넥터 설정 정책</translation>
 <translation id="4578265298946081589">사용자 로그아웃 시 재부팅하지 않습니다.</translation>
 <translation id="4581507927311097234">사용자 입력이 없어서 화면이 꺼지기까지 걸리는 시간(밀리초)입니다.</translation>
 <translation id="4582338216073557489">정책을 None으로 설정하면 <ph name="PRODUCT_NAME" />에서 디스크에 캐시된 파일을 저장하는 데 기본 캐시 크기를 사용합니다. 사용자는 이 설정을 변경할 수 없습니다.
@@ -5505,6 +5527,12 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="7509761893401042250">이 정책은 M96부터 지원이 중단됩니다. 대신 <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" />, <ph name="REPORT_DEVICE_AUDIO_STATUS" /> 정책을 사용해 주세요.
 
       정책을 사용 설정하거나 설정하지 않으면 등록된 기기에서 CPU/RAM 사용 등의 하드웨어 통계를 보고합니다. 정책을 사용 중지하면 등록된 기기에서 하드웨어 통계를 보고하지 않습니다.</translation>
+<translation id="7512065400265675158"><ph name="USER_AGENT_HEADER_NAME" /> HTTP 요청 헤더가 축소될 예정입니다. 이 정책은 원활한 테스트 및 호환성을 위해 모든 웹사이트에서 축소 기능을 사용 설정하거나, 오리진 트라이얼 또는 필드 트라이얼을 통해 이를 사용하는 기능을 사용 중지할 수 있습니다.
+
+      <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />와 관련 일정에 관해 자세히 알아보려면 다음 페이지를 참고하세요.
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      </translation>
 <translation id="7519218194072744342">프로토콜 핸들러의 URL입니다.</translation>
 <translation id="7519251620064708155">이 사이트에서 키 생성 허용</translation>
 <translation id="7529144158022474049">분산 요소 자동 업데이트</translation>
@@ -6048,6 +6076,23 @@ False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화�
 
       정책을 사용 중지하거나 설정하지 않으면 패킷을 전송하지 않습니다.</translation>
 <translation id="816783746144552109">기기에 허용되는 최소 Chrome OS 버전을 설정합니다.</translation>
+<translation id="8169492352330154095"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, Chrome에 파일이 첨부될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에 첨부되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 페이지 URL이 특정 태그와 연결된 패턴과 일치하면 'enable' 패턴에 해당하는 태그가 분석 요청에 포함되지만, 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 1개 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 Chrome에서 분석 서비스의 응답이 올 때까지 기다렸다가 페이지에 파일 액세스 권한을 부여합니다. 다른 정숫값으로 설정되면 Chrome에서 페이지에 파일 액세스 권한을 즉시 부여합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 필드는 Chrome에서 비밀번호로 보호된 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 Chrome에서 크기가 커서 분석하기 어려운 파일을 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 결과 부정적으로 평가되어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. message 필드에는 사용자에게 표시하는 텍스트가 포함되며 최대 200자(영문 기준)까지 포함할 수 있습니다. learn_more_url 필드에는 관리자가 제공한 URL이 포함됩니다. 사용자는 이 URL을 클릭하여 작업이 차단된 이유에 관해 고객이 제공한 정보를 자세히 확인할 수 있습니다. language 필드는 선택사항이며 여기에는 메시지의 언어가 포함됩니다. language 필드가 비어 있거나 값이 'default'이면 사용자의 언어로 된 메시지가 없는 경우에 대신 사용될 메시지를 나타냅니다. tag 필드는 메시지가 표시될 스캔 유형을 지정합니다. custom_messages 목록에는 0개 이상의 항목이 포함될 수 있으며, 각 항목에는 비어 있지 않은 message 필드와 tag 필드가 있어야 합니다.
+
+      이 정책은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서만 설정할 수 있습니다.</translation>
 <translation id="8171924760436219650">로그인 화면의 기본 마우스 버튼을 오른쪽 버튼으로 변경</translation>
 <translation id="8173864651667424191">이미지로 인쇄 옵션이 사용 가능한 경우 PDF 문서의 인쇄 미리보기로 기본적으로 설정됩니다.</translation>
 <translation id="8176035528522326671">기업 사용자에게 기본 멀티 프로필 사용자만 허용(기업에서 관리하는 사용자에 대한 기본 동작임)</translation>
@@ -6301,6 +6346,11 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
       정책이 설정되지 않은 경우 기본값 3이 사용됩니다.
 
       정책이 설정되면 필요 시 한도에 맞추어 기존 스냅샷이 삭제됩니다. 정책이 0으로 설정된 경우 스냅샷이 생성되지 않습니다.</translation>
+<translation id="8447347049334673364">정책을 설정하면 기존의 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다. 기존에 설정된 정책이 있을 경우 이 정책으로 대체됩니다.
+
+      이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />의 기본 구성을 설정할 수 있으며, 이 정책에 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.
+
+      참고: <ph name="MS_AD_NAME" /> 도메인에 연결되지 않은 <ph name="MS_WIN_NAME" /> 인스턴스와 MDM을 통해 관리되지 않거나 MCX를 통해 도메인에 연결되지 않은 <ph name="MAC_OS_NAME" /> 인스턴스의 경우 강제 설치는 Chrome 웹 스토어에 등록된 앱과 확장 프로그램으로 제한됩니다.</translation>
 <translation id="8451988835943702790">새 탭 페이지를 홈페이지로 사용</translation>
 <translation id="8455529558077979314">개인정보 보호 화면 설정</translation>
 <translation id="8455551509936646199">재부팅이 이루어져야 하는 요일로, 기기의 현지 시간대로 변환됩니다. 'frequency'가 'WEEKLY'인 경우에만 사용됩니다.</translation>
@@ -6516,6 +6566,21 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
       유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="8703488928438047864">보드 상태 보고</translation>
 <translation id="8704831857353097849">사용할 수 없는 플러그인 목록</translation>
+<translation id="8704915028294851978"><ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 <ph name="PRODUCT_NAME" /> Enterprise 커넥터 서비스 설정의 목록으로, <ph name="PRODUCT_NAME" />에서 페이지나 파일이 출력될 때 실행됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 특정 페이지에서 출력이 실행될 때 커넥터가 분석을 위해 데이터를 전송할지, 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 1개 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 <ph name="PRODUCT_NAME" />에서 분석 서비스의 응답이 올 때까지 기다렸다가 출력된 페이지의 출력 미리보기 대화상자가 표시되도록 허용합니다. 다른 정숫값으로 설정되면 <ph name="PRODUCT_NAME" />에서 출력 미리보기 대화상자를 즉시 표시합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 필드는 <ph name="PRODUCT_NAME" />에서 크기가 커서 분석하기 어려운 파일/페이지를 차단할지 또는 허용할지 결정합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 필드는 스캔 결과 부정적으로 평가되어 경고가 표시될 경우 사용자에게 표시할 메시지를 구성하는 데 사용됩니다. 관리자는 최대 200자(영문 기준)의 메시지를 구성할 수 있습니다.
+
+      이 정책은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서만 설정할 수 있습니다.</translation>
 <translation id="8705895771006864851">정책을 True로 설정하면 사용자에게 적합한 경우 <ph name="PRODUCT_NAME" />에 통합 번역 툴바를 표시하고 마우스 오른쪽 버튼 클릭 시 나타나는 컨텍스트 메뉴에 번역 옵션을 표시하여 번역 기능을 제공합니다. 정책을 False로 설정하면 내장된 모든 번역 기능이 꺼집니다.
 
       정책을 설정하면 사용자가 이 기능을 변경할 수 없습니다. 설정하지 않으면 사용자가 설정을 변경할 수 있습니다.</translation>

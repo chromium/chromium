@@ -375,7 +375,7 @@
 <translation id="338583716107319301">વિભાજક</translation>
 <translation id="3389259863310851658">પાછલી ફોર્મ ફીલ્ડ</translation>
 <translation id="3393605254399152980">તમે જે સ્પર્શ કરી રહ્યાં હો તે લખાણને સાંભળવા માટે કોઈ આંગળીને સ્ક્રીન પર ખેંચો</translation>
-<translation id="3406283310380167331">ફોર્મ્સની સૂચિ બતાવો</translation>
+<translation id="3406283310380167331">ફોર્મની સૂચિ બતાવો</translation>
 <translation id="3414400929511680526">એલિસ બ્લૂ</translation>
 <translation id="3418936350470374046">નીચે કોઈ સેલ નથી</translation>
 <translation id="3419269701801640163">પેસ્ટ કરો</translation>
@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{પ્રશ્નાર્થ ચિહ્ન}one{# પ્રશ્નાર્થ ચિહ્ન}other{# પ્રશ્નાર્થ ચિહ્ન}}</translation>
 <translation id="3505359110822747654">ChromeVox મેનૂ નાનું કરો</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{કૅરેટ}one{# કૅરેટ}other{# કૅરેટ}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{સફેદ બુલેટ}one{# સફેદ બુલેટ}other{# સફેદ બુલેટ}}</translation>
 <translation id="352577523970648069">સંપાદનયોગ્ય ટેક્સ્ટ ફીલ્ડ</translation>
 <translation id="3538907380453898475">વર્ણનની સૂચિ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> કાપો.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">આગલું ચેકબૉક્સ</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, રેડિયો બટન પસંદ કરેલું</translation>
 <translation id="5601172225407283979">ડિફોલ્ટ ક્રિયા ભજવો</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ચોરસ બુલેટ}one{# ચોરસ બુલેટ}other{# ચોરસ બુલેટ}}</translation>
 <translation id="5608798115546226984">સ્વતઃપૂર્ણ ઇનલાઇન</translation>
 <translation id="5616029807486814372">આગલો પાઠ</translation>
 <translation id="561939826962581046">સમય</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">ડ્રૉપ-ડાઉન સૂચિ</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> અંત</translation>
 <translation id="867187640362843212">મથાળું 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{નેસ્ટ કરેલું લેવલ #}other{નેસ્ટ કરેલું લેવલ #}}</translation>
 <translation id="8693391540059827073">મારી મનપસંદ ઋતુ</translation>
 <translation id="8696284982970258155">હનીડ્યૂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{પાઇપ}one{# વર્ટિકલ પાઇપ}other{# વર્ટિકલ પાઇપ}}</translation>

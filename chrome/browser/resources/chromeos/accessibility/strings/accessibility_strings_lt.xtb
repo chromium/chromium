@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{klaustukas}one{# klaustukas}few{# klaustukai}many{# question marks}other{# klaustukų}}</translation>
 <translation id="3505359110822747654">„ChromeVox“ meniu sutraukimas</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{stogelio ženklas}one{# stogelio ženklas}few{# stogelio ženklai}many{# carets}other{# stogelio ženklų}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{baltas ženklelis}one{# baltas ženklelis}few{# balti ženkleliai}many{# balto ženklelio}other{# baltų ženklelių}}</translation>
 <translation id="352577523970648069">Redaguotinas teksto laukas</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">iškirpti „<ph name="TEXT" />“.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Kitas žymimasis laukelis</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, akutės pasirinkimas panaikintas</translation>
 <translation id="5601172225407283979">Atlikti numatytąjį veiksmą</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratinis ženklelis}one{# kvadratinis ženklelis}few{# kvadratiniai ženkleliai}many{# kvadratinio ženklelio}other{# kvadratinių ženklelių}}</translation>
 <translation id="5608798115546226984">Automatinis eilutės užbaigimas</translation>
 <translation id="5616029807486814372">Kita pamoka</translation>
 <translation id="561939826962581046">time</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Išskleidžiamieji sąrašai</translation>
 <translation id="8666733765751421568">Skilties „<ph name="TYPE" />“ pabaiga</translation>
 <translation id="867187640362843212">5 antraštė</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{# įdėtinis lygis}few{# įdėtinis lygis}many{# įdėtinis lygis}other{# įdėtinis lygis}}</translation>
 <translation id="8693391540059827073">Mano mėgstamiausias metų laikas</translation>
 <translation id="8696284982970258155">Šviesiai žalsva spalva</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{statusis brūkšnys}one{# statusis brūkšnys}few{# statieji brūkšniai}many{# vertical pipes}other{# stačiųjų brūkšnių}}</translation>

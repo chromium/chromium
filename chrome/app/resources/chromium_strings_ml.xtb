@@ -213,7 +213,7 @@
 <translation id="6990124437352146030">ഈ സൈറ്റിനായി, Chromium-ത്തിന് നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="705851970750939768">Chromium അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="7067091210845072982">ചിത്രത്തിൽ ഉപകാരപ്രദമായ വിവരണമില്ലെങ്കിൽ നിങ്ങൾക്കായി ഒരു വിവരണം നൽകാൻ Chromium ശ്രമിക്കും. വിവരണങ്ങൾ സൃഷ്‌ടിക്കാൻ, ചിത്രങ്ങൾ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
-<translation id="7147279922647361552">Chromium-ന്റെ ഏറ്റവും പ്രധാനപ്പെട്ട ചില സ്വകാര്യതാ തിരഞ്ഞെടുപ്പുകൾ ഇഷ്ടാനുസൃതമാക്കുക</translation>
+<translation id="7147279922647361552">ഏറ്റവും പ്രധാനപ്പെട്ട ചില Chromium സ്വകാര്യതാ തിരഞ്ഞെടുപ്പുകൾ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="718435575166326686">Chromium-ന് ഈ സൈറ്റിനായി ക്യാമറാ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="7196312274710523067">Chromium ലോഞ്ച് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7197677400338048821">Chromium-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. 24 മണിക്കൂറിന് ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -227,6 +227,7 @@
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="734373864078049451">നിങ്ങളുടെ വെബ്, ബുക്ക്മാർക്കുകൾ,മറ്റ് Chromium ഫയൽ എന്നിവ ഇവിടെ തത്സമയമാണ്.</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" /> ആക്‌സസ് ചെയ്യാൻ <ph name="ALTERNATIVE_BROWSER_NAME" /> തുറക്കുന്നതിനായി നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിൻ Chromium കോൺഫിഗർ ചെയ്‌തു.</translation>
+<translation id="7366100504948874379">Chromium-ലും ഓണാക്കണോ?</translation>
 <translation id="7398989605938454041">Chromium പ്രൊഫൈലുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ എല്ലാ Chromium ഉള്ളടക്കവും വേർതിരിക്കാം. ജോലികാര്യങ്ങളും വിനോദവും പ്രത്യേകമായി തരംതിരിക്കുന്നത് ഇത് കൂടുതൽ എളുപ്പമാക്കുന്നു.</translation>
 <translation id="7448255348454382571">Chromium OS പുനഃരാരംഭിക്കുക</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>

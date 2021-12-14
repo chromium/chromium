@@ -725,7 +725,6 @@
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
-<translation id="5250483651202458397">스크린샷입니다. 닫으려면 탭하세요.</translation>
 <translation id="5262378156578470238"><ph name="DATE" />에 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="526421993248218238">이 페이지를 로드할 수 없습니다.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
@@ -827,6 +826,7 @@
 <translation id="5854512288214985237">Google에 사용 통계와 비정상 종료 보고서를 전송하지 않음</translation>
 <translation id="5855546874025048181">상세검색: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">문제가 발생했습니다. 가격 추적을 업데이트할 수 없습니다.</translation>
+<translation id="5859968346865909126">설정에서 이 기능을 사용 설정하거나 중지할 수 있습니다.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862731021271217234">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
@@ -1101,6 +1101,7 @@
 <translation id="7359002509206457351">결제 수단 액세스</translation>
 <translation id="7375125077091615385">유형:</translation>
 <translation id="7376560087009844242">페이지 텍스트를 더 많이 포함하면 터치하여 검색 기능을 사용할 때 더 나은 검색결과를 확인할 수 있습니다. 이를 변경하려면 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 방문하세요.</translation>
+<translation id="7379900596734708416">사이트에 어두운 테마 적용 가능</translation>
 <translation id="7386842512861524348">Chrome에서 별도의 안내가 없는 한 이 사이트의 연결은 항상 안전하게 유지됩니다.</translation>
 <translation id="7396940094317457632">파일(<ph name="FILE_NAME" />)이 다운로드되었습니다.</translation>
 <translation id="7400418766976504921">URL</translation>

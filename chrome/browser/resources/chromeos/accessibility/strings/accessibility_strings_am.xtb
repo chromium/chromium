@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">የመለማመቻ ቦታ፦ ተቆልቋይ ዝርዝሮች</translation>
 <translation id="1195238899008218998">ድሕረ ቃል</translation>
 <translation id="1197088940767939838">ብርቱካናማ</translation>
+<translation id="1198865190323699001">የመንካት ምልክቶች</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1206619573307042055">መልሶ መልስ</translation>
 <translation id="1207086294218137981">ምንም ቀጣይ የደረጃ 4 ርዕስ የለም</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{የጥያቄ ምልክት}one{# የጥያቄ ምልክቶች}other{# የጥያቄ ምልክቶች}}</translation>
 <translation id="3505359110822747654">ChromeVox Menusን ሰብስብ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ድፋት}one{# ድፋቶች}other{# ድፋቶች}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ነጭ ነጥበ ምልክት}one{# ነጭ ነጥበ ምልክቶች}other{# ነጭ ነጥበ ምልክቶች}}</translation>
 <translation id="352577523970648069">አርትዖት ሊደረግበት የሚችል የጽሑፍ መስክ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ይቁረጡ።</translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">ቀጣይ አመልካች ሳጥን</translation>
 <translation id="5598905979683743333"><ph name="NAME" />፣ ሬዲዮ አዝራር አልተመረጠም</translation>
 <translation id="5601172225407283979">ነባሪ እርምጃ አከናውን</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ካሬ ነጥበ ምልክት}one{# ካሬ ነጥበ ምልክቶች}other{# ካሬ ነጥበ ምልክቶች}}</translation>
 <translation id="5608798115546226984">መስመር ውስጥ ራስ-አጠናቅቅ</translation>
 <translation id="5616029807486814372">ቀጣይ ትምህርት</translation>
 <translation id="561939826962581046">ሰዓት</translation>
@@ -1097,6 +1100,7 @@
 <translation id="8659501358298941449">ተቆልቋይ ዝርዝሮች</translation>
 <translation id="8666733765751421568">የ<ph name="TYPE" /> መጨረሻ</translation>
 <translation id="867187640362843212">ርዕስ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{የእቅፍ ደረጃ #}other{የእቅፍ ደረጃ #}}</translation>
 <translation id="8693391540059827073">የእኔ ተወዳጅ ምዕራፍ</translation>
 <translation id="8696284982970258155">ሃኒዴው</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ቁም መስመር}one{# የቁም መስመሮች}other{# የቁም መስመሮች}}</translation>

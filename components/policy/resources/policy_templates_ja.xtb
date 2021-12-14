@@ -284,6 +284,7 @@
 このポリシーが false に設定されている場合、ゲストモードのプロフィールで <ph name="PRODUCT_NAME" /> を使用することはできません。</translation>
 <translation id="1361661842732478894">ツールバーにホームボタンを表示する</translation>
 <translation id="1363275621236827384">ハードウェア プロファイルを Quirks サーバーに問い合わせられるようにする</translation>
+<translation id="1371626834351873151">ユーザー エージェントの削減をすべてのオリジンで有効にする。</translation>
 <translation id="1372618949173323717">JavaScript を無効にする</translation>
 <translation id="1376119291123231789">詳細なバッテリー充電モードを有効にする</translation>
 <translation id="1384459581748403878">参考: <ph name="REFERENCE_URL" /></translation>
@@ -787,6 +788,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、高速切り替えは使用されません。</translation>
 <translation id="1972134432340252414">ブラウザ プロセスで従来の拡張機能ポイントをブロックする</translation>
 <translation id="1977581177449752640">このポリシーを設定した場合、リモート アクセス ホストは発行元の CN が指定されたクライアント証明書を使用して <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> に対し認証を行います。利用可能な任意のクライアント証明書を使用するには、このポリシーを「<ph name="WILDCARD_VALUE" />」に設定します。このポリシーを空白にした場合または設定しない場合、この機能は無効になります。</translation>
+<translation id="1985598967415986700">ユーザー エージェントの削減をフィールド トライアルとオリジン トライアルによって管理可能にする。</translation>
 <translation id="1988345404999458987">使用できるプリント サーバーの設定を指定します。
 
       このポリシーでは、外部プリント サーバーの設定を JSON ファイルとして <ph name="PRODUCT_OS_NAME" /> デバイスに渡すよう設定できます。
@@ -1966,6 +1968,7 @@
       注: <ph name="MS_AD_NAME" /> の管理対象デバイスの場合、このポリシーは <ph name="MACHINE_NAME_VARIABLE" /> から <ph name="MS_AD_NAME" /> のマシン名またはその部分文字列への展開をサポートします。たとえばマシン名が <ph name="MACHINE_NAME_EXAMPLE" /> の場合、<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> は 6 文字目以降の 4 文字（<ph name="MACHINE_NAME_PART_EXAMPLE" />）に置き換えられます（先頭をゼロ文字目として数えます）。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_POLICY_NAME" /> を使用してください。</translation>
+<translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> を有効または無効にします。</translation>
 <translation id="3302829897293005699">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはアプリの ID やバージョンなどのアクティブなキオスク セッション情報を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはキオスク セッション情報を報告しません。</translation>
@@ -2897,6 +2900,7 @@
       注: 使用できる変数の一覧については、https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables をご覧ください。</translation>
 <translation id="4531706050939927436">Android アプリを強制的にインストールするには、Google 管理コンソールで Google Play からのインストールを指定します。Android アプリでこのポリシーは使用されません。</translation>
 <translation id="4534500438517478692">Android の制限名:</translation>
+<translation id="4537906430022369840">ユーザー エージェントの削減を無効にして、フィールド トライアルやオリジン トライアルによる有効化を許可しない。</translation>
 <translation id="4541530620466526913">デバイスのローカル アカウント</translation>
 <translation id="4543502256674577024">デバイスの更新設定</translation>
 <translation id="454585952814397564">音声処理で通常の優先度を使用する</translation>
@@ -5290,6 +5294,12 @@
 <translation id="7509761893401042250">このポリシーは M96 でサポートが終了しました。代わりに <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" />、<ph name="REPORT_DEVICE_AUDIO_STATUS" /> を使用してください。
 
       このポリシーを有効にするか未設定のままにした場合、登録済みのデバイスは CPU/RAM 使用量などに関するハードウェアの統計情報を報告します。このポリシーを無効に設定した場合、登録済みのデバイスはハードウェアの統計情報を報告しません。</translation>
+<translation id="7512065400265675158"><ph name="USER_AGENT_HEADER_NAME" /> HTTP リクエスト ヘッダーは、今後、含められる情報の削減が予定されています。このポリシーでは、テストを行って互換性を確保できるように、この削減をすべてのウェブサイトに対して有効にすることができます。オリジン トライアルやフィールド トライアルによる削減の有効化を許可しないよう設定することもできます。
+
+      <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> とそのスケジュールについて詳しくは、こちらをご覧ください。
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      </translation>
 <translation id="7519218194072744342">プロトコル ハンドラの URL です。</translation>
 <translation id="7519251620064708155">指定サイトでのキー生成を許可する</translation>
 <translation id="7529144158022474049">自動更新の散乱係数</translation>

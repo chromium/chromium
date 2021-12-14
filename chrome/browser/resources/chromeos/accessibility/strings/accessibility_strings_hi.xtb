@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">प्रैक्टिस करने की जगह: ड्रॉप-डाउन सूचियां</translation>
 <translation id="1195238899008218998">उपसंहार</translation>
 <translation id="1197088940767939838">नारंगी</translation>
+<translation id="1198865190323699001">टच जेस्चर</translation>
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1206619573307042055">मार्की</translation>
 <translation id="1207086294218137981">आगे कोई लेवल 4 का शीर्षक नहीं है</translation>
@@ -391,6 +392,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3497063866483065785">{COUNT,plural, =1{प्रश्न चिह्न}one{# प्रश्न चिह्न}other{# प्रश्न चिह्न}}</translation>
 <translation id="3505359110822747654">ChromeVox मेन्यू को छोटा करें</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{कैरेट}one{# कैरेट}other{# कैरेट}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{सफ़ेद बुलेट}one{# सफ़ेद बुलेट}other{# सफ़ेद बुलेट}}</translation>
 <translation id="352577523970648069">संपादन-योग्य लेख फ़ील्ड</translation>
 <translation id="3538907380453898475">जानकारी वाली सूची</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> को काटें.</translation>
@@ -674,6 +676,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5597170376237141345">अगला चेकबॉक्‍स</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडियो बटन अचयनित</translation>
 <translation id="5601172225407283979">डिफ़ॉल्ट कार्रवाई करें</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{स्क्वेयर बुलेट}one{# स्क्वेयर बुलेट}other{# स्क्वेयर बुलेट}}</translation>
 <translation id="5608798115546226984">अपने आप पूरा होने का इनलाइन</translation>
 <translation id="5616029807486814372">अगले लेसन पर जाएं</translation>
 <translation id="561939826962581046">समय</translation>
@@ -1096,6 +1099,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8659501358298941449">ड्रॉप-डाउन सूचियां</translation>
 <translation id="8666733765751421568">आखिरी <ph name="TYPE" /></translation>
 <translation id="867187640362843212">शीर्षक 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{नेस्ट किया हुआ लेवल #}other{नेस्ट किया हुआ लेवल #}}</translation>
 <translation id="8693391540059827073">मेरा पसंदीदा मौसम</translation>
 <translation id="8696284982970258155">खरबूजा</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}one{# लम्बवत पाइप}other{# लम्बवत पाइप}}</translation>

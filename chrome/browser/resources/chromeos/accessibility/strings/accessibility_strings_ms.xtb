@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{tanda soal}other{# tanda soal}}</translation>
 <translation id="3505359110822747654">Menu ChromeVox runtuh</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{karet}other{# karet}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{bulet putih}other{# bulet putih}}</translation>
 <translation id="352577523970648069">Medan teks boleh edit</translation>
 <translation id="3538907380453898475">snrprhl</translation>
 <translation id="3549141990712742152">potong <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Kotak pilihan seterusnya</translation>
 <translation id="5598905979683743333">Butang radio, <ph name="NAME" /> dinyahpilih</translation>
 <translation id="5601172225407283979">Lakukan tindakan lalai</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{bulet segi empat sama}other{# bulet segi empat sama}}</translation>
 <translation id="5608798115546226984">Autolengkap sebaris</translation>
 <translation id="5616029807486814372">Pelajaran seterusnya</translation>
 <translation id="561939826962581046">masa</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Senarai Lungsur</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> tamat</translation>
 <translation id="867187640362843212">Tajuk 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{tahap bersarang #}}</translation>
 <translation id="8693391540059827073">Musim kegemaran saya</translation>
 <translation id="8696284982970258155">Hijau Tembikai Susu</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{paip}other{# paip menegak}}</translation>

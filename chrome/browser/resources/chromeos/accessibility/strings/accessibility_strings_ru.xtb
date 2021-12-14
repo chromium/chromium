@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Практические задания: раскрывающиеся списки</translation>
 <translation id="1195238899008218998">Послесловие</translation>
 <translation id="1197088940767939838">Оранжевый</translation>
+<translation id="1198865190323699001">Жесты</translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Следующего заголовка четвертого уровня нет</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{вопросительный знак}one{# вопросительный знак}few{# вопросительных знака}many{# вопросительных знаков}other{# question marks}}</translation>
 <translation id="3505359110822747654">Свернуть меню ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{циркумфлекс}one{# циркумфлекс}few{# циркумфлекса}many{# циркумфлексов}other{# carets}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{белый маркер списка}one{# белый маркер списка}few{# белых маркера списка}many{# белых маркеров списка}other{# белого маркера списка}}</translation>
 <translation id="352577523970648069">Редактируемое текстовое поле</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">вырезать <ph name="TEXT" />.</translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">Следующий флажок</translation>
 <translation id="5598905979683743333">Переключатель "<ph name="NAME" />", не выбран</translation>
 <translation id="5601172225407283979">Выполнить действие по умолчанию</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{квадратный маркер списка}one{# квадратный маркер списка}few{# квадратных маркера списка}many{# квадратных маркеров списка}other{# квадратного маркера списка}}</translation>
 <translation id="5608798115546226984">Строка автозаполнения</translation>
 <translation id="5616029807486814372">Следующий урок</translation>
 <translation id="561939826962581046">time</translation>
@@ -1096,6 +1099,7 @@
 <translation id="8659501358298941449">Раскрывающиеся списки</translation>
 <translation id="8666733765751421568">Шрифт <ph name="TYPE" />, конец</translation>
 <translation id="867187640362843212">Заголовок пятого уровня.</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{вложенный уровень #}few{вложенный уровень #}many{вложенный уровень #}other{вложенный уровень #}}</translation>
 <translation id="8693391540059827073">Мое любимое время года</translation>
 <translation id="8696284982970258155">Мускатная дыня</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{вертикальная черта}one{# вертикальная черта}few{# вертикальные черты}many{# вертикальных черт}other{# vertical pipes}}</translation>

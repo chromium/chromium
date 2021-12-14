@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">অনুশীলন ক্ষেত্র: ড্রপ-ডাউন তালিকা</translation>
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
 <translation id="1197088940767939838">কমলা</translation>
+<translation id="1198865190323699001">জেসচার মেনুতে স্পর্শ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">কোনও পরবর্তী লেভেল ৪ শিরোনাম নেই</translation>
@@ -391,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{প্রশ্নবোধক চিহ্ন}one{#টি প্রশ্নবোধক চিহ্ন}other{#টি প্রশ্নবোধক চিহ্ন}}</translation>
 <translation id="3505359110822747654">ChromeVox Menus আড়াল করুন</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ক্যারেট}one{# ক্যারেট}other{# ক্যারেট}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{সাদা বুলেট}one{#টি সাদা বুলেট}other{#টি সাদা বুলেট}}</translation>
 <translation id="352577523970648069">একটি সম্পাদনাযোগ্য পাঠ্য ফিল্ড</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> কাট করুন।</translation>
@@ -674,6 +676,7 @@
 <translation id="5597170376237141345">পরবর্তী চেকবাক্স</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, রেডিও বোতাম নির্বাচিত নেই</translation>
 <translation id="5601172225407283979">ডিফল্ট অ্যাকশন সম্পন্ন করুন</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{বর্গাকার বুলেট}one{#টি বর্গাকার বুলেট}other{#টি বর্গাকার বুলেট}}</translation>
 <translation id="5608798115546226984">স্বতসম্পূর্ণ ইনলাইন</translation>
 <translation id="5616029807486814372">পরবর্তী পাঠ</translation>
 <translation id="561939826962581046">time</translation>
@@ -1097,6 +1100,7 @@
 <translation id="8659501358298941449">ড্রপ-ডাউন তালিকা</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> শেষ</translation>
 <translation id="867187640362843212">শিরোনাম ৫</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{নেস্ট করা লেভেল #}other{নেস্ট করা লেভেল #}}</translation>
 <translation id="8693391540059827073">আমার প্রিয় ঋতু</translation>
 <translation id="8696284982970258155">হানিডিউ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#টি উলম্ব পাইপ}other{#টি উলম্ব পাইপ}}</translation>

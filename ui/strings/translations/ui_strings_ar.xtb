@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4588090240171750605">التمرير إلى اليسار</translation>
 <translation id="4724120544754982507">مركز الإشعارات، <ph name="UNREAD_NOTIFICATION_COUNT" /> من الإشعارات غير المقروءة</translation>
+<translation id="4746179598275229723">تمت إزالة تثبيت الإضافة.</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{يتبقى شهر واحد}zero{يتبقى # شهر}two{يتبقى شهرين (#)}few{يتبقى # أشهر}many{يتبقى # شهرًا}other{يتبقى # شهر}}</translation>
 <translation id="4888938634149558681">إجراء مكالمة</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ثانية واحدة}zero{# من الثواني}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{يتبقى ثانية واحدة}zero{يتبقى # من الثواني}two{يتبقى ثانيتان (#)}few{يتبقى # ثانية}many{يتبقى # ثانية}other{يتبقى # من الثواني}}</translation>
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{ساعة واحدة}zero{# من الساعات}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# من الساعات}}</translation>
+<translation id="6007284015834422026">تم تثبيت الإضافة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6117103120090651229">الزر الأوسط</translation>
 <translation id="6129953537138746214">مسافة</translation>

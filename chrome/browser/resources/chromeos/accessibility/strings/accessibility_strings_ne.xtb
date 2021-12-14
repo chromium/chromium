@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ प्रश्न चिन्ह}other{ # प्रश्न चिन्हहरू}}</translation>
 <translation id="3505359110822747654">ChromeVox का मेनुहरू कोल्याप्स गर्नुहोस्</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ क्यारेट}other{ # क्यारेटहरू}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{सेतो बुलेट}other{# वटा सेता बुलेट}}</translation>
 <translation id="352577523970648069">एउटा सम्पादन गर्न मिल्ने पाठ क्षेत्र</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />काट्नुहोस्।</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">अर्को जाँच बाकस</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडियो बटन छानिएन</translation>
 <translation id="5601172225407283979">डिफल्ट कार्य गर्नुहोस्</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{वर्गाकार बुलेट}other{# वटा वर्गाकार बुलेट}}</translation>
 <translation id="5608798115546226984">स्वत: पूर्णता रेखा</translation>
 <translation id="5616029807486814372">अर्को पाठ</translation>
 <translation id="561939826962581046">समय</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">ड्रप-डाउन सूचीहरू</translation>
 <translation id="8666733765751421568">अन्तिम <ph name="TYPE" /></translation>
 <translation id="867187640362843212">शिर्षक 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{एककाभित्र अर्को राखिएको लेबल #}}</translation>
 <translation id="8693391540059827073">मेरो मन पर्ने मौसम</translation>
 <translation id="8696284982970258155">मधुरसको रङ्ग</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}other{# ठाडो पाइपहरू}}</translation>

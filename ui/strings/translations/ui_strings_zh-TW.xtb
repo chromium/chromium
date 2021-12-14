@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4588090240171750605">向右捲動</translation>
 <translation id="4724120544754982507">通知中心，<ph name="UNREAD_NOTIFICATION_COUNT" /> 則未讀通知</translation>
+<translation id="4746179598275229723">已取消固定擴充功能</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{還剩 1 個月}other{還剩 # 個月}}</translation>
 <translation id="4888938634149558681">撥打電話</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{還剩 1 秒}other{還剩 # 秒}}</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 小時}other{# 小時}}</translation>
+<translation id="6007284015834422026">已固定擴充功能</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6117103120090651229">中間按鈕</translation>
 <translation id="6129953537138746214">空格</translation>

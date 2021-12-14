@@ -50,7 +50,7 @@
 <translation id="4214277427269650960">登入此網站和 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249068189593983585">Chrome 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
-<translation id="4267862249323750454">密碼已儲存至 <ph name="BEGIN_LINK" />Google 密碼管理員<ph name="END_LINK" />，你可以在任何裝置上使用。</translation>
+<translation id="4267862249323750454">密碼已儲存至「<ph name="BEGIN_LINK" />Google 密碼管理工具<ph name="END_LINK" />」，您可在任何裝置上使用。</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
@@ -71,7 +71,7 @@
 <translation id="6063091872902370735">允許登入 Chrome</translation>
 <translation id="6181930887571472871">切換至 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定您的無痕式分頁。</translation>
-<translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理員。</translation>
+<translation id="6387994324662817823">密碼只會儲存至此裝置上的「Google 密碼管理工具」。</translation>
 <translation id="6427126399757991875">您的機構正在設定 Chrome…</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
 <translation id="6634107063912726160">登出時，Chrome 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>

@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4588090240171750605">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="4724120544754982507">জাননী কেন্দ্ৰ, <ph name="UNREAD_NOTIFICATION_COUNT" /> নপঢ়া জাননীসমূহ</translation>
+<translation id="4746179598275229723">এক্সটেনশ্বন আনপিন কৰা আছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাহ বাকী আছে}one{# মাহ বাকী আছে}other{# মাহ বাকী আছে}}</translation>
 <translation id="4888938634149558681">কল কৰক</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{১ ছেকেণ্ড}one{# ছেকেণ্ড}other{# ছেকেণ্ড}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{১ ছেকেণ্ড বাকী আছে}one{# ছেকেণ্ড বাকী আছে}other{# ছেকেণ্ড বাকী আছে}}</translation>
 <translation id="5941711191222866238">সৰু কৰক</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{১ ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
+<translation id="6007284015834422026">এক্সটেনশ্বন পিন কৰা আছে</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6117103120090651229">কেন্দ্ৰৰ বুটাম</translation>
 <translation id="6129953537138746214">স্পেচ</translation>

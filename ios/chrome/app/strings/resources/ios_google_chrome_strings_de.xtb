@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">Melden Sie sich bei dieser Website und in Chrome an. Sie können die Synchronisierung später aktivieren.</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249068189593983585">Chrome-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Sie befindet sich unten oder oben auf dem Bildschirm.</translation>
+<translation id="4267862249323750454">Passwörter werden im <ph name="BEGIN_LINK" />Google Passwortmanager<ph name="END_LINK" /> gespeichert, sodass Sie sie auf jedem Gerät verwenden können.</translation>
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfen Sie die Passwörter in Ihrem Google-Konto<ph name="END_LINK" />.</translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Anmeldung in Chrome zulassen</translation>
 <translation id="6181930887571472871">Zu Chrome wechseln</translation>
 <translation id="6238746320622508509">Erlauben Sie Chrome, Ihre Inkognitotabs zu sperren.</translation>
+<translation id="6387994324662817823">Passwörter werden auf diesem Gerät nur im Google Passwortmanager gespeichert.</translation>
 <translation id="6427126399757991875">Ihre Organisation richtet Chrome ein…</translation>
 <translation id="6600954340915313787">In Chrome kopiert</translation>
 <translation id="6634107063912726160">Wenn Sie sich abmelden, synchronisiert Chrome keine neuen Daten mehr mit Ihrem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>

@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
 <translation id="4588090240171750605">જમણે સ્ક્રોલ કરો</translation>
 <translation id="4724120544754982507">સૂચના કેન્દ્ર, વાંચ્યા વગરની <ph name="UNREAD_NOTIFICATION_COUNT" /> સૂચનાઓ</translation>
+<translation id="4746179598275229723">એક્સ્ટેન્શન અનપિન કર્યું</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 મહિનો બાકી}one{# મહિનો બાકી}other{# મહિના બાકી}}</translation>
 <translation id="4888938634149558681">કૉલ કરો</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 સેકન્ડ}one{# સેકન્ડ}other{# સેકન્ડ}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 સેકન્ડ બાકી}one{# સેકન્ડ બાકી}other{# સેકન્ડ બાકી}}</translation>
 <translation id="5941711191222866238">નાનું કરો</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 કલાક}one{# કલાક}other{# કલાક}}</translation>
+<translation id="6007284015834422026">એક્સ્ટેન્શન પિન કર્યું</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6117103120090651229">વચ્ચેનું બટન</translation>
 <translation id="6129953537138746214">જગ્યા</translation>

@@ -393,6 +393,7 @@
 <translation id="3505359110822747654">Менијата на ChromeVox се собираат</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{карет
 }one{# карет}other{# карети}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{бела точка}one{# бела точка}other{# бели точки}}</translation>
 <translation id="352577523970648069">Текстуално поле за уредување</translation>
 <translation id="3538907380453898475">список со опис</translation>
 <translation id="3549141990712742152">исечи <ph name="TEXT" />.</translation>
@@ -676,6 +677,7 @@
 <translation id="5597170376237141345">Следно поле за избор</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, радио-копчето не е избрано</translation>
 <translation id="5601172225407283979">Извршете стандардно дејство</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{квадратна точка}one{# квадратна точка}other{# квадратни точки}}</translation>
 <translation id="5608798115546226984">Линеарно автоматско комплетирање</translation>
 <translation id="5616029807486814372">Следна лекција</translation>
 <translation id="561939826962581046">time</translation>
@@ -1099,6 +1101,7 @@
 <translation id="8659501358298941449">Паѓачки списоци</translation>
 <translation id="8666733765751421568">Крај на <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Заглавие 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{подниво #}other{подниво #}}</translation>
 <translation id="8693391540059827073">Мое омилено годишно време</translation>
 <translation id="8696284982970258155">Боја на медена роса</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{цевка}one{# вертикална цевка}other{# вертикални цевки}}</translation>

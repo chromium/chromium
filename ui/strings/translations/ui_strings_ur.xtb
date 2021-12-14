@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4588090240171750605">دائیں سکرول کریں</translation>
 <translation id="4724120544754982507">اطلاعاتی مرکز، <ph name="UNREAD_NOTIFICATION_COUNT" /> بغیر پڑھی ہوئی اطلاعات</translation>
+<translation id="4746179598275229723">ایکسٹینشن کا پن ہٹایا گیا</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 مہینہ باقی}other{# مہینے باقی}}</translation>
 <translation id="4888938634149558681">کال کریں</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 سیکنڈ}other{# سیکنڈ}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 سیکنڈ باقی}other{# سیکنڈ باقی}}</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 گھنٹہ}other{# گھنٹے}}</translation>
+<translation id="6007284015834422026">ایکسٹینشن کو پن کیا گیا</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6117103120090651229">سینٹر بٹن</translation>
 <translation id="6129953537138746214">اسپیس</translation>

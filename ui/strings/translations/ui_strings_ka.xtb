@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">პაროლის დამალვა</translation>
 <translation id="4588090240171750605">გადაადგილება მარჯვნივ</translation>
 <translation id="4724120544754982507">შეტყობინებათა ცენტრი, <ph name="UNREAD_NOTIFICATION_COUNT" /> წაუკითხავი შეტყობინება</translation>
+<translation id="4746179598275229723">გაფართოების ჩამაგრება მოიხსნა</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{დარჩენილია 1 თვე}other{დარჩენილია # თვე}}</translation>
 <translation id="4888938634149558681">დარეკვა</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 წამი}other{# წამი}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{დარჩენილია 1 წამი}other{დარჩენილია # წამი}}</translation>
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 საათი}other{# საათი}}</translation>
+<translation id="6007284015834422026">გაფართოება ჩამაგრდა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6117103120090651229">ცენტრალური ღილაკი</translation>
 <translation id="6129953537138746214">ინტერვალი</translation>

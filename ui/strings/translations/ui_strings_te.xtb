@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
 <translation id="4588090240171750605">కుడికి స్క్రోల్ చేయి</translation>
 <translation id="4724120544754982507">నోటిఫికేషన్ కేంద్రం, <ph name="UNREAD_NOTIFICATION_COUNT" /> చదవని నోటిఫికేషన్‌లు</translation>
+<translation id="4746179598275229723">ఎక్స్‌టెన్షన్ అన్‌పిన్ చేయబడింది</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 నెల మిగిలి ఉంది}other{# నెలలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="4888938634149558681">కాల్ చేయి</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 సెకను}other{# సెకన్లు}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 సెకను మిగిలి ఉంది}other{# సెకన్లు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 గంట}other{# గంటలు}}</translation>
+<translation id="6007284015834422026">ఎక్స్‌టెన్షన్ పిన్ చేయబడింది</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6117103120090651229">మధ్య బటన్</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>

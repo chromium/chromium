@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4588090240171750605">Κύλιση δεξιά</translation>
 <translation id="4724120544754982507">Κέντρο ειδοποιήσεων, <ph name="UNREAD_NOTIFICATION_COUNT" /> μη αναγνωσμένες ειδοποιήσεις</translation>
+<translation id="4746179598275229723">Η επέκταση ξεκαρφιτσώθηκε</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Απομένει 1 μήνας}other{Απομένουν # μήνες}}</translation>
 <translation id="4888938634149558681">Πραγματοποίηση κλήσης</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 δευτερόλεπτο}other{# δευτερόλεπτα}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Απομένει 1 δευτερόλεπτο}other{Απομένουν # δευτερόλεπτα}}</translation>
 <translation id="5941711191222866238">Ελαχιστοποίηση</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ώρα}other{# ώρες}}</translation>
+<translation id="6007284015834422026">Η επέκταση καρφιτσώθηκε</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6117103120090651229">Κεντρικό κουμπί</translation>
 <translation id="6129953537138746214">Κενό</translation>

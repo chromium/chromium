@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
 <translation id="4588090240171750605">Slinkti į dešinę</translation>
 <translation id="4724120544754982507">Pranešimų centras, neskaitytų pranešimų: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4746179598275229723">Plėtinys atsegtas</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Liko 1 mėnuo}one{Liko # mėnuo}few{Liko # mėnesiai}many{Liko # mėnesio}other{Liko # mėnesių}}</translation>
 <translation id="4888938634149558681">Skambinti</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekundė}one{# sekundė}few{# sekundės}many{# sekundės}other{# sekundžių}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Liko 1 sekundė}one{Liko # sekundė}few{Liko # sekundės}many{Liko # sekundės}other{Liko # sekundžių}}</translation>
 <translation id="5941711191222866238">Sumažinti</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 valanda}one{# valanda}few{# valandos}many{# valandos}other{# valandų}}</translation>
+<translation id="6007284015834422026">Plėtinys prisegtas</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6117103120090651229">Centrinis mygtukas</translation>
 <translation id="6129953537138746214">Tarpas</translation>

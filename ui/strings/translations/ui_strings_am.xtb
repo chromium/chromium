@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
 <translation id="4588090240171750605">ወደ ቀኝ ሸብልል</translation>
 <translation id="4724120544754982507">የማሳወቂያ ማዕከል፣ <ph name="UNREAD_NOTIFICATION_COUNT" /> ያልተነበቡ ማሳወቂያዎች</translation>
+<translation id="4746179598275229723">ቅጥያው ተነቅሏል</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ወር ቀርቷል}one{# ወሮች ቀርተዋል}other{# ወሮች ቀርተዋል}}</translation>
 <translation id="4888938634149558681">ጥሪ ያድርጉ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ሰከንድ}one{# ሰከንዶች}other{# ሰከንዶች}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ሰከንድ ቀርቷል}one{# ሰከንዶች ቀርቷል}other{# ሰከንዶች ቀርቷል}}</translation>
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ሰዓት}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
+<translation id="6007284015834422026">ቅጥያ ተሰክቷል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6117103120090651229">የመሃል አዝራር</translation>
 <translation id="6129953537138746214">ባዶ ቦታ</translation>

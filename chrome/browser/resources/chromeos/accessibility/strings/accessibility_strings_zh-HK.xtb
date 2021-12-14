@@ -30,7 +30,7 @@
 <translation id="1189258430971676908">練習區：下拉式清單</translation>
 <translation id="1195238899008218998">後記</translation>
 <translation id="1197088940767939838">橙色</translation>
-<translation id="1198865190323699001">觸控手勢</translation>
+<translation id="1198865190323699001">輕觸手勢</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">冇下一個第 4 級標題</translation>
@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{1 個問號}other{# 個問號}}</translation>
 <translation id="3505359110822747654">收合 ChromeVox 選單</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{1 個插入符號}other{# 個插入符號}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{白色項目符號}other{# 個白色項目符號}}</translation>
 <translation id="352577523970648069">可編輯的文字欄位</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">剪下<ph name="TEXT" />。</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">下一個選框</translation>
 <translation id="5598905979683743333"><ph name="NAME" />，未選取的圓形按鈕</translation>
 <translation id="5601172225407283979">執行預設動作</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{方形項目符號}other{# 個方形項目符號}}</translation>
 <translation id="5608798115546226984">自動完成內嵌元素</translation>
 <translation id="5616029807486814372">下一課</translation>
 <translation id="561939826962581046">time</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8659501358298941449">下拉式清單</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> 結束</translation>
 <translation id="867187640362843212">標題 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{巢狀層級 #}}</translation>
 <translation id="8693391540059827073">我的最愛季節</translation>
 <translation id="8696284982970258155">蜜瓜綠色</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{1 個直立線符號}other{# 個直立線符號}}</translation>

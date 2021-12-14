@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4588090240171750605">दायाँ तिर स्क्रोल गर्नुहोस्</translation>
 <translation id="4724120544754982507">सूचनासम्बन्धी केन्द्र, <ph name="UNREAD_NOTIFICATION_COUNT" /> नपढिएका सूचनाहरू</translation>
+<translation id="4746179598275229723">एक्स्टेन्सन अनपिन गरियो</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{१ महिना बाँकी}other{# महिना बाँकी}}</translation>
 <translation id="4888938634149558681">कल गर्नुहोस्</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ १ सेकेन्ड}other{ # सेकेन्ड}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{ १ सेकेन्ड बाँकी}other{ # सेकेन्ड बाँकी}}</translation>
 <translation id="5941711191222866238">सानो बनाउनुहोस</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{ १ घन्टा}other{ # घन्टा}}</translation>
+<translation id="6007284015834422026">एक्स्टेन्सन पिन गरियो</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6117103120090651229">मध्य भागमा भएको बटन</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>

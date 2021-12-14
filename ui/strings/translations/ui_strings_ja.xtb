@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4588090240171750605">右にスクロール</translation>
 <translation id="4724120544754982507">通知センター: <ph name="UNREAD_NOTIFICATION_COUNT" /> 件の未読通知</translation>
+<translation id="4746179598275229723">拡張機能の固定を解除しました</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{残り 1 か月}other{残り # か月}}</translation>
 <translation id="4888938634149558681">電話をかける</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{残り 1 秒}other{残り # 秒}}</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 時間}other{# 時間}}</translation>
+<translation id="6007284015834422026">拡張機能を固定しました</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6117103120090651229">中央のボタン</translation>
 <translation id="6129953537138746214">Space</translation>
