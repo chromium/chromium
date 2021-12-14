@@ -369,8 +369,7 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size.GetArea());
 
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, va_surface->id(), va_surface->size(), picture,
-      std::move(scoped_va_buffer));
+      input_frame, keyframe, va_surface, picture, std::move(scoped_va_buffer));
 }
 
 void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(

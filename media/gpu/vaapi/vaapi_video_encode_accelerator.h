@@ -167,7 +167,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   std::unique_ptr<EncodeJob> CreateEncodeJob(
       scoped_refptr<VideoFrame> frame,
       bool force_keyframe,
-      const VASurface& input_surface,
+      scoped_refptr<VASurface> input_surface,
       scoped_refptr<VASurface> reconstructed_surface);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
