@@ -121,7 +121,7 @@ class _SingleArtifactDownloader:
       if ret_code != 0:
         raise Exception('Command "{}" failed'.format(' '.join(cmd)))
     except OSError as e:
-      if e.errno == os.errno.ENOENT:
+      if e.errno == errno.ENOENT:
         raise Exception('mvn command not found. Please install Maven.') from e
       raise
 

@@ -28,12 +28,6 @@ def CommonChecks(input_api, output_api):
           input_api,
           output_api,
           pylintrc='pylintrc',
-          # Temporarily disabled until pylint-2.6: crbug.com/1100664
-          disabled_warnings=[
-              'no-member',
-              'superfluous-parens',
-              'no-name-in-module',
-              'import-error'],
           files_to_skip=[
               r'.*_pb2\.py',
               # The following are all temporary due to: crbug.com/1100664
@@ -56,7 +50,7 @@ def CommonChecks(input_api, output_api):
               J('..', '..', 'third_party', 'colorama', 'src'),
               J('..', '..', 'build'),
           ],
-          version='2.6'))
+          version='2.7'))
   tests.extend(
       input_api.canned_checks.GetPylint(
           input_api,
@@ -69,7 +63,7 @@ def CommonChecks(input_api, output_api):
               r'.*create_unwind_table_tests\.py',
           ],
           extra_paths_list=[J('gyp'), J('gn')],
-          version='2.6'))
+          version='2.7'))
 
   tests.extend(
       input_api.canned_checks.GetPylint(
@@ -80,7 +74,7 @@ def CommonChecks(input_api, output_api):
               r'.*create_unwind_table_tests\.py',
           ],
           extra_paths_list=[J('gyp'), J('gn')],
-          version='2.6'))
+          version='2.7'))
   # yapf: enable
 
   # Disabled due to http://crbug.com/410936

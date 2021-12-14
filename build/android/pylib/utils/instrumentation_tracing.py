@@ -76,7 +76,7 @@ def _shouldTrace(frame, to_include, to_exclude, included, excluded):
   if module_name in included:
     includes = True
   elif to_include:
-    includes = any([pattern.match(module_name) for pattern in to_include])
+    includes = any(pattern.match(module_name) for pattern in to_include)
   else:
     includes = True
 

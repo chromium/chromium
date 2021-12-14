@@ -225,6 +225,7 @@ class ProguardMapping:
 class MalformedLineException(Exception):
   def __init__(self, message, line_number):
     super().__init__(message)
+    self.message = message
     self.line_number = line_number
 
   def __str__(self):
