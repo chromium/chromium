@@ -98,7 +98,6 @@ CalendarEventListItemView::CalendarEventListItemView(
       time_range_(new views::Label()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   GetViewAccessibility().OverrideName(GetClassName());
-  SetFocusBehavior(FocusBehavior::ALWAYS);
 
   summary_->SetText(base::UTF8ToUTF16(event.summary()));
   SetUpLabel(summary_);

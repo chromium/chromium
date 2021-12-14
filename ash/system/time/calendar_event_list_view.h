@@ -34,7 +34,6 @@ class ASH_EXPORT CalendarEventListView
 
  private:
   friend class CalendarViewEventListViewTest;
-  friend class CalendarViewTest;
 
   // Updates the event list entries.
   void UpdateListItems();
