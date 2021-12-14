@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">กำลังดำเนินการคืนค่า Linux</translation>
 <translation id="1244303850296295656">ข้อผิดพลาดของส่วนขยาย</translation>
 <translation id="1246863218384630739">ไม่สามารถติดตั้ง <ph name="VM_NAME" />: URL ของรูปภาพแสดงรหัสข้อผิดพลาด <ph name="HTTP_ERROR" /> โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="1247071602516579380">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, แท็บเล็ตชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">เครื่องหมายวงเล็บปีกกาเปิดที่ต้องมี: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">การดำเนินการนี้จะล้างข้อมูลที่เว็บไซต์และแอปต่างๆ จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="1251578593170406502">กำลังสแกนหาเครือข่ายอินเทอร์เน็ตมือถือ...</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
 <translation id="1442851588227551435">ตั้งค่าตั๋ว Kerberos ที่ใช้งานอยู่</translation>
 <translation id="1444628761356461360"><ph name="OWNER_EMAIL" /> ซึ่งเป็นเจ้าของอุปกรณ์เป็นผู้จัดการการตั้งค่านี้</translation>
+<translation id="1445005312224723356">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, โทรศัพท์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">ไม่สามารถโหลดธีมจาก "<ph name="IMAGE_PATH" />"</translation>
 <translation id="1449191289887455076">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อยืนยันการกำหนดและ<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">หน้าเว็บ ไฟล์เดียว</translation>
@@ -859,6 +861,7 @@
 <translation id="1855079636134697549">กล้องเปิดอยู่</translation>
 <translation id="1856715684130786728">เพิ่มตำแหน่ง...</translation>
 <translation id="1858585891038687145">เชื่อถือใบรับรองนี้ในการระบุตัวตนผู้ผลิตซอฟต์แวร์</translation>
+<translation id="1859787252990099899">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์ที่ไม่รู้จักชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1862311223300693744">คุณได้ติดตั้ง VPN, พร็อกซี, ไฟร์วอลล์ หรือซอฟต์แวร์ NAS พิเศษไว้ไหม</translation>
 <translation id="1863182668524159459">ไม่พบพอร์ตอนุกรม</translation>
@@ -1232,6 +1235,7 @@
 <translation id="2242687258748107519">ข้อมูลไฟล์</translation>
 <translation id="2246549592927364792">รับคำอธิบายรูปภาพจาก Google ไหม</translation>
 <translation id="2247738527273549923">อุปกรณ์นี้จัดการโดยองค์กรของคุณ</translation>
+<translation id="2249061317998743208">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์ควบคุมเกมชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">เปิดเป็นหน้าต่างแท็บ</translation>
 <translation id="2249605167705922988">เช่น 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">เปิดด้วยเครื่องมือดูระบบ</translation>
@@ -1992,6 +1996,7 @@
 <translation id="3007771295016901659">ทำซ้ำแท็บ</translation>
 <translation id="3008232374986381779">เรียกใช้เครื่องมือ ตัวแก้ไข และ IDE ของ Linux ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
+<translation id="3008396025115884998">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์เสียงชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi วันนี้เพื่อดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}other{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi และดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}}</translation>
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
@@ -2298,6 +2303,7 @@
 <translation id="3348038390189153836">พบอุปกรณ์แบบถอดออกได้</translation>
 <translation id="3348131053948466246">มีการแนะนำอีโมจิ กดขึ้นหรือลงเพื่อไปยังอีโมจิที่ต้องการแล้วกด Enter เพื่อแทรก</translation>
 <translation id="3349933790966648062">หน่วยความจำที่ใช้</translation>
+<translation id="3354972872297836698">จับคู่กับอุปกรณ์ <ph name="DEVICE_NAME" /> ไม่ได้ เลือกอุปกรณ์เพื่อลองอีกครั้ง</translation>
 <translation id="3355936511340229503">ข้อผิดพลาดในการเชื่อมต่อ</translation>
 <translation id="3356580349448036450">เสร็จสมบูรณ์</translation>
 <translation id="3359256513598016054">ข้อจำกัดนโยบายใบรับรอง</translation>
@@ -3129,6 +3135,7 @@
 <translation id="4200689466366162458">คำที่กำหนดเอง</translation>
 <translation id="4200983522494130825">แ&amp;ท็บใหม่</translation>
 <translation id="4201546031411513170">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า</translation>
+<translation id="4202417625268941299">เมื่อเปิดใช้ Google Safe Browsing เวอร์ชันปรับปรุง คุณจะได้รับการรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome</translation>
 <translation id="420283545744377356">ปิดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="4206144641569145248">มนุษย์ต่างดาว</translation>
 <translation id="4206323443866416204">รายงานความคิดเห็น</translation>
@@ -3636,6 +3643,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4761104368405085019">ใช้ไมโครโฟนของคุณ</translation>
 <translation id="4762718786438001384">พื้นที่ดิสก์ของอุปกรณ์ใกล้จะเต็มแล้ว</translation>
+<translation id="4762898026821161650">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, คอมพิวเตอร์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">มีการวางคุกกี้ต่อไปนี้เมื่อคุณดูหน้าเว็บนี้</translation>
 <translation id="4765582662863429759">อนุญาตให้ Android Messages นำส่งข้อความจากโทรศัพท์ไปยัง Chromebook ของคุณ</translation>
 <translation id="4768332406694066911">คุณมีใบรับรองจากองค์กรเหล่านี้ซึ่งระบุถึงตัวคุณ</translation>
@@ -3818,6 +3826,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ต้องการเชื่อมต่อกับพอร์ตอนุกรม</translation>
 <translation id="4944310289250773232">บริการการตรวจสอบสิทธิ์นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
+<translation id="4946459324029651239">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
@@ -4402,6 +4411,7 @@
 <translation id="5575528586625653441">เกิดปัญหาเกี่ยวกับคำขอลงทะเบียนสาธิต</translation>
 <translation id="557722062034137776">การรีเซ็ตอุปกรณ์ของคุณจะไม่ส่งผลต่อบัญชี Google ของคุณหรือข้อมูลใดๆ ที่ซิงค์กับบัญชีเหล่านี้ อย่างไรก็ตาม ไฟล์ทั้งหมดที่บันทึกอยู่ภายในอุปกรณ์จะถูกลบ</translation>
 <translation id="5578059481725149024">ลงชื่อเข้าใช้อัตโนมัติ</translation>
+<translation id="5581134892342029705">การแปลเป็นภาษา<ph name="LANGUAGE" />เสร็จสมบูรณ์</translation>
 <translation id="558170650521898289">การตรวจสอบโปรแกรมควบคุมฮาร์ดแวร์ของ Microsoft Windows</translation>
 <translation id="5581972110672966454">นำอุปกรณ์เข้าร่วมโดเมนไม่ได้ โปรดลองอีกครั้งหรือติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="5582839680698949063">เมนูหลัก</translation>
@@ -5816,6 +5826,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ 1 นาทีที่ผ่านมา}other{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ {NUM_MINS} นาทีที่ผ่านมา}}</translation>
 <translation id="7057767408836081338">รับข้อมูลแอปไม่สำเร็จ ยังพยายามเรียกใช้แอปอยู่...</translation>
 <translation id="7058024590501568315">เครือข่ายที่ซ่อนอยู่</translation>
+<translation id="70582545822664495">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, เมาส์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">ตั้งค่าเป็นเรียกใช้อัตโนมัติ</translation>
 <translation id="7062222374113411376">อนุญาตให้เว็บไซต์ที่ปิดล่าสุดดำเนินการส่งและรับข้อมูลต่อจนเสร็จ (แนะนำ)</translation>
 <translation id="7063129466199351735">กำลังประมวลผลทางลัด...</translation>
@@ -5979,6 +5990,7 @@
 <translation id="7257173066616499747">เครือข่าย Wi-Fi</translation>
 <translation id="725758059478686223">บริการการพิมพ์</translation>
 <translation id="7257666756905341374">อ่านข้อมูลที่คุณคัดลอกและวาง</translation>
+<translation id="7258006747130724016">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, กล้องวิดีโอชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">แอปพลิเคชันไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7262004276116528033">บริการลงชื่อเข้าใช้นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
@@ -6773,6 +6785,7 @@
 <translation id="8037117027592400564">อ่านข้อความทั้งหมดที่พูดโดยใช้เสียงสังเคราะห์</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
+<translation id="8038399858950372766">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, แป้นพิมพ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8042142357103597104">ความทึบแสงของข้อความ</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง</translation>
@@ -6796,6 +6809,7 @@
 <translation id="8054563304616131773">โปรดป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="8054883179223321715">พร้อมใช้งานสำหรับเว็บไซต์วิดีโอบางเว็บไซต์</translation>
 <translation id="8054921503121346576">เชื่อมต่อแป้นพิมพ์ USB แล้ว</translation>
+<translation id="8057414620575339583">การค้นหาในแผงด้านข้าง</translation>
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
 <translation id="8058986560951482265">กระตุก</translation>
 <translation id="8059417245945632445">&amp;ตรวจสอบอุปกรณ์</translation>
@@ -6912,6 +6926,7 @@
 <translation id="8168071266284693455">ซิงค์บุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่องแล้ว</translation>
 <translation id="8168435359814927499">เนื้อหา</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{เพิ่มแท็บไปยังเรื่องรออ่าน}other{เพิ่มหลายแท็บไปยังเรื่องรออ่าน}}</translation>
+<translation id="8169849063724750395">เปิดอีกครั้ง</translation>
 <translation id="8171334254070436367">ซ่อนการ์ดทั้งหมด</translation>
 <translation id="8174047975335711832">ข้อมูลอุปกรณ์</translation>
 <translation id="8174876712881364124">สำรองข้อมูลไปยัง Google ไดรฟ์ กู้ข้อมูลคืนหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองนี้จะรวมถึงข้อมูลแอป ระบบจะอัปโหลดข้อมูลสำรองไปยัง Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
@@ -6985,6 +7000,7 @@
 <translation id="8249615410597138718">ส่งไปยังอุปกรณ์</translation>
 <translation id="8249672078237421304">เสนอให้แปลหน้าที่ไม่ได้อยู่ในภาษาที่คุณอ่านได้</translation>
 <translation id="8251441930213048644">รีเฟรชเลย</translation>
+<translation id="8251509999076836464">กำลังจับคู่กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">รูปภาพขนาดย่อถูกลบแล้ว</translation>
 <translation id="825238165904109940">แสดง URL แบบเต็มเสมอ</translation>
 <translation id="8252569384384439529">กำลังอัปโหลด...</translation>
@@ -7222,9 +7238,11 @@
 <translation id="8528074251912154910">เพิ่มภาษา</translation>
 <translation id="8528962588711550376">กำลังลงชื่อเข้าใช้</translation>
 <translation id="8529925957403338845">การเชื่อมต่ออินเทอร์เน็ตผ่านมือถือแบบด่วนล้มเหลว</translation>
+<translation id="8531701051932785007">Google Safe Browsing เวอร์ชันปรับปรุงปิดอยู่</translation>
 <translation id="8534656636775144800">อ๊ะ! เกิดข้อผิดพลาดขณะพยายามเข้าร่วมโดเมน โปรดลองอีกครั้ง</translation>
 <translation id="8535005006684281994">URL การต่ออายุใบรับรองของ Netscape</translation>
 <translation id="8536956381488731905">ส่งเสียงเมื่อกดปุ่ม</translation>
+<translation id="8538718737588735385">เปิดอีกครั้ง</translation>
 <translation id="8539727552378197395">ไม่มี (HttpOnly)</translation>
 <translation id="8539766201049804895">อัปเกรด</translation>
 <translation id="8540136935098276800">ป้อน URL ที่มีรูปแบบที่ถูกต้อง</translation>

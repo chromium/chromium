@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">デスク 7</translation>
 <translation id="2224075387478458881">保護されたコンテンツが表示されているときは、画面を録画できません</translation>
 <translation id="225680501294068881">デバイスをスキャンしています...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> のダウンロード中にエラーが発生しました</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268813581635650749">すべてログアウト</translation>
 <translation id="2269016722240250274">アプリケーションがマイクを使用しています</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
 <translation id="4849058404725798627">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="485592688953820832">なし（一時停止）</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> をダウンロードするには、ネットワーク接続を確認してください</translation>
 <translation id="486056901304535126">ダウンロードは後で試行されます。音声はダウンロードが完了するまで処理のために Google に送信されます。</translation>
 <translation id="4868492592575313542">有効</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">拒否</translation>
 <translation id="6453179446719226835">言語が変更されました</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> へ画面を拡張しています</translation>
+<translation id="6477681113376365978">ファイルをダウンロードできません</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> が期限までに <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">絵文字</translation>
 <translation id="6537924328260219877">信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+新たなインストール</translation>
 <translation id="6559976592393364813">管理者に問い合わせる</translation>
 <translation id="6565007273808762236">eSIM 接続を利用できません</translation>
 <translation id="6570831796530454248">{0,plural, =1{1 時間以内にデバイスを更新してください}other{# 時間以内にデバイスを更新してください}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">設定に移動</translation>
 <translation id="6751052314767925245">管理者によって適用</translation>
 <translation id="6751826523481687655">パフォーマンス追跡機能が有効になっています</translation>
 <translation id="6752912906630585008">デスク <ph name="REMOVED_DESK" /> が削除されデスク <ph name="RECEIVE_DESK" /> に統合されました</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">設定するにはタップします</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新しいモバイル ネットワークを追加</translation>
+<translation id="7720410380936703141">再試行</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7745560842763881396">シェルフのアプリを表示</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
+<translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="951991426597076286">同意しない</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> をダウンロードするのに十分な容量がありません。容量を空けてください。</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> の検索結果 <ph name="RESULT_COUNT" /> 件を表示しています</translation>
 <translation id="98515147261107953">横</translation>
 <translation id="990277280839877440">「<ph name="WINDOW_TITILE" />」のウィンドウを閉じました。</translation>

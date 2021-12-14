@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準保護功能：</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
+<translation id="1633659023549081553">透過 Chrome 首頁探索新內容</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
+<translation id="2342601525305963189">Chrome 提示：</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">系統會將您瀏覽的網址傳送至 Google</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
+<translation id="2558692642259318568">如果不要將瀏覽活動儲存到裝置上，請使用無痕模式</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2631006050119455616">已節省</translation>
+<translation id="2634905176438867146">瞭解如何將 Chrome 設為預設瀏覽器</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 連線可能會減慢下載速度</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649068648233607930">您的瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3046945242843292318">之後可更快前往此網站</translation>
+<translation id="3055259925215945098">已移動書籤</translation>
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">儲存至裝置</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
 <translation id="3237087289225714896">標準預先載入模式：</translation>
+<translation id="3237433641417325993">向下捲動以查看推薦文章</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3250563604907490871">圖片描述功能將會在連線至 Wi-Fi 時恢復運作</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
 <translation id="4837753911714442426">開啟列印網頁選項</translation>
 <translation id="4842092870884894799">正在顯示密碼產生彈出式視窗</translation>
+<translation id="4842515939542199281">如要透過語音進行搜尋，請輕觸「麥克風」圖示</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4864369630010738180">正在登入…</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">延伸使用情況資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="510275257476243843">尚餘 1 小時</translation>
+<translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">興趣</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5126510351761255129">驗證信用卡</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">Chrome 需要儲存空間的存取權才能下載檔案。</translation>
 <translation id="5749237766298580851">關閉 <ph name="SEPARATOR" /> 不建議</translation>
 <translation id="5752232708629533680">只分享 GIF</translation>
+<translation id="5753139477036638699">你可以使用語音在 Chrome 中搜尋</translation>
 <translation id="5754350196967618083">無法重新整理「探索」</translation>
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">登入 Chrome，開咗。</translation>
 <translation id="6814033694018386318">您與 Google 分享的資料</translation>
 <translation id="6817747507826986771">快速分享此頁面。如要編輯此捷徑，請按住捷徑按鈕。</translation>
+<translation id="6819199143469632133">如要在所有裝置上取得你的 Google 設定，請登入帳戶</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />，分頁，已選取</translation>
 <translation id="6828070228333235514">停止追蹤價格</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705">還原咗 <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">將 QR 碼/條碼放在此方框中。</translation>
 <translation id="7029809446516969842">密碼</translation>
+<translation id="7037830628447527439">使用 Google 帳戶登入 Chrome</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8951232171465285730">Chrome 已為您節省 <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">返回頁首</translation>
+<translation id="8964479563882643397">如要開啟新的無痕分頁，請按一下「選單」圖示</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
