@@ -118,8 +118,11 @@ constexpr int kDeskDefaultNameIds[] = {
 void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
   DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
 
+  // TODO(dandersson): See if we can remove this code and just let
+  // OverviewSession do its thing when the windows are moved to the new desk.
   auto* overview_session =
       Shell::Get()->overview_controller()->overview_session();
+  overview_session->set_auto_add_windows_enabled(false);
   for (auto* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (!base::Contains(windows, window) ||
@@ -129,6 +132,7 @@ void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
 
     overview_session->AppendItem(window, /*reposition=*/true, /*animate=*/true);
   }
+  overview_session->set_auto_add_windows_enabled(true);
 }
 
 // Removes all the items that currently exist in overview.
@@ -560,6 +564,13 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     return;
   }
 
+  if (source == DesksSwitchSource::kLaunchTemplate) {
+    // Desk switch due to launching a template will immediately activate the new
+    // desk without animation.
+    ActivateDeskInternal(desk, /*update_window_activation=*/true);
+    return;
+  }
+
   // When switching desks we want to update window activation when leaving
   // overview or if nothing was active prior to switching desks. This will
   // ensure that after switching desks, we will try to focus a candidate window.
@@ -973,13 +984,35 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   desk->SetName(desk_name, /*set_by_user=*/true);
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  // We're staying in overview mode, so move desks bar window and the save
+  // template button to the new desk. They would otherwise disappear when the
+  // new desk is activated.
+  DCHECK(active_desk_);
+
+  // Since we're going to move certain windows from the currently active desk,
+  // this is going to implicitly modify that list. We therefore grab a copy of
+  // it to avoid issues with concurrent iteration and modification of the list.
+  auto active_desk_windows = active_desk_->windows();
+  for (aura::Window* window : active_desk_windows) {
+    if (window->GetId() == kShellWindowId_DesksBarWindow ||
+        window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
+      aura::Window* destination_container =
+          desk->GetDeskContainerForRoot(window->GetRootWindow());
+      destination_container->AddChild(window);
+    }
+  }
+
+  if (auto* session = Shell::Get()->overview_controller()->overview_session()) {
+    session->HideDesksTemplatesGrids();
+    for (auto& grid : session->grid_list())
+      grid->RemoveAllItemsForDesksTemplatesLaunch();
+  }
+
   ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
-  DCHECK(animation_);
-  animation_->set_finished_callback(base::BindOnce(
-      [](base::OnceCallback<void(bool)> passed_callback) {
-        std::move(passed_callback).Run(/*success=*/true);
-      },
-      std::move(callback)));
+  DCHECK(!animation_);
+
+  std::move(callback).Run(/*success=*/true);
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
@@ -1018,7 +1051,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
           existing_app_instance_window)) {
     DCHECK(src_desk);
     DCHECK_NE(src_desk, active_desk_);
-    DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+
     base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
     src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
                                existing_app_instance_window->GetRootWindow(),

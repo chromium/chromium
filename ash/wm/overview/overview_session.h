@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -57,7 +58,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public ui::EventHandler,
                                    public ShellObserver,
                                    public SplitViewObserver,
-                                   public TabletModeObserver {
+                                   public TabletModeObserver,
+                                   public DesksController::Observer {
  public:
   using WindowList = std::vector<aura::Window*>;
 
@@ -279,6 +281,18 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Shows the desks templates grids on all displays. If `was_zero_state` is
   // true then we will expand the desks bars.
   void ShowDesksTemplatesGrids(bool was_zero_state);
+  void HideDesksTemplatesGrids();
+
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskSwitchAnimationLaunching() override;
+  void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& display) override;
@@ -287,6 +301,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAdded(aura::Window* new_window) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -336,6 +351,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   DesksTemplatesPresenter* desks_templates_presenter() {
     return desks_templates_presenter_.get();
+  }
+
+  void set_auto_add_windows_enabled(bool enabled) {
+    auto_add_windows_enabled_ = enabled;
   }
 
  private:
@@ -448,8 +467,22 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
 
+  // When non-null, windows changes on this desk are observed.
+  const Desk* observing_desk_ = nullptr;
+
+  // This is true *while* an overview item is being dynamically added. It is
+  // used to avoid recursively adding overview items.
+  bool is_adding_new_item_ = false;
+
+  // When true, windows added to the observed desk are automatically added to
+  // the overview session.
+  bool auto_add_windows_enabled_ = true;
+
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
+
+  base::ScopedObservation<DesksController, DesksController::Observer>
+      desks_controller_observation_{this};
 };
 
 }  // namespace ash

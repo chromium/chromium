@@ -726,36 +726,29 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Click on the grid item to launch the template.
-  {
-    DeskSwitchAnimationWaiter waiter;
-    ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-    WaitForDesksTemplatesUI();
-    waiter.Wait();
-  }
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
+  WaitForDesksTemplatesUI();
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
 
-  // Launching a template creates and activates a new desk, which also results
-  // in exiting overview mode, so we check to make sure overview is closed.
-  EXPECT_FALSE(InOverviewSession());
+  // Launching a template creates and activates a new desk without exiting
+  // overview mode, so we check that we're still in overview.
+  EXPECT_TRUE(InOverviewSession());
 
   // This section tests clicking on the "Use template" button to launch the
   // template.
+  ToggleOverview();
   OpenOverviewAndShowTemplatesGrid();
-  {
-    DeskSwitchAnimationWaiter waiter;
-    DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
-        /*grid_item_index=*/0);
-    ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
-    WaitForDesksTemplatesUI();
-    waiter.Wait();
-  }
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
+  ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
+  WaitForDesksTemplatesUI();
 
   EXPECT_EQ(3ul, desks_controller->desks().size());
   EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
-  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(InOverviewSession());
 }
 
 // Tests that the order of DesksTemplatesItemView is in order.
@@ -1308,16 +1301,13 @@ TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
   ASSERT_EQ(1ul, GetAllEntries().size());
 
-  // Click on the grid item to launch the template. We should exit overview and
-  // there should be no crash.
-  DeskSwitchAnimationWaiter waiter;
+  // Click on the grid item to launch the template. We should remain in overview
+  // and there should be no crash.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  // Launching a template fetches it from the desk model asynchronously. Make
-  // sure the async call is done before waiting.
+  // Launching a template fetches it from the desk model asynchronously.
   WaitForDesksTemplatesUI();
-  waiter.Wait();
 
-  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(InOverviewSession());
 }
 
 // Tests that there is no crash if we launch a template after deleting the
@@ -1339,16 +1329,12 @@ TEST_F(DesksTemplatesTest, LaunchTemplateAfterClosingActiveDesk) {
   // a template" button was not moved when the active desk was removed.
   RemoveDesk(desks_controller->active_desk());
 
-  // Click on the grid item to launch the template. We should exit overview and
-  // there should be no crash.
-  DeskSwitchAnimationWaiter waiter;
+  // Click on the grid item to launch the template. There should be no crash.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  // Launching a template fetches it from the desk model asynchronously. Make
-  // sure the async call is done before waiting.
+  // Launching a template fetches it from the desk model asynchronously.
   WaitForDesksTemplatesUI();
-  waiter.Wait();
 
-  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(InOverviewSession());
 }
 
 // Tests that if we open the desks templates grid a second time during an
@@ -1717,10 +1703,8 @@ TEST_F(DesksTemplatesTest, LaunchTemplateRecordsMetric) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Click on the grid item to launch the template.
-  DeskSwitchAnimationWaiter waiter;
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
   WaitForDesksTemplatesUI();
-  waiter.Wait();
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());

@@ -60,6 +60,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -257,6 +258,8 @@ void OverviewSession::Init(const WindowList& windows,
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
       AccessibilityAlert::WINDOW_OVERVIEW_MODE_ENTERED);
 
+  desks_controller_observation_.Observe(DesksController::Get());
+
   ignore_activations_ = false;
 }
 
@@ -267,6 +270,12 @@ void OverviewSession::Shutdown() {
   // This should have been set already when the process of ending overview mode
   // began. See OverviewController::OnSelectionEnded().
   DCHECK(is_shutting_down_);
+
+  desks_controller_observation_.Reset();
+  if (observing_desk_) {
+    for (auto* root : Shell::GetAllRootWindows())
+      observing_desk_->GetDeskContainerForRoot(root)->RemoveObserver(this);
+  }
 
   Shell::Get()->RemovePreTargetHandler(this);
   Shell::Get()->RemoveShellObserver(this);
@@ -964,6 +973,35 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state) {
   UpdateNoWindowsWidgetOnEachGrid();
 }
 
+void OverviewSession::HideDesksTemplatesGrids() {
+  // Before hiding the templates grid, we need to explicitly activate the focus
+  // window. Otherwise, some other window may get activated as the templates
+  // grid is hidden, and this could in turn lead to exiting overview mode.
+  wm::ActivateWindow(GetOverviewFocusWindow());
+
+  for (auto& grid : grid_list_)
+    grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
+}
+
+void OverviewSession::OnDeskAdded(const Desk* desk) {}
+void OverviewSession::OnDeskRemoved(const Desk* desk) {}
+void OverviewSession::OnDeskReordered(int old_index, int new_index) {}
+
+void OverviewSession::OnDeskActivationChanged(const Desk* activated,
+                                              const Desk* deactivated) {
+  observing_desk_ = activated;
+
+  for (auto* root : Shell::GetAllRootWindows()) {
+    activated->GetDeskContainerForRoot(root)->AddObserver(this);
+    deactivated->GetDeskContainerForRoot(root)->RemoveObserver(this);
+  }
+}
+
+void OverviewSession::OnDeskSwitchAnimationLaunching() {}
+void OverviewSession::OnDeskSwitchAnimationFinished() {}
+void OverviewSession::OnDeskNameChanged(const Desk* desk,
+                                        const std::u16string& new_name) {}
+
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
   if (EndOverview(OverviewEndAction::kDisplayAdded))
     return;
@@ -992,6 +1030,25 @@ void OverviewSession::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(active_window_before_overview_, window);
   active_window_before_overview_->RemoveObserver(this);
   active_window_before_overview_ = nullptr;
+}
+
+void OverviewSession::OnWindowAdded(aura::Window* new_window) {
+  if (!auto_add_windows_enabled_)
+    return;
+
+  // We track if we are in the process of adding an item to avoid recursively
+  // adding items.
+  if (is_adding_new_item_)
+    return;
+  base::AutoReset<bool> adding_new_item_resetter(&is_adding_new_item_, true);
+
+  // Avoid adding overview items for certain windows.
+  if (!WindowState::Get(new_window) ||
+      window_util::ShouldExcludeForOverview(new_window)) {
+    return;
+  }
+
+  AppendItem(new_window, /*reposition=*/true, /*animate*/ true);
 }
 
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {

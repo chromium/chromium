@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/scoped_animation_disabler.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_state_observer.h"
@@ -444,6 +445,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // has been hidden.
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
       item_widget_event_blocker_;
+
+  // Disable animations on the contained window while it is being managed by the
+  // overview item.
+  ScopedAnimationDisabler animation_disabler_;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };

@@ -498,9 +498,6 @@ void Desk::MoveWindowToDesk(aura::Window* window,
   DCHECK(target_root);
   DCHECK(base::Contains(windows_, window));
   DCHECK(this != target_desk);
-  // The desks bar should not be allowed to move individually to another desk.
-  // Only as part of `MoveWindowsToDesk()` when the desk is removed.
-  DCHECK_NE(window->GetId(), kShellWindowId_DesksBarWindow);
 
   {
     ScopedWindowPositionerDisabler window_positioner_disabler;

@@ -187,7 +187,8 @@ OverviewItem::OverviewItem(aura::Window* window,
     : root_window_(window->GetRootWindow()),
       transform_window_(this, window),
       overview_session_(overview_session),
-      overview_grid_(overview_grid) {
+      overview_grid_(overview_grid),
+      animation_disabler_(window) {
   CreateItemWidget();
   window->AddObserver(this);
   WindowState::Get(window)->AddObserver(this);

@@ -141,6 +141,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                   bool item_destroying,
                   bool reposition);
 
+  // Removes all overview items and restores the respective windows. This is
+  // used when launching a desks template. While this will empty the grid, it
+  // will *not* invoke `OverviewSession::OnGridEmpty()` since the grid is about
+  // to get filled with new windows.
+  void RemoveAllItemsForDesksTemplatesLaunch();
+
   // Adds a drop target for |dragged_item|, at the index immediately following
   // |dragged_item|. Repositions all items except |dragged_item|, so that the
   // drop target takes the place of |dragged_item|. Does not animate the

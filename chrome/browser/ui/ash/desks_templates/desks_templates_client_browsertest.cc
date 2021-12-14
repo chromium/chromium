@@ -249,10 +249,8 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   }
 
   void LaunchTemplate(const base::GUID& uuid) {
-    ash::DeskSwitchAnimationWaiter waiter;
     DesksTemplatesClient::Get()->LaunchDeskTemplate(uuid.AsLowercaseString(),
                                                     base::DoNothing());
-    waiter.Wait();
   }
 
   void SetAndLaunchTemplate(std::unique_ptr<ash::DeskTemplate> desk_template) {
@@ -1043,14 +1041,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
   ASSERT_TRUE(template_item);
   ClickButton(template_item);
 
-  // Clicking the button is a two part, both async process. We need to wait for
-  // the template to be fetched from the model, and then wait for the desk
-  // animation to be launched.
-  // TODO(dandersson): Remove this when the desk is no longer activated on
-  // template launch.
+  // We need to wait for the template to be fetched from the model.
   ash::WaitForDesksTemplatesUI();
-  ash::DeskSwitchAnimationWaiter waiter;
-  waiter.Wait();
 
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
@@ -1118,14 +1110,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ASSERT_TRUE(template_item);
   ClickButton(template_item);
 
-  // Clicking the button is a two part, both async process. We need to wait for
-  // the template to be fetched from the model, and then wait for the desk
-  // animation to be launched.
-  // TODO(dandersson): Remove this when the desk is no longer activated on
-  // template launch.
+  // We need to wait for the template to be fetched from the model.
   ash::WaitForDesksTemplatesUI();
-  ash::DeskSwitchAnimationWaiter waiter;
-  waiter.Wait();
 
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();

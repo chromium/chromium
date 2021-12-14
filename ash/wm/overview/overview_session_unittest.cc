@@ -438,7 +438,6 @@ TEST_P(OverviewSessionTest, MinimizeDuringOverview) {
   WMEvent minimize_event(WM_EVENT_MINIMIZE);
   window_state->OnWMEvent(&minimize_event);
   EXPECT_FALSE(window->IsVisible());
-  EXPECT_EQ(0.f, window->layer()->GetTargetOpacity());
   EXPECT_EQ(WindowStateType::kMinimized,
             WindowState::Get(window.get())->GetStateType());
   ToggleOverview();

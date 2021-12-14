@@ -766,6 +766,12 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   }
 }
 
+void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
+  for (auto& item : window_list_)
+    item->RestoreWindow(/*reset_tranform=*/true);
+  window_list_.clear();
+}
+
 void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
     OverviewItem* dragged_item) {
   DCHECK(!drop_target_widget_);
