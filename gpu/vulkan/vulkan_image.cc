@@ -114,14 +114,15 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
   image->device_queue_ = device_queue;
   image->image_ = vk_image;
   image->device_memory_ = vk_device_memory;
-  image->size_ = size;
-  image->format_ = format;
-  image->image_tiling_ = image_tiling;
+  image->create_info_.extent = {static_cast<uint32_t>(size.width()),
+                                static_cast<uint32_t>(size.height()), 1};
+  image->create_info_.format = format;
+  image->create_info_.tiling = image_tiling;
   image->device_size_ = device_size;
   image->memory_type_index_ = memory_type_index;
   image->ycbcr_info_ = ycbcr_info;
-  image->usage_ = usage;
-  image->flags_ = flags;
+  image->create_info_.usage = usage;
+  image->create_info_.flags = flags;
   return image;
 }
 
@@ -184,33 +185,29 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   DCHECK(device_memory_ == VK_NULL_HANDLE);
 
   device_queue_ = device_queue;
-  size_ = size;
-  format_ = format;
-  usage_ = usage;
-  flags_ = flags;
-  image_tiling_ = image_tiling;
-
-  VkImageCreateInfo create_info = {
+  create_info_ = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = vk_image_create_info_next,
-      .flags = flags_,
+      .flags = flags,
       .imageType = VK_IMAGE_TYPE_2D,
-      .format = format_,
+      .format = format,
       .extent = {static_cast<uint32_t>(size.width()),
                  static_cast<uint32_t>(size.height()), 1},
       .mipLevels = 1,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
-      .tiling = image_tiling_,
+      .tiling = image_tiling,
       .usage = usage,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .queueFamilyIndexCount = 0,
       .pQueueFamilyIndices = nullptr,
-      .initialLayout = image_layout_,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
   };
   VkDevice vk_device = device_queue->GetVulkanDevice();
-  VkResult result =
-      vkCreateImage(vk_device, &create_info, nullptr /* pAllocator */, &image_);
+  VkResult result = vkCreateImage(vk_device, &create_info_,
+                                  nullptr /* pAllocator */, &image_);
+  create_info_.pNext = nullptr;
+
   if (result != VK_SUCCESS) {
     DLOG(ERROR) << "vkCreateImage failed result:" << result;
     device_queue_ = nullptr;
@@ -276,7 +273,7 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   // initialized in InitializeWithExternalMemoryAndModifiers(). For
   // VK_IMAGE_TILING_OPTIMAL the layout is not usable and
   // vkGetImageSubresourceLayout() is illegal.
-  if (image_tiling_ != VK_IMAGE_TILING_LINEAR)
+  if (image_tiling != VK_IMAGE_TILING_LINEAR)
     return true;
 
   const VkImageSubresource image_subresource = {

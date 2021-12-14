@@ -11,6 +11,10 @@
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
 
+#define EGL_VULKAN_IMAGE_ANGLE 0x34D3
+#define EGL_VULKAN_IMAGE_CREATE_INFO_HI_ANGLE 0x34D4
+#define EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE 0x34D5
+
 namespace gl {
 
 GLImageEGLAngleVulkan::GLImageEGLAngleVulkan(const gfx::Size& size)
@@ -18,53 +22,30 @@ GLImageEGLAngleVulkan::GLImageEGLAngleVulkan(const gfx::Size& size)
 
 GLImageEGLAngleVulkan::~GLImageEGLAngleVulkan() = default;
 
-bool GLImageEGLAngleVulkan::Initialize(unsigned int texture) {
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-  if (egl_display == EGL_NO_DISPLAY) {
-    LOG(ERROR) << "Failed to retrieve EGLDisplay";
-    return false;
-  }
+bool GLImageEGLAngleVulkan::Initialize(VkImage image,
+                                       const VkImageCreateInfo* create_info) {
+  DCHECK(image != VK_NULL_HANDLE);
+  DCHECK(create_info);
 
-  GLContext* current_context = GLContext::GetCurrent();
-  if (!current_context || !current_context->IsCurrent(nullptr)) {
-    LOG(ERROR) << "No gl context bound to the current thread";
-    return false;
-  }
+  uint64_t info = reinterpret_cast<uint64_t>(create_info);
+  EGLint attribs[] = {
+      EGL_VULKAN_IMAGE_CREATE_INFO_HI_ANGLE,
+      static_cast<EGLint>((info >> 32) & 0xffffffff),
+      EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE,
+      static_cast<EGLint>(info & 0xffffffff),
+      EGL_NONE,
+  };
 
-  EGLContext context_handle =
-      reinterpret_cast<EGLContext>(current_context->GetHandle());
-  DCHECK_NE(context_handle, EGL_NO_CONTEXT);
   bool result = GLImageEGL::Initialize(
-      context_handle, EGL_GL_TEXTURE_2D_KHR,
-      reinterpret_cast<EGLClientBuffer>(texture), nullptr);
+      EGL_NO_CONTEXT, EGL_VULKAN_IMAGE_ANGLE,
+      reinterpret_cast<EGLClientBuffer>(&image), attribs);
 
   if (!result) {
-    LOG(ERROR) << "Create EGLImage from texture failed";
+    LOG(ERROR) << "Create EGLImage from VkImage failed";
     return false;
   }
 
   return true;
-}
-
-VkImage GLImageEGLAngleVulkan::ExportVkImage(VkImageCreateInfo* info) {
-  DCHECK(info);
-
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-  if (egl_display == EGL_NO_DISPLAY) {
-    LOG(ERROR) << "Failed to retrieve EGLDisplay";
-    return VK_NULL_HANDLE;
-  }
-
-  VkImage vk_image = VK_NULL_HANDLE;
-  if (!eglExportVkImageANGLE(egl_display, egl_image_, &vk_image, info)) {
-    LOG(ERROR) << "Export VkImage from EGLImage failed";
-    return VK_NULL_HANDLE;
-  }
-
-  DCHECK_NE(vk_image, VK_NULL_HANDLE);
-  DCHECK_EQ(info->sType, VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO);
-  DCHECK_EQ(size_, gfx::Size(info->extent.width, info->extent.height));
-  return vk_image;
 }
 
 }  // namespace gl

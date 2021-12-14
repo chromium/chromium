@@ -114,13 +114,16 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
 #endif
 
   VulkanDeviceQueue* device_queue() const { return device_queue_; }
-  const gfx::Size& size() const { return size_; }
-  VkFormat format() const { return format_; }
-  VkImageCreateFlags flags() const { return flags_; }
-  VkImageUsageFlags usage() const { return usage_; }
+  const VkImageCreateInfo& create_info() const { return create_info_; }
+  gfx::Size size() const {
+    return gfx::Size(create_info_.extent.width, create_info_.extent.height);
+  }
+  VkFormat format() const { return create_info_.format; }
+  VkImageCreateFlags flags() const { return create_info_.flags; }
+  VkImageUsageFlags usage() const { return create_info_.usage; }
   VkDeviceSize device_size() const { return device_size_; }
   uint32_t memory_type_index() const { return memory_type_index_; }
-  VkImageTiling image_tiling() const { return image_tiling_; }
+  VkImageTiling image_tiling() const { return create_info_.tiling; }
   VkImageLayout image_layout() const { return image_layout_; }
   void set_image_layout(VkImageLayout layout) { image_layout_ = layout; }
   uint32_t queue_family_index() const { return queue_family_index_; }
@@ -179,13 +182,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
 #endif
 
   raw_ptr<VulkanDeviceQueue> device_queue_ = nullptr;
-  gfx::Size size_;
-  VkFormat format_ = VK_FORMAT_UNDEFINED;
-  VkImageCreateFlags flags_ = 0;
-  VkImageUsageFlags usage_ = 0;
+  VkImageCreateInfo create_info_{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceSize device_size_ = 0;
   uint32_t memory_type_index_ = 0;
-  VkImageTiling image_tiling_ = VK_IMAGE_TILING_OPTIMAL;
   VkImageLayout image_layout_ = VK_IMAGE_LAYOUT_UNDEFINED;
   uint32_t queue_family_index_ = VK_QUEUE_FAMILY_IGNORED;
   absl::optional<VulkanYCbCrInfo> ycbcr_info_;

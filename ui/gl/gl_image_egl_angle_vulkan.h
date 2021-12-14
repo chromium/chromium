@@ -21,8 +21,7 @@ class GL_EXPORT GLImageEGLAngleVulkan : public GLImageEGL {
   GLImageEGLAngleVulkan(const GLImageEGLAngleVulkan&) = delete;
   GLImageEGLAngleVulkan& operator=(const GLImageEGLAngleVulkan&) = delete;
 
-  bool Initialize(unsigned int texture);
-  VkImage ExportVkImage(VkImageCreateInfo* info);
+  bool Initialize(VkImage image, const VkImageCreateInfo* create_info);
 
  protected:
   ~GLImageEGLAngleVulkan() override;

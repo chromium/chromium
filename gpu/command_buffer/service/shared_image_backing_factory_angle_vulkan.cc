@@ -13,7 +13,10 @@
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_fence_helper.h"
+#include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gl/gl_context.h"
@@ -29,32 +32,6 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   size_t estimated_size = 0;
   viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
   return estimated_size;
-}
-
-GrVkImageInfo CreateGrVkImageInfo(
-    VkImage vk_image,
-    const VkImageCreateInfo& info,
-    const raw_ptr<SharedContextState>& context_state) {
-  DCHECK_NE(vk_image, VK_NULL_HANDLE);
-
-  bool is_protected = info.flags & VK_IMAGE_CREATE_PROTECTED_BIT;
-
-  GrVkImageInfo image_info;
-  image_info.fImage = vk_image;
-  image_info.fAlloc = {};
-  image_info.fImageTiling = info.tiling;
-  image_info.fImageLayout = info.initialLayout;
-  image_info.fFormat = info.format;
-  image_info.fImageUsageFlags = info.usage;
-  image_info.fSampleCount = info.samples;
-  image_info.fLevelCount = info.mipLevels;
-  image_info.fCurrentQueueFamily = context_state->vk_context_provider()
-                                       ->GetDeviceQueue()
-                                       ->GetVulkanQueueIndex();
-  image_info.fProtected = is_protected ? GrProtected::kYes : GrProtected::kNo;
-  image_info.fYcbcrConversionInfo = {};
-
-  return image_info;
 }
 
 using ScopedResetAndRestoreUnpackState =
@@ -85,66 +62,62 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         context_state_(context_state) {}
 
   ~AngleVulkanBacking() override {
-    if (!passthrough_texture_)
-      return;
+    if (passthrough_texture_) {
+      if (!gl::GLContext::GetCurrent())
+        context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
 
-    if (!gl::GLContext::GetCurrent())
-      context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
+      if (!have_context())
+        passthrough_texture_->MarkContextLost();
 
-    if (!have_context())
-      passthrough_texture_->MarkContextLost();
-
-    passthrough_texture_.reset();
+      passthrough_texture_.reset();
+    }
+    auto* fence_helper = context_state_->vk_context_provider()
+                             ->GetDeviceQueue()
+                             ->GetFenceHelper();
+    fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
+        std::move(vulkan_image_));
   }
 
   bool Initialize(
       const SharedImageBackingFactoryAngleVulkan::FormatInfo& format_info,
       const SharedImageBackingGLCommon::UnpackStateAttribs& attribs) {
-    SharedImageBackingGLCommon::MakeTextureAndSetParameters(
-        GL_TEXTURE_2D, /*service_id=*/0, /*framebuffer_attachment_angle=*/true,
-        &passthrough_texture_, nullptr);
-    passthrough_texture_->SetEstimatedSize(estimated_size());
+    auto* device_queue =
+        context_state_->vk_context_provider()->GetDeviceQueue();
+    VkFormat vk_format = ToVkFormat(format());
 
-    GLuint texture = passthrough_texture_->service_id();
-
-    gl::GLApi* api = gl::g_current_gl_context;
-    ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
-    api->glBindTextureFn(GL_TEXTURE_2D, texture);
-
-    if (format_info.supports_storage) {
-      {
-        gl::ScopedProgressReporter scoped_progress_reporter(
-            context_state_->progress_reporter());
-        api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
-                                 format_info.storage_internal_format,
-                                 size().width(), size().height());
+    constexpr auto kUsageNeedsColorAttachment =
+        SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+        SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+        SHARED_IMAGE_USAGE_WEBGPU;
+    VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
+                                 VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                                 VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    if (usage() & kUsageNeedsColorAttachment) {
+      vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                  VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+      if (format() == viz::ETC1) {
+        DLOG(ERROR) << "ETC1 format cannot be used as color attachment.";
+        return false;
       }
-
-    } else {
-      ScopedResetAndRestoreUnpackState scoped_unpack_state(api, attribs, false);
-      gl::ScopedProgressReporter scoped_progress_reporter(
-          context_state_->progress_reporter());
-      api->glTexImage2DFn(GL_TEXTURE_2D, 0, format_info.image_internal_format,
-                          size().width(), size().height(), 0,
-                          format_info.adjusted_format, format_info.gl_type,
-                          nullptr);
     }
 
-    if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
-      const std::string label =
-          "SharedImage_AngleVulkan" + CreateLabelForSharedImageUsage(usage());
-      api->glObjectLabelFn(GL_TEXTURE, texture, -1, label.c_str());
-    }
+    VkImageCreateFlags vk_flags = 0;
+    auto vulkan_image =
+        VulkanImage::Create(device_queue, size(), vk_format, vk_usage, vk_flags,
+                            VK_IMAGE_TILING_OPTIMAL);
 
-    // Release the texture from ANGLE.
-    api->glReleaseTexturesANGLEFn(1, &texture, &layout_);
+    if (!vulkan_image)
+      return false;
 
-    auto image = base::MakeRefCounted<gl::GLImageEGLAngleVulkan>(size());
-    if (!image->Initialize(texture)) {
-      passthrough_texture_.reset();
+    auto egl_image = base::MakeRefCounted<gl::GLImageEGLAngleVulkan>(size());
+    if (!egl_image->Initialize(vulkan_image->image(),
+                               &vulkan_image->create_info())) {
+      vulkan_image->Destroy();
       return false;
     }
-    image_ = std::move(image);
+
+    vulkan_image_ = std::move(vulkan_image);
+    egl_image_ = std::move(egl_image);
     return true;
   }
 
@@ -167,7 +140,9 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override {
-    DCHECK(passthrough_texture_);
+    if (!passthrough_texture_ && !InitializePassthroughTexture())
+      return nullptr;
+
     return std::make_unique<SharedImageRepresentationGLTexturePassthroughImpl>(
         manager, this, this, tracker, passthrough_texture_);
   }
@@ -199,14 +174,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   class SkiaRepresentation;
 
   bool BeginAccessSkia() {
-    VkImageCreateInfo info;
-    VkImage vk_image = image_->ExportVkImage(&info);
-    // Check whether VkImage is re-created in ANGLE.
-    if (vk_image != vk_image_) {
-      vk_image_ = vk_image;
-      backend_texture_ = GrBackendTexture(
-          size().width(), size().height(),
-          CreateGrVkImageInfo(vk_image_, info, context_state_));
+    if (!backend_texture_.isValid()) {
+      GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
+      backend_texture_ =
+          GrBackendTexture(size().width(), size().height(), info);
     }
     auto vk_layout = GLImageLayoutToVkImageLayout(layout_);
     backend_texture_.setVkImageLayout(vk_layout);
@@ -220,11 +191,37 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     layout_ = VkImageLayoutToGLImageLayout(info.fImageLayout);
   }
 
+  bool InitializePassthroughTexture() {
+    DCHECK(!passthrough_texture_);
+    scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
+    SharedImageBackingGLCommon::MakeTextureAndSetParameters(
+        GL_TEXTURE_2D, /*service_id=*/0,
+        /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
+    passthrough_texture->SetEstimatedSize(estimated_size());
+
+    GLuint texture = passthrough_texture->service_id();
+
+    gl::GLApi* api = gl::g_current_gl_context;
+    ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
+    api->glBindTextureFn(GL_TEXTURE_2D, texture);
+
+    if (!egl_image_->BindTexImage(GL_TEXTURE_2D))
+      return false;
+
+    if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
+      const std::string label =
+          "SharedImage_AngleVulkan" + CreateLabelForSharedImageUsage(usage());
+      api->glObjectLabelFn(GL_TEXTURE, texture, -1, label.c_str());
+    }
+    passthrough_texture_ = std::move(passthrough_texture);
+    return true;
+  }
+
   raw_ptr<SharedContextState> context_state_;
-  scoped_refptr<gl::GLImageEGLAngleVulkan> image_;
+  std::unique_ptr<VulkanImage> vulkan_image_;
+  scoped_refptr<gl::GLImageEGLAngleVulkan> egl_image_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
-  VkImage vk_image_ = VK_NULL_HANDLE;
   GLenum layout_ = GL_NONE;
 };  // namespace
 
