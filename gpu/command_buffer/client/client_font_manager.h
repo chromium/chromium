@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 #include "gpu/raster_export.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace gpu {
 class CommandBuffer;

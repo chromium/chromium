@@ -12,7 +12,7 @@
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace gpu {
 class Buffer;

@@ -5,13 +5,15 @@
 #ifndef CC_TEST_TEST_OPTIONS_PROVIDER_H_
 #define CC_TEST_TEST_OPTIONS_PROVIDER_H_
 
+#include <vector>
+
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/test_skcanvas.h"
 #include "cc/test/transfer_cache_test_helper.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace cc {
 
