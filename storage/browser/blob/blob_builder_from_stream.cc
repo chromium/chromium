@@ -92,7 +92,7 @@ class DataPipeConsumerHelper {
     if (result != MOJO_RESULT_OK) {
       // We requested a trap on a condition that can never occur. The state of
       // `pipe_` likely changed.
-      DCHECK(result == MOJO_RESULT_FAILED_PRECONDITION);
+      DCHECK_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);
       InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
                  /*success=*/true, current_offset_);
       delete this;
