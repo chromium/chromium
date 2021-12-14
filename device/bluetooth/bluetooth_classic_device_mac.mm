@@ -31,20 +31,8 @@ namespace {
 
 const char kApiUnavailable[] = "This API is not implemented on this platform.";
 
-// Returns the first (should be, only) UUID contained within the
-// |service_class_data|. Returns an invalid (empty) UUID if none is found.
-BluetoothUUID ExtractUuid(IOBluetoothSDPDataElement* service_class_data) {
-  NSArray* inner_elements = [service_class_data getArrayValue];
-  IOBluetoothSDPUUID* sdp_uuid = nil;
-  for (IOBluetoothSDPDataElement* inner_element in inner_elements) {
-    if ([inner_element getTypeDescriptor] == kBluetoothSDPDataElementTypeUUID) {
-      sdp_uuid = [[inner_element getUUIDValue] getUUIDWithLength:16];
-      break;
-    }
-  }
-
-  if (!sdp_uuid)
-    return BluetoothUUID();
+BluetoothUUID GetUuid(IOBluetoothSDPUUID* sdp_uuid) {
+  DCHECK(sdp_uuid);
 
   const uint8_t* uuid_bytes =
       reinterpret_cast<const uint8_t*>([sdp_uuid bytes]);
@@ -54,7 +42,21 @@ BluetoothUUID ExtractUuid(IOBluetoothSDPDataElement* service_class_data) {
   uuid_str.insert(13, "-");
   uuid_str.insert(18, "-");
   uuid_str.insert(23, "-");
+
   return BluetoothUUID(uuid_str);
+}
+
+// Returns the first (should be, only) UUID contained within the
+// |service_class_data|. Returns an invalid (empty) UUID if none is found.
+BluetoothUUID ExtractUuid(IOBluetoothSDPDataElement* service_class_data) {
+  NSArray* inner_elements = [service_class_data getArrayValue];
+  for (IOBluetoothSDPDataElement* inner_element in inner_elements) {
+    if ([inner_element getTypeDescriptor] == kBluetoothSDPDataElementTypeUUID) {
+      return GetUuid([[inner_element getUUIDValue] getUUIDWithLength:16]);
+    }
+  }
+
+  return BluetoothUUID();
 }
 
 }  // namespace
@@ -146,8 +148,15 @@ BluetoothDevice::UUIDSet BluetoothClassicDeviceMac::GetUUIDs() const {
     IOBluetoothSDPDataElement* service_class_data =
         [service_record getAttributeDataElement:
                             kBluetoothSDPAttributeIdentifierServiceClassIDList];
-    if ([service_class_data getTypeDescriptor] ==
-        kBluetoothSDPDataElementTypeDataElementSequence) {
+    auto type_descriptor = [service_class_data getTypeDescriptor];
+    if (type_descriptor == kBluetoothSDPDataElementTypeUUID) {
+      IOBluetoothSDPUUID* sdp_uuid =
+          [[service_class_data getUUIDValue] getUUIDWithLength:16];
+      BluetoothUUID uuid = GetUuid(sdp_uuid);
+      if (uuid.IsValid())
+        uuids.insert(uuid);
+    } else if (type_descriptor ==
+               kBluetoothSDPDataElementTypeDataElementSequence) {
       BluetoothUUID uuid = ExtractUuid(service_class_data);
       if (uuid.IsValid())
         uuids.insert(uuid);
