@@ -97,7 +97,7 @@ AccessTokenFetcher::AccessTokenFetcher(
       mode_(mode),
       callback_(std::move(callback)) {
   DCHECK(client_id_.empty() == client_secret_.empty());
-  DCHECK(client_id_.empty() || !url_loader_factory);
+  DCHECK(client_id_.empty() || !url_loader_factory_);
 
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
