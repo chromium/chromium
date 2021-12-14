@@ -14,9 +14,14 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 
+namespace viz {
+struct BeginFrameArgs;
+}  // namespace viz
+
 namespace cc {
 class ThroughputUkmReporter;
 class JankMetrics;
+struct FrameInfo;
 
 enum class FrameSequenceTrackerType {
   // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
@@ -164,6 +169,9 @@ class CC_EXPORT FrameSequenceMetrics {
   // Report related metrics: throughput, checkboarding...
   void ReportMetrics();
 
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
+
   ThroughputData& impl_throughput() { return impl_throughput_; }
   ThroughputData& main_throughput() { return main_throughput_; }
   void add_checkerboarded_frames(int64_t frames) {
@@ -216,6 +224,12 @@ class CC_EXPORT FrameSequenceMetrics {
 
   // Pointer to the reporter owned by the FrameSequenceTrackerCollection.
   const raw_ptr<ThroughputUkmReporter> throughput_ukm_reporter_;
+
+  // Track state for measuring the PercentDroppedFrames v2 metrics.
+  struct {
+    uint32_t frames_expected = 0;
+    uint32_t frames_dropped = 0;
+  } v2_;
 
   ThroughputData impl_throughput_;
   ThroughputData main_throughput_;

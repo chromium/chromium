@@ -730,6 +730,7 @@ cc_test("cc_unittests") {
     "metrics/compositor_timing_history_unittest.cc",
     "metrics/dropped_frame_counter_unittest.cc",
     "metrics/events_metrics_manager_unittest.cc",
+    "metrics/frame_info_unittest.cc",
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
     "metrics/frame_sorter_unittest.cc",

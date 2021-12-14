@@ -26,6 +26,7 @@ namespace cc {
 class DroppedFrameCounter;
 class UkmManager;
 struct BeginMainFrameMetrics;
+struct FrameInfo;
 
 // This is used for managing simultaneous CompositorFrameReporter instances
 // in the case that the compositor has high latency. Calling one of the
@@ -99,8 +100,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
 
-  void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
-    global_trackers_.dropped_frame_counter = counter;
+  void SetDroppedFrameCounter(DroppedFrameCounter* counter);
+
+  void SetFrameSequenceTrackerCollection(
+      FrameSequenceTrackerCollection* frame_sequence_trackers) {
+    global_trackers_.frame_sequence_trackers = frame_sequence_trackers;
   }
 
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {
@@ -157,6 +161,9 @@ class CC_EXPORT CompositorFrameReportingController {
   void TrackSwapTiming(const viz::FrameTimingDetails& details);
   void ReportMultipleSwaps(base::TimeTicks begin_frame_time,
                            base::TimeDelta interval);
+
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
 
   const bool should_report_metrics_;
   const int layer_tree_host_id_;

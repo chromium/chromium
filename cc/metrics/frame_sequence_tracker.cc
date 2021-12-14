@@ -718,6 +718,12 @@ void FrameSequenceTracker::CleanUp() {
     metrics_->ReportLeftoverData();
 }
 
+void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
+                                          const FrameInfo& frame_info) {
+  if (metrics_)
+    metrics_->AddSortedFrame(args, frame_info);
+}
+
 FrameSequenceTracker::CheckerboardingData::CheckerboardingData() = default;
 FrameSequenceTracker::CheckerboardingData::~CheckerboardingData() = default;
 

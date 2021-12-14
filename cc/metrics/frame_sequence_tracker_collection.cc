@@ -407,4 +407,13 @@ void FrameSequenceTrackerCollection::AddCustomTrackerResult(
   custom_tracker_results_added_callback_.Run(results);
 }
 
+void FrameSequenceTrackerCollection::AddSortedFrame(
+    const viz::BeginFrameArgs& args,
+    const FrameInfo& frame_info) {
+  for (auto& tracker : frame_trackers_)
+    tracker.second->AddSortedFrame(args, frame_info);
+  for (auto& tracker : custom_frame_trackers_)
+    tracker.second->AddSortedFrame(args, frame_info);
+}
+
 }  // namespace cc
