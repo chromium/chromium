@@ -290,8 +290,8 @@ void CheckInstallation(UpdaterScope scope,
 // Returns true is any updater process is found running in any session in the
 // system, regardless of its path.
 bool IsUpdaterRunning() {
-  ProcessFilterName filter(kUpdaterProcessName);
-  return base::ProcessIterator(&filter).NextProcessEntry();
+  return IsProcessRunning(kUpdaterProcessName) ||
+         IsProcessRunning(base::UTF8ToWide(kUninstallScript).c_str());
 }
 
 }  // namespace
@@ -411,10 +411,6 @@ void Uninstall(UpdaterScope scope) {
   int exit_code = -1;
   ASSERT_TRUE(Run(scope, command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
-
-  // Uninstallation involves a race with the uninstall.cmd script and the
-  // process exit. Sleep to allow the script to complete its work.
-  SleepFor(5);
 }
 
 void SetActive(UpdaterScope /*scope*/, const std::string& id) {
@@ -450,7 +446,7 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
-void WaitForServerExit(UpdaterScope /*scope*/) {
+void WaitForUpdaterExit(UpdaterScope /*scope*/) {
   WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
 }
 

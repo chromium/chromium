@@ -120,6 +120,7 @@ class IntegrationTest : public ::testing::Test {
     PrintLog();
     CopyLog();
     test_commands_->Uninstall();
+    WaitForUpdaterExit();
   }
 
   void ExpectCandidateUninstalled() {
@@ -211,7 +212,7 @@ class IntegrationTest : public ::testing::Test {
     return test_commands_->GetDifferentUserPath();
   }
 
-  void WaitForServerExit() { test_commands_->WaitForServerExit(); }
+  void WaitForUpdaterExit() { test_commands_->WaitForUpdaterExit(); }
 
   void SetUpTestService() {
 #if defined(OS_WIN)
@@ -265,7 +266,7 @@ class IntegrationTest : public ::testing::Test {
 
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
@@ -281,16 +282,12 @@ TEST_F(IntegrationTest, InstallUninstall) {
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
-  SleepFor(2);
+  WaitForUpdaterExit();
   SetupFakeUpdaterHigherVersion();
   ExpectVersionNotActive(kUpdaterVersion);
 
   RunWake(0);
-
-  // The mac server will remain active for 10 seconds after it replies to the
-  // wake client, then shut down and uninstall itself. Sleep to wait for this
-  // to happen.
-  SleepFor(11);
+  WaitForUpdaterExit();
 
   ExpectCandidateUninstalled();
   // The candidate uninstall should not have altered global prefs.
@@ -306,7 +303,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ExpectRegistrationEvent(&test_server, kUpdaterAppId);
   Install();
   ExpectInstalled();
-  WaitForServerExit();
+  WaitForUpdaterExit();
   SetupFakeUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
 
@@ -315,7 +312,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
                        base::Version("0.2"));
 
   RunWake(0);
-  WaitForServerExit();
+  WaitForUpdaterExit();
 
   // This instance is now qualified and should activate itself and check itself
   // for updates on the next check.
@@ -324,7 +321,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
                            base::StringPrintf(".*%s.*", kUpdaterAppId))},
       ")]}'\n");
   RunWake(0);
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectVersionActive(kUpdaterVersion);
 
   Uninstall();
@@ -341,7 +338,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
                        base::Version(kUpdaterVersion), next_version);
 
   RunWake(0);
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectAppVersion(kUpdaterAppId, next_version);
 
   Uninstall();
@@ -404,7 +401,7 @@ TEST_F(IntegrationTest, UpdateApp) {
   base::Version v2("2");
   ExpectUpdateSequence(&test_server, kAppId, v1, v2);
   Update(kAppId);
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectAppVersion(kAppId, v2);
 
   Uninstall();
@@ -502,8 +499,7 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ExpectActiveUpdater();
 
   RunUninstallCmdLine();
-  WaitForServerExit();
-  SleepFor(2);
+  WaitForUpdaterExit();
   ExpectClean();
 }
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -514,14 +510,14 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterApp("test1");
   RegisterApp("test2");
 
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
 
   RunWake(0);
 
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectInstalled();
   ExpectAppUnregisteredExistenceCheckerPath("test1");
 
@@ -530,12 +526,11 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
 TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectInstalled();
   SetServerStarts(24);
   RunWake(0);
-  WaitForServerExit();
-  SleepFor(2);
+  WaitForUpdaterExit();
   ExpectClean();
 }
 
@@ -543,17 +538,16 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   RegisterApp("test1");
   ExpectInstalled();
-  WaitForServerExit();
+  WaitForUpdaterExit();
   SetServerStarts(24);
   RunWake(0);
-  WaitForServerExit();
+  WaitForUpdaterExit();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
   RunWake(0);
-  WaitForServerExit();
-  SleepFor(2);
+  WaitForUpdaterExit();
   ExpectClean();
 }
 
@@ -572,7 +566,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   SetExistenceCheckerPath("test1", GetDifferentUserPath());
 
   RunWake(0);
-  WaitForServerExit();
+  WaitForUpdaterExit();
 
   ExpectAppUnregisteredExistenceCheckerPath("test1");
 
