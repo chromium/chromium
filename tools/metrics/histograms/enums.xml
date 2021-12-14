@@ -55323,6 +55323,8 @@ from previous Chrome versions.
   <int value="5" label="Field trial logged-in site"/>
   <int value="6" label="Password manager saved site"/>
   <int value="7" label="OAuth popup based first time login flow"/>
+  <int value="8"
+      label="Common logged-in site received from optimization guide hints"/>
 </enum>
 
 <enum name="LoginFailureReason">

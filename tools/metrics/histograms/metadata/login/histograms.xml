@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
-    expires_after="2021-11-30">
+    expires_after="2022-11-30">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PasswordStoreSites.InitializedBeforeQuery"
-    enum="Boolean" expires_after="2022-06-05">
+    enum="Boolean" expires_after="2022-11-30">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
