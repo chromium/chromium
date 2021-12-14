@@ -150,6 +150,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Gets the PaginationModel used for the grid view.
   PaginationModel* pagination_model() { return &pagination_model_; }
 
+  int first_page_offset() const { return first_page_offset_; }
   void set_first_page_offset(int offset) { first_page_offset_ = offset; }
 
   // Calculates the maximum number of rows on the first page. Relies on tile

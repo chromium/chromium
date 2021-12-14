@@ -652,7 +652,7 @@ TEST_F(ContinueSectionViewTabletModeTest,
 
   // Set the display width so only 2 continue section tasks fit into available
   // space.
-  UpdateDisplay("800x600");
+  UpdateDisplay("600x800");
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();

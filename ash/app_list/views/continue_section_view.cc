@@ -31,11 +31,6 @@
 namespace ash {
 namespace {
 
-// Continue File Section view paddings. This view encloses the header and the
-// suggested tasks container.
-constexpr int kSectionVerticalPadding = 16;
-constexpr int kSectionHorizontalPadding = 20;
-
 // Header paddings in dips.
 constexpr int kHeaderVerticalSpacing = 4;
 constexpr int kHeaderHorizontalPadding = 12;
@@ -61,8 +56,7 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
   AppListModelProvider::Get()->AddObserver(this);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kSectionVerticalPadding, kSectionHorizontalPadding),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kHeaderVerticalSpacing));
   layout->set_main_axis_alignment(
       tablet_mode ? views::BoxLayout::MainAxisAlignment::kCenter

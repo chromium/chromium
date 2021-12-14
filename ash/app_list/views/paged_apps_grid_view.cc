@@ -589,7 +589,8 @@ void PagedAppsGridView::UpdateBorder() {
   if (IsInFolder())
     return;
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(GetFadeoutMaskHeight(), 0)));
+  if (!features::IsProductivityLauncherEnabled())
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(GetFadeoutMaskHeight(), 0)));
 }
 
 void PagedAppsGridView::MaybeStartCardifiedView() {
@@ -1221,8 +1222,9 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
                                         ? first_page_vertical_tile_padding_
                                         : vertical_tile_padding_;
   const gfx::Size background_card_size =
-      grid_size +
-      gfx::Size(2 * horizontal_tile_padding_, 2 * vertical_tile_padding);
+      grid_size + gfx::Size(2 * horizontal_tile_padding_,
+                            2 * std::max(kMinVerticalPaddingBetweenTiles,
+                                         vertical_tile_padding));
 
   // Add a padding on the sides to make space for pagination preview, but make
   // sure the padding doesn't exceed the tile padding (otherwise the background
@@ -1233,13 +1235,13 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
       (GetContentsBounds().width() - background_card_size.width()) / 2 +
       extra_padding_for_cardified_state;
 
-  const int y_offset = (new_page_index == 0 ? first_page_offset_ : 0);
+  int y_offset = std::max(new_page_index == 0 ? first_page_offset_ : 0,
+                          GetFadeoutMaskHeight());
   // The vertical padding should account for the fadeout mask.
-  const int vertical_padding = y_offset +
-                               (GetContentsBounds().height() - y_offset -
-                                background_card_size.height()) /
-                                   2 +
-                               GetFadeoutMaskHeight();
+  const int vertical_padding =
+      y_offset + (GetContentsBounds().height() - y_offset -
+                  background_card_size.height()) /
+                     2;
   const int padding_between_pages = GetPaddingBetweenPages();
   // The space that each page occupies in the items container. This is the size
   // of the grid without outer padding plus the padding between pages.
@@ -1314,6 +1316,10 @@ void PagedAppsGridView::UpdateTilePadding() {
   if (cardified_state_) {
     content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale) -
                    gfx::Size(2 * kCardifiedHorizontalPadding, 0);
+    content_size.set_width(
+        std::max(content_size.width(), cols() * tile_size.width()));
+    content_size.set_height(
+        std::max(content_size.height(), max_rows_ * tile_size.height()));
   }
 
   const auto calculate_tile_padding = [](int content_size, int num_tiles,
