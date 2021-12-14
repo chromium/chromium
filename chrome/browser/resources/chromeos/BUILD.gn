@@ -28,6 +28,7 @@ grit("multidevice_setup_resources") {
 
 group("closure_compile") {
   deps = [
+    ":closure_compile_local",
     "accessibility/accessibility_common:closure_compile",
     "accessibility/braille_ime:closure_compile",
     "accessibility/chromevox:closure_compile",
@@ -62,4 +63,16 @@ group("closure_compile") {
   if (is_cfm) {
     deps += [ "chromebox_for_meetings:closure_compile" ]
   }
+}
+
+js_type_check("closure_compile_local") {
+  deps = [ ":power" ]
+}
+
+js_library("power") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
 }
