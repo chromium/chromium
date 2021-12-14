@@ -57,15 +57,13 @@ def _Generate(java_file_paths,
   """
   # Without multiprocessing, script takes ~13 seconds for chrome_public_apk
   # on a z620. With multiprocessing, takes ~2 seconds.
-  pool = multiprocessing.Pool()
-
   results = []
-  for d in pool.imap_unordered(
-      functools.partial(_DictForPath, use_proxy_hash=proxy_opts.use_hash),
-      java_file_paths):
-    if d:
-      results.append(d)
-  pool.close()
+  with multiprocessing.Pool() as pool:
+    for d in pool.imap_unordered(
+        functools.partial(_DictForPath, use_proxy_hash=proxy_opts.use_hash),
+        java_file_paths):
+      if d:
+        results.append(d)
 
   # Sort to make output deterministic.
   results.sort(key=lambda d: d['FULL_CLASS_NAME'])
