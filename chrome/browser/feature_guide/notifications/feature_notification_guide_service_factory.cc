@@ -16,7 +16,9 @@
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/browser_context.h"
 
 #if defined(OS_ANDROID)
@@ -64,6 +66,8 @@ FeatureNotificationGuideServiceFactory::FeatureNotificationGuideServiceFactory()
           "FeatureNotificationGuideService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
 KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
@@ -73,6 +77,9 @@ KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
       NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  segmentation_platform::SegmentationPlatformService*
+      segmentation_platform_service = segmentation_platform::
+          SegmentationPlatformServiceFactory::GetForProfile(profile);
   Config config;
   config.enabled_features = GetEnabledFeaturesFromVariations();
   config.notification_deliver_time_delta =
@@ -83,7 +90,7 @@ KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
 #endif
   return new FeatureNotificationGuideServiceImpl(
       std::move(delegate), config, notification_scheduler, tracker,
-      base::DefaultClock::GetInstance());
+      segmentation_platform_service, base::DefaultClock::GetInstance());
 }
 
 bool FeatureNotificationGuideServiceFactory::ServiceIsNULLWhileTesting() const {

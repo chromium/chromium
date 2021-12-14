@@ -14,6 +14,9 @@
 #include "chrome/browser/feature_guide/notifications/config.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +62,24 @@ class TestScheduler
       queued_params_;
 };
 
+class TestSegmentationPlatformService
+    : public segmentation_platform::SegmentationPlatformService {
+ public:
+  void GetSelectedSegment(const std::string& segmentation_key,
+                          segmentation_platform::SegmentationPlatformService::
+                              SegmentSelectionCallback callback) override {
+    segmentation_platform::SegmentSelectionResult result;
+    result.is_ready = true;
+    result.segment = optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+    std::move(callback).Run(result);
+  }
+  void EnableMetrics(bool signal_collection_allowed) override {}
+  segmentation_platform::ServiceProxy* GetServiceProxy() override {
+    return nullptr;
+  }
+};
+
 class FeatureNotificationGuideServiceImplTest : public testing::Test {
  public:
   FeatureNotificationGuideServiceImplTest() = default;
@@ -69,7 +90,7 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
     config_.notification_deliver_time_delta = base::Days(7);
     service_ = std::make_unique<FeatureNotificationGuideServiceImpl>(
         std::make_unique<TestDelegate>(), config_, &notifcation_scheduler_,
-        &tracker_, &test_clock_);
+        &tracker_, &segmentation_platform_service_, &test_clock_);
     EXPECT_CALL(tracker_, AddOnInitializedCallback(_))
         .WillOnce(RunOnceCallback<0>(true));
   }
@@ -78,6 +99,7 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestScheduler notifcation_scheduler_;
   feature_engagement::test::MockTracker tracker_;
+  TestSegmentationPlatformService segmentation_platform_service_;
   Config config_;
   base::SimpleTestClock test_clock_;
   std::unique_ptr<FeatureNotificationGuideServiceImpl> service_;

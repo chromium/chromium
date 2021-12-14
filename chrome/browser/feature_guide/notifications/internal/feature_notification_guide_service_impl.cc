@@ -21,6 +21,10 @@
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace feature_guide {
 namespace {
@@ -40,10 +44,13 @@ FeatureNotificationGuideServiceImpl::FeatureNotificationGuideServiceImpl(
     const Config& config,
     notifications::NotificationScheduleService* notification_scheduler,
     feature_engagement::Tracker* tracker,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     base::Clock* clock)
     : delegate_(std::move(delegate)),
       notification_scheduler_(notification_scheduler),
       tracker_(tracker),
+      segmentation_platform_service_(segmentation_platform_service),
       clock_(clock),
       config_(config) {
   DCHECK(notification_scheduler_);
@@ -59,16 +66,37 @@ void FeatureNotificationGuideServiceImpl::OnSchedulerInitialized(
     scheduled_features_.emplace(NotificationIdToFeature(guid));
   }
 
-  tracker_->AddOnInitializedCallback(base::BindOnce(
-      &FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures,
-      weak_ptr_factory_.GetWeakPtr()));
+  tracker_->AddOnInitializedCallback(
+      base::BindOnce(&FeatureNotificationGuideServiceImpl::OnTrackerInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures(
+void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
     bool init_success) {
   if (!init_success)
     return;
 
+  segmentation_platform_service_->GetSelectedSegment(
+      segmentation_platform::kChromeLowUserEngagementSegmentationKey,
+      base::BindOnce(
+          &FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
+    const segmentation_platform::SegmentSelectionResult& result) {
+  if (!result.is_ready || !result.segment.has_value())
+    return;
+  if (result.segment.value() !=
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT) {
+    return;
+  }
+
+  StartCheckingForEligibleFeatures();
+}
+
+void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
   for (auto feature : config_.enabled_features) {
     if (base::Contains(scheduled_features_, feature))
       continue;
