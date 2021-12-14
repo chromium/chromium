@@ -65,7 +65,6 @@ builder(
 
 builder(
     name = "WebRTC Chromium Mac Builder",
-    cores = 8,
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
 )

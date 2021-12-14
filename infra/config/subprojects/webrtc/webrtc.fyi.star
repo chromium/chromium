@@ -89,14 +89,12 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
-    cores = 8,
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
-    cores = 8,
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
 )
