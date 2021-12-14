@@ -6571,17 +6571,6 @@
       'gpu_swiftshader_gtests',
     ],
 
-    'gpu_fyi_linux_release_and_dawn_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_dawn_gtests',
-      'gpu_desktop_specific_gtests',
-      'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
-    ],
-
     'gpu_fyi_linux_release_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
