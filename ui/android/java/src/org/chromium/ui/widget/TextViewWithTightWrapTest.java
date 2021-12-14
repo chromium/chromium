@@ -29,8 +29,8 @@ Render tests for {@link TextViewWithTightWrap}.
 */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TextViewWithTightWrapTest extends DummyUiActivityTestCase {
-    private static final int RENDER_TEST_REVISION = 1;
-    private static final String RENDER_TEST_REVISION_DESCRIPTION = "Fix the background color.";
+    private static final int RENDER_TEST_REVISION = 2;
+    private static final String RENDER_TEST_REVISION_DESCRIPTION = "Update the text style.";
 
     private TextViewWithTightWrap mTextView;
     private View mView;

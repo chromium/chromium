@@ -13,6 +13,7 @@
     <macro name="default_icon_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color">?attr/colorOnSurface</macro>
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
+    <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
     <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>
     -->
@@ -26,6 +27,7 @@
     <macro name="default_icon_color_accent1">@color/default_icon_color_accent1_baseline</macro>
     <macro name="default_text_color">@color/default_text_color_baseline</macro>
     <macro name="default_text_color_accent1">@color/default_text_color_blue_baseline</macro>
+    <macro name="default_text_color_on_accent1">@color/default_text_color_on_accent1_baseline</macro>
     <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
     <macro name="divider_line_bg_color">@color/divider_line_bg_color_baseline</macro>
 

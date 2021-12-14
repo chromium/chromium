@@ -17,8 +17,8 @@
     <color name="default_text_color_link">@color/default_text_color_link_dark</color>
     <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
     <color name="default_text_color_error">@color/default_text_color_error_dark</color>
-    <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_light</color>
-    <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_dark</color>
+    <color name="default_text_color_on_accent1_baseline">@color/default_text_color_on_accent1_light</color>
+    <color name="default_text_color_on_accent1_disabled_baseline">@color/default_text_color_disabled_dark</color>
     <!-- TODO(https://crbug.com/1248157): This is the same as light mode's
          ?attr/colorOnSecondaryContainer, but it would break in dark mode.
          Figure out a solution for dynamic colors. -->

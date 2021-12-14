@@ -33,6 +33,7 @@ android_resources("java_resources") {
     "java/res/color/default_text_color_hint_list.xml",
     "java/res/color/default_text_color_link_tint_list.xml",
     "java/res/color/default_text_color_list.xml",
+    "java/res/color/default_text_color_on_accent1_list.xml",
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/progress_bar_bg_color.xml",
     "java/res/color/selection_control_button_tint.xml",

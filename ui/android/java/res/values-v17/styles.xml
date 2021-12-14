@@ -242,21 +242,6 @@
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
     </style>
 
-    <!-- Inverse text styles -->
-    <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
-    <style name="TextAppearance.Headline.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextMediumThick.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextMedium.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextSmall.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-
     <!-- Blue And Button Text Styles -->
     <style name="TextAppearance.TextMediumThick.Green">
         <item name="android:textColor">@color/default_green</item>
@@ -274,11 +259,11 @@
         <item name="android:textColor">@color/blue_when_enabled_dark</item>
     </style>
     <style name="TextAppearance.Button.Text.Filled" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+        <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.Button.Text.Inverse" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+        <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
        <item name="android:textSize">@dimen/text_size_small</item>
