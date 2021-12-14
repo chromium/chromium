@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -20,6 +21,9 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "dbus/message.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 
@@ -237,6 +241,12 @@ void FirmwareUpdateManager::OnUpdateListResponse(
 
 void FirmwareUpdateManager::OnInstallResponse(bool success) {
   ++on_install_update_response_count_for_testing_;
+}
+
+void FirmwareUpdateManager::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
+        pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace ash

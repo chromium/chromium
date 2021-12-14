@@ -19,6 +19,8 @@
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
@@ -63,6 +65,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void StartInstall(const std::string& device_id,
                     int release,
                     base::OnceCallback<void()> callback);
+
+  void BindInterface(
+      mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
+          pending_receiver);
 
  protected:
   friend class FirmwareUpdateManagerTest;
@@ -111,6 +117,8 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
       update_list_observers_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  mojo::Receiver<firmware_update::mojom::UpdateProvider> receiver_{this};
 
   base::WeakPtrFactory<FirmwareUpdateManager> weak_ptr_factory_{this};
 };

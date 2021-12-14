@@ -4,13 +4,19 @@
 
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 
+#include <memory>
+#include <utility>
+
+#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/grit/ash_firmware_update_app_resources.h"
 #include "ash/grit/ash_firmware_update_app_resources_map.h"
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -55,7 +61,7 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
 }  // namespace
 
 FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   auto source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIFirmwareUpdateAppHost));
   source->OverrideContentSecurityPolicy(
@@ -76,4 +82,10 @@ FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
 
 FirmwareUpdateAppUI::~FirmwareUpdateAppUI() = default;
 
+void FirmwareUpdateAppUI::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::UpdateProvider> receiver) {
+  FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(FirmwareUpdateAppUI)
 }  // namespace ash

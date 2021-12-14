@@ -192,6 +192,8 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
+#include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
@@ -980,6 +982,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
                                          chromeos::AudioUI>(map);
+
+  if (ash::features::IsFirmwareUpdaterAppEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
+        map);
+  }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
