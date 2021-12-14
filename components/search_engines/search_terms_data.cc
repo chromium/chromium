@@ -5,7 +5,6 @@
 #include "components/search_engines/search_terms_data.h"
 
 #include "base/check.h"
-#include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "url/gurl.h"
@@ -21,7 +20,6 @@ std::string SearchTermsData::GoogleBaseURLValue() const {
 std::string SearchTermsData::GoogleBaseSearchByImageURLValue() const {
   const std::string kGoogleHomepageURLPath = std::string("searchbyimage/");
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
   // If both LensStandalone and LensRegionSearch features are enabled,
   // LensStandalone parameters will take precedence even if the values differ.
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
@@ -29,8 +27,6 @@ std::string SearchTermsData::GoogleBaseSearchByImageURLValue() const {
   } else if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch)) {
     return lens::features::GetHomepageURLForRegionSearch();
   }
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
-
   return google_util::kGoogleHomepageURL + kGoogleHomepageURLPath;
 }
 
