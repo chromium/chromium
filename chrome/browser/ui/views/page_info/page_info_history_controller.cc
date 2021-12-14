@@ -50,17 +50,14 @@ void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
 
 std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
     std::u16string last_visit) {
-  // TODO(crbug.com/1275042): Use correct icons and strings (title, tooltip).
-  // TODO(crbug.com/1275042): Add on click handler to open the history webpage.
-  auto history_button = std::make_unique<PageInfoHoverButton>(
+  // TODO(crbug.com/1275042): Use correct icons and strings (tooltip).
+  return std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
-      PageInfoViewFactory::GetSiteSettingsIcon(), IDS_PAGE_INFO_COOKIES,
-      last_visit, 0,
+      PageInfoViewFactory::GetSiteSettingsIcon(), IDS_PAGE_INFO_HISTORY,
+      last_visit, PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());
-  history_button->SetTitleText(u"History");
-  return history_button;
 }
 
 void PageInfoHistoryController::OpenHistoryPage() {

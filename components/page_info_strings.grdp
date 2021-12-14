@@ -701,4 +701,21 @@
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
     From <ph name="SOURCE_NAME">$1<ex>Wikipedia</ex></ph>
   </message>
+
+  <!-- History strings -->
+  <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
+    History
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+    Last visited today
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+    Last visited yesterday
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+    Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+    Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+  </message>
 </grit-part>

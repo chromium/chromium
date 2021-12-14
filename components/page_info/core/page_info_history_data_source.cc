@@ -10,6 +10,8 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace page_info {
 
@@ -32,20 +34,19 @@ std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
   const base::Time mightnight_last_visited = last_visit.LocalMidnight();
   const base::TimeDelta delta = midnight_today - mightnight_last_visited;
 
-  // TODO(crbug.com/1275042): Use actual strings.
   if (delta == base::Milliseconds(0))
-    return u"Last visited today";
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY);
 
   if (delta == kDay)
-    return u"Last visited yesterday";
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY);
 
   if (delta > kDay && delta <= kDay * 7)
-    return base::ReplaceStringPlaceholders(u"Last visited $1 days ago",
-                                           {base::FormatNumber(delta.InDays())},
-                                           nullptr);
+    return l10n_util::GetStringFUTF16Int(IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS,
+                                         delta.InDays());
 
-  return base::ReplaceStringPlaceholders(
-      u"Last visited $1", {base::TimeFormatShortDate(last_visit)}, nullptr);
+  return l10n_util::GetStringFUTF16(IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE,
+                                    base::TimeFormatShortDate(last_visit));
 }
 
 void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
