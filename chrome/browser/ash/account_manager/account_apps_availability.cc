@@ -55,6 +55,22 @@ bool IsPrefInitialized(PrefService* prefs) {
   return accounts && (accounts->DictSize() > 0 || IsActiveDirectoryUser());
 }
 
+void CompleteFindAccountByGaiaId(
+    const std::string& gaia_id,
+    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+        callback,
+    const std::vector<account_manager::Account>& accounts) {
+  for (const auto& account : accounts) {
+    if (account.key.account_type() == account_manager::AccountType::kGaia &&
+        account.key.id() == gaia_id) {
+      std::move(callback).Run(account);
+      return;
+    }
+  }
+  LOG(ERROR) << "Couldn't find account by gaia id in AccountManager";
+  std::move(callback).Run(absl::nullopt);
+}
+
 void CompleteGetAccountsAvailableInArc(
     const base::flat_set<std::string>& gaia_ids_in_arc,
     base::OnceCallback<void(const base::flat_set<account_manager::Account>&)>
@@ -226,8 +242,13 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
   absl::optional<bool> current_status =
       IsAccountAvailableInArc(prefs_, account.key.id());
   if (!current_status.has_value()) {
+    // Account is not in prefs yet - add a new entry.
     AddAccountToPrefs(prefs_, account.key.id(), is_available);
-    NotifyObservers(account, is_available);
+
+    // Notify observers only if account should be available.
+    if (is_available)
+      NotifyObservers(account, is_available);
+
     return;
   }
 
@@ -268,7 +289,21 @@ void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
     return;
   }
 
-  NOTIMPLEMENTED();
+  absl::optional<bool> current_status =
+      IsAccountAvailableInArc(prefs_, account_info.gaia);
+  // - If `current_status.has_value()` is `false` - this account is not in prefs
+  // yet. This happens when account is just added and
+  // `SetIsAccountAvailableInArc()` wasn't called yet.
+  // - If `current_status.value()` is `false` - this account is not available in
+  // ARC. In this case we don't want to notify the observers.
+  if (!current_status.has_value() || !current_status.value())
+    return;
+
+  FindAccountByGaiaId(
+      account_info.gaia,
+      base::BindOnce(&AccountAppsAvailability::MaybeNotifyObservers,
+                     weak_factory_.GetWeakPtr(),
+                     /*is_available_in_arc=*/true));
 }
 
 void AccountAppsAvailability::OnAccountUpserted(
@@ -286,6 +321,9 @@ void AccountAppsAvailability::OnAccountUpserted(
 void AccountAppsAvailability::OnAccountRemoved(
     const account_manager::Account& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (account.key.account_type() != account_manager::AccountType::kGaia)
+    return;
+
   if (!IsInitialized()) {
     // Using base::Unretained(this) is fine because `initialization_callbacks_`
     // is owned by this.
@@ -347,6 +385,23 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
   for (auto& callback : initialization_callbacks_)
     std::move(callback).Run();
   initialization_callbacks_.clear();
+}
+
+void AccountAppsAvailability::FindAccountByGaiaId(
+    const std::string& gaia_id,
+    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+        callback) {
+  account_manager_facade_->GetAccounts(base::BindOnce(
+      &CompleteFindAccountByGaiaId, gaia_id, std::move(callback)));
+}
+
+void AccountAppsAvailability::MaybeNotifyObservers(
+    bool is_available_in_arc,
+    const absl::optional<account_manager::Account>& account) {
+  if (!account)
+    return;
+
+  NotifyObservers(account.value(), is_available_in_arc);
 }
 
 void AccountAppsAvailability::NotifyObservers(

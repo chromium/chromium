@@ -26,6 +26,9 @@
 
 using testing::_;
 using testing::Contains;
+using testing::InSequence;
+
+using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 namespace ash {
 
@@ -278,6 +281,174 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
     EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_1)));
   }
+}
+
+TEST_F(AccountAppsAvailabilityTest, ObserversAreCalledWhenAvailabilityChanges) {
+  const AccountInfo secondary_account_1_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account_1 =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+
+  MockObserver mock_observer;
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
+      observation{&mock_observer};
+  observation.Observe(account_apps_availability.get());
+
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_observer,
+                OnAccountUnavailableInArc(AccountEqual(secondary_account_1)))
+        .Times(1);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_observer,
+                OnAccountAvailableInArc(AccountEqual(secondary_account_1)))
+        .Times(1);
+  }
+
+  // [Account is available in ARC] Remove an account from ARC - observer is
+  // called.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        false);
+
+  checkpoint.Call(1);
+
+  // [Account is NOT available in ARC] Add an account to ARC - observer is
+  // called.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        true);
+}
+
+TEST_F(AccountAppsAvailabilityTest,
+       ObserversAreNotCalledWhenAvailabilityDoesntChange) {
+  const AccountInfo secondary_account_1_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account_1 =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+
+  MockObserver mock_observer;
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
+      observation{&mock_observer};
+  observation.Observe(account_apps_availability.get());
+
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_observer, OnAccountAvailableInArc(_)).Times(0);
+    EXPECT_CALL(mock_observer, OnAccountUnavailableInArc(_)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_observer, OnAccountAvailableInArc(_)).Times(0);
+    EXPECT_CALL(mock_observer, OnAccountUnavailableInArc(_)).Times(0);
+  }
+
+  // [Account is available in ARC] Add the same account again - observer is not
+  // called.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        true);
+  checkpoint.Call(1);
+
+  const AccountInfo secondary_account_2_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount2Email);
+  const account_manager::Account secondary_account_2 =
+      CreateAccount(kSecondaryAccount2Email, secondary_account_2_info.gaia);
+
+  // [Account is NOT available in ARC] Account is removed from ARC - observer is
+  // not called.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_2,
+                                                        false);
+}
+
+TEST_F(AccountAppsAvailabilityTest,
+       ObserversAreCalledWhenAvailableAccountIsChanged) {
+  const AccountInfo secondary_account_1_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account_1 =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+
+  MockObserver mock_observer;
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
+      observation{&mock_observer};
+  observation.Observe(account_apps_availability.get());
+
+  EXPECT_CALL(mock_observer,
+              OnAccountAvailableInArc(AccountEqual(secondary_account_1)))
+      .Times(1);
+  // [Account is available in ARC] Account is upserted - observer is called.
+  identity_test_env()->SetRefreshTokenForAccount(
+      secondary_account_1_info.account_id);
+  // Wait for async calls to finish.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccountAppsAvailabilityTest,
+       ObserversAreNotCalledWhenUnavailableAccountIsChanged) {
+  const AccountInfo secondary_account_1_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account_1 =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+
+  MockObserver mock_observer;
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
+      observation{&mock_observer};
+  observation.Observe(account_apps_availability.get());
+
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_observer,
+                OnAccountUnavailableInArc(AccountEqual(secondary_account_1)))
+        .Times(1);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_observer, OnAccountAvailableInArc(_)).Times(0);
+    EXPECT_CALL(mock_observer, OnAccountUnavailableInArc(_)).Times(0);
+  }
+
+  // Remove an account from ARC.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        false);
+  checkpoint.Call(1);
+
+  // [Account is NOT available in ARC] Account is upserted - observer is not
+  // called.
+  identity_test_env()->SetRefreshTokenForAccount(
+      secondary_account_1_info.account_id);
+  // Wait for async calls to finish.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace ash
