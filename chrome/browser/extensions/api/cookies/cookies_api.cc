@@ -119,16 +119,16 @@ void CookiesEventRouter::OnCookieChange(bool otr,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetBoolean(cookies_api_constants::kRemovedKey,
-                   change.cause != net::CookieChangeCause::INSERTED);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey(cookies_api_constants::kRemovedKey,
+                  change.cause != net::CookieChangeCause::INSERTED);
 
   Profile* profile =
       otr ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : profile_->GetOriginalProfile();
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
-  dict->Set(cookies_api_constants::kCookieKey, cookie.ToValue());
+  dict.SetKey(cookies_api_constants::kCookieKey, std::move(*cookie.ToValue()));
 
   // Map the internal cause to an external string.
   std::string cause_dict_entry;
@@ -159,7 +159,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
     case net::CookieChangeCause::UNKNOWN_DELETION:
       NOTREACHED();
   }
-  dict->SetString(cookies_api_constants::kCauseKey, cause_dict_entry);
+  dict.SetStringKey(cookies_api_constants::kCauseKey, cause_dict_entry);
 
   args->Append(std::move(dict));
 
