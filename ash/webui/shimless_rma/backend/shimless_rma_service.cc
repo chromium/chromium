@@ -1029,15 +1029,21 @@ void ShimlessRmaService::OnAbortRmaResponse(
     AbortRmaCallback callback,
     bool reboot,
     absl::optional<rmad::AbortRmaReply> response) {
+  const bool rma_not_required =
+      critical_error_occurred_ ||
+      (response && response->error() == rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
+  // Send status before shutting down or restarting Chrome session.
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::AbortRma";
     std::move(callback).Run(rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+  } else if (rma_not_required) {
+    std::move(callback).Run(rmad::RMAD_ERROR_OK);
   } else {
     std::move(callback).Run(response->error());
   }
-  // Only reboot or exit to login if abort was successful or a critical error
-  // has occurred.
-  if (critical_error_occurred_ || response->error() == rmad::RMAD_ERROR_OK) {
+  // Only reboot or exit to login if abort was successful (state will be
+  // RMAD_ERROR_RMA_NOT_REQUIRED) or a critical error has occurred.
+  if (rma_not_required) {
     if (reboot) {
       VLOG(1) << "Rebooting...";
       chromeos::PowerManagerClient::Get()->RequestRestart(

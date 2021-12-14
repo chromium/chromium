@@ -472,12 +472,12 @@ TEST_F(FakeRmadClientTest,
   }
 }
 
-TEST_F(FakeRmadClientTest, Abortable_Default_Ok) {
+TEST_F(FakeRmadClientTest, Abortable_Default_Rma_Not_Required) {
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
       [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();
@@ -495,13 +495,13 @@ TEST_F(FakeRmadClientTest, Abortable_SetFalse_CannotCancel) {
   run_loop.RunUntilIdle();
 }
 
-TEST_F(FakeRmadClientTest, Abortable_SetTrue_Ok) {
+TEST_F(FakeRmadClientTest, Abortable_SetTrue_Rma_Not_Required) {
   fake_client_()->SetAbortable(true);
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
       [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();

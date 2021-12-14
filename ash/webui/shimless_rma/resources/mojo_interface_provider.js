@@ -42,7 +42,7 @@ function setupFakeShimlessRmaService_() {
 
   service.setAsyncOperationDelayMs(500);
 
-  service.setAbortRmaResult(RmadErrorCode.kOk);
+  service.setAbortRmaResult(RmadErrorCode.kRmaNotRequired);
 
   service.automaticallyTriggerHardwareVerificationStatusObservation();
 

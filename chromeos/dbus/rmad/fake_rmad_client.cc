@@ -210,7 +210,8 @@ void FakeRmadClient::CreateWithState() {
 }
 
 FakeRmadClient::FakeRmadClient() {
-  abort_rma_reply_.set_error(rmad::RMAD_ERROR_OK);
+  // Default to abortable.
+  SetAbortable(true);
 }
 FakeRmadClient::~FakeRmadClient() = default;
 
@@ -337,7 +338,8 @@ void FakeRmadClient::SetFakeStateReplies(
 }
 
 void FakeRmadClient::SetAbortable(bool abortable) {
-  abort_rma_reply_.set_error(abortable ? rmad::RMAD_ERROR_OK
+  // Abort RMA returns 'not in RMA' on success.
+  abort_rma_reply_.set_error(abortable ? rmad::RMAD_ERROR_RMA_NOT_REQUIRED
                                        : rmad::RMAD_ERROR_CANNOT_CANCEL_RMA);
 }
 
