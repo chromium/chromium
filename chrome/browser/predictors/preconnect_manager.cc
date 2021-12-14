@@ -52,7 +52,7 @@ PreresolveJob::PreresolveJob(const GURL& url,
       network_isolation_key(std::move(network_isolation_key)),
       info(info) {
   DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_isolation_key.IsEmpty());
+  DCHECK(!this->network_isolation_key.IsEmpty());
 }
 
 PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
