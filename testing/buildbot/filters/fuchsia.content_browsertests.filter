@@ -14,9 +14,6 @@
 -ContentBrowserTest.BrowserCrashCallStack
 -ContentBrowserTest.RendererCrashCallStack
 -CrossPlatformAccessibilityBrowserTest.ControlsIdsForDateTimePopup
--DataDecoderBrowserTest.DecodeImage
--DataDecoderBrowserTest.DecodeImageIsolated
--DataDecoderBrowserTest.LaunchIsolated
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
 -DnsHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -MHTMLGenerationSitePerProcessTest/*
@@ -34,8 +31,6 @@
 -PrerenderBrowserTest.AbandonIfRendererProcessCrashes
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/*
 -SRC_ClearKey/EncryptedMediaTest.*
--SavePackageWebBundleBrowserTest.OnePageSimple
--SavePageAsWebBundleBrowserTest.GenerateOnePageSimpleWebBundle
 -SitePerProcessDelegatedInkBrowserTest.MetadataAndPointGoThroughOOPIF
 -SitePerProcessMouseWheelHitTestBrowserTest.MouseWheelEventPositionChange
 -SnapshotBrowserTest.AsyncMultiWindowTest
@@ -44,16 +39,9 @@
 -TtsSsmlBrowserTest.TestStripSSML
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.*
 -UserMedia/WebRtcConstraintsBrowserTest.GetUserMediaConstraints/4
--WebBundleFileBrowserTest/WebBundleFileBrowserTest.*
--WebBundleNetworkBrowserTest.*
--WebBundleTrustableFileBrowserTest/WebBundleTrustableFileBrowserTest.*
 -WebContentsViewAuraTest.OverscrollNavigation
 -WebContentsViewAuraTest.OverscrollNavigationWithTouchHandler
 -WebContentsViewAuraTest.RepeatedQuickOverscrollGestures
--WebIdBrowserTest.AbsoluteURLs
--WebIdBrowserTest.FastLoginFlow
--WebIdBrowserTest.FullLoginFlow
--WebIdBrowserTest.TokenExchangePermissionDeclined
 -WebRtcCaptureFromElementBrowserTest.VerifyCanvasCaptureWebGLFrames
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 
@@ -70,11 +58,23 @@
 -WebRtcIPPermissionDeniedTest.GatherLocalCandidates
 -WebRtcIPPolicyPublicAndPrivateInterfacesTest.GatherLocalCandidates
 
-# crbug.com/1260245: InterestGroupBrowserTest failures
+# crbug.com/1260245: Failing due to using jitless v8 out of renderer
+-DataDecoderBrowserTest.DecodeImage
+-DataDecoderBrowserTest.DecodeImageIsolated
+-DataDecoderBrowserTest.LaunchIsolated
 -InterestGroupBrowserTest*
 -*/InterestGroupFencedFrameBrowserTest.*
 -InterestGroupPrivateNetworkBrowserTest.*
 -InterestGroupRestrictedPermissionsPolicyBrowserTest.*
+-SavePackageWebBundleBrowserTest.OnePageSimple
+-SavePageAsWebBundleBrowserTest.GenerateOnePageSimpleWebBundle
+-WebBundleFileBrowserTest/WebBundleFileBrowserTest.*
+-WebBundleNetworkBrowserTest.*
+-WebBundleTrustableFileBrowserTest/WebBundleTrustableFileBrowserTest.*
+-WebIdBrowserTest.AbsoluteURLs
+-WebIdBrowserTest.FastLoginFlow
+-WebIdBrowserTest.FullLoginFlow
+-WebIdBrowserTest.TokenExchangePermissionDeclined
 
 # crbug.com/1212491: WebSQL is being deprecated, these are low priority
 -BackForwardCacheBrowserTest.DoesNotCacheIfWebDatabase
