@@ -8,42 +8,14 @@ import {assert} from './assert.js';
  * Size of Rectangle.
  */
 export class Size {
-  /**
-   * @param {number} width
-   * @param {number} height
-   */
-  constructor(width, height) {
-    /**
-     * @type {number}
-     */
-    this.width = width;
-
-    /**
-     * @type {number}
-     */
-    this.height = height;
-  }
+  constructor(readonly width: number, readonly height: number) {}
 }
 
 /**
  * 2D point.
  */
 export class Point {
-  /**
-   * @param {number} x
-   * @param {number} y
-   */
-  constructor(x, y) {
-    /**
-     * @const {number}
-     */
-    this.x = x;
-
-    /**
-     * @const {number}
-     */
-    this.y = y;
-  }
+  constructor(readonly x: number, readonly y: number) {}
 }
 
 const ORIGIN = new Point(0, 0);
@@ -52,86 +24,51 @@ const ORIGIN = new Point(0, 0);
  * 2D vector.
  */
 export class Vector {
-  /**
-   * @param {number} x
-   * @param {number} y
-   */
-  constructor(x, y) {
-    /**
-     * @const {number}
-     */
-    this.x = x;
+  constructor(readonly x: number, readonly y: number) {}
 
-    /**
-     * @const {number}
-     */
-    this.y = y;
-  }
-
-  /**
-   * @return {number}
-   */
-  length() {
+  length(): number {
     return Math.hypot(this.x, this.y);
   }
 
   /**
    * Square distance.
-   * @return {number}
    */
-  length2() {
+  length2(): number {
     return this.x * this.x + this.y * this.y;
   }
 
-  /**
-   * @param {!Vector} v
-   * @return {!Vector}
-   */
-  add(v) {
+  add(v: Vector): Vector {
     return new Vector(this.x + v.x, this.y + v.y);
   }
 
-  /**
-   * @param {!Vector} v
-   * @return {!Vector}
-   */
-  minus(v) {
+  minus(v: Vector): Vector {
     return new Vector(this.x - v.x, this.y - v.y);
   }
 
   /**
    * Dot product.
-   * @param {!Vector} v
-   * @return {number}
    */
-  dot(v) {
+  dot(v: Vector): number {
     return this.x * v.x + this.y * v.y;
   }
 
   /**
    * Cross product.
-   * @param {!Vector} v
-   * @return {number}
    */
-  cross(v) {
+  cross(v: Vector): number {
     return this.x * v.y - this.y * v.x;
   }
 
-  /**
-   * @param {number} n
-   * @return {!Vector}
-   */
-  multiply(n) {
+  multiply(n: number): Vector {
     return new Vector(this.x * n, this.y * n);
   }
 
   /**
-   * @param {!Vector} v
-   * @return {number} Angle required to rotate from this vector to |v|.
+   * @return Angle required to rotate from this vector to |v|.
    *     Positive/negative sign represent rotating in (counter-)clockwise
    *     direction.
    */
-  rotation(v) {
+  rotation(v: Vector): number {
     const cross = this.cross(v);
     const dot = this.dot(v);
     return Math.atan2(cross, dot);
@@ -139,51 +76,43 @@ export class Vector {
 
   /**
    * The rotation angle for setting |CSSRotate|.
-   * @return {number}
    */
-  cssRotateAngle() {
+  cssRotateAngle(): number {
     return ROTATE_START_AXIS.rotation(this);
   }
 
   /**
    * Unit direction vector.
-   * @return {!Vector}
    */
-  direction() {
+  direction(): Vector {
     const length = this.length();
     return new Vector(this.x / length, this.y / length);
   }
 
   /**
    * Unit normal vector n in direction that the |this| x |n| is positive.
-   * @return {!Vector}
    */
-  normal() {
+  normal(): Vector {
     const length = this.length();
     return new Vector(-this.y / length, this.x / length);
   }
 
   /**
-   * @return {!Vector} Returns the vector point to reverse direction.
+   * @return Returns the vector point to reverse direction.
    */
-  reverse() {
+  reverse(): Vector {
     return new Vector(-this.x, -this.y);
   }
 
-  /**
-   * @return {!Point}
-   */
-  point() {
+  point(): Point {
     return new Point(this.x, this.y);
   }
 }
 
 /**
- * @param {!Point} end
- * @param {!Point=} start
- * @return {!Vector} Vector points from |start| to |end|.
+ * @return Vector points from |start| to |end|.
  */
-export function vectorFromPoints(end, start) {
+export function vectorFromPoints(end: Point, start?: Point): Vector {
   start = start || ORIGIN;
   return new Vector(end.x - start.x, end.y - start.y);
 }
@@ -198,10 +127,9 @@ const ROTATE_START_AXIS = new Vector(1, 0);
  */
 export class PolarVector extends Vector {
   /**
-   * @param {number} angle Counter closewise angle start from (1, 0) in rad.
-   * @param {number} length
+   * @param angle Counter closewise angle start from (1, 0) in rad.
    */
-  constructor(angle, length) {
+  constructor(angle: number, length: number) {
     super(Math.cos(angle) * length, Math.sin(angle) * length);
   }
 }
@@ -210,29 +138,13 @@ export class PolarVector extends Vector {
  * Line formed by a point and a vector.
  */
 export class Line {
-  /**
-   * @param {!Point} point
-   * @param {!Vector} direction
-   */
-  constructor(point, direction) {
-    /**
-     * @const {!Point} point
-     */
-    this.point = point;
-
-    /**
-     * @const {!Vector} point
-     */
-    this.direction = direction;
-  }
+  constructor(readonly point: Point, readonly direction: Vector) {}
 
   /**
    * Move parallelly in |this.direction.normal()| direction with specified
    * distance.
-   * @param {number} distance
-   * @return {!Line}
    */
-  moveParallel(distance) {
+  moveParallel(distance: number): Line {
     const newPt = vectorFromPoints(this.point)
                       .add(this.direction.normal().multiply(distance))
                       .point();
@@ -240,10 +152,9 @@ export class Line {
   }
 
   /**
-   * @param {!Line} line
-   * @return {?Point} Intersection with another line.
+   * @return Intersection with another line.
    */
-  intersect(line) {
+  intersect(line: Line): Point|null {
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/geometry/float_polygon.cc;drc=977ef9c6935c51f8e4fdb1b0a81fdba23bf5563c;l=214
     const det = this.direction.cross(line.direction);
     if (det === 0) {
@@ -255,11 +166,10 @@ export class Line {
   }
 
   /**
-   * @param {!Point} pt
-   * @return {boolean} If the |pt| fall in the half plane in normal vector
+   * @return If the |pt| fall in the half plane in normal vector
    *     direction divided by this line.
    */
-  isInward(pt) {
+  isInward(pt: Point): boolean {
     const v = vectorFromPoints(pt, this.point);
     return this.direction.cross(v) >= 0;
   }
@@ -269,21 +179,9 @@ export class Line {
  * Bounding box position at origin.
  */
 export class Box {
-  /**
-   * @param {!Size} size
-   */
-  constructor(size) {
-    /**
-     * @const {!Size}
-     */
-    this.size = size;
-  }
+  constructor(readonly size: Size) {}
 
-  /**
-   * @param {!Point} pt
-   * @return {boolean}
-   */
-  inside(pt) {
+  inside(pt: Point): boolean {
     return 0 <= pt.x && pt.x <= this.size.width && 0 <= pt.y &&
         pt.y <= this.size.height;
   }
@@ -291,11 +189,11 @@ export class Box {
   /**
    * Calculates intersection with a ray formed by a start point(inside box) and
    * a pointing direction.
-   * @param {!Point} pt Start point of the ray.
-   * @param {!Vector} dir Direction of the ray.
-   * @return {!Point} The intersection point.
+   * @param pt Start point of the ray.
+   * @param dir Direction of the ray.
+   * @return The intersection point.
    */
-  rayIntersect(pt, dir) {
+  rayIntersect(pt: Point, dir: Vector): Point {
     assert(
         0 <= pt.x && pt.x <= this.size.width && 0 <= pt.y &&
         pt.y <= this.size.height);
@@ -326,12 +224,9 @@ export class Box {
 
   /**
    * Calculates intersection with segment.
-   * @param {!Point} pt
-   * @param {!Point} pt2
-   * @return {!Array<!Point>} Intersections with segment formed by |pt| and
-   *     |pt2|.
+   * @return Intersections with segment formed by |pt| and |pt2|.
    */
-  segmentIntersect(pt, pt2) {
+  segmentIntersect(pt: Point, pt2: Point): Point[] {
     /**
      * Intersection point of two line segments in 2 dimensions:
      * http://paulbourke.net/geometry/pointlineplane/
@@ -342,24 +237,25 @@ export class Box {
      * @return {?Point} Intersection of segment pt1, pt2 and segment pt3, pt4.
      *     Null for no intersection between two segment.
      */
-    const intersect = (pt1, pt2, pt3, pt4) => {
-      const uDenom =
-          (pt4.y - pt3.y) * (pt2.x - pt1.x) - (pt4.x - pt3.x) * (pt2.y - pt1.y);
-      if (uDenom === 0) {
-        return null;
-      }
-      const ua = ((pt4.x - pt3.x) * (pt1.y - pt3.y) -
-                  (pt4.y - pt3.y) * (pt1.x - pt3.x)) /
-          uDenom;
-      const ub = ((pt2.x - pt1.x) * (pt1.y - pt3.y) -
-                  (pt2.y - pt1.y) * (pt1.x - pt3.x)) /
-          uDenom;
-      if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
-        return new Point(
-            pt1.x + ua * (pt2.x - pt1.x), pt1.y + ua * (pt2.y - pt1.y));
-      }
-      return null;
-    };
+    const intersect =
+        (pt1: Point, pt2: Point, pt3: Point, pt4: Point): Point|null => {
+          const uDenom = (pt4.y - pt3.y) * (pt2.x - pt1.x) -
+              (pt4.x - pt3.x) * (pt2.y - pt1.y);
+          if (uDenom === 0) {
+            return null;
+          }
+          const ua = ((pt4.x - pt3.x) * (pt1.y - pt3.y) -
+                      (pt4.y - pt3.y) * (pt1.x - pt3.x)) /
+              uDenom;
+          const ub = ((pt2.x - pt1.x) * (pt1.y - pt3.y) -
+                      (pt2.y - pt1.y) * (pt1.x - pt3.x)) /
+              uDenom;
+          if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
+            return new Point(
+                pt1.x + ua * (pt2.x - pt1.x), pt1.y + ua * (pt2.y - pt1.y));
+          }
+          return null;
+        };
 
     const cornRD = new Point(this.size.width, this.size.height);
     const cornLD = new Point(0, this.size.height);
