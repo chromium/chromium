@@ -47,6 +47,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
       // A iterator in the vector of quads.
       QuadList::Iterator quad_iter;
+      // This is needed to sort candidates based on DrawQuad order.
+      size_t quad_index;
       OverlayCandidate candidate;
       raw_ptr<Strategy> strategy = nullptr;
 
@@ -251,6 +253,33 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       std::vector<gfx::Rect>* content_bounds,
       gfx::Rect* incoming_damage);
 
+  // Determines if we should attempt multiple overlays. This is based on
+  // `max_overlays_considered_`, the strategies proposed, and if any of the
+  // candidates require an overlay.
+  bool ShouldAttemptMultipleOverlays(
+      const Strategy::OverlayProposedCandidateList& sorted_candidates);
+
+  // Attempts to promote multiple candidates to overlays. Returns a boolean
+  // indicating if any of the attempted candidates were successfully promoted to
+  // overlays.
+  //
+  // TODO(khaslett): Write unit tests for this function before launching
+  // UseMultipleOverlays feature.
+  bool AttemptMultipleOverlays(
+      const Strategy::OverlayProposedCandidateList& sorted_candidates,
+      OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      AggregatedRenderPass* render_pass,
+      OverlayCandidateList& candidates);
+
+  // Assigns `plane_z_order`s to the proposed underlay candidates based on their
+  // DrawQuad orderings.
+  //
+  // TODO(khaslett): Write unit tests for this function before launching
+  // UseMultipleOverlays feature.
+  void AssignUnderlayZOrders(
+      std::vector<Strategy::OverlayProposedCandidateList::iterator>&
+          underlay_iters);
+
   // This function reorders and removes |proposed_candidates| based on a
   // heuristic designed to maximize the effectiveness of the limited number
   // of Hardware overlays. Effectiveness here is primarily about power and
@@ -287,6 +316,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
   static ProposedCandidateKey ToProposeKey(
       const Strategy::OverlayProposedCandidate& proposed);
+
+  const int max_overlays_considered_;
 
   std::unordered_map<ProposedCandidateKey,
                      OverlayCandidateTemporalTracker,

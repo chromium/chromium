@@ -52600,6 +52600,7 @@ from previous Chrome versions.
   <int value="151825088" label="MessagesForAndroidPermissionUpdate:enabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
+  <int value="156285060" label="UseMultipleOverlays:disabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
@@ -53749,6 +53750,7 @@ from previous Chrome versions.
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
+  <int value="1022504679" label="UseMultipleOverlays:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
   <int value="1023319882" label="HttpsOnlyMode:disabled"/>
   <int value="1023668536" label="PrintServerUi:enabled"/>

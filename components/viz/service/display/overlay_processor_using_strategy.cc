@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
 #include <algorithm>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -22,6 +25,7 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -102,7 +106,7 @@ gfx::RectF OverlayProcessorUsingStrategy::Strategy::GetPrimaryPlaneDisplayRect(
 }
 
 OverlayProcessorUsingStrategy::OverlayProcessorUsingStrategy()
-    : OverlayProcessorInterface() {}
+    : max_overlays_considered_(features::MaxOverlaysConsidered()) {}
 
 OverlayProcessorUsingStrategy::~OverlayProcessorUsingStrategy() = default;
 
@@ -484,6 +488,12 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
 
   SortProposedOverlayCandidatesPrioritized(&proposed_candidates);
 
+  if (ShouldAttemptMultipleOverlays(proposed_candidates)) {
+    auto* render_pass = render_pass_list->back().get();
+    return AttemptMultipleOverlays(proposed_candidates, primary_plane,
+                                   render_pass, *candidates);
+  }
+
   for (auto&& candidate : proposed_candidates) {
     // Underlays change the material so we save it here to record proper UMA.
     DrawQuad::Material quad_material =
@@ -561,6 +571,160 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
   }
   OnOverlaySwitchUMA(ProposedCandidateKey());
   return false;
+}
+
+bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
+    const Strategy::OverlayProposedCandidateList& sorted_candidates) {
+  if (max_overlays_considered_ <= 1) {
+    return false;
+  }
+
+  for (auto& proposed : sorted_candidates) {
+    // When candidates that require overlays fail, they get retried with
+    // different scale factors. This becomes complicated when using multiple
+    // overlays at once so we won't attempt multiple in that case.
+    if (proposed.candidate.requires_overlay) {
+      return false;
+    }
+    // Using multiple overlays only makes sense with SingleOnTop and Underlay
+    // strategies.
+    OverlayStrategy type = proposed.strategy->GetUMAEnum();
+    if (type != OverlayStrategy::kSingleOnTop &&
+        type != OverlayStrategy::kUnderlay) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
+    const Strategy::OverlayProposedCandidateList& sorted_candidates,
+    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    AggregatedRenderPass* render_pass,
+    OverlayCandidateList& candidates) {
+  int max_overlays_possible = std::min(
+      max_overlays_considered_, static_cast<int>(sorted_candidates.size()));
+
+  Strategy::OverlayProposedCandidateList test_candidates;
+  // Reserve max possible overlays so iterators remain stable while we insert
+  // candidates.
+  test_candidates.reserve(max_overlays_possible);
+  bool testing_underlay = false;
+  // We'll keep track of the underlays that we're testing so we can assign their
+  // `plane_z_order`s based on their order in the QuadList.
+  std::vector<Strategy::OverlayProposedCandidateList::iterator> underlay_iters;
+  // Used to prevent testing multiple candidates representing the same DrawQuad.
+  std::set<size_t> used_quad_indices;
+
+  for (auto& cand : sorted_candidates) {
+    // Skip candidates whose quads have already been added to the test list. A
+    // quad could have an on top and an underlay candidate.
+    bool inserted = used_quad_indices.insert(cand.quad_iter.index()).second;
+    if (!inserted) {
+      continue;
+    }
+    test_candidates.push_back(cand);
+
+    switch (cand.strategy->GetUMAEnum()) {
+      case OverlayStrategy::kSingleOnTop:
+        // Ordering of on top candidates doesn't matter (they can't overlap), so
+        // they can all have z = 1.
+        test_candidates.back().candidate.plane_z_order = 1;
+        break;
+      case OverlayStrategy::kUnderlay:
+        testing_underlay = true;
+        underlay_iters.push_back(test_candidates.end() - 1);
+        break;
+      default:
+        // Unsupported strategy type.
+        NOTREACHED();
+    }
+    if (test_candidates.size() == static_cast<size_t>(max_overlays_possible)) {
+      break;
+    }
+  }
+
+  // We don't sort the actual items in `test_candidates` here in order to
+  // maintain the power-gain sorted order.
+  AssignUnderlayZOrders(underlay_iters);
+
+  candidates.reserve(test_candidates.size());
+  for (auto& proposed_candidate : test_candidates) {
+    candidates.push_back(proposed_candidate.candidate);
+  }
+
+  if (!testing_underlay || !primary_plane) {
+    CheckOverlaySupport(primary_plane, &candidates);
+  } else {
+    Strategy::PrimaryPlane new_plane_candidate(*primary_plane);
+    new_plane_candidate.enable_blending = true;
+    // Check for support.
+    CheckOverlaySupport(&new_plane_candidate, &candidates);
+  }
+
+  bool underlay_used = false;
+  auto cand_it = candidates.begin();
+  auto test_it = test_candidates.begin();
+  while (cand_it != candidates.end()) {
+    // Update the test candidates so we can use EraseIf below.
+    test_it->candidate.overlay_handled = cand_it->overlay_handled;
+    if (cand_it->overlay_handled && cand_it->plane_z_order < 0) {
+      underlay_used = true;
+    }
+    cand_it++;
+    test_it++;
+  }
+  // Remove failed candidates
+  base::EraseIf(candidates, [](auto& cand) { return !cand.overlay_handled; });
+  base::EraseIf(test_candidates, [](auto& proposed) -> bool {
+    return !proposed.candidate.overlay_handled;
+  });
+
+  if (candidates.empty()) {
+    return false;
+  }
+
+  if (underlay_used && primary_plane) {
+    // Using underlays means the primary plane needs blending enabled.
+    primary_plane->enable_blending = true;
+  }
+
+  // Sort test candidates in reverse order so we can commit them from back to
+  // front. This makes sure none of the quad iterators are invalidated when some
+  // are removed from the QuadList as they're committed.
+  //
+  // TODO(khaslett): Remove this hacky workaround. Instead of erasing quads we
+  // could probably replace them with solid colour quads or make them invisible
+  // instead.
+  std::sort(test_candidates.begin(), test_candidates.end(),
+            [](const Strategy::OverlayProposedCandidate& c1,
+               const Strategy::OverlayProposedCandidate& c2) -> bool {
+              return c1.quad_iter.index() > c2.quad_iter.index();
+            });
+  // Commit successful candidates.
+  for (auto& test_candidate : test_candidates) {
+    test_candidate.strategy->CommitCandidate(test_candidate, render_pass);
+  }
+
+  return true;
+}
+
+void OverlayProcessorUsingStrategy::AssignUnderlayZOrders(
+    std::vector<Strategy::OverlayProposedCandidateList::iterator>&
+        underlay_iters) {
+  // Sort the underlay iterators by DrawQuad order, frontmost first.
+  std::sort(
+      underlay_iters.begin(), underlay_iters.end(),
+      [](const Strategy::OverlayProposedCandidateList::iterator& c1,
+         const Strategy::OverlayProposedCandidateList::iterator& c2) -> bool {
+        return c1->quad_iter.index() < c2->quad_iter.index();
+      });
+  // Assign underlay candidate plane_z_orders based on DrawQuad order.
+  int underlay_z_order = -1;
+  for (auto& it : underlay_iters) {
+    it->candidate.plane_z_order = underlay_z_order--;
+  }
 }
 
 gfx::Rect OverlayProcessorUsingStrategy::GetOverlayDamageRectForOutputSurface(

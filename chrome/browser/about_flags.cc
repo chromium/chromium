@@ -2637,6 +2637,26 @@ const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
      nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam kMaxOverlays1 = {features::kMaxOverlaysParam,
+                                                  "1"};
+const FeatureEntry::FeatureParam kMaxOverlays2 = {features::kMaxOverlaysParam,
+                                                  "2"};
+const FeatureEntry::FeatureParam kMaxOverlays3 = {features::kMaxOverlaysParam,
+                                                  "3"};
+const FeatureEntry::FeatureParam kMaxOverlays4 = {features::kMaxOverlaysParam,
+                                                  "4"};
+const FeatureEntry::FeatureParam kMaxOverlays5 = {features::kMaxOverlaysParam,
+                                                  "5"};
+const FeatureEntry::FeatureParam kMaxOverlays6 = {features::kMaxOverlaysParam,
+                                                  "6"};
+
+const FeatureEntry::FeatureVariation kUseMultipleOverlaysVariations[] = {
+    {"1", &kMaxOverlays1, 1, nullptr}, {"2", &kMaxOverlays2, 1, nullptr},
+    {"3", &kMaxOverlays3, 1, nullptr}, {"4", &kMaxOverlays4, 1, nullptr},
+    {"5", &kMaxOverlays5, 1, nullptr}, {"6", &kMaxOverlays6, 1, nullptr}};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7688,6 +7708,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImproveAccessibilityTreeUsingLocalMLDescription,
      kOsLinux | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kImproveAccessibilityTreeUsingLocalML)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"use-multiple-overlays", flag_descriptions::kUseMultipleOverlaysName,
+     flag_descriptions::kUseMultipleOverlaysDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kUseMultipleOverlays,
+                                    kUseMultipleOverlaysVariations,
+                                    "UseMultipleOverlays")},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

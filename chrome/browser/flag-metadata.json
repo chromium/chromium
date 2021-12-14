@@ -5523,6 +5523,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-multiple-overlays",
+    "owners": [ "khaslett", "//components/viz/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
     "expiry_milestone": 100

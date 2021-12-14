@@ -5148,6 +5148,11 @@ const char kUseFakeDeviceForMediaStreamDescription[] =
     "timestamp) instead of the system audio/video devices, for debugging "
     "purposes.";
 
+const char kUseMultipleOverlaysName[] = "Use Multiple Overlays";
+const char kUseMultipleOverlaysDescription[] =
+    "Specifies the maximum number of quads that Chrome will attempt to promote"
+    " to overlays.";
+
 const char kUiDevToolsName[] = "Enable native UI inspection";
 const char kUiDevToolsDescription[] =
     "Enables inspection of native UI elements. For local inspection use "

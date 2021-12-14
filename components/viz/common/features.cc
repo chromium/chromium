@@ -48,6 +48,10 @@ const base::Feature kEnableOverlayPrioritization {
 #endif
 };
 
+const base::Feature kUseMultipleOverlays{"UseMultipleOverlays",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const char kMaxOverlaysParam[] = "max_overlays";
+
 const base::Feature kDelegatedCompositing{"DelegatedCompositing",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -356,6 +360,19 @@ absl::optional<double> IsDynamicSchedulerEnabledForClients() {
   if (result < 0.0)
     return absl::nullopt;
   return result;
+}
+
+int MaxOverlaysConsidered() {
+  if (!IsOverlayPrioritizationEnabled()) {
+    return 1;
+  }
+
+  if (!base::FeatureList::IsEnabled(kUseMultipleOverlays)) {
+    return 1;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsInt(kUseMultipleOverlays,
+                                                kMaxOverlaysParam, 2);
 }
 
 }  // namespace features

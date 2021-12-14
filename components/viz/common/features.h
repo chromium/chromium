@@ -25,6 +25,8 @@ VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
 VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
 VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
+VIZ_COMMON_EXPORT extern const base::Feature kUseMultipleOverlays;
+VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
@@ -93,6 +95,7 @@ VIZ_COMMON_EXPORT bool UseRealVideoColorSpaceForDisplay();
 VIZ_COMMON_EXPORT bool IsSurfaceSyncThrottling();
 VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForDraw();
 VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForClients();
+VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 
 }  // namespace features
 

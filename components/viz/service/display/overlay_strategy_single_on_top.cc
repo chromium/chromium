@@ -92,8 +92,6 @@ void OverlayStrategySingleOnTop::ProposePrioritized(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
   // Build a list of candidates with the associated quad.
-  OverlayCandidate best_candidate;
-  auto best_quad_it = quad_list->end();
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     if (OverlayCandidate::FromDrawQuad(
