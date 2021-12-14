@@ -1091,7 +1091,7 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
       // Since we do not serialize location data we can ignore changes to this.
       break;
     default:
-      AXObjectModified(ax_object, false);
+      MarkAXObjectDirty(ax_object);
       RefreshFrontendNodes();
       break;
   }
@@ -1124,6 +1124,7 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
   } else {
     MarkAXObjectDirty(ax_object);
   }
+  RefreshFrontendNodes();
 }
 
 void InspectorAccessibilityAgent::EnableAndReset() {
