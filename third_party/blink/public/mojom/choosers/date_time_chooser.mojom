@@ -33,4 +33,7 @@ interface DateTimeChooser {
   // returned to replace a date/time input field.
   OpenDateTimeDialog(DateTimeDialogValue value) =>
       (bool success, double dialog_value);
+
+  // Dismiss the date/time dialog.
+  CloseDateTimeDialog();
 };

@@ -19,24 +19,27 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @JNINamespace("content")
 class DateTimeChooserAndroid {
-
-    private final long mNativeDateTimeChooserAndroid;
+    private long mNativeDateTimeChooserAndroid;
     private final InputDialogContainer mInputDialogContainer;
 
-    private DateTimeChooserAndroid(Context context,
-            long nativeDateTimeChooserAndroid) {
+    private DateTimeChooserAndroid(Context context, long nativeDateTimeChooserAndroid) {
         mNativeDateTimeChooserAndroid = nativeDateTimeChooserAndroid;
-        mInputDialogContainer = new InputDialogContainer(context,
-                new InputDialogContainer.InputActionDelegate() {
-
+        mInputDialogContainer =
+                new InputDialogContainer(context, new InputDialogContainer.InputActionDelegate() {
                     @Override
                     public void replaceDateTime(double value) {
+                        if (mNativeDateTimeChooserAndroid == 0) {
+                            return;
+                        }
                         DateTimeChooserAndroidJni.get().replaceDateTime(
                                 mNativeDateTimeChooserAndroid, DateTimeChooserAndroid.this, value);
                     }
 
                     @Override
                     public void cancelDateTimeDialog() {
+                        if (mNativeDateTimeChooserAndroid == 0) {
+                            return;
+                        }
                         DateTimeChooserAndroidJni.get().cancelDialog(
                                 mNativeDateTimeChooserAndroid, DateTimeChooserAndroid.this);
                     }
@@ -47,6 +50,12 @@ class DateTimeChooserAndroid {
                             double min, double max, double step,
                             DateTimeSuggestion[] suggestions) {
         mInputDialogContainer.showDialog(dialogType, dialogValue, min, max, step, suggestions);
+    }
+
+    @CalledByNative
+    private void dismissAndDestroy() {
+        mNativeDateTimeChooserAndroid = 0;
+        mInputDialogContainer.dismissDialog();
     }
 
     @CalledByNative

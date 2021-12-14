@@ -48,6 +48,7 @@ DateTimeChooserAndroid::DateTimeChooserAndroid(WebContents* web_contents)
       date_time_chooser_receiver_(this) {}
 
 DateTimeChooserAndroid::~DateTimeChooserAndroid() {
+  DismissAndDestroyJavaObject();
 }
 
 void DateTimeChooserAndroid::OnDateTimeChooserReceiver(
@@ -97,6 +98,18 @@ void DateTimeChooserAndroid::OpenDateTimeDialog(
   }
   if (j_date_time_chooser_.is_null())
     std::move(open_date_time_response_callback_).Run(true, value->dialog_value);
+}
+
+void DateTimeChooserAndroid::CloseDateTimeDialog() {
+  DismissAndDestroyJavaObject();
+}
+
+void DateTimeChooserAndroid::DismissAndDestroyJavaObject() {
+  if (j_date_time_chooser_) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_DateTimeChooserAndroid_dismissAndDestroy(env, j_date_time_chooser_);
+    j_date_time_chooser_.Reset();
+  }
 }
 
 void DateTimeChooserAndroid::ReplaceDateTime(JNIEnv* env,
