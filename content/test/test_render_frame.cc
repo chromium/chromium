@@ -242,7 +242,7 @@ TestRenderFrame::TestRenderFrame(RenderFrameImpl::CreateParams params)
       static_cast<MockRenderThread*>(RenderThread::Get());
   mock_frame_host_->SetInitialBrowserInterfaceBrokerReceiver(
       mock_render_thread->TakeInitialBrowserInterfaceBrokerReceiverForFrame(
-          params.routing_id));
+          GetRoutingID()));
 }
 
 TestRenderFrame::~TestRenderFrame() {}
