@@ -974,12 +974,7 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   // as a default match (and that's a non-tail suggestion).
   // 1) above.
   if (default_tail != matches->end() && default_non_tail == matches->end()) {
-    // TODO(thakis): Remove this branch once CFI builds use C++17.
-#if __cplusplus >= 201703L
     base::EraseIf(*matches, std::not_fn(is_tail));
-#else
-    base::EraseIf(*matches, std::not1(is_tail));
-#endif
     return;
   }
   // 2) above.
