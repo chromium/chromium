@@ -4,15 +4,13 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
-#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -201,7 +199,7 @@ class ReportQueryView : public views::Button {
     dogfood_icon->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(kDogfoodIconBorderDip)));
     dogfood_icon->SetImage(gfx::CreateVectorIcon(
-        kDogfoodIcon, kDogfoodIconSizeDip, gfx::kGoogleBlue600));
+        vector_icons::kDogfoodIcon, kDogfoodIconSizeDip, gfx::kGoogleBlue600));
 
     auto* description_label = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
@@ -441,8 +439,8 @@ void QuickAnswersView::AddSettingsButton() {
           base::Unretained(controller_))));
   settings_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(kUnifiedMenuSettingsIcon, kSettingsButtonSizeDip,
-                            kSettingsButtonColor));
+      gfx::CreateVectorIcon(vector_icons::kSettingsOutlineIcon,
+                            kSettingsButtonSizeDip, kSettingsButtonColor));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
   settings_button_->SetBorder(
@@ -470,7 +468,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
                               base::Unretained(this), phonetics_audio)));
   phonetics_audio_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(kSystemMenuVolumeHighIcon,
+      gfx::CreateVectorIcon(vector_icons::kVolumeUpIcon,
                             kPhoneticsAudioButtonSizeDip,
                             kPhoneticsAudioButtonColor));
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
@@ -484,8 +482,9 @@ void QuickAnswersView::AddGoogleIcon() {
   auto* google_icon =
       main_view_->AddChildView(std::make_unique<views::ImageView>());
   google_icon->SetBorder(views::CreateEmptyBorder(kGoogleIconInsets));
-  google_icon->SetImage(gfx::CreateVectorIcon(
-      kGoogleColorIcon, kGoogleIconSizeDip, gfx::kPlaceholderColor));
+  google_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
+                                              kGoogleIconSizeDip,
+                                              gfx::kPlaceholderColor));
 }
 
 void QuickAnswersView::ResetContentView() {

@@ -182,6 +182,7 @@ source_set("app_list") {
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_update",
     "//components/sync",
+    "//components/vector_icons",
     "//extensions/common:common_constants",
     "//mojo/public/cpp/bindings",
     "//skia",

@@ -34,6 +34,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -284,8 +285,9 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
 TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kGoogleColorIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon =
+      gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon, kSearchBoxIconSize,
+                            kDefaultSearchboxColor);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 

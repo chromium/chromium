@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 
-#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -238,8 +236,9 @@ void UserConsentView::InitLayout() {
       main_view_->AddChildView(std::make_unique<views::ImageView>());
   google_icon->SetBorder(views::CreateEmptyBorder(
       (kLineHeightDip - kGoogleIconSizeDip) / 2, 0, 0, 0));
-  google_icon->SetImage(gfx::CreateVectorIcon(
-      kGoogleColorIcon, kGoogleIconSizeDip, gfx::kPlaceholderColor));
+  google_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
+                                              kGoogleIconSizeDip,
+                                              gfx::kPlaceholderColor));
 
   // Content.
   InitContent();

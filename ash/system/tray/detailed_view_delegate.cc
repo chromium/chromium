@@ -190,9 +190,9 @@ views::Button* DetailedViewDelegate::CreateInfoButton(
 views::Button* DetailedViewDelegate::CreateSettingsButton(
     views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
-  auto* button =
-      new IconButton(std::move(callback), IconButton::Type::kSmall,
-                     &kUnifiedMenuSettingsIcon, setting_accessible_name_id);
+  auto* button = new IconButton(std::move(callback), IconButton::Type::kSmall,
+                                &vector_icons::kSettingsOutlineIcon,
+                                setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;

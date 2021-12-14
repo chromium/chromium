@@ -34,6 +34,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -209,8 +210,9 @@ void SearchBoxView::UpdateModel(bool initiated_by_user) {
 void SearchBoxView::UpdateSearchIcon() {
   const bool search_engine_is_google =
       AppListModelProvider::Get()->search_model()->search_engine_is_google();
-  const gfx::VectorIcon& google_icon =
-      is_search_box_active() ? kGoogleColorIcon : kGoogleBlackIcon;
+  const gfx::VectorIcon& google_icon = is_search_box_active()
+                                           ? vector_icons::kGoogleColorIcon
+                                           : kGoogleBlackIcon;
   const gfx::VectorIcon& icon =
       search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(

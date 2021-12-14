@@ -18,7 +18,6 @@ aggregate_vector_icons("app_list_vector_icons") {
     "bookmark.icon",
     "equal.icon",
     "google_black.icon",
-    "google_color.icon",
     "history.icon",
     "mic_black.icon",
     "omnibox_generic.icon",
