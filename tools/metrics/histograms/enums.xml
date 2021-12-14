@@ -12076,6 +12076,13 @@ not CDM specific. See media/base/cdm_promise.h. -->
   <int value="4" label="Buffer"/>
 </enum>
 
+<enum name="ChromeOSCameraFaceAutoExposureFunctionStatus">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="NotEnabled"/>
+  <int value="2" label="Enabled"/>
+  <int value="3" label="ForceDisabled"/>
+</enum>
+
 <enum name="ChromeOSCameraFacing">
   <int value="0" label="Back"/>
   <int value="1" label="Front"/>

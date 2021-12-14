@@ -274,6 +274,27 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.FaceAutoExposure.FunctionStatus"
+    enum="ChromeOSCameraFaceAutoExposureFunctionStatus"
+    expires_after="2022-11-16">
+  <owner>mojahsu@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records face auto exposure function status of the Chrome OS device. The
+    metric is reported when the camera is detected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.FaceAutoExposure.MaxNumDetectedFaces"
+    units="faces" expires_after="2022-11-16">
+  <owner>mojahsu@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records max number of detected faces of the camera session in Chrome OS
+    camera service. The metric is reported when the camera is closed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.Facing" enum="ChromeOSCameraFacing"
     expires_after="2022-10-01">
   <owner>wtlee@chromium.org</owner>
