@@ -279,8 +279,7 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
              process_type == switches::kCloudPrintServiceProcess) {
     score = content::kMiscOomScore;
 #if BUILDFLAG(ENABLE_NACL)
-  } else if (process_type == switches::kNaClLoaderProcess ||
-             process_type == switches::kNaClLoaderNonSfiProcess) {
+  } else if (process_type == switches::kNaClLoaderProcess) {
     score = content::kPluginOomScore;
 #endif
   } else if (process_type == switches::kZygoteProcess || process_type.empty()) {

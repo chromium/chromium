@@ -187,21 +187,6 @@ class PPAPIPrivateNaClPNaClTest : public PPAPINaClPNaClTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
-// Test Non-SFI Mode, using PNaCl toolchain to produce nexes.
-class PPAPINaClPNaClNonSfiTest : public PPAPINaClTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  std::string BuildQuery(const std::string& base,
-                         const std::string& test_case) override;
-};
-
-class PPAPIPrivateNaClPNaClNonSfiTest : public PPAPINaClPNaClNonSfiTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-};
-
-
 class PPAPINaClTestDisallowedSockets : public PPAPITestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override;

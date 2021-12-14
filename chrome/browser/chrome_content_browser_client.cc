@@ -2405,7 +2405,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kEnableNaCl,
 #if BUILDFLAG(ENABLE_NACL)
       switches::kEnableNaClDebug,
-      switches::kEnableNaClNonSfiMode,
 #endif
       switches::kEnableNetBenchmarking,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2446,9 +2445,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #if BUILDFLAG(ENABLE_NACL)
     static const char* const kSwitchNames[] = {
         switches::kEnableNaClDebug,
-        switches::kEnableNaClNonSfiMode,
         switches::kForcePNaClSubzero,
-        switches::kNaClDangerousNoSandboxNonSfi,
     };
 
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
