@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ui/aura/window.h"
@@ -15,7 +16,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -61,11 +61,16 @@ class DesksTemplatesEventHandler : public ui::EventHandler {
 
 DesksTemplatesGridView::DesksTemplatesGridView() = default;
 
-DesksTemplatesGridView::~DesksTemplatesGridView() = default;
+DesksTemplatesGridView::~DesksTemplatesGridView() {
+  if (widget_window_) {
+    widget_window_->RemovePreTargetHandler(event_handler_.get());
+    widget_window_->RemoveObserver(this);
+  }
+}
 
 // static
-views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
-    aura::Window* root) {
+std::unique_ptr<views::Widget>
+DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
@@ -73,6 +78,7 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.accept_events = true;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // The parent should be a container that covers all the windows but is below
   // some other system UI features such as system tray and capture mode and also
   // below the system modal dialogs.
@@ -81,8 +87,7 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
   params.parent = root->GetChildById(kShellWindowId_ShelfBubbleContainer);
   params.name = "DesksTemplatesGridWidget";
 
-  views::UniqueWidgetPtr widget(
-      std::make_unique<views::Widget>(std::move(params)));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
 
   // Not opaque since we want to view the contents of the layer behind.
@@ -187,13 +192,15 @@ void DesksTemplatesGridView::AddedToWidget() {
   // this window.
   event_handler_ = std::make_unique<DesksTemplatesEventHandler>(this);
   widget_window_ = GetWidget()->GetNativeWindow();
+  widget_window_->AddObserver(this);
   widget_window_->AddPreTargetHandler(event_handler_.get());
 }
 
-void DesksTemplatesGridView::RemovedFromWidget() {
+void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(window, widget_window_);
   DCHECK(event_handler_);
-  DCHECK(widget_window_);
   widget_window_->RemovePreTargetHandler(event_handler_.get());
+  widget_window_->RemoveObserver(this);
   event_handler_.reset();
   widget_window_ = nullptr;
 }

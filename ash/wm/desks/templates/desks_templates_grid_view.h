@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
 class TableLayout;
-class UniqueWidgetPtr;
 }  // namespace views
 
 namespace ash {
@@ -23,7 +23,7 @@ class DeskTemplate;
 
 // A view that acts as the content view of the desks templates widget.
 // TODO(richui): Add details and ASCII.
-class DesksTemplatesGridView : public views::View {
+class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
  public:
   METADATA_HEADER(DesksTemplatesGridView);
 
@@ -36,7 +36,7 @@ class DesksTemplatesGridView : public views::View {
   // overview mode. This does not show the widget.
   // TODO(sammiequon): We might want this view to be part of the DesksWidget
   // depending on the animations.
-  static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
+  static std::unique_ptr<views::Widget> CreateDesksTemplatesGridWidget(
       aura::Window* root);
 
   const std::vector<DesksTemplatesItemView*>& grid_items() const {
@@ -54,7 +54,9 @@ class DesksTemplatesGridView : public views::View {
 
   // views::View:
   void AddedToWidget() override;
-  void RemovedFromWidget() override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   friend class DesksTemplatesEventHandler;

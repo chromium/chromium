@@ -257,12 +257,13 @@ ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
   return OverviewGridWindowFillMode::kNormal;
 }
 
-void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform) {
+void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
+                                                  bool animate_back) {
   // Shadow controller may be null on shutdown.
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
 
-  if (IsMinimized()) {
+  if (IsMinimized() || !animate_back) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
     SetTransform(window_, gfx::Transform());
