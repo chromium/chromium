@@ -668,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
       blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false,
-      /*request_pan_tilt_zoom_permission=*/false);
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*region_capture_capable=*/false);
 
   base::test::TestFuture<
       std::reference_wrapper<const blink::MediaStreamDevices>,
