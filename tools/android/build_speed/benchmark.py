@@ -413,6 +413,8 @@ def main():
         '--use-emulator',
         action='store_true',
         help='Use an emulator to include install/launch timing.')
+    parser.add_argument('--target',
+                        help='Specify this to override the default target.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -439,7 +441,10 @@ def main():
         devil_chromium.Initialize()
         gn_args += _EMULATOR_GN_ARGS
 
-    target = _TARGETS['bundle' if args.bundle else 'apk']
+    if args.target:
+        target = args.target
+    else:
+        target = _TARGETS['bundle' if args.bundle else 'apk']
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
                              args.repeat, args.no_server, args.use_emulator)
     server_str = f'{"not " if args.no_server else ""}using build server'
