@@ -6,14 +6,22 @@
 
 #include <chrome-color-management-server-protocol.h>
 #include <wayland-server-core.h>
+#include <cstdint>
+#include <memory>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "components/exo/surface.h"
+#include "components/exo/surface_observer.h"
+#include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wm_helper_chromeos.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/triangle_f.h"
 
 namespace exo {
@@ -22,6 +30,8 @@ namespace wayland {
 namespace {
 
 #define PARAM_TO_FLOAT(x) (x / 10000.f)
+
+constexpr auto kDefaultColorSpace = gfx::ColorSpace::CreateSRGB();
 
 constexpr auto kChromaticityMap =
     base::MakeFixedFlatMap<zcr_color_manager_v1_chromaticity_names,
@@ -64,7 +74,6 @@ class ColorManagerColorSpace {
  public:
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
       : color_space(color_space) {}
-
   virtual ~ColorManagerColorSpace() = default;
 
   const gfx::ColorSpace color_space;
@@ -96,6 +105,63 @@ class NameBasedColorSpace final : public ColorManagerColorSpace {
     zcr_color_space_v1_send_names(color_space_resource, eotf, chromaticity,
                                   whitepoint);
   }
+};
+
+// Wrap a surface pointer and handle relevant events.
+// TODO(b/207031122): This class should also watch for display color space
+// changes and update clients.
+class ColorManagerSurface final : public SurfaceObserver {
+ public:
+  explicit ColorManagerSurface(Server* server,
+                               wl_resource* color_manager_surface_resource,
+                               Surface* surface)
+      : server_(server),
+        color_manager_surface_resource_(color_manager_surface_resource),
+        scoped_surface_(std::make_unique<ScopedSurface>(surface, this)) {}
+  ColorManagerSurface(ColorManagerSurface&) = delete;
+  ColorManagerSurface(ColorManagerSurface&&) = delete;
+  ~ColorManagerSurface() override = default;
+
+  // Safely set the color space (doing nothing if the surface was destroyed).
+  void SetColorSpace(gfx::ColorSpace color_space) {
+    Surface* surface = scoped_surface_->get();
+    if (!surface)
+      return;
+
+    surface->SetColorSpace(color_space);
+  }
+
+ private:
+  // SurfaceObserver:
+  void OnDisplayChanged(Surface* surface,
+                        int64_t old_display,
+                        int64_t new_display) override {
+    wl_client* client = wl_resource_get_client(color_manager_surface_resource_);
+    wl_resource* display_resource =
+        server_->GetOutputResource(client, new_display);
+
+    if (!display_resource)
+      return;
+
+    const auto* wm_helper = WMHelperChromeOS::GetInstance();
+    const auto& old_display_info = wm_helper->GetDisplayInfo(old_display);
+    const auto& new_display_info = wm_helper->GetDisplayInfo(new_display);
+
+    if (old_display_info.display_color_spaces() ==
+        new_display_info.display_color_spaces())
+      return;
+
+    zcr_color_management_surface_v1_send_preferred_color_space(
+        color_manager_surface_resource_, display_resource);
+  }
+
+  void OnSurfaceDestroying(Surface* surface) override {
+    scoped_surface_.reset();
+  }
+
+  Server* server_;
+  wl_resource* color_manager_surface_resource_;
+  std::unique_ptr<ScopedSurface> scoped_surface_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -157,21 +223,31 @@ void color_management_surface_set_extended_dynamic_range(
     uint32_t value) {
   NOTIMPLEMENTED();
 }
+
 void color_management_surface_set_color_space(
     struct wl_client* client,
     struct wl_resource* color_management_surface_resource,
-    struct wl_resource* color_space,
+    struct wl_resource* color_space_resource,
     uint32_t render_intent) {
-  NOTIMPLEMENTED();
+  auto* color_manager_color_space =
+      GetUserDataAs<ColorManagerColorSpace>(color_space_resource);
+  GetUserDataAs<ColorManagerSurface>(color_management_surface_resource)
+      ->SetColorSpace(color_manager_color_space->color_space);
 }
+
 void color_management_surface_set_default_color_space(
     struct wl_client* client,
     struct wl_resource* color_management_surface_resource) {
-  NOTIMPLEMENTED();
+  GetUserDataAs<ColorManagerSurface>(color_management_surface_resource)
+      ->SetColorSpace(kDefaultColorSpace);
 }
+
 void color_management_surface_destroy(
     struct wl_client* client,
     struct wl_resource* color_management_surface_resource) {
+  GetUserDataAs<ColorManagerSurface>(color_management_surface_resource)
+      ->SetColorSpace(kDefaultColorSpace);
+
   wl_resource_destroy(color_management_surface_resource);
 }
 
@@ -348,13 +424,16 @@ void color_manager_get_color_management_surface(
     struct wl_client* client,
     struct wl_resource* color_manager_resource,
     uint32_t id,
-    struct wl_resource* surface) {
+    struct wl_resource* surface_resource) {
   wl_resource* color_management_surface_resource = wl_resource_create(
       client, &zcr_color_management_surface_v1_interface, 1, id);
 
-  wl_resource_set_implementation(color_management_surface_resource,
-                                 &color_management_surface_v1_implementation,
-                                 /*data=*/nullptr, /*destroy=*/nullptr);
+  SetImplementation(color_management_surface_resource,
+                    &color_management_surface_v1_implementation,
+                    std::make_unique<ColorManagerSurface>(
+                        GetUserDataAs<Server>(color_manager_resource),
+                        color_management_surface_resource,
+                        GetUserDataAs<Surface>(surface_resource)));
 }
 
 void color_manager_destroy(struct wl_client* client,

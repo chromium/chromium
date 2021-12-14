@@ -47,6 +47,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -798,6 +799,11 @@ bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
     if (!sub_surface->UpdateDisplay(old_display, new_display))
       return false;
   }
+
+  for (auto& observer : observers_) {
+    observer.OnDisplayChanged(this, old_display, new_display);
+  }
+
   return true;
 }
 
@@ -1193,15 +1199,10 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
             std::move(state_.per_commit_explicit_release_callback_))) {
       current_resource_has_alpha_ =
           FormatHasAlpha(state_.buffer.buffer()->GetFormat());
-      // Planar buffers are sampled as RGB. Technically, the driver is supposed
-      // to preserve the colorspace, so we could still pass the primaries and
-      // transfer function.  However, we don't actually pass the colorspace
-      // to the driver, and it's unclear what drivers would actually do if we
-      // did. So in effect, the colorspace is undefined.
-      if (NumberOfPlanesForLinearBufferFormat(
-              state_.buffer.buffer()->GetFormat()) > 1) {
+      // Setting colors for YUV buffers has been problematic in the past. See
+      // crrev.com/c/2331769
+      if (state_.buffer.buffer()->GetFormat() != gfx::BufferFormat::YVU_420)
         current_resource_.color_space = state_.basic_state.color_space;
-      }
     } else {
       current_resource_.id = viz::kInvalidResourceId;
       // Use the buffer's size, so the AppendContentsToFrame() will append
