@@ -29,6 +29,14 @@ gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
                              gfx::ColorSpace::TransferID::GAMMA24);
     case PredefinedColorSpace::kP3:
       return gfx::ColorSpace::CreateDisplayP3D65();
+    case PredefinedColorSpace::kRec2100HLG:
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                             gfx::ColorSpace::TransferID::ARIB_STD_B67);
+    case PredefinedColorSpace::kRec2100PQ:
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                             gfx::ColorSpace::TransferID::SMPTEST2084);
+    case PredefinedColorSpace::kSRGBLinear:
+      return gfx::ColorSpace::CreateSCRGBLinear();
   }
   NOTREACHED();
 }
@@ -46,9 +54,9 @@ PredefinedColorSpace PredefinedColorSpaceFromSkColorSpace(
   // |sk_color_space| does not exactly match one of the named color spaces. It
   // should find the best named match.
   PredefinedColorSpace color_spaces[] = {
-      PredefinedColorSpace::kSRGB,
-      PredefinedColorSpace::kRec2020,
-      PredefinedColorSpace::kP3,
+      PredefinedColorSpace::kSRGB,      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,        PredefinedColorSpace::kRec2100HLG,
+      PredefinedColorSpace::kRec2100PQ, PredefinedColorSpace::kSRGBLinear,
   };
   for (const auto& color_space : color_spaces) {
     if (SkColorSpace::Equals(sk_color_space,

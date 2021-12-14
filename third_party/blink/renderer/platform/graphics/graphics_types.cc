@@ -239,6 +239,12 @@ String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
       return "rec2020";
     case PredefinedColorSpace::kP3:
       return "display-p3";
+    case PredefinedColorSpace::kRec2100HLG:
+      return "rec2100-hlg";
+    case PredefinedColorSpace::kRec2100PQ:
+      return "rec2100-pq";
+    case PredefinedColorSpace::kSRGBLinear:
+      return "srgb-linear";
   };
   NOTREACHED();
   return String();
@@ -255,6 +261,18 @@ bool ParsePredefinedColorSpace(const String& s, PredefinedColorSpace& format) {
   }
   if (s == "display-p3") {
     format = PredefinedColorSpace::kP3;
+    return true;
+  }
+  if (s == "rec2100-hlg") {
+    format = PredefinedColorSpace::kRec2100HLG;
+    return true;
+  }
+  if (s == "rec2100-pq") {
+    format = PredefinedColorSpace::kRec2100PQ;
+    return true;
+  }
+  if (s == "srgb-linear") {
+    format = PredefinedColorSpace::kSRGBLinear;
     return true;
   }
   return false;

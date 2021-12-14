@@ -47,6 +47,9 @@ enum class PredefinedColorSpace {
   kSRGB,
   kRec2020,
   kP3,
+  kRec2100HLG,
+  kRec2100PQ,
+  kSRGBLinear,
 };
 
 enum DataU8ColorType {
