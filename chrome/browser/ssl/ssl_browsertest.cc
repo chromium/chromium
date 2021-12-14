@@ -1991,7 +1991,10 @@ class SSLUITestWithClientCert : public SSLUITestBase {
 
 // Visit a HTTPS page which requires client cert authentication. The client
 // cert will be selected automatically, then a test which uses WebSocket runs.
-IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, TestWSSClientCert) {
+//
+// TODO(https://crbug.com/1279930): disabled because of race in when certs
+// are incorporated.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // Import a client cert for test.
   crypto::ScopedPK11Slot public_slot = cert_db_->GetPublicSlot();
   std::string pkcs12_data;
@@ -2213,7 +2216,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
   EXPECT_EQ("", tab->GetLastCommittedURL().ref());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
+// TODO(https://crbug.com/1279930): disabled because of race in when certs
+// are incorporated.
+IN_PROC_BROWSER_TEST_F(SSLUITest,
+                       DISABLED_TestCertDBChangedFlushesClientAuthCache) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->set_client_cert_store_factory_for_testing(
