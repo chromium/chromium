@@ -185,6 +185,8 @@
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -960,6 +962,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       chromeos::features::IsWallpaperWebUIEnabled()) {
     return &NewComponentUI<ash::PersonalizationAppUI,
                            ChromePersonalizationAppUiDelegate>;
+  }
+  if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
+      base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {
+    return &NewWebUI<ash::SystemExtensionsInternalsUI>;
   }
 
 #if !defined(OFFICIAL_BUILD)

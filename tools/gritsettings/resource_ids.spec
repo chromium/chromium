@@ -499,6 +499,10 @@
     "includes": [3220],
     "structures": [3240],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [3260],
+  },
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [3280],
   },

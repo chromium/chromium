@@ -2937,6 +2937,7 @@ static_library("ui") {
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
+      "//ash/webui/system_extensions_internals_ui",
       "//ash/webui/web_applications",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",

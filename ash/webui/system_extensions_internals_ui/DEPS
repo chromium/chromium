@@ -1,0 +1,5 @@
+include_rules = [
+  # Do not add chrome here. Use a delegate instead.
+  "+ash/grit/ash_system_extensions_internals_resources.h",
+  "+ui/webui",
+]
