@@ -177,8 +177,6 @@ class TestInputMethodManager : public MockInputMethodManager {
   mojo::Receiver<ime::mojom::InputEngineManager> receiver_;
 };
 
-// TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
-// hidden dependencies on globals such as ImeBridge.
 class NativeInputMethodEngineTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -700,8 +698,6 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   InputMethodManager::Shutdown();
 }
 
-// TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
-// hidden dependencies on globals such as ImeBridge.
 class NativeInputMethodEngineWithRenderViewHostTest
     : public content::RenderViewHostTestHarness {
   void SetUp() override {

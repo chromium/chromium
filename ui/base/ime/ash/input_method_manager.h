@@ -277,16 +277,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Gets the global instance of InputMethodManager. Initialize() must be called
   // first.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager* Get();
 
   // Sets the global instance. |instance| will be owned by the internal pointer
   // and deleted by Shutdown().
   // TODO(nona): Instanciate InputMethodManagerImpl inside of this function once
   //             crbug.com/164375 is fixed.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Initialize(
       InputMethodManager* instance);
 
   // Destroy the global instance.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Shutdown();
 
   // Adds an observer to receive notifications of input method related
