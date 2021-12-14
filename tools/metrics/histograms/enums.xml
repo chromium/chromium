@@ -45884,6 +45884,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="App state was UIApplicationStateBackground during XTE."/>
 </enum>
 
+<enum name="IOSColdStartType">
+  <int value="0" label="Cold start"/>
+  <int value="1" label="Cold start with FRE"/>
+  <int value="2" label="Cold start after device restore"/>
+  <int value="3" label="Cold start after Chrome upgrade"/>
+  <int value="4" label="Cold start after device restore and Chrome upgrade"/>
+  <int value="5" label="Cold start with unknown device restore"/>
+  <int value="6"
+      label="Cold start with unknown device restore and Chrome upgrade"/>
+</enum>
+
 <enum name="IOSContentSizeCategory">
   <int value="0" label="Unspecified"/>
   <int value="1" label="ExtraSmall"/>
@@ -45937,6 +45948,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Made for iOS"/>
   <int value="2" label="Stay Safe"/>
   <int value="3" label="All Tabs"/>
+</enum>
+
+<enum name="IOSDeviceRestoreSignedinState">
+  <int value="0" label="User not signed in before iOS device restore"/>
+  <int value="1"
+      label="User signed in before iOS device restore, and signed out after"/>
+  <int value="2" label="User signed in before and after iOS device restore"/>
 </enum>
 
 <enum name="IOSDeviceThermalState">
@@ -79925,7 +79943,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     User turned off sync from the Desktop Identity Consistency internals UI.
   </int>
   <int value="9" label="Account removed from device">
-    Signout forced because account was removed from device.
+    Signout forced because account was removed from device. With M98, on iOS,
+    this value is split with &quot;Signed out forced by iOS device
+    restore&quot;.
   </int>
   <int value="10" label="Signout forced on profile load">
     Signout forced when profile is loaded as browser sign-in is no longer
@@ -79945,6 +79965,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="Force Account ID migration">
     Signout was forced because account ID migration from email to Gaia ID was
     forced.
+  </int>
+  <int value="15" label="Signed out forced by iOS device restore">
+    Sign-out forced because the account was removed from the device after a
+    device restore. iOS only.
   </int>
 </enum>
 

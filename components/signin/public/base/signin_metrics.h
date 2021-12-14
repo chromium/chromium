@@ -15,6 +15,7 @@
 namespace signin_metrics {
 
 // Track all the ways a profile can become signed out as a histogram.
+// Enum SigninSignoutProfile.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
 // These values are persisted to logs. Entries should not be renumbered and
@@ -43,8 +44,7 @@ enum ProfileSignout : int {
   AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN = 7,
   // The user disables sync from the DICE UI.
   USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
-  // Android specific. Signout forced because the account was removed from the
-  // device.
+  // Signout forced because the account was removed from the device.
   ACCOUNT_REMOVED_FROM_DEVICE = 9,
   // Signin is no longer allowed when the profile is initialized.
   SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT = 10,
@@ -57,6 +57,9 @@ enum ProfileSignout : int {
   MOBILE_IDENTITY_CONSISTENCY_ROLLBACK = 13,
   // Sign-out when the account id migration to Gaia ID did not finish,
   ACCOUNT_ID_MIGRATION = 14,
+  // iOS Specific. Sign-out forced because the account was removed from the
+  // device after a device restore.
+  IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE = 15,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

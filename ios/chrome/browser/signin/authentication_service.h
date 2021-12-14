@@ -178,8 +178,11 @@ class AuthenticationService : public KeyedService,
   //
   // |should_prompt| indicates whether the user should be prompted with the
   // resign-in infobar if the method signs out.
+  // |device_restore| should be true only when called from |Initialize()| and
+  // Chrome is started after a device restore.
   void HandleForgottenIdentity(ChromeIdentity* invalid_identity,
-                               bool should_prompt);
+                               bool should_prompt,
+                               bool device_restore);
 
   // Checks if the authenticated identity was removed by calling
   // |HandleForgottenIdentity|. Reloads the OAuth2 token service accounts if the
