@@ -489,5 +489,5 @@ as required builders.
   * Experiment percentage: 1.0
 
 * [mac11-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac11-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""mac11-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac11-arm64-rel""))
-  * Experiment percentage: 100.0
+  * Experiment percentage: 50.0
 
