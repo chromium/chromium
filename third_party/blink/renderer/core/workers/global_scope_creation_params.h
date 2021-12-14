@@ -59,7 +59,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
       absl::optional<network::mojom::IPAddressSpace>,
-      const Vector<String>* origin_trial_tokens,
+      const Vector<OriginTrialFeature>* inherited_trial_features,
       const base::UnguessableToken& parent_devtools_token,
       std::unique_ptr<WorkerSettings>,
       mojom::blink::V8CacheOptions,
@@ -116,7 +116,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       response_content_security_policies;
 
   network::mojom::ReferrerPolicy referrer_policy;
-  std::unique_ptr<Vector<String>> origin_trial_tokens;
+
+  // Origin trial features to be inherited by worker/worklet from the document
+  // loading it.
+  std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features;
 
   // The SecurityOrigin of the Document creating a Worker/Worklet.
   //
@@ -136,9 +139,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   //
   // Worklets are defined to have a unique, opaque origin, so are not secure:
   // https://drafts.css-houdini.org/worklets/#script-settings-for-worklets
-  // Origin trials are only enabled in secure contexts, and the trial tokens are
-  // inherited from the document, so also consider the context of the document.
-  // The value should be supplied as the result of Document.IsSecureContext().
+  // Origin trials are only enabled in secure contexts so also consider the
+  // context of the document. The value should be supplied as the result of
+  // Document.IsSecureContext().
   bool starter_secure_context;
 
   HttpsState starter_https_state;

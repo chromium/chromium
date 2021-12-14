@@ -39,7 +39,7 @@ CreateAnimationAndPaintWorkletThread(
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),
           window->IsSecureContext(), window->GetHttpsState(), clients,
           nullptr /* content_settings_client */, window->AddressSpace(),
-          OriginTrialContext::GetTokens(window).get(),
+          OriginTrialContext::GetInheritedTrialFeatures(window).get(),
           base::UnguessableToken::Create(), nullptr /* worker_settings */,
           mojom::blink::V8CacheOptions::kDefault,
           MakeGarbageCollected<WorkletModuleResponsesMap>(),

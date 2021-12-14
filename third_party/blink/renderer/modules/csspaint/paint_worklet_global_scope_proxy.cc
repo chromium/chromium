@@ -52,7 +52,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       window->IsSecureContext(), window->GetHttpsState(),
       nullptr /* worker_clients */,
       frame_client->CreateWorkerContentSettingsClient(), window->AddressSpace(),
-      OriginTrialContext::GetTokens(window).get(),
+      OriginTrialContext::GetInheritedTrialFeatures(window).get(),
       base::UnguessableToken::Create(), nullptr /* worker_settings */,
       mojom::blink::V8CacheOptions::kDefault, module_responses_map,
       mojo::NullRemote() /* browser_interface_broker */,

@@ -393,7 +393,8 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
           MakeGarbageCollected<WorkerClients>(),
           nullptr /* content_settings_client */,
           network::mojom::IPAddressSpace::kLocal,
-          nullptr /* originTrialToken */, base::UnguessableToken::Create(),
+          nullptr /* inherited_trial_features */,
+          base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
           mojom::blink::V8CacheOptions::kDefault,
           nullptr /* worklet_module_responses_map */);

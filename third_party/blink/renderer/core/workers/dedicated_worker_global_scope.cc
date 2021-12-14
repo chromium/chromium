@@ -71,8 +71,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
-  std::unique_ptr<Vector<String>> outside_origin_trial_tokens =
-      std::move(creation_params->origin_trial_tokens);
+  std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features =
+      std::move(creation_params->inherited_trial_features);
   BeginFrameProviderParams begin_frame_provider_params =
       creation_params->begin_frame_provider_params;
 
@@ -90,7 +90,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       std::move(creation_params->response_content_security_policies);
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
-      std::move(outside_origin_trial_tokens), begin_frame_provider_params,
+      std::move(inherited_trial_features), begin_frame_provider_params,
       parent_cross_origin_isolated_capability, parent_direct_socket_capability,
       std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host));
@@ -130,7 +130,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
+    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_direct_socket_capability,
@@ -142,7 +142,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           ParseCreationParams(std::move(creation_params)),
           thread,
           time_origin,
-          std::move(outside_origin_trial_tokens),
+          std::move(inherited_trial_features),
           begin_frame_provider_params,
           parent_cross_origin_isolated_capability,
           parent_direct_socket_capability,
@@ -153,7 +153,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
+    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_direct_socket_capability,
@@ -187,8 +187,9 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
 
   // Dedicated workers don't need to pause after script fetch.
   ReadyToRunWorkerScript();
-  // Inherit the outside's origin trial tokens.
-  OriginTrialContext::AddTokens(this, outside_origin_trial_tokens.get());
+  // Inherit the outside's enabled origin trial features.
+  OriginTrialContext::ActivateWorkerInheritedFeatures(
+      this, inherited_trial_features.get());
 
   dedicated_worker_host_.Bind(std::move(dedicated_worker_host),
                               GetTaskRunner(TaskType::kInternalDefault));

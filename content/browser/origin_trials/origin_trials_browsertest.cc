@@ -142,6 +142,18 @@ IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
   EXPECT_FALSE(HasNavigationTrialEnabled(GetMainFrame()));
 }
 
+const char kCallWorkerScript[] =
+    "(() => {"
+    "  const worker = new Worker('/worker.js');"
+    "  const waitResult = new Promise((resolve, reject) => {"
+    "    worker.onmessage = function(e) {"
+    "      (e.data?resolve:reject)(`return ${e.data} from worker`);"
+    "    };"
+    "  });"
+    "  worker.postMessage('ping');"
+    "  return waitResult;"
+    "})()";
+
 class ForceEnabledOriginTrialsBrowserTest
     : public OriginTrialsBrowserTest,
       public testing::WithParamInterface<bool>,
@@ -186,6 +198,7 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   // OT are enabled per-frame. Subframes should not have OT.
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
+  EXPECT_FALSE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
 
   // With site isolation, the cross-site iframe on |main_url_| will get its own
   // process.  Otherwise, we'll only get one main frame process.
@@ -213,6 +226,9 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   // Cross-origin frame has no trial.
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
 
+  // Worker in same-origin frame (which loads notrial.html>worker.js) has trial.
+  EXPECT_TRUE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
+
   // When Iframe navigates away, it loses origin trial.
   const GURL url("https://other.test/notrial.html");
   TestNavigationObserver navigation_observer(url);
@@ -235,6 +251,7 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   EXPECT_FALSE(HasTrialEnabled(GetMainFrame()));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
+  EXPECT_FALSE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
 
   // Create an iframe with origin trial and wait for it to load
   TestNavigationObserver navigation_observer(frame_url);

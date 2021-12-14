@@ -215,6 +215,18 @@ void OriginTrialContext::AddTokens(ExecutionContext* context,
 }
 
 // static
+void OriginTrialContext::ActivateWorkerInheritedFeatures(
+    ExecutionContext* context,
+    const Vector<OriginTrialFeature>* features) {
+  if (!features || features->IsEmpty())
+    return;
+  DCHECK(context && context->GetOriginTrialContext());
+  DCHECK(context->IsDedicatedWorkerGlobalScope() ||
+         context->IsWorkletGlobalScope());
+  context->GetOriginTrialContext()->ActivateWorkerInheritedFeatures(*features);
+}
+
+// static
 void OriginTrialContext::ActivateNavigationFeaturesFromInitiator(
     ExecutionContext* context,
     const Vector<OriginTrialFeature>* features) {
@@ -247,12 +259,37 @@ std::unique_ptr<Vector<String>> OriginTrialContext::GetTokens(
 
 // static
 std::unique_ptr<Vector<OriginTrialFeature>>
+OriginTrialContext::GetInheritedTrialFeatures(
+    ExecutionContext* execution_context) {
+  DCHECK(execution_context);
+  const OriginTrialContext* context =
+      execution_context->GetOriginTrialContext();
+  return context ? context->GetInheritedTrialFeatures() : nullptr;
+}
+
+// static
+std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetEnabledNavigationFeatures(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
   const OriginTrialContext* context =
       execution_context->GetOriginTrialContext();
   return context ? context->GetEnabledNavigationFeatures() : nullptr;
+}
+
+std::unique_ptr<Vector<OriginTrialFeature>>
+OriginTrialContext::GetInheritedTrialFeatures() const {
+  if (enabled_features_.IsEmpty()) {
+    return nullptr;
+  }
+  std::unique_ptr<Vector<OriginTrialFeature>> result =
+      std::make_unique<Vector<OriginTrialFeature>>();
+  // TODO(crbug.com/1083407): Handle features from
+  // |navigation_activated_features_| and |feature_expiry_times_| expiry.
+  for (const OriginTrialFeature& feature : enabled_features_) {
+    result->push_back(feature);
+  }
+  return result;
 }
 
 std::unique_ptr<Vector<OriginTrialFeature>>
@@ -318,6 +355,14 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
     // valid. Otherwise, there was no change to the list of enabled features.
     InitializePendingFeatures();
   }
+}
+
+void OriginTrialContext::ActivateWorkerInheritedFeatures(
+    const Vector<OriginTrialFeature>& features) {
+  for (const OriginTrialFeature& feature : features) {
+    enabled_features_.insert(feature);
+  }
+  InitializePendingFeatures();
 }
 
 void OriginTrialContext::ActivateNavigationFeaturesFromInitiator(

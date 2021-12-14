@@ -216,7 +216,7 @@ ServiceWorkerGlobalScope* ServiceWorkerGlobalScope::Create(
     DCHECK(creation_params->outside_content_security_policies.IsEmpty());
     DCHECK_EQ(network::mojom::ReferrerPolicy::kDefault,
               creation_params->referrer_policy);
-    DCHECK(creation_params->origin_trial_tokens->IsEmpty());
+    DCHECK(creation_params->inherited_trial_features->IsEmpty());
   }
 #endif  // DCHECK_IS_ON()
 
@@ -2057,9 +2057,7 @@ void ServiceWorkerGlobalScope::DispatchPushEvent(
       base::Seconds(mojom::blink::kPushEventTimeoutSeconds));
 }
 
-void ServiceWorkerGlobalScope::StartPushEvent(
-    String payload,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartPushEvent(String payload, int event_id) {
   DCHECK(IsContextThread());
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchPushEvent",
@@ -2133,10 +2131,9 @@ void ServiceWorkerGlobalScope::DispatchSyncEvent(
       CreateAbortCallback(&sync_event_callbacks_), timeout);
 }
 
-void ServiceWorkerGlobalScope::StartSyncEvent(
-    String tag,
-    bool last_chance,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartSyncEvent(String tag,
+                                              bool last_chance,
+                                              int event_id) {
   DCHECK(IsContextThread());
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchSyncEvent",
@@ -2166,9 +2163,8 @@ void ServiceWorkerGlobalScope::DispatchPeriodicSyncEvent(
       CreateAbortCallback(&periodic_sync_event_callbacks_), timeout);
 }
 
-void ServiceWorkerGlobalScope::StartPeriodicSyncEvent(
-    String tag,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartPeriodicSyncEvent(String tag,
+                                                      int event_id) {
   DCHECK(IsContextThread());
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchPeriodicSyncEvent",
@@ -2423,9 +2419,8 @@ void ServiceWorkerGlobalScope::DispatchContentDeleteEvent(
       CreateAbortCallback(&content_delete_callbacks_), absl::nullopt);
 }
 
-void ServiceWorkerGlobalScope::StartContentDeleteEvent(
-    String id,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartContentDeleteEvent(String id,
+                                                       int event_id) {
   DCHECK(IsContextThread());
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchContentDeleteEvent",

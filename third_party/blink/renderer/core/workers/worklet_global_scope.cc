@@ -129,8 +129,8 @@ WorkletGlobalScope::WorkletGlobalScope(
       std::move(creation_params->outside_content_security_policies));
   BindContentSecurityPolicyToExecutionContext();
 
-  OriginTrialContext::AddTokens(this,
-                                creation_params->origin_trial_tokens.get());
+  OriginTrialContext::ActivateWorkerInheritedFeatures(
+      this, creation_params->inherited_trial_features.get());
 
   // WorkletGlobalScopes are not currently provided with UKM source IDs.
   DCHECK_EQ(creation_params->ukm_source_id, ukm::kInvalidSourceId);

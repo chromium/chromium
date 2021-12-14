@@ -480,7 +480,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->IsSecureContext(), execution_context->GetHttpsState(),
       MakeGarbageCollected<WorkerClients>(), CreateWebContentSettingsClient(),
       response_address_space,
-      OriginTrialContext::GetTokens(execution_context).get(),
+      OriginTrialContext::GetInheritedTrialFeatures(execution_context).get(),
       parent_devtools_token, std::move(settings),
       mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_responses_map */,
