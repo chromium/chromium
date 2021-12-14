@@ -69,6 +69,7 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       rsuCode_: {
         type: String,
         value: '',
+        observer: 'onRsuCodeChanged_',
       },
 
       /** @protected */
@@ -159,10 +160,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @private
    * @return {boolean}
-   * TODO(gavindodd): Add basic validation for the format of RSU code.
-   * Can this use cr-input autovalidate?
+   * @private
    */
   rsuCodeIsPlausible_() {
     return !!this.rsuCode_ && this.rsuCode_.length == 8;
