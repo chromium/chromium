@@ -358,8 +358,6 @@ pid_t NaClForkDelegate::Fork(const std::string& process_type,
   // First, send a remote fork request.
   base::Pickle write_pickle;
   write_pickle.WriteInt(nacl::kNaClForkRequest);
-  // TODO(b/200965779): nonsfi mode is no longer supported. Remove this value.
-  write_pickle.WriteBool(/*nonsfi=*/false);
   write_pickle.WriteString(channel_id);
 
   char reply_buf[kNaClMaxIPCMessageLength];
