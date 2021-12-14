@@ -130,6 +130,19 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
   EXPECT_NE(messages.find(kMessage1), messages.end());
 }
 
+TEST_F(NetworkSmsHandlerTest, SmsHandlerEmptyDbusObjectPath) {
+  // This test verifies no crash should occur when the device dbus object path
+  // is an empty value.
+  device_test_->SetDeviceProperty(kCellularDevicePath,
+                                  shill::kDBusObjectProperty, base::Value(""),
+                                  /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(test_observer_->message_count(), 0);
+}
+
 TEST_F(NetworkSmsHandlerTest, SmsHandlerDeviceObjectPathChange) {
   // Fake the SIM being switched to a different SIM.
   device_test_->SetDeviceProperty(
