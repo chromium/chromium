@@ -16,8 +16,10 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Initializes the instance.
-// |userEmail| is used as a proxy to determine if accounts have
-// been added to the device.
+// If |viewMode| is SigninPromoViewModeNoAccounts, then |userEmail|,
+// |userGivenName| and |userImage| have to be nil.
+// Otherwise |userEmail| and |userImage| can't be nil. |userImage| has to be to
+// the size of IdentityAvatarSize::SmallSize.
 - (instancetype)initWithSigninPromoViewMode:(SigninPromoViewMode)viewMode
                                   userEmail:(NSString*)userEmail
                               userGivenName:(NSString*)userGivenName

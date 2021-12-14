@@ -27,6 +27,8 @@ source_set("cells") {
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/signin:constants",
+    "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/collection_view/cells",
