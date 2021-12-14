@@ -4048,9 +4048,6 @@
           '--flag-specific=webgpu-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--time-out-ms=30000',
-          # TODO(crbug.com/1274975): Remove this once loading on newer NVIDIA
-          # GPUs is fixed.
-          '--additional-driver-flag=--disable-gpu-sandbox',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -4083,9 +4080,6 @@
           # crbug.com/953991 Ensure WebGPU is ready before running tests
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu',
-          # TODO(crbug.com/1274975): Remove this once loading on newer NVIDIA
-          # GPUs is fixed.
-          '--additional-driver-flag=--disable-gpu-sandbox',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -4122,9 +4116,6 @@
           '--flag-specific=webgpu-with-partial-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--time-out-ms=30000',
-          # TODO(crbug.com/1274975): Remove this once loading on newer NVIDIA
-          # GPUs is fixed.
-          '--additional-driver-flag=--disable-gpu-sandbox',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [

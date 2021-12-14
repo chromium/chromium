@@ -194,7 +194,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -228,7 +227,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -450,7 +448,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -484,7 +481,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -706,7 +702,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -740,7 +735,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -962,7 +956,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -996,7 +989,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -1235,7 +1227,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1271,7 +1262,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1494,7 +1484,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1528,7 +1517,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1839,7 +1827,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1875,7 +1862,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2098,7 +2084,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2132,7 +2117,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2352,7 +2336,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64",
           "--time-out-ms=48000"
         ],
@@ -2575,7 +2558,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2608,7 +2590,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2823,7 +2804,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2856,7 +2836,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3071,7 +3050,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3104,7 +3082,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3319,7 +3296,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3352,7 +3328,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3568,8 +3543,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3600,8 +3574,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3814,8 +3787,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3846,8 +3818,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4060,8 +4031,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4092,8 +4062,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4306,8 +4275,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4338,8 +4306,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
