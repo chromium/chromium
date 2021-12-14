@@ -46,6 +46,11 @@ class DeviceConversionUtilTest : public testing::Test {
     return mock_device_.get();
   }
 
+  void ChangeDeviceConnected(bool connected) {
+    ON_CALL(*mock_device_, IsConnected())
+        .WillByDefault(testing::Return(connected));
+  }
+
  private:
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>> mock_device_;
@@ -73,7 +78,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion) {
 TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
   device::BluetoothDevice* device = InitDevice(
       /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
-      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/false);
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
 
   device::BluetoothDevice::BatteryInfo battery_info(
       /*battery_type=*/device::BluetoothDevice::BatteryType::kDefault,
@@ -84,6 +89,15 @@ TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
 
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device);
+  ASSERT_TRUE(properties);
+
+  // If device is not connected, |battery_info| should be null.
+  EXPECT_FALSE(properties->battery_info);
+
+  // Set the device to connected.
+  ChangeDeviceConnected(/*connected=*/true);
+
+  properties = GenerateBluetoothDeviceMojoProperties(device);
   ASSERT_TRUE(properties);
 
   EXPECT_TRUE(properties->battery_info->default_properties);
@@ -97,7 +111,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
 TEST_F(DeviceConversionUtilTest, TestConversion_MultipleBatteries) {
   device::BluetoothDevice* device = InitDevice(
       /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
-      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/false);
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
 
   device::BluetoothDevice::BatteryInfo left_battery_info(
       /*battery_type=*/device::BluetoothDevice::BatteryType::
@@ -124,6 +138,15 @@ TEST_F(DeviceConversionUtilTest, TestConversion_MultipleBatteries) {
 
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device);
+  ASSERT_TRUE(properties);
+
+  // If device is not connected, |battery_info| should be null.
+  EXPECT_FALSE(properties->battery_info);
+
+  // Set the device to connected.
+  ChangeDeviceConnected(/*connected=*/true);
+
+  properties = GenerateBluetoothDeviceMojoProperties(device);
   ASSERT_TRUE(properties);
 
   EXPECT_FALSE(properties->battery_info->default_properties);

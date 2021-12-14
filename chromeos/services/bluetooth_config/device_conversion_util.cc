@@ -89,6 +89,10 @@ mojom::BatteryPropertiesPtr ComputeBatteryInfoForBatteryType(
 
 mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
     const device::BluetoothDevice* device) {
+  // Only provide battery information for devices that are connected.
+  if (!device->IsConnected())
+    return nullptr;
+
   mojom::BatteryPropertiesPtr default_battery =
       ComputeBatteryInfoForBatteryType(
           device, device::BluetoothDevice::BatteryType::kDefault);
