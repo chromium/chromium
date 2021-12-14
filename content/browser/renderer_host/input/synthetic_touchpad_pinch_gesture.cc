@@ -86,7 +86,10 @@ void SyntheticTouchpadPinchGesture::ForwardGestureEvents(
       target->DispatchInputEventToPlatform(
           blink::SyntheticWebGestureEventBuilder::Build(
               blink::WebGestureEvent::Type::kGesturePinchBegin,
-              blink::WebGestureDevice::kTouchpad));
+              blink::WebGestureDevice::kTouchpad,
+              params_.from_devtools_debugger
+                  ? blink::WebInputEvent::kFromDebugger
+                  : blink::WebInputEvent::kNoModifiers));
       state_ = IN_PROGRESS;
       break;
     case IN_PROGRESS: {
@@ -100,13 +103,19 @@ void SyntheticTouchpadPinchGesture::ForwardGestureEvents(
       target->DispatchInputEventToPlatform(
           blink::SyntheticWebGestureEventBuilder::BuildPinchUpdate(
               incremental_scale, params_.anchor.x(), params_.anchor.y(),
-              0 /* modifierFlags */, blink::WebGestureDevice::kTouchpad));
+              params_.from_devtools_debugger
+                  ? blink::WebInputEvent::kFromDebugger
+                  : blink::WebInputEvent::kNoModifiers,
+              blink::WebGestureDevice::kTouchpad));
 
       if (HasReachedTarget(event_timestamp)) {
         target->DispatchInputEventToPlatform(
             blink::SyntheticWebGestureEventBuilder::Build(
                 blink::WebGestureEvent::Type::kGesturePinchEnd,
-                blink::WebGestureDevice::kTouchpad));
+                blink::WebGestureDevice::kTouchpad,
+                params_.from_devtools_debugger
+                    ? blink::WebInputEvent::kFromDebugger
+                    : blink::WebInputEvent::kNoModifiers));
         state_ = DONE;
       }
       break;

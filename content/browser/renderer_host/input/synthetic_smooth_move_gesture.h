@@ -43,6 +43,7 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
   ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
   // A bitfield of values from blink::WebInputEvent::Modifiers.
   int modifiers = 0;
+  bool from_devtools_debugger = false;
 };
 
 // This class is used as helper class for simulation of scroll and drag.

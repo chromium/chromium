@@ -58,6 +58,7 @@ bool SyntheticSmoothScrollGesture::InitializeMoveGesture(
     move_params.add_slop = true;
     move_params.granularity = params_.granularity;
     move_params.modifiers = params_.modifiers;
+    move_params.from_devtools_debugger = params_.from_devtools_debugger;
     move_gesture_ = std::make_unique<SyntheticSmoothMoveGesture>(move_params);
     return true;
   }
