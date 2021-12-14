@@ -156,7 +156,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     absl::optional<base::FilePath> ksadmin_path =
         GetKSAdminPath(GetUpdaterScope());
     if (ksadmin_path) {
-      env_path = base::StrCat({env_path, ":", (*ksadmin_path).value()});
+      env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
     }
 
     base::LaunchOptions options;
