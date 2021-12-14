@@ -102,6 +102,7 @@ class FakeWebState : public WebState {
 
   // Setters for test data.
   void SetBrowserState(BrowserState* browser_state);
+  void SetIsRealized(bool value);
   void SetJSInjectionReceiver(CRWJSInjectionReceiver* injection_receiver);
   void SetTitle(const std::u16string& title);
   void SetContentIsHTML(bool content_is_html);
@@ -159,6 +160,7 @@ class FakeWebState : public WebState {
   CRWJSInjectionReceiver* injection_receiver_ = nil;
   NSString* stable_identifier_ = nil;
   bool web_usage_enabled_ = true;
+  bool is_realized_ = true;
   bool is_loading_ = false;
   bool is_visible_ = false;
   bool is_crashed_ = false;

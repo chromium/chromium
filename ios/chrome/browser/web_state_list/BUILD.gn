@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "session_metrics_unittest.cc",
     "tab_insertion_browser_agent_unittest.mm",
     "web_state_dependency_installation_observer_unittest.mm",
+    "web_state_dependency_installer_bridge_unittest.mm",
     "web_state_list_favicon_driver_observer_unittest.mm",
     "web_state_list_order_controller_unittest.mm",
     "web_state_list_serialization_unittest.mm",

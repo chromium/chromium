@@ -30,11 +30,19 @@ class FakeDependencyInstaller : public DependencyInstaller {
   }
   ~FakeDependencyInstaller() override {}
 
-  bool WasInstalled(web::WebState* web_state) {
+  bool WasInstalled(web::WebState* web_state) const {
+    return installed_.count(web_state) > 0;
+  }
+
+  bool WasUninstalled(web::WebState* web_state) const {
+    return uninstalled_.count(web_state) > 0;
+  }
+
+  size_t InstallCount(web::WebState* web_state) const {
     return installed_.count(web_state);
   }
 
-  bool WasUninstalled(web::WebState* web_state) {
+  size_t UninstallCount(web::WebState* web_state) const {
     return uninstalled_.count(web_state);
   }
 
@@ -93,4 +101,62 @@ TEST_F(WebStateDependencyInstallationObserverTest,
   WebStateDependencyInstallationObserver observer(&web_state_list_,
                                                   &installer_);
   EXPECT_TRUE(installer_.WasInstalled(web_state_raw));
+}
+
+// Verifies that unrealized web states don't get dependencies installed.
+TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
+  WebStateDependencyInstallationObserver observer(&web_state_list_,
+                                                  &installer_);
+  auto web_state_1 = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_1_raw = web_state_1.get();
+  web_state_list_.InsertWebState(0, std::move(web_state_1),
+                                 WebStateList::INSERT_ACTIVATE,
+                                 WebStateOpener());
+  EXPECT_TRUE(installer_.WasInstalled(web_state_1_raw));
+
+  auto web_state_2 = std::make_unique<web::FakeWebState>();
+  web_state_2->SetIsRealized(false);
+  web::WebState* web_state_2_raw = web_state_2.get();
+
+  // Insert the unrealized webstate but don't have it activate (since that
+  // forces realization).
+  web_state_list_.InsertWebState(1, std::move(web_state_2),
+                                 WebStateList::INSERT_NO_FLAGS,
+                                 WebStateOpener());
+  // The unrealized webstate should not have dependencies installed.
+  EXPECT_FALSE(installer_.WasInstalled(web_state_2_raw));
+  // Once realized, dependencioes should be installed.
+  web_state_2_raw->ForceRealized();
+  EXPECT_TRUE(installer_.WasInstalled(web_state_2_raw));
+
+  auto web_state_3 = std::make_unique<web::FakeWebState>();
+  web_state_3->SetIsRealized(false);
+  web::WebState* web_state_3_raw = web_state_3.get();
+
+  // Insert the unrealized webstate and activate it, forcing realization.
+  web_state_list_.InsertWebState(2, std::move(web_state_3),
+                                 WebStateList::INSERT_ACTIVATE,
+                                 WebStateOpener());
+  // The formerly unrealized webstate should have dependencies installed.
+  // (The webstate should also be realized, but that's not the responsibility
+  // of the code under test).
+  EXPECT_TRUE(installer_.WasInstalled(web_state_3_raw));
+  // Dependencies should have been installed only once
+  EXPECT_EQ(1u, installer_.InstallCount(web_state_3_raw));
+}
+
+// Verifies that destroying the observer triggers uninstallation.
+TEST_F(WebStateDependencyInstallationObserverTest, Disconnect) {
+  auto observer = std::make_unique<WebStateDependencyInstallationObserver>(
+      &web_state_list_, &installer_);
+  auto web_state_1 = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_1_raw = web_state_1.get();
+
+  web_state_list_.InsertWebState(0, std::move(web_state_1),
+                                 WebStateList::INSERT_ACTIVATE,
+                                 WebStateOpener());
+  EXPECT_TRUE(installer_.WasInstalled(web_state_1_raw));
+  observer.reset();
+
+  EXPECT_TRUE(installer_.WasUninstalled(web_state_1_raw));
 }

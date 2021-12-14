@@ -74,11 +74,15 @@ WebStateDelegate* FakeWebState::GetDelegate() {
 void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
 
 bool FakeWebState::IsRealized() const {
-  // FakeWebState cannot be unrealized.
-  return true;
+  return is_realized_;
 }
 
 WebState* FakeWebState::ForceRealized() {
+  if (!is_realized_) {
+    is_realized_ = true;
+    for (auto& observer : observers_)
+      observer.WebStateRealized(this);
+  }
   return this;
 }
 
@@ -246,6 +250,10 @@ base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
 
 void FakeWebState::SetBrowserState(BrowserState* browser_state) {
   browser_state_ = browser_state;
+}
+
+void FakeWebState::SetIsRealized(bool value) {
+  is_realized_ = value;
 }
 
 void FakeWebState::SetJSInjectionReceiver(

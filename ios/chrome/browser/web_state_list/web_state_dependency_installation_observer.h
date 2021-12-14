@@ -5,9 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 
+#import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 
 // Interface for classes wishing to install and/or uninstall dependencies
 // (delegates, etc) for each WebState using
@@ -28,7 +31,8 @@ class DependencyInstaller {
 // configured to do the installing/uninstalling work. This class acts as a
 // forwarder, listening for changes in the WebStateList and invoking the
 // installation/uninstallation methods as necessary.
-class WebStateDependencyInstallationObserver : public WebStateListObserver {
+class WebStateDependencyInstallationObserver : public WebStateListObserver,
+                                               public web::WebStateObserver {
  public:
   WebStateDependencyInstallationObserver(
       WebStateList* web_state_list,
@@ -54,6 +58,16 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver {
       const WebStateDependencyInstallationObserver&) = delete;
 
  private:
+  // Helper methods that call InstallDependency/UninstallDependency on the
+  // `dependency_installer_` if the WebState is realized, or start observing
+  // the WebState for `WebStateRealized()` event.
+  void OnWebStateAdded(web::WebState* web_state);
+  void OnWebStateRemoved(web::WebState* web_state);
+
+  // web::WebStateObserver:
+  void WebStateRealized(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
   // The WebStateList being observed for addition, replacement, and detachment
   // of WebStates
   WebStateList* web_state_list_;
@@ -61,8 +75,11 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver {
   // the WebStateList
   DependencyInstaller* dependency_installer_;
   // Automatically detaches |this| from the WebStateList when destroyed
-  base::ScopedObservation<WebStateList, WebStateListObserver> observation_{
-      this};
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+  // Automatically detaches |this| from the WebStates when destroyed.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
