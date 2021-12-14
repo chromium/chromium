@@ -63,12 +63,19 @@ void SyntheticGestureTargetAura::DispatchWebTouchEventToPlatform(
 
   aura::Window* window = GetWindow();
   aura::WindowTreeHost* host = window->GetHost();
-  for (const auto& event : events) {
-    event->ConvertLocationToTarget(window, host->window());
-    ui::EventDispatchDetails details =
-        event_injector_.Inject(host, event.get());
-    if (details.dispatcher_destroyed)
-      break;
+  for (auto& event : events) {
+    // Synthetic events from devtools debugger need to be dispatched explicitly
+    // to the target window. Otherwise they will end up in the active tab
+    // which might be different from the target.
+    if (web_touch.GetModifiers() & blink::WebInputEvent::kFromDebugger) {
+      window->delegate()->OnEvent(event.get());
+    } else {
+      event->ConvertLocationToTarget(window, host->window());
+      ui::EventDispatchDetails details =
+          event_injector_.Inject(host, event.get());
+      if (details.dispatcher_destroyed)
+        break;
+    }
   }
 }
 
@@ -97,11 +104,18 @@ void SyntheticGestureTargetAura::DispatchWebMouseWheelEventToPlatform(
   wheel_precision_y_ = delta_y - wheel_event.y_offset();
 
   aura::Window* window = GetWindow();
-  wheel_event.ConvertLocationToTarget(window, window->GetRootWindow());
-  ui::EventDispatchDetails details =
-      event_injector_.Inject(window->GetHost(), &wheel_event);
-  if (details.dispatcher_destroyed)
-    return;
+  // Synthetic events from devtools debugger need to be dispatched explicitly
+  // to the target window. Otherwise they will end up in the active tab
+  // which might be different from the target.
+  if (web_wheel.GetModifiers() & blink::WebInputEvent::kFromDebugger) {
+    window->delegate()->OnEvent(&wheel_event);
+  } else {
+    wheel_event.ConvertLocationToTarget(window, window->GetRootWindow());
+    ui::EventDispatchDetails details =
+        event_injector_.Inject(window->GetHost(), &wheel_event);
+    if (details.dispatcher_destroyed)
+      return;
+  }
 }
 
 void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
@@ -123,8 +137,15 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
                                  web_gesture.PositionInWidget().y(), flags,
                                  web_gesture.TimeStamp(), pinch_details);
 
-    pinch_event.ConvertLocationToTarget(window, window->GetRootWindow());
-    event_injector_.Inject(window->GetHost(), &pinch_event);
+    // Synthetic events from devtools debugger need to be dispatched explicitly
+    // to the target window. Otherwise they will end up in the active tab
+    // which might be different from the target.
+    if (web_gesture.GetModifiers() & blink::WebInputEvent::kFromDebugger) {
+      window->delegate()->OnEvent(&pinch_event);
+    } else {
+      pinch_event.ConvertLocationToTarget(window, window->GetRootWindow());
+      event_injector_.Inject(window->GetHost(), &pinch_event);
+    }
     return;
   }
 
@@ -138,8 +159,15 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
                                web_gesture.data.fling_start.velocity_x,
                                web_gesture.data.fling_start.velocity_y, 0, 0, 2,
                                momentum_phase, ui::ScrollEventPhase::kNone);
-  scroll_event.ConvertLocationToTarget(window, window->GetRootWindow());
-  event_injector_.Inject(window->GetHost(), &scroll_event);
+  // Synthetic events from devtools debugger need to be dispatched explicitly
+  // to the target window. Otherwise they will end up in the active tab
+  // which might be different from the target.
+  if (web_gesture.GetModifiers() & blink::WebInputEvent::kFromDebugger) {
+    window->delegate()->OnEvent(&scroll_event);
+  } else {
+    scroll_event.ConvertLocationToTarget(window, window->GetRootWindow());
+    event_injector_.Inject(window->GetHost(), &scroll_event);
+  }
 }
 
 void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
@@ -164,12 +192,19 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
                              changed_button_flags, pointer_details);
 
   aura::Window* window = GetWindow();
-  mouse_event.ConvertLocationToTarget(window, window->GetRootWindow());
   mouse_event.SetClickCount(web_mouse_event.click_count);
-  ui::EventDispatchDetails details =
-      event_injector_.Inject(window->GetHost(), &mouse_event);
-  if (details.dispatcher_destroyed)
-    return;
+  // Synthetic events from devtools debugger need to be dispatched explicitly
+  // to the target window. Otherwise they will end up in the active tab
+  // which might be different from the target.
+  if (web_mouse_event.GetModifiers() & blink::WebInputEvent::kFromDebugger) {
+    window->delegate()->OnEvent(&mouse_event);
+  } else {
+    mouse_event.ConvertLocationToTarget(window, window->GetRootWindow());
+    ui::EventDispatchDetails details =
+        event_injector_.Inject(window->GetHost(), &mouse_event);
+    if (details.dispatcher_destroyed)
+      return;
+  }
 }
 
 content::mojom::GestureSourceType
