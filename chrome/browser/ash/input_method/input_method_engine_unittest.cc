@@ -102,7 +102,6 @@ class TestObserver : public StubInputMethodEngineObserver {
   void OnBlur(const std::string& engine_id, int context_id) override {
     calls_bitmap_ |= ONBLUR;
   }
-  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
