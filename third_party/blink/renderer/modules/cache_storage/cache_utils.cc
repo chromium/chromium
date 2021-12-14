@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache_utils.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
