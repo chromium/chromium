@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -92,6 +93,11 @@ DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
                           BluetoothFilterType filter_type,
                           int max_devices);
+
+// Returns |true| if the device is unsupported and should not be known by the
+// UI.
+DEVICE_BLUETOOTH_EXPORT bool IsUnsupportedDevice(
+    const device::BluetoothDevice* device);
 
 // Record outcome of user attempting to pair to a device.
 DEVICE_BLUETOOTH_EXPORT void RecordPairingResult(

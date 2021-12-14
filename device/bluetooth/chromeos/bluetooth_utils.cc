@@ -98,63 +98,10 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
 
   BluetoothAdapter::DeviceList result;
   for (BluetoothDevice* device : devices) {
-    // Always filter out laptops, etc. There is no intended use case or
-    // Bluetooth profile in this context.
-    if (device->GetDeviceType() == BluetoothDeviceType::COMPUTER) {
+    if (device::IsUnsupportedDevice(device))
       continue;
-    }
 
-    // Always filter out phones. There is no intended use case or Bluetooth
-    // profile in this context.
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kBluetoothPhoneFilter) &&
-        device->GetDeviceType() == BluetoothDeviceType::PHONE) {
-      continue;
-    }
-
-    // Allow paired devices which are not filtered above to appear in the UI.
-    if (device->IsPaired()) {
-      result.push_back(device);
-      continue;
-    }
-
-    switch (device->GetType()) {
-      // Device with invalid bluetooth transport is filtered out.
-      case BLUETOOTH_TRANSPORT_INVALID:
-        break;
-      // For LE devices, check the service UUID to determine if it supports HID
-      // or second factor authenticator (security key).
-      case BLUETOOTH_TRANSPORT_LE:
-        if (base::Contains(device->GetUUIDs(),
-                           device::BluetoothUUID(kHIDServiceUUID)) ||
-            base::Contains(device->GetUUIDs(),
-                           device::BluetoothUUID(kSecurityKeyServiceUUID))) {
-          result.push_back(device);
-        }
-        break;
-      // For classic mode devices, only filter out if the name is empty because
-      // the device could have an unknown or even known type and still also
-      // provide audio/HID functionality.
-      case BLUETOOTH_TRANSPORT_CLASSIC:
-        if (device->GetName())
-          result.push_back(device);
-        break;
-      // For dual mode devices, a device::BluetoothDevice object without a name
-      // and type/appearance most likely signals that it is truly only a LE
-      // advertisement for a peripheral which is active, but not pairable. Many
-      // popular headphones behave in this exact way. Filter them out until they
-      // provide a type/appearance; this means they've become pairable. See
-      // https://crbug.com/1656971 for more.
-      case BLUETOOTH_TRANSPORT_DUAL:
-        if (device->GetName()) {
-          if (device->GetDeviceType() == BluetoothDeviceType::UNKNOWN) {
-            continue;
-          }
-
-          result.push_back(device);
-        }
-        break;
-    }
+    result.push_back(device);
   }
   return result;
 }
@@ -222,6 +169,72 @@ device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
       filter_type == BluetoothFilterType::KNOWN ? FilterUnknownDevices(devices)
                                                 : devices;
   return GetLimitedNumDevices(max_devices, filtered_devices);
+}
+
+bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::switches::IsUnfilteredBluetoothDevicesEnabled())
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()
+          ->init_params()
+          ->is_unfiltered_bluetooth_device_enabled) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Always filter out laptops, etc. There is no intended use case or
+  // Bluetooth profile in this context.
+  if (device->GetDeviceType() == BluetoothDeviceType::COMPUTER)
+    return true;
+
+  // Always filter out phones. There is no intended use case or Bluetooth
+  // profile in this context.
+  if (base::FeatureList::IsEnabled(chromeos::features::kBluetoothPhoneFilter) &&
+      device->GetDeviceType() == BluetoothDeviceType::PHONE) {
+    return true;
+  }
+
+  // Allow paired devices which are not filtered above to appear in the UI.
+  if (device->IsPaired())
+    return false;
+
+  switch (device->GetType()) {
+    // Device with invalid bluetooth transport is filtered out.
+    case BLUETOOTH_TRANSPORT_INVALID:
+      break;
+    // For LE devices, check the service UUID to determine if it supports HID
+    // or second factor authenticator (security key).
+    case BLUETOOTH_TRANSPORT_LE:
+      if (base::Contains(device->GetUUIDs(),
+                         device::BluetoothUUID(kHIDServiceUUID)) ||
+          base::Contains(device->GetUUIDs(),
+                         device::BluetoothUUID(kSecurityKeyServiceUUID))) {
+        return false;
+      }
+      break;
+    // For classic mode devices, only filter out if the name is empty because
+    // the device could have an unknown or even known type and still also
+    // provide audio/HID functionality.
+    case BLUETOOTH_TRANSPORT_CLASSIC:
+      if (device->GetName())
+        return false;
+      break;
+    // For dual mode devices, a device::BluetoothDevice object without a name
+    // and type/appearance most likely signals that it is truly only a LE
+    // advertisement for a peripheral which is active, but not pairable. Many
+    // popular headphones behave in this exact way. Filter them out until they
+    // provide a type/appearance; this means they've become pairable. See
+    // https://crbug.com/1656971 for more.
+    case BLUETOOTH_TRANSPORT_DUAL:
+      if (device->GetName())
+        return device->GetDeviceType() == BluetoothDeviceType::UNKNOWN;
+      break;
+  }
+
+  return true;
 }
 
 void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,

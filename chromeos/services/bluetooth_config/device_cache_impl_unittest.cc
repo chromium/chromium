@@ -94,7 +94,9 @@ class DeviceCacheImplTest : public testing::Test {
   void AddDevice(bool paired,
                  bool connected,
                  std::string* id_out,
-                 const absl::optional<int8_t> inquiry_rssi = absl::nullopt) {
+                 const absl::optional<int8_t> inquiry_rssi = absl::nullopt,
+                 const device::BluetoothDeviceType device_type =
+                     device::BluetoothDeviceType::AUDIO) {
     // We use the number of devices created in this test as the address.
     std::string address = base::NumberToString(num_devices_created_);
     ++num_devices_created_;
@@ -106,8 +108,12 @@ class DeviceCacheImplTest : public testing::Test {
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
             mock_adapter_.get(), kTestBluetoothClass, kTestBluetoothName,
             address, paired, connected);
+    ON_CALL(*mock_device, GetType())
+        .WillByDefault(testing::Return(device::BLUETOOTH_TRANSPORT_DUAL));
     ON_CALL(*mock_device, GetInquiryRSSI())
         .WillByDefault(testing::Return(inquiry_rssi));
+    ON_CALL(*mock_device, GetDeviceType())
+        .WillByDefault(testing::Return(device_type));
 
     device::BluetoothDevice* device = mock_device.get();
     mock_devices_.push_back(std::move(mock_device));
@@ -473,7 +479,7 @@ TEST_F(DeviceCacheImplTest, PairedDeviceBluetoothClassChanges) {
   PairedDeviceList list = GetPairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(paired_device_id, list[0]->device_properties->id);
-  EXPECT_EQ(mojom::DeviceType::kUnknown,
+  EXPECT_EQ(mojom::DeviceType::kHeadset,
             list[0]->device_properties->device_type);
 
   // Change its device type.
@@ -496,8 +502,6 @@ TEST_F(DeviceCacheImplTest, PairedDeviceForgotten) {
   PairedDeviceList list = GetPairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(paired_device_id, list[0]->device_properties->id);
-  EXPECT_EQ(mojom::DeviceType::kUnknown,
-            list[0]->device_properties->device_type);
 
   ForgetDevice(paired_device_id);
   EXPECT_EQ(2u, GetNumPairedDeviceListObserverEvents());
@@ -515,15 +519,15 @@ TEST_F(DeviceCacheImplTest, UnpairedDeviceBluetoothClassChanges) {
   UnpairedDeviceList list = GetUnpairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(unpaired_device_id, list[0]->id);
-  EXPECT_EQ(mojom::DeviceType::kUnknown, list[0]->device_type);
+  EXPECT_EQ(mojom::DeviceType::kHeadset, list[0]->device_type);
 
   // Change its device type.
-  ChangeDeviceType(unpaired_device_id, device::BluetoothDeviceType::PHONE);
+  ChangeDeviceType(unpaired_device_id, device::BluetoothDeviceType::VIDEO);
   EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
   list = GetUnpairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(unpaired_device_id, list[0]->id);
-  EXPECT_EQ(mojom::DeviceType::kPhone, list[0]->device_type);
+  EXPECT_EQ(mojom::DeviceType::kVideoCamera, list[0]->device_type);
 }
 
 TEST_F(DeviceCacheImplTest, UnpairedDeviceSignalStrengthChanges) {
@@ -590,6 +594,141 @@ TEST_F(DeviceCacheImplTest, BluetoothTurnsOff) {
   EXPECT_TRUE(GetPairedDevices().empty());
   unpaired_list = GetUnpairedDevices();
   EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, UnknownUnpairedDeviceNotReturned) {
+  Init();
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Add an unknown device. This should not be added to the unpaired list and no
+  // observers notified.
+  std::string unpaired_device_id;
+  AddDevice(/*paired=*/false, /*connected=*/false, &unpaired_device_id,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::UNKNOWN);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Update a property in the device. This should not cause any observable
+  // actions.
+  ChangeInquiryRssi(unpaired_device_id, 3);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Remove the device. This should not cause any observable actions.
+  RemoveDevice(unpaired_device_id);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, UnsupportedUnpairedDeviceNotReturned) {
+  Init();
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Add a device of type PHONE. This should not be added to the unpaired list
+  // and no observers notified because this device type is unsupported.
+  std::string unpaired_device_id;
+  AddDevice(/*paired=*/false, /*connected=*/false, &unpaired_device_id,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::PHONE);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Update a property in the device. This should not cause any observable
+  // actions.
+  ChangeInquiryRssi(unpaired_device_id, 3);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Remove the device. This should not cause any observable actions.
+  RemoveDevice(unpaired_device_id);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, UnknownUnpairedDeviceChangesToKnown) {
+  Init();
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Add an unknown device. This should not be added to the unpaired list and no
+  // observers notified.
+  std::string unpaired_device_id;
+  AddDevice(/*paired=*/false, /*connected=*/false, &unpaired_device_id,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::UNKNOWN);
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Update the device type to a known type. This should add the device to the
+  // unpaired list.
+  ChangeDeviceType(unpaired_device_id, device::BluetoothDeviceType::VIDEO);
+  UnpairedDeviceList unpaired_list = GetUnpairedDevices();
+  EXPECT_EQ(1u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_EQ(1u, unpaired_list.size());
+  EXPECT_EQ(unpaired_device_id, unpaired_list[0]->id);
+
+  // Remove the device. This should notify observers.
+  RemoveDevice(unpaired_device_id);
+  EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, KnownUnpairedDeviceChangesToUnknown) {
+  Init();
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Add a known device. This should notify observers.
+  std::string unpaired_device_id;
+  AddDevice(/*paired=*/false, /*connected=*/false, &unpaired_device_id,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::VIDEO);
+  UnpairedDeviceList unpaired_list = GetUnpairedDevices();
+  EXPECT_EQ(1u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_EQ(1u, unpaired_list.size());
+  EXPECT_EQ(unpaired_device_id, unpaired_list[0]->id);
+
+  // Update the device type to unknown type. This should remove the device from
+  // the unpaired list and notify observers.
+  ChangeDeviceType(unpaired_device_id, device::BluetoothDeviceType::UNKNOWN);
+  EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Remove the device. This should not cause any observable actions.
+  RemoveDevice(unpaired_device_id);
+  EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, UnknownPairedDeviceReturned) {
+  Init();
+  EXPECT_TRUE(GetPairedDevices().empty());
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+
+  // Add an unknown paired device. This should notify observers.
+  std::string paired_device_id;
+  AddDevice(/*paired=*/true, /*connected=*/false, &paired_device_id,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::UNKNOWN);
+  EXPECT_EQ(1u, GetNumPairedDeviceListObserverEvents());
+  PairedDeviceList paired_list = GetPairedDevices();
+  EXPECT_EQ(1u, paired_list.size());
+  EXPECT_EQ(paired_device_id, paired_list[0]->device_properties->id);
+
+  // Update a property in the device. This should notify observers.
+  ChangeDeviceIsBlockedByPolicy(paired_device_id,
+                                /*is_blocked_by_policy=*/true);
+  EXPECT_EQ(2u, GetNumPairedDeviceListObserverEvents());
+  paired_list = GetPairedDevices();
+  EXPECT_EQ(1u, paired_list.size());
+  EXPECT_TRUE(paired_list[0]->device_properties->is_blocked_by_policy);
+
+  // Change the device to unpaired. This should update the paired device list
+  // but not the unpaired device list.
+  ChangePairingState(paired_device_id, /*is_now_paired=*/false);
+  EXPECT_EQ(3u, GetNumPairedDeviceListObserverEvents());
+  EXPECT_TRUE(GetPairedDevices().empty());
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
   EXPECT_TRUE(GetUnpairedDevices().empty());
 }
 

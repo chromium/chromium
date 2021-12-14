@@ -119,8 +119,8 @@ class DeviceCacheImpl : public DeviceCache,
   bool RemoveFromUnpairedDeviceList(device::BluetoothDevice* device);
 
   // Attempts to add updated metadata about |device| to |paired_devices_|. If
-  // |device| is not found in |unpaired_devices_|, no update is performed.
-  // Returns true if the device was updated in the list.
+  // |device| is not found in |unpaired_devices_|, it is added. Returns true if
+  // the device was updated in the list.
   bool AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
 
   // Sorts |unpaired_devices_| based on signal strength. This function is called
