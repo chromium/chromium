@@ -5,7 +5,7 @@
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 
 #include "base/memory/ptr_util.h"
-#include "content/public/browser/navigating_frame_type.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace subresource_filter {
@@ -17,7 +17,7 @@ void NavigationConsoleLogger::LogMessageOnCommit(
     const std::string& message) {
   DCHECK(handle->IsInMainFrame());
   if (handle->GetNavigatingFrameType() ==
-      content::NavigatingFrameType::kFencedFrameRoot) {
+      content::FrameType::kFencedFrameRoot) {
     // TODO(crbug.com/1263541): Replace it with DCHECK once fenced frames use
     // the embedder's ContentSubresourceFilterThrottleManager.
     return;
@@ -35,7 +35,7 @@ NavigationConsoleLogger* NavigationConsoleLogger::CreateIfNeededForNavigation(
     content::NavigationHandle* handle) {
   DCHECK(handle->IsInMainFrame());
   DCHECK_NE(handle->GetNavigatingFrameType(),
-            content::NavigatingFrameType::kFencedFrameRoot);
+            content::FrameType::kFencedFrameRoot);
   return GetOrCreateForNavigationHandle(*handle);
 }
 

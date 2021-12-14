@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_type.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -144,6 +145,9 @@ class CONTENT_EXPORT FrameTreeNode {
   const absl::optional<base::UnguessableToken>& opener_devtools_frame_token() {
     return opener_devtools_frame_token_;
   }
+
+  // Returns the type of the frame. Refer to frame_type.h for the details.
+  FrameType GetFrameType() const;
 
   // Gets the total number of descendants to this FrameTreeNode in addition to
   // this node.

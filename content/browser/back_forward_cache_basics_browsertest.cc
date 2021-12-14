@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(num_messages_received, 3);
 }
 
-enum class FrameType {
+enum class TestFrameType {
   kMainFrame,
   kSubFrame,
 };
@@ -1065,13 +1065,13 @@ enum class StickinessType {
 class BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType
     : public BackForwardCacheBrowserTest,
       public ::testing::WithParamInterface<
-          testing::tuple<FrameType, StickinessType>> {};
+          testing::tuple<TestFrameType, StickinessType>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
-    ::testing::Combine(::testing::Values(FrameType::kMainFrame,
-                                         FrameType::kSubFrame),
+    ::testing::Combine(::testing::Values(TestFrameType::kMainFrame,
+                                         TestFrameType::kSubFrame),
                        ::testing::Values(StickinessType::kSticky,
                                          StickinessType::kNonSticky)));
 
@@ -1087,13 +1087,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // 1) Navigate to A(B).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  FrameType parameter_frame = std::get<0>(GetParam());
+  TestFrameType parameter_frame = std::get<0>(GetParam());
   StickinessType use_sticky_feature = std::get<1>(GetParam());
 
   // Depending on the parameter, pick the mainframe or subframe to add a
   // blocking feature.
   RenderFrameHostImplWrapper rfh_with_blocking_feature(
-      parameter_frame == FrameType::kSubFrame
+      parameter_frame == TestFrameType::kSubFrame
           ? current_frame_host()->child_at(0)->current_frame_host()
           : current_frame_host());
 

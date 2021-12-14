@@ -11,7 +11,7 @@
 
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/navigating_frame_type.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/prerender_trigger_type.h"
@@ -123,7 +123,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsPrerenderedPageActivation() = 0;
 
   // Returns the type of the frame in which this navigation is taking place.
-  virtual NavigatingFrameType GetNavigatingFrameType() const = 0;
+  virtual FrameType GetNavigatingFrameType() const = 0;
 
   // Whether the navigation was initiated by the renderer process. Examples of
   // renderer-initiated navigations include:

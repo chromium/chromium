@@ -288,6 +288,27 @@ RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentHelper(
   return nullptr;
 }
 
+FrameType FrameTreeNode::GetFrameType() const {
+  if (!IsMainFrame())
+    return FrameType::kSubframe;
+
+  switch (frame_tree()->type()) {
+    case FrameTree::Type::kPrimary:
+      return FrameType::kPrimaryMainFrame;
+    case FrameTree::Type::kPrerender:
+      return FrameType::kPrerenderMainFrame;
+    case FrameTree::Type::kFencedFrame:
+      // We also have FencedFramesImplementationType::kShadowDOM for a
+      // fenced frame implementation based on <iframe> + shadowDOM,
+      // which will return kSubframe as it's a modified <iframe> rather
+      // than a dedicated FrameTree. This returns kSubframe for the
+      // shadow dom implementation in order to keep consistency (i.e.
+      // NavigationHandle::GetParentFrame returning non-null value for
+      // shadow-dom based FFs).
+      return FrameType::kFencedFrameRoot;
+  }
+}
+
 size_t FrameTreeNode::GetFrameTreeSize() const {
   if (is_collapsed())
     return 0;
