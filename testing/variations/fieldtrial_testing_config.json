@@ -541,6 +541,21 @@
             ]
         }
     ],
+    "AndroidMessagesPWAInstall": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InstallableAmbientBadgeMessage"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMessagesPermissionUpdate": [
         {
             "platforms": [
