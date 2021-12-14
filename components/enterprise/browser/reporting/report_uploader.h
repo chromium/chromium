@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UPLOADER_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UPLOADER_H_
 
-#include <memory>
-#include <queue>
-
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "net/base/backoff_entry.h"
 
 namespace base {
@@ -43,8 +40,6 @@ class ReportUploader {
                        // invalid dm token.
   };
 
-  using ReportRequest = definition::ReportRequest;
-  using ReportRequests = std::queue<std::unique_ptr<ReportRequest>>;
   // A callback to notify the upload result.
   using ReportCallback = base::OnceCallback<void(ReportStatus status)>;
 
@@ -58,7 +53,7 @@ class ReportUploader {
 
   // Sets a list of requests and upload it. Request will be uploaded one after
   // another.
-  virtual void SetRequestAndUpload(ReportRequests requests,
+  virtual void SetRequestAndUpload(ReportRequestQueue requests,
                                    ReportCallback callback);
 
  private:
@@ -81,7 +76,7 @@ class ReportUploader {
 
   raw_ptr<policy::CloudPolicyClient> client_;
   ReportCallback callback_;
-  ReportRequests requests_;
+  ReportRequestQueue requests_;
 
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;

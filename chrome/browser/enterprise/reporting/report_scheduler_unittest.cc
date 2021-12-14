@@ -27,6 +27,7 @@
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/report_queue_provider.h"
@@ -69,9 +70,9 @@ constexpr char kUploadTriggerMetricName[] =
 }  // namespace
 
 ACTION_P(ScheduleGeneratorCallback, request_number) {
-  ReportGenerator::ReportRequests requests;
+  ReportRequestQueue requests;
   for (int i = 0; i < request_number; i++)
-    requests.push(std::make_unique<ReportGenerator::ReportRequest>());
+    requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
@@ -92,7 +93,7 @@ class MockReportGenerator : public ReportGenerator {
   }
   MOCK_METHOD2(OnGenerate,
                void(ReportType report_type, ReportCallback& callback));
-  MOCK_METHOD0(GenerateBasic, ReportRequests());
+  MOCK_METHOD0(GenerateBasic, ReportRequestQueue());
 };
 
 class MockReportUploader : public ReportUploader {
@@ -103,7 +104,7 @@ class MockReportUploader : public ReportUploader {
   MockReportUploader& operator=(const MockReportUploader&) = delete;
 
   ~MockReportUploader() override = default;
-  MOCK_METHOD2(SetRequestAndUpload, void(ReportRequests, ReportCallback));
+  MOCK_METHOD2(SetRequestAndUpload, void(ReportRequestQueue, ReportCallback));
 };
 
 class MockRealTimeReportGenerator : public RealTimeReportGenerator {
@@ -225,10 +226,10 @@ class ReportSchedulerTest : public ::testing::Test {
     }
   }
 
-  ReportGenerator::ReportRequests CreateRequests(int number) {
-    ReportGenerator::ReportRequests requests;
+  ReportRequestQueue CreateRequests(int number) {
+    ReportRequestQueue requests;
     for (int i = 0; i < number; i++)
-      requests.push(std::make_unique<ReportGenerator::ReportRequest>());
+      requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
     return requests;
   }
 
@@ -559,7 +560,7 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
   // Hang on to the uploader's ReportCallback.
   ReportUploader::ReportCallback saved_callback;
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce([&saved_callback](ReportUploader::ReportRequests requests,
+      .WillOnce([&saved_callback](ReportRequestQueue requests,
                                   ReportUploader::ReportCallback callback) {
         saved_callback = std::move(callback);
       });

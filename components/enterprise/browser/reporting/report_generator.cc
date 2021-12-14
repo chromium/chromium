@@ -32,12 +32,8 @@ ReportGenerator::~ReportGenerator() = default;
 
 void ReportGenerator::Generate(ReportType report_type,
                                ReportCallback callback) {
-  CreateBasicRequest(std::make_unique<ReportRequest>(), report_type,
+  CreateBasicRequest(std::make_unique<ReportRequest>(report_type), report_type,
                      std::move(callback));
-}
-
-void ReportGenerator::SetMaximumReportSizeForTesting(size_t size) {
-  report_request_queue_generator_.SetMaximumReportSizeForTesting(size);
 }
 
 void ReportGenerator::CreateBasicRequest(
@@ -47,12 +43,15 @@ void ReportGenerator::CreateBasicRequest(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_->SetAndroidAppInfos(basic_request.get());
 #else
-  basic_request->set_computer_name(this->GetMachineName());
-  basic_request->set_os_user_name(GetOSUserName());
-  basic_request->set_serial_number(GetSerialNumber());
-  basic_request->set_allocated_os_report(GetOSReport().release());
-  basic_request->set_allocated_browser_device_identifier(
-      policy::GetBrowserDeviceIdentifier().release());
+  basic_request->GetDeviceReportRequest().set_computer_name(
+      this->GetMachineName());
+  basic_request->GetDeviceReportRequest().set_os_user_name(GetOSUserName());
+  basic_request->GetDeviceReportRequest().set_serial_number(GetSerialNumber());
+  basic_request->GetDeviceReportRequest().set_allocated_os_report(
+      GetOSReport().release());
+  basic_request->GetDeviceReportRequest()
+      .set_allocated_browser_device_identifier(
+          policy::GetBrowserDeviceIdentifier().release());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -112,7 +111,8 @@ void ReportGenerator::OnBrowserReportReady(
     ReportType report_type,
     ReportCallback callback,
     std::unique_ptr<em::BrowserReport> browser_report) {
-  basic_request->set_allocated_browser_report(browser_report.release());
+  basic_request->GetDeviceReportRequest().set_allocated_browser_report(
+      browser_report.release());
 
   if (report_type != ReportType::kBrowserVersion) {
     // Generate a queue of requests containing detailed profile information.
@@ -123,7 +123,7 @@ void ReportGenerator::OnBrowserReportReady(
 
   // Return a queue containing only the basic request and browser report without
   // detailed profile information.
-  ReportRequests requests;
+  ReportRequestQueue requests;
   requests.push(std::move(basic_request));
   std::move(callback).Run(std::move(requests));
 }
@@ -133,8 +133,9 @@ void ReportGenerator::SetHardwareInfo(
     base::OnceCallback<void(std::unique_ptr<ReportRequest>)> callback,
     base::SysInfo::HardwareInfo hardware_info) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
-  basic_request->set_brand_name(hardware_info.manufacturer);
-  basic_request->set_device_model(hardware_info.model);
+  basic_request->GetDeviceReportRequest().set_brand_name(
+      hardware_info.manufacturer);
+  basic_request->GetDeviceReportRequest().set_device_model(hardware_info.model);
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
   std::move(callback).Run(std::move(basic_request));

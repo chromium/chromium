@@ -140,7 +140,7 @@ class ReportScheduler {
 
   // Continues processing a report (contained in the |requests| collection) by
   // sending it to the uploader.
-  void OnReportGenerated(ReportGenerator::ReportRequests requests);
+  void OnReportGenerated(ReportRequestQueue requests);
 
   // Finishes processing following report upload. |status| indicates the result
   // of the attempted upload.

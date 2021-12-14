@@ -10,6 +10,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,11 +57,12 @@ class ReportUploaderTest : public ::testing::Test {
       ReportUploader::ReportStatus expected_status) {
     DCHECK_LE(number_of_request, 2)
         << "Please update kBrowserVersionNames above.";
-    ReportUploader::ReportRequests requests;
+    ReportRequestQueue requests;
     for (int i = 0; i < number_of_request; i++) {
-      auto request = std::make_unique<ReportUploader::ReportRequest>();
-      request->mutable_browser_report()->set_browser_version(
-          kBrowserVersionNames[i]);
+      auto request = std::make_unique<ReportRequest>(ReportType::kFull);
+      request->GetDeviceReportRequest()
+          .mutable_browser_report()
+          ->set_browser_version(kBrowserVersionNames[i]);
       requests.push(std::move(request));
     }
     has_responded_ = false;
@@ -231,23 +234,25 @@ TEST_F(ReportUploaderTest, MultipleReports) {
   {
     InSequence s;
     // First report
-    EXPECT_CALL(client_,
-                UploadReportProxy(
-                    Property(&ReportUploader::ReportRequest::browser_report,
-                             Property(&em::BrowserReport::browser_version,
-                                      Eq(kBrowserVersionNames[0]))),
-                    _))
+    EXPECT_CALL(
+        client_,
+        UploadReportProxy(
+            Property(&ReportRequest::DeviceReportRequestProto::browser_report,
+                     Property(&em::BrowserReport::browser_version,
+                              Eq(kBrowserVersionNames[0]))),
+            _))
         .Times(3)
         .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(false)))
         .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(false)))
         .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(true)));
     // Second report
-    EXPECT_CALL(client_,
-                UploadReportProxy(
-                    Property(&ReportUploader::ReportRequest::browser_report,
-                             Property(&em::BrowserReport::browser_version,
-                                      Eq(kBrowserVersionNames[1]))),
-                    _))
+    EXPECT_CALL(
+        client_,
+        UploadReportProxy(
+            Property(&ReportRequest::DeviceReportRequestProto::browser_report,
+                     Property(&em::BrowserReport::browser_version,
+                              Eq(kBrowserVersionNames[1]))),
+            _))
         .Times(2)
         .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(false)))
         .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(false)));

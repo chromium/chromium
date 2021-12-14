@@ -261,8 +261,7 @@ void ReportScheduler::GenerateAndUploadRealtimeReport(
   }
 }
 
-void ReportScheduler::OnReportGenerated(
-    ReportGenerator::ReportRequests requests) {
+void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
   DCHECK_NE(active_trigger_, kTriggerNone);
   if (requests.empty()) {
     SYSLOG(ERROR)
