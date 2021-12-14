@@ -762,6 +762,7 @@ void ArcAppLaunchHandler::StartCpuUsageCount() {
 }
 
 void ArcAppLaunchHandler::StopCpuUsageCount() {
+  probe_service_.reset();
   cpu_tick_count_timer_.Stop();
 }
 
@@ -776,6 +777,9 @@ void ArcAppLaunchHandler::UpdateCpuUsage() {
 
 void ArcAppLaunchHandler::OnCpuUsageUpdated(
     chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
+  if (!probe_service_ || !probe_service_.is_connected())
+    return;
+
   CpuTick tick;
   // For simplicity, assume that device has only one physical CPU.
   for (const auto& logical_cpu :
