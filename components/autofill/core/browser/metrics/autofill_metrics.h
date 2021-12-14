@@ -42,6 +42,11 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
+  enum class MeasurementTime {
+    kFillTime,
+    kSubmissionTime,
+  };
+
   enum AutofillProfileAction {
     EXISTING_PROFILE_USED,
     EXISTING_PROFILE_UPDATED,
@@ -1774,11 +1779,13 @@ class AutofillMetrics {
   // details. Note that this function does not check whether the form contains a
   // credit card field.
   static void LogCreditCardSeamlessFills(
-      const ServerFieldTypeSet& autofilled_types);
+      const ServerFieldTypeSet& autofilled_types,
+      MeasurementTime measurement_time);
 
   // Logs the Autofill.CreditCard.NumberFills metric.
   static void LogCreditCardNumberFills(
-      const ServerFieldTypeSet& autofilled_types);
+      const ServerFieldTypeSet& autofilled_types,
+      MeasurementTime measurement_time);
 
   // This should be called when determining the heuristic types for a form's
   // fields.

@@ -196,6 +196,21 @@ std::string GetCreditCardTypeSuffix(
   }
 }
 
+std::string AppendMeasurementTimeToMetricName(
+    base::StringPiece metric_name,
+    AutofillMetrics::MeasurementTime measurement_time) {
+  base::StringPiece measurement_time_string;
+  switch (measurement_time) {
+    case AutofillMetrics::MeasurementTime::kFillTime:
+      measurement_time_string = "AtFillTime";
+      break;
+    case AutofillMetrics::MeasurementTime::kSubmissionTime:
+      measurement_time_string = "AtSubmissionTime";
+      break;
+  }
+  return base::JoinString({metric_name, measurement_time_string}, ".");
+}
+
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -2431,7 +2446,8 @@ void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
 
 // static
 void AutofillMetrics::LogCreditCardSeamlessFills(
-    const ServerFieldTypeSet& autofilled_types) {
+    const ServerFieldTypeSet& autofilled_types,
+    MeasurementTime measurement_time) {
   bool name = autofilled_types.contains(CREDIT_CARD_NAME_FULL) ||
               (autofilled_types.contains(CREDIT_CARD_NAME_FIRST) &&
                autofilled_types.contains(CREDIT_CARD_NAME_LAST));
@@ -2442,6 +2458,8 @@ void AutofillMetrics::LogCreditCardSeamlessFills(
               (autofilled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
                autofilled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
   bool cvc = autofilled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
+  if (!name && !number && !exp && !cvc)
+    return;
   CreditCardSeamlessFillMetric emit;
   if (name && number && exp && cvc) {
     emit = CreditCardSeamlessFillMetric::kFullFill;
@@ -2456,14 +2474,21 @@ void AutofillMetrics::LogCreditCardSeamlessFills(
   } else {
     emit = CreditCardSeamlessFillMetric::kPartialFill;
   }
-  base::UmaHistogramEnumeration("Autofill.CreditCard.SeamlessFills", emit);
+  base::UmaHistogramEnumeration(
+      AppendMeasurementTimeToMetricName("Autofill.CreditCard.SeamlessFills",
+                                        measurement_time),
+      emit);
 }
 
 // static
 void AutofillMetrics::LogCreditCardNumberFills(
-    const ServerFieldTypeSet& autofilled_types) {
+    const ServerFieldTypeSet& autofilled_types,
+    MeasurementTime measurement_time) {
   bool emit = autofilled_types.contains(CREDIT_CARD_NUMBER);
-  base::UmaHistogramBoolean("Autofill.CreditCard.NumberFills", emit);
+  base::UmaHistogramBoolean(
+      AppendMeasurementTimeToMetricName("Autofill.CreditCard.NumberFills",
+                                        measurement_time),
+      emit);
 }
 
 // static
