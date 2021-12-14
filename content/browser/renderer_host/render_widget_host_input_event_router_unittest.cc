@@ -81,45 +81,6 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   raw_ptr<RenderWidgetHostViewBase> root_view_;
 };
 
-// Used as a target for the RenderWidgetHostInputEventRouter. We record what
-// events were forwarded to us in order to verify that the events are being
-// routed correctly.
-class TestRenderWidgetHostViewChildFrame
-    : public RenderWidgetHostViewChildFrame {
- public:
-  explicit TestRenderWidgetHostViewChildFrame(RenderWidgetHost* widget)
-      : RenderWidgetHostViewChildFrame(widget, display::ScreenInfos()) {
-    Init();
-  }
-  ~TestRenderWidgetHostViewChildFrame() override = default;
-
-  void ProcessGestureEvent(const blink::WebGestureEvent& event,
-                           const ui::LatencyInfo&) override {
-    last_gesture_seen_ = event.GetType();
-  }
-
-  void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
-      blink::mojom::InputEventResultState ack_result) override {
-    unique_id_for_last_touch_ack_ = touch.event.unique_touch_event_id;
-  }
-
-  blink::WebInputEvent::Type last_gesture_seen() { return last_gesture_seen_; }
-  uint32_t last_id_for_touch_ack() { return unique_id_for_last_touch_ack_; }
-
-  void Reset() { last_gesture_seen_ = blink::WebInputEvent::Type::kUndefined; }
-
-  void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
-  ui::Compositor* GetCompositor() override { return compositor_; }
-
- private:
-  blink::WebInputEvent::Type last_gesture_seen_ =
-      blink::WebInputEvent::Type::kUndefined;
-  uint32_t unique_id_for_last_touch_ack_ = 0;
-
-  raw_ptr<ui::Compositor> compositor_;
-};
-
 class StubHitTestQuery : public viz::HitTestQuery {
  public:
   StubHitTestQuery(RenderWidgetHostViewBase* hittest_result,

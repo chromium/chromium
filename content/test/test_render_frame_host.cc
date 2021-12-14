@@ -10,6 +10,7 @@
 
 #include "base/guid.h"
 #include "base/run_loop.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -238,6 +239,13 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
   // TODO(crbug.com/1222510): Add TestPage and use it.
   GetPage().UpdateManifestUrl(manifest_url);
+}
+
+TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame() {
+  fenced_frames_.push_back(
+      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef()));
+  return static_cast<TestRenderFrameHost*>(
+      fenced_frames_.back().get()->GetInnerRoot());
 }
 
 void TestRenderFrameHost::SendNavigate(int nav_entry_id,

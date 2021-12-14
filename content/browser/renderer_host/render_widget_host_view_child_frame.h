@@ -112,7 +112,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
-  void ShowWithVisibility(PageVisibilityState page_visibility) final;
+  void ShowWithVisibility(PageVisibilityState page_visibility) override;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,

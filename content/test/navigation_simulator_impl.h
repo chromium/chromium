@@ -221,6 +221,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
         has_potentially_trustworthy_unique_origin;
   }
 
+  void set_supports_loading_mode_header(std::string value) {
+    supports_loading_mode_header_ = value;
+  }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,
@@ -413,6 +417,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool was_aborted_prior_to_ready_to_commit_ = false;
 
   bool early_hints_preload_link_header_received_ = false;
+
+  std::string supports_loading_mode_header_;
 
   absl::optional<bool> was_prerendered_page_activation_;
 

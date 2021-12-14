@@ -18,6 +18,7 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -171,6 +172,38 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 };
 
+// TestRenderWidgetHostViewChildFrame -----------------------------------------
+
+// Test version of RenderWidgetHostViewChildFrame to use in unit tests.
+class TestRenderWidgetHostViewChildFrame
+    : public RenderWidgetHostViewChildFrame {
+ public:
+  explicit TestRenderWidgetHostViewChildFrame(RenderWidgetHost* rwh);
+  ~TestRenderWidgetHostViewChildFrame() override = default;
+
+  blink::WebInputEvent::Type last_gesture_seen() { return last_gesture_seen_; }
+
+  void Reset();
+  void SetCompositor(ui::Compositor* compositor);
+  ui::Compositor* GetCompositor() override;
+
+ private:
+  void SetBounds(const gfx::Rect& rect) override {}
+  void Hide() override {}
+  void SetInsets(const gfx::Insets& insets) override {}
+
+  void SendInitialPropertiesIfNeeded() override {}
+  void ShowWithVisibility(PageVisibilityState) override {}
+  void DidNavigate() override {}
+
+  void ProcessGestureEvent(const blink::WebGestureEvent& event,
+                           const ui::LatencyInfo&) override;
+
+  blink::WebInputEvent::Type last_gesture_seen_ =
+      blink::WebInputEvent::Type::kUndefined;
+  raw_ptr<ui::Compositor> compositor_;
+};
+
 // TestRenderViewHost ----------------------------------------------------------
 
 // TODO(brettw) this should use a TestWebContents which should be generalized
@@ -206,9 +239,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 // similar to (b) above, essentially it gets very tricky.  By using
 // the split interface we avoid complexity within content and maintain
 // reasonable utility for embedders.
-class TestRenderViewHost
-    : public RenderViewHostImpl,
-      public RenderViewHostTester {
+class TestRenderViewHost : public RenderViewHostImpl,
+                           public RenderViewHostTester {
  public:
   TestRenderViewHost(FrameTree* frame_tree,
                      SiteInstance* instance,

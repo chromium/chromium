@@ -141,7 +141,14 @@ class NavigationSimulator {
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
       NavigationController& controller);
 
-  virtual ~NavigationSimulator() {}
+  // Creates a NavigationSimulator that will be used to simulate a
+  // renderer-initiated navigation of a fenced frame root (|render_frame_host|)
+  // to |original_url|.
+  static std::unique_ptr<NavigationSimulator> CreateForFencedFrame(
+      const GURL& original_url,
+      RenderFrameHost* fenced_frame_root);
+
+  virtual ~NavigationSimulator() = default;
 
   // --------------------------------------------------------------------------
 

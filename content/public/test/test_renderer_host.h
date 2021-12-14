@@ -135,6 +135,9 @@ class RenderFrameHostTester {
 
   // Simulates the receipt of a manifest URL.
   virtual void SimulateManifestURLUpdate(const GURL& manifest_url) = 0;
+
+  // Creates and appends a fenced frame.
+  virtual RenderFrameHost* AppendFencedFrame() = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.

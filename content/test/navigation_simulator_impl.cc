@@ -322,6 +322,20 @@ NavigationSimulatorImpl::CreateFromPendingInFrame(
   return simulator;
 }
 
+// static
+std::unique_ptr<NavigationSimulator> NavigationSimulator::CreateForFencedFrame(
+    const GURL& original_url,
+    RenderFrameHost* fenced_frame_root) {
+  DCHECK(fenced_frame_root->IsFencedFrameRoot());
+  std::unique_ptr<NavigationSimulatorImpl> simulator =
+      NavigationSimulatorImpl::CreateRendererInitiated(original_url,
+                                                       fenced_frame_root);
+  simulator->set_supports_loading_mode_header("fenced-frame");
+  simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  simulator->set_should_replace_current_entry(true);
+  return simulator;
+}
+
 NavigationSimulatorImpl::NavigationSimulatorImpl(
     const GURL& original_url,
     bool browser_initiated,
@@ -571,6 +585,9 @@ void NavigationSimulatorImpl::ReadyToCommit() {
   }
 
   response_headers_->SetHeader("Content-Type", contents_mime_type_);
+  if (!supports_loading_mode_header_.empty())
+    response_headers_->SetHeader("Supports-Loading-Mode",
+                                 supports_loading_mode_header_);
   PrepareCompleteCallbackOnRequest();
   request_->set_ready_to_commit_callback_for_testing(
       base::BindOnce(&NavigationSimulatorImpl::ReadyToCommitComplete,
