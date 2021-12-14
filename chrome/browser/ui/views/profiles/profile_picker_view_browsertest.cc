@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // confirmation should appear.
   Profile* profile_being_created = SignInForNewProfile(
       GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
-  EXPECT_NE(profile_to_cancel, profile_being_created);
+  EXPECT_NE(canceled_path, profile_being_created->GetPath());
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
