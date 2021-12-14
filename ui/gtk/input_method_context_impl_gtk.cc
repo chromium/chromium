@@ -256,4 +256,9 @@ void InputMethodContextImplGtk::SetContentType(ui::TextInputType input_type,
   // Do nothing.
 }
 
+ui::VirtualKeyboardController*
+InputMethodContextImplGtk::GetVirtualKeyboardController() {
+  return nullptr;
+}
+
 }  // namespace gtk

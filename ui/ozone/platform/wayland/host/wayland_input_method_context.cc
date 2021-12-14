@@ -396,6 +396,12 @@ void WaylandInputMethodContext::SetContentType(TextInputType input_type,
   text_input_->SetContentType(content_hint, content_purpose);
 }
 
+VirtualKeyboardController*
+WaylandInputMethodContext::GetVirtualKeyboardController() {
+  // TODO(crbug.com/1141531): return VirtualKeyboardController for wayland.
+  return nullptr;
+}
+
 void WaylandInputMethodContext::OnPreeditString(
     base::StringPiece text,
     const std::vector<SpanStyle>& spans,

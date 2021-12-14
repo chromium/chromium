@@ -50,6 +50,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Reset() override;
   void Focus() override;
   void Blur() override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 
   // WaylandWindowObserver overrides:
   void OnKeyboardFocusedWindowChanged() override;

@@ -433,6 +433,11 @@ bool InputMethodAuraLinux::IsCandidatePopupOpen() const {
   return false;
 }
 
+VirtualKeyboardController*
+InputMethodAuraLinux::GetVirtualKeyboardController() {
+  return context_->GetVirtualKeyboardController();
+}
+
 // Overriden from ui::LinuxInputMethodContextDelegate
 
 void InputMethodAuraLinux::OnCommit(const std::u16string& text) {

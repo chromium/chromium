@@ -15,6 +15,7 @@
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
+#include "ui/base/ime/virtual_keyboard_controller_stub.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -84,6 +85,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   void AddCompositionStartAction() { actions_.push_back(u"S"); }
 
   void AddCompositionEndAction() { actions_.push_back(u"E"); }
+
+  VirtualKeyboardController* GetVirtualKeyboardController() override {
+    return &virtual_keyboard_controller_;
+  }
 
  protected:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override {
@@ -156,6 +161,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
  private:
   LinuxInputMethodContextDelegate* delegate_;
+  VirtualKeyboardControllerStub virtual_keyboard_controller_;
   std::vector<std::u16string> actions_;
   bool is_sync_mode_;
   bool eat_key_;
@@ -929,6 +935,11 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   test_result_->ExpectAction("selectionrangestart:7");
   test_result_->ExpectAction("selectionrangeend:9");
   test_result_->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {
+  EXPECT_EQ(input_method_auralinux_->GetVirtualKeyboardController(),
+            context_->GetVirtualKeyboardController());
 }
 
 }  // namespace

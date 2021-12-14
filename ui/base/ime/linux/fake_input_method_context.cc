@@ -38,4 +38,9 @@ void FakeInputMethodContext::SetSurroundingText(
 void FakeInputMethodContext::SetContentType(TextInputType input_type,
                                             int input_flags) {}
 
+VirtualKeyboardController*
+FakeInputMethodContext::GetVirtualKeyboardController() {
+  return nullptr;
+}
+
 }  // namespace ui

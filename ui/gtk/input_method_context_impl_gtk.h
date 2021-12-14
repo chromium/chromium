@@ -40,6 +40,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
   void SetContentType(ui::TextInputType input_type, int input_flags) override;
+  ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
   // GtkIMContext event handlers.  They are shared among |gtk_context_simple_|
