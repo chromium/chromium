@@ -5130,8 +5130,8 @@ int RenderFrameHostImpl::GetEnabledBindings() {
 
 void RenderFrameHostImpl::SetWebUIProperty(const std::string& name,
                                            const std::string& value) {
-  // WebUI allows to register SetProperties only for the main frame.
-  if (GetParent())
+  // WebUI allows to register SetProperties only for the outermost main frame.
+  if (GetParentOrOuterDocument())
     return;
 
   // This is a sanity check before telling the renderer to enable the property.
