@@ -161,6 +161,10 @@
     grid-row: 1;
   }
 
+  #layoutSwitchKey {
+    --keyboard-key-icon-size: 60%;
+  }
+
   /* Modifications for Assistant key */
 
   [data-show-assistant-key] #leftCtrlKey {
@@ -308,8 +312,7 @@
     <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
       <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
-      <!-- TODO(crbug.com/1207678): Add an icon for the layout switch key. -->
-      <keyboard-key id="layoutSwitchKey" main-glyph="[g]"></keyboard-key>
+      <keyboard-key id="layoutSwitchKey" icon="keyboard:layout-switch"></keyboard-key>
     </template>
     <template is="dom-if" if="[[showAssistantKey]]">
       <keyboard-key icon="keyboard:assistant"></keyboard-key>

@@ -8,6 +8,7 @@
         var(--keyboard-key-top-radii, 3px)
         var(--keyboard-key-bottom-right-radius, 3px)
         3px;
+    --icon-size: var(--keyboard-key-icon-size, 100%);
     --travel: var(--keyboard-key-travel, 3px);
     --foreground-color-unpressed: hsl(214deg 82% 51%);
     --foreground-color-pressed: hsl(213deg 23% 91%);
@@ -45,8 +46,8 @@
 
   iron-icon {
     --iron-icon-fill-color: var(--foreground-color-unpressed);
-    --iron-icon-height: 100%;
-    --iron-icon-width: 100%;
+    --iron-icon-height: var(--icon-size);
+    --iron-icon-width: var(--icon-size);
   }
 
   :host(.left) iron-icon,
