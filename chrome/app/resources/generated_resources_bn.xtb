@@ -1738,7 +1738,6 @@
 <translation id="2738771556149464852">এরপরে নয়</translation>
 <translation id="2739191690716947896">ডিবাগ</translation>
 <translation id="2739240477418971307">আপনার ব্যবহারযোগ্যতার সেটিংস পরিবর্তন করুন</translation>
-<translation id="2739965161385757621">আমার সেটিংস পর্যালোচনা করুন</translation>
 <translation id="274029851662193272">ভিতরের দিকে চাপা</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2741713322780029189">রিকভারি টার্মিনাল খুলুন</translation>
@@ -1867,7 +1866,6 @@
 <translation id="2864601841139725659">আপনার প্রোফাইল ফটো সেট করুন</translation>
 <translation id="2865919525181940183">স্ক্রিনে এখন যেসকল প্রোগ্রাম দেখা যাচ্ছে সেগুলির স্ক্রিনশট</translation>
 <translation id="286674810810214575">পাওয়ার সোর্স পরীক্ষা করা হচ্ছে...</translation>
-<translation id="2866876751734765554">গোপনীয়তা রিভিউ</translation>
 <translation id="2867768963760577682">পিন করা ট্যাব হিসেবে খুলুন</translation>
 <translation id="2868746137289129307">এই এক্সটেনশানটির পুরনো ভার্সনের এবং এন্টারপ্রাইজ নীতি বন্ধ করা রয়েছে৷ যখনই নতুন ভার্সন উপলভ্য থাকবে তখন এটি স্বয়ংক্রিয়ভারে চালু হবে৷</translation>
 <translation id="2870560284913253234">সাইট</translation>
@@ -2413,7 +2411,6 @@
 <translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
 <translation id="344630545793878684">কতগুলি ওয়েবসাইটে আপনার ডেটা পড়ে</translation>
 <translation id="3446650212859500694">এই ফাইলে সংবেদনশীল কন্টেন্ট আছে</translation>
-<translation id="3446827946208017735">এক জায়গা থেকে সবথেকে গুরুত্বপূর্ণ গোপনীয়তা সেটিংস বুঝে নিয়ে তার পর্যালোচনা করুন</translation>
 <translation id="3447644283769633681">সমস্ত তৃতীয়-পক্ষ কুকি অবরোধ করুন</translation>
 <translation id="3448086340637592206">Google Chrome ও Chrome OS-এর অতিরিক্ত শর্তাবলী</translation>
 <translation id="3448492834076427715">অ্যাকাউন্ট আপডেট করুন</translation>
@@ -3343,6 +3340,7 @@
 <translation id="4423376891418188461">সেটিংস পুনরুদ্ধার করুন</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, আপনার প্রশাসক চায় যে আপনি আপনার পাসওয়ার্ড পরিবর্তন করুন।</translation>
 <translation id="4426464032773610160">শুরু করতে আপনার Chromebook-এর সাথে USB বা ব্লুটুথ সুইচ কানেক্ট করা আছে কিনা ভাল করে দেখে নিন। আপনি কীবোর্ডের কী ব্যবহার করেও করতে পারেন।</translation>
+<translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
 <translation id="4427365070557649936">কনফার্মেশন কোড যাচাই করা হচ্ছে...</translation>
 <translation id="4429163740524851942">ফিজিক্যাল কীবোর্ড লেআউট</translation>
 <translation id="4430019312045809116">ভলিউম</translation>

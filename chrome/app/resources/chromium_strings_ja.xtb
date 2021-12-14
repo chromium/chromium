@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2347108572062610441">この拡張機能により、Chromium の起動時に表示されるページが変更されました。</translation>
+<translation id="2359808026110333948">続行</translation>
 <translation id="2396765026452590966">拡張機能「<ph name="EXTENSION_NAME" />」により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2483889755041906834">Chromium 内</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
 <translation id="4415566066719264597">Chromium をバックグラウンドで実行する</translation>
 <translation id="4423735387467980091">Chromium の設定</translation>
+<translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="452711251841752011">Chromium へようこそ。新しいブラウザ ウィンドウが開いています</translation>
 <translation id="4544142686420020088">エラーが発生したため、Chromium が更新されませんでした。<ph name="BEGIN_LINK" />Chromium の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">新しい Chromium プロフィールで続行しますか？</translation>

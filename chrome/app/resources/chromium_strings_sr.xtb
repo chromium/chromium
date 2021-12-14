@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chromium-у. Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетну датотеку, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање.</translation>
 <translation id="2343156876103232566">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chromium на оба уређаја.</translation>
 <translation id="2347108572062610441">Овај додатак је променио страницу која се приказује када покренете Chromium.</translation>
+<translation id="2359808026110333948">Наставите</translation>
 <translation id="2396765026452590966">Додатак „<ph name="EXTENSION_NAME" />“ је променио страницу која се приказује када покренете Chromium.</translation>
 <translation id="2401032172288869980">Chromium-у су потребне дозволе за камеру и микрофон за овај сајт</translation>
 <translation id="2483889755041906834">У Chromium-у</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Желите ли ипак да затворите Chromium?</translation>
 <translation id="4415566066719264597">Нека Chromium ради у позадини</translation>
 <translation id="4423735387467980091">Прилагодите и контролишите Chromium</translation>
+<translation id="4427306783828095590">Побољшана заштита нуди више могућности за блокирање „пецања“ и малвера</translation>
 <translation id="452711251841752011">Добро дошли у Chromium; отворен је нови прозор прегледача</translation>
 <translation id="4544142686420020088">Chromium се није ажурирао. Дошло је до грешке. <ph name="BEGIN_LINK" />Отклоните проблеме са ажурирањем Chromium-а и неуспела ажурирања.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Желите да наставите на новом Chromium профилу?</translation>

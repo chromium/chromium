@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Chromiumରେ ଷ୍ଟୋର କରାଯାଇଥିବା ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା ସହିତ URLଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ସାଇଟ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ ଡାଉନଲୋଡ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chromium ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ।</translation>
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2347108572062610441">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌ ଏହା ପରିବର୍ତ୍ତନ କରିଛି ଯେ ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ।</translation>
+<translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2396765026452590966">ଆପଣ ଯେତେବେଳେ Chromium ଆରମ୍ଭ କରିବେ, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯିବ ତାହା "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍ ବଦଳାଇଦିଏ।</translation>
 <translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2483889755041906834">Chromiumରେ</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">ଯେକୌଣସିମତେ Chromiumରୁ ବାହାରିବେ?</translation>
 <translation id="4415566066719264597">ପୃଷ୍ଠପଟରେ Chromiumକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="4423735387467980091">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
+<translation id="4427306783828095590">ଉନ୍ନତ ସୁରକ୍ଷା ଫିସିଂ ଓ ମାଲୱେୟାରକୁ ବ୍ଲକ୍ କରିବାକୁ ଅନେକ କିଛି କରେ</translation>
 <translation id="452711251841752011">Chromiumକୁ ସ୍ୱାଗତ; ନୂଆ ବ୍ରାଉଜର୍ ୱିଣ୍ଡୋ ଖୋଲାଯାଇଛି</translation>
 <translation id="4544142686420020088">Chromium ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chromium ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>

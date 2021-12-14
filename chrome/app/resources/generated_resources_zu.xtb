@@ -1737,7 +1737,6 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="2738771556149464852">Hhayi ngemuva</translation>
 <translation id="2739191690716947896">Lungisa isiphazamisi</translation>
 <translation id="2739240477418971307">Shintsha izilungiselelo zakho zokufinyelela</translation>
-<translation id="2739965161385757621">Buyekeza amasethingi wami</translation>
 <translation id="274029851662193272">Icindezelwe phansi</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Vula itheminali yokubuyisela</translation>
@@ -1866,7 +1865,6 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="2864601841139725659">Setha isithombe sakho sephrofayela</translation>
 <translation id="2865919525181940183">Isithombe-skrini sezinhlelo manje ezikusikrini</translation>
 <translation id="286674810810214575">Ihlola imithombo yesiphequluli...</translation>
-<translation id="2866876751734765554">Ukubuyekeza kobumfihlo</translation>
 <translation id="2867768963760577682">Vula njengethebhu ephiniwe</translation>
 <translation id="2868746137289129307">Lesi sandiso siphelelwe isikhathi futhi sikhutshazwe inqubomgomo yebhizinisi. Singahle sinikwe amandla ngokuzenzakalelayo uma inguqulo entsha itholakala.</translation>
 <translation id="2870560284913253234">Isayithi</translation>
@@ -2412,7 +2410,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3446274660183028131">Sicela uqalise i-Parallels Desktop ukuze ufake i-Windows.</translation>
 <translation id="344630545793878684">Funda idatha yakho kumawebhusayithi athile</translation>
 <translation id="3446650212859500694">Leli fayela linokuqukethwe okuzwelayo</translation>
-<translation id="3446827946208017735">Qonda futhi ubuyekeze amasethingi wobumfihlo abucayi kakhulu endaweni eyodwa</translation>
 <translation id="3447644283769633681">Vimba wonke amakhukhi wenkampani yangaphandle</translation>
 <translation id="3448086340637592206">I-Google Chrome Nemigomo Yokungezwa ye-Chrome OS</translation>
 <translation id="3448492834076427715">Buyekeza i-akhawunti</translation>
@@ -3342,6 +3339,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4423376891418188461">Buyisela izilungiselelo</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, umlawuli wakho udinga ukuthi ushintshe iphasiwedi yakho.</translation>
 <translation id="4426464032773610160">Ukuze uqalise, sicela uqiniseke ukuthi i-USB yakho noma iswishi ye-Bluethooth ixhunyiwe ku-Chromebook yakho. Ungasebenzisa nokhiye bekhibhodi yakho.</translation>
+<translation id="4427306783828095590">Isivikelo esithuthukisiwe senza okuningi ukuvimba ubugebengu bokweba imininingwane ebucayi kanye uhlelo olungayilungele ikhompyutha</translation>
 <translation id="4427365070557649936">Iqinisekisa ikhodi yokuqinisekisa...</translation>
 <translation id="4429163740524851942">Uhlaka lwekhibhodi engokoqobo</translation>
 <translation id="4430019312045809116">Ivolumu</translation>

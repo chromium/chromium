@@ -1724,7 +1724,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2738771556149464852">Nikoli po</translation>
 <translation id="2739191690716947896">Ladit</translation>
 <translation id="2739240477418971307">Změnit nastavení přístupnosti</translation>
-<translation id="2739965161385757621">Zkontrolovat nastavení</translation>
 <translation id="274029851662193272">Ryté</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Otevřít terminál pro obnovení</translation>
@@ -1853,7 +1852,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2864601841139725659">Nastavení profilové fotky</translation>
 <translation id="2865919525181940183">Snímek obrazovky programů, které jsou aktuálně na obrazovce.</translation>
 <translation id="286674810810214575">Probíhá kontrola zdrojů napájení...</translation>
-<translation id="2866876751734765554">Kontrola ochrany soukromí</translation>
 <translation id="2867768963760577682">Otevřít jako připnutou kartu</translation>
 <translation id="2868746137289129307">Toto rozšíření je zastaralé a je zakázáno podnikovou zásadou. Možná bude opět automaticky povoleno, až bude k dispozici novější verze.</translation>
 <translation id="2870560284913253234">Stránky</translation>
@@ -2399,7 +2397,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3446274660183028131">Pokud chcete nainstalovat systém Windows, spusťte nástroj Parallels Desktop.</translation>
 <translation id="344630545793878684">Čtení vašich dat na mnoha webech</translation>
 <translation id="3446650212859500694">Obsah tohoto souboru je citlivý</translation>
-<translation id="3446827946208017735">Zkontrolujte většinu důležitých nastavení ochrany soukromí na jednom místě</translation>
 <translation id="3447644283769633681">Blokovat všechny soubory cookie třetích stran</translation>
 <translation id="3448086340637592206">Doplňující smluvní podmínky prohlížeče Google Chrome a systému Chrome OS</translation>
 <translation id="3448492834076427715">Aktualizovat účet</translation>
@@ -3329,6 +3326,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4423376891418188461">Obnovit nastavení</translation>
 <translation id="442397852638519243">Zpráva pro uživatele <ph name="USER_NAME" />: váš administrátor vyžaduje, abyste si změnili heslo.</translation>
 <translation id="4426464032773610160">Na začátku je třeba mít přepínač USB nebo Bluetooth zapojený do Chromebooku. Můžete také použít klávesnici.</translation>
+<translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
 <translation id="4427365070557649936">Ověřování potvrzovacího kódu…</translation>
 <translation id="4429163740524851942">Rozložení fyzické klávesnice</translation>
 <translation id="4430019312045809116">Hlasitost</translation>

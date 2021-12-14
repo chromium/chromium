@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromiumএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহো সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
 <translation id="2343156876103232566">ইয়াৰ পৰা আপোনাৰ Android ফ’নলৈ নম্বৰ পঠিয়াবলৈ দুয়োটা ডিভাইচত Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="2347108572062610441">আপুনি Chromium আৰম্ভ কৰিলে কি পৃষ্ঠা দেখুওৱা হ‘ব এই এক্সটেনশ্বনটোৱে সেইটো সলনি কৰিছে।</translation>
+<translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2396765026452590966">আপুনি Chromium আৰম্ভ কৰিলে কোনটো পৃষ্ঠা দেখুওৱা হ’ব সেয়া "<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনে সলনি কৰিছে৷</translation>
 <translation id="2401032172288869980">Chromiumক এই ছাইটটোৰ বাবে মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="2483889755041906834">Chromiumত</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">যিকোনো প্ৰকাৰে Chromiumৰ পৰা বাহিৰ হ’বনে?</translation>
 <translation id="4415566066719264597">Chromiumক নেপথ্যত চলিবলৈ দিয়ক</translation>
 <translation id="4423735387467980091">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক</translation>
+<translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="452711251841752011">Chromiumলৈ স্বাগতম; নতুন ব্ৰাউজাৰৰ ৱিণ্ড’ খোলা হৈছে</translation>
 <translation id="4544142686420020088">Chromium আপডে'ট হোৱা নাই, কিবা ভুল হৈছে। <ph name="BEGIN_LINK" />Chromiumৰ আপডে'ট সম্পর্কীয় সমস্যাবোৰ আৰু বিফল হোৱা আপডে'টসমূহ সমাধান কৰক।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">এটা নতুন Chromium প্ৰ'ফাইলত অব্যাহত ৰাখিবনে?</translation>

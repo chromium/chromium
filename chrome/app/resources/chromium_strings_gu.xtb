@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="2343156876103232566">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromiumમાં સાઇન ઇન કરો.</translation>
 <translation id="2347108572062610441">જ્યારે તમે Chromium શરૂ કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે આ એક્સટેન્શને બદલ્યું છે.</translation>
+<translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2396765026452590966">જ્યારે તમે Chromium શરૂ કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="2401032172288869980">આ સાઇટ માટે Chromiumને કૅમેરા અને માઇક્રોફોનની પરવાનગીઓની જરૂર છે</translation>
 <translation id="2483889755041906834">Chromium માં</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">છતાં પણ Chromiumમાંથી બહાર નિકળવું છે?</translation>
 <translation id="4415566066719264597">Chromiumને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="4423735387467980091">Chromium ને કસ્ટમાઇઝ અને નિયંત્રિત કરો</translation>
+<translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="452711251841752011">Chromium પર આપનું સ્વાગત છે; નવી બ્રાઉઝર વિન્ડો ખોલી છે</translation>
 <translation id="4544142686420020088">કંઈક ખોટુ થયું હોવાને કારણે Chromium અપડેટ થયું નથી. <ph name="BEGIN_LINK" />Chromium અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">નવી Chromium પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>

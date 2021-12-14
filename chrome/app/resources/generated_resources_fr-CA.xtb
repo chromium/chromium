@@ -1724,7 +1724,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2739191690716947896">Débogage</translation>
 <translation id="2739240477418971307">Modifier vos paramètres d'accessibilité</translation>
-<translation id="2739965161385757621">Vérifier mes paramètres</translation>
 <translation id="274029851662193272">Surbaissé</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Ouvrir le terminal de récupération</translation>
@@ -1853,7 +1852,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
 <translation id="2865919525181940183">Capture d'écran des programmes qui sont présentement à l'écran</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation en cours…</translation>
-<translation id="2866876751734765554">Vérification de la confidentialité</translation>
 <translation id="2867768963760577682">Ouvrir dans un onglet épinglé</translation>
 <translation id="2868746137289129307">Cette extension est obsolète et désactivée par la politique de l'entreprise. Il est possible qu’elle s’active automatiquement lorsqu’une nouvelle version sera disponible.</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -2398,7 +2396,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur un nombre défini de sites Web</translation>
 <translation id="3446650212859500694">Le contenu de ce fichier est délicat</translation>
-<translation id="3446827946208017735">Vérifiez les paramètres de confidentialité les plus importants au même endroit</translation>
 <translation id="3447644283769633681">Bloquez tous les témoins tiers</translation>
 <translation id="3448086340637592206">Conditions supplémentaires pour Google Chrome et Chrome OS</translation>
 <translation id="3448492834076427715">Mettre à jour le compte</translation>
@@ -3328,6 +3325,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4423376891418188461">Restaurer les paramètres</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, votre administrateur vous demande de changer votre mot de passe.</translation>
 <translation id="4426464032773610160">Pour commencer, veuillez vous assurer que votre commutateur USB ou Bluetooth est connecté à votre Chromebook. Vous pouvez aussi utiliser les touches du clavier.</translation>
+<translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4427365070557649936">Vérification du code de confirmation en cours…</translation>
 <translation id="4429163740524851942">Disposition du clavier physique</translation>
 <translation id="4430019312045809116">Volume</translation>

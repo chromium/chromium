@@ -1738,7 +1738,6 @@
 <translation id="2738771556149464852">만료:</translation>
 <translation id="2739191690716947896">디버그</translation>
 <translation id="2739240477418971307">접근성 설정 변경</translation>
-<translation id="2739965161385757621">내 설정 검토</translation>
 <translation id="274029851662193272">음각</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2741713322780029189">복구 터미널 열기</translation>
@@ -1867,7 +1866,6 @@
 <translation id="2864601841139725659">프로필 사진 설정</translation>
 <translation id="2865919525181940183">현재 화면에 표시된 프로그램의 스크린샷</translation>
 <translation id="286674810810214575">전원 확인 중...</translation>
-<translation id="2866876751734765554">개인 정보 보호 검토</translation>
 <translation id="2867768963760577682">고정 탭으로 열기</translation>
 <translation id="2868746137289129307">이 확장 프로그램은 오래된 것이며 기업 정책에 의해 중지되었습니다. 새로운 버전이 있는 경우 자동으로 사용 설정될 수 있습니다.</translation>
 <translation id="2870560284913253234">사이트</translation>
@@ -2413,7 +2411,6 @@
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
 <translation id="3446650212859500694">민감한 콘텐츠가 있는 파일입니다.</translation>
-<translation id="3446827946208017735">한곳에서 가장 중요한 개인 정보 보호 설정을 확인하고 검토하세요.</translation>
 <translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
 <translation id="3448086340637592206">Chrome 및 Chrome OS 추가 약관</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
@@ -3342,6 +3339,7 @@
 <translation id="4423376891418188461">설정 복원</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />님, 관리자가 비밀번호 변경을 요청했습니다.</translation>
 <translation id="4426464032773610160">시작하려면 USB 또는 블루투스 스위치가 Chromebook에 연결되어 있는지 확인하세요. 키보드 키를 사용할 수도 있습니다.</translation>
+<translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4427365070557649936">확인 코드 확인 중…</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
 <translation id="4430019312045809116">볼륨</translation>

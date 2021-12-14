@@ -1731,7 +1731,6 @@
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
 <translation id="2739240477418971307">تغيير إعدادات إمكانية الوصول</translation>
-<translation id="2739965161385757621">مراجعة الإعدادات</translation>
 <translation id="274029851662193272">منخفضة</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2741713322780029189">فتح الوحدة الطرفية للاسترداد</translation>
@@ -1861,7 +1860,6 @@
 <translation id="2864601841139725659">تعيين صورة الملف الشخصي</translation>
 <translation id="2865919525181940183">لقطة شاشة للبرامج التي تظهر على الشاشة حاليًا</translation>
 <translation id="286674810810214575">جارٍ التحقق من مصادر الطاقة...</translation>
-<translation id="2866876751734765554">مراجعة الخصوصية</translation>
 <translation id="2867768963760577682">فتح كعلامة تبويب مثبتة</translation>
 <translation id="2868746137289129307">تعتبر هذه الإضافة قديمة وغير مفعّلة بواسطة سياسة المؤسسة. وقد تصبح مفعّلة تلقائيًا عندما يتوفر إصدار أحدث.</translation>
 <translation id="2870560284913253234">الموقع</translation>
@@ -2410,7 +2408,6 @@
 <translation id="3446274660183028131">‏يُرجى تشغيل نظام Parallels Desktop لتثبيت نظام التشغيل Windows.</translation>
 <translation id="344630545793878684">قراءة بياناتك على عدد من المواقع الإلكترونية</translation>
 <translation id="3446650212859500694">هذا الملف به محتوى حسّاس.</translation>
-<translation id="3446827946208017735">فهم الإعدادات المُهمّة للخصوصية ومراجعتها من مكان واحد</translation>
 <translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط للأطراف الثالثة</translation>
 <translation id="3448086340637592206">‏بنود الخدمة الإضافية لكلٍّ من متصفّح Google Chrome و"نظام التشغيل Chrome"</translation>
 <translation id="3448492834076427715">تحديث الحساب</translation>
@@ -3339,6 +3336,7 @@
 <translation id="4423376891418188461">استعادة الإعدادات</translation>
 <translation id="442397852638519243">يا <ph name="USER_NAME" />، يطلب منك مشرفك تغيير كلمة المرور.</translation>
 <translation id="4426464032773610160">‏للبدء، يُرجى التأكُّد من توصيل مفتاح تبديل يعمل باستخدام USB أو بلوتوث بجهاز Chromebook. ويمكنك أيضًا استخدام مفاتيح لوحة المفاتيح.</translation>
+<translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
 <translation id="4427365070557649936">جارٍ التحقّق من رمز تأكيد البيانات...</translation>
 <translation id="4429163740524851942">تنسيق لوحة المفاتيح الفعلية</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>

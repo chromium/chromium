@@ -1738,7 +1738,6 @@
 <translation id="2738771556149464852">לא אחרי</translation>
 <translation id="2739191690716947896">ניפוי באגים</translation>
 <translation id="2739240477418971307">שינוי הגדרות הנגישות שלך</translation>
-<translation id="2739965161385757621">בדיקת ההגדרות שלי</translation>
 <translation id="274029851662193272">שקוע</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2741713322780029189">פתיחת טרמינל שחזור</translation>
@@ -1867,7 +1866,6 @@
 <translation id="2864601841139725659">הגדרת תמונת הפרופיל</translation>
 <translation id="2865919525181940183">צילום מסך של התוכנות שמוצגות כרגע במסך</translation>
 <translation id="286674810810214575">מקורות החשמל בבדיקה…</translation>
-<translation id="2866876751734765554">בדיקת הגדרות פרטיות</translation>
 <translation id="2867768963760577682">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="2868746137289129307">תוסף זה הוא מיושן והושבת בהתאם למדיניות הארגון. ייתכן שהוא יופעל באופן אוטומטי כשתצא גרסה חדשה יותר.</translation>
 <translation id="2870560284913253234">אתר</translation>
@@ -2413,7 +2411,6 @@
 <translation id="3446274660183028131">‏יש להפעיל את Parallels Desktop כדי להתקין את Windows.</translation>
 <translation id="344630545793878684">קריאת הנתונים שלך במספר אתרים</translation>
 <translation id="3446650212859500694">הקובץ הזה מכיל תוכן רגיש</translation>
-<translation id="3446827946208017735">הבנת ובדיקת הגדרות הפרטיות החשובות ביותר – במקום אחד.</translation>
 <translation id="3447644283769633681">‏חסום את כל קובצי ה-Cookie של צד שלישי</translation>
 <translation id="3448086340637592206">‏תנאים נוספים של Google Chrome ו-Chrome OS</translation>
 <translation id="3448492834076427715">עדכון חשבון</translation>
@@ -3344,6 +3341,7 @@
 <translation id="4423376891418188461">שחזור הגדרות</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, מנהל המערכת מבקש ממך לשנות את הסיסמה שלך.</translation>
 <translation id="4426464032773610160">‏כדי להתחיל, עליך לוודא שהמתג ב-USB או ב-Bluetooth מחובר ל-Chromebook. ניתן גם להשתמש במקשי המקלדת.</translation>
+<translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4427365070557649936">בתהליך אימות של קוד האישור...</translation>
 <translation id="4429163740524851942">פריסת מקלדת פיזית</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>

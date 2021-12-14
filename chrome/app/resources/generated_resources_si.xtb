@@ -1730,7 +1730,6 @@
 <translation id="2738771556149464852">පසුව නොවේ</translation>
 <translation id="2739191690716947896">නිදොස් කිරීම</translation>
 <translation id="2739240477418971307">ඔබගේ ප්‍රවේශ්‍යතා සැකසුම් වෙනස් කරන්න</translation>
-<translation id="2739965161385757621">මගේ සැකසීම් සමාලෝචනය කරන්න</translation>
 <translation id="274029851662193272">අවපාත කළ</translation>
 <translation id="2740531572673183784">හරි</translation>
 <translation id="2741713322780029189">ප්‍රතිසාධන පර්යන්තය විවෘතයි</translation>
@@ -1859,7 +1858,6 @@
 <translation id="2864601841139725659">ඔබගේ පැතිකඩ පින්තූරය සකසන්න</translation>
 <translation id="2865919525181940183">දැනට තිරයේ ඇති වැඩසටහන්වල තිර රුව</translation>
 <translation id="286674810810214575">බල මූලාශ්‍ර පරීක්‍ෂා කෙරේ...</translation>
-<translation id="2866876751734765554">පෞද්ගලිකත්ව සමාලෝචනය</translation>
 <translation id="2867768963760577682">ඇමිණූ ටැබයක් ලෙස විවෘත කරන්න</translation>
 <translation id="2868746137289129307">මෙම දිගුව පැරණි හා ව්‍යවසාය ප්‍රතිපත්තිය මගින් අක්‍රීය කර ඇත. එය නව සංස්කරණයක් පවතින විට නැවත සක්‍රීය වනු ඇත.</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
@@ -2407,7 +2405,6 @@
 <translation id="3446274660183028131">Windows ස්ථාපනය කිරීමට කරුණාකර Parallels Desktop දියත් කරන්න.</translation>
 <translation id="344630545793878684">වෙබ අඩවි විශාල ගණනක ඔබගේ දත්ත කියවන්න</translation>
 <translation id="3446650212859500694">මෙම ගොනුවේ සංවේදී අන්තර්ගතය ඇත</translation>
-<translation id="3446827946208017735">එක් ස්ථානයක් තුළදී ඉතාම තීරණාත්මක පෞද්ගලිකත්ව සැකසීම් වටහා ගන්න සහ සමාලෝචනය කරන්න</translation>
 <translation id="3447644283769633681">සියලු තෙවන පාර්ශ්ව කුකි අවහිර කරන්න</translation>
 <translation id="3448086340637592206">Google Chrome සහ Chrome OS අතිරේක නියම</translation>
 <translation id="3448492834076427715">ගිණුම යාවත්කාලීන කරන්න</translation>
@@ -3340,6 +3337,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4423376891418188461">සැකසීම් ප්‍රතිසාධනය කරන්න</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ඔබේ පරිපාලකට ඔබ ඔබේ මුරපදය වෙනස් කිරීමට අවශ්‍යයි.</translation>
 <translation id="4426464032773610160">ආරම්භ කිරීමට, කරුණාකර ඔබගේ USB හෝ බ්ලූටූත් ස්විචය ඔබගේ Chromebook වෙත සම්බන්ධ වී ඇති බවට සහතික කර ගන්න. ඔබට යතුරු පුවරු යතුරුද භාවිත කළ හැකිය.</translation>
+<translation id="4427306783828095590">තතුබෑම් සහ අනිෂ්ට මෘදුකාංග අවහිර කිරීමට වැඩි දියුණු කළ ආරක්ෂාව වැඩි දෙයක් කරයි</translation>
 <translation id="4427365070557649936">තහවුරු කිරීමේ කේතය සත්‍යාපනය කරමින්...</translation>
 <translation id="4429163740524851942">භෞතික යතුරු පුවරු පිරිසැලසුම</translation>
 <translation id="4430019312045809116">ශබ්ද තීව්‍රතාවය</translation>

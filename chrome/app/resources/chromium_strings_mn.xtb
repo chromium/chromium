@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">URL-г Chromium-д хадгалсан аюултай сайтын жагсаалттай харьцуулж шалгадаг. Хэрэв сайт таны нууц үгийг хулгайлах гэж оролдвол эсвэл таныг аюултай файл татах үед Chromium нь хуудасны контентын зэрэг URL-г Аюулгүй хайлт руу мөн илгээж болзошгүй.</translation>
 <translation id="2343156876103232566">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chromium-д нэвтэрнэ үү.</translation>
 <translation id="2347108572062610441">Энэ өргөтгөл нь таныг Chromium эхлүүлэх үед хуудас дээр харуулах зүйлийг өөрчилсөн.</translation>
+<translation id="2359808026110333948">Цааш</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" өргөтгөл нь таныг Chromium эхлүүлэх үед хуудасны харуулах зүйлийг өөрчилсөн.</translation>
 <translation id="2401032172288869980">Chromium-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="2483889755041906834">Chromium-д</translation>
@@ -108,8 +109,10 @@
 <translation id="4271805377592243930">Chromium-с тусламж авах</translation>
 <translation id="4285930937574705105">Гэнэтийн асуудлаас болж суулгах ажиллагаа амжилтгүй боллоо. Хэрвээ Chromium яг одоо ажиллаж байгаа бол хаагаад дахин оролдож үзнэ үү.</translation>
 <translation id="4407044323746248786">Ямар ч байсан Chromium-с гарах уу?</translation>
+<translation id="4414390922528416758">Chromium-н хамгийн чухал гэж үздэг нууцлалын сонголтуудыг өөрчилнө үү. Энэ хөтчид бүх тохиргоо болон сонголт багтаагүй.</translation>
 <translation id="4415566066719264597">Chromium-г цаана ажиллуулахыг зөвшөөрөх</translation>
 <translation id="4423735387467980091">Chromium-ыг гүйцэтгэх ба хянах</translation>
+<translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="452711251841752011">Chromium-д тавтай морилно уу; хөтчийн шинэ цонхыг нээсэн</translation>
 <translation id="4544142686420020088">Chromium-г шинэчлээгүй, ямар нэг алдаа гарлаа. <ph name="BEGIN_LINK" />Chromium-г шинэчлэхтэй холбоотой асуудлууд болон амжилтгүй болсон шинэчлэлтүүдийг засна уу.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Chromium-н шинэ профайлд үргэлжлүүлэх үү?</translation>
@@ -223,6 +226,7 @@
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="734373864078049451">Таны веб хуудас, хавчуурга, болон бусад Chromium-ийн зүйлс энд байдаг.</translation>
 <translation id="7349591376906416160">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
+<translation id="7366100504948874379">Мөн Chromium-д асаах уу?</translation>
 <translation id="7398989605938454041">Та Chromium-н профайлуудаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Энэ нь ажил болон зугаацдаг зүйлсээ тусад нь байлгахад илүү хялбар болгоно.</translation>
 <translation id="7448255348454382571">Chromium OS-г дахин эхлүүлэх</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Дев</translation>
@@ -292,5 +296,6 @@
 <translation id="9214764063801632699">Chromium үйлдлийн систем</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
 <translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
+<translation id="967427899662692980">Chromium-н хамгийн хүчирхэг аюулгүй байдлыг аваарай</translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
 </translationbundle>

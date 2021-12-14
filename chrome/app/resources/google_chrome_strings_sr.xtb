@@ -61,6 +61,7 @@
 <translation id="2348335408836342058">Chrome тражи дозволу да приступи камери и микрофону за овај сајт</translation>
 <translation id="234869673307233423">Chrome не може да вам проверава лозинке. Пробајте поново касније.</translation>
 <translation id="235650106824528204">Администратор пословног профила може да уклони све податке Chrome-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Наставите</translation>
 <translation id="2429317896000329049">Google Chrome не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="2467438592969358367">Google Chrome жели да извезе лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -145,6 +146,7 @@
 <translation id="4343195214584226067">Додатак <ph name="EXTENSION_NAME" /> је додат у Chrome</translation>
 <translation id="4384570495110188418">Chrome не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">Побољшана заштита нуди више могућности за блокирање „пецања“ и малвера</translation>
 <translation id="4450664632294415862">Chrome – пријављивање на мрежу – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Друга радња у Google Chrome-у је у току. Пробајте поново касније.</translation>
 <translation id="4480040274068703980">Chrome ОС не може да синхронизује податке због грешке при пријављивању.</translation>

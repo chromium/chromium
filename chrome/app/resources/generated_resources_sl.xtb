@@ -1741,7 +1741,6 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2738771556149464852">Ne po</translation>
 <translation id="2739191690716947896">Odpravljanje napak</translation>
 <translation id="2739240477418971307">Sprememba nastavitev funkcij za ljudi s posebnimi potrebami</translation>
-<translation id="2739965161385757621">Pregled nastavitev</translation>
 <translation id="274029851662193272">Znižano</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2741713322780029189">Odpri terminal za obnovitev</translation>
@@ -1870,7 +1869,6 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2864601841139725659">Nastavitev slike za profil</translation>
 <translation id="2865919525181940183">Posnetek zaslona s programi, ki so trenutno na zaslon</translation>
 <translation id="286674810810214575">Preverjanje virov napajanja ...</translation>
-<translation id="2866876751734765554">Pregled zasebnosti</translation>
 <translation id="2867768963760577682">Odpri v pripetem zavihku</translation>
 <translation id="2868746137289129307">Ta razširitev je zastarela in jo je onemogočil pravilnik podjetja. Ko bo na voljo novejša različica, bo morda samodejno omogočena.</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
@@ -2416,7 +2414,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3446274660183028131">Zaženite program Parallels Desktop, če želite namestiti sistem Windows.</translation>
 <translation id="344630545793878684">Branje vaših podatkov na več spletnih mestih</translation>
 <translation id="3446650212859500694">V tej datoteki je občutljiva vsebina</translation>
-<translation id="3446827946208017735">Razlaga in pregled bistvenih nastavitev zasebnosti na enem mestu.</translation>
 <translation id="3447644283769633681">Blokiraj vse piškotke drugih spletnih mest</translation>
 <translation id="3448086340637592206">Dodatni pogoji za Google Chrome in Chrome OS</translation>
 <translation id="3448492834076427715">Posodobi račun</translation>
@@ -3347,6 +3344,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4423376891418188461">Obnovi nastavitve</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, skrbnik zahteva, da spremenite geslo.</translation>
 <translation id="4426464032773610160">Če želite začeti, mora biti stikalo USB ali Bluetooth povezano s Chromebookom. Uporabljate lahko tudi tipke na tipkovnici.</translation>
+<translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4427365070557649936">Preverjanje potrditvene kode …</translation>
 <translation id="4429163740524851942">Postavitev fizične tipkovnice</translation>
 <translation id="4430019312045809116">Glasnost</translation>

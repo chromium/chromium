@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chromium ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند.</translation>
 <translation id="2343156876103232566">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
 <translation id="2347108572062610441">‏این افزونه، صفحه‌ای را تغییر داده است که هنگام راه‌اندازی Chromium نشان داده می‌شود.</translation>
+<translation id="2359808026110333948">ادامه</translation>
 <translation id="2396765026452590966">‏افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را تغییر داده است که هنگام راه‌اندازی Chromium نشان داده می‌شود.</translation>
 <translation id="2401032172288869980">‏Chromium برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="2483889755041906834">‏در Chromium</translation>
@@ -109,6 +110,7 @@
 <translation id="4407044323746248786">‏درهرصورت از Chromium خارج می‌شوید؟</translation>
 <translation id="4415566066719264597">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="4423735387467980091">‏سفارشی کردن و کنترل Chromium</translation>
+<translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="452711251841752011">‏به Chromium خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
 <translation id="4544142686420020088">‏Chromium به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chromium و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏در نمایه جدید Chromium ادامه می‌دهید؟</translation>

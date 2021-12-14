@@ -1738,7 +1738,6 @@
 <translation id="2738771556149464852">बाद में नहीं</translation>
 <translation id="2739191690716947896">डीबग</translation>
 <translation id="2739240477418971307">अपनी सुलभता सेटिंग बदलें</translation>
-<translation id="2739965161385757621">'मेरी सेटिंग' की समीक्षा करें</translation>
 <translation id="274029851662193272">छोटे आकार में</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2741713322780029189">वापस पाने वाला टर्मिनल खोलें</translation>
@@ -1867,7 +1866,6 @@
 <translation id="2864601841139725659">अपना प्रोफ़ाइल चित्र सेट करें</translation>
 <translation id="2865919525181940183">इस समय, स्क्रीन पर मौजूद प्रोग्राम का स्क्रीनशॉट</translation>
 <translation id="286674810810214575">पावर के स्रोतों की जांच की जा रही है...</translation>
-<translation id="2866876751734765554">निजता की समीक्षा</translation>
 <translation id="2867768963760577682">छोटे टैब के रूप में खोलें</translation>
 <translation id="2868746137289129307">यह एक्‍सटेंशन पुराना हो चुका है और एंटरप्राइज़ नीति द्वारा अक्षम कर दिया गया है. ज़्यादा नया वर्शन उपलब्‍ध हो जाने पर वह अपने आप सक्षम हो सकता है.</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -2413,7 +2411,6 @@
 <translation id="3446274660183028131">Windows को इंस्टॉल करने के लिए कृपया Parallels Desktop को लॉन्च करें.</translation>
 <translation id="344630545793878684">अपना डेटा कई वेबसाइटों पर पढ़ें</translation>
 <translation id="3446650212859500694">इस फ़ाइल में संवेदनशील सामग्री है</translation>
-<translation id="3446827946208017735">एक ही जगह पर सबसे ज़रूरी 'निजता सेटिंग' को समझें और उनकी समीक्षा करें</translation>
 <translation id="3447644283769633681">सभी तृतीय पक्ष कुकी अवरोधित करें</translation>
 <translation id="3448086340637592206">Google Chrome और Chrome OS की दूसरी शर्तें</translation>
 <translation id="3448492834076427715">खाता अपडेट करें</translation>
@@ -3343,6 +3340,7 @@
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, आपके व्यवस्थापक के लिए ज़रूरी है कि आप अपना पासवर्ड बदलें.</translation>
 <translation id="4426464032773610160">शुरू करने के लिए, कृपया पक्का करें कि आपके यूएसबी या ब्लूटूथ स्विच को Chromebook से कनेक्ट किया गया हो. कनेक्शन की जांच के लिए, आप कीबोर्ड के बटन भी इस्तेमाल कर सकते हैं.</translation>
+<translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
 <translation id="4427365070557649936">पुष्टिकरण कोड की पुष्टि की जा रही है...</translation>
 <translation id="4429163740524851942">फ़िज़िकल कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">मात्रा</translation>

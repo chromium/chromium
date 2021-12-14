@@ -1722,7 +1722,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2738771556149464852">No després</translation>
 <translation id="2739191690716947896">Depura</translation>
 <translation id="2739240477418971307">Canvia la configuració d'accessibilitat</translation>
-<translation id="2739965161385757621">Revisa la configuració</translation>
 <translation id="274029851662193272">Enfonsat</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2741713322780029189">Obre el terminal de recuperació</translation>
@@ -1851,7 +1850,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2864601841139725659">Estableix la teva foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de programes que hi ha en pantalla en aquests moments</translation>
 <translation id="286674810810214575">S'estan comprovant les fonts d'alimentació...</translation>
-<translation id="2866876751734765554">Revisió de la privadesa</translation>
 <translation id="2867768963760577682">Obre com a pestanya fixada</translation>
 <translation id="2868746137289129307">Aquesta extensió no està actualitzada i està desactivada per a la política d'empresa. És possible que s'activi de manera automàtica quan estigui disponible una versió nova.</translation>
 <translation id="2870560284913253234">Lloc web</translation>
@@ -2397,7 +2395,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop per instal·lar Windows.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
 <translation id="3446650212859500694">Aquest fitxer inclou contingut sensible</translation>
-<translation id="3446827946208017735">Entén i revisa les opcions de configuració de privadesa més importants des d'un sol lloc</translation>
 <translation id="3447644283769633681">Bloqueja totes les galetes de tercers</translation>
 <translation id="3448086340637592206">Condicions addicionals de Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
@@ -3327,6 +3324,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4423376891418188461">Restaura la configuració</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, l'administrador necessita que canviïs la contrasenya.</translation>
 <translation id="4426464032773610160">Per començar, comprova que l'interruptor USB o Bluetooth estigui connectat al Chromebook. També pots utilitzar les tecles del teclat.</translation>
+<translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4427365070557649936">S'està verificant el codi de confirmació...</translation>
 <translation id="4429163740524851942">Disposició del teclat físic</translation>
 <translation id="4430019312045809116">Volum</translation>

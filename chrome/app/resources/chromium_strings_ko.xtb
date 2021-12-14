@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2347108572062610441">Chromium을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
+<translation id="2359808026110333948">계속</translation>
 <translation id="2396765026452590966">Chromium을 시작하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2483889755041906834">Chromium에서</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Chromium을 종료하시겠습니까?</translation>
 <translation id="4415566066719264597">백그라운드에서 Chromium을 실행</translation>
 <translation id="4423735387467980091">Chromium 맞춤설정 및 제어</translation>
+<translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="452711251841752011">Chromium에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="4544142686420020088">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chromium 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">새 Chromium 프로필로 계속하시겠습니까?</translation>

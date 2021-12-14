@@ -1739,7 +1739,6 @@
 <translation id="2738771556149464852">نه بعد از</translation>
 <translation id="2739191690716947896">رفع اشکال</translation>
 <translation id="2739240477418971307">تغییر تنظیمات دسترس‌پذیریتان</translation>
-<translation id="2739965161385757621">مرور تنظیمات</translation>
 <translation id="274029851662193272">فرورفته</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2741713322780029189">باز کردن پایانه بازیابی</translation>
@@ -1868,7 +1867,6 @@
 <translation id="2864601841139725659">عکس نمایه اضافه کنید</translation>
 <translation id="2865919525181940183">نماگرفت برنامه‌هایی که درحال‌حاضر روی صفحه هستند</translation>
 <translation id="286674810810214575">درحال بررسی منابع برق...</translation>
-<translation id="2866876751734765554">مرور حریم‌خصوصی</translation>
 <translation id="2867768963760577682">بازکردن به‌عنوان برگه پین شده</translation>
 <translation id="2868746137289129307">این افزونه قدیمی است و خط‌مشی شرکت آن را غیرفعال کرده است. شاید وقتی یک نسخه جدیدتر در دسترس قرار گیرد به صورت خودکار فعال شود.</translation>
 <translation id="2870560284913253234">سایت</translation>
@@ -2416,7 +2414,6 @@
 <translation id="3446274660183028131">‏لطفاً برای نصب Windows، ‏Parallels Desktop را راه‌اندازی کنید.</translation>
 <translation id="344630545793878684">خواندن داده‌های شما در تعدادی از وب‌سایت‌ها</translation>
 <translation id="3446650212859500694">این فایل محتوای حساس دارد</translation>
-<translation id="3446827946208017735">در یک جا از تنظیمات حریم‌خصوصی بسیار مهم مطلع شوید و آن‌ها را مرور کنید</translation>
 <translation id="3447644283769633681">مسدود کردن همه کوکی‌های شخص ثالث</translation>
 <translation id="3448086340637592206">‏شرایط تکمیلی Google Chrome و Chrome OS</translation>
 <translation id="3448492834076427715">به‌روزرسانی حساب</translation>
@@ -3348,6 +3345,7 @@
 <translation id="4423376891418188461">بازیابی تنظیمات</translation>
 <translation id="442397852638519243">سرپرستتان (<ph name="USER_NAME" />)، از شما می‌خواهد که گذرواژه‌تان را عوض کنید.</translation>
 <translation id="4426464032773610160">‏برای شروع کار، لطفاً مطمئن شوید که کلید بلوتوث یا USB به Chromebook متصل باشد. می‌توانید از کلیدهای صفحه‌کلید هم استفاده کنید.</translation>
+<translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="4427365070557649936">درحال راستی‌آزمایی کد تأیید…</translation>
 <translation id="4429163740524851942">طرح‌بندی صفحه‌کلید فیزیکی</translation>
 <translation id="4430019312045809116">میزان صدا</translation>

@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，無法使用螢幕畫面錄製功能</translation>
 <translation id="225680501294068881">正在掃描裝置...</translation>
+<translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生問題</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
 <translation id="2269016722240250274">某個應用程式正在使用麥克風</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4849058404725798627">醒目顯示鍵盤焦點所在物件</translation>
 <translation id="485592688953820832">不執行任何動作 (暫停)</translation>
+<translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>
 <translation id="486056901304535126">系統稍後將再次嘗試下載。在下載作業完成前，系統會先將語音內容傳送給 Google 處理。</translation>
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 畫面</translation>
+<translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求你在期限內更新 <ph name="DEVICE_TYPE" /></translation>
@@ -815,7 +818,9 @@
 <translation id="6528179044667508675">請勿打擾</translation>
 <translation id="65320610082834431">表情符號</translation>
 <translation id="6537924328260219877">訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">正在掃描下載項目「<ph name="FILENAME" />」</translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559976592393364813">詢問系統管理員</translation>
 <translation id="6565007273808762236">無法建立 eSIM 卡連線</translation>
 <translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6727969043791803658">已連線，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">前往「設定」</translation>
 <translation id="6751052314767925245">由系統管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新增行動網路</translation>
+<translation id="7720410380936703141">再試一次</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7745560842763881396">顯示檔案櫃中的應用程式</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 帳戶解鎖裝置，即可執行通知動作</translation>
+<translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9047624247355796468">開啟「<ph name="NETWORK_NAME" />」設定</translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">我的日曆上有什麼活動？</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="951991426597076286">拒絕</translation>
+<translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請釋出空間。</translation>
 <translation id="974545358917229949">目前正顯示 <ph name="RESULT_COUNT" /> 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="98515147261107953">橫向</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 已關閉。</translation>

@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="2343156876103232566">Щоб надіслати номер на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
 <translation id="2347108572062610441">Це розширення змінило сторінку, яка відкривається під час запуску Chromium.</translation>
+<translation id="2359808026110333948">Продовжити</translation>
 <translation id="2396765026452590966">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час запуску Chromium.</translation>
 <translation id="2401032172288869980">Веб-переглядачу Chromium потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="2483889755041906834">У Chromium</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">Усе одно вийти з Chromium?</translation>
 <translation id="4415566066719264597">Дозволити Chromium працювати у фоновому режимі</translation>
 <translation id="4423735387467980091">Налаштування та керування Chromium</translation>
+<translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
 <translation id="4544142686420020088">Не вдалось оновити веб-переглядач Chromium. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Продовжити в новому профілі Chromium?</translation>

@@ -1724,7 +1724,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2738771556149464852">Nie później niż</translation>
 <translation id="2739191690716947896">Debugowanie</translation>
 <translation id="2739240477418971307">Zmiana ustawień ułatwień dostępu</translation>
-<translation id="2739965161385757621">Sprawdź moje ustawienia</translation>
 <translation id="274029851662193272">Obniżony</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Otwórz terminal odzyskiwania</translation>
@@ -1853,7 +1852,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2864601841139725659">Ustawianie zdjęcia profilowego</translation>
 <translation id="2865919525181940183">Zrzut ekranu z widocznymi na nim teraz programami</translation>
 <translation id="286674810810214575">Sprawdzam źródła zasilania...</translation>
-<translation id="2866876751734765554">Sprawdzanie prywatności</translation>
 <translation id="2867768963760577682">Otwórz jako przypiętą kartę</translation>
 <translation id="2868746137289129307">To rozszerzenie jest nieaktualne i zostało wyłączone zgodnie z polityką firmy. Może zostać włączone automatycznie, gdy dostępna będzie nowa wersja.</translation>
 <translation id="2870560284913253234">Witryna</translation>
@@ -2401,7 +2399,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3446274660183028131">Włącz aplikację Parallels Desktop, by zainstalować system Windows.</translation>
 <translation id="344630545793878684">Odczyt Twoich danych na kilku stronach internetowych</translation>
 <translation id="3446650212859500694">Ten plik zawiera treści o charakterze kontrowersyjnym</translation>
-<translation id="3446827946208017735">Sprawdzaj najważniejsze ustawienia prywatności w 1 miejscu</translation>
 <translation id="3447644283769633681">Blokuj wszystkie pliki cookie innych firm</translation>
 <translation id="3448086340637592206">Dodatkowe warunki korzystania z Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Aktualizuj konto</translation>
@@ -3333,6 +3330,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4423376891418188461">Przywróć ustawienia</translation>
 <translation id="442397852638519243">Twój administrator (<ph name="USER_NAME" />) prosi Cię o zmianę Twojego hasła.</translation>
 <translation id="4426464032773610160">Aby rozpocząć, sprawdź, czy do Chromebooka został podłączony przełącznik USB lub Bluetooth. Możesz też użyć klawiatury.</translation>
+<translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
 <translation id="4430019312045809116">Głośność</translation>

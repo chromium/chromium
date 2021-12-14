@@ -1719,7 +1719,6 @@
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
-<translation id="2739965161385757621">查看我的设置</translation>
 <translation id="274029851662193272">凹陷</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2741713322780029189">打开恢复终端</translation>
@@ -1848,7 +1847,6 @@
 <translation id="2864601841139725659">设置您的个人资料照片</translation>
 <translation id="2865919525181940183">当前屏幕所含程序的屏幕截图</translation>
 <translation id="286674810810214575">正在检查电源…</translation>
-<translation id="2866876751734765554">查看隐私设置</translation>
 <translation id="2867768963760577682">在固定标签页中打开</translation>
 <translation id="2868746137289129307">此扩展程序已过期并已根据企业政策停用。当有新版本时，它可能会自动启用。</translation>
 <translation id="2870560284913253234">网站</translation>
@@ -2394,7 +2392,6 @@
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
 <translation id="344630545793878684">读取您在一些网站上的数据</translation>
 <translation id="3446650212859500694">此文件包含敏感内容</translation>
-<translation id="3446827946208017735">在一处集中了解和查看最重要的隐私设置</translation>
 <translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
 <translation id="3448086340637592206">Google Chrome 和 Chrome 操作系统附加条款</translation>
 <translation id="3448492834076427715">更新帐号</translation>
@@ -3324,6 +3321,7 @@
 <translation id="4423376891418188461">还原设置</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />，您的管理员要求您更改密码。</translation>
 <translation id="4426464032773610160">首先，请确保您的 USB 或蓝牙开关已连接到您的 Chromebook。您还可以使用键盘按键。</translation>
+<translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>

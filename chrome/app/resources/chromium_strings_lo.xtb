@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">ກວດສອບ URL ກັບລາຍຊື່ເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chromium. ຖ້າມີເວັບໄຊໃດໜຶ່ງພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chromium ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="2343156876103232566">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="2347108572062610441">ສ່ວນຂະຫຍາຍ​ນີ້​ໄດ້ປ່ຽນສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນ Chromium​.</translation>
+<translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2396765026452590966">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນ Chromium​.</translation>
 <translation id="2401032172288869980">Chromium ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນສຳລັບເວັບໄຊນີ້</translation>
 <translation id="2483889755041906834">ໃນ Chromium</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">ຢືນຢັນການອອກຈາກ Chromium ບໍ?</translation>
 <translation id="4415566066719264597">ໃຫ້ Chromium ເປີດໃຊ້ຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="4423735387467980091">ກໍານົດໃຊ້ ແລະ​ຄວບ​ຄຸມ Chromium</translation>
+<translation id="4427306783828095590">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເຮັດໄດ້ຫຼາຍກວ່າໃນການບລັອກການຫຼອກເອົາຂໍ້ມູນ ແລະ ເມົາແວ</translation>
 <translation id="452711251841752011">ຍິນດີຕ້ອນຮັບສູ່ Chromium; ເປີດໜ້າຈໍໂປຣແກຣມທ່ອງເວັບໃໝ່ແລ້ວ</translation>
 <translation id="4544142686420020088">Chromium ບໍ່ອັບເດດ, ມີບາງຢ່າງຜິດພາດ. <ph name="BEGIN_LINK" />ແກ້ໄຂບັນຫາການອັບເດດ Chromium ແລະ ການອັບເດດທີ່ບໍ່ສຳເລັດ.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">ສືບຕໍ່ໃນໂປຣໄຟລ໌ Chromium ໃໝ່ບໍ?</translation>

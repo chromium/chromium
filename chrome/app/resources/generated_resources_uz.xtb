@@ -1729,7 +1729,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2738771556149464852">Bundan kechiktirmasdan</translation>
 <translation id="2739191690716947896">Nosozliklarni ko‘rib chiqish</translation>
 <translation id="2739240477418971307">Maxsus imkoniyatlar sozlamalarini o‘zgartirish</translation>
-<translation id="2739965161385757621">Sozlamalarni koʻrib chiqish</translation>
 <translation id="274029851662193272">Botiq</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Tiklash terminalini ochish</translation>
@@ -1858,7 +1857,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2864601841139725659">Profilga rasm joylang</translation>
 <translation id="2865919525181940183">Joriy ekrandagi dasturlarning skrinshoti</translation>
 <translation id="286674810810214575">Quvvat manbalari tekshirilmoqda…</translation>
-<translation id="2866876751734765554">Maxfiylik sozlamalarini ochish</translation>
 <translation id="2867768963760577682">Qadalgan tab sifatida ochish</translation>
 <translation id="2868746137289129307">Ushbu kengaytma eskirgan, shuning uchun u korporativ siyosat shartlariga ko‘ra o‘chirib qo‘yildi. Yangi versiyasi chiqishi bilan bu kengaytma avtomatik yoqilishi mumkin.</translation>
 <translation id="2870560284913253234">Sayt</translation>
@@ -2406,7 +2404,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3446274660183028131">Windowsni oʻrnatish uchun Parallels Desktopni ishga tushiring.</translation>
 <translation id="344630545793878684">Bir nechta saytlardagi ma’lumotlarni ko‘rish</translation>
 <translation id="3446650212859500694">Bu faylda maxfiy kontent bor</translation>
-<translation id="3446827946208017735">Eng muhim maxfiylik sozlamalari bilan tanishing va bir joyda koʻrib chiqing</translation>
 <translation id="3447644283769633681">Barcha tashqi cookie fayllarni bloklash</translation>
 <translation id="3448086340637592206">Google Chrome va Chrome OS qoʻshimcha shartlari</translation>
 <translation id="3448492834076427715">Hisobni yangilash</translation>
@@ -2514,6 +2511,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3557101512409028104">Family Link orqali saytlar va qurilmadan foydalanish vaqtiga cheklovlarni sozlash</translation>
 <translation id="3559262020195162408">Qurilmaga parametrni oʻrnatib boʻlmadi.</translation>
 <translation id="3559533181353831840">Taxminan <ph name="TIME_LEFT" /> qoldi</translation>
+<translation id="3559697822483154494">Ekranni ajratish va ish stollarini almashtirish kabi amallar tebranish bilan tasdiqlansin.</translation>
 <translation id="3560034655160545939">&amp;Imlo tekshiruvi</translation>
 <translation id="3562423906127931518">Bu jarayon bir necha daqiqa olishi mumkin. Linux konteyneri sozlanmoqda.</translation>
 <translation id="3562655211539199254">Chromedagi oxirgi varaqlarni telefondan koʻring</translation>
@@ -3338,6 +3336,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4423376891418188461">Dastlabki sozlamalarni tiklash</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administratoringiz parolingizni o‘zgartirishni so‘rayapti.</translation>
 <translation id="4426464032773610160">Boshlash uchun USB yoki Bluetooth kalit Chromebookka ulangan boʻlishi kerak. Klaviaturadagi tugmalardan foydalanishingiz ham mumkin.</translation>
+<translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4427365070557649936">Tasdiqlash kodi tekshirilmoqda...</translation>
 <translation id="4429163740524851942">Tashqi klaviatura tugmalari tartibi</translation>
 <translation id="4430019312045809116">Hajmi</translation>
@@ -4914,6 +4913,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6112931163620622315">Telefoningizni tekshiring</translation>
 <translation id="6113434369102685411">Chrome brauzeri va <ph name="DEVICE_TYPE" /> launcherida asosiy qidiruv tizimi sifatida belgilash</translation>
 <translation id="6113942107547980621">Smart Lock himoyasini yoqish uchun telefondagi asosiy profilga oʻting</translation>
+<translation id="611684075852771314">Bu jurnal qaydlari Fayllarim jildida quyidagi faylga saqlandi:</translation>
 <translation id="6116921718742659598">Til va kiritish usuli sozlamalarini o‘zgartirish</translation>
 <translation id="6119927814891883061">Qurilmani nomlash: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Ushbu sahifani bosh ekranga qadab qo‘yish...</translation>
@@ -5691,6 +5691,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6930036377490597025">Tashqi elektron kalit yoki xavfsizlik sensori</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Kengaytma rad etildi}other{# ta kengaytma rad etildi}}</translation>
 <translation id="6930321203306643451">Yangilanish bajarildi</translation>
+<translation id="6931690462168617033">Bosish sezgirligi</translation>
 <translation id="6935286146439255109">Kiritish tarnoviga qogʻoz solinmagan</translation>
 <translation id="693807610556624488">“<ph name="DEVICE_NAME" />” qurilmasida ma’lumot yozishda atribut uzunligi oshib ketdi.</translation>
 <translation id="6938386202199793006">1 ta printer saqlangan.</translation>
@@ -6822,6 +6823,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> guruhi – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Ulanish oynasi</translation>
 <translation id="8069615408251337349">Google virtual printeri</translation>
+<translation id="8070662218171013510">Sezgir aloqa</translation>
 <translation id="8071432093239591881">Rasm sifatida chop etish</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Ilovaga tegishli axborotlar – bu, ilovalar tomonidan saqlangan (dasturchi o‘rnatgan sozlamalarga asoslanib) kontaktlar, xabarlar va rasmlar kabi maʼlumotlar<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zaxiralangan axborotlar farzandingizning Drive ombori sigʻimiga ta’sir qilmaydi.<ph name="END_PARAGRAPH2" />

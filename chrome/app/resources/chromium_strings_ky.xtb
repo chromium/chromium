@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Chromium'дагы кооптуу сайттардын тизмесиндеги URL даректерин текшерет. Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактардагы мазмунду Коопсуз серептөөгө жөнөтүшү мүмкүн.</translation>
 <translation id="2343156876103232566">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
 <translation id="2347108572062610441">Бул кеңейтүү Chromium иштеп баштаганда көрсөтүлө турган бетти өзгөрттү.</translation>
+<translation id="2359808026110333948">Улантуу</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" кеңейтүүсү Chromium иштеп баштаганда көрсөтүлө турган бетти өзгөрттү.</translation>
 <translation id="2401032172288869980">Chromium'га бул сайтта камера менен микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="2483889755041906834">Chromium'да</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Баары бир Chromium'дан чыгасызбы?</translation>
 <translation id="4415566066719264597">Chromium'га фондук режимде иштөөгө уруксат берүү</translation>
 <translation id="4423735387467980091">Chromium'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
+<translation id="4427306783828095590">Өркүндөтүлгөн коргоо параметри фишинг жана кесепеттүү программалардан жакшыраак коргойт</translation>
 <translation id="452711251841752011">Chromium'га кош келиңиз; серепчиде жаңы терезе ачылды</translation>
 <translation id="4544142686420020088">Chromium жаңырган жок. Бир жерден ката кетти. <ph name="BEGIN_LINK" />Chrome'догу жаңыртуу маселелерин оңдоңуз.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Жаңы Chromium профилинде улантасызбы?</translation>

@@ -36,6 +36,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2313870531055795960">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="2343156876103232566">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chromium“ abiejuose įrenginiuose.</translation>
 <translation id="2347108572062610441">Šis plėtinys pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
+<translation id="2359808026110333948">Tęskite</translation>
 <translation id="2396765026452590966">Plėtinys „<ph name="EXTENSION_NAME" />“ pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
 <translation id="2401032172288869980">„Chromium“ reikalingi fotoaparato ir mikrofono leidimai šioje svetainėje</translation>
 <translation id="2483889755041906834">Naudojant „Chromium“</translation>
@@ -112,6 +113,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4407044323746248786">Vis tiek išeiti iš „Chromium“?</translation>
 <translation id="4415566066719264597">„Chromium“ leidimas fone</translation>
 <translation id="4423735387467980091">Tinkinkite ir valdykite „Chromium“</translation>
+<translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="452711251841752011">Sveiki, tai – „Chromium“; atidarytas naujas naršyklės langas</translation>
 <translation id="4544142686420020088">Nepavyko atnaujinti „Chromium“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chromium“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Tęsti naudojant naują „Chromium“ profilį?</translation>

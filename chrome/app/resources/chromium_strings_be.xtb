@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chromium. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="2343156876103232566">Каб адпраўляць нумары з гэтай прылады на свой тэлефон Android, увайдзіце ў Chromium на абедзвюх прыладах.</translation>
 <translation id="2347108572062610441">Гэта пашырэнне змяніла старонку, якая паказваецца пры запуску Chromium.</translation>
+<translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2396765026452590966">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла старонку, якая паказваецца пры запуску Chromium.</translation>
 <translation id="2401032172288869980">Chromium запытвае дазвол на доступ да камеры і мікрафона для гэтага сайта</translation>
 <translation id="2483889755041906834">У Chromium</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Усё роўна выйсці з Chromium?</translation>
 <translation id="4415566066719264597">Дазволіць браўзеру Chromium працаваць у фоне</translation>
 <translation id="4423735387467980091">Наладка і кіраванне Chromium</translation>
+<translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
 <translation id="452711251841752011">Вітаем у Chromium! Адкрыта новае акно браўзера</translation>
 <translation id="4544142686420020088">Chromium не абнавіўся. Нешта пайшло не так. <ph name="BEGIN_LINK" />Выправіце праблемы з абнаўленнем Chromium і памылкі абнаўлення.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Працягнуць працу ў новым профілі Chromium?</translation>

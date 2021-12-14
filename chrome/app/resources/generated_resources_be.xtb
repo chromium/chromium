@@ -1725,7 +1725,6 @@
 <translation id="2738771556149464852">Не пазней</translation>
 <translation id="2739191690716947896">Адладзіць</translation>
 <translation id="2739240477418971307">Змяніць налады спецыяльных магчымасцей</translation>
-<translation id="2739965161385757621">Праглядзець мае налады</translation>
 <translation id="274029851662193272">Уціснуты</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Адкрыць тэрмінал аднаўлення</translation>
@@ -1854,7 +1853,6 @@
 <translation id="2864601841139725659">Задайце сваё фота профілю</translation>
 <translation id="2865919525181940183">Здымак экрана з праграмамі</translation>
 <translation id="286674810810214575">Ідзе праверка крыніц сілкавання...</translation>
-<translation id="2866876751734765554">Праверка налад прыватнасці</translation>
 <translation id="2867768963760577682">Адкрыць у замацаванай укладцы</translation>
 <translation id="2868746137289129307">Гэта пашырэнне састарэлае, яно выключана ў адпаведнасці з карпаратыўнай палітыкай. Пры даступнасці новай версіі пашырэнне можа быць уключана аўтаматычна.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2400,7 +2398,6 @@
 <translation id="3446274660183028131">Каб усталяваць Windows, запусціце Parallels Desktop.</translation>
 <translation id="344630545793878684">Прагляд вашых даных на шэрагу вэб-сайтаў</translation>
 <translation id="3446650212859500694">Гэты файл змяшчае канфідэнцыяльнае змесціва.</translation>
-<translation id="3446827946208017735">Самыя важныя налады прыватнасці на адной старонцы</translation>
 <translation id="3447644283769633681">Блакіроўка ўсіх старонніх файлаў cookie</translation>
 <translation id="3448086340637592206">Дадатковыя ўмовы Google Chrome і Chrome OS</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
@@ -3331,6 +3328,7 @@
 <translation id="4423376891418188461">Аднавіць налады</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ваш адміністратар патрабуе, каб вы змянілі пароль.</translation>
 <translation id="4426464032773610160">Перш чым пачаць работу, пераканайцеся, што да прылады Chromebook падключаны пераключальнік USB або Bluetooth. Вы можаце таксама выкарыстоўваць клавішы клавіятуры.</translation>
+<translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
 <translation id="4427365070557649936">Ідзе спраўджанне кода пацвярджэння...</translation>
 <translation id="4429163740524851942">Раскладка фізічнай клавіятуры</translation>
 <translation id="4430019312045809116">Гучнасць</translation>

@@ -1738,7 +1738,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2738771556149464852">Ekki eftir</translation>
 <translation id="2739191690716947896">Villuleit</translation>
 <translation id="2739240477418971307">Breyta aðgengisstillingum</translation>
-<translation id="2739965161385757621">Yfirfara stillingar</translation>
 <translation id="274029851662193272">Þrykkt</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2741713322780029189">Opna endurheimtarstöð</translation>
@@ -1867,7 +1866,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2864601841139725659">Veldu prófílmynd</translation>
 <translation id="2865919525181940183">Skjámynd af forritum sem eru á skjánum núna</translation>
 <translation id="286674810810214575">Athugar aflgjafa...</translation>
-<translation id="2866876751734765554">Persónuverndaryfirferð</translation>
 <translation id="2867768963760577682">Opna sem fastan flipa</translation>
 <translation id="2868746137289129307">Þessi viðbót er úrelt og regla frá fyrirtækinu hefur gert hana óvirka. Hún gæti sjálfkrafa orðið virk þegar ný útgáfa verður aðgengileg.</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
@@ -2413,7 +2411,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3446274660183028131">Ræstu Parallels Desktop til að setja upp Windows.</translation>
 <translation id="344630545793878684">Lesa gögnin þín á fjölda vefsvæða</translation>
 <translation id="3446650212859500694">Skráin inniheldur viðkvæmt efni</translation>
-<translation id="3446827946208017735">Kynntu þér og farðu yfir mikilvægar persónuverndarstillingar á einum stað</translation>
 <translation id="3447644283769633681">Útiloka öll fótspor þriðju aðila</translation>
 <translation id="3448086340637592206">Viðbótarskilmálar Google Chrome og Chrome OS</translation>
 <translation id="3448492834076427715">Uppfæra reikning</translation>
@@ -3344,6 +3341,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4423376891418188461">Endurheimta stillingar</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, kerfisstjóri krefst þess að þú breytir aðgangsorðinu þínu.</translation>
 <translation id="4426464032773610160">Til að hefjast handa skaltu vera viss um að USB- eða Bluetooth-rofinn sé tengdur við Chromebook. Þú getur einnig notað lykla á lyklaborðinu.</translation>
+<translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4427365070557649936">Staðfestir staðfestingarkóða...</translation>
 <translation id="4429163740524851942">Uppsetning vélbúnaðarlyklaborðs</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>

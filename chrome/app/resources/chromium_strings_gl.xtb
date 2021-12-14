@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión cambiou a páxina que se mostra ao iniciar Chromium.</translation>
+<translation id="2359808026110333948">Continuar</translation>
 <translation id="2396765026452590966">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="2483889755041906834">En Chromium</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Queres saír de Chromium de todas formas?</translation>
 <translation id="4415566066719264597">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza e controla Chromium</translation>
+<translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="452711251841752011">Dámosche a benvida a Chromium. Abriuse unha nova ventá do navegador</translation>
 <translation id="4544142686420020088">Chromium non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chromium e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
 <translation id="454579500955453258">Queres continuar nun perfil de Chromium novo?</translation>

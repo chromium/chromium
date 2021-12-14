@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2347108572062610441">Denne utvidelsen har endret hvilken side som vises når du starter Chromium.</translation>
+<translation id="2359808026110333948">Fortsett</translation>
 <translation id="2396765026452590966">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="2483889755041906834">I Chromium</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">Vil du avslutte Chromium likevel?</translation>
 <translation id="4415566066719264597">La Chromium kjøre i bakgrunnen</translation>
 <translation id="4423735387467980091">Tilpass og kontrollér Chromium</translation>
+<translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="452711251841752011">Velkommen til Chromium – et nytt nettleservindu er åpnet</translation>
 <translation id="4544142686420020088">Chromium ble ikke oppdatert. Noe gikk galt. <ph name="BEGIN_LINK" />Løs problemer med Chromium-oppdateringer og mislykkede oppdateringer.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vil du fortsette i en ny Chromium-profil?</translation>

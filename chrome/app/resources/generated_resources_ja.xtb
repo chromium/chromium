@@ -1720,7 +1720,6 @@
 <translation id="2738771556149464852">終了時刻</translation>
 <translation id="2739191690716947896">デバッグ</translation>
 <translation id="2739240477418971307">ユーザー補助設定の変更</translation>
-<translation id="2739965161385757621">設定を確認</translation>
 <translation id="274029851662193272">沈み彫り</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">リカバリ ターミナルを開く</translation>
@@ -1849,7 +1848,6 @@
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
 <translation id="2865919525181940183">現在画面に表示されているプログラムのスクリーンショット</translation>
 <translation id="286674810810214575">電源を確認しています...</translation>
-<translation id="2866876751734765554">プライバシーの確認</translation>
 <translation id="2867768963760577682">固定されたタブとして開く</translation>
 <translation id="2868746137289129307">この拡張機能は古く、企業のポリシーによって無効にされました。新しいバージョンが利用可能になったときに自動的に有効になる可能性があります。</translation>
 <translation id="2870560284913253234">サイト</translation>
@@ -2395,7 +2393,6 @@
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
 <translation id="3446650212859500694">このファイルにはデリケートなコンテンツが含まれています</translation>
-<translation id="3446827946208017735">最も重要なプライバシー設定を 1 か所で確認して変更できます</translation>
 <translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
 <translation id="3448086340637592206">Google Chrome および Chrome OS 追加利用規約</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
@@ -3321,6 +3318,7 @@
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" /> さん、管理者がパスワードの変更をリクエストしています。</translation>
 <translation id="4426464032773610160">始める前に、USB または Bluetooth スイッチが Chromebook に接続されていることをご確認ください。キーボードのキーを使うこともできます。</translation>
+<translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -6770,6 +6768,7 @@
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
 <translation id="8054883179223321715">特定の動画サイトで利用可能</translation>
 <translation id="8054921503121346576">USB キーボードが接続されました</translation>
+<translation id="8057414620575339583">サイド検索</translation>
 <translation id="8058655154417507695">有効期限（年）</translation>
 <translation id="8058986560951482265">粗く、途切れがち</translation>
 <translation id="8059417245945632445">デバイスを検証(&amp;I)</translation>

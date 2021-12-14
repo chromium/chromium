@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Ստուգում է URL-ները Chromium-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chromium-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="2343156876103232566">Հեռախոսահամարն այստեղից ձեր Android հեռախոսին ուղարկելու համար երկու սարքերի Chromium դիտարկիչներում մտեք հաշիվ։</translation>
 <translation id="2347108572062610441">Այս ընդլայնումը փոխել է Chromium-ի մեկնարկի ժամանակ ցուցադրվող էջը:</translation>
+<translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2396765026452590966">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Chromium-ի մեկնարկի ժամանակ ցուցադրվող էջը:</translation>
 <translation id="2401032172288869980">Այս կայքի համար Chromium-ին անհրաժեշտ է խոսափողն ու տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="2483889755041906834">Chromium-ի մեջ</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">Փակե՞լ Chromium-ը։</translation>
 <translation id="4415566066719264597">Թույլատրել Chromium-ին աշխատել ֆոնային ռեժիմում</translation>
 <translation id="4423735387467980091">Հարմարեցնել և վերահսկել Chromium-ը</translation>
+<translation id="4427306783828095590">Լրացուցիչ պաշտպանությունն օգնում է խուսափել ֆիշինգից և արգելափակել վնասաբեր ծրագրերը</translation>
 <translation id="452711251841752011">Բարի գալուստ Chromium․ բացված է դիտարկիչի նոր պատուհան</translation>
 <translation id="4544142686420020088">Անհայտ սխալի պատճառով չհաջողվեց թարմացնել Chromium-ը։ <ph name="BEGIN_LINK" />Շտկել Chromium-ի թարմացման հետ կապված խնդիրները<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Շարունակե՞լ Chromium-ի նոր պրոֆիլով</translation>

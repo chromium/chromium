@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>
 <translation id="2343156876103232566">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
 <translation id="2347108572062610441">Tämä laajennus on vaihtanut Chromiumin aloitussivun.</translation>
+<translation id="2359808026110333948">Jatka</translation>
 <translation id="2396765026452590966">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromiumin aloitussivun.</translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2483889755041906834">Chromiumissa</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
 <translation id="4415566066719264597">Jätä Chromium käyntiin taustalle</translation>
 <translation id="4423735387467980091">Chromiumin muokkaus ja hallinta</translation>
+<translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="452711251841752011">Tervetuloa Chromiumiin, uusi selainikkuna avattu</translation>
 <translation id="4544142686420020088">Chromiumia ei päivitetty, vaan jotain meni pieleen. <ph name="BEGIN_LINK" />Korjaa Chromiumin päivitysongelmat ja epäonnistuneet päivitykset<ph name="END_LINK" />.</translation>
 <translation id="454579500955453258">Jatketaanko uudessa Chromium-profiilissa?</translation>

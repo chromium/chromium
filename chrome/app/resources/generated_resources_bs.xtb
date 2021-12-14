@@ -1740,7 +1740,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2738771556149464852">Ne poslije</translation>
 <translation id="2739191690716947896">Otkloni pogrešku</translation>
 <translation id="2739240477418971307">Promijeniti postavke pristupačnosti</translation>
-<translation id="2739965161385757621">Pregledaj moje postavke</translation>
 <translation id="274029851662193272">Utisnuto</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2741713322780029189">Otvorite terminal za oporavak</translation>
@@ -1869,7 +1868,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2864601841139725659">Postavite sliku profila</translation>
 <translation id="2865919525181940183">Snimak ekrana programa koji su trenutno na ekranu.</translation>
 <translation id="286674810810214575">Provjeravanje izvora napajanja...</translation>
-<translation id="2866876751734765554">Pregled privatnosti</translation>
 <translation id="2867768963760577682">Otvori kao zakačenu karticu</translation>
 <translation id="2868746137289129307">Ova ekstenzija je zastarjela i onemogućena je pravilom preduzeća. Može se omogućiti automatski kada nova verzija postane dostupna.</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
@@ -2417,7 +2415,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da instalirate Windows.</translation>
 <translation id="344630545793878684">Čitati vaše podatke na nizu web lokacija</translation>
 <translation id="3446650212859500694">U ovom fajlu postoji osjetljiv sadržaj</translation>
-<translation id="3446827946208017735">Shvatite i pregledajte najkritičnije postavke privatnosti na jednom mjestu</translation>
 <translation id="3447644283769633681">Blokiraj sve kolačiće trećih strana</translation>
 <translation id="3448086340637592206">Dodatni uslovi za Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Ažuriraj račun</translation>
@@ -3349,6 +3346,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4423376891418188461">Vrati postavke</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, vaš administrator traži da promijenite svoju lozinku.</translation>
 <translation id="4426464032773610160">Da započnete, provjerite je li USB ili Bluetooth prekidač povezan s Chromebookom. Možete koristiti i tipke na tastaturi.</translation>
+<translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
 <translation id="4427365070557649936">Potvrđivanje koda za potvrdu...</translation>
 <translation id="4429163740524851942">Raspored fizičke tastature</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>

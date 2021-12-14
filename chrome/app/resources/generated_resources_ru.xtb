@@ -1724,7 +1724,6 @@
 <translation id="2738771556149464852">Не позже</translation>
 <translation id="2739191690716947896">Отладка</translation>
 <translation id="2739240477418971307">Изменение настроек специальных возможностей</translation>
-<translation id="2739965161385757621">Проверить настройки</translation>
 <translation id="274029851662193272">Утопленная</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2741713322780029189">Открыть терминал для восстановления</translation>
@@ -1853,7 +1852,6 @@
 <translation id="2864601841139725659">Выберите фото профиля</translation>
 <translation id="2865919525181940183">Скриншот с открытыми программами на экране</translation>
 <translation id="286674810810214575">Проверка источников питания…</translation>
-<translation id="2866876751734765554">Проверка конфиденциальности</translation>
 <translation id="2867768963760577682">Открыть в закрепленной вкладке</translation>
 <translation id="2868746137289129307">Это устаревшее расширение отключено в соответствии с корпоративной политикой. Когда появится новая версия, оно может включиться автоматически.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2399,7 +2397,6 @@
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
 <translation id="344630545793878684">Просмотр данных на нескольких сайтах</translation>
 <translation id="3446650212859500694">Этот файл содержит конфиденциальный контент.</translation>
-<translation id="3446827946208017735">Самые важные настройки конфиденциальности на одной странице.</translation>
 <translation id="3447644283769633681">Заблокировать все сторонние файлы cookie</translation>
 <translation id="3448086340637592206">Дополнительные условия использования Google Chrome и Chrome OS</translation>
 <translation id="3448492834076427715">Обновить аккаунт</translation>
@@ -3330,6 +3327,7 @@
 <translation id="4423376891418188461">Восстановить настройки</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, администратор просит вас сменить пароль.</translation>
 <translation id="4426464032773610160">Чтобы начать работу, убедитесь, что к устройству Chromebook подключен переключатель USB или Bluetooth. Вы также можете использовать клавиши на клавиатуре.</translation>
+<translation id="4427306783828095590">В режиме "Улучшенная защита" фишинговые атаки и вредоносное ПО блокируются ещё эффективнее.</translation>
 <translation id="4427365070557649936">Проверка кода подтверждения…</translation>
 <translation id="4429163740524851942">Раскладка физической клавиатуры</translation>
 <translation id="4430019312045809116">Объем</translation>

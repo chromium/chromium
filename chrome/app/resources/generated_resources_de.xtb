@@ -1720,7 +1720,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2738771556149464852">Nicht nach</translation>
 <translation id="2739191690716947896">Fehlerbehebung</translation>
 <translation id="2739240477418971307">Einstellungen für Zugänglichkeit ändern</translation>
-<translation id="2739965161385757621">Einstellungen überprüfen</translation>
 <translation id="274029851662193272">Vertieft</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Terminal zur Wiederherstellung öffnen</translation>
@@ -1849,7 +1848,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2864601841139725659">Profilbild festlegen</translation>
 <translation id="2865919525181940183">Screenshot der Programme, die sich momentan auf dem Bildschirm befinden</translation>
 <translation id="286674810810214575">Stromquellen werden überprüft…</translation>
-<translation id="2866876751734765554">Überprüfung der Datenschutzeinstellungen</translation>
 <translation id="2867768963760577682">In angepinntem Tab öffnen</translation>
 <translation id="2868746137289129307">Diese Erweiterung ist veraltet und wurde aufgrund der Unternehmensrichtlinie deaktiviert. Die Erweiterung kann automatisch aktiviert werden, wenn eine neuere Version verfügbar ist.</translation>
 <translation id="2870560284913253234">Website</translation>
@@ -2395,7 +2393,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
 <translation id="344630545793878684">Ihre Daten auf verschiedenen Websites lesen</translation>
 <translation id="3446650212859500694">Diese Datei enthält vertrauliche Inhalte</translation>
-<translation id="3446827946208017735">Hier können Sie an einem Ort mehr über die wichtigsten Datenschutzeinstellungen erfahren und sie überprüfen</translation>
 <translation id="3447644283769633681">Alle Drittanbieter-Cookies blockieren</translation>
 <translation id="3448086340637592206">Google Chrome und Chrome OS – zusätzliche Nutzungsbedingungen</translation>
 <translation id="3448492834076427715">Konto aktualisieren</translation>
@@ -3326,6 +3323,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, Ihr Administrator fordert Sie zum Ändern Ihres Passworts auf.</translation>
 <translation id="4426464032773610160">Prüfen Sie zuerst, ob Ihr USB- oder Bluetooth-Schalter mit Ihrem Chromebook verbunden ist. Sie können auch die Tastatur verwenden.</translation>
+<translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
 <translation id="4430019312045809116">Lautstärke</translation>

@@ -1723,7 +1723,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2738771556149464852">Anterior a</translation>
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Cambiar tu configuración de accesibilidad</translation>
-<translation id="2739965161385757621">Revisar mis ajustes</translation>
 <translation id="274029851662193272">Hundida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2741713322780029189">Abrir terminal en modo de recuperación</translation>
@@ -1852,7 +1851,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2864601841139725659">Selecciona tu foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de los programas que hay en la pantalla ahora mismo</translation>
 <translation id="286674810810214575">Comprobando fuentes de alimentación...</translation>
-<translation id="2866876751734765554">Revisión de privacidad</translation>
 <translation id="2867768963760577682">Abrir como pestaña fija</translation>
 <translation id="2868746137289129307">Esta extensión está obsoleta e inhabilitada por la política de empresas. Es posible que se habilite automáticamente cuando haya una nueva versión disponible.</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -2398,7 +2396,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3446274660183028131">Abre Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer tus datos en varios sitios web</translation>
 <translation id="3446650212859500694">Este archivo incluye contenido sensible</translation>
-<translation id="3446827946208017735">Consulta y revisa los ajustes de privacidad más importantes en un solo lugar</translation>
 <translation id="3447644283769633681">Bloquear todas las cookies de terceros</translation>
 <translation id="3448086340637592206">Términos Adicionales de Google Chrome y Chrome OS</translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
@@ -3328,6 +3325,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4423376891418188461">Restaurar configuración</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, tu administrador solicita que cambies la contraseña.</translation>
 <translation id="4426464032773610160">Para empezar, comprueba que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar teclas del teclado.</translation>
+<translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y software malicioso.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>

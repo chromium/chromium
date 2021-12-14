@@ -1724,7 +1724,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2738771556149464852">Nu după</translation>
 <translation id="2739191690716947896">Remediați erorile</translation>
 <translation id="2739240477418971307">Modifică setările de accesibilitate</translation>
-<translation id="2739965161385757621">Examinează setările</translation>
 <translation id="274029851662193272">Adâncită</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Deschide terminalul de recuperare</translation>
@@ -1853,7 +1852,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2864601841139725659">Setează fotografia de profil</translation>
 <translation id="2865919525181940183">Captură de ecran a programelor afișate pe ecran</translation>
 <translation id="286674810810214575">Se verifică sursele de alimentare…</translation>
-<translation id="2866876751734765554">Examinarea confidențialității</translation>
 <translation id="2867768963760577682">Deschideți ca filă fixată</translation>
 <translation id="2868746137289129307">Această extensie este învechită și a fost dezactivată de o politică de companie. Dacă este disponibilă o nouă versiune, extensia ar putea fi activată automat.</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -2399,7 +2397,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3446274660183028131">Lansează Parallels Desktop pentru a instala Windows.</translation>
 <translation id="344630545793878684">Citește datele de pe un număr de site-uri</translation>
 <translation id="3446650212859500694">Acest fișier include conținut sensibil</translation>
-<translation id="3446827946208017735">Înțelege și examinează setările de confidențialitate esențiale într-un singur loc</translation>
 <translation id="3447644283769633681">Blocați toate cookie-urile terță parte</translation>
 <translation id="3448086340637592206">Condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome</translation>
 <translation id="3448492834076427715">Actualizează contul</translation>
@@ -3330,6 +3327,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4423376891418188461">Restabilește setările</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administratorul solicită să îți schimbi parola.</translation>
 <translation id="4426464032773610160">Pentru început, asigură-te că USB-ul sau Bluetooth-ul este conectat la Chromebook. Poți folosi și tastele de pe tastatură.</translation>
+<translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4427365070557649936">Este verificat codul de confirmare...</translation>
 <translation id="4429163740524851942">Aspectul tastaturii fizice</translation>
 <translation id="4430019312045809116">Volum</translation>

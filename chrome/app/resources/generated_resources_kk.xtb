@@ -1722,7 +1722,6 @@
 <translation id="2738771556149464852">Кейін емес</translation>
 <translation id="2739191690716947896">Түзету</translation>
 <translation id="2739240477418971307">Арнайы мүмкіндіктер параметрлерін өзгерту</translation>
-<translation id="2739965161385757621">Параметрлерімді көру</translation>
 <translation id="274029851662193272">Басылыңқы</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2741713322780029189">Қалпына келтіру терминалын ашу</translation>
@@ -1851,7 +1850,6 @@
 <translation id="2864601841139725659">Профиль суретін реттеу</translation>
 <translation id="2865919525181940183">Экрандағы ашық бағдарламалардың скриншоты</translation>
 <translation id="286674810810214575">Қуат көздері тексерілуде...</translation>
-<translation id="2866876751734765554">Құпиялылықты қарап шығу</translation>
 <translation id="2867768963760577682">Бекітілген қойынды ретінде ашу</translation>
 <translation id="2868746137289129307">Бұл кеңейтім ескіргендіктен, кәсіпорын саясатына сәйкес өшірілді. Жаңа нұсқасы қолжетімді болғанда, ол автоматты түрде қосылуы мүмкін.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2398,7 +2396,6 @@
 <translation id="3446274660183028131">Windows жүйесін орнату үшін Parallels Desktop-ты іске қосыңыз.</translation>
 <translation id="344630545793878684">Көптеген веб-сайттардағы деректеріңізді оқу</translation>
 <translation id="3446650212859500694">Бұл файлда құпия ақпарат бар.</translation>
-<translation id="3446827946208017735">Құпиялылықтың аса маңызды параметрлерін бір жерден түсініп, қарап алыңыз.</translation>
 <translation id="3447644283769633681">Барлық үшінші тарап cookie файлын бөгеу</translation>
 <translation id="3448086340637592206">Google Chrome және Chrome OS қосымша шарттары</translation>
 <translation id="3448492834076427715">Аккаунтты жаңарту</translation>
@@ -3329,6 +3326,7 @@
 <translation id="4423376891418188461">Параметрлерді қалпына келтіру</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, әкімшіңіз құпия сөздің өзгертілуін талап етеді.</translation>
 <translation id="4426464032773610160">Бастау үшін USB немесе Bluetooth ауыстырғышының Chromebook-қа жалғанғанын тексеріңіз. Пернетақта пернелерін де пайдалануға болады.</translation>
+<translation id="4427306783828095590">Жақсартылған қорғаныс фишинг пен зиянды бағдарламаларды бөгеуде көбірек істейді.</translation>
 <translation id="4427365070557649936">Растау коды тексерілуде...</translation>
 <translation id="4429163740524851942">Физикалық пернетақта орналасуы</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>

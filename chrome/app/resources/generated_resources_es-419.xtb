@@ -1720,7 +1720,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2738771556149464852">No después</translation>
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Cambiar la configuración de accesibilidad</translation>
-<translation id="2739965161385757621">Revisar mi configuración</translation>
 <translation id="274029851662193272">Disminuida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2741713322780029189">Abrir terminal de recuperación</translation>
@@ -1849,7 +1848,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2864601841139725659">Establecer tu foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de los programas que aparecen</translation>
 <translation id="286674810810214575">Buscando fuentes de energía…</translation>
-<translation id="2866876751734765554">Revisión de la privacidad</translation>
 <translation id="2867768963760577682">Abrir como pestaña fija</translation>
 <translation id="2868746137289129307">Esta extensión está desactualizada e inhabilitada por política de la empresa. Podría habilitarse automáticamente cuando haya una versión nueva disponible.</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -2395,7 +2393,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
 <translation id="3446650212859500694">Este archivo incluye contenido sensible</translation>
-<translation id="3446827946208017735">Encuentra información sobre los parámetros de configuración de privacidad más importantes y revísalos en un solo lugar.</translation>
 <translation id="3447644283769633681">Bloquear todas las cookies de terceros</translation>
 <translation id="3448086340637592206">Condiciones Adicionales del Sistema operativo Chrome y Google Chrome</translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
@@ -3326,6 +3323,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, tu administrador te solicita que cambies la contraseña.</translation>
 <translation id="4426464032773610160">Para comenzar, asegúrate de que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar las teclas del teclado.</translation>
+<translation id="4427306783828095590">La protección mejorada permite bloquear mejor la suplantación de identidad (phishing) y el software malicioso.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación…</translation>
 <translation id="4429163740524851942">Diseño del teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>

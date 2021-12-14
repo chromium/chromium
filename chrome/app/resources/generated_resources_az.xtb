@@ -1725,7 +1725,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2738771556149464852">Sonra yox</translation>
 <translation id="2739191690716947896">Debaq</translation>
 <translation id="2739240477418971307">Əlçatımlıq ayarlarını dəyişin</translation>
-<translation id="2739965161385757621">Ayarlarımı nəzərdən keçirin</translation>
 <translation id="274029851662193272">Kədərli</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Bərpa terminalını açın</translation>
@@ -1854,7 +1853,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2864601841139725659">Profil şəkli ayarlayın</translation>
 <translation id="2865919525181940183">Hazırda ekranda olan proqramların ekran şəkli</translation>
 <translation id="286674810810214575">Enerji mənbələri yoxlanılır...</translation>
-<translation id="2866876751734765554">Məxfiliyin nəzərdən keçirilməsi</translation>
 <translation id="2867768963760577682">VACİB Tab Açıq</translation>
 <translation id="2868746137289129307">Bu artırma köhnədir və müəssisə siyasəti tərəfindən deaktiv edildi. Yeni versiya əlçatan olanda avtomatik aktiv edilə bilər.</translation>
 <translation id="2870560284913253234">Sayt</translation>
@@ -2402,7 +2400,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3446274660183028131">Windows'u quraşdırmaq üçün Parallels Desktop'u işə salın.</translation>
 <translation id="344630545793878684">Datanızı çoxsaylı vebsaytda oxuyun</translation>
 <translation id="3446650212859500694">Bu fayl həssas məzmun ehtiva edir</translation>
-<translation id="3446827946208017735">Ən kritik məxfilik ayarlarını bir yerdə anlayın və nəzərdən keçirin</translation>
 <translation id="3447644283769633681">Bütün üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3448086340637592206">Google Chrome və Chrome ƏS üzrə Əlavə Şərtlər</translation>
 <translation id="3448492834076427715">Hesabı yeniləyin</translation>
@@ -3332,6 +3329,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4423376891418188461">Ayarları Bərpa Edin</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administrator parolu dəyişməyinizi tələb edir.</translation>
 <translation id="4426464032773610160">Başlamaq üçün USB və ya Bluetooth keçiricinizin Chromebook'unuza qoşulduğuna əmin olun. Klaviatura düymələrindən də istifadə edə bilərsiniz.</translation>
+<translation id="4427306783828095590">Təkmil qoruma ilə fişinq və zərərli proqramların bloklanması üçün daha çox iş görülür</translation>
 <translation id="4427365070557649936">Təsdiq kodu doğrulanır...</translation>
 <translation id="4429163740524851942">Fiziki klaviatura düzəni</translation>
 <translation id="4430019312045809116">Həcm</translation>

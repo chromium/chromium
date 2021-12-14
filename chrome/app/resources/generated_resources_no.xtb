@@ -1736,7 +1736,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2738771556149464852">Ikke etter</translation>
 <translation id="2739191690716947896">Feilsøk</translation>
 <translation id="2739240477418971307">endre innstillingene for tilgjengelighet</translation>
-<translation id="2739965161385757621">Gjennomgå innstillingene mine</translation>
 <translation id="274029851662193272">Preget</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Åpne gjenopprettingsterminalen</translation>
@@ -1865,7 +1864,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
 <translation id="2865919525181940183">Skjermdump av programmene som er på skjermen</translation>
 <translation id="286674810810214575">Sjekker strømkilder …</translation>
-<translation id="2866876751734765554">Personverngjennomgang</translation>
 <translation id="2867768963760577682">Åpne som festet fane</translation>
 <translation id="2868746137289129307">Denne utvidelsen er utdatert og avslått av bedriftsretningslinjene. Den kan slås på automatisk når en nyere versjon er tilgjengelig.</translation>
 <translation id="2870560284913253234">Nettsted</translation>
@@ -2413,7 +2411,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for å installere Windows.</translation>
 <translation id="344630545793878684">Lesing av dataene dine på en rekke nettsteder</translation>
 <translation id="3446650212859500694">Denne filen har sensitivt innhold</translation>
-<translation id="3446827946208017735">Forstå og gjennomgå de mest kritiske personverninnstillingene på ett sted</translation>
 <translation id="3447644283769633681">Blokkér alle informasjonskapsler fra tredjeparter</translation>
 <translation id="3448086340637592206">Tilleggsvilkår for Google Chrome og Chrome OS</translation>
 <translation id="3448492834076427715">Oppdater kontoen</translation>
@@ -3343,6 +3340,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4423376891418188461">Gjenopprett innstillingene</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administratoren din krever at du endrer passord.</translation>
 <translation id="4426464032773610160">For å komme i gang, sørg for at USB- eller Bluetooth-bryteren er koblet til Chromebooken. Du kan også bruke tastaturtaster.</translation>
+<translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
 <translation id="4430019312045809116">Volum</translation>

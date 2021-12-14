@@ -60,6 +60,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="234869673307233423">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="235650106824528204">Toutes les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe etc.) peuvent être supprimées par l'administrateur du profil professionnel. <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Continuer</translation>
 <translation id="2429317896000329049">Impossible de synchroniser vos données dans Google Chrome, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="2467438592969358367">Google Chrome veut exporter vos mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -144,6 +145,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4343195214584226067">L'extension <ph name="EXTENSION_NAME" /> a été ajoutée à Chrome</translation>
 <translation id="4384570495110188418">Chrome ne peut pas vérifier vos mots de passe, car vous n'êtes pas connecté</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
 <translation id="4450664632294415862">Chrome - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours dans Google Chrome. Veuillez réessayer ultérieurement.</translation>
 <translation id="4480040274068703980">Impossible de synchroniser vos données dans Chrome OS, car une erreur s'est produite lors de la connexion.</translation>

@@ -1725,7 +1725,6 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2738771556149464852">Nevis pēc</translation>
 <translation id="2739191690716947896">Atkļūdot</translation>
 <translation id="2739240477418971307">Mainītu jūsu pieejamības iestatījumus</translation>
-<translation id="2739965161385757621">Pārskatīt iestatījumus</translation>
 <translation id="274029851662193272">Pazemināta</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2741713322780029189">Atvērt atkopšanas termināli</translation>
@@ -1854,7 +1853,6 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2864601841139725659">Profila attēla iestatīšana</translation>
 <translation id="2865919525181940183">Ekrānā pašlaik redzamo programmu ekrānuzņēmums</translation>
 <translation id="286674810810214575">Notiek barošanas avotu pārbaude...</translation>
-<translation id="2866876751734765554">Konfidencialitātes iestatījumu pārskatīšana</translation>
 <translation id="2867768963760577682">Atvērt kā piespraustu cilni</translation>
 <translation id="2868746137289129307">Šis paplašinājums ir novecojis, un uzņēmuma politika to ir atspējojusi. Kad būs pieejama jaunāka versija, iespējams, paplašinājums tiks automātiski iespējots.</translation>
 <translation id="2870560284913253234">Vietne</translation>
@@ -2400,7 +2398,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3446274660183028131">Lai instalētu Windows, palaidiet Parallels Desktop.</translation>
 <translation id="344630545793878684">Lasīt jūsu datus vairākās vietnēs</translation>
 <translation id="3446650212859500694">Šis fails ietver sensitīvu saturu.</translation>
-<translation id="3446827946208017735">Izprotiet un vienuviet pārskatiet vissvarīgākos konfidencialitātes iestatījumus.</translation>
 <translation id="3447644283769633681">Bloķēt visus trešo pušu sīkfailus</translation>
 <translation id="3448086340637592206">Google Chrome un Chrome OS papildu noteikumi</translation>
 <translation id="3448492834076427715">Atjaunināt kontu</translation>
@@ -3331,6 +3328,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4423376891418188461">Atjaunot iestatījumus</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, jūsu administrators pieprasa paroles maiņu.</translation>
 <translation id="4426464032773610160">Lai sāktu darbu, gādājiet, lai jūsu USB vai Bluetooth slēdzis būtu pievienots Chromebook datoram. Varat arī izmantot tastatūras taustiņus.</translation>
+<translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4427365070557649936">Notiek apstiprinājuma koda verifikācija...</translation>
 <translation id="4429163740524851942">Fiziskās tastatūras izkārtojums</translation>
 <translation id="4430019312045809116">Skaļums</translation>

@@ -1729,7 +1729,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2738771556149464852">Mitte pärast</translation>
 <translation id="2739191690716947896">Silu</translation>
 <translation id="2739240477418971307">Juurdepääsetavuse seadete muutmine</translation>
-<translation id="2739965161385757621">Kuva minu seaded</translation>
 <translation id="274029851662193272">Lohkus</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Ava taasteterminal</translation>
@@ -1858,7 +1857,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2864601841139725659">Profiilipildi määramine</translation>
 <translation id="2865919525181940183">Ekraanipilt programmidest, mis on praegu ekraanil kuvatud</translation>
 <translation id="286674810810214575">Toiteallikate kontrollimine …</translation>
-<translation id="2866876751734765554">Privaatsusseadete ülevaatamine</translation>
 <translation id="2867768963760577682">Ava kinnitatud vahelehel</translation>
 <translation id="2868746137289129307">See laiendus on aegunud ja ettevõtte reeglitega keelatud. Kui uuem versioon muutub kättesaadavaks, siis võidakse see automaatselt lubada.</translation>
 <translation id="2870560284913253234">Sait</translation>
@@ -2404,7 +2402,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3446274660183028131">Käivitage Windowsi installimiseks Parallels Desktop.</translation>
 <translation id="344630545793878684">Lugege oma andmeid mitmel veebisaidil</translation>
 <translation id="3446650212859500694">See fail sisaldab tundlikku sisu</translation>
-<translation id="3446827946208017735">Vaadake ühes kohas üle kõige kriitilisemad privaatsusseaded ja tehke need endale selgeks</translation>
 <translation id="3447644283769633681">Kõikide kolmanda osapoole küpsiste blokeerimine</translation>
 <translation id="3448086340637592206">Google Chrome'i ja Chrome OS-i lisatingimused</translation>
 <translation id="3448492834076427715">Värskenda kontot</translation>
@@ -3335,6 +3332,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4423376891418188461">Taasta seaded</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administraator nõuab, et muudaksite parooli.</translation>
 <translation id="4426464032773610160">Alustamiseks veenduge, et USB- või Bluetooth-lüliti oleks teie Chromebookiga ühendatud. Saate kasutada ka klaviatuuri klahve.</translation>
+<translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
 <translation id="4427365070557649936">Kinnituskoodi kinnitamine …</translation>
 <translation id="4429163740524851942">Füüsilise klaviatuuri paigutus</translation>
 <translation id="4430019312045809116">Helitugevus</translation>

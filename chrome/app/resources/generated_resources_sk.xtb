@@ -1729,7 +1729,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2738771556149464852">Nie po</translation>
 <translation id="2739191690716947896">Ladiť</translation>
 <translation id="2739240477418971307">Zmeniť nastavenia dostupnosti</translation>
-<translation id="2739965161385757621">Skontrolovať nastavenia</translation>
 <translation id="274029851662193272">Rytina</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Otvoriť terminál obnovenia</translation>
@@ -1858,7 +1857,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2864601841139725659">Nastavte si profilovú fotku</translation>
 <translation id="2865919525181940183">Snímky programov, ktoré sú momentálne na obrazovke</translation>
 <translation id="286674810810214575">Kontrolujú sa zdroje napájania…</translation>
-<translation id="2866876751734765554">Kontrola ochrany súkromia</translation>
 <translation id="2867768963760577682">Otvoriť ako pevnú kartu</translation>
 <translation id="2868746137289129307">Toto rozšírenie je zastarané a je zakázané podnikovým pravidlom. Možno bude opäť automaticky povolené, keď bude k dispozícii novšia verzia.</translation>
 <translation id="2870560284913253234">Web</translation>
@@ -2406,7 +2404,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3446274660183028131">Spustite Parallels Desktop a nainštalujte tak Windows.</translation>
 <translation id="344630545793878684">Čítať vaše údaje na viacerých webových stránkach</translation>
 <translation id="3446650212859500694">Tento súbor má citlivý obsah</translation>
-<translation id="3446827946208017735">Porozumejte najdôležitejším nastaveniam ochrany súkromia a skontrolujte ich na jednom mieste</translation>
 <translation id="3447644283769633681">Blokovať všetky súbory cookie tretích strán</translation>
 <translation id="3448086340637592206">Doplňujúce zmluvné podmienky prehliadača Google Chrome a systému Chrome OS</translation>
 <translation id="3448492834076427715">Aktualizovať účet</translation>
@@ -3338,6 +3335,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4423376891418188461">Obnoviť nastavenia</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, váš správca vyžaduje zmenu hesla.</translation>
 <translation id="4426464032773610160">Ak chcete začať, skontrolujte, či je k Chromebooku pripojený prepínač USB alebo Bluetooth. Môžete tiež použiť klávesy na klávesnici.</translation>
+<translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4427365070557649936">Overuje sa potvrdzovací kód…</translation>
 <translation id="4429163740524851942">Rozloženie fyzickej klávesnice</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>

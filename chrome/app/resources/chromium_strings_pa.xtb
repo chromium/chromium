@@ -36,6 +36,7 @@
 <translation id="2313870531055795960">Chromium ਵਿੱਚ ਸਟੋਰ ਕੀਤੀਆਂ ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਦੇ ਨਾਲ URL ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਜੇ ਕੋਈ ਸਾਈਟ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੀ ਹੈ ਜਾਂ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਨੁਕਸਾਨਦੇਹ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਦੇ ਹੋ, ਤਾਂ Chromium ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਸਮੇਤ URL ਵੀ ਭੇਜ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2343156876103232566">ਇੱਥੋਂ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਨੰਬਰ ਭੇਜਣ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2347108572062610441">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੇ ਤੁਹਾਡੇ ਵੱਲੋਂ Chromium ਸ਼ੁਰੂ ਕੀਤੇ ਜਾਣ ਵੇਲੇ ਦਿਖਾਏ ਗਏ ਪੰਨੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਹੈ।</translation>
+<translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2396765026452590966">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਬਦਲਿਆ ਗਿਆ ਹੈ ਕਿ ਕਿਹੜਾ ਸਫ਼ਾ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ ਜਦੋਂ ਤੁਸੀਂ Chromium ਚਾਲੂ ਕਰਦੇ ਹੋ।</translation>
 <translation id="2401032172288869980">Chromium ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2483889755041906834">Chromium ਵਿੱਚ</translation>
@@ -112,6 +113,7 @@
 <translation id="4407044323746248786">ਕੀ ਫਿਰ ਵੀ Chromium ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="4415566066719264597">Chromium ਨੂੰ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲਣ ਦਿਓ</translation>
 <translation id="4423735387467980091">Google Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਕੇ ਕੰਟਰੋਲ ਕਰੋ।</translation>
+<translation id="4427306783828095590">ਧੋਖਾਧੜੀ ਅਤੇ ਮਾਲਵੇਅਰ ਨੂੰ ਬਲਾਕ ਕਰਨ ਵਾਸਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਹੋਰ ਵੱਧ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="452711251841752011">Chromium ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ; ਨਵੀਂ ਬ੍ਰਾਊਜ਼ਰ ਵਿੰਡੋ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="4544142686420020088">Chromium ਅੱਪਡੇਟ ਨਹੀਂ ਹੋਇਆ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। <ph name="BEGIN_LINK" />Chromium ਅੱਪਡੇਟ ਦੀਆਂ ਸਮੱਸਿਆਵਾਂ ਅਤੇ ਅਸਫਲ ਹੋਈਆਂ ਅੱਪਡੇਟਾਂ ਨੂੰ ਠੀਕ ਕਰੋ।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">ਕੀ ਨਵੇਂ Chromium ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>

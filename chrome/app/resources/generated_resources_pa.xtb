@@ -1739,7 +1739,6 @@
 <translation id="2738771556149464852">ਬਾਅਦ ਵਿੱਚ ਨਹੀਂ</translation>
 <translation id="2739191690716947896">ਡੀਬੱਗ</translation>
 <translation id="2739240477418971307">ਆਪਣੀਆਂ ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
-<translation id="2739965161385757621">ਮੇਰੀਆਂ ਸੈਟਿੰਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="274029851662193272">ਨਿਰਾਸ਼</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
 <translation id="2741713322780029189">ਰਿਕਵਰੀ ਟਰਮੀਨਲ ਖੋਲ੍ਹੋ</translation>
@@ -1868,7 +1867,6 @@
 <translation id="2864601841139725659">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਦੀ ਸੈਟਿੰਗ ਕਰੋ</translation>
 <translation id="2865919525181940183">ਉਹਨਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਜੋ ਫਿਲਹਾਲ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਹਨ</translation>
 <translation id="286674810810214575">ਪਾਵਰ ਸਰੋਤਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
-<translation id="2866876751734765554">ਪਰਦੇਦਾਰੀ ਸਮੀਖਿਆ</translation>
 <translation id="2867768963760577682">ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="2868746137289129307">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਪੁਰਾਣੀ ਹੈ ਅਤੇ ਐਂਟਰਪ੍ਰਾਈਜ ਨੀਤੀ ਵੱਲੋਂ ਬੰਦ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਉਦੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚਾਲੂ ਹੋ ਸਕਦੀ ਹੈ, ਜਦੋਂ ਕੋਈ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
@@ -2413,7 +2411,6 @@
 <translation id="3446274660183028131">Windows ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ Parallels Desktop ਨੂੰ ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="344630545793878684">ਕੁਝ ਵੈਬਸਾਈਟਾਂ ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
 <translation id="3446650212859500694">ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਸਮੱਗਰੀ ਹੈ</translation>
-<translation id="3446827946208017735">ਇੱਕੋ ਹੀ ਥਾਂ 'ਤੇ ਪਰਦੇਦਾਰੀ ਸੰਬੰਧੀ ਸਭ ਤੋਂ ਗੰਭੀਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਮਝੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="3447644283769633681">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="3448086340637592206">Google Chrome ਅਤੇ Chrome OS ਦੇ ਵਧੀਕ ਨਿਯਮ</translation>
 <translation id="3448492834076427715">ਖਾਤਾ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -3344,6 +3341,7 @@
 <translation id="4423376891418188461">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਲਈ ਤੁਹਾਡੀ ਲੋੜ ਹੈ।</translation>
 <translation id="4426464032773610160">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ USB ਜਾਂ ਬਲੂਟੁੱਥ ਸਵਿੱਚ ਤੁਹਾਡੀ Chromebook ਨਾਲ ਕਨੈਕਟ ਹੈ। ਤੁਸੀਂ ਕੀ-ਬੋਰਡ ਕੁੰਜੀਆਂ ਵੀ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
+<translation id="4427306783828095590">ਧੋਖਾਧੜੀ ਅਤੇ ਮਾਲਵੇਅਰ ਨੂੰ ਬਲਾਕ ਕਰਨ ਵਾਸਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਹੋਰ ਵੱਧ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="4427365070557649936">ਤਸਦੀਕੀ ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4429163740524851942">ਭੌਤਿਕ ਕੀ-ਬੋਰਡ ਖਾਕਾ</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>

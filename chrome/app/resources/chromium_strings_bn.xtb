@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Chromium-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সেগুলির URL গুলি পরীক্ষা করে দেখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Safe Browsing-এ Chromium পৃষ্ঠার কিছু কন্টেন্ট সহ URL গুলিও হয়ত পাঠাতে পারে।</translation>
 <translation id="2343156876103232566">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="2347108572062610441">আপনি Chromium চালু করলে কোন পৃষ্ঠাটি দেখানো হবে তা এই এক্সটেনশনটি পরিবর্তন করেছে।</translation>
+<translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2396765026452590966">আপনি Chromium চালু করলে কোন পৃষ্ঠাটি দেখানো হবে তা "<ph name="EXTENSION_NAME" />" এক্সটেনশনটি পরিবর্তন করেছে।</translation>
 <translation id="2401032172288869980">এই সাইটের জন্য Chromium-এর ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="2483889755041906834">Chromium এ</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">তা স্বত্তেও Chromium ছেড়ে যাবেন?</translation>
 <translation id="4415566066719264597">Chromium-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="4423735387467980091">Chromium কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
+<translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
 <translation id="452711251841752011">Chromium-এ স্বাগতম; নতুন ব্রাউজার উইন্ডো খোলা হয়েছে</translation>
 <translation id="4544142686420020088">Chromium আপডেট করা যায়নি, কোনও সমস্যা হয়েছে। <ph name="BEGIN_LINK" />Chromium আপডেট করতে না পারার সমস্যা ও আপডেট করা যায়নি এমন সমস্যার সমাধান করুন।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">এক্ষেত্রে নতুন Chromium প্রোফাইল তৈরি করতে চান?</translation>

@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2347108572062610441">Ekstensi ini telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chromium.</translation>
+<translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2396765026452590966">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chromium.</translation>
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="2483889755041906834">Di Chromium</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">Tetap keluar dari Chromium?</translation>
 <translation id="4415566066719264597">Jalankan Chromium di Background</translation>
 <translation id="4423735387467980091">Menyesuaikan dan mengontrol Chromium</translation>
+<translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="452711251841752011">Selamat datang di Chromium; jendela browser baru terbuka</translation>
 <translation id="4544142686420020088">Chromium tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Lanjutkan di profil Chromium baru?</translation>

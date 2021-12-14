@@ -60,6 +60,7 @@
 <translation id="2348335408836342058">Chrome 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="234869673307233423">Chrome 無法檢查密碼，請稍後再試。</translation>
 <translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">繼續</translation>
 <translation id="2429317896000329049">您的網域無法使用「同步功能」，因此 Google Chrome 無法同步處理您的數據。</translation>
 <translation id="2467438592969358367">Google Chrome 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -144,6 +145,7 @@
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
 <translation id="4384570495110188418">由於您尚未登入帳戶，因此 Chrome 無法檢查密碼</translation>
 <translation id="4407807842708586359">Google Chrome 作業系統</translation>
+<translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4480040274068703980">登入時發生錯誤，因此 Chrome 作業系統無法同步處理您的數據。</translation>
@@ -288,6 +290,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
 <translation id="8556340503434111824">Google Chrome 推出全新版本，速度更勝從前。</translation>
+<translation id="855774455305595697">要一併在 Chrome 中開啟這項功能嗎？</translation>
 <translation id="8571790202382503603">透過 Chrome 設定檔，您可將所有 Chrome 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>

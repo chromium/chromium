@@ -34,6 +34,7 @@
 <translation id="2313870531055795960">‏يعمل هذا الوضع على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chromium. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفِّح Chromium أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفُّح الآمن".</translation>
 <translation id="2343156876103232566">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى Chromium على الجهازَين.</translation>
 <translation id="2347108572062610441">‏غيّرت هذه الإضافة الصفحة التي تظهر عند بدء Chromium.</translation>
+<translation id="2359808026110333948">متابعة</translation>
 <translation id="2396765026452590966">‏غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند بدء Chromium.</translation>
 <translation id="2401032172288869980">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="2483889755041906834">‏في Chromium</translation>
@@ -110,6 +111,7 @@
 <translation id="4407044323746248786">‏هل تريد الخروج من Chromium على أي حال؟</translation>
 <translation id="4415566066719264597">‏السماح بتشغيل Chromium في الخلفية</translation>
 <translation id="4423735387467980091">‏تخصيص Chromium والتحكم فيه</translation>
+<translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
 <translation id="452711251841752011">‏مرحبًا بك في Chromium. تم فتح نافذة متصفّح جديدة.</translation>
 <translation id="4544142686420020088">‏تعذّر تحديث Chromium بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chromium؟</translation>

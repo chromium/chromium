@@ -35,6 +35,7 @@
 <translation id="2313870531055795960">Chromium मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. एखाद्या साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chromium हे पेजवरील काही आशयाच्या समावेशासह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकते.</translation>
 <translation id="2343156876103232566">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
 <translation id="2347108572062610441">तुम्ही Chromium सुरू करता तेव्हा कोणते पेज दर्शविले जाते हे या एक्स्टेंशनने बदलले आहे.</translation>
+<translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2396765026452590966">तुम्ही Chromium सुरू करता तेव्हा कोणते पेज दर्शविले जाते हे "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने बदलले आहे.</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
 <translation id="2483889755041906834">Chromium मध्ये</translation>
@@ -111,6 +112,7 @@
 <translation id="4407044323746248786">तरीही Chromium बंद करायचे?</translation>
 <translation id="4415566066719264597">Chromium बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="4423735387467980091">Chromium कस्टमाइझ करा आणि नियंत्रित करा</translation>
+<translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="452711251841752011">Chromium मध्ये स्वागत आहे; नवीन ब्राउझर विंडो उघडली</translation>
 <translation id="4544142686420020088">Chromium अपडेट झाले नाही, काहीतरी चूक झाली. <ph name="BEGIN_LINK" />Chromium अपडेट समस्या आणि अयशस्वी झालेल्या अपडेटचे निराकरण करा.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">नवीन Chromium प्रोफाइलमध्ये पुढे सुरू ठेवायचे आहे का?</translation>

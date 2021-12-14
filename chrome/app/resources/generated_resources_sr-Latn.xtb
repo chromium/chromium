@@ -1722,7 +1722,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2738771556149464852">Ne posle</translation>
 <translation id="2739191690716947896">Otkloni greške</translation>
 <translation id="2739240477418971307">Menjanje podešavanja pristupačnosti</translation>
-<translation id="2739965161385757621">Prikaži moja podešavanja</translation>
 <translation id="274029851662193272">Udubljeno</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2741713322780029189">Otvori terminal za oporavak</translation>
@@ -1851,7 +1850,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2864601841139725659">Podesite sliku profila</translation>
 <translation id="2865919525181940183">Snimak ekrana programa koji su trenutno na ekranu</translation>
 <translation id="286674810810214575">Proveravaju se izvori napajanja...</translation>
-<translation id="2866876751734765554">Pregled privatnosti</translation>
 <translation id="2867768963760577682">Otvori kao zakačenu karticu</translation>
 <translation id="2868746137289129307">Ovaj dodatak je zastareo i smernice za preduzeća ga onemogućavaju. Možda će automatski postati omogućen kada novija verzija postane dostupna.</translation>
 <translation id="2870560284913253234">Sajt</translation>
@@ -2397,7 +2395,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da biste instalirali Windows.</translation>
 <translation id="344630545793878684">Čitanje vaših podataka na više veb-sajtova</translation>
 <translation id="3446650212859500694">Ova datoteka sadrži osetljiv sadržaj</translation>
-<translation id="3446827946208017735">Razumite i pregledajte najvažnija podešavanja privatnosti na jednom mestu</translation>
 <translation id="3447644283769633681">Blokiraj sve kolačiće trećih strana</translation>
 <translation id="3448086340637592206">Dodatni uslovi za Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Ažuriraj nalog</translation>
@@ -3328,6 +3325,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4423376891418188461">Vrati podešavanja</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administrator zahteva da promenite lozinku.</translation>
 <translation id="4426464032773610160">Da biste započeli, proverite da li je USB ili Bluetooth prekidač povezan na Chromebook. Možete da koristite i tastere na tastaturi.</translation>
+<translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
 <translation id="4427365070557649936">Verifikuje se kôd za potvrdu…</translation>
 <translation id="4429163740524851942">Raspored tastera na fizičkoj tastaturi</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>

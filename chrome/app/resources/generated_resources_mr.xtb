@@ -1737,7 +1737,6 @@
 <translation id="2738771556149464852">नंतर नाही</translation>
 <translation id="2739191690716947896">डीबग</translation>
 <translation id="2739240477418971307">तुमच्या ॲक्सेसिबिलिटी सेटिंग्ज बदला</translation>
-<translation id="2739965161385757621">माझ्या सेटिंग्जचे पुनरावलोकन करा</translation>
 <translation id="274029851662193272">डिप्रेस्ड</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2741713322780029189">रिकव्हरी टर्मिनल उघडा</translation>
@@ -1866,7 +1865,6 @@
 <translation id="2864601841139725659">तुमचे प्रोफाइल चित्र सेट करा</translation>
 <translation id="2865919525181940183">सध्या स्क्रीनवर असलेल्या प्रोग्रामचे स्क्रीनशॉट</translation>
 <translation id="286674810810214575">पॉवर स्रोत तपासत आहे…</translation>
-<translation id="2866876751734765554">गोपनीयतेचे पुनरावलोकन करणे</translation>
 <translation id="2867768963760577682">पिन केलेला टॅब म्हणून उघडा</translation>
 <translation id="2868746137289129307">हे एक्स्टेंशन कालबाह्य आहे आणि संस्‍था धोरणानुसार बंद केले आहे. नवीनतम आवृत्ती उपलब्‍ध झाल्‍यावर ते कदाचित आपोआप सुरू होईल.</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -2412,7 +2410,6 @@
 <translation id="3446274660183028131">Windows इंस्टॉल करण्यासाठी कृपया Parallels Desktop लाँच करा.</translation>
 <translation id="344630545793878684">अनेक वेबसाइटवर तुमचा डेटा वाचा</translation>
 <translation id="3446650212859500694">या फाइलमध्ये संवेदनशील आशय आहे</translation>
-<translation id="3446827946208017735">सर्वात महत्त्वाच्या गोपनीयता सेटिंग्ज एकाच ठिकाणी समजून घ्या आणि त्यांचे पुनरावलोकन करा</translation>
 <translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज अवरोधित करा</translation>
 <translation id="3448086340637592206">Google Chrome आणि Chrome OS अतिरिक्त अटी</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
@@ -3341,6 +3338,7 @@
 <translation id="4423376891418188461">सेटिंग्ज पुनर्संचयित करा</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, तुम्ही तुमचा पासवर्ड बदलणे तुमच्या ॲडमिनिस्ट्रेटरलााठी आवश्यक आहे.</translation>
 <translation id="4426464032773610160">सुरुवात करण्यासाठी, कृपया तुमचे USB किंवा ब्लूटूथ स्विच तुमच्या Chromebook शी कनेक्ट केले असल्याची खात्री करा. आपण कीबोर्ड कीदेखील वापरू शकता.</translation>
+<translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4427365070557649936">कंफर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>

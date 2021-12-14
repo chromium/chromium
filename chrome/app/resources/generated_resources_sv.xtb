@@ -1738,7 +1738,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2738771556149464852">Inte efter</translation>
 <translation id="2739191690716947896">Felsökning</translation>
 <translation id="2739240477418971307">Ändra tillgänglighetsinställningarna</translation>
-<translation id="2739965161385757621">Granska mina inställningar</translation>
 <translation id="274029851662193272">Nedsänkt</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Öppna återställningsterminalen</translation>
@@ -1867,7 +1866,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2864601841139725659">Ange profilbild</translation>
 <translation id="2865919525181940183">Skärmbild av program som visas på skärmen</translation>
 <translation id="286674810810214575">Kontrollerar strömkällor …</translation>
-<translation id="2866876751734765554">Granskning av integritet</translation>
 <translation id="2867768963760577682">Öppna som en fast flik</translation>
 <translation id="2868746137289129307">Tillägget är inaktuellt och inaktiverat av företagspolicyn. Det kan aktiveras automatiskt när en ny version blir tillgänglig.</translation>
 <translation id="2870560284913253234">Webbplats</translation>
@@ -2413,7 +2411,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3446274660183028131">Starta Parallels Desktop om du vill installera Windows.</translation>
 <translation id="344630545793878684">Läsa din data på ett antal webbplatser</translation>
 <translation id="3446650212859500694">Filen har känsligt innehåll</translation>
-<translation id="3446827946208017735">Förstå och granska de viktigaste integritetsinställningarna från ett ställe</translation>
 <translation id="3447644283769633681">Blockera alla cookies från tredje part</translation>
 <translation id="3448086340637592206">Ytterligare villkor för Google Chrome och Chrome OS</translation>
 <translation id="3448492834076427715">Uppdatera kontot</translation>
@@ -3344,6 +3341,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4423376891418188461">Återställ inställningar</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, administratören kräver att du ändrar ditt lösenord.</translation>
 <translation id="4426464032773610160">Kontrollera att USB- eller Bluetooth-brytaren är ansluten till Chromebook innan du sätter igång. Du kan även använda tangenter på tangentbordet.</translation>
+<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
 <translation id="4427365070557649936">Bekräftelsekoden verifieras …</translation>
 <translation id="4429163740524851942">Layout på fysiskt tangentbord</translation>
 <translation id="4430019312045809116">Volym</translation>
