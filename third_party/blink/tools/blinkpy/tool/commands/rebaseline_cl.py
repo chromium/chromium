@@ -93,11 +93,19 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 '--patchset',
                 default=None,
                 help='Patchset number to fetch new baselines from.'),
+            optparse.make_option('--resultDB',
+                                 dest='resultDB',
+                                 default=False,
+                                 action='store_true',
+                                 help=('Fetch results from resultDB(WIP). '
+                                       'Works with --test-name-file '
+                                       'and positional parameters')),
             self.no_optimize_option,
             self.results_directory_option,
         ])
         self.git_cl = None
         self._selected_try_bots = None
+        self._resultdb_fetcher = False
 
     def execute(self, options, args, tool):
         self._tool = tool
@@ -126,6 +134,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     'Aborted: builder %s not found in builder list.' % options.flag_specific)
                 return 1
 
+        if options.resultDB:
+            self._resultdb_fetcher = True
         jobs = self.git_cl.latest_try_jobs(
             builder_names=self.selected_try_bots, patchset=options.patchset)
 
@@ -285,6 +295,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
         results_fetcher = self._tool.results_fetcher
         results = {}
+        results_url = ''
 
         for build, status in jobs.items():
             if status == TryJobStatus('COMPLETED', 'SUCCESS'):
@@ -296,9 +307,14 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 # Only completed failed builds will contain actual failed
                 # web tests to download baselines for.
                 continue
-            results_url = results_fetcher.results_url(build.builder_name,
-                                                      build.build_number)
-            web_test_results = results_fetcher.fetch_results(build)
+            if self._resultdb_fetcher:
+                web_test_results = results_fetcher.fetch_results_from_resultdb_layout_tests(
+                    self._tool, build, True)
+            else:
+                results_url = results_fetcher.results_url(
+                    build.builder_name, build.build_number)
+                web_test_results = results_fetcher.fetch_results(build)
+
             if web_test_results is None:
                 _log.info('Failed to fetch results for "%s".',
                           build.builder_name)

@@ -49,6 +49,11 @@ TEST_RESULTS_SERVER = 'https://test-results.appspot.com'
 RESULTS_URL_BASE = '%s/data/layout_results' % TEST_RESULTS_SERVER
 RESULTS_SUMMARY_URL_BASE = 'https://storage.googleapis.com/chromium-layout-test-archives'
 
+PREDICATE_UNEXPECTED_RESULTS = {
+    "expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS",
+    "excludeExonerated": True
+}
+
 
 class Build(collections.namedtuple('Build', ('builder_name', 'build_number',
                                              'build_id'))):
@@ -74,6 +79,7 @@ class TestResultsFetcher(object):
     def __init__(self):
         self.web = Web()
         self.builders = BuilderList.load_default_builder_list(FileSystem())
+        self._webtest_results_resultdb = None
 
     def results_url(self, builder_name, build_number=None, step_name=None):
         """Returns a URL for one set of archived web test results.
@@ -95,6 +101,35 @@ class TestResultsFetcher(object):
                     six.moves.urllib.parse.quote(step_name))
             return '%s/%s/layout-test-results' % (url_base, build_number)
         return self.accumulated_results_url_base(builder_name)
+
+    def get_artifact_list_for_test(self, host, result_name):
+        """Fetches the list of artifacts for a test-result.
+        """
+        luci_token = LuciAuth(host).get_access_token()
+
+        url = 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/ListArtifacts'
+        header = {
+            'Authorization': 'Bearer ' + luci_token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        data = {
+            "parent": result_name,
+        }
+
+        req_body = json.dumps(data).encode("utf-8")
+        response = self.do_request_with_retries('POST', url, req_body, header)
+        if response is None:
+            _log.warning("Failed to get baseline artifacts")
+        if response.getcode() == 200:
+            response_body = response.read()
+
+        RESPONSE_PREFIX = b")]}'"
+        if response_body.startswith(RESPONSE_PREFIX):
+            response_body = response_body[len(RESPONSE_PREFIX):]
+        res = json.loads(response_body)
+        return res['artifacts']
 
     def get_full_builder_url(self, url_base, builder_name):
         """ Returns the url for a builder directory in google storage.
@@ -161,6 +196,19 @@ class TestResultsFetcher(object):
                     time.sleep(10)
         _log.error("Http request failed for %s" % data)
         return None
+
+    @memoized
+    def fetch_results_from_resultdb_layout_tests(self, host, build,
+                                                 unexpected_results):
+        rv = []
+        if unexpected_results:
+            predicate = PREDICATE_UNEXPECTED_RESULTS
+        else:
+            predicate = ""
+        rv = self.fetch_results_from_resultdb(host, [build], predicate)
+        self._webtest_results_resultdb = WebTestResults.results_from_resultdb(
+            rv)
+        return self._webtest_results_resultdb
 
     def fetch_results_from_resultdb(self, host, builds, predicate):
         """Returns a list of test results from ResultDB

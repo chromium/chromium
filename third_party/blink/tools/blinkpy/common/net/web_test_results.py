@@ -134,6 +134,18 @@ class WebTestResults(object):
 
         return cls(json_dict, step_name=step_name)
 
+    @classmethod
+    def results_from_resultdb(cls, rv, step_name=None):
+        """Creates a WebTestResults object from a resultDB RPC response data.
+
+        Args:
+            rv: resultDB RPC response json containing web test result.
+        """
+        if not rv:
+            return None
+
+        return cls(rv, step_name=step_name)
+
     def __init__(self, parsed_json, chromium_revision=None, step_name=None):
         self._results = parsed_json
         self._chromium_revision = chromium_revision
@@ -194,3 +206,6 @@ class WebTestResults(object):
 
     def didnt_run_as_expected_results(self):
         return self._filter_tests(lambda r: not r.did_run_as_expected())
+
+    def test_results_resultdb(self):
+        return self._results

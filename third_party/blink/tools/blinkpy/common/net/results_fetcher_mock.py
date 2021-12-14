@@ -38,6 +38,7 @@ class MockTestResultsFetcher(TestResultsFetcher):
     def __init__(self):
         super(MockTestResultsFetcher, self).__init__()
         self._canned_results = {}
+        self._canned_artifacts_resultdb = {}
         self._canned_retry_summary_json = {}
         self._webdriver_results = {}
         self.fetched_builds = []
@@ -65,6 +66,15 @@ class MockTestResultsFetcher(TestResultsFetcher):
             if results:
                 rv.extend(results)
         return rv
+
+    def fetch_results_from_resultdb_layout_tests(self, host, build, predicate):
+        return self._canned_results.get(build.build_id)
+
+    def get_artifact_list_for_test(self, host, result_id):
+        return self._canned_artifacts_resultdb[result_id]
+
+    def set_artifact_list_for_test(self, host, artifacts):
+        self._canned_artifacts_resultdb = artifacts
 
     def set_webdriver_test_results(self, build, m, results):
         self._webdriver_results[(build, m)] = results

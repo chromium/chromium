@@ -27,6 +27,7 @@ class TestRebaselineTest(BaseTestCase):
                     'build_number': None,
                     'step_name': None,
                     'flag_specific': None,
+                    'resultDB': None,
                 }, **kwargs))
 
     def test_rebaseline_test_internal_with_port_that_lacks_buildbot(self):
@@ -55,6 +56,7 @@ class TestRebaselineTest(BaseTestCase):
                 'build_number': None,
                 'step_name': None,
                 'flag_specific': None,
+                'resultDB': None,
             })
             oc.capture_output()
             self.command.execute(options, [], self.tool)

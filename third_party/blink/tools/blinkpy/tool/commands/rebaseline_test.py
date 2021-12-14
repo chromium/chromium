@@ -23,6 +23,8 @@ class RebaselineTest(AbstractRebaseliningCommand):
             self.step_name_option,
             self.results_directory_option,
             self.flag_specific_option,
+            self.resultDB_option,
+            self.fetch_url_option,
         ])
 
     def execute(self, options, args, tool):
@@ -31,10 +33,11 @@ class RebaselineTest(AbstractRebaseliningCommand):
 
     def _rebaseline_test_and_update_expectations(self, options):
         self._baseline_suffix_list = options.suffixes.split(',')
-
+        results_url = ''
+        suffix = ''
         if options.results_directory:
             results_url = 'file://' + options.results_directory
-        else:
+        elif not options.resultDB:
             results_url = self._tool.results_fetcher.results_url(
                 options.builder,
                 build_number=options.build_number,
@@ -43,20 +46,42 @@ class RebaselineTest(AbstractRebaseliningCommand):
         port_name = options.port_name or self._tool.builders.port_name_for_builder_name(
             options.builder)
         test_name = options.test
-        for suffix in self._baseline_suffix_list:
-            self._rebaseline_test(port_name,
-                                  test_name,
-                                  suffix,
-                                  results_url,
-                                  self._tool.builders.is_wpt_builder(
-                                      options.builder),
-                                  options=options)
+        if not options.resultDB:
+            for suffix in self._baseline_suffix_list:
+                self._rebaseline_test(port_name,
+                                      test_name,
+                                      suffix,
+                                      results_url,
+                                      self._tool.builders.is_wpt_builder(
+                                          options.builder),
+                                      options=options)
+        else:
+            self._baseline_fetch_url_list = options.fetch_url.split(',')
+            if not self._baseline_fetch_url_list:
+                _log.warning('No baseline fetch url found for test %s',
+                             test_name)
+            for artifact_fetch_url in self._baseline_fetch_url_list:
+                if 'actual_image' in artifact_fetch_url:
+                    suffix = 'png'
+                if 'actual_text' in artifact_fetch_url:
+                    suffix = 'txt'
+                if 'actual_audio' in artifact_fetch_url:
+                    suffix = 'wav'
+                self._rebaseline_test(port_name,
+                                      test_name,
+                                      suffix,
+                                      results_url,
+                                      artifact_fetch_url,
+                                      self._tool.builders.is_wpt_builder(
+                                          options.builder),
+                                      options=options)
 
     def _rebaseline_test(self,
                          port_name,
                          test_name,
                          suffix,
                          results_url,
+                         fetch_url_resultdb='',
                          is_wpt=False,
                          options=None):
         """Downloads a baseline file and saves it to the filesystem.
@@ -82,8 +107,12 @@ class RebaselineTest(AbstractRebaseliningCommand):
         else:
             baseline_directory = port.baseline_version_dir()
 
-        source_baseline = '%s/%s' % (
-            results_url, self._file_name_for_actual_result(test_name, suffix))
+        if options and options.resultDB:
+            source_baseline = fetch_url_resultdb
+        else:
+            source_baseline = '%s/%s' % (results_url,
+                                         self._file_name_for_actual_result(
+                                             test_name, suffix))
         target_baseline = self._tool.filesystem.join(
             baseline_directory,
             self._file_name_for_expected_result(test_name, suffix, is_wpt))
