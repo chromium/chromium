@@ -1,5 +1,0 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="iframe", offscreen="true"]
-++++View scrollable actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea", offscreen="true"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="iframe", offscreen="true"]
-++++View scrollable actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea", offscreen="true"]
