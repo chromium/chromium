@@ -4015,15 +4015,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)lensControllerDidSelectURL:(NSURL*)URL {
-  // Dismiss the Lens view controller.
-  if (self.presentedViewController != nil) {
-    [self dismissViewControllerAnimated:YES completion:nil];
-  }
-
   // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
   // stack.
   UrlLoadParams loadParams = UrlLoadParams::InNewTab(net::GURLWithNSURL(URL));
-  loadParams.SetInBackground(NO);
+  loadParams.SetInBackground(YES);
   loadParams.in_incognito = self.isOffTheRecord;
   loadParams.append_to = kCurrentTab;
   UrlLoadingBrowserAgent* loadingAgent =
