@@ -21,6 +21,6 @@ struct OverflowMenuView: View {
         .frame(height: Dimensions.destinationListHeight)
       Divider()
       OverflowMenuActionList(actionGroups: model.actionGroups)
-    }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.top))
+    }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
   }
 }
