@@ -33,9 +33,9 @@ StorableSource::StorableSource(uint64_t source_event_id,
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.
   DCHECK_GT(expiry_time, impression_time);
-  DCHECK(!impression_origin.opaque());
-  DCHECK(!reporting_origin.opaque());
-  DCHECK(!conversion_origin.opaque());
+  DCHECK(!impression_origin_.opaque());
+  DCHECK(!reporting_origin_.opaque());
+  DCHECK(!conversion_origin_.opaque());
 }
 
 StorableSource::StorableSource(const StorableSource& other) = default;
