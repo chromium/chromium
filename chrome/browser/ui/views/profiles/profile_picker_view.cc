@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -440,6 +441,7 @@ void ProfilePickerView::ShowScreenInPickerContents(
 }
 
 void ProfilePickerView::Clear() {
+  TRACE_EVENT1("browser,startup", "ProfilePickerView::Clear", "state", state_);
   if (state_ == kClosing)
     return;
 
@@ -530,6 +532,8 @@ bool ProfilePickerView::ShouldReopen(
 
 void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
   DCHECK_NE(state_, kClosing);
+  TRACE_EVENT2("browser,startup", "ProfilePickerView::Display", "entry_point",
+               entry_point, "state", state_);
   // Record creation metrics.
   base::UmaHistogramEnumeration("ProfilePicker.Shown", entry_point);
   if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
@@ -564,6 +568,10 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
 
 void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile,
                                                Profile::CreateStatus status) {
+  TRACE_EVENT2("browser,startup", "ProfilePickerView::OnPickerProfileCreated",
+               "profile_path",
+               (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""),
+               "status", status);
   DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
@@ -573,6 +581,9 @@ void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile,
 
 void ProfilePickerView::Init(Profile* picker_profile) {
   DCHECK_EQ(state_, kInitializing);
+  TRACE_EVENT1(
+      "browser,startup", "ProfilePickerView::Init", "profile_path",
+      (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""));
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(picker_profile));
   contents_->SetDelegate(this);

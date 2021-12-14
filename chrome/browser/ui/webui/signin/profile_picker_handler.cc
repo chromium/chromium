@@ -478,6 +478,8 @@ void ProfilePickerHandler::HandleMainViewInitialize(
 void ProfilePickerHandler::HandleLaunchSelectedProfile(
     bool open_settings,
     const base::ListValue* args) {
+  TRACE_EVENT1("browser", "ProfilePickerHandler::HandleLaunchSelectedProfile",
+               "args", args->DebugString());
   if (args->GetList().empty())
     return;
   const base::Value& profile_path_value = args->GetList()[0];
@@ -934,6 +936,9 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
     bool open_settings,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {
+  TRACE_EVENT2("browser", "ProfilePickerHandler::OnSwitchToProfileComplete",
+               "profile_path", profile->GetPath().AsUTF8Unsafe(),
+               "create_status", profile_create_status);
   Browser* browser = chrome::FindAnyBrowser(profile, false);
   DCHECK(browser);
   DCHECK(browser->window());

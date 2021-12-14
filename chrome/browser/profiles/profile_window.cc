@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
@@ -119,6 +120,8 @@ void FindOrCreateNewWindowForProfile(
     chrome::startup::IsFirstRun is_first_run,
     bool always_create) {
   DCHECK(profile);
+  TRACE_EVENT1("browser", "FindOrCreateNewWindowForProfile", "profile_path",
+               profile->GetPath());
 
   if (!always_create) {
     Browser* browser = chrome::FindTabbedBrowser(profile, false);
@@ -144,6 +147,8 @@ void OpenBrowserWindowForProfile(CreateOnceCallback callback,
                                  Profile* profile,
                                  Profile::CreateStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT2("browser", "OpenBrowserWindowForProfile", "profile_path",
+               profile->GetPath().AsUTF8Unsafe(), "status", status);
 
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
