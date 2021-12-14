@@ -247,6 +247,11 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
                         WebFeature::kWebAppWindowControlsOverlay);
     }
   }
+
+  if (!manifest.user_preferences.is_null()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestUserPreferences);
+  }
 }
 
 void ManifestManager::ResolveCallbacks(ResolveState state) {

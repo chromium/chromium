@@ -3402,6 +3402,7 @@ enum WebFeature {
   kAbortPaymentRespondWithTrue = 4093,
   kAllowPaymentRequestAttributeHasEffect = 4094,
   kV8PaymentResponse_Retry_Method = 4095,
+  kWebAppManifestUserPreferences = 4096,
 
 
   // Add new features immediately above this line. Don't change assigned
