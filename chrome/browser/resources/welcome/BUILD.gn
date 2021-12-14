@@ -34,7 +34,7 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
 
-  deps = [ ":build" ]
+  deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 
   if (is_chrome_branded) {
@@ -142,9 +142,9 @@ html_to_js("web_components_local") {
   ]
 }
 
-ts_library("build") {
+ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [

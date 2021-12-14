@@ -22,9 +22,9 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [
-    "chrome://welcome/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/welcome/preprocessed/*",
-            target_gen_dir),
+    "chrome://welcome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/welcome/tsc/*",
+                    target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
@@ -47,6 +47,6 @@ ts_library("build_ts") {
     "welcome_app_test.ts",
   ]
   definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
-  deps = [ "//chrome/browser/resources/welcome:build" ]
+  deps = [ "//chrome/browser/resources/welcome:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
 }
