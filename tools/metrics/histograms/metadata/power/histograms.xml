@@ -196,7 +196,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2022-04-10">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2022-06-12">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -1147,7 +1147,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.MainScreenBrightnessAvailable" units="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

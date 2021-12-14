@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.ArchivedDataWithRootObjectTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

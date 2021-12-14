@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Geolocation.AuthorizationActionExistingUser"
-    enum="GeolocationAuthorizationAction" expires_after="2022-04-10">
+    enum="GeolocationAuthorizationAction" expires_after="2022-06-12">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

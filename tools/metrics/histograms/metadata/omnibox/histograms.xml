@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.Requests"
-    enum="OmniboxDocumentSuggestRequests" expires_after="2022-04-10">
+    enum="OmniboxDocumentSuggestRequests" expires_after="2022-06-12">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.ResultCount" units="count"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.InputType" enum="OmniboxInputType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.JustDeletedText" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1000,7 +1000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.URL.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2022-04-10">
+    units="ms" expires_after="2022-06-12">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.PredictionService.Request" enum="BooleanSent"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.WebHid.ChooserClosed" enum="WebHidChooserClosed"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1077,7 +1077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2022-04-10">
+    enum="WebSiteSettingsAllSitesAction2" expires_after="2022-06-12">
   <owner>jarrydg@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>

@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadExtensions"
-    enum="SBClientDownloadExtensions" expires_after="2022-04-10">
+    enum="SBClientDownloadExtensions" expires_after="2022-06-12">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
     enum="SBClientDetectionPreClassificationCheckResult"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1041,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

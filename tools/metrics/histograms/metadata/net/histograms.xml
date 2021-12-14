@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.InvalidRsaPssParams" enum="Boolean"
-    expires_after="2022-03-01">
+    expires_after="2022-06-12">
   <owner>bcb@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts" enum="NetErrorPageEvents"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>edwardjung@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2369,7 +2369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte.TLS13.Google" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -5215,7 +5215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.SiteForCookiesOK" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -5632,7 +5632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLHandshakeEarlyDataReason.Google"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2022-04-10">
+    enum="SSLHandshakeEarlyDataReason" expires_after="2022-06-12">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

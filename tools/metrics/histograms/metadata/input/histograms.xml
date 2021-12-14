@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="InputMethod.ActiveCount" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

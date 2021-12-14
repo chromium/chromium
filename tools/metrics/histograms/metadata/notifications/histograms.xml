@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded when the Sites channel (which we hope to deprecate) is used as a
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.MutedCount"
-    units="notifications" expires_after="2022-04-10">
+    units="notifications" expires_after="2022-06-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.ReadResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-04-10">
+    enum="NotificationDatabaseStatus" expires_after="2022-06-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessRuntime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

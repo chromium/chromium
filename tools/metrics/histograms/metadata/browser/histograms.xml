@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.LinkClicked"
-    units="BooleanSuccess" expires_after="2022-04-10">
+    units="BooleanSuccess" expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -464,7 +464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.CompositorFailureReason"
-    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2022-04-10">
+    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.SnackbarCount" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJankyIntervalsPerMinute"
-    units="janks" expires_after="2022-04-10">
+    units="janks" expires_after="2022-06-12">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

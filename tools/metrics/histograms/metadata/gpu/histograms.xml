@@ -539,7 +539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ContextLost" enum="ContextLostReason"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sievers@chromium.org</owner>
   <summary>
     The reason a GPU command buffer context of a given type was lost.
@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -945,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
@@ -1113,7 +1113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V3" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1150,7 +1150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Startup time of the GPU process as measured by the GPU process host.
@@ -1209,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1219,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1692,7 +1692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SupportsDX12" enum="BooleanSupported"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1881,7 +1881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event" enum="GpuWatchdogThreadEvent"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2022-04-10">
+<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2022-06-12">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Drive.FileClick" units="index"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>tiborg@chromium.org</owner>
   <owner>aee@chromium.org</owner>
   <owner>andrevincent@google.com</owner>
@@ -1031,7 +1031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="NewTabPage.Modules.EnabledOnNTPLoad"
-    enum="BooleanEnabled" expires_after="2022-04-10">
+    enum="BooleanEnabled" expires_after="2022-06-12">
   <owner>danielms@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1062,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Hover" enum="NtpModules"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>danielms@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1248,7 +1248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NumberOfTiles" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1893,7 +1893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestionsImpression" enum="MostVisitedTileIndex"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2017,7 +2017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileTitle" enum="NTPTileTitleSource"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2028,7 +2028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileTitleClicked" enum="NTPTileTitleSource"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>danielms@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2039,7 +2039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileType" enum="NTPTileVisualType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -2050,7 +2050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileTypeClicked" enum="NTPTileVisualType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>

@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2022-04-10">
+    units="dBFS (negated)" expires_after="2022-06-12">
   <owner>hlundin@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal coming in to WebRTC's
@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.AudioInterruptionMs" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>hlundin@chromium.org</owner>
   <owner>ivoc@chromium.org</owner>
   <summary>
@@ -981,7 +981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRate" enum="AudioSampleRate"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>Audio output sample rate for WebRTC (in Hz).</summary>

@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Settings.Changed"
-    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-04-10">
+    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-06-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Settings.Startup"
-    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-04-10">
+    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-06-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AppLaunch.BlockDrawForInitialTabAccuracy"
-    enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2022-04-10">
+    enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2022-06-12">
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ArmCpuPart" enum="ArmCpuPart"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rsesek@chromium.org</owner>
   <owner>clank-security@google.com</owner>
   <summary>
@@ -638,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.Result"
-    enum="ChromeStartupDelegateResult" expires_after="2022-04-10">
+    enum="ChromeStartupDelegateResult" expires_after="2022-06-12">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DeviceSize.LargestDisplaySize" units="dp"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -964,7 +964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DeviceSize.SmallestDisplaySize" units="dp"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1155,7 +1155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Other"
-    enum="AndroidDownloadOpenSource" expires_after="2022-04-10">
+    enum="AndroidDownloadOpenSource" expires_after="2022-06-12">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1165,7 +1165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Video"
-    enum="AndroidDownloadOpenSource" expires_after="2022-04-10">
+    enum="AndroidDownloadOpenSource" expires_after="2022-06-12">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records how users open video download files on Android.</summary>
@@ -1535,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1544,7 +1544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1822,7 +1822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.KernelVersion" enum="AndroidKernelVersion"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rsesek@chromium.org</owner>
   <summary>
     Reports the kernel major and minor version from the utsname.release field.
@@ -2439,7 +2439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.OpenHistoryFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-04-10">
+    enum="BrowserProfileType" expires_after="2022-06-12">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2787,7 +2787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.UserSwitchToDesktop" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -2914,7 +2914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogScope" enum="SelectFileDialogScope"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>peter@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>

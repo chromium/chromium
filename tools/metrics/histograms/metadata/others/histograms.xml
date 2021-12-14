@@ -1841,7 +1841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -2051,7 +2051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
@@ -2122,7 +2122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>wychen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
@@ -2132,7 +2132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -2144,7 +2144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -2178,7 +2178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -2650,7 +2650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Crashed.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2022-04-10">
+    enum="UtilityProcessNameHash" expires_after="2022-06-12">
   <owner>wfh@chromium.org</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
@@ -2754,7 +2754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Launched.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2022-04-10">
+    enum="UtilityProcessNameHash" expires_after="2022-06-12">
   <owner>wfh@chromium.org</owner>
   <summary>
     Count of child utility process launches, bucketed by the hash of their
@@ -3545,7 +3545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="CompositorLatency.MissedDeadlineFrame"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -3563,7 +3563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CompositorLatency.Type" enum="FrameReportType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -3871,7 +3871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.TimeToSelectShare" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -3894,7 +3894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -6645,7 +6645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.NtpBackgroundInteraction"
-    enum="NuxNtpBackgroundInteractions" expires_after="2022-04-10">
+    enum="NuxNtpBackgroundInteractions" expires_after="2022-06-12">
   <owner>hcarmona@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -7323,7 +7323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2022-04-10">
+    units="%" expires_after="2022-06-12">
   <owner>behdadb@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>
@@ -7337,7 +7337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.MaxStale" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -7402,7 +7402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllInteractions"
-    units="%" expires_after="2022-04-10">
+    units="%" expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -7584,7 +7584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Stale" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sadrul@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -7717,7 +7717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnChange" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -7727,7 +7727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnStartup" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -9238,7 +9238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.FilteringResult"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2022-04-10">
+    enum="SupervisedUserSafetyFilterResult" expires_after="2022-06-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families@google.com</owner>
   <summary>
@@ -12460,7 +12460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus" enum="PushEventStatus"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -15127,7 +15127,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.BundleFetchErrorCode"
-    enum="NetErrorCodes" expires_after="2022-04-10">
+    enum="NetErrorCodes" expires_after="2022-06-12">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -16332,7 +16332,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.FinalizingTraceSizeInKB" units="KB"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>oysteine@chromium.org</owner>
   <summary>
     The size, in kilobytes, of a finalized trace ready to be uploaded.
@@ -17803,7 +17803,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -17825,7 +17825,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabActivation" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -17835,7 +17835,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabCreation" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -18052,7 +18052,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WrenchMenu.MenuAction" enum="WrenchMenuAction"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>Number of times that each menu item is clicked.</summary>

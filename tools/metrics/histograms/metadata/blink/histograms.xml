@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.AutomaticLazyLoadFrame"
-    enum="AutomaticLazyLoadFrameState" expires_after="2022-04-09">
+    enum="AutomaticLazyLoadFrameState" expires_after="2022-06-12">
   <owner>sisidovski@google.com</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.GPUFallbackToCPU"
-    enum="CanvasGPUFallbackToCPUScenario" expires_after="2022-04-10">
+    enum="CanvasGPUFallbackToCPUScenario" expires_after="2022-06-12">
   <owner>fserb@chromium.org</owner>
   <summary>Logs the occurrences of canvas fallback from GPU to CPU.</summary>
 </histogram>
@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.Outcome"
-    enum="ImageSelectionOutcome" expires_after="2022-04-10">
+    enum="ImageSelectionOutcome" expires_after="2022-06-12">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fonts.VariableFontsRatio"
-    enum="WebFontInstantiationResult" expires_after="2022-04-10">
+    enum="WebFontInstantiationResult" expires_after="2022-06-12">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1432,7 +1432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.ForcedStyleAndLayout.UpdateTime"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2630,7 +2630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.OffscreenCanvas.Transferred" enum="Boolean"
-    expires_after="2022-04-04">
+    expires_after="2022-06-12">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -3040,7 +3040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancel" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -3073,7 +3073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeContinueOnSuccess" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-12">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -3661,7 +3661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.ImageDecoder.Success" enum="BooleanSuccess"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3671,7 +3671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.ImageDecoder.Type" enum="DecodedImageType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

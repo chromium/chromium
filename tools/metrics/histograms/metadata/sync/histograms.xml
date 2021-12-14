@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkModelMerger.ValidInputUpdates" units="bookmarks"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CustomSync3" enum="SyncModelTypes"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InvalidBookmarkSpecifics"
-    enum="InvalidBookmarkSpecificsError" expires_after="2022-04-10">
+    enum="InvalidBookmarkSpecificsError" expires_after="2022-06-12">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.Enabled" enum="BooleanEnabled"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeIncrementalUpdateReceived" enum="SyncModelTypes"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PassphraseType" enum="SyncPassphraseType"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1892,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TypedURLDatabaseError" enum="SyncTypedUrlDatabaseError"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>

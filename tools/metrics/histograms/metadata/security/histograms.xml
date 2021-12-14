@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2022-04-10">
+    units="ms" expires_after="2022-06-12">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
-    units="ms" expires_after="2022-04-10">
+    units="ms" expires_after="2022-06-12">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
-    enum="BooleanEnabled" expires_after="2022-04-10">
+    enum="BooleanEnabled" expires_after="2022-06-12">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen" units="units"
-    expires_after="2022-05-22">
+    expires_after="2022-06-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.Action" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.NoAction" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
-    enum="SecurityLevel" expires_after="2022-04-10">
+    enum="SecurityLevel" expires_after="2022-06-12">
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -913,7 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.TimeOnPage2" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
-    units="ms" expires_after="2022-04-10">
+    units="ms" expires_after="2022-06-12">
   <owner>jessemckenna@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

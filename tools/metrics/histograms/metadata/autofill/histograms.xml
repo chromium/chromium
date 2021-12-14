@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CardUploadDecisionMetric"
-    enum="AutofillCardUploadDecisionMetric" expires_after="2022-04-10">
+    enum="AutofillCardUploadDecisionMetric" expires_after="2022-06-12">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormSubmission.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-04-10">
+    enum="BrowserProfileType" expires_after="2022-06-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -3120,7 +3120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

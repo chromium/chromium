@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.MaxChannelsAvailable" units="units"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The maximum number of (hardware) channels available in an AudioContext.

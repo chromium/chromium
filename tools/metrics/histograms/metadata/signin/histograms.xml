@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -332,7 +332,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>
@@ -782,7 +782,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
-    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-04-10">
+    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-06-12">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1624,7 +1624,7 @@ name="TransactionalReauthEntryPoint" -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthUserAction"
-    enum="SigninReauthUserAction" expires_after="2022-04-10">
+    enum="SigninReauthUserAction" expires_after="2022-06-12">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 

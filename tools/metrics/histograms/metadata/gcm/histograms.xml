@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of the outcome of a GCM checkin request.</summary>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

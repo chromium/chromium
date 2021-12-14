@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>adlr@chromium.org</owner>
   <summary>
     Counts the number of simulataneously connected Bluetooth devices. Used to
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2022-04-10">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2022-06-12">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -992,7 +992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
-    expires_after="2022-04-09">
+    expires_after="2022-06-12">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel"
-    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2022-04-09">
+    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2022-06-12">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

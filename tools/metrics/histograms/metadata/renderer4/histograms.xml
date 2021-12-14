@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
 <!-- Name completed by histogram_suffixes name="OutOfRaster" -->
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="2022-04-10">
+    enum="MainThreadScrollingReason" expires_after="2022-06-12">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>

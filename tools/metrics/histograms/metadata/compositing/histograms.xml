@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.Draw.Occlusion.Calculation.Time"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
   <owner>yiyix@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2022-06-12">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.LCDTextDisallowedReasonLayers"
-    enum="LCDTextDisallowedReason" expires_after="2022-04-10">
+    enum="LCDTextDisallowedReason" expires_after="2022-06-12">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -556,7 +556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActiveLayers" units="layers"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

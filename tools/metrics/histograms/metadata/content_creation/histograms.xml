@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -228,14 +228,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.NoteShared" enum="BooleanShared"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>Records whether the created note was shared or not.</summary>
 </histogram>
 
 <histogram name="NoteCreation.NumberOfTemplateChanges"
-    units="Number of changes" expires_after="2022-04-10">
+    units="Number of changes" expires_after="2022-06-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2022-04-10">
+    enum="LinkGenerationError" expires_after="2022-06-12">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
-    units="ms" expires_after="2022-04-10">
+    units="ms" expires_after="2022-06-12">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
-    enum="LinkGenerationState" expires_after="2022-04-10">
+    enum="LinkGenerationState" expires_after="2022-06-12">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>

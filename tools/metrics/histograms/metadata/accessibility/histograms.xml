@@ -1379,7 +1379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="2022-04-10">
+    enum="AccessibilityHighContrastColorScheme" expires_after="2022-06-12">
   <owner>aleventhal@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>weblayoutdev@microsoft.com</owner>
@@ -1537,7 +1537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>mdjones@chromium.org</owner>
   <summary>
     &quot;Used&quot; is recorded when the user clicks the infobar to enter

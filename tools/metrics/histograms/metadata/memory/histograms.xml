@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Dirty" units="KiB"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateMemoryFootprint"
-    units="MB" expires_after="2022-04-10">
+    units="MB" expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -1943,7 +1943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.ResidentSet" units="MiB"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
