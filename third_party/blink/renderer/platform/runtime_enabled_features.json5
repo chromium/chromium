@@ -2618,6 +2618,11 @@
       status: {"Android": "stable", "default": "test"},
     },
     {
+      name: "WebNFCMakeReadOnly",
+      depends_on: ["WebNFC"],
+      status: "experimental",
+    },
+    {
       name: "WebOTP",
       status: "stable",
     },

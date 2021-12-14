@@ -647,6 +647,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_record_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_make_read_only_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_make_read_only_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_action.cc",

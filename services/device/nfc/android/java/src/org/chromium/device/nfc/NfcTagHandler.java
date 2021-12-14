@@ -56,6 +56,7 @@ public class NfcTagHandler {
     private interface TagTechnologyHandler {
         public void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException;
+        public boolean makeReadOnly() throws IOException, TagLostException;
         public NdefMessage read()
                 throws IOException, TagLostException, FormatException, IllegalStateException;
         public boolean canAlwaysOverwrite()
@@ -77,6 +78,11 @@ public class NfcTagHandler {
         public void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException {
             mNdef.writeNdefMessage(message);
+        }
+
+        @Override
+        public boolean makeReadOnly() throws IOException, TagLostException {
+            return mNdef.makeReadOnly();
         }
 
         @Override
@@ -108,6 +114,16 @@ public class NfcTagHandler {
         public void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException {
             mNdefFormattable.format(message);
+        }
+
+        @Override
+        public boolean makeReadOnly() throws IOException, TagLostException {
+            try {
+                mNdefFormattable.formatReadOnly(NdefMessageUtils.emptyNdefMessage());
+            } catch (FormatException e) {
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -180,6 +196,13 @@ public class NfcTagHandler {
     public void write(NdefMessage message)
             throws IOException, TagLostException, FormatException, IllegalStateException {
         mTechHandler.write(message);
+    }
+
+    /**
+     * Make NFC tag read-only.
+     */
+    public boolean makeReadOnly() throws IOException, TagLostException {
+        return mTechHandler.makeReadOnly();
     }
 
     public NdefMessage read()

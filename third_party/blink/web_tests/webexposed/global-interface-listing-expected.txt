@@ -5724,6 +5724,7 @@ interface NDEFReader : EventTarget
     getter onreading
     getter onreadingerror
     method constructor
+    method makeReadOnly
     method scan
     method write
     setter onreading

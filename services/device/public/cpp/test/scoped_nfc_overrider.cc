@@ -32,6 +32,10 @@ class FakeNFC : public mojom::NFC {
     std::move(callback).Run(nullptr);
   }
   void CancelPush() override {}
+  void MakeReadOnly(MakeReadOnlyCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+  void CancelMakeReadOnly() override {}
   void Watch(uint32_t id, WatchCallback callback) override {
     std::move(callback).Run(nullptr);
   }

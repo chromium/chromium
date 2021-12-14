@@ -101,8 +101,8 @@ struct NDEFWriteOptions {
   bool overwrite;
 };
 
-// Interface used by Web NFC to push data to NFC devices and get notified of
-// nearby NFC devices.
+// Interface used by Web NFC to push data to NFC devices, make an NFC tag
+// read-only, and get notified of nearby NFC devices.
 interface NFC {
   // NFCClient interface is used to notify |client| when watching for nearby
   // NFC devices.
@@ -114,6 +114,12 @@ interface NFC {
 
   // Cancels pending push request.
   CancelPush();
+
+  // Make an NFC tag permanently read-only.
+  MakeReadOnly() => (NDEFError? error);
+
+  // Cancels pending make read-only request.
+  CancelMakeReadOnly();
 
   // Starts watching for nearby NFC devices. |id| identifies each watch request
   // on the current Mojo connection.
