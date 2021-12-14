@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="BooleanModel">
+  <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="QueryTiles"/>
 </variants>
@@ -36,12 +37,14 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SegmentationKey">
   <variant name="AdaptiveToolbar"/>
+  <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="DummyFeature"/>
   <variant name="QueryTiles"/>
 </variants>
 
 <variants name="SegmentationModel">
+  <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="Dummy"/>
   <variant name="NewTab"/>

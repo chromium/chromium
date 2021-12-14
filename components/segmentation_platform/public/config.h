@@ -25,6 +25,14 @@ const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
 // The key is used to decide whether to show query tiles.
 const char kQueryTilesSegmentationKey[] = "query_tiles";
 
+// The key is used to decide whether a user has low user engagement with chrome.
+// This is a generic model that can be used by multiple features targeting
+// low-engaged users. Typically low engaged users are active in chrome below a
+// certain threshold number of days over a time period. This is computed using
+// Session.TotalDuration histogram.
+const char kChromeLowUserEngagementSegmentationKey[] =
+    "chrome_low_user_engagement";
+
 // Contains various finch configuration params used by the segmentation
 // platform.
 struct Config {

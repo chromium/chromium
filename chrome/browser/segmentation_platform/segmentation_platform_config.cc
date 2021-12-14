@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/public/features.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
@@ -34,6 +35,8 @@ constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
 constexpr int kChromeStartDefaultSelectionTTLDays = 30;
 constexpr int kChromeStartDefaultUnknownTTLDays = 7;
+
+constexpr int kChromeLowUserEngagementSelectionTTLDays = 30;
 
 // DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES
 constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
@@ -106,6 +109,23 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   config->unknown_selection_ttl = base::Days(kQueryTilesDefaultUnknownTTLDays);
   return config;
 }
+
+std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kChromeLowUserEngagementSegmentationKey;
+  config->segment_ids = {
+      OptimizationTarget::
+          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+  };
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      feature_guide::features::kFeatureNotificationGuide,
+      "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = base::Days(segment_selection_ttl_days);
+  return config;
+}
+
 #endif  // defined(OS_ANDROID)
 
 }  // namespace
@@ -128,6 +148,10 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           segmentation_platform::features::
               kSegmentationPlatformQueryTilesFeature)) {
     configs.emplace_back(GetConfigForQueryTiles());
+  }
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kFeatureNotificationGuide)) {
+    configs.emplace_back(GetConfigForChromeLowUserEngagement());
   }
 #endif
   return configs;
