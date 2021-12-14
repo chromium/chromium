@@ -394,7 +394,6 @@ void PPBNaClPrivate::LaunchSelLdr(
     PP_Bool main_service_runtime,
     const char* alleged_url,
     const PP_NaClFileInfo* nexe_file_info,
-    PP_Bool uses_nonsfi_mode,
     PP_NaClAppProcessType pp_process_type,
     std::unique_ptr<IPC::SyncChannel>* translator_channel,
     PP_CompletionCallback callback) {
@@ -466,15 +465,14 @@ void PPBNaClPrivate::LaunchSelLdr(
                            nexe_file_info->token_lo, nexe_file_info->token_hi,
                            resource_prefetch_request_list,
                            GetFrameRoutingID(instance), perm_bits,
-                           PP_ToBool(uses_nonsfi_mode), process_type),
+                           // TODO(b/200965779): Remove nonsfi parameter.
+                           /*uses_nonsfi_mode=*/PP_FALSE, process_type),
           &launch_result, &error_message_string))) {
     ppapi::PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE, base::BindOnce(callback.func, callback.user_data,
                                   static_cast<int32_t>(PP_ERROR_FAILED)));
     return;
   }
-
-  load_manager->set_nonsfi(PP_ToBool(uses_nonsfi_mode));
 
   if (!error_message_string.empty()) {
     // Even on error, some FDs/handles may be passed to here.
@@ -801,8 +799,11 @@ PP_FileHandle OpenNaClExecutable(PP_Instance instance,
   *nonce_hi = 0;
   base::FilePath file_path;
   if (!sender->Send(new NaClHostMsg_OpenNaClExecutable(
-          GetFrameRoutingID(instance), GURL(file_url), !load_manager->nonsfi(),
-          &out_fd, nonce_lo, nonce_hi))) {
+          GetFrameRoutingID(instance), GURL(file_url),
+          // TODO(b/200965779): drop enable_validation_caching param because
+          // this param was needed for nonsfi mode supporting, which is being
+          // removed.
+          /*enable_validation_caching=*/true, &out_fd, nonce_lo, nonce_hi))) {
     return PP_kInvalidFileHandle;
   }
 
@@ -1120,8 +1121,7 @@ bool ShouldUseSubzero(const PP_PNaClOptions* pnacl_options) {
 // static
 PP_Bool PPBNaClPrivate::GetManifestProgramURL(PP_Instance instance,
                                               PP_Var* pp_full_url,
-                                              PP_PNaClOptions* pnacl_options,
-                                              PP_Bool* pp_uses_nonsfi_mode) {
+                                              PP_PNaClOptions* pnacl_options) {
   nacl::NexeLoadManager* load_manager = GetNexeLoadManager(instance);
 
   JsonManifest* manifest = GetJsonManifest(instance);
@@ -1132,7 +1132,6 @@ PP_Bool PPBNaClPrivate::GetManifestProgramURL(PP_Instance instance,
   JsonManifest::ErrorInfo error_info;
   if (manifest->GetProgramURL(&full_url, pnacl_options, &error_info)) {
     *pp_full_url = ppapi::StringVar::StringToPPVar(full_url);
-    *pp_uses_nonsfi_mode = PP_FALSE;
     if (ShouldUseSubzero(pnacl_options)) {
       pnacl_options->use_subzero = PP_TRUE;
       // Subzero -O2 is closer to LLC -O0, so indicate -O2.

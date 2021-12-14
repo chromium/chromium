@@ -33,7 +33,6 @@ void Plugin::ShutDownSubprocesses() {
 }
 
 void Plugin::LoadNaClModule(PP_NaClFileInfo file_info,
-                            bool uses_nonsfi_mode,
                             PP_NaClAppProcessType process_type) {
   CHECK(pp::Module::Get()->core()->IsMainThread());
   // Before forking a new sel_ldr process, ensure that we do not leak
@@ -50,8 +49,8 @@ void Plugin::LoadNaClModule(PP_NaClFileInfo file_info,
                            file_info,
                            process_type);
   ErrorInfo error_info;
-  ServiceRuntime* service_runtime = new ServiceRuntime(
-      this, pp_instance(), true, uses_nonsfi_mode);
+  ServiceRuntime* service_runtime =
+      new ServiceRuntime(this, pp_instance(), /*main_service_runtime=*/true);
   main_subprocess_.set_service_runtime(service_runtime);
 
   service_runtime->StartSelLdr(params,
@@ -70,8 +69,8 @@ void Plugin::LoadHelperNaClModule(const std::string& helper_url,
                            PP_PNACL_TRANSLATOR_PROCESS_TYPE);
   ServiceRuntime* service_runtime =
       new ServiceRuntime(this, pp_instance(),
-                         false,   // Not main_service_runtime.
-                         false);  // No non-SFI mode (i.e. in SFI-mode).
+                         /*main_service_runtime=*/false);
+
   subprocess_to_init->set_service_runtime(service_runtime);
   service_runtime->StartSelLdr(params, callback);
 }
@@ -89,9 +88,7 @@ bool Plugin::Init(uint32_t argc, const char* argn[], const char* argv[]) {
 }
 
 Plugin::Plugin(PP_Instance pp_instance)
-    : pp::Instance(pp_instance),
-      uses_nonsfi_mode_(false),
-      uma_interface_(this) {
+    : pp::Instance(pp_instance), uma_interface_(this) {
   callback_factory_.Initialize(this);
 
   // Notify PPBNaClPrivate that the instance is created before altering any
@@ -142,10 +139,7 @@ bool Plugin::HandleDocumentLoad(const pp::URLLoader& url_loader) {
 void Plugin::NexeFileDidOpen(int32_t pp_error) {
   if (pp_error != PP_OK)
     return;
-  LoadNaClModule(
-      nexe_file_info_,
-      uses_nonsfi_mode_,
-      PP_NATIVE_NACL_PROCESS_TYPE);
+  LoadNaClModule(nexe_file_info_, PP_NATIVE_NACL_PROCESS_TYPE);
 }
 
 void Plugin::BitcodeDidTranslate(int32_t pp_error) {
@@ -161,10 +155,7 @@ void Plugin::BitcodeDidTranslate(int32_t pp_error) {
   info.handle = handle;
   info.token_lo = 0;
   info.token_hi = 0;
-  LoadNaClModule(
-      info,
-      false, /* uses_nonsfi_mode */
-      PP_PNACL_PROCESS_TYPE);
+  LoadNaClModule(info, PP_PNACL_PROCESS_TYPE);
 }
 
 void Plugin::NaClManifestFileDidOpen(int32_t pp_error) {
@@ -173,15 +164,13 @@ void Plugin::NaClManifestFileDidOpen(int32_t pp_error) {
 
   PP_Var pp_program_url;
   PP_PNaClOptions pnacl_options = {PP_FALSE, PP_FALSE, PP_FALSE, 2};
-  PP_Bool uses_nonsfi_mode;
   if (nacl::PPBNaClPrivate::GetManifestProgramURL(
-          pp_instance(), &pp_program_url, &pnacl_options, &uses_nonsfi_mode)) {
+          pp_instance(), &pp_program_url, &pnacl_options)) {
     std::string program_url = pp::Var(pp::PASS_REF, pp_program_url).AsString();
     // TODO(teravest): Make ProcessNaClManifest take responsibility for more of
     // this function.
     nacl::PPBNaClPrivate::ProcessNaClManifest(pp_instance(),
                                               program_url.c_str());
-    uses_nonsfi_mode_ = PP_ToBool(uses_nonsfi_mode);
     if (pnacl_options.translate) {
       pp::CompletionCallback translate_callback =
           callback_factory_.NewCallback(&Plugin::BitcodeDidTranslate);

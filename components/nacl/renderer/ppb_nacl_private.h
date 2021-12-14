@@ -222,8 +222,6 @@ class PPBNaClPrivate {
    * The |nexe_file_info| is currently used only in non-SFI mode. It is the
    * file handle for the main nexe file, which should be initially loaded.
    * LaunchSelLdr takes the ownership of the file handle.
-   * The |uses_nonsfi_mode| flag indicates whether or not nonsfi-mode should
-   * be used with the binary pointed by the url.
    * |translator_channel| is filled out when launching PNaCl translator
    * processes.
    */
@@ -232,7 +230,6 @@ class PPBNaClPrivate {
       PP_Bool main_service_runtime,
       const char* alleged_url,
       const struct PP_NaClFileInfo* nexe_file_info,
-      PP_Bool uses_nonsfi_mode,
       PP_NaClAppProcessType process_type,
       std::unique_ptr<IPC::SyncChannel>* translator_channel,
       struct PP_CompletionCallback callback);
@@ -304,8 +301,7 @@ class PPBNaClPrivate {
                                   const char* program_url);
   static PP_Bool GetManifestProgramURL(PP_Instance instance,
                                        struct PP_Var* full_url,
-                                       struct PP_PNaClOptions* pnacl_options,
-                                       PP_Bool* uses_nonsfi_mode);
+                                       struct PP_PNaClOptions* pnacl_options);
   /* Returns the filenames for the llc and ld tools. */
   static PP_Bool GetPnaclResourceInfo(PP_Instance instance,
                                       struct PP_Var* llc_tool_name,
