@@ -5511,11 +5511,15 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
-                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15"
+                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
+                        "OmniboxMaxURLMatches": "8",
+                        "UIMaxAutocompleteMatches": "15"
                     },
                     "enable_features": [
                         "OmniboxDynamicMaxAutocomplete",
+                        "OmniboxMaxURLMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QuickActionSearchWidgetAndroid",
                         "QuickActionSearchWidgetAndroidDinoVariant"
                     ]
