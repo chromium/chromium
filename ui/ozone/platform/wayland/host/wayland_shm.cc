@@ -10,7 +10,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxShmVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 constexpr uint32_t kShmFormat = WL_SHM_FORMAT_ARGB8888;
 }  // namespace
 
@@ -25,11 +25,12 @@ void WaylandShm::Instantiate(WaylandConnection* connection,
                              uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->shm_)
+  if (connection->shm_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto shm =
-      wl::Bind<wl_shm>(registry, name, std::min(version, kMaxShmVersion));
+  auto shm = wl::Bind<wl_shm>(registry, name, kMinVersion);
   if (!shm) {
     LOG(ERROR) << "Failed to bind to wl_shm global";
     return;

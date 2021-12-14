@@ -35,6 +35,8 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "base/logging.h"
+
 namespace wl {
 namespace {
 
@@ -76,6 +78,25 @@ void delete_touch(wl_touch* touch) {
 }
 
 }  // namespace
+
+bool CanBind(const std::string& interface,
+             uint32_t available_version,
+             uint32_t min_version,
+             uint32_t max_version) {
+  if (available_version < min_version) {
+    LOG(WARNING) << "Unable to bind to " << interface << " version "
+                 << available_version << ".  The minimum supported version is "
+                 << min_version << ".";
+    return false;
+  }
+
+  if (available_version > max_version) {
+    LOG(WARNING) << "Binding to " << interface << " version " << max_version
+                 << " but version " << available_version << " is available.";
+  }
+
+  return true;
+}
 
 void (*ObjectTraits<wl_cursor_theme>::deleter)(wl_cursor_theme*) =
     &wl_cursor_theme_destroy;

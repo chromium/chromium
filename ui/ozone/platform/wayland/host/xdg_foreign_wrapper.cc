@@ -19,6 +19,8 @@ constexpr char XdgForeignWrapper::kInterfaceNameV1[];
 // static
 constexpr char XdgForeignWrapper::kInterfaceNameV2[];
 
+constexpr uint32_t kMinVersion = 1;
+
 using OnHandleExported = XdgForeignWrapper::OnHandleExported;
 
 namespace {
@@ -185,15 +187,17 @@ void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
                                     uint32_t name,
                                     const std::string& interface,
                                     uint32_t version) {
-  if (connection->xdg_foreign_)
+  if (connection->xdg_foreign_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
   if (interface == kInterfaceNameV1) {
-    connection->xdg_foreign_ =
-        CreateWrapper<zxdg_exporter_v1>(connection, registry, name, version);
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v1>(
+        connection, registry, name, kMinVersion);
   } else if (interface == kInterfaceNameV2) {
-    connection->xdg_foreign_ =
-        CreateWrapper<zxdg_exporter_v2>(connection, registry, name, version);
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v2>(
+        connection, registry, name, kMinVersion);
   } else {
     NOTREACHED() << " unexpected interface name: " << interface;
   }
