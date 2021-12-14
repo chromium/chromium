@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ዴስክ 7</translation>
 <translation id="2224075387478458881">ጥበቃ የሚደረግለት ይዘት በሚታይበት ጊዜ የማያ ገጽ ቀረጻ አይፈቀድም</translation>
 <translation id="225680501294068881">መሣሪያዎችን በመቃኘት ላይ...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" />ን በማውረድ ላይ ሳለ የሆነ ችግር ተፈጥሯል</translation>
 <translation id="2268130516524549846">ብሉቱዝ ተሰናክሏል</translation>
 <translation id="2268813581635650749">ሁሉንም ዘግተህ ውጣ</translation>
 <translation id="2269016722240250274">አንድ መተግበሪያ ማይክሮፎንዎን እየተጠቀመ ነው</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">ራስሰር ጠቅ ማድረጎችን ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
 <translation id="4849058404725798627">ነገርየውን ከቁልፍ ሰሌዳ ትኩረት ጋር አድምቅ</translation>
 <translation id="485592688953820832">ምንም እርምጃ የለም (ባለበት አቁም)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" />ን ለማውረድ የአውታረ መረብ ግንኙነትዎን ያረጋግጡ</translation>
 <translation id="486056901304535126">ማውረድ በኋላ ላይ ይሞከራል። ማውረድ እስኪጠናቀቅ ድረስ ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="4868492592575313542">ገብሯል</translation>
 <translation id="4872237917498892622">Alt+Search ወይም Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">አይቀበሉ</translation>
 <translation id="6453179446719226835">ቋንቋ ተለውጧል</translation>
 <translation id="6459472438155181876">ማያ ገጽ ወደ <ph name="DISPLAY_NAME" /> በመቀጠል ላይ</translation>
+<translation id="6477681113376365978">ፋይል ማውረድ አልተቻለም</translation>
 <translation id="6482559668224714696">የሙሉ ማያ ገጽ ማጉያ</translation>
 <translation id="6490471652906364588">USB-C መሣሪያ (የቀኝ ወደብ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ከቀነገደቡ በፊት እንዲያዘምኑት ይፈልግብዎታል።</translation>
@@ -817,6 +820,8 @@
 <translation id="6537924328260219877">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">እየተቃኘ ያለ <ph name="FILENAME" /> ያውርዱ</translation>
 <translation id="6542521951477560771">ወደ <ph name="RECEIVER_NAME" /> cast በማድረግ ላይ</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+አዲስ ጭነት</translation>
 <translation id="6559976592393364813">አስተዳዳሪን ይጠይቁ</translation>
 <translation id="6565007273808762236">ኢሲም ግንኙነት አይገኝም</translation>
 <translation id="6570831796530454248">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያን ያዘምኑ}one{በ# ሰዓታት ውስጥ መሣሪያን ያዘምኑ}other{በ# ሰዓታት ውስጥ መሣሪያን ያዘምኑ}}</translation>
@@ -848,6 +853,7 @@
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6727969043791803658">ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ወደ ቅንብሮች ሂድ</translation>
 <translation id="6751052314767925245">በእርስዎ አስተዳዳሪ ተፈጻሚ የተደረገ</translation>
 <translation id="6751826523481687655">የአፈጻጸም ክትትል በርቷል</translation>
 <translation id="6752912906630585008">ዴስክ <ph name="REMOVED_DESK" /> ተወግዶ ከዴስክ <ph name="RECEIVE_DESK" /> ጋር ተዋህዷል</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">ለማዋቀር መታ ያድርጉ</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
 <translation id="7714767791242455379">አዲስ የተንቀሳቃሽ ስልክ አውታረ መረብን አክል</translation>
+<translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ማሳወቂያ}one{# ማሳወቂያዎች}other{# ማሳወቂያዎች}}</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7745560842763881396">መተግበሪያዎችን በመደርደሪያ አሳይ</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />ን በመጠቀም ላይ</translation>
 <translation id="899350903320462459">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን እንደ <ph name="LOGIN_ID" /> ይክፈቱ</translation>
+<translation id="9000771174482730261">ማከማቻን ያቀናብሩ</translation>
 <translation id="9017320285115481645">የ Family Link ወላጅ መዳረሻ ኮድ ያስገቡ።</translation>
 <translation id="9024331582947483881">ሙሉ ገጽ ማያ</translation>
 <translation id="9047624247355796468">ለ <ph name="NETWORK_NAME" /> ቅንብሮችን ክፈት</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">የቀን መቁጠሪያዬ ላይ ምን አለ?</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="951991426597076286">አትቀበል</translation>
+<translation id="954052413789300507">ለ<ph name="FILENAME" /> በቂ ቦታ የለም። ቦታ ያስለቅቁ።</translation>
 <translation id="974545358917229949">ለ<ph name="RESULT_COUNT" /> ውጤቶችን ለ<ph name="QUERY" /> በማሳየት ላይ</translation>
 <translation id="98515147261107953">በወርድ</translation>
 <translation id="990277280839877440">መስኮት <ph name="WINDOW_TITILE" /> ተዘግቷል።</translation>

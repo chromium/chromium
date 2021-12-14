@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2224075387478458881">Запись экрана запрещена, так как на нем есть защищенный контент.</translation>
 <translation id="225680501294068881">Поиск устройств…</translation>
+<translation id="2257486738914982088">При скачивании файла <ph name="FILENAME" /> произошла ошибка.</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
 <translation id="2268813581635650749">Выйти для всех</translation>
 <translation id="2269016722240250274">Приложение использует ваш микрофон</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">Вы уверены, что хотите отключить функцию автоматического нажатия?</translation>
 <translation id="4849058404725798627">Выделять элементы, выбранные с помощью клавиатуры</translation>
 <translation id="485592688953820832">Отсутствие действий (пауза)</translation>
+<translation id="4860284199500934869">Чтобы скачать файл <ph name="FILENAME" />, проверьте подключение к сети.</translation>
 <translation id="486056901304535126">Повторная попытка будет выполнена позже. Пока скачивание не завершится, записи с речью будут передаваться для обработки в Google.</translation>
 <translation id="4868492592575313542">включила</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">Отклонить</translation>
 <translation id="6453179446719226835">Язык изменен</translation>
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491071886865974820">Согласно требованиям <ph name="MANAGER" /> вам нужно обновить устройство <ph name="DEVICE_TYPE" /> до истечения срока.</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">Эмодзи</translation>
 <translation id="6537924328260219877">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="655633303491376835">"<ph name="APP_NAME" />"
+Новое приложение</translation>
 <translation id="6559976592393364813">Обратитесь к администратору</translation>
 <translation id="6565007273808762236">Подключение eSIM недоступно</translation>
 <translation id="6570831796530454248">{0,plural, =1{Перезагрузите устройство в течение 1 часа}one{Перезагрузите устройство в течение # часа}few{Перезагрузите устройство в течение # часов}many{Перезагрузите устройство в течение # часов}other{Перезагрузите устройство в течение # часа}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732800389263199929">ещё <ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ОТКРЫТЬ НАСТРОЙКИ</translation>
 <translation id="6751052314767925245">Функция принудительно включена администратором</translation>
 <translation id="6751826523481687655">Отслеживание эффективности включено.</translation>
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
+<translation id="7720410380936703141">ПОВТОРИТЬ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7745560842763881396">Показать приложения на панели запуска</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
+<translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">Что у меня запланировано?</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="951991426597076286">Отклонить</translation>
+<translation id="954052413789300507">Недостаточно свободного места для скачивания файла <ph name="FILENAME" />. Освободите пространство.</translation>
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>

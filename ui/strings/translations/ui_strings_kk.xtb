@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
 <translation id="4588090240171750605">Оңға айналдыру</translation>
 <translation id="4724120544754982507">Хабарландыру орталығы, <ph name="UNREAD_NOTIFICATION_COUNT" /> жаңа хабарландыру</translation>
+<translation id="4746179598275229723">Кеңейтім босатылды.</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ай қалды}other{# ай қалды}}</translation>
 <translation id="4888938634149558681">Қоңырау шалу</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунд}other{# секунд}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 секунд қалды}other{# секунд қалды}}</translation>
 <translation id="5941711191222866238">Жию</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 сағат}other{# сағат}}</translation>
+<translation id="6007284015834422026">Кеңейтім бекітілді.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6117103120090651229">Ортадағы түйме</translation>
 <translation id="6129953537138746214">Бос орын</translation>

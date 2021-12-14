@@ -192,6 +192,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2224075387478458881">Înregistrarea ecranului nu este permisă atunci când se afișează conținut protejat</translation>
 <translation id="225680501294068881">Se caută gadgeturi...</translation>
+<translation id="2257486738914982088">A apărut o eroare în timpul descărcării <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
 <translation id="2268813581635650749">Deconectează tot</translation>
 <translation id="2269016722240250274">O aplicație folosește microfonul</translation>
@@ -587,6 +588,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
 <translation id="4849058404725798627">Evidențiază obiectul focalizat de la tastatură</translation>
 <translation id="485592688953820832">Nicio acțiune (pauză)</translation>
+<translation id="4860284199500934869">Verifică starea conexiunii la rețea pentru a descărca <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Se va încerca descărcarea mai târziu. Fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare până la finalizarea descărcării.</translation>
 <translation id="4868492592575313542">activată</translation>
 <translation id="4872237917498892622">Alt+Căutare sau Shift</translation>
@@ -804,6 +806,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6452181791372256707">Respingeți</translation>
 <translation id="6453179446719226835">Limba a fost schimbată</translation>
 <translation id="6459472438155181876">Se extinde ecranul pe <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> solicită să actualizezi dispozitivul <ph name="DEVICE_TYPE" /> înainte de termenul limită</translation>
@@ -816,6 +819,8 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537924328260219877">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Instalare nouă</translation>
 <translation id="6559976592393364813">Întreabă administratorul</translation>
 <translation id="6565007273808762236">Nu este disponibilă o conexiune eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualizează dispozitivul într-o oră}few{Actualizează dispozitivul în # ore}other{Actualizează dispozitivul în # de ore}}</translation>
@@ -847,6 +852,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6727969043791803658">Conectat, nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ACCESEAZĂ SETĂRILE</translation>
 <translation id="6751052314767925245">Impusă de administrator</translation>
 <translation id="6751826523481687655">Urmărirea performanțelor este activată</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +988,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adaugă o nouă rețea de date mobile</translation>
+<translation id="7720410380936703141">ÎNCEARCĂ DIN NOU</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{O notificare}few{# notificări}other{# de notificări}}</translation>
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7745560842763881396">Afișează aplicațiile în raft</translation>
@@ -1168,6 +1175,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Se folosește <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Deblochează dispozitivul ca <ph name="LOGIN_ID" /> pentru efectuarea acțiunii de notificare</translation>
+<translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1221,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="938963181863597773">Ce am în calendar?</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="951991426597076286">Refuză</translation>
+<translation id="954052413789300507">Nu există suficient spațiu pentru <ph name="FILENAME" />. Eliberează spațiu.</translation>
 <translation id="974545358917229949">Se afișează <ph name="RESULT_COUNT" /> rezultate pentru <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Peisaj</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>

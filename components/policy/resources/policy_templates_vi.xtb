@@ -288,6 +288,7 @@
       Nếu chính sách này được đặt thành false, <ph name="PRODUCT_NAME" /> sẽ không cho phép bắt đầu hồ sơ khách.</translation>
 <translation id="1361661842732478894">Hiện nút Màn hình chính trên thanh công cụ</translation>
 <translation id="1363275621236827384">Bật truy vấn cấu hình Máy chủ Quirks cho phần cứng</translation>
+<translation id="1371626834351873151">Tính năng Giảm thiểu tác nhân người dùng sẽ được bật cho mọi bản dùng thử theo nguyên gốc.</translation>
 <translation id="1372618949173323717">Tắt JavaScript</translation>
 <translation id="1376119291123231789">Bật chế độ sạc pin nâng cao</translation>
 <translation id="1384459581748403878">Tham khảo: <ph name="REFERENCE_URL" /></translation>
@@ -802,6 +803,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì người dùng không thể sử dụng tính năng Chuyển đổi nhanh.</translation>
 <translation id="1972134432340252414">Chặn các điểm tiện ích cũ trong Quá trình chạy trình duyệt</translation>
 <translation id="1977581177449752640">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ dùng một chứng chỉ máy khách có tên thường gọi (CN) của nhà phát hành cụ thể để xác thực theo <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Để dùng chứng chỉ máy khách có sẵn, hãy đặt chính sách này thành <ph name="WILDCARD_VALUE" />. Tính năng này sẽ bị tắt nếu bạn để trống hoặc không đặt chính sách này.</translation>
+<translation id="1985598967415986700">Có thể kiểm soát được Tính năng Giảm thiểu tác nhân người dùng qua Field-Trials và Origin-Trials.</translation>
 <translation id="1988345404999458987">Cung cấp cấu hình của các máy chủ máy in hiện có.
 
       Chính sách này cho phép bạn cung cấp cấu hình của các máy chủ máy in bên ngoài cho thiết bị <ph name="PRODUCT_OS_NAME" /> dưới dạng tệp JSON.
@@ -2030,6 +2032,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="PRINTERS_POLICY_NAME" />.</translation>
+<translation id="3300784749135986828">Bật hoặc tắt <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3302829897293005699">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo thông tin về phiên kiosk đang hoạt động như mã và phiên bản ứng dụng.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin về phiên kiosk.</translation>
@@ -2990,6 +2993,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
       Lưu ý: Xem danh sách các biến mà bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4531706050939927436">Các ứng dụng Android có thể bị buộc cài đặt từ Bảng điều khiển dành cho quản trị viên của Google bằng Google Play. Các ứng dụng đó không sử dụng chính sách này.</translation>
 <translation id="4534500438517478692">Tên giới hạn Android:</translation>
+<translation id="4537906430022369840">Đã tắt tính năng giảm thiểu Tác nhân người dùng và không dùng Field-Trials hoặc Origin-Trials để bật tính năng này.</translation>
 <translation id="4541530620466526913">Tài khoản trong thiết bị</translation>
 <translation id="4543502256674577024">Cài đặt cập nhật thiết bị</translation>
 <translation id="454585952814397564">Dùng mức ưu tiên bình thường cho tiến trình âm thanh</translation>
@@ -5528,6 +5532,12 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 <translation id="7509761893401042250">Chính sách này không còn dùng nữa kể từ M96. Thay vào đó, vui lòng dùng <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> và <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
 
       Nếu bạn bật hoặc không đặt chính sách này, thì các thiết bị đã đăng ký sẽ báo cáo số liệu thống kê phần cứng, chẳng hạn như mức sử dụng CPU/RAM. Nếu bạn tắt chính sách này thì thiết bị đã đăng ký sẽ không báo cáo số liệu thống kê phần cứng.</translation>
+<translation id="7512065400265675158">Tiêu đề của yêu cầu HTTP <ph name="USER_AGENT_HEADER_NAME" /> được lên lịch để giảm bớt. Để tạo điều kiện cho hoạt động thử nghiệm và khả năng tương thích, chính sách này có thể bật tính năng giảm thiểu cho mọi trang web hoặc tắt tính năng bản dùng thử theo nguyên gốc hoặc bản thử nghiệm để bật tính năng này.
+
+      Để tìm hiểu thêm về <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> và tiến trình của tác nhân này, hãy đọc tại đây:
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      </translation>
 <translation id="7519218194072744342">URL của trình xử lý giao thức.</translation>
 <translation id="7519251620064708155">Cho phép tạo khóa trên các trang web này</translation>
 <translation id="7529144158022474049">Yếu tố phân tán tự động cập nhật</translation>

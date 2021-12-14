@@ -168,6 +168,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2584132361465095047">Gehitu kontu bat…</translation>
 <translation id="2600682495497606169">Garbitu webguneko cookieak</translation>
 <translation id="2625189173221582860">Kopiatu da pasahitza</translation>
+<translation id="2626236249646841566">Egiaztatu konektatuta zaudela eta saiatu berriro saioa hasten.</translation>
 <translation id="2637313651144986786">Bilatu fitxak…</translation>
 <translation id="2647269890314209800">Erabiltzen diren cookieak</translation>
 <translation id="2648803196158606475">Ezabatu irakurritakoak</translation>
@@ -364,6 +365,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4508750114462689118">Itxi saioa hasteko promozioa</translation>
 <translation id="4526249700380860531">Ikusi eta kudeatu gordetako pasahitzak <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> estekan.</translation>
 <translation id="4536418791685807335">Hasi saioa berriro.</translation>
+<translation id="4540780316273593836">Arazoren bat izan da</translation>
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4592368184551360546">Teklatua</translation>
 <translation id="461440297010471931">Google-rekin bilatzen</translation>
@@ -479,6 +481,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> bertsioa</translation>
 <translation id="5690398455483874150">{count,plural, =1{Chrome-ko leiho bat dago ikusgai}other{Chrome-ko {count} leiho daude ikusgai}}</translation>
+<translation id="5704908597376970822">Ezin da hasi saioa.</translation>
 <translation id="5706552126692816153">Aktibo duela 1 egun</translation>
 <translation id="5711039611392265845">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5724941645893276623">Sarea modu pribatuan arakatzeko, gehitu beste fitxa bat</translation>

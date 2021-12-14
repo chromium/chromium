@@ -192,6 +192,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je vidljiv zaštićeni sadržaj</translation>
 <translation id="225680501294068881">Skeniranje uređaja...</translation>
+<translation id="2257486738914982088">Došlo je do problema pri preuzimanju fajla <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
 <translation id="2269016722240250274">Aplikacija koristi mikrofon</translation>
@@ -587,6 +588,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4831034276697007977">Želite li stvarno da isključite automatske klikove?</translation>
 <translation id="4849058404725798627">Istakni objekat pomoću fokusa tastature</translation>
 <translation id="485592688953820832">Ništa se ne preduzima (pauziranje)</translation>
+<translation id="4860284199500934869">Proverite mrežnu vezu da biste preuzeli <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Probaćemo preuzimanje kasnije. Govor će biti poslat Google-u radi obrade dok se preuzimanje ne završi.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
 <translation id="4872237917498892622">Alt + taster za pretragu ili Shift</translation>
@@ -804,6 +806,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6452181791372256707">Odbij</translation>
 <translation id="6453179446719226835">Jezik je promenjen</translation>
 <translation id="6459472438155181876">Proširivanje ekrana u <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Preuzimanje fajla nije uspelo</translation>
 <translation id="6482559668224714696">Lupa za ceo ekran</translation>
 <translation id="6490471652906364588">Uređaj sa USB priključkom tipa C (desni port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> traži da ažurirate <ph name="DEVICE_TYPE" /> pre isteka roka</translation>
@@ -816,6 +819,8 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="65320610082834431">Emodžiji</translation>
 <translation id="6537924328260219877">Jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Prebacuje se na <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Novo instaliranje</translation>
 <translation id="6559976592393364813">Pitajte administratora</translation>
 <translation id="6565007273808762236">eSIM veza nije dostupna</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ažurirajte uređaj u roku od jednog sata}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
@@ -847,6 +852,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="6727969043791803658">Povezano, nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">IDI U PODEŠAVANJA</translation>
 <translation id="6751052314767925245">Primenjuje administrator</translation>
 <translation id="6751826523481687655">Praćenje učinka je uključeno</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena sa radnom površinom <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +988,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurisali</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
+<translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obaveštenje}one{# obaveštenje}few{# obaveštenja}other{# obaveštenja}}</translation>
 <translation id="7724603315864178912">Iseci</translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
@@ -1168,6 +1175,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Otključajte uređaj pomoću ID-a prijavljivanja <ph name="LOGIN_ID" /> da biste dobili obaveštenje</translation>
+<translation id="9000771174482730261">UPRAVLJAJTE MEMORIJSKIM PROSTOROM</translation>
 <translation id="9017320285115481645">Unesite pristupni kôd roditelja za Family Link.</translation>
 <translation id="9024331582947483881">ceo ekran</translation>
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1221,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="938963181863597773">Šta je u kalendaru?</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="951991426597076286">Odbij</translation>
+<translation id="954052413789300507">Nema dovoljno prostora za <ph name="FILENAME" />. Oslobodite prostor.</translation>
 <translation id="974545358917229949">Prikazuju se rezultati (<ph name="RESULT_COUNT" />) za: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontalno</translation>
 <translation id="990277280839877440">Prozor <ph name="WINDOW_TITILE" /> je zatvoren.</translation>

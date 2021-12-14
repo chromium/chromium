@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">डेस्क 7</translation>
 <translation id="2224075387478458881">जब सुरक्षित कॉन्टेंट दिख रहा हो, तो स्क्रीन रिकॉर्डिंग की सुविधा काम नहीं करती</translation>
 <translation id="225680501294068881">डिवाइस स्कैन किए जा रहे हैं...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> डाउनलोड करते समय कोई गड़बड़ी हुई</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम किया गया</translation>
 <translation id="2268813581635650749">सभी को साइन आउट करें</translation>
 <translation id="2269016722240250274">एक ऐप्लिकेशन आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
@@ -588,6 +589,7 @@
 <translation id="4831034276697007977">क्या आप वाकई अपने-आप क्लिक होने की सुविधा बंद करना चाहते हैं?</translation>
 <translation id="4849058404725798627">कीबोर्ड फ़ोकस वाला ऑब्जेक्ट हाइलाइट करें</translation>
 <translation id="485592688953820832">कोई कार्रवाई नहीं (रोकें)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> को डाउनलोड करने के लिए, अपना इंटरनेट कनेक्शन देखें</translation>
 <translation id="486056901304535126">बाद में, डाउनलोड करने की कोशिश की जाएगी. फ़ाइल पूरी डाउनलोड होने तक, स्पीच को प्रोसेसिंग के लिए Google के पास भेजा जाएगा.</translation>
 <translation id="4868492592575313542">चालू किया गया</translation>
 <translation id="4872237917498892622">Alt+Search या Shift</translation>
@@ -805,6 +807,7 @@
 <translation id="6452181791372256707">अस्‍वीकार करें</translation>
 <translation id="6453179446719226835">भाषा बदल दी गई है</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> पर स्क्रीन विस्तृत कर रहा है</translation>
+<translation id="6477681113376365978">फ़ाइल डाउनलोड नहीं की जा सकी</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
 <translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> के लिए ज़रूरी है आप अपने <ph name="DEVICE_TYPE" /> को समयसीमा खत्म होने से पहले अपडेट करें</translation>
@@ -817,6 +820,8 @@
 <translation id="65320610082834431">इमोजी</translation>
 <translation id="6537924328260219877">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, फ़ोन की बैटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+अभी इंस्टॉल किया गया है</translation>
 <translation id="6559976592393364813">एडमिन से पूछें</translation>
 <translation id="6565007273808762236">ई-सिम कनेक्शन मौजूद नहीं है</translation>
 <translation id="6570831796530454248">{0,plural, =1{डिवाइस को 1 घंटे के अंदर अपडेट करें}one{डिवाइस को # घंटे के अंदर अपडेट करें}other{डिवाइस को # घंटों के अंदर अपडेट करें}}</translation>
@@ -848,6 +853,7 @@
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6727969043791803658">कनेक्ट किया गया, <ph name="BATTERY_PERCENTAGE" /> % बैटरी बची है</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">'सेटिंग' पर जाएं</translation>
 <translation id="6751052314767925245">यह सुविधा आपके एडमिन ने लागू की है</translation>
 <translation id="6751826523481687655">'परफ़ॉर्मेंस ट्रेसिंग' चालू कर दी गई है</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> को हटा दिया गया है और इसे डेस्क<ph name="RECEIVE_DESK" /> के साथ मिला दिया गया है</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7714767791242455379">नया मोबाइल नेटवर्क जोड़ें</translation>
+<translation id="7720410380936703141">फिर से कोशिश करें</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 सूचना}one{# सूचना}other{# सूचनाएं}}</translation>
 <translation id="7724603315864178912">काटें</translation>
 <translation id="7745560842763881396">शेल्फ़ में मौजूद ऐप्लिकेशन दिखाएं</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> का इस्तेमाल करें</translation>
 <translation id="899350903320462459">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को <ph name="LOGIN_ID" /> के तौर पर अनलॉक करें</translation>
+<translation id="9000771174482730261">डिवाइस का स्टोरेज मैनेज करें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> के लिए सेटिंग खोलें</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">मेरे कैलेंडर पर आज के लिए क्या काम हैं?</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="951991426597076286">अस्वीकार करें</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> को डाउनलोड करने के लिए, डिवाइस में जगह कम है. जगह खाली करें.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> के लिए <ph name="RESULT_COUNT" /> नतीजे दिखाए जा रहे हैं</translation>
 <translation id="98515147261107953">लैंडस्केप</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> विंडो बंद है.</translation>

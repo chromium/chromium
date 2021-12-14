@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">Толық көрсету</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Браузердің нұсқасын іздеп жатырсыз ба? Келесіге бетке өтіңіз:</translation>
 <translation id="1476595624592550506">Құпия сөзді өзгерту</translation>
 <translation id="1483493594462132177">Жіберу</translation>
 <translation id="1484290072879560759">Жөнелту мекенжайын таңдау</translation>
@@ -1885,6 +1886,7 @@
 <translation id="7118618213916969306">Буфердегі URL сілтемесін (<ph name="SHORT_URL" />) іздеу</translation>
 <translation id="7119414471315195487">Басқа қойындыларды не бағдарламаларды жабу</translation>
 <translation id="7129409597930077180">Бұл мекенжайға жөнелтілмейді. Басқа мекенжайды таңдаңыз.</translation>
+<translation id="7132939140423847331">Әкімші бұл деректің көшірілуіне тыйым салды.</translation>
 <translation id="7135130955892390533">Күйін көрсету</translation>
 <translation id="7138472120740807366">Жеткізу әдісі</translation>
 <translation id="7139724024395191329">Әмірлік</translation>
@@ -2444,6 +2446,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузерін қолдану тарихын көру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="8987927404178983737">Ай</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Жүйенің нұсқасын іздеп жатырсыз ба? Келесіге бетке өтіңіз:</translation>
 <translation id="899688752321268742"><ph name="URL" /> сіз құрылғыны қашан белсенді пайдаланатыныңыз туралы білгісі келеді.</translation>
 <translation id="8996941253935762404">Алдағы сайт зиянды бағдарламаларды қамтиды</translation>
 <translation id="8997023839087525404">Сервер Сертификат айқындығы саясаты жалпыға жарияламаған сертификатты ұсынды. Бұл – кейбір сертификаттардың сенімді екенін растау үшін және оларды шабуылдаушылардан қорғау мақсатында қойылатын міндетті талап.</translation>

@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1592864538817356322">सामान्य सुरक्षा मोड:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
+<translation id="1633659023549081553">Chrome के होम पेज पर जाकर, नया कॉन्टेंट खोजें</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
 <translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">इस टेक्स्ट को आसानी से पढ़ने लायक बनाने के लिए, स्‍लाइडर को आगे की ओर खींचें. पैराग्राफ़ पर डबल-टैप करने के बाद, टेक्स्ट को इतना बड़ा दिखाई देना चाहिए.</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
+<translation id="2342601525305963189">Chrome से जुड़ी सलाह:</translation>
 <translation id="234265804618409743">कैमरा खाेला नहीं जा सकता. कोई गड़बड़ी हुई.</translation>
 <translation id="2345671828921229300">किसी शब्द को खोजने के लिए, उसे दबाकर रखें</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">आपके देखे गए पेजों के यूआरएल, Google को भेजे जाते हैं</translation>
 <translation id="2536728043171574184">इस पृष्‍ठ की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
+<translation id="2558692642259318568">अपनी गतिविधि को डिवाइस में सेव किए बिना ब्राउज़ करने के लिए, गुप्त मोड आज़माएं</translation>
 <translation id="2561519700418191927">वीडियो की झलक की सेटिंग</translation>
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2567545343356994513">नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से तेज़ और प्रोऐक्टिव (बिना मांगे मिलने वाली) सुरक्षा</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">कार्ड संख्या</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी किया गया</translation>
 <translation id="2631006050119455616">बचाया गया</translation>
+<translation id="2634905176438867146">Chrome को अपने डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करने का तरीका जानें</translation>
 <translation id="2645657967708199252">हो सकता है कि आपका <ph name="CONNECTION_TYPE" /> कनेक्शन आपके डाउनलोड की स्पीड कम कर दे</translation>
 <translation id="2647434099613338025">भाषा जोड़ें</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" />, आपके ब्राउज़र को मैनेज करता है</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037517125981011456">Chrome में साइन इन करने के निर्देश दिखाता है</translation>
 <translation id="3046945242843292318">अगली बार यह साइट तेज़ी से ऐक्सेस हो</translation>
+<translation id="3055259925215945098">बुकमार्क को एक से दूसरी जगह ले जाया गया</translation>
 <translation id="305593374596241526">स्थान सेवा बंद है, उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3237087289225714896">पहले से लोड करने की स्टैंडर्ड सुविधा:</translation>
+<translation id="3237433641417325993">सुझाए गए लेख देखने के लिए, नीचे की ओर स्क्रोल करें</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">अगर Chrome के इस्तेमाल से जुड़ी जानकारी देने वाली रिपोर्ट भी शेयर की जाती हैं, तो याद रखें कि आपके देखे गए पेजों के यूआरएल उनमें शामिल होते हैं</translation>
 <translation id="3250563604907490871">वाई-फ़ाई से कनेक्ट करने पर, इमेज की जानकारी जोड़ने की सुविधा फिर से शुरू हो जाएगी</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome के पास अनुरोध किए गए संसाधन का एक्सेस नहीं है.</translation>
 <translation id="4837753911714442426">पेज प्रिंट करने के विकल्प खोलें</translation>
 <translation id="4842092870884894799">पासवर्ड जेनरेशन पॉपअप दिखाया जा रहा है</translation>
+<translation id="4842515939542199281">बोलकर खोजने के लिए, माइक्रोफ़ोन पर टैप करें</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="4860895144060829044">कॉल करें</translation>
 <translation id="4864369630010738180">प्रवेश कर रहा है...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
 <translation id="510275257476243843">1 घंटा शेष</translation>
+<translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> में ले जाया गया</translation>
 <translation id="5118713593561876160">रुचि</translation>
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5126510351761255129">कार्ड की पुष्टि करें</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">फ़ाइलें डाउनलोड करने के लिए Chrome को मेमोरी के ऐक्‍सेस की ज़रूरत होगी.</translation>
 <translation id="5749237766298580851"><ph name="SEPARATOR" /> को बंद करने का सुझाव नहीं दिया गया</translation>
 <translation id="5752232708629533680">सिर्फ़ GIF शेयर करें</translation>
+<translation id="5753139477036638699">Chrome पर जानकारी खोजने के लिए, आवाज़ का इस्तेमाल किया जा सकता है</translation>
 <translation id="5754350196967618083">'डिस्कवर' को रीफ़्रेश नहीं किया जा सकता</translation>
 <translation id="5763382633136178763">गुप्त टैब</translation>
 <translation id="5763514718066511291">इस ऐप्लिकेशन का यूआरएल कॉपी करने के लिए टैप करें</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">'Chrome में साइन इन करें' पेज खोला गया.</translation>
 <translation id="6814033694018386318">आप Google के साथ क्या शेयर करते हैं</translation>
 <translation id="6817747507826986771">इस पेज को तेज़ी से शेयर करें. इस शॉर्टकट में बदलाव करने के लिए, दबाकर रखें.</translation>
+<translation id="6819199143469632133">Google की सेवाएं अपने सभी डिवाइसों पर ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, टैब, चुना गया</translation>
 <translation id="6828070228333235514">कीमत को ट्रैक करना रोकें</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029390216614421513">इस फ़्रेम में क्यूआर/बार कोड रखें.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7037830628447527439">अपने Google खाते से Chrome में साइन इन करें</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - यह भाषा डाउनलोड नहीं की जा सकी. कुछ देर बाद कोशिश करें.</translation>
 <translation id="8951232171465285730">Chrome ने आपके <ph name="MEGABYTES" /> एमबी की बचत की</translation>
 <translation id="8955719471735800169">शीर्ष पर वापस जाएं</translation>
+<translation id="8964479563882643397">नया गुप्त टैब खोलने के लिए, मेन्यू खोलें</translation>
 <translation id="8965591936373831584">डाउनलोड बाकी है</translation>
 <translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>

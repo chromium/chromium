@@ -192,6 +192,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2222841058024245321">Lessenaar 7</translation>
 <translation id="2224075387478458881">Skermopname word nie toegelaat wanneer beskermde inhoud sigbaar is nie</translation>
 <translation id="225680501294068881">Skandeer tans vir toestelle …</translation>
+<translation id="2257486738914982088">Kon nie <ph name="FILENAME" /> aflaai nie</translation>
 <translation id="2268130516524549846">Bluetooth gedeaktiveer</translation>
 <translation id="2268813581635650749">Meld almal af</translation>
 <translation id="2269016722240250274">'n Program gebruik tans jou mikrofoon</translation>
@@ -588,6 +589,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4831034276697007977">Is jy seker jy wil outomatiese klikke afskakel?</translation>
 <translation id="4849058404725798627">Lig voorwerp met sleutelbordfokus uit</translation>
 <translation id="485592688953820832">Geen handeling nie (onderbreek)</translation>
+<translation id="4860284199500934869">Gaan jou netwerkverbinding na om <ph name="FILENAME" /> af te laai</translation>
 <translation id="486056901304535126">Sal later probeer aflaai. Spraak sal na Google toe gestuur word vir verwerking totdat aflaai voltooi is.</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
 <translation id="4872237917498892622">Alt+Search of Shift</translation>
@@ -805,6 +807,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6452181791372256707">Verwerp</translation>
 <translation id="6453179446719226835">Taal is verander</translation>
 <translation id="6459472438155181876">Brei skerm na <ph name="DISPLAY_NAME" /> uit</translation>
+<translation id="6477681113376365978">Kan nie lêer aflaai nie</translation>
 <translation id="6482559668224714696">Volskermvergrootglas</translation>
 <translation id="6490471652906364588">USB C-toestel (poort aan regterkant)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereis dat jy hierdie <ph name="DEVICE_TYPE" /> voor die spertyd opdateer</translation>
@@ -818,6 +821,8 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6537924328260219877">Seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Laai <ph name="FILENAME" /> af wat tans skandeer</translation>
 <translation id="6542521951477560771">Saai tans uit na <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nuwe installasie</translation>
 <translation id="6559976592393364813">Vra administrateur</translation>
 <translation id="6565007273808762236">e-SIM-verbinding is nie beskikbaar nie</translation>
 <translation id="6570831796530454248">{0,plural, =1{Dateer toestel binne 'n uur op}other{Dateer toestel binne # uur op}}</translation>
@@ -849,6 +854,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
 <translation id="6727969043791803658">Gekoppel, <ph name="BATTERY_PERCENTAGE" />% batterykrag</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">GAAN NA INSTELLINGS</translation>
 <translation id="6751052314767925245">Afgedwing deur jou administrateur</translation>
 <translation id="6751826523481687655">Werkverrigtingnasporing is aangeskakel</translation>
 <translation id="6752912906630585008">Lessenaar <ph name="REMOVED_DESK" /> is verwyder en met lessenaar <ph name="RECEIVE_DESK" /> saamgevoeg</translation>
@@ -984,6 +990,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7662283695561029522">Tik om op te stel</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Voeg nuwe selnetwerk by</translation>
+<translation id="7720410380936703141">PROBEER WEER</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 kennisgewing}other{# kennisgewings}}</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7745560842763881396">Wys programme op rak</translation>
@@ -1170,6 +1177,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gebruik tans <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ontsluit toestel as <ph name="LOGIN_ID" /> om die kennisgewinghandeling uit te voer</translation>
+<translation id="9000771174482730261">BESTUUR BERGING</translation>
 <translation id="9017320285115481645">Voer die Family Link-ouertoegangskode in.</translation>
 <translation id="9024331582947483881">volskerm</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
@@ -1215,6 +1223,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="938963181863597773">Wat is op my kalender?</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="951991426597076286">Weier</translation>
+<translation id="954052413789300507">Nie genoeg spasie vir <ph name="FILENAME" /> nie. Maak spasie beskikbaar.</translation>
 <translation id="974545358917229949">Wys tans <ph name="RESULT_COUNT" /> resultate vir <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landskap</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> is gesluit.</translation>

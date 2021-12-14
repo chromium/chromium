@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">డెస్క్ 7</translation>
 <translation id="2224075387478458881">గోప్యమైన కంటెంట్ కనిపించినప్పుడు స్క్రీన్ రికార్డింగ్ అనుమతించబడదు</translation>
 <translation id="225680501294068881">పరికరాల కోసం స్కాన్ చేస్తోంది...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" />‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఏదో తప్పు జరిగింది</translation>
 <translation id="2268130516524549846">బ్లూటూత్‌ నిలిపివేయబడింది</translation>
 <translation id="2268813581635650749">అన్నీ సైన్అవుట్ చేయి</translation>
 <translation id="2269016722240250274">ఒక యాప్ మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
@@ -588,6 +589,7 @@
 <translation id="4831034276697007977">ఆటోమేటిక్ క్లిక్‌లను మీరు ఖచ్చితంగా ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4849058404725798627">కీబోర్డ్ దృష్టి కేంద్రీకరణతో అంశాన్ని హైలైట్ చేయి</translation>
 <translation id="485592688953820832">చర్య వద్దు (పాజ్ చేయి)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" />‌ను డౌన్‌లోడ్ చేయడానికి మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="486056901304535126">మీ డౌన్‌లోడ్ తర్వాత మళ్లీ ప్రారంభమవుతుంది. డౌన్‌లోడ్ పూర్తయ్యే వరకు, ప్రాసెసింగ్ కోసం స్పీచ్ Googleకు పంపబడుతుంది.</translation>
 <translation id="4868492592575313542">యాక్టివేట్ చేయబడింది</translation>
 <translation id="4872237917498892622">Alt+Search లేదా Shift</translation>
@@ -805,6 +807,7 @@
 <translation id="6452181791372256707">తిరస్కరించు</translation>
 <translation id="6453179446719226835">భాష మార్చబడింది</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />కు స్క్రీన్‌ను విస్తరిస్తోంది</translation>
+<translation id="6477681113376365978">ఫైల్‌ను డౌన్‌లోడ్ చేయలేకపోయింది</translation>
 <translation id="6482559668224714696">పూర్తి స్క్రీన్‌ మాగ్నిఫైయర్</translation>
 <translation id="6490471652906364588">USB-C పరికరం (కుడి పోర్ట్)</translation>
 <translation id="6491071886865974820">గడువుకు ముందే ఈ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయమని <ph name="MANAGER" /> మిమ్మల్ని కోరుతోంది</translation>
@@ -816,7 +819,10 @@
 <translation id="6528179044667508675">అంతరాయం వద్దు</translation>
 <translation id="65320610082834431">ఎమోజిలు</translation>
 <translation id="6537924328260219877">సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">డౌన్‌లోడ్ చేయడానికి <ph name="FILENAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="6559976592393364813">నిర్వాహకుడిని అడగండి</translation>
 <translation id="6565007273808762236">eSIM కనెక్షన్ అందుబాటులో లేదు</translation>
 <translation id="6570831796530454248">{0,plural, =1{ఒక గంట లోపు పరికరాన్ని అప్‌డేట్ చేయండి}other{# గంటల లోపు పరికరాన్ని అప్‌డేట్ చేయండి}}</translation>
@@ -848,6 +854,7 @@
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="6727969043791803658">కనెక్ట్ చేయబడింది, <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6751052314767925245">మీ నిర్వాహకుని ద్వారా అమలు చేయబడింది</translation>
 <translation id="6751826523481687655">పనితీరు స్థితిగతి కనుగొనడం ఆన్‌లో ఉంది</translation>
 <translation id="6752912906630585008">"<ph name="REMOVED_DESK" />" డెస్క్ తీసివేసి, "<ph name="RECEIVE_DESK" />" డెస్క్‌తో విలీనం చేయబడింది</translation>
@@ -983,6 +990,7 @@
 <translation id="7662283695561029522">కాన్ఫిగర్ చేయడానికి నొక్కండి</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">కొత్త సెల్యులర్ నెట్‌వర్క్‌ను జోడించు</translation>
+<translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
 <translation id="7724603315864178912">కత్తిరించు</translation>
 <translation id="7745560842763881396">యాప్‌లను షెల్ఫ్‌లో చూపించు</translation>
@@ -1169,6 +1177,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ఉపయోగిస్తోంది</translation>
 <translation id="899350903320462459">నోటిఫికేషన్ చర్యను నిర్వహించడానికి <ph name="LOGIN_ID" />గా పరికరాన్ని అన్‌లాక్ చేయండి</translation>
+<translation id="9000771174482730261">స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="9017320285115481645">Family Link తల్లిదండ్రుల యాక్సెస్ కోడ్‌ను నమోదు చేయండి.</translation>
 <translation id="9024331582947483881">పూర్తి స్క్రీన్</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
@@ -1214,6 +1223,7 @@
 <translation id="938963181863597773">నా క్యాలెండర్‌లో ఏమి ఉన్నాయి?</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="951991426597076286">తిరస్కరించు</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> కోసం తగినంత స్పేస్ లేదు. స్పేస్‌ను ఖాళీ చేయండి.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> కోసం <ph name="RESULT_COUNT" /> ఫలితాలను ప్రదర్శిస్తోంది</translation>
 <translation id="98515147261107953">సమతలదిశ</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> విండో మూసివేయబడింది.</translation>

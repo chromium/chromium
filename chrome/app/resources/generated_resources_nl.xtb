@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1244303850296295656">Fout met extensie</translation>
 <translation id="1246863218384630739">Kan <ph name="VM_NAME" /> niet installeren: image-URL heeft een <ph name="HTTP_ERROR" />-foutcode geretourneerd. Neem contact op met je beheerder.</translation>
+<translation id="1247071602516579380">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, tablet met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Verwachte openingsaccolade <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Hiermee wis je <ph name="TOTAL_USAGE" /> van de gegevens die zijn opgeslagen door sites en geïnstalleerde apps</translation>
 <translation id="1251578593170406502">Scannen naar mobiele gegevensnetwerken...</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> geselecteerd</translation>
 <translation id="1442851588227551435">Actief Kerberos-ticket instellen</translation>
 <translation id="1444628761356461360">Deze instelling wordt beheerd door de eigenaar van het apparaat, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, telefoon met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Kan '<ph name="IMAGE_PATH" />' niet laden voor thema.</translation>
 <translation id="1449191289887455076">Druk nog een keer op <ph name="CURRENTKEY" /> om de toewijzing te bevestigen en <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Webpagina, één bestand</translation>
@@ -859,6 +861,7 @@
 <translation id="1855079636134697549">Camera staat aan</translation>
 <translation id="1856715684130786728">Locatie toevoegen...</translation>
 <translation id="1858585891038687145">Dit certificaat vertrouwen voor het identificeren van softwareontwikkelaars</translation>
+<translation id="1859787252990099899">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, onbekend apparaat met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
 <translation id="1862311223300693744">Heb je speciale VPN-, proxy-, firewall- of NAS-software geïnstalleerd?</translation>
 <translation id="1863182668524159459">Geen seriële poorten gevonden</translation>
@@ -1233,6 +1236,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2242687258748107519">Bestandsinformatie</translation>
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
 <translation id="2247738527273549923">Je apparaat wordt beheerd door je organisatie</translation>
+<translation id="2249061317998743208">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, gamecontroller met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Openen met systeemviewer</translation>
@@ -1992,6 +1996,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3007771295016901659">Tabblad dupliceren</translation>
 <translation id="3008232374986381779">Voer Linux-tools, -editors en -IDE's op je <ph name="DEVICE_TYPE" /> uit. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
+<translation id="3008396025115884998">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, audioapparaat met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag verbinding maakt met wifi om een update te downloaden. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}other{<ph name="MANAGER" /> vereist dat je vóór de deadline verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}}</translation>
 <translation id="3009300415590184725">Weet je zeker dat je het instellen van een mobiele dataservice wilt annuleren?</translation>
 <translation id="3009779501245596802">Geïndexeerde databases</translation>
@@ -2298,6 +2303,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3348038390189153836">Verwisselbaar apparaat gedetecteerd</translation>
 <translation id="3348131053948466246">Voorgestelde emoji's. Druk op de pijl-omhoog of pijl-omlaag om te navigeren en druk op Enter om het geselecteerde item in te voegen.</translation>
 <translation id="3349933790966648062">Geheugenvoetafdruk</translation>
+<translation id="3354972872297836698">Kan niet koppelen met apparaat <ph name="DEVICE_NAME" />, selecteer het apparaat om het opnieuw te proberen</translation>
 <translation id="3355936511340229503">Verbindingsfout</translation>
 <translation id="3356580349448036450">Voltooid</translation>
 <translation id="3359256513598016054">Beleidsbeperkingen voor certificaat</translation>
@@ -3129,6 +3135,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4200689466366162458">Aangepaste woorden</translation>
 <translation id="4200983522494130825">Nieuw &amp;tabblad</translation>
 <translation id="4201546031411513170">Je kunt altijd in de instellingen bepalen wat je wilt synchroniseren.</translation>
+<translation id="4202417625268941299">Met de uitgebreide versie van Safe Browsing krijg je de sterkste beveiliging van Chrome</translation>
 <translation id="420283545744377356">Screensaver uitzetten</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
@@ -3636,6 +3643,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Je microfoon gebruiken</translation>
 <translation id="4762718786438001384">Er is zeer weinig schijfruimte beschikbaar op het apparaat</translation>
+<translation id="4762898026821161650">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, computer met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">De volgende cookies zijn opgeslagen toen je deze pagina bekeek</translation>
 <translation id="4765582662863429759">Hiermee kan Android Berichten sms'jes van je telefoon naar je Chromebook doorsturen</translation>
 <translation id="4768332406694066911">Je hebt certificaten van deze organisaties waarmee je wordt geïdentificeerd</translation>
@@ -3816,6 +3824,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4943691134276646401">'<ph name="CHROME_EXTENSION_NAME" />' wil verbinden met een seriële poort</translation>
 <translation id="4944310289250773232">Deze verificatieservice wordt gehost door <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Laat je kind de aan/uit-knop aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="4946459324029651239">Je krijgt standaardbeveiliging</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{een bestand}other{# bestanden}}</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
@@ -4400,6 +4409,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5575528586625653441">Er is een probleem opgetreden met een demoregistratieverzoek.</translation>
 <translation id="557722062034137776">Als je je apparaat opnieuw instelt, heeft dit geen effect op je Google-accounts of gegevens die zijn gesynchroniseerd met deze accounts. Alle bestanden die lokaal op je apparaat zijn opgeslagen, worden wel verwijderd.</translation>
 <translation id="5578059481725149024">Automatisch inloggen</translation>
+<translation id="5581134892342029705">Vertaling naar <ph name="LANGUAGE" /> klaar</translation>
 <translation id="558170650521898289">Controle van Windows-apparaatstuurprogramma's</translation>
 <translation id="5581972110672966454">Kan het apparaat niet aan het domein koppelen. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Hoofdmenu</translation>
@@ -5814,6 +5824,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidscheck is 1 minuut geleden uitgevoerd}other{Veiligheidscheck is {NUM_MINS} minuten geleden uitgevoerd}}</translation>
 <translation id="7057767408836081338">App-gegevens kunnen niet worden opgehaald. Er wordt toch geprobeerd de app uit te voeren.</translation>
 <translation id="7058024590501568315">Verborgen netwerk</translation>
+<translation id="70582545822664495">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, muis met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Instellen op automatisch starten</translation>
 <translation id="7062222374113411376">Toestaan dat onlangs gesloten sites het verzenden en ontvangen van gegevens voltooien (aanbevolen)</translation>
 <translation id="7063129466199351735">Snelle links verwerken...</translation>
@@ -5977,6 +5988,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7257173066616499747">Wifi-netwerken</translation>
 <translation id="725758059478686223">Afdrukservice</translation>
 <translation id="7257666756905341374">Gegevens lezen die je kopieert en plakt</translation>
+<translation id="7258006747130724016">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, videocamera met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformaties</translation>
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>
@@ -6771,6 +6783,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8037117027592400564">Alle tekst lezen die wordt gesproken met gesynthetiseerde spraak</translation>
 <translation id="8037357227543935929">Vragen (standaard)</translation>
 <translation id="803771048473350947">Archief</translation>
+<translation id="8038399858950372766">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, toetsenbord met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8042142357103597104">Ondoorzichtigheid van tekst</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> reageert niet.</translation>
@@ -6911,6 +6924,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8168071266284693455">Je bookmarks, wachtwoorden, geschiedenis en meer zijn gesynchroniseerd op al je apparaten</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
+<translation id="8169849063724750395">Weer aanzetten</translation>
 <translation id="8171334254070436367">Alle kaarten verbergen</translation>
 <translation id="8174047975335711832">Apparaatgegevens</translation>
 <translation id="8174876712881364124">Een back-up maken in Google Drive. Gemakkelijk gegevens herstellen of op elk gewenst moment van apparaat wisselen. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
@@ -6984,6 +6998,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8249615410597138718">Verzenden naar je apparaten</translation>
 <translation id="8249672078237421304">Aanbieden om pagina's te vertalen die in een voor jou onbekende taal zijn</translation>
 <translation id="8251441930213048644">Nu vernieuwen</translation>
+<translation id="8251509999076836464">Koppelen met <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatuur verwijderd.</translation>
 <translation id="825238165904109940">Altijd volledige URL's bekijken</translation>
 <translation id="8252569384384439529">Uploaden...</translation>
@@ -7221,9 +7236,11 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8528074251912154910">Talen toevoegen</translation>
 <translation id="8528962588711550376">Inloggen.</translation>
 <translation id="8529925957403338845">Verbinding via instant-tethering mislukt</translation>
+<translation id="8531701051932785007">Uitgebreide versie van Safe Browsing staat uit</translation>
 <translation id="8534656636775144800">Er is een fout opgetreden bij het verbinden met het domein. Probeer het opnieuw.</translation>
 <translation id="8535005006684281994">URL voor verlengen van Netscape-certificaat</translation>
 <translation id="8536956381488731905">Geluid bij toetsaanslag</translation>
+<translation id="8538718737588735385">Weer aanzetten</translation>
 <translation id="8539727552378197395">Nee (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgraden</translation>
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>
