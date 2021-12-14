@@ -44,15 +44,23 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   DCHECK(!block.IsTableCell());
 
   const LayoutBlock* cb = block.ContainingBlock();
-  LayoutUnit available_logical_width =
-      LayoutBoxUtils::AvailableLogicalWidth(block, cb);
-  LayoutUnit available_logical_height =
-      LayoutBoxUtils::AvailableLogicalHeight(block, cb);
-  LogicalSize percentage_size = {available_logical_width,
-                                 available_logical_height};
-  LogicalSize available_size = percentage_size;
+  LogicalSize available_size;
+  bool is_fixed_inline_size = false;
+  bool is_fixed_block_size = false;
+  if (cb) {
+    available_size.inline_size =
+        LayoutBoxUtils::AvailableLogicalWidth(block, cb);
+    available_size.block_size =
+        LayoutBoxUtils::AvailableLogicalHeight(block, cb);
+  } else {
+    DCHECK(block.IsLayoutView());
+    available_size = To<LayoutView>(block).InitialContainingBlockSize();
+    is_fixed_inline_size = true;
+    is_fixed_block_size = true;
+  }
 
-  bool is_fixed_inline_size = false, is_fixed_block_size = false;
+  LogicalSize percentage_size = available_size;
+
   bool is_initial_block_size_definite = true;
   if (block.HasOverrideLogicalWidth()) {
     available_size.inline_size = block.OverrideLogicalWidth();

@@ -1357,6 +1357,9 @@
       status: "stable",
     },
     {
+      name: "LayoutNGView",
+    },
+    {
       name: "LazyFrameLoading",
       status: "stable",
     },

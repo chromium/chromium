@@ -20,7 +20,7 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 class CORE_EXPORT LayoutNGBlockFlow
     : public LayoutNGBlockFlowMixin<LayoutBlockFlow> {
  public:
-  explicit LayoutNGBlockFlow(Element*);
+  explicit LayoutNGBlockFlow(ContainerNode*);
   ~LayoutNGBlockFlow() override;
 
   void UpdateBlockLayout(bool relayout_children) override;

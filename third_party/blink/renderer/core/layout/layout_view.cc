@@ -98,9 +98,9 @@ class HitTestLatencyRecorder {
 
 }  // namespace
 
-LayoutView::LayoutView(Document* document)
+LayoutView::LayoutView(ContainerNode* document)
     : LayoutBlockFlow(document),
-      frame_view_(document->View()),
+      frame_view_(To<Document>(document)->View()),
       layout_state_(nullptr),
       compositor_(RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
                       ? nullptr
@@ -463,6 +463,11 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     transform_state.Move(OffsetForFixedPosition());
 }
 
+LogicalSize LayoutView::InitialContainingBlockSize() const {
+  return LogicalSize(LayoutUnit(ViewLogicalWidthForBoxSizing()),
+                     LayoutUnit(ViewLogicalHeightForBoxSizing()));
+}
+
 void LayoutView::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   ViewPainter(*this).Paint(paint_info);
@@ -606,11 +611,13 @@ void LayoutView::CommitPendingSelection() {
   frame_view_->GetFrame().Selection().CommitAppearanceIfNeeded();
 }
 
-bool LayoutView::ShouldUsePrintingLayout() const {
-  NOT_DESTROYED();
-  if (!GetDocument().Printing() || !frame_view_)
+bool LayoutView::ShouldUsePrintingLayout(const Document& document) {
+  if (!document.Printing())
     return false;
-  return frame_view_->GetFrame().ShouldUsePrintingLayout();
+  const LocalFrameView* frame_view = document.View();
+  if (!frame_view)
+    return false;
+  return frame_view->GetFrame().ShouldUsePrintingLayout();
 }
 
 PhysicalRect LayoutView::ViewRect() const {

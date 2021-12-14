@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_inner_editor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_multi_line.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -128,6 +129,18 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
     LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGBlockFlow,
                       LayoutDeprecatedFlexibleBox>(node, legacy);
+}
+
+LayoutView* LayoutObjectFactory::CreateView(Document& document,
+                                            const ComputedStyle& style) {
+  bool disable_ng_for_type =
+      !RuntimeEnabledFeatures::LayoutNGViewEnabled() ||
+      (LayoutView::ShouldUsePrintingLayout(document) &&
+       !RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
+
+  if (disable_ng_for_type)
+    return MakeGarbageCollected<LayoutView>(&document);
+  return MakeGarbageCollected<LayoutNGView>(&document);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,

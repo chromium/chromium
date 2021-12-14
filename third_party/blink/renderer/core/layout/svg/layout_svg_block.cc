@@ -34,11 +34,11 @@
 
 namespace blink {
 
-LayoutSVGBlock::LayoutSVGBlock(Element* element)
-    : LayoutBlockFlow(element),
+LayoutSVGBlock::LayoutSVGBlock(ContainerNode* node)
+    : LayoutBlockFlow(node),
       needs_transform_update_(true),
       transform_uses_reference_box_(false) {
-  DCHECK(IsA<SVGElement>(element));
+  DCHECK(IsA<SVGElement>(node));
 }
 
 SVGElement* LayoutSVGBlock::GetElement() const {

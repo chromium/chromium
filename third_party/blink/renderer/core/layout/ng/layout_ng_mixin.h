@@ -28,7 +28,7 @@ namespace blink {
 template <typename Base>
 class LayoutNGMixin : public Base {
  public:
-  explicit LayoutNGMixin(Element* element);
+  explicit LayoutNGMixin(ContainerNode*);
   ~LayoutNGMixin() override;
 
   void Paint(const PaintInfo&) const override;

@@ -61,9 +61,9 @@ class ViewFragmentationContext;
 // Because there is one LayoutView per rooted layout tree (or Frame), this class
 // is used to add members shared by this tree (e.g. m_layoutState or
 // m_layoutQuoteHead).
-class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
+class CORE_EXPORT LayoutView : public LayoutBlockFlow {
  public:
-  explicit LayoutView(Document*);
+  explicit LayoutView(ContainerNode* document);
   ~LayoutView() override;
   void Trace(Visitor*) const override;
 
@@ -321,7 +321,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   Vector<gfx::Rect> GetTickmarks() const;
   bool HasTickmarks() const;
 
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
 
   // The visible background area, in the local coordinates. The view background
   // will be painted in this rect. It's also the positioning area of fixed-
@@ -349,11 +349,17 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
                           TransformState&,
                           MapCoordinatesFlags) const override;
 
-  bool ShouldUsePrintingLayout() const;
+  static bool ShouldUsePrintingLayout(const Document&);
+  bool ShouldUsePrintingLayout() const {
+    NOT_DESTROYED();
+    return ShouldUsePrintingLayout(GetDocument());
+  }
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const override;
+
+  LogicalSize InitialContainingBlockSize() const;
 
  private:
   bool CanHaveChildren() const override;

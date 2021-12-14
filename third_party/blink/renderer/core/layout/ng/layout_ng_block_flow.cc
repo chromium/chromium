@@ -8,8 +8,8 @@
 
 namespace blink {
 
-LayoutNGBlockFlow::LayoutNGBlockFlow(Element* element)
-    : LayoutNGBlockFlowMixin<LayoutBlockFlow>(element) {}
+LayoutNGBlockFlow::LayoutNGBlockFlow(ContainerNode* node)
+    : LayoutNGBlockFlowMixin<LayoutBlockFlow>(node) {}
 
 LayoutNGBlockFlow::~LayoutNGBlockFlow() = default;
 

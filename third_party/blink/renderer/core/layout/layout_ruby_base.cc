@@ -35,8 +35,8 @@
 
 namespace blink {
 
-LayoutRubyBase::LayoutRubyBase(Element* element) : LayoutBlockFlow(nullptr) {
-  DCHECK(!element);
+LayoutRubyBase::LayoutRubyBase(ContainerNode* node) : LayoutBlockFlow(nullptr) {
+  DCHECK(!node);
   SetInline(false);
 }
 

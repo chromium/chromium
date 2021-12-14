@@ -37,8 +37,8 @@
 namespace blink {
 
 template <typename Base>
-LayoutNGBlockFlowMixin<Base>::LayoutNGBlockFlowMixin(Element* element)
-    : LayoutNGMixin<Base>(element) {
+LayoutNGBlockFlowMixin<Base>::LayoutNGBlockFlowMixin(ContainerNode* node)
+    : LayoutNGMixin<Base>(node) {
   static_assert(std::is_base_of<LayoutBlockFlow, Base>::value,
                 "Base class of LayoutNGBlockFlowMixin must be LayoutBlockFlow "
                 "or derived class.");
@@ -256,5 +256,6 @@ template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyText>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutTableCaption>;
+template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutView>;
 
 }  // namespace blink

@@ -118,8 +118,8 @@ void LayoutRubyAsInline::RemoveChild(LayoutObject* child) {
 
 // === ruby as block object ===
 
-LayoutRubyAsBlock::LayoutRubyAsBlock(Element* element)
-    : LayoutBlockFlow(element) {
+LayoutRubyAsBlock::LayoutRubyAsBlock(ContainerNode* node)
+    : LayoutBlockFlow(node) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 

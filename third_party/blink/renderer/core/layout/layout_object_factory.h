@@ -13,6 +13,7 @@ namespace blink {
 
 class ComputedStyle;
 class CounterContentData;
+class Document;
 class HTMLElement;
 class LayoutBlock;
 class LayoutBlockFlow;
@@ -24,6 +25,7 @@ class LayoutRubyAsBlock;
 class LayoutTableCaption;
 class LayoutText;
 class LayoutTextFragment;
+class LayoutView;
 class Node;
 class PseudoElement;
 
@@ -45,6 +47,7 @@ class LayoutObjectFactory {
   static LayoutBlock* CreateBlockForLineClamp(Node& node,
                                               const ComputedStyle& style,
                                               LegacyLayout legacy);
+  static LayoutView* CreateView(Document&, const ComputedStyle&);
   static LayoutBlock* CreateFlexibleBox(Node&,
                                         const ComputedStyle&,
                                         LegacyLayout);

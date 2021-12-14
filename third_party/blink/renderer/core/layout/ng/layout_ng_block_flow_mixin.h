@@ -37,7 +37,7 @@ struct NGInlineNodeData;
 template <typename Base>
 class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  public:
-  explicit LayoutNGBlockFlowMixin(Element* element);
+  explicit LayoutNGBlockFlowMixin(ContainerNode*);
   ~LayoutNGBlockFlowMixin() override;
 
   NGInlineNodeData* TakeNGInlineNodeData() final;
