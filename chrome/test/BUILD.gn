@@ -1691,7 +1691,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/optimization_guide/browser_test_util.h",
       "../browser/optimization_guide/hints_fetcher_browsertest.cc",
       "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
-      "../browser/optimization_guide/page_content_annotations_service_browsertest.cc",
       "../browser/optimization_guide/page_text_observer_browsertest.cc",
       "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_browsertest.cc",
@@ -2119,6 +2118,13 @@ if (!is_android && !is_fuchsia) {
       "ppapi/ppapi_filechooser_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    # crbug.com/1279884 Flaky on CrOS
+    if (!is_chromeos) {
+      sources += [
+          "../browser/optimization_guide/page_content_annotations_service_browsertest.cc"
+      ]
+    }
 
     if (enable_reporting) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
