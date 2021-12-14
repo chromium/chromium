@@ -56,9 +56,6 @@ class CastRuntimeService
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller);
 
-  // Returns current instance of CastRuntimeService in the browser process.
-  static CastRuntimeService* GetInstance();
-
   CastRuntimeService();
   ~CastRuntimeService() override;
 

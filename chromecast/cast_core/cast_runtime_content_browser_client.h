@@ -9,6 +9,7 @@
 
 namespace chromecast {
 
+class CastRuntimeService;
 class CastFeatureListCreator;
 
 class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
@@ -49,6 +50,10 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
  private:
   std::unique_ptr<blink::URLLoaderThrottle> CreateUrlRewriteRulesThrottle(
       content::WebContents* web_contents);
+
+  // An instance of |CastRuntimeService| created once during the lifetime of the
+  // runtime.
+  CastRuntimeService* cast_runtime_service_ = nullptr;
 };
 
 }  // namespace chromecast

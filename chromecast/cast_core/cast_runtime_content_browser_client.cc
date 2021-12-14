@@ -34,15 +34,18 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     CastWebService* web_service,
     DisplaySettingsManager* display_settings_manager,
     shell::AccessibilityServiceImpl* accessibility_service) {
+  DCHECK(!cast_runtime_service_);
   auto network_context_getter = base::BindRepeating(
       [](CastRuntimeContentBrowserClient* client)
           -> network::mojom::NetworkContext* {
         return client->GetSystemNetworkContext();
       },
       this);
-  return CastRuntimeService::Create(
+  auto cast_runtime_service = CastRuntimeService::Create(
       GetMediaTaskRunner(), web_service, media_pipeline_backend_manager(),
       std::move(network_context_getter), pref_service, video_plane_controller);
+  cast_runtime_service_ = cast_runtime_service.get();
+  return cast_runtime_service;
 }
 
 void CastRuntimeContentBrowserClient::OverrideWebkitPrefs(
@@ -105,8 +108,9 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
 std::unique_ptr<blink::URLLoaderThrottle>
 CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
     content::WebContents* web_contents) {
-  RuntimeApplication* app =
-      CastRuntimeService::GetInstance()->GetRuntimeApplication();
+  DCHECK(cast_runtime_service_);
+
+  RuntimeApplication* app = cast_runtime_service_->GetRuntimeApplication();
   DCHECK(app);
 
   url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager =

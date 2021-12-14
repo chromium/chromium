@@ -17,14 +17,6 @@ const char kRuntimeServicePathSwitch[] = "runtime-service-path";
 
 }  // namespace
 
-// static
-CastRuntimeService* CastRuntimeService::GetInstance() {
-  DCHECK(shell::CastBrowserProcess::GetInstance());
-  auto* cast_service = shell::CastBrowserProcess::GetInstance()->cast_service();
-  DCHECK(cast_service);
-  return static_cast<CastRuntimeService*>(cast_service);
-}
-
 CastRuntimeServiceImpl::CastRuntimeServiceImpl(
     CastWebService* web_service,
     NetworkContextGetter network_context_getter)

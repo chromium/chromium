@@ -20,11 +20,4 @@ std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
   return std::make_unique<CastRuntimeService>();
 }
 
-CastRuntimeService* CastRuntimeService::GetInstance() {
-  // TODO(b/186668532): Instead use the CastService singleton instead of
-  // creating a new one with NoDestructor.
-  static base::NoDestructor<CastRuntimeService> g_instance;
-  return g_instance.get();
-}
-
 }  // namespace chromecast
