@@ -9,10 +9,6 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
 
-// TODO(crbug.com/1279452): This really shouldn't be here, but removing it means
-// adding it to 20-30 files. Do as a followup CL.
-#include "url/gurl.h"
-
 @class CrURL;
 @class TableViewLinkHeaderFooterView;
 
