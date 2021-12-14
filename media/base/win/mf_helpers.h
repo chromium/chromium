@@ -10,7 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
-#include "media/base/win/mf_initializer_export.h"
+#include "media/base/win/mf_util_export.h"
 
 struct ID3D11DeviceChild;
 struct ID3D11Device;
@@ -53,12 +53,13 @@ const auto PrintHr = logging::SystemErrorCodeToString;
 
 // Creates a Media Foundation sample with one buffer of length |buffer_length|
 // on a |align|-byte boundary. Alignment must be a perfect power of 2 or 0.
-MF_INITIALIZER_EXPORT Microsoft::WRL::ComPtr<IMFSample>
-CreateEmptySampleWithBuffer(uint32_t buffer_length, int align);
+MF_UTIL_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
+    uint32_t buffer_length,
+    int align);
 
 // Provides scoped access to the underlying buffer in an IMFMediaBuffer
 // instance.
-class MF_INITIALIZER_EXPORT MediaBufferScopedPointer {
+class MF_UTIL_EXPORT MediaBufferScopedPointer {
  public:
   explicit MediaBufferScopedPointer(IMFMediaBuffer* media_buffer);
 
@@ -79,17 +80,17 @@ class MF_INITIALIZER_EXPORT MediaBufferScopedPointer {
 };
 
 // Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().
-MF_INITIALIZER_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
-                                                      LPWSTR* out_string);
+MF_UTIL_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
+                                               LPWSTR* out_string);
 
 // Set the debug name of a D3D11 resource for use with ETW debugging tools.
 // D3D11 retains the string passed to this function.
-MF_INITIALIZER_EXPORT HRESULT
-SetDebugName(ID3D11DeviceChild* d3d11_device_child, const char* debug_string);
-MF_INITIALIZER_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
-                                           const char* debug_string);
-MF_INITIALIZER_EXPORT HRESULT SetDebugName(IDXGIObject* dxgi_object,
-                                           const char* debug_string);
+MF_UTIL_EXPORT HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
+                                    const char* debug_string);
+MF_UTIL_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
+                                    const char* debug_string);
+MF_UTIL_EXPORT HRESULT SetDebugName(IDXGIObject* dxgi_object,
+                                    const char* debug_string);
 
 }  // namespace media
 

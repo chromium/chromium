@@ -11,12 +11,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "media/base/win/mf_initializer_export.h"
+#include "media/base/win/mf_util_export.h"
 
 namespace media {
 
 // Wrap around the usage of device handle from |device_manager|.
-class MF_INITIALIZER_EXPORT DXGIDeviceScopedHandle {
+class MF_UTIL_EXPORT DXGIDeviceScopedHandle {
  public:
   explicit DXGIDeviceScopedHandle(IMFDXGIDeviceManager* device_manager);
   DXGIDeviceScopedHandle(const DXGIDeviceScopedHandle&) = delete;
@@ -32,7 +32,7 @@ class MF_INITIALIZER_EXPORT DXGIDeviceScopedHandle {
   HANDLE device_handle_ = INVALID_HANDLE_VALUE;
 };
 
-class MF_INITIALIZER_EXPORT DXGIDeviceManager
+class MF_UTIL_EXPORT DXGIDeviceManager
     : public base::RefCountedThreadSafe<DXGIDeviceManager> {
  public:
   DXGIDeviceManager(const DXGIDeviceManager&) = delete;

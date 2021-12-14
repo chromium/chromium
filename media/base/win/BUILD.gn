@@ -14,7 +14,7 @@ config("delay_load_mf") {
 }
 
 component("media_foundation_util") {
-  defines = [ "MF_INITIALIZER_IMPLEMENTATION" ]
+  defines = [ "IS_MF_UTIL_IMPL" ]
   sources = [
     "dxgi_device_manager.cc",
     "dxgi_device_manager.h",
@@ -22,7 +22,7 @@ component("media_foundation_util") {
     "mf_helpers.h",
     "mf_initializer.cc",
     "mf_initializer.h",
-    "mf_initializer_export.h",
+    "mf_util_export.h",
   ]
   configs += [ "//media:media_config" ]
   deps = [
