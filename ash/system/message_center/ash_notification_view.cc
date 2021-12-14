@@ -983,7 +983,8 @@ void AshNotificationView::UpdateAppIconView() {
 
   // Grouped child notification use notification's icon for the app icon view,
   // so we don't need further update here.
-  if (is_grouped_child_view_ && !notification->icon().IsEmpty())
+  if (!notification ||
+      (is_grouped_child_view_ && !notification->icon().IsEmpty()))
     return;
 
   SkColor accent_color = notification->accent_color().value_or(
