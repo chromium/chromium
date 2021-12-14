@@ -2657,7 +2657,6 @@
 <translation id="3732078975418297900">စာကြောင်း <ph name="ERROR_LINE" /> တွင် အမှားအယွင်း ရှိနေသည်</translation>
 <translation id="3732530910372558017">ပင်နံပါတ်သည် အများဆုံးအက္ခရာ ၆၃ လုံး ရှိရမည်</translation>
 <translation id="3732857534841813090">Google Assistant နှင့် ဆက်စပ်သော အချက်အလက်များ</translation>
-<translation id="3733127536501031542">အဆင့်တက်ခြင်းဖြင့် SSL ဆာဗာ</translation>
 <translation id="3733296813637058299">သင့်အတွက် ထိုအက်ပ်များကို ထည့်သွင်းပေးပါမည်။ Play Store တွင် သင့် <ph name="DEVICE_TYPE" /> အတွက် နောက်ထပ်အက်ပ်များကို ရှာဖွေနိုင်သည်။</translation>
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ဒေတာကို ၂၄ နာရီအတွင်း ဖျက်ပါမည်</translation>
@@ -2999,7 +2998,6 @@
 <translation id="4068776064906523561">သိမ်းဆည်းထားသည့် လက်ဗွေများ</translation>
 <translation id="407173827865827707">ကလစ်နှိပ်လျှင်</translation>
 <translation id="4072701974556190758">သင့် Google Account <ph name="ACCOUNT" /> တွင်စကားဝှက် သိမ်းပါမည်။ သင်မှတ်ထားစရာ မလိုပါ။</translation>
-<translation id="4074900173531346617">အီးမေးလ် လက်မှတ်ထိုးသူ အသိမှတ်ပြုလက်မှတ်</translation>
 <translation id="407520071244661467">အတိုင်းအတာ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ၏ ပရိုဖိုင်ကို <ph name="EMAIL" /> နှင့် လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> ကို ကာစ်လုပ်၍မရပါ။</translation>
@@ -4306,7 +4304,6 @@
 <translation id="5517304475148761050">ဤအက်ပ်က 'Play စတိုး' သို့ ဝင်သုံးခွင့် လိုအပ်သည်</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ဝဘ်ဆိုက်က ကြည့်လိုသည့်အခါ မေးမြန်းပါ</translation>
-<translation id="5518584115117143805">လျှို့ဝှက်ကုဒ်သွင်း လက်မှတ် အီးမေးလ် လုပ်ရန်</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">သင် စောင့်နေခဲ့သည်မှာ ဒီပင်မ စာမျက်နှာလား?</translation>
 <translation id="5522156646677899028">ဒီတိုးချဲ့မှု ထဲတွင် လေးနက်သည့် လုံခြုံရေး ထိပျက်လွယ်မှု တစ်ခု ပါရှိသည်။</translation>
@@ -6139,7 +6136,6 @@
 <translation id="7506242536428928412">သင်၏လုံခြုံရေးကီးအသစ် အသုံးပြုရန် ပင်နံပါတ်အသစ် သတ်မှတ်ပါ</translation>
 <translation id="7506541170099744506">သင့် <ph name="DEVICE_TYPE" /> ကို လုပ်ငန်းစီမံခန့်ခွဲမှုအတွက် အောင်မြင်စွာ လျှောက်ထားပြီးပါပြီ။</translation>
 <translation id="7507207699631365376">ဤဝန်ဆောင်မှုပေးသူ၏ <ph name="BEGIN_LINK" />ပုဂ္ဂိုလ်ရေးဆိုင်ရာ မူဝါဒ<ph name="END_LINK" /> ကို ကြည့်ရန်</translation>
-<translation id="7507930499305566459">အခြေနေ တုံ့ပြန်သူ အသိမှတ်ပြုလက်မှတ်</translation>
 <translation id="7509097596023256288">စီမံခန့်ခွဲမှုကို စနစ်ထည့်သွင်းနေသည်</translation>
 <translation id="7509246181739783082">သင်၏အထောက်အထားကို အတည်ပြုပါ</translation>
 <translation id="7509539379068593709">အက်ပ်ကို ဖယ်ရှားရန်</translation>
@@ -7377,7 +7373,6 @@
 <translation id="8778328560035799409">လက်ရှိသတ်မှတ်ထားသော အသွင်တူခလုတ်များကို ဖယ်ရှားလိုက်ပါမည်</translation>
 <translation id="8780123805589053431">Google မှ ပုံအကြောင်းအရာများ ရယူရန်</translation>
 <translation id="8780443667474968681">အသံဖြင့် ရှာဖွေခြင်းကို ပိတ်ထားသည်။</translation>
-<translation id="878069093594050299">ဒီလက်မှတ်ကို အောက်ပါ သုံးစွဲမှုများအတွက် စိစစ်ပေးထားသည်:</translation>
 <translation id="8781834595282316166">အုပ်စုတွင် တဘ်အသစ်ထည့်ခြင်း</translation>
 <translation id="8782565991310229362">Kiosk အပလီကေးရှင်း စတင်မှု ပယ်ဖျက်လိုက်ပါသည်။</translation>
 <translation id="8783834180813871000">ဘလူးတုသ် တွဲချိတ်ရန်ကုဒ်ကို ထည့်ပြီး Return သို့မဟုတ် Enter ကို နှိပ်ပါ။</translation>
