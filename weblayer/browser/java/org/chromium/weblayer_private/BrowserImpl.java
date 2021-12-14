@@ -208,7 +208,8 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
                     BrowserImplJni.get().getBrowserPersisterCryptoKey(mNativeBrowser));
         } else if (!hasPersistenceId) {
             outState.putByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY,
-                    BrowserImplJni.get().getMinimalPersistenceState(mNativeBrowser));
+                    BrowserImplJni.get().getMinimalPersistenceState(mNativeBrowser,
+                            WebLayerImpl.getMaxNavigationsPerTabForInstanceState()));
         }
 
         if (mWindowAndroid != null) {
@@ -716,7 +717,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         String getPersistenceId(long nativeBrowserImpl);
         void saveBrowserPersisterIfNecessary(long nativeBrowserImpl);
         byte[] getBrowserPersisterCryptoKey(long nativeBrowserImpl);
-        byte[] getMinimalPersistenceState(long nativeBrowserImpl);
+        byte[] getMinimalPersistenceState(long nativeBrowserImpl, int maxNavigationsPerTab);
         void restoreStateIfNecessary(long nativeBrowserImpl, String persistenceId,
                 byte[] persistenceCryptoKey, byte[] minimalPersistenceState);
         void webPreferencesChanged(long nativeBrowserImpl);

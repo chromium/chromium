@@ -77,7 +77,8 @@ class BrowserImpl : public Browser {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBrowserPersisterCryptoKey(
       JNIEnv* env);
   base::android::ScopedJavaLocalRef<jbyteArray> GetMinimalPersistenceState(
-      JNIEnv* env);
+      JNIEnv* env,
+      int max_navigations_per_tab);
   void RestoreStateIfNecessary(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_persistence_id,
@@ -96,7 +97,8 @@ class BrowserImpl : public Browser {
 #endif
 
   // Used in tests to specify a non-default max (0 means use the default).
-  std::vector<uint8_t> GetMinimalPersistenceState(int max_size_in_bytes);
+  std::vector<uint8_t> GetMinimalPersistenceState(int max_navigations_per_tab,
+                                                  int max_size_in_bytes);
 
   // Used by tests to specify a callback to listen to changes to visible
   // security state.

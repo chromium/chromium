@@ -826,6 +826,11 @@ public class WebLayer {
             // The id is part of the public library to avoid conflicts.
             return R.id.weblayer_remote_playback_api_notification;
         }
+
+        @Override
+        public int getMaxNavigationsPerTabForInstanceState() {
+            return Browser.getMaxNavigationsPerTabForInstanceState();
+        }
     }
 
     /** Utility class to use new APIs that were added in O (API level 26). */

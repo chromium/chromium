@@ -48,10 +48,12 @@ class MinimalBrowserPersisterTest : public WebLayerBrowserTest {
   // Persists the current state, then recreates the browser. See
   // BrowserImpl::GetMinimalPersistenceState() for details on
   // |max_size_in_bytes|, 0 means use the default value.
-  void RecreateBrowserFromCurrentState(int max_size_in_bytes = 0) {
+  void RecreateBrowserFromCurrentState(
+      int max_number_of_navigations_per_tab = 0,
+      int max_size_in_bytes = 0) {
     Browser::PersistenceInfo persistence_info;
-    persistence_info.minimal_state =
-        browser_impl()->GetMinimalPersistenceState(max_size_in_bytes);
+    persistence_info.minimal_state = browser_impl()->GetMinimalPersistenceState(
+        max_number_of_navigations_per_tab, max_size_in_bytes);
     tab_ = nullptr;
     browser_ = Browser::Create(GetProfile(), &persistence_info);
     // There is always at least one tab created (even if restore fails).
@@ -144,6 +146,33 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, TwoNavs) {
   EXPECT_EQ(url2(), nav_controller.GetEntryAtIndex(1)->GetURL());
 }
 
+IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, NavigationOverflow) {
+  NavigateAndWaitForCompletion(url1(), tab_);
+  NavigateAndWaitForCompletion(url2(), tab_);
+  const GURL url3 = embedded_test_server()->GetURL("/simple_page3.html");
+  NavigateAndWaitForCompletion(url3, tab_);
+  const GURL url4 = embedded_test_server()->GetURL("/simple_page4.html");
+  NavigateAndWaitForCompletion(url4, tab_);
+
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState(3));
+
+  // As a max of 3 navigations was specified, only the last three navigations
+  // should be restored.
+  TabImpl* restored_tab = tab_;
+  EXPECT_EQ(restored_tab, browser_->GetActiveTab());
+  TestNavigationObserver observer(
+      url4, TestNavigationObserver::NavigationEvent::kCompletion, restored_tab);
+  observer.Wait();
+  ASSERT_EQ(3,
+            restored_tab->GetNavigationController()->GetNavigationListSize());
+  content::NavigationController& nav_controller =
+      restored_tab->web_contents()->GetController();
+  EXPECT_EQ(2, nav_controller.GetCurrentEntryIndex());
+  EXPECT_EQ(url2(), nav_controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(url3, nav_controller.GetEntryAtIndex(1)->GetURL());
+  EXPECT_EQ(url4, nav_controller.GetEntryAtIndex(2)->GetURL());
+}
+
 // crbug.com/1240904: test is flaky on linux and win.
 #if defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_Overflow DISABLED_Overflow
@@ -156,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
   url_string.replace(0, data.size(), data);
   NavigateAndWaitForCompletion(GURL(url_string), tab_);
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState(2048));
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState(0, 2048));
 
   TabImpl* restored_tab = tab_;
   EXPECT_EQ(restored_tab, browser_->GetActiveTab());

@@ -137,6 +137,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     // //build/android/gyp/util/protoresources.py and WebViewChromiumFactoryProvider.java.
     private static final int REQUIRED_PACKAGE_IDENTIFIER = 36;
 
+    // 0 results in using the default value.
+    private static int sMaxNavigationsForInstanceState = 0;
+
     private final ProfileManager mProfileManager = new ProfileManager();
 
     private boolean mInited;
@@ -544,6 +547,16 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Override
     public IObjectWrapper getApplicationContext() {
         return ObjectWrapper.wrap(ContextUtils.getApplicationContext());
+    }
+
+    public static int getMaxNavigationsPerTabForInstanceState() {
+        try {
+            return (WebLayerFactoryImpl.getClientMajorVersion() >= 97)
+                    ? sClient.getMaxNavigationsPerTabForInstanceState()
+                    : 0;
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
     public static Intent createIntent() {
