@@ -181,7 +181,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       ukm_source_id(ukm_source_id) {
   web_request_type = ToWebRequestResourceType(request, is_download);
 
-  DCHECK_EQ(is_navigation_request, navigation_id.has_value());
+  DCHECK_EQ(is_navigation_request, this->navigation_id.has_value());
 
   InitializeWebViewAndFrameData(navigation_ui_data.get());
 
