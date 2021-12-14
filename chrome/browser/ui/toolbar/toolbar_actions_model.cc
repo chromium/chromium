@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -226,9 +227,10 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
   return controller;
 }
 
-const std::string& ToolbarActionsModel::GetExtensionName(
+const std::u16string ToolbarActionsModel::GetExtensionName(
     const ActionId& action_id) const {
-  return extension_registry_->enabled_extensions().GetByID(action_id)->name();
+  return base::UTF8ToUTF16(
+      extension_registry_->enabled_extensions().GetByID(action_id)->name());
 }
 
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {

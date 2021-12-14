@@ -100,6 +100,10 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   void ClickPinButton(ExtensionsMenuItemView* installed_item);
   void ClickContextMenuButton(ExtensionsMenuItemView* installed_item);
 
+  void LayoutMenuIfNecessary() {
+    extensions_tabbed_menu()->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -395,6 +399,44 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(browser3.extensions_container()->IsActionVisibleOnToolbar(
       installed_item->view_controller()));
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       InstalledTab_AddAndRemoveExtensionWhenMenuIsOpen) {
+  constexpr char kExtensionA[] = "A Extension";
+  constexpr char kExtensionC[] = "C Extension";
+  InstallExtension(kExtensionA);
+  InstallExtension(kExtensionC);
+
+  ShowTabbedMenu();
+
+  // Verify the order of the extensions is A,C.
+  std::vector<ExtensionsMenuItemView*> items = installed_items();
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_THAT(GetNamesFromInstalledItems(items),
+              testing::ElementsAre(kExtensionA, kExtensionC));
+
+  // Add a new extension while the menu is open.
+  constexpr char kExtensionB[] = "B Extension";
+  auto extensionB = InstallExtension(kExtensionB);
+  LayoutMenuIfNecessary();
+
+  // Extension should be added in the correct place.
+  // Verify the new order is A,B,C.
+  items = installed_items();
+  ASSERT_EQ(items.size(), 3u);
+  EXPECT_THAT(GetNamesFromInstalledItems(items),
+              testing::ElementsAre(kExtensionA, kExtensionB, kExtensionC));
+
+  // Remove a extension while the menu is open
+  UninstallExtension(extensionB->id());
+  LayoutMenuIfNecessary();
+
+  // Verify the new order is A,C.
+  items = installed_items();
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_THAT(GetNamesFromInstalledItems(items),
+              testing::ElementsAre(kExtensionA, kExtensionC));
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {

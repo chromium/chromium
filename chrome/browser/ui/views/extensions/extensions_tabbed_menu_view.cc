@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 
+#include <algorithm>
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -56,6 +59,29 @@ ExtensionsMenuItemView* GetAsMenuItemView(views::View* view) {
   return static_cast<ExtensionsMenuItemView*>(view);
 }
 
+// Returns the current index or insert position of `extension_name` in
+// `parent_view`, based on alphabetical order.
+int FindIndex(const std::u16string extension_name, views::View* parent_view) {
+  const auto& children = parent_view->children();
+  return std::find_if(children.begin(), children.end(),
+                      [extension_name](views::View* v) {
+                        return base::i18n::ToLower(extension_name) <=
+                               base::i18n::ToLower(GetAsMenuItemView(v)
+                                                       ->view_controller()
+                                                       ->GetActionName());
+                      }) -
+         children.begin();
+}
+
+// Updates the `item_view` state and its position under `parent_view`.
+void UpdateMenuItemView(ExtensionsMenuItemView* item_view,
+                        views::View* parent_view) {
+  item_view->view_controller()->UpdateState();
+  int new_index =
+      FindIndex(item_view->view_controller()->GetActionName(), parent_view);
+  parent_view->ReorderChildView(item_view, new_index);
+}
+
 }  // namespace
 
 ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
@@ -75,6 +101,7 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
   // appropriately.
   SetPaintClientToLayer(true);
 
+  toolbar_model_observation_.Observe(toolbar_model_.get());
   set_margins(gfx::Insets(0));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -92,7 +119,11 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  Populate(button_type);
+  Populate();
+
+  // Tabs left to right order is 'site access tab' | 'extensions tab'.
+  tabbed_pane_->SelectTabAt(button_type ==
+                            ExtensionsToolbarButton::ButtonType::kExtensions);
 }
 
 ExtensionsTabbedMenuView::~ExtensionsTabbedMenuView() {
@@ -156,8 +187,51 @@ std::u16string ExtensionsTabbedMenuView::GetAccessibleWindowTitle() const {
   return std::u16string();
 }
 
-void ExtensionsTabbedMenuView::Populate(
-    ExtensionsToolbarButton::ButtonType button_type) {
+void ExtensionsTabbedMenuView::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  auto extension_name = toolbar_model_->GetExtensionName(action_id);
+  auto index = FindIndex(extension_name, installed_items_);
+  CreateAndInsertInstalledExtension(action_id, index);
+
+  ConsistencyCheck();
+}
+
+void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (views::View* view : installed_items_->children()) {
+    if (GetAsMenuItemView(view)->view_controller()->GetId() == action_id) {
+      installed_items_->RemoveChildViewT(view);
+      break;
+    }
+  }
+
+  ConsistencyCheck();
+}
+
+void ExtensionsTabbedMenuView::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (views::View* view : installed_items_->children()) {
+    auto* item_view = GetAsMenuItemView(view);
+    if (item_view->view_controller()->GetId() == action_id) {
+      UpdateMenuItemView(item_view, installed_items_);
+      break;
+    }
+  }
+
+  ConsistencyCheck();
+}
+
+void ExtensionsTabbedMenuView::OnToolbarModelInitialized() {
+  DCHECK(installed_items_->children().empty());
+  Populate();
+}
+
+void ExtensionsTabbedMenuView::OnToolbarPinnedActionsChanged() {
+  for (views::View* view : installed_items_->children())
+    GetAsMenuItemView(view)->UpdatePinButton();
+}
+
+void ExtensionsTabbedMenuView::Populate() {
   // The actions for the profile haven't been initialized yet. We'll call in
   // again once they have.
   if (!toolbar_model_->actions_initialized())
@@ -182,10 +256,8 @@ void ExtensionsTabbedMenuView::Populate(
   // Sort action ids based on their extension name.
   auto sort_by_name = [this](const ToolbarActionsModel::ActionId a,
                              const ToolbarActionsModel::ActionId b) {
-    return base::i18n::ToLower(
-               base::UTF8ToUTF16(toolbar_model_->GetExtensionName(a))) <
-           base::i18n::ToLower(
-               base::UTF8ToUTF16(toolbar_model_->GetExtensionName(b)));
+    return base::i18n::ToLower(toolbar_model_->GetExtensionName(a)) <
+           base::i18n::ToLower(toolbar_model_->GetExtensionName(b));
   };
   std::vector<std::string> sorted_ids(toolbar_model_->action_ids().begin(),
                                       toolbar_model_->action_ids().end());
@@ -193,10 +265,7 @@ void ExtensionsTabbedMenuView::Populate(
 
   for (size_t i = 0; i < sorted_ids.size(); ++i)
     CreateAndInsertInstalledExtension(sorted_ids[i], i);
-
-  // Tabs left to right order is 'site access tab' | 'extensions tab'.
-  tabbed_pane_->SelectTabAt(button_type ==
-                            ExtensionsToolbarButton::ButtonType::kExtensions);
+  ConsistencyCheck();
 }
 
 void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
@@ -209,6 +278,28 @@ void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
       ExtensionsMenuItemView::MenuItemType::kExtensions, browser_,
       std::move(controller), allow_pinning_);
   installed_items_->AddChildViewAt(std::move(item), index);
+}
+
+void ExtensionsTabbedMenuView::ConsistencyCheck() {
+#if DCHECK_IS_ON()
+  const base::flat_set<std::string>& action_ids = toolbar_model_->action_ids();
+
+  // Check that all items are owned by the view hierarchy, and that each
+  // corresponds to an item in the model.
+  std::vector<std::u16string> installed_items_names;
+  for (views::View* view : installed_items_->children()) {
+    DCHECK(Contains(view));
+    auto* installed_item_view = GetAsMenuItemView(view);
+    DCHECK(base::Contains(action_ids,
+                          installed_item_view->view_controller()->GetId()));
+    installed_items_names.push_back(base::i18n::ToLower(
+        installed_item_view->view_controller()->GetActionName()));
+  }
+
+  // Verify that all installed extensions are properly sorted.
+  DCHECK(std::is_sorted(installed_items_names.begin(),
+                        installed_items_names.end()));
+#endif
 }
 
 BEGIN_METADATA(ExtensionsTabbedMenuView, views::BubbleDialogDelegateView)

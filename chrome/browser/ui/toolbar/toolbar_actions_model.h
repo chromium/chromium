@@ -113,7 +113,7 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   GetExtensionMessageBubbleController(Browser* browser);
 
   // Returns the extension name corresponding to the `action_id`.
-  const std::string& GetExtensionName(const ActionId& action_id) const;
+  const std::u16string GetExtensionName(const ActionId& action_id) const;
 
   // Returns true if the action is pinned to the toolbar.
   bool IsActionPinned(const ActionId& action_id) const;
