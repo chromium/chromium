@@ -83,6 +83,7 @@ using ErrorCheckCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidStartPrintingCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
+using OnStopCallback = base::RepeatingCallback<void()>;
 
 // Overriding callbacks for `TestPrintJobWorker` is broken into the following
 // steps:
@@ -98,6 +99,11 @@ using OnDidStartPrintingCallback =
 struct TestPrintCallbacks {
   ErrorCheckCallback error_check_callback;
   OnDidStartPrintingCallback did_start_printing_callback;
+
+  // The exception to callback steps is `did_stop_callback`, as there is no
+  // result code provided to it and thus no need to call
+  // ``error_check_callback`.
+  OnStopCallback did_stop_callback;
 };
 
 namespace {
@@ -1687,6 +1693,12 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
     callbacks_->did_start_printing_callback.Run(result);
   }
 
+  void Stop() override {
+    DVLOG(1) << "Observed: stop print job worker";
+    PrintJobWorkerOop::Stop();
+    callbacks_->did_stop_callback.Run();
+  }
+
   raw_ptr<TestPrintCallbacks> callbacks_;
 };
 
@@ -1712,6 +1724,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       test_print_callbacks_.did_start_printing_callback = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidStartPrinting,
           base::Unretained(this));
+      test_print_callbacks_.did_stop_callback = base::BindRepeating(
+          &PrintBackendPrintBrowserTestBase::OnDidStop, base::Unretained(this));
       test_create_print_job_worker_callback_ = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::CreatePrintJobWorker,
           base::Unretained(this));
@@ -1804,6 +1818,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     return start_printing_result_;
   }
 
+  bool stop_invoked() const { return stop_invoked_; }
+
  private:
   class PrintBackendPrintingContextFactoryForTest
       : public PrintingContextFactoryForTest {
@@ -1858,6 +1874,11 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     CheckForQuit();
   }
 
+  void OnDidStop() {
+    stop_invoked_ = true;
+    CheckForQuit();
+  }
+
   void ResetForNoAccessDeniedErrors() {
     test_printing_context_factory_.SetAccessDeniedErrorOnNewDocument(
         /*cause_errors=*/false);
@@ -1872,6 +1893,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
   mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
+  bool stop_invoked_ = false;
 };
 
 class PrintBackendPrintBrowserTestService
@@ -1943,9 +1965,15 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
+  // The test will succeed to start printing.  Wait for a call to `Stop()` to
+  // ensure print job wrap-up finished cleanly before completing the test.
+  // This results in a total of 2 expected calls.
+  SetNumExpectedMessages(/*num=*/2);
+
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(stop_invoked());
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
@@ -1964,12 +1992,15 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   SetUpPrintViewManager(web_contents);
 
   // The test will retry to print after getting an access-denied error when
-  // trying to start printing, resulting in 2 calls.
-  SetNumExpectedMessages(/*num=*/2);
+  // trying to start printing.  Wait for a call to `Stop()` to ensure print job
+  // wrap-up finished cleanly before completing the test.  This results in a
+  // total of 3 expected calls.
+  SetNumExpectedMessages(/*num=*/3);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(stop_invoked());
 }
 #endif  // !defined(OS_CHROMEOS)
 

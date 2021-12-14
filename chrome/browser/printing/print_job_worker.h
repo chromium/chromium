@@ -99,7 +99,8 @@ class PrintJobWorker {
   void StopSoon();
 
   // Signals the thread to exit and returns once the thread has exited.
-  void Stop();
+  // Virtual to support testing.
+  virtual void Stop();
 
   // Starts the thread.
   bool Start();
