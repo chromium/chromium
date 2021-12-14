@@ -25,8 +25,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_custom_extension_provider.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
+#include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
