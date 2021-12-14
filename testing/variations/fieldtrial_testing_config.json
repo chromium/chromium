@@ -556,21 +556,6 @@
             ]
         }
     ],
-    "AndroidMessagesPopupBlocked": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagesForAndroidPopupBlocked"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesSaveCard": [
         {
             "platforms": [

@@ -35,7 +35,7 @@ const base::Feature kMessagesForAndroidPermissionUpdate{
     "MessagesForAndroidPermissionUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPopupBlocked{
-    "MessagesForAndroidPopupBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidPopupBlocked", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidReaderMode{
     "MessagesForAndroidReaderMode", base::FEATURE_ENABLED_BY_DEFAULT};
