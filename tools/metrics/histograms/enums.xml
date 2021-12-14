@@ -92842,6 +92842,9 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="WebViewOpenWebVisibility">
+  <obsolete>
+    Deprecated in December 2021.
+  </obsolete>
   <int value="0" label="OpenWebContentVisible"/>
   <int value="1" label="OpenWebContentNotVisible"/>
 </enum>

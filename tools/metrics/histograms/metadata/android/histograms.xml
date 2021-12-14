@@ -4740,7 +4740,7 @@ chromium-metrics-reviews@google.com.
     Records the global visibility state of WebView in seconds, updated with
     every Metrics upload. The Visible bucket counts total seconds that any
     WebView was visible (the view itself was visible, and was attached to the
-    view hierarchy of a visible window). The NotVisble bucket counts time since
+    view hierarchy of a visible window). The NotVisible bucket counts time since
     WebView initialization for which no WebView was considered visible, or no
     WebView existed. The total of these two buckets reflects the amount of time
     covered by metrics collection.
@@ -4765,8 +4765,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.VisibleScheme.Global" enum="WebViewUrlScheme"
+    expires_after="2022-06-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of seconds any WebView was visible (the view itself was
+    visible, and was attached to the view hierarchy of a visible window) with a
+    particular URL scheme in the primary main frame. Updated with every Metrics
+    upload.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.VisibleScheme.PerWebView"
+    enum="WebViewUrlScheme" expires_after="2022-06-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of seconds each WebView was visible (the view itself was
+    visible, and was attached to the view hierarchy of a visible window) with a
+    particular URL scheme in the primary main frame. Updated with every Metrics
+    upload.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.WebViewOpenWebVisible.Global"
     enum="WebViewOpenWebVisibility" expires_after="2022-06-01">
+  <obsolete>
+    Removed in December 2021, use Android.WebView.VisibleScheme.Global instead
+    which breaks down all the visible time spent into more schemes.
+  </obsolete>
   <owner>idries@google.com</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -4783,6 +4813,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.WebViewOpenWebVisible.PerWebView"
     enum="WebViewOpenWebVisibility" expires_after="2022-06-01">
+  <obsolete>
+    Deprecated in December 2021, use Android.WebView.VisibleScheme.PerWebView
+    instead which breaks down all the visible time spent into more schemes.
+  </obsolete>
   <owner>idries@google.com</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
