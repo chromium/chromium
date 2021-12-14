@@ -3127,12 +3127,12 @@
   {
     "name": "file-handling-api",
     "owners": [ "estade", "mgiuca", "cmp" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 104
   },
   {
     "name": "file-handling-icons",
     "owners": [ "estade", "mgiuca", "cmp" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 104
   },
   {
     "name": "files-archivemount",
