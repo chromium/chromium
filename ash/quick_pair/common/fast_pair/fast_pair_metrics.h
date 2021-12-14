@@ -44,6 +44,16 @@ enum COMPONENT_EXPORT(QUICK_PAIR_COMMON)
       kAssociateAccountDismissedAfterLearnMorePressed = 133,
     };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the FastPairPairingMethod enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) PairingMethod {
+  kFastPair = 0,
+  kSystemPairingUi = 1,
+  kMaxValue = kSystemPairingUi,
+};
+
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
@@ -56,6 +66,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairRetroactiveEngagementFlow(
     const Device& device,
     FastPairRetroactiveEngagementFlowEvent event);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPairingMethod(PairingMethod method);
 
 }  // namespace quick_pair
 }  // namespace ash

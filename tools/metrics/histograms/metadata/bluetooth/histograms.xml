@@ -207,6 +207,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.PairingMethod"
+    enum="FastPairPairingMethod" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the count of eligible users who pair devices without Fast Pair and
+    with Fast Pair. This metric is emitted after a device pairing event to the
+    Bluetooth adapter, once verified that it is not a Fast Pair device pairing,
+    and that the pairing was to connect to the Bluetooth adapter, not to
+    disconnect from it. It is also emitted when the Fast Pair OnDevicePaired
+    event fires.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps"
     enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

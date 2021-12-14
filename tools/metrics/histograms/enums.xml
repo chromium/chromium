@@ -31437,6 +31437,11 @@ Called by update_extension_permission.py.-->
   <int value="1212" label="Pairing Failed: Error UI Settings Button Pressed"/>
 </enum>
 
+<enum name="FastPairPairingMethod">
+  <int value="0" label="Fast Pair Pairing"/>
+  <int value="1" label="System UI Pairing"/>
+</enum>
+
 <enum name="FastPairRetroactiveEngagementFlowEvent">
   <int value="1" label="Associate Account UI Shown"/>
   <int value="11" label="Associate Account Dismissed By User"/>

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
@@ -24,6 +25,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -42,6 +46,40 @@ constexpr char kFastPairPairTimeMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
 constexpr char kFastPairPairTimeMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
+const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
+
+constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
+constexpr char kTestBleDeviceName[] = "Test Device Name";
+constexpr char kValidModelId[] = "718c17";
+
+std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
+CreateTestBluetoothDevice(std::string address) {
+  return std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+      /*adapter=*/nullptr, /*bluetooth_class=*/0, kTestBleDeviceName, address,
+      /*paired=*/true, /*connected=*/false);
+}
+
+class FakeMetricBluetoothAdapter
+    : public testing::NiceMock<device::MockBluetoothAdapter> {
+ public:
+  device::BluetoothDevice* GetDevice(const std::string& address) override {
+    for (const auto& it : mock_devices_) {
+      if (it->GetAddress() == address)
+        return it.get();
+    }
+
+    return nullptr;
+  }
+
+  void NotifyDevicePairedChanged(device::BluetoothDevice* device,
+                                 bool new_paired_status) {
+    device::BluetoothAdapter::NotifyDevicePairedChanged(device,
+                                                        new_paired_status);
+  }
+
+ private:
+  ~FakeMetricBluetoothAdapter() = default;
+};
 
 }  // namespace
 
@@ -51,6 +89,9 @@ namespace quick_pair {
 class QuickPairMetricsLoggerTest : public testing::Test {
  public:
   void SetUp() override {
+    adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+
     scanner_broker_ = std::make_unique<MockScannerBroker>();
     mock_scanner_broker_ =
         static_cast<MockScannerBroker*>(scanner_broker_.get());
@@ -142,9 +183,11 @@ class QuickPairMetricsLoggerTest : public testing::Test {
   void SimulatePairingSucceeded(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
+        initial_device_->set_classic_address(kTestAddress);
         mock_pairer_broker_->NotifyDevicePaired(initial_device_);
         break;
       case Protocol::kFastPairSubsequent:
+        subsequent_device_->set_classic_address(kTestAddress);
         mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
         break;
       case Protocol::kFastPairRetroactive:
@@ -207,11 +250,29 @@ class QuickPairMetricsLoggerTest : public testing::Test {
         retroactive_device_, AssociateAccountAction::kLearnMore);
   }
 
+  void PairFastPairDeviceWithFastPair(std::string address) {
+    auto fp_device = base::MakeRefCounted<Device>(kValidModelId, address,
+                                                  Protocol::kFastPairInitial);
+    fp_device->set_classic_address(address);
+    mock_pairer_broker_->NotifyDevicePaired(fp_device);
+  }
+
+  void PairFastPairDeviceWithClassicBluetooth(bool new_paired_status,
+                                              std::string classic_address) {
+    std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
+        bluetooth_device = CreateTestBluetoothDevice(classic_address);
+    bluetooth_device->AddUUID(ash::quick_pair::kFastPairBluetoothUuid);
+    auto* bt_device_ptr = bluetooth_device.get();
+    adapter_->AddMockDevice(std::move(bluetooth_device));
+    adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);
+  }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
   base::HistogramTester histogram_tester_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<FakeMetricBluetoothAdapter> adapter_;
   scoped_refptr<Device> initial_device_;
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
@@ -1077,6 +1138,58 @@ TEST_F(QuickPairMetricsLoggerTest,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountDismissedAfterLearnMorePressed),
             0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, DevicedPaired_FastPair) {
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            0);
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, DeviceUnpaired) {
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            0);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/false, kTestDeviceAddress);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, DevicePaired) {
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            0);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kFastPair),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
+                                              PairingMethod::kSystemPairingUi),
+            1);
 }
 
 }  // namespace quick_pair

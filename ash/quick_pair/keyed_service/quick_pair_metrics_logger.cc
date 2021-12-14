@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "base/containers/contains.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash {
 namespace quick_pair {
@@ -19,6 +20,9 @@ QuickPairMetricsLogger::QuickPairMetricsLogger(
     RetroactivePairingDetector* retroactive_pairing_detector)
     : feature_usage_metrics_logger_(
           std::make_unique<FastPairFeatureUsageMetricsLogger>()) {
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &QuickPairMetricsLogger::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
+
   scanner_broker_observation_.Observe(scanner_broker);
   retroactive_pairing_detector_observation_.Observe(
       retroactive_pairing_detector);
@@ -28,13 +32,52 @@ QuickPairMetricsLogger::QuickPairMetricsLogger(
 
 QuickPairMetricsLogger::~QuickPairMetricsLogger() = default;
 
+void QuickPairMetricsLogger::OnGetAdapter(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  adapter_ = adapter;
+  adapter_observation_.Observe(adapter_.get());
+}
+
+void QuickPairMetricsLogger::DevicePairedChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    bool new_paired_status) {
+  // This event fires whenever a device pairing has changed with the adapter.
+  // If the |new_paired_status| is false, it means a device was unpaired with
+  // the adapter, so we early return since it would not be a device that has
+  // been paired alternatively. If the device that was paired to that fires this
+  // event is a device we just paired to with Fast Pair, then we early return
+  // since it also wouldn't be one that was alternatively pair to. We want to
+  // only continue our check here if we have a newly paired device that was
+  // paired with classic Bluetooth pairing.
+  const std::string& classic_address = device->GetAddress();
+  if (!new_paired_status ||
+      base::Contains(fast_pair_addresses_, classic_address)) {
+    return;
+  }
+
+  RecordPairingMethod(PairingMethod::kSystemPairingUi);
+}
+
 void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   AttemptRecordingFastPairEngagementFlow(
       *device, FastPairEngagementFlowEvent::kPairingSucceeded);
   feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
+
   base::TimeDelta total_pair_time =
       base::TimeTicks::Now() - device_pairing_start_timestamps_[device];
   AttemptRecordingTotalUxPairTime(*device, total_pair_time);
+
+  RecordPairingMethod(PairingMethod::kFastPair);
+
+  // The classic address is assigned to the Device during the
+  // initial Fast Pair pairing protocol during the key exchange, and if it
+  // doesn't exist, then it wasn't properly paired during initial Fast Pair
+  // pairing. We want to save the addresses here in the event that the
+  // Bluetooth adapter pairing event fires, so we can detect when a device
+  // was paired solely via classic bluetooth, instead of Fast Pair.
+  if (device->classic_address())
+    fast_pair_addresses_.insert(device->classic_address().value());
 }
 
 void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,

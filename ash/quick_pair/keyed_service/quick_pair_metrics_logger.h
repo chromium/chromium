@@ -12,8 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {
 namespace quick_pair {
@@ -25,7 +27,8 @@ class FastPairFeatureUsageMetricsLogger;
 class QuickPairMetricsLogger : public PairerBroker::Observer,
                                public ScannerBroker::Observer,
                                public UIBroker::Observer,
-                               public RetroactivePairingDetector::Observer {
+                               public RetroactivePairingDetector::Observer,
+                               public device::BluetoothAdapter::Observer {
  public:
   QuickPairMetricsLogger(
       ScannerBroker* scanner_broker,
@@ -61,6 +64,15 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   // RetroactivePairingDetector::Observer
   void OnRetroactivePairFound(scoped_refptr<Device> device) override;
 
+  // device::BluetoothAdapter::Observer
+  void DevicePairedChanged(device::BluetoothAdapter* adapter,
+                           device::BluetoothDevice* device,
+                           bool new_paired_status) override;
+
+  // Internal method called by BluetoothAdapterFactory to provide the adapter
+  // object.
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
   // Map of devices to the time at which a pairing was initiated. This is used
   // to calculate the time between the user electing to pair the device and
   // the pairing entering a terminal state (success or failure).
@@ -74,8 +86,17 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   // event is not a terminal state.
   base::flat_set<scoped_refptr<Device>> learn_more_devices_;
 
+  // The classic pairing addresses of Fast Pair devices that we have already
+  // paired to.
+  base::flat_set<std::string> fast_pair_addresses_;
+
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairFeatureUsageMetricsLogger>
       feature_usage_metrics_logger_;
+
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      adapter_observation_{this};
   base::ScopedObservation<ScannerBroker, ScannerBroker::Observer>
       scanner_broker_observation_{this};
   base::ScopedObservation<PairerBroker, PairerBroker::Observer>
@@ -85,6 +106,7 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
       retroactive_pairing_detector_observation_{this};
   base::ScopedObservation<UIBroker, UIBroker::Observer> ui_broker_observation_{
       this};
+  base::WeakPtrFactory<QuickPairMetricsLogger> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair
