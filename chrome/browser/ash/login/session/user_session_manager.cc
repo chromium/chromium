@@ -1724,7 +1724,8 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   if (delegate_)
     delegate_->OnProfilePrepared(profile, browser_launched);
 
-  if (OnboardingUserActivityCounter::ShouldStart(profile->GetPrefs())) {
+  if (ProfileHelper::IsPrimaryProfile(profile) &&
+      OnboardingUserActivityCounter::ShouldStart(profile->GetPrefs())) {
     onboarding_user_activity_counter_ =
         std::make_unique<OnboardingUserActivityCounter>(
             profile->GetPrefs(), GetActivityTimeBeforeOnboardingSurvey(),
