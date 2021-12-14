@@ -18,8 +18,7 @@ namespace ppapi {
 class ManifestService;
 
 // Sets the IPC channels for the browser and the renderer.
-// This will be used for non-SFI mode. Must be called before the
-// ppapi_start() IRT interface is called.
+// Must be called before the ppapi_start() IRT interface is called.
 PPAPI_PROXY_EXPORT void SetIPCChannelHandles(
     IPC::ChannelHandle browser_ipc_handle,
     IPC::ChannelHandle renderer_ipc_handle,

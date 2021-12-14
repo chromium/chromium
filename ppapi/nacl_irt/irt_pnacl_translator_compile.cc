@@ -4,15 +4,12 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "native_client/src/untrusted/irt/irt_dev.h"
 #include "ppapi/nacl_irt/irt_interfaces.h"
 #include "ppapi/nacl_irt/plugin_startup.h"
 #include "ppapi/proxy/ppapi_messages.h"
-
-#if !defined(OS_NACL_NONSFI)
 
 namespace {
 
@@ -110,8 +107,4 @@ void ServeTranslateRequest(const struct nacl_irt_pnacl_compile_funcs* funcs) {
 }
 
 const struct nacl_irt_private_pnacl_translator_compile
-    nacl_irt_private_pnacl_translator_compile = {
-  ServeTranslateRequest
-};
-
-#endif  // !defined(OS_NACL_NONSFI)
+    nacl_irt_private_pnacl_translator_compile = {ServeTranslateRequest};
