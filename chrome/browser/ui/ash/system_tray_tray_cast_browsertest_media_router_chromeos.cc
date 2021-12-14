@@ -200,23 +200,20 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
                                                               local_route};
 
   // We do not show the cast view for non-local routes.
-  media_routes_observer()->OnRoutesUpdated(
-      non_local_routes, std::vector<media_router::MediaRoute::Id>());
+  media_routes_observer()->OnRoutesUpdated(non_local_routes);
   content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(IsCastingNotificationVisible());
 
   // If there are multiple routes active at the same time, then we need to
   // display the local route over a non-local route. This also verifies that we
   // display the cast view when we're casting.
-  media_routes_observer()->OnRoutesUpdated(
-      multiple_routes, std::vector<media_router::MediaRoute::Id>());
+  media_routes_observer()->OnRoutesUpdated(multiple_routes);
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsCastingNotificationVisible());
   EXPECT_NE(std::u16string::npos, GetNotificationString().find(u"Local Sink"));
 
   // When a casting session stops, we shouldn't display the cast view.
-  media_routes_observer()->OnRoutesUpdated(
-      no_routes, std::vector<media_router::MediaRoute::Id>());
+  media_routes_observer()->OnRoutesUpdated(no_routes);
   content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(IsCastingNotificationVisible());
 }

@@ -51,14 +51,10 @@ class MockMediaSinksObserver : public MediaSinksObserver {
 
 class MockMediaRoutesObserver : public MediaRoutesObserver {
  public:
-  explicit MockMediaRoutesObserver(
-      MediaRouter* router,
-      const MediaSource::Id source_id = std::string());
+  explicit MockMediaRoutesObserver(MediaRouter* router);
   ~MockMediaRoutesObserver() override;
 
-  MOCK_METHOD2(OnRoutesUpdated,
-               void(const std::vector<MediaRoute>& routes,
-                    const std::vector<MediaRoute::Id>& joinable_route_ids));
+  MOCK_METHOD1(OnRoutesUpdated, void(const std::vector<MediaRoute>& routes));
 };
 
 class MockPresentationConnectionProxy

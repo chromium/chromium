@@ -101,8 +101,7 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
 
     media_router_->OnPresentationConnectionStateChanged(
         route_id, blink::mojom::PresentationConnectionState::CONNECTED);
-    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes(), media_source,
-                                   {});
+    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
     std::move(callback).Run(routes_[route_id], nullptr, absl::nullopt,
                             RouteRequestResult::ResultCode::OK);
   }
@@ -160,9 +159,7 @@ void TestMediaRouteProvider::TerminateRoute(const std::string& route_id,
   routes_.erase(it);
   media_router_->OnPresentationConnectionStateChanged(
       route_id, blink::mojom::PresentationConnectionState::TERMINATED);
-  media_router_->OnRoutesUpdated(
-      kProviderId, GetMediaRoutes(),
-      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id), {});
+  media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
   std::move(callback).Run(absl::nullopt, RouteRequestResult::OK);
 }
 
@@ -176,9 +173,7 @@ void TestMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
         media_route_id,
         blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR,
         "Send error. Closing connection.");
-    media_router_->OnRoutesUpdated(
-        kProviderId, GetMediaRoutes(),
-        MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id), {});
+    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
   } else {
     std::string response = "Pong: " + message;
     std::vector<mojom::RouteMessagePtr> messages;
@@ -205,11 +200,7 @@ void TestMediaRouteProvider::StartObservingMediaSinks(
 void TestMediaRouteProvider::StopObservingMediaSinks(
     const std::string& media_source) {}
 
-void TestMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {}
-
-void TestMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {}
+void TestMediaRouteProvider::StartObservingMediaRoutes() {}
 
 void TestMediaRouteProvider::StartListeningForRouteMessages(
     const std::string& route_id) {}
@@ -255,6 +246,10 @@ void TestMediaRouteProvider::CaptureOffScreenTab(
   offscreen_tab_ =
       std::make_unique<OffscreenTab>(this, web_contents->GetBrowserContext());
   offscreen_tab_->Start(source_urn, gfx::Size(180, 180), presentation_id);
+}
+
+bool TestMediaRouteProvider::HasRoutes() const {
+  return !routes_.empty();
 }
 
 void TestMediaRouteProvider::TearDown() {

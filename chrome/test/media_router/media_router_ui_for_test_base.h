@@ -49,7 +49,6 @@ class MediaRouterUiForTestBase {
   virtual void WaitForAnyRoute() = 0;
   virtual void WaitForDialogShown() = 0;
   virtual void WaitForDialogHidden() = 0;
-  void WaitUntilNoRoutes();
 
   // These methods require that the dialog is shown, and the sink specified by
   // |sink_name| is in the dialog.

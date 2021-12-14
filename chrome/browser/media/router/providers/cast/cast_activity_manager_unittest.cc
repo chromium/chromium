@@ -179,9 +179,6 @@ class CastActivityManagerTest : public testing::Test,
         }));
 
     RunUntilIdle();
-
-    // Make sure we get route updates.
-    manager_->AddRouteQuery(route_query_);
   }
 
   void TearDown() override {
@@ -445,9 +442,8 @@ class CastActivityManagerTest : public testing::Test,
   // optionally be saved in the variable pointed to by |route_ptr|.
   void ExpectSingleRouteUpdate() {
     updated_route_ = absl::nullopt;
-    EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
-                                ElementsAre(_), route_query_, IsEmpty()))
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
+                                              ElementsAre(_)))
         .WillOnce(WithArg<1>(
             [this](const auto& routes) { updated_route_ = routes[0]; }));
   }
@@ -456,8 +452,7 @@ class CastActivityManagerTest : public testing::Test,
   void ExpectEmptyRouteUpdate() {
     updated_route_ = absl::nullopt;
     EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty(),
-                                route_query_, IsEmpty()))
+                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty()))
         .Times(1);
   }
 

@@ -128,8 +128,7 @@ void CastMediaNotificationProducer::OnMediaItemUIDismissed(
 }
 
 void CastMediaNotificationProducer::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
+    const std::vector<media_router::MediaRoute>& routes) {
   const bool had_items = HasActiveItems();
 
   base::EraseIf(items_, [&routes](const auto& item) {

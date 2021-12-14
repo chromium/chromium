@@ -198,9 +198,6 @@ void MediaRouterAndroid::UnregisterMediaSinksObserver(
 void MediaRouterAndroid::RegisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
   DVLOG(2) << "Added MediaRoutesObserver: " << observer;
-  if (!observer->source_id().empty())
-    NOTIMPLEMENTED() << "Joinable routes query not implemented.";
-
   routes_observers_.AddObserver(observer);
 }
 
@@ -254,7 +251,7 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
 
   active_routes_.push_back(route);
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
         result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
@@ -341,7 +338,7 @@ void MediaRouterAndroid::RemoveRoute(const MediaRoute::Id& route_id) {
     }
 
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
 }
 
 std::unique_ptr<media::FlingingController>

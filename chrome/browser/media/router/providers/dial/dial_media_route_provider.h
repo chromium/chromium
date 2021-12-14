@@ -91,8 +91,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                               const std::vector<uint8_t>& data) override;
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
-  void StartObservingMediaRoutes(const std::string& media_source) override;
-  void StopObservingMediaRoutes(const std::string& media_source) override;
+  void StartObservingMediaRoutes() override;
   void StartListeningForRouteMessages(const std::string& route_id) override;
   void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
@@ -171,8 +170,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                            const absl::optional<std::string>& message,
                            RouteRequestResult::ResultCode result_code);
   void NotifyAllOnRoutesUpdated();
-  void NotifyOnRoutesUpdated(const MediaSource::Id& source_id,
-                             const std::vector<MediaRoute>& routes);
+  void NotifyOnRoutesUpdated(const std::vector<MediaRoute>& routes);
 
   // Returns a list of valid origins for |app_name|. Returns an empty list if
   // all origins are valid.

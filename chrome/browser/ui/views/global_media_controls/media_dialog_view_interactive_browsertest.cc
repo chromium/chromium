@@ -325,7 +325,7 @@ class TestMediaRouter : public media_router::MockMediaRouter {
   void NotifyMediaRoutesChanged(
       const std::vector<media_router::MediaRoute>& routes) {
     for (auto* observer : routes_observers_)
-      observer->OnRoutesUpdated(routes, {});
+      observer->OnRoutesUpdated(routes);
   }
 
  private:

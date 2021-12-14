@@ -186,6 +186,8 @@ class MediaRouterIntegrationBrowserTest
   // Wait for a specific time.
   void Wait(base::TimeDelta timeout);
 
+  void WaitUntilNoRoutes(content::WebContents* web_contents);
+
   // Test API for manipulating the UI.
   raw_ptr<MediaRouterUiForTestBase> test_ui_ = nullptr;
 

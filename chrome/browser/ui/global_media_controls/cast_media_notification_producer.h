@@ -59,9 +59,8 @@ class CastMediaNotificationProducer
   void OnMediaItemUIDismissed(const std::string& id) override;
 
   // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(const std::vector<media_router::MediaRoute>& routes,
-                       const std::vector<media_router::MediaRoute::Id>&
-                           joinable_route_ids) override;
+  void OnRoutesUpdated(
+      const std::vector<media_router::MediaRoute>& routes) override;
 
   size_t GetActiveItemCount() const;
   bool HasLocalMediaRoute() const;

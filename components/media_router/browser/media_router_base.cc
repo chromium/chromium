@@ -29,13 +29,9 @@ class MediaRouterBase::InternalMediaRoutesObserver
   ~InternalMediaRoutesObserver() override {}
 
   // MediaRoutesObserver
-  void OnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) override {
+  void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override {
     current_routes = routes;
     off_the_record_route_ids.clear();
-    // TODO(crbug.com/611486): Have the MRPM pass a list of joinable route ids
-    // via |joinable_route_ids|, and check here if it is non-empty.
     has_route = !routes.empty();
     for (const auto& route : routes) {
       if (route.is_off_the_record())

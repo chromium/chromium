@@ -91,6 +91,23 @@ std::string GetDefaultRequestSessionId(WebContents* web_contents) {
   return session_id;
 }
 
+// Routes observer that calls a callback once there are no routes.
+class NoRoutesObserver : public MediaRoutesObserver {
+ public:
+  NoRoutesObserver(MediaRouter* router, base::OnceClosure callback)
+      : MediaRoutesObserver(router), callback_(std::move(callback)) {}
+
+  ~NoRoutesObserver() override = default;
+
+  void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override {
+    if (callback_ && routes.empty())
+      std::move(callback_).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
 MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
@@ -177,6 +194,23 @@ void MediaRouterIntegrationBrowserTest::Wait(base::TimeDelta timeout) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), timeout);
+  run_loop.Run();
+}
+
+void MediaRouterIntegrationBrowserTest::WaitUntilNoRoutes(
+    WebContents* web_contents) {
+  if (!test_provider_->HasRoutes())
+    return;
+
+  // FIXME: There can't be a good reason to use the observer API to check for
+  // routes asynchronously, which is fragile.  However, some browser tests rely
+  // on this behavior.  Either add a callback parameter to TerminateRoute, or
+  // add pass callback to the TestProvider to run when all routes are gone.
+  base::RunLoop run_loop;
+  NoRoutesObserver no_routes_observer(
+      MediaRouterFactory::GetApiForBrowserContext(
+          web_contents->GetBrowserContext()),
+      run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -385,7 +419,7 @@ void MediaRouterIntegrationBrowserTest::RunBasicTest() {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
   ExecuteJavaScriptAPI(web_contents, kTerminateSessionScript);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(web_contents);
 }
 
 void MediaRouterIntegrationBrowserTest::RunSendMessageTest(
@@ -425,7 +459,7 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionTest() {
   ASSERT_EQ(session_id, reconnected_session_id);
 
   ExecuteJavaScriptAPI(web_contents, kTerminateSessionScript);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(web_contents);
 }
 
 void MediaRouterIntegrationBrowserTest::RunFailedReconnectSessionTest() {
@@ -442,7 +476,7 @@ void MediaRouterIntegrationBrowserTest::RunFailedReconnectSessionTest() {
                        base::StringPrintf(kCheckReconnectSessionFailsScript,
                                           session_id.c_str()));
   ExecuteJavaScriptAPI(web_contents, kTerminateSessionScript);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(web_contents);
 }
 
 void MediaRouterIntegrationBrowserTest::SetEnableMediaRouter(bool enable) {
@@ -693,7 +727,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
   // dangling Mojo callback at shutdown. So we must wait for the update.
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
@@ -703,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
   // dangling Mojo callback at shutdown. So we must wait for the update.
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
 }
 
 INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(

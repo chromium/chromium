@@ -188,18 +188,12 @@ void WiredDisplayMediaRouteProvider::StopObservingMediaSinks(
   sink_queries_.erase(media_source);
 }
 
-void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.insert(media_source);
+void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  media_router_->OnRoutesUpdated(kProviderId, route_list, media_source, {});
-}
 
-void WiredDisplayMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.erase(media_source);
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::StartListeningForRouteMessages(
@@ -327,8 +321,8 @@ void WiredDisplayMediaRouteProvider::NotifyRouteObservers() const {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  for (const auto& route_query : route_queries_)
-    media_router_->OnRoutesUpdated(kProviderId, route_list, route_query, {});
+
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::NotifySinkObservers() {

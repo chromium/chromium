@@ -166,18 +166,10 @@ void MediaRouterMojoImpl::OnSinksReceived(
 
 void MediaRouterMojoImpl::OnRoutesUpdated(
     mojom::MediaRouteProviderId provider_id,
-    const std::vector<MediaRoute>& routes,
-    const std::string& media_source,
-    const std::vector<std::string>& joinable_route_ids) {
+    const std::vector<MediaRoute>& routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto it = routes_queries_.find(media_source);
-  if (it == routes_queries_.end() || !it->second->HasObservers()) {
-    return;
-  }
-
-  auto* routes_query = it->second.get();
-  routes_query->SetRoutesForProvider(provider_id, routes, joinable_route_ids);
-  routes_query->NotifyObservers();
+  routes_query_.SetRoutesForProvider(provider_id, routes);
+  routes_query_.NotifyObservers();
 }
 
 void MediaRouterMojoImpl::RouteResponseReceived(
@@ -449,19 +441,9 @@ bool MediaRouterMojoImpl::MediaSinksQuery::HasObservers() const {
 
 void MediaRouterMojoImpl::MediaRoutesQuery::SetRoutesForProvider(
     mojom::MediaRouteProviderId provider_id,
-    const std::vector<MediaRoute>& routes,
-    const std::vector<MediaRoute::Id>& joinable_route_ids) {
+    const std::vector<MediaRoute>& routes) {
   providers_to_routes_[provider_id] = routes;
   UpdateCachedRouteList();
-
-  providers_to_joinable_routes_[provider_id] = joinable_route_ids;
-  joinable_route_ids_.clear();
-  for (const auto& provider_to_joinable_routes :
-       providers_to_joinable_routes_) {
-    joinable_route_ids_.insert(joinable_route_ids_.end(),
-                               provider_to_joinable_routes.second.begin(),
-                               provider_to_joinable_routes.second.end());
-  }
 }
 
 bool MediaRouterMojoImpl::MediaRoutesQuery::AddRouteForProvider(
@@ -493,8 +475,7 @@ void MediaRouterMojoImpl::MediaRoutesQuery::AddObserver(
     MediaRoutesObserver* observer) {
   observers_.AddObserver(observer);
   observer->OnRoutesUpdated(
-      cached_route_list_.value_or(std::vector<MediaRoute>()),
-      joinable_route_ids_);
+      cached_route_list_.value_or(std::vector<MediaRoute>()));
 }
 
 void MediaRouterMojoImpl::MediaRoutesQuery::RemoveObserver(
@@ -505,8 +486,7 @@ void MediaRouterMojoImpl::MediaRoutesQuery::RemoveObserver(
 void MediaRouterMojoImpl::MediaRoutesQuery::NotifyObservers() {
   for (auto& observer : observers_) {
     observer.OnRoutesUpdated(
-        cached_route_list_.value_or(std::vector<MediaRoute>()),
-        joinable_route_ids_);
+        cached_route_list_.value_or(std::vector<MediaRoute>()));
   }
 }
 
@@ -576,77 +556,40 @@ void MediaRouterMojoImpl::UnregisterMediaSinksObserver(
 void MediaRouterMojoImpl::RegisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const MediaSource::Id source_id = observer->source_id();
-  auto& routes_query = routes_queries_[source_id];
-  bool is_new_query = false;
-  if (!routes_query) {
-    is_new_query = true;
-    routes_query = std::make_unique<MediaRoutesQuery>();
-  } else {
-    DCHECK(!routes_query->HasObserver(observer));
-  }
+  bool is_first_observer = !routes_query_.HasObservers();
+  if (!is_first_observer)
+    DCHECK(!routes_query_.HasObserver(observer));
 
-  routes_query->AddObserver(observer);
-  if (is_new_query) {
-    for (const auto& provider : media_route_providers_)
-      provider.second->StartObservingMediaRoutes(source_id);
-    // The MRPs will call MediaRouterMojoImpl::OnRoutesUpdated() soon, if there
-    // are any existing routes the new observer should be aware of.
-  } else if (routes_query->cached_route_list()) {
+  routes_query_.AddObserver(observer);
+  if (is_first_observer) {
+    for (const auto& provider : media_route_providers_) {
+      provider.second->StartObservingMediaRoutes();
+      // The MRPs will call MediaRouterMojoImpl::OnRoutesUpdated() soon, if
+      // there are any existing routes the new observer should be aware of.
+    }
+  } else {
     // Return to the event loop before notifying of a cached route list because
     // MediaRoutesObserver is calling this method from its constructor, and that
     // must complete before invoking its virtual OnRoutesUpdated() method.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MediaRouterMojoImpl::NotifyOfExistingRoutesIfRegistered,
-                       weak_factory_.GetWeakPtr(), source_id, observer));
+                       weak_factory_.GetWeakPtr(), observer));
   }
 }
 
 void MediaRouterMojoImpl::NotifyOfExistingRoutesIfRegistered(
-    const MediaSource::Id& source_id,
     MediaRoutesObserver* observer) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Check that the route query still exists with a cached result, and that the
-  // observer is still registered. Otherwise, there is nothing to report to the
-  // observer.
-  const auto it = routes_queries_.find(source_id);
-  if (it == routes_queries_.end() || !it->second->cached_route_list() ||
-      !it->second->HasObserver(observer)) {
-    return;
+  if (routes_query_.HasObserver(observer)) {
+    observer->OnRoutesUpdated(
+        routes_query_.cached_route_list().value_or(std::vector<MediaRoute>{}));
   }
-
-  observer->OnRoutesUpdated(*it->second->cached_route_list(),
-                            it->second->joinable_route_ids());
 }
 
 void MediaRouterMojoImpl::UnregisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
-  const MediaSource::Id source_id = observer->source_id();
-  auto it = routes_queries_.find(source_id);
-  if (it == routes_queries_.end() || !it->second->HasObserver(observer)) {
-    return;
-  }
-
-  // If we are removing the final observer for the source, then stop
-  // observing routes for it.
-  // HasObservers() is reliable here on the assumption that this call
-  // is not inside the ObserverList iteration.
-  it->second->RemoveObserver(observer);
-  if (!it->second->HasObservers()) {
-    for (const auto& provider : media_route_providers_) {
-      if (!provider.second) {
-        // The provider somehow not existing may be the cause of the crash at
-        // crbug.com/1200786.
-        NOTREACHED() << "Provider is null: "
-                     << ProviderIdToString(provider.first);
-        continue;
-      }
-      provider.second->StopObservingMediaRoutes(source_id);
-    }
-    routes_queries_.erase(source_id);
-  }
+  routes_query_.RemoveObserver(observer);
 }
 
 void MediaRouterMojoImpl::RegisterRouteMessageObserver(
@@ -741,16 +684,8 @@ void MediaRouterMojoImpl::OnTerminateRouteResult(
 
 void MediaRouterMojoImpl::OnRouteAdded(mojom::MediaRouteProviderId provider_id,
                                        const MediaRoute& route) {
-  // |routes_queries_| might be added during the iteration. Making a
-  // copy here to avoid the iterator from being invalidated.
-  std::vector<MediaRoutesQuery*> queries;
-  for (auto& routes_query : routes_queries_) {
-    if (routes_query.second->AddRouteForProvider(provider_id, route))
-      queries.push_back(routes_query.second.get());
-  }
-  for (auto* query : queries) {
-    query->NotifyObservers();
-  }
+  routes_query_.AddRouteForProvider(provider_id, route);
+  routes_query_.NotifyObservers();
 }
 
 void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
@@ -763,9 +698,9 @@ void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
     provider->StartObservingMediaSinks(it.first);
   }
 
-  // Route queries.
-  for (const auto& it : routes_queries_)
-    provider->StartObservingMediaRoutes(it.first);
+  // Route updates.
+  if (routes_query_.HasObservers())
+    provider->StartObservingMediaRoutes();
 
   // Route messages.
   for (const auto& it : message_observers_)
@@ -856,17 +791,14 @@ void MediaRouterMojoImpl::BindToMojoReceiver(
 
 absl::optional<mojom::MediaRouteProviderId>
 MediaRouterMojoImpl::GetProviderIdForRoute(const MediaRoute::Id& route_id) {
-  for (const auto& routes_query : routes_queries_) {
-    MediaRoutesQuery* query = routes_query.second.get();
-    for (const auto& provider_to_routes : query->providers_to_routes()) {
-      const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
-      const std::vector<MediaRoute>& routes = provider_to_routes.second;
-      if (std::find_if(routes.begin(), routes.end(),
-                       [&route_id](const MediaRoute& route) {
-                         return route.media_route_id() == route_id;
-                       }) != routes.end()) {
-        return provider_id;
-      }
+  for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {
+    const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
+    const std::vector<MediaRoute>& routes = provider_to_routes.second;
+    if (std::find_if(routes.begin(), routes.end(),
+                     [&route_id](const MediaRoute& route) {
+                       return route.media_route_id() == route_id;
+                     }) != routes.end()) {
+      return provider_id;
     }
   }
   return absl::nullopt;
@@ -883,18 +815,15 @@ MediaRouterMojoImpl::GetProviderIdForSink(const MediaSink::Id& sink_id) {
 absl::optional<mojom::MediaRouteProviderId>
 MediaRouterMojoImpl::GetProviderIdForPresentation(
     const std::string& presentation_id) {
-  for (const auto& routes_query : routes_queries_) {
-    MediaRoutesQuery* query = routes_query.second.get();
-    for (const auto& provider_to_routes : query->providers_to_routes()) {
-      const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
-      const std::vector<MediaRoute>& routes = provider_to_routes.second;
-      auto pred = [&presentation_id](const MediaRoute& route) {
-        return route.presentation_id() == presentation_id;
-      };
-      DCHECK_LE(std::count_if(routes.begin(), routes.end(), pred), 1);
-      if (std::find_if(routes.begin(), routes.end(), pred) != routes.end()) {
-        return provider_id;
-      }
+  for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {
+    const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
+    const std::vector<MediaRoute>& routes = provider_to_routes.second;
+    auto pred = [&presentation_id](const MediaRoute& route) {
+      return route.presentation_id() == presentation_id;
+    };
+    DCHECK_LE(std::count_if(routes.begin(), routes.end(), pred), 1);
+    if (std::find_if(routes.begin(), routes.end(), pred) != routes.end()) {
+      return provider_id;
     }
   }
   return absl::nullopt;

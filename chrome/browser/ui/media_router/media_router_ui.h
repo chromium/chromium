@@ -201,10 +201,8 @@ class MediaRouterUI
   class UIMediaRoutesObserver : public MediaRoutesObserver {
    public:
     using RoutesUpdatedCallback =
-        base::RepeatingCallback<void(const std::vector<MediaRoute>&,
-                                     const std::vector<MediaRoute::Id>&)>;
+        base::RepeatingCallback<void(const std::vector<MediaRoute>&)>;
     UIMediaRoutesObserver(MediaRouter* router,
-                          const MediaSource::Id& source_id,
                           const RoutesUpdatedCallback& callback);
 
     UIMediaRoutesObserver(const UIMediaRoutesObserver&) = delete;
@@ -213,9 +211,7 @@ class MediaRouterUI
     ~UIMediaRoutesObserver() override;
 
     // MediaRoutesObserver:
-    void OnRoutesUpdated(
-        const std::vector<MediaRoute>& routes,
-        const std::vector<MediaRoute::Id>& joinable_route_ids) override;
+    void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
    private:
     // Callback to the owning MediaRouterUI instance.
@@ -283,8 +279,7 @@ class MediaRouterUI
   void OnIssueCleared();
 
   // Called by |routes_observer_| when the set of active routes has changed.
-  void OnRoutesUpdated(const std::vector<MediaRoute>& routes,
-                       const std::vector<MediaRoute::Id>& joinable_route_ids);
+  void OnRoutesUpdated(const std::vector<MediaRoute>& routes);
 
   // QueryResultManager::Observer:
   void OnResultsUpdated(

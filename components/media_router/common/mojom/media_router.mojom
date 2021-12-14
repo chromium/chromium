@@ -337,30 +337,8 @@ interface MediaRouteProvider {
   // Stops querying sinks for |media_source|.
   StopObservingMediaSinks(string media_source);
 
-  // Starts reporting the state of active media routes via
-  // OnRoutesUpdated() in the context of the |media_source|.  The
-  // |media_source| represents the application interested in the media
-  // routes (usually the web page from which the content originates).
-  // If no |media_source| is given, this should be considered an
-  // observer that is not associated with a media source, and thus
-  // cannot connect to a remote route without showing a source.  The
-  // |media_source| should be considered when returning joinable routes in the
-  // OnRoutesUpdated() call. If an empty |media_source| is given, there is no
-  // context in which a joinable route makes sense and therefore, there should
-  // not be any joinable routes returned in OnRoutesUpdated().
-  // Querying will continue until StopObservingMediaRoutes() is called with
-  // the same |media_source| (even if it's an empty string).
-  StartObservingMediaRoutes(string media_source);
-
-  // Stops querying the state of all media routes in the context of
-  // the |media_source|.  StartObservingMediaRoutes() has
-  // to be called with the same |media_source| for this to have any effect even
-  // if it's empty.  Thus, StartObservingMediaRoutes(media_source) must be
-  // matched with StopObservingMediaRoutes(media_source).
-  // Calling StopObservingMediaRoutes() without a media_source will stop
-  // any media routes queries associated with emtpy strings (queries
-  // that being with StartObservingMediaRoutes()).
-  StopObservingMediaRoutes(string media_source);
+  // Starts reporting the state of active media routes.
+  StartObservingMediaRoutes();
 
   // Starts listening for messages from the media sink for the route given by
   // |route_id|.
@@ -435,13 +413,9 @@ interface MediaRouter {
   // Called when issues are reported for media routes.
   OnIssue(Issue issue);
 
-  // Called when list of routes for a MediaRouteProvider has been updated in the
-  // context of the calling |media_source|.  The array |joinable_route_ids|
-  // should contain route IDs of joinable routes found in the |routes| array.
+  // Called when list of routes for a MediaRouteProvider has been updated.
   OnRoutesUpdated(MediaRouteProviderId provider_id,
-                  array<MediaRoute> routes,
-                  string media_source,
-                  array<string> joinable_route_ids);
+                  array<MediaRoute> routes);
 
   // Called when the state of presentation connected to route |route_id| has
   // changed to |state|.

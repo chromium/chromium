@@ -231,16 +231,9 @@ void CastMediaRouteProvider::StopObservingMediaSinks(
   sink_queries_.erase(media_source);
 }
 
-void CastMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
+void CastMediaRouteProvider::StartObservingMediaRoutes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  activity_manager_->AddRouteQuery(media_source);
-}
-
-void CastMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  activity_manager_->RemoveRouteQuery(media_source);
+  activity_manager_->NotifyAllOnRoutesUpdated();
 }
 
 void CastMediaRouteProvider::StartListeningForRouteMessages(

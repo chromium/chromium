@@ -74,13 +74,6 @@ class CastActivityManager : public CastActivityManagerBase,
                       const std::string& hash_token);
   ~CastActivityManager() override;
 
-  // Adds or removes a route query with |source|. When adding a route query, if
-  // the current list of routes is non-empty, the query will be immediately
-  // updated with the current list.
-  // TODO(https://crbug.com/882481): Simplify the route query API.
-  void AddRouteQuery(const MediaSource::Id& source);
-  void RemoveRouteQuery(const MediaSource::Id& source);
-
   // Launches a Cast session with parameters given by |cast_source| to |sink|.
   // Returns the created MediaRoute and notifies existing route queries.
   void LaunchSession(const CastMediaSource& cast_source,
@@ -110,6 +103,7 @@ class CastActivityManager : public CastActivityManagerBase,
 
   const MediaRoute* GetRoute(const MediaRoute::Id& route_id) const;
   std::vector<MediaRoute> GetRoutes() const;
+  void NotifyAllOnRoutesUpdated();
   CastSessionTracker* GetCastSessionTracker() const { return session_tracker_; }
 
   // cast_channel::CastMessageHandler::Observer overrides.
@@ -226,10 +220,6 @@ class CastActivityManager : public CastActivityManagerBase,
       blink::mojom::PresentationConnectionState state,
       blink::mojom::PresentationConnectionCloseReason close_reason);
 
-  void NotifyAllOnRoutesUpdated();
-  void NotifyOnRoutesUpdated(const MediaSource::Id& source_id,
-                             const std::vector<MediaRoute>& routes);
-
   void HandleLaunchSessionResponse(
       DoLaunchSessionParams params,
       cast_channel::LaunchSessionResponse response);
@@ -285,8 +275,6 @@ class CastActivityManager : public CastActivityManagerBase,
   void TerminateAllLocalMirroringActivities();
 
   static CastActivityFactoryForTest* cast_activity_factory_for_test_;
-
-  base::flat_set<MediaSource::Id> route_queries_;
 
   // This map contains all activities--both presentation activities and
   // mirroring activities.

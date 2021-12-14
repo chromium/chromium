@@ -76,8 +76,7 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
                               const std::vector<uint8_t>& data) override;
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
-  void StartObservingMediaRoutes(const std::string& media_source) override;
-  void StopObservingMediaRoutes(const std::string& media_source) override;
+  void StartObservingMediaRoutes() override;
   void StartListeningForRouteMessages(const std::string& route_id) override;
   void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;

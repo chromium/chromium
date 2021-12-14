@@ -20,10 +20,8 @@ class MockMediaRouterActionController : public MediaRouterActionController {
   ~MockMediaRouterActionController() override;
 
   MOCK_METHOD1(OnIssueUpdated, void(const media_router::Issue* issue));
-  MOCK_METHOD2(OnRoutesUpdated,
-               void(const std::vector<media_router::MediaRoute>& routes,
-                    const std::vector<media_router::MediaRoute::Id>&
-                        joinable_route_ids));
+  MOCK_METHOD1(OnRoutesUpdated,
+               void(const std::vector<media_router::MediaRoute>& routes));
   MOCK_METHOD0(OnDialogShown, void());
   MOCK_METHOD0(OnDialogHidden, void());
   MOCK_METHOD0(OnContextMenuShown, void());

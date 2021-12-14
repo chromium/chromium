@@ -80,13 +80,13 @@ TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
   MediaRoute route = CreateRoute(route_id);
 
   EXPECT_CALL(items_changed_callback_, Run());
-  notification_producer_->OnRoutesUpdated({route}, {});
+  notification_producer_->OnRoutesUpdated({route});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
   EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id));
 
   EXPECT_CALL(items_changed_callback_, Run());
-  notification_producer_->OnRoutesUpdated({}, {});
+  notification_producer_->OnRoutesUpdated({});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
@@ -95,7 +95,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   const std::string route_id = "route-id-1";
   MediaRoute route = CreateRoute(route_id);
 
-  notification_producer_->OnRoutesUpdated({route}, {});
+  notification_producer_->OnRoutesUpdated({route});
   auto* item = static_cast<CastMediaNotificationItem*>(
       notification_producer_->GetMediaItem(route_id).get());
   NiceMock<media_message_center::test::MockMediaNotificationView> view;
@@ -112,7 +112,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
         EXPECT_EQ(base::UTF8ToUTF16(new_description + separator + new_sink),
                   metadata.source_title);
       });
-  notification_producer_->OnRoutesUpdated({route}, {});
+  notification_producer_->OnRoutesUpdated({route});
 }
 
 TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
@@ -124,7 +124,7 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   MediaRoute multizone_member_route = CreateRoute("route-3", "cast:705D30C6");
 
   notification_producer_->OnRoutesUpdated(
-      {non_display_route, no_controller_route, multizone_member_route}, {});
+      {non_display_route, no_controller_route, multizone_member_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
 
@@ -133,14 +133,14 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   const std::string route_id2 = "route-id-2";
   MediaRoute route1 = CreateRoute(route_id1);
   MediaRoute route2 = CreateRoute(route_id2);
-  notification_producer_->OnRoutesUpdated({route1}, {});
+  notification_producer_->OnRoutesUpdated({route1});
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 
   notification_producer_->OnMediaItemUIDismissed(route_id1);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 
   // Adding another route should not bring back the dismissed notification.
-  notification_producer_->OnRoutesUpdated({route1, route2}, {});
+  notification_producer_->OnRoutesUpdated({route1, route2});
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 }
 
@@ -155,9 +155,8 @@ TEST_F(CastMediaNotificationProducerCastStartStopTest,
   MediaRoute connecting_route = CreateRoute("route-4");
   connecting_route.set_is_connecting(true);
 
-  notification_producer_->OnRoutesUpdated(
-      {non_display_route, mirroring_route, multizone_member_route,
-       connecting_route},
-      {});
+  notification_producer_->OnRoutesUpdated({non_display_route, mirroring_route,
+                                           multizone_member_route,
+                                           connecting_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }

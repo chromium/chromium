@@ -80,8 +80,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
                               const std::vector<uint8_t>& data) override;
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
-  void StartObservingMediaRoutes(const std::string& media_source) override;
-  void StopObservingMediaRoutes(const std::string& media_source) override;
+  void StartObservingMediaRoutes() override;
   void StartListeningForRouteMessages(const std::string& route_id) override;
   void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
@@ -195,9 +194,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
 
   // Map from presentation IDs to active presentations managed by this provider.
   std::map<std::string, Presentation> presentations_;
-
-  // A set of MediaSource IDs associated with queries for MediaRoute updates.
-  base::flat_set<std::string> route_queries_;
 
   // A set of MediaSource IDs associated with queries for MediaSink updates.
   base::flat_set<std::string> sink_queries_;

@@ -49,9 +49,7 @@ class CastHandler::MediaRoutesObserver
   const std::vector<MediaRoute>& routes() const { return routes_; }
 
  private:
-  void OnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) override {
+  void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override {
     routes_ = routes;
     update_callback_.Run();
   }

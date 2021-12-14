@@ -123,17 +123,15 @@ TEST_F(MediaRouterBaseTest, GetCurrentRoutes) {
   MediaRoute route1("route_1", source1, "sink_1", "", false, false);
   MediaRoute route2("route_2", source2, "sink_2", "", true, false);
   std::vector<MediaRoute> routes = {route1, route2};
-  std::vector<MediaRoute::Id> joinable_route_ids = {"route_1"};
 
   EXPECT_TRUE(router_.GetCurrentRoutes().empty());
-  routes_observer_->OnRoutesUpdated(routes, joinable_route_ids);
+  routes_observer_->OnRoutesUpdated(routes);
   std::vector<MediaRoute> current_routes = router_.GetCurrentRoutes();
   ASSERT_EQ(current_routes.size(), 2u);
   EXPECT_EQ(current_routes[0], route1);
   EXPECT_EQ(current_routes[1], route2);
 
-  routes_observer_->OnRoutesUpdated(std::vector<MediaRoute>(),
-                                    std::vector<MediaRoute::Id>());
+  routes_observer_->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_TRUE(router_.GetCurrentRoutes().empty());
 }
 

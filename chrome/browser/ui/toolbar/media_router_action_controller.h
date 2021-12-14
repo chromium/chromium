@@ -66,9 +66,8 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   void OnIssuesCleared() override;
 
   // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(const std::vector<media_router::MediaRoute>& routes,
-                       const std::vector<media_router::MediaRoute::Id>&
-                           joinable_route_ids) override;
+  void OnRoutesUpdated(
+      const std::vector<media_router::MediaRoute>& routes) override;
 
   // Called when a Media Router dialog is shown or hidden, and updates the
   // visibility of the action icon. Overridden in tests.

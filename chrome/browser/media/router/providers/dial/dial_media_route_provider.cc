@@ -507,16 +507,12 @@ void DialMediaRouteProvider::HandleStopAppResult(
 
 void DialMediaRouteProvider::NotifyAllOnRoutesUpdated() {
   auto routes = activity_manager_->GetRoutes();
-  for (const auto& query : media_route_queries_)
-    NotifyOnRoutesUpdated(query, routes);
+  NotifyOnRoutesUpdated(routes);
 }
 
 void DialMediaRouteProvider::NotifyOnRoutesUpdated(
-    const MediaSource::Id& source_id,
     const std::vector<MediaRoute>& routes) {
-  media_router_->OnRoutesUpdated(mojom::MediaRouteProviderId::DIAL, routes,
-                                 source_id,
-                                 /* joinable_route_ids */ {});
+  media_router_->OnRoutesUpdated(mojom::MediaRouteProviderId::DIAL, routes);
 }
 
 void DialMediaRouteProvider::SendRouteBinaryMessage(
@@ -580,19 +576,11 @@ void DialMediaRouteProvider::StopObservingMediaSinks(
     media_sink_queries_.erase(sink_query_it);
 }
 
-void DialMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
-  media_route_queries_.insert(media_source);
-
+void DialMediaRouteProvider::StartObservingMediaRoutes() {
   // Return current set of routes.
   auto routes = activity_manager_->GetRoutes();
   if (!routes.empty())
-    NotifyOnRoutesUpdated(media_source, routes);
-}
-
-void DialMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  media_route_queries_.erase(media_source);
+    NotifyOnRoutesUpdated(routes);
 }
 
 void DialMediaRouteProvider::StartListeningForRouteMessages(

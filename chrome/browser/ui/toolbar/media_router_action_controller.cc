@@ -61,8 +61,7 @@ void MediaRouterActionController::OnIssuesCleared() {
 }
 
 void MediaRouterActionController::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
+    const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
       std::find_if(routes.begin(), routes.end(),
                    [this](const media_router::MediaRoute& route) {

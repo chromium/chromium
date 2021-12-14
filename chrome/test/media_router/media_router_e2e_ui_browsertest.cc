@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
     test_ui_->ShowDialog();
   test_ui_->WaitForSink(receiver_);
   test_ui_->StopCasting(receiver_);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(web_contents);
   test_ui_->HideDialog();
 }
 

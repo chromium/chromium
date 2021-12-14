@@ -96,7 +96,6 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
 
   std::vector<media_router::MediaRoute> local_display_route_list_;
   std::vector<media_router::MediaRoute> non_local_display_route_list_;
-  std::vector<media_router::MediaRoute::Id> empty_route_id_list_;
 };
 
 // TODO(b/185139027): Remove this class once
@@ -130,12 +129,11 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
   EXPECT_FALSE(IsIconShown());
 
   // Creating a local route should show the action icon.
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_route_list_);
   EXPECT_TRUE(controller_->has_local_display_route_);
   EXPECT_TRUE(IsIconShown());
   // Removing the local route should hide the icon.
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated(non_local_display_route_list_);
   EXPECT_FALSE(controller_->has_local_display_route_);
   EXPECT_FALSE(IsIconShown());
 
@@ -149,13 +147,12 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
   EXPECT_FALSE(IsIconShown());
 
   controller_->OnIssue(issue_);
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_route_list_);
   controller_->OnIssuesCleared();
   // When the issue disappears, the icon should remain visible if there's
   // a local route.
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(std::vector<media_router::MediaRoute>(),
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated(std::vector<media_router::MediaRoute>());
   EXPECT_FALSE(IsIconShown());
 }
 
@@ -177,12 +174,11 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForDialog) {
 
   controller_->OnDialogShown();
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_route_list_);
   // Hiding the dialog while there are local routes shouldn't hide the icon.
   controller_->OnDialogHidden();
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated(non_local_display_route_list_);
   EXPECT_FALSE(IsIconShown());
 
   controller_->OnDialogShown();
@@ -217,14 +213,13 @@ TEST_F(MediaRouterActionControllerUnitTest, ObserveAlwaysShowPrefChange) {
   SetAlwaysShowActionPref(true);
   EXPECT_TRUE(IsIconShown());
 
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_route_list_);
   SetAlwaysShowActionPref(false);
   // Unchecking the option while having a local route shouldn't hide the icon.
   EXPECT_TRUE(IsIconShown());
 
   SetAlwaysShowActionPref(true);
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated(non_local_display_route_list_);
   // Removing the local route should not hide the icon.
   EXPECT_TRUE(IsIconShown());
 
@@ -236,12 +231,10 @@ TEST_F(MediaRouterActionControllerGMCUnitTest,
        EphemeralIconForMirroringSessions) {
   EXPECT_FALSE(IsIconShown());
   // Creating a cast route should not show the action icon.
-  controller_->OnRoutesUpdated({local_display_cast_route_list_},
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated({local_display_cast_route_list_});
   EXPECT_FALSE(IsIconShown());
 
   // Creating a local mirroring route should show the action icon.
-  controller_->OnRoutesUpdated(local_display_mirroring_route_list_,
-                               empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_mirroring_route_list_);
   EXPECT_TRUE(IsIconShown());
 }

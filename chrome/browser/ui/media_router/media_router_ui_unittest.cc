@@ -189,10 +189,8 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
       const std::vector<MediaSinkWithCastModes>& sinks) {
     ui_->OnResultsUpdated(sinks);
   }
-  void NotifyUiOnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) {
-    ui_->OnRoutesUpdated(routes, joinable_route_ids);
+  void NotifyUiOnRoutesUpdated(const std::vector<MediaRoute>& routes) {
+    ui_->OnRoutesUpdated(routes);
   }
 
   void StartTabCasting(bool is_incognito) {
@@ -302,7 +300,7 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
             EXPECT_EQ(UIMediaSinkState::CONNECTED, ui_sink.state);
             EXPECT_EQ(route.media_route_id(), ui_sink.route->media_route_id());
           })));
-  NotifyUiOnRoutesUpdated({route}, {});
+  NotifyUiOnRoutesUpdated({route});
 
   EXPECT_CALL(observer, OnControllerInvalidatedInternal());
   ui_.reset();
@@ -418,7 +416,7 @@ TEST_F(MediaRouterViewsUITest, ConnectingState) {
         EXPECT_EQ(UIMediaSinkState::CONNECTED, model.media_sinks()[0].state);
       })));
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true, true);
-  NotifyUiOnRoutesUpdated({route}, {});
+  NotifyUiOnRoutesUpdated({route});
 }
 
 TEST_F(MediaRouterViewsUITest, DisconnectingState) {
@@ -428,7 +426,7 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true, true);
   for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
-  NotifyUiOnRoutesUpdated({route}, {});
+  NotifyUiOnRoutesUpdated({route});
 
   // When a request to stop casting to a sink is made, its state should become
   // DISCONNECTING.
@@ -446,7 +444,7 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
         ASSERT_EQ(1u, model.media_sinks().size());
         EXPECT_EQ(UIMediaSinkState::AVAILABLE, model.media_sinks()[0].state);
       })));
-  NotifyUiOnRoutesUpdated({}, {});
+  NotifyUiOnRoutesUpdated({});
 }
 
 TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
@@ -617,7 +615,7 @@ TEST_F(MediaRouterViewsUITest, FilterNonDisplayRoutes) {
                              true, true);
 
   NotifyUiOnRoutesUpdated(
-      {display_route_1, non_display_route_1, display_route_2}, {});
+      {display_route_1, non_display_route_1, display_route_2});
   ASSERT_EQ(2u, ui_->routes().size());
   EXPECT_EQ(display_route_1, ui_->routes()[0]);
   EXPECT_TRUE(ui_->routes()[0].for_display());

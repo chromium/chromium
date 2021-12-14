@@ -22,9 +22,7 @@ class MediaRouter;
 // |source_id| is supplied, then the idea of joinable routes no longer applies.
 class MediaRoutesObserver {
  public:
-  explicit MediaRoutesObserver(MediaRouter* router)
-      : MediaRoutesObserver(router, MediaSource::Id()) {}
-  MediaRoutesObserver(MediaRouter* router, const MediaSource::Id& source_id);
+  explicit MediaRoutesObserver(MediaRouter* router);
 
   MediaRoutesObserver(const MediaRoutesObserver&) = delete;
   MediaRoutesObserver& operator=(const MediaRoutesObserver&) = delete;
@@ -32,22 +30,17 @@ class MediaRoutesObserver {
   virtual ~MediaRoutesObserver();
 
   // Invoked when the list of routes and their associated sinks have been
-  // updated with the context of the |source_id|.  This will return a list of
-  // |routes| and a list of |joinable_route_ids|.  A route is joinable only if
-  // it is joinable in the context of the |source_id|.
+  // updated.
+  //
   // Implementations may not perform operations that modify the Media Router's
   // observer list. In particular, invoking this observer's destructor within
   // OnRoutesUpdated will result in undefined behavior.
-  virtual void OnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) {}
+  virtual void OnRoutesUpdated(const std::vector<MediaRoute>& routes) {}
 
   MediaRouter* router() const { return router_; }
-  const MediaSource::Id source_id() const { return source_id_; }
 
  private:
   const raw_ptr<MediaRouter> router_;
-  const MediaSource::Id source_id_;
 };
 
 }  // namespace media_router

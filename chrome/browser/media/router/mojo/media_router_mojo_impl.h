@@ -205,6 +205,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   // Represents a query to the MediaRouteProviders for media routes and caches
   // media routes returned by MRPs. Holds observers for the query.
+  //
+  // NOTE: If the to-do below for providers_for_routes_ is fixed, then this
+  // entire class can be replaced with a std::vector<MediaRoute> and a
+  // base::ObserverList of observers.
   class MediaRoutesQuery {
    public:
     MediaRoutesQuery();
@@ -214,12 +218,9 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
     ~MediaRoutesQuery();
 
-    // Caches the list of routes and joinable route IDs for the provider
-    // returned from the query.
-    void SetRoutesForProvider(
-        mojom::MediaRouteProviderId provider_id,
-        const std::vector<MediaRoute>& routes,
-        const std::vector<MediaRoute::Id>& joinable_route_ids);
+    // Caches the list of routes for the provider returned from the query.
+    void SetRoutesForProvider(mojom::MediaRouteProviderId provider_id,
+                              const std::vector<MediaRoute>& routes);
 
     // Adds |route| to the list of routes managed by the provider and returns
     // true, if it hasn't been added already. Returns false otherwise.
@@ -239,26 +240,20 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     const absl::optional<std::vector<MediaRoute>>& cached_route_list() const {
       return cached_route_list_;
     }
-    const std::vector<MediaRoute::Id>& joinable_route_ids() const {
-      return joinable_route_ids_;
-    }
     const base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute>>&
     providers_to_routes() const {
       return providers_to_routes_;
     }
 
    private:
-    // Cached list of routes and joinable route IDs for the query.
+    // Cached list of routes for the query.
     absl::optional<std::vector<MediaRoute>> cached_route_list_;
-    std::vector<MediaRoute::Id> joinable_route_ids_;
 
-    // Per-MRP lists of routes and joinable route IDs for the query.
-    // TODO(crbug.com/761493): Consider making MRP ID an attribute
-    // of MediaRoute, so that we can simplify these into vectors.
+    // Per-MRP lists of routes for the query.
+    // TODO(crbug.com/761493): Consider making MRP ID an attribute of
+    // MediaRoute, so that we can simplify these into vectors.
     base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute>>
         providers_to_routes_;
-    base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute::Id>>
-        providers_to_joinable_routes_;
 
     base::ObserverList<MediaRoutesObserver>::Unchecked observers_;
   };
@@ -281,16 +276,12 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   // Notifies |observer| of any existing cached routes, if it is still
   // registered.
-  void NotifyOfExistingRoutesIfRegistered(const MediaSource::Id& source_id,
-                                          MediaRoutesObserver* observer) const;
+  void NotifyOfExistingRoutesIfRegistered(MediaRoutesObserver* observer) const;
 
   // mojom::MediaRouter implementation.
   void OnIssue(const IssueInfo& issue) override;
-  void OnRoutesUpdated(
-      mojom::MediaRouteProviderId provider_id,
-      const std::vector<MediaRoute>& routes,
-      const std::string& media_source,
-      const std::vector<std::string>& joinable_route_ids) override;
+  void OnRoutesUpdated(mojom::MediaRouteProviderId provider_id,
+                       const std::vector<MediaRoute>& routes) override;
   void OnPresentationConnectionStateChanged(
       const std::string& route_id,
       blink::mojom::PresentationConnectionState state) override;
@@ -385,8 +376,9 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   base::flat_map<MediaSource::Id, std::unique_ptr<MediaSinksQuery>>
       sinks_queries_;
 
-  base::flat_map<MediaSource::Id, std::unique_ptr<MediaRoutesQuery>>
-      routes_queries_;
+  // Holds observers for media route updates and a map of providers to route
+  // ids..
+  MediaRoutesQuery routes_query_;
 
   using RouteMessageObserverList =
       base::ObserverList<RouteMessageObserver>::Unchecked;
