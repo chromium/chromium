@@ -9,7 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -57,7 +57,7 @@ void CheckAllowedDomainsHeader(const std::string& allowed_domain,
   EXPECT_EQ(header, allowed_domain);
 }
 
-class PolicyTestGoogle : public PolicyTest {
+class PolicyTestGoogle : public SafeSearchPolicyTest {
  public:
   PolicyTestGoogle() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
@@ -70,7 +70,7 @@ class PolicyTestGoogle : public PolicyTest {
 
  private:
   void SetUpOnMainThread() override {
-    PolicyTest::SetUpOnMainThread();
+    SafeSearchPolicyTest::SetUpOnMainThread();
 
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
@@ -87,6 +87,8 @@ class PolicyTestGoogle : public PolicyTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    SafeSearchPolicyTest::SetUpCommandLine(command_line);
+
     // Note for the google and youtube tests below, the throttles expect that
     // the URLs are to google.com or youtube.com. Networking code also
     // automatically upgrades http requests to these domains to https (see the

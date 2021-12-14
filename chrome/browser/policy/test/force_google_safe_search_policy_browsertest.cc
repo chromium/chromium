@@ -7,7 +7,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -26,7 +26,7 @@
 
 namespace policy {
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, LegacySafeSearch) {
+IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
   static_assert(safe_search_util::YOUTUBE_RESTRICT_OFF == 0 &&
                     safe_search_util::YOUTUBE_RESTRICT_MODERATE == 1 &&
                     safe_search_util::YOUTUBE_RESTRICT_STRICT == 2 &&
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, LegacySafeSearch) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, ForceGoogleSafeSearch) {
+IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, ForceGoogleSafeSearch) {
   base::Lock lock;
   std::set<GURL> google_urls_requested;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(

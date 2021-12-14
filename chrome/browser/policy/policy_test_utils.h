@@ -5,16 +5,12 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 #define CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
-
-class Browser;
 
 namespace content {
 class WebContents;
@@ -45,8 +41,6 @@ class PolicyTest : public PlatformBrowserTest {
   PolicyTest();
   ~PolicyTest() override;
 
-  void SetUp() override;
-
   void SetUpInProcessBrowserTestFixture() override;
 
   void SetUpOnMainThread() override;
@@ -64,20 +58,9 @@ class PolicyTest : public PlatformBrowserTest {
                         const char* key,
                         absl::optional<base::Value> value);
 
-  void ApplySafeSearchPolicy(absl::optional<base::Value> legacy_safe_search,
-                             absl::optional<base::Value> google_safe_search,
-                             absl::optional<base::Value> legacy_youtube,
-                             absl::optional<base::Value> youtube_restrict);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void TestScreenshotFile(bool enabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  static GURL GetExpectedSearchURL(bool expect_safe_search);
-
-  static void CheckSafeSearch(Browser* browser,
-                              bool expect_safe_search,
-                              const std::string& url = "http://google.com/");
 
   static bool FetchSubresource(content::WebContents* web_contents,
                                const GURL& url);
