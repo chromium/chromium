@@ -148,8 +148,8 @@
     },
     "mac-rel": {
         "master": "tryserver.chromium.mac",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Release"],
+        "port_name": "mac-mac11",
+        "specifiers": ["Mac11", "Release"],
         "is_try_builder": true,
         "is_cq_builder":true
     },
