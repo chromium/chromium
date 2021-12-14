@@ -387,16 +387,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // frame proxies.
   void OnDidUpdateName(const std::string& name, const std::string& unique_name);
 
-  // Sends updated enforcement of insecure request policy to all frame proxies
-  // when the frame changes its setting.
-  void OnEnforceInsecureRequestPolicy(
-      blink::mojom::InsecureRequestPolicy policy);
-
-  // Sends updated enforcement of upgrade insecure navigations set to all frame
-  // proxies when the frame changes its setting.
-  void OnEnforceInsecureNavigationsSet(
-      const std::vector<uint32_t>& insecure_navigations_set);
-
   // Called when the client changes whether the frame's owner element in the
   // embedder document should be collapsed, that is, remove from the layout as
   // if it did not exist. Never called for main frames. Only has an effect for
@@ -414,15 +404,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // header on the frame have been changed during page load. Sandbox flags can
   // change when set by a CSP header.
   void OnDidSetFramePolicyHeaders();
-
-  // Send updated origin to all frame proxies when the frame navigates to a new
-  // origin.
-  void OnDidUpdateOrigin(const url::Origin& origin,
-                         bool is_potentially_trustworthy_unique_origin);
-
-  // Send updated ad status to all frame proxies at ready-to-commit time when it
-  // gets updated.
-  void OnDidSetIsAdSubframe(bool is_ad_subframe);
 
   void EnsureRenderViewInitialized(RenderViewHostImpl* render_view_host,
                                    SiteInstance* instance);
@@ -516,8 +497,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   void UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type);
-
-  void OnSetHadStickyUserActivationBeforeNavigation(bool value);
 
   // Sets up the necessary state for a new RenderViewHost.  If |proxy| is not
   // null, it creates a RenderFrameProxy in the target renderer process which is

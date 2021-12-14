@@ -111,37 +111,8 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
     replication_state_->name = name;
   }
 
-  void set_is_ad_subframe(bool is_ad_subframe) {
-    replication_state_->is_ad_subframe = is_ad_subframe;
-  }
-
-  void set_origin(const url::Origin& origin) {
-    replication_state_->origin = origin;
-  }
-
-  void set_has_potentially_trustworthy_unique_origin(
-      bool is_potentially_trustworthy_unique_origin) {
-    replication_state_->has_potentially_trustworthy_unique_origin =
-        is_potentially_trustworthy_unique_origin;
-  }
-
-  void set_insecure_request_policy(blink::mojom::InsecureRequestPolicy policy) {
-    replication_state_->insecure_request_policy = policy;
-  }
-
-  void set_insecure_navigations_set(
-      const std::vector<uint32_t>& insecure_navigations_set) {
-    replication_state_->insecure_navigations_set = insecure_navigations_set;
-  }
-
   void set_has_active_user_gesture(bool has_active_user_gesture) {
     replication_state_->has_active_user_gesture = has_active_user_gesture;
-  }
-
-  void set_has_received_active_user_gesture_before_nav(
-      bool has_received_user_gesture_before_nav) {
-    replication_state_->has_received_user_gesture_before_nav =
-        has_received_user_gesture_before_nav;
   }
 
   void set_permissions_policy_header(
@@ -157,6 +128,27 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
                          bool did_change_flags,
                          bool did_change_container_policy,
                          bool did_change_required_document_policy);
+
+  // Set the current origin and notify proxies about the update.
+  void SetCurrentOrigin(const url::Origin& origin,
+                        bool is_potentially_trustworthy_unique_origin);
+
+  // Sets the current insecure request policy, and notifies proxies about the
+  // update.
+  void SetInsecureRequestPolicy(blink::mojom::InsecureRequestPolicy policy);
+
+  // Sets the current set of insecure urls to upgrade, and notifies proxies
+  // about the update.
+  void SetInsecureNavigationsSet(
+      const std::vector<uint32_t>& insecure_navigations_set);
+
+  // Sets the the sticky user activation status and notifies proxies about the
+  // update.
+  void OnSetHadStickyUserActivationBeforeNavigation(bool value);
+
+  // Sets whether this is an ad subframe and notifies the proxies about the
+  // update.
+  void SetIsAdSubframe(bool is_ad_subframe);
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

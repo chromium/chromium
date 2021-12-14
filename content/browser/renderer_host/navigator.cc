@@ -474,10 +474,12 @@ void Navigator::DidNavigate(
   // Save the new page's origin and other properties, and replicate them to
   // proxies, including the proxy created in DidNavigateFrame() to replace the
   // old frame in cross-process navigation cases.
-  frame_tree_node->SetCurrentOrigin(
+  render_frame_host->browsing_context_state()->SetCurrentOrigin(
       params.origin, params.has_potentially_trustworthy_unique_origin);
-  frame_tree_node->SetInsecureRequestPolicy(params.insecure_request_policy);
-  frame_tree_node->SetInsecureNavigationsSet(params.insecure_navigations_set);
+  render_frame_host->browsing_context_state()->SetInsecureRequestPolicy(
+      params.insecure_request_policy);
+  render_frame_host->browsing_context_state()->SetInsecureNavigationsSet(
+      params.insecure_navigations_set);
 
   // Save the activation status of the previous page here before it gets reset
   // in FrameTreeNode::ResetForNavigation.

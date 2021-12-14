@@ -225,21 +225,8 @@ class CONTENT_EXPORT FrameTreeNode {
     return render_manager_.current_replication_state().origin;
   }
 
-  // Set the current origin and notify proxies about the update.
-  void SetCurrentOrigin(const url::Origin& origin,
-                        bool is_potentially_trustworthy_unique_origin);
-
   // Set the current name and notify proxies about the update.
   void SetFrameName(const std::string& name, const std::string& unique_name);
-
-  // Sets the current insecure request policy, and notifies proxies about the
-  // update.
-  void SetInsecureRequestPolicy(blink::mojom::InsecureRequestPolicy policy);
-
-  // Sets the current set of insecure urls to upgrade, and notifies proxies
-  // about the update.
-  void SetInsecureNavigationsSet(
-      const std::vector<uint32_t>& insecure_navigations_set);
 
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
@@ -392,8 +379,6 @@ class CONTENT_EXPORT FrameTreeNode {
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type);
 
-  void OnSetHadStickyUserActivationBeforeNavigation(bool value);
-
   // Returns the sandbox flags currently in effect for this frame. This includes
   // flags inherited from parent frames, the currently active flags from the
   // <iframe> element hosting this frame, as well as any flags set from a
@@ -458,8 +443,6 @@ class CONTENT_EXPORT FrameTreeNode {
   blink::mojom::TreeScopeType tree_scope_type() const {
     return tree_scope_type_;
   }
-
-  void SetIsAdSubframe(bool is_ad_subframe);
 
   // The initial popup URL for new window opened using:
   // `window.open(initial_popup_url)`.

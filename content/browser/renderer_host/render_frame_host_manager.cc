@@ -1366,22 +1366,6 @@ void RenderFrameHostManager::OnDidUpdateName(const std::string& name,
   }
 }
 
-void RenderFrameHostManager::OnEnforceInsecureRequestPolicy(
-    blink::mojom::InsecureRequestPolicy policy) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureRequestPolicy(
-        policy);
-  }
-}
-
-void RenderFrameHostManager::OnEnforceInsecureNavigationsSet(
-    const std::vector<uint32_t>& insecure_navigations_set) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureNavigationsSet(
-        insecure_navigations_set);
-  }
-}
-
 void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   DCHECK(frame_tree_node_->parent());
   SiteInstanceImpl* parent_site_instance =
@@ -1429,22 +1413,6 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
       proxy->GetAssociatedRemoteFrame()->SetFrameOwnerProperties(
           std::move(properties_for_remote_frame));
     }
-  }
-}
-
-void RenderFrameHostManager::OnDidUpdateOrigin(
-    const url::Origin& origin,
-    bool is_potentially_trustworthy_unique_origin) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedOrigin(
-        origin, is_potentially_trustworthy_unique_origin);
-  }
-}
-
-void RenderFrameHostManager::OnDidSetIsAdSubframe(bool is_ad_subframe) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedIsAdSubframe(
-        is_ad_subframe);
   }
 }
 
@@ -1506,14 +1474,6 @@ void RenderFrameHostManager::UpdateUserActivationState(
         update_type, notification_type);
     GetOuterDelegateNode()->UpdateUserActivationState(update_type,
                                                       notification_type);
-  }
-}
-
-void RenderFrameHostManager::OnSetHadStickyUserActivationBeforeNavigation(
-    bool value) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()
-        ->SetHadStickyUserActivationBeforeNavigation(value);
   }
 }
 

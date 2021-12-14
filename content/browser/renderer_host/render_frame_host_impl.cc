@@ -5279,12 +5279,12 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
 
 void RenderFrameHostImpl::EnforceInsecureRequestPolicy(
     blink::mojom::InsecureRequestPolicy policy) {
-  frame_tree_node()->SetInsecureRequestPolicy(policy);
+  browsing_context_state_->SetInsecureRequestPolicy(policy);
 }
 
 void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
     const std::vector<uint32_t>& set) {
-  frame_tree_node()->SetInsecureNavigationsSet(set);
+  browsing_context_state_->SetInsecureNavigationsSet(set);
 }
 
 void RenderFrameHostImpl::AddDocumentService(
@@ -6190,7 +6190,7 @@ void RenderFrameHostImpl::UpdateUserActivationState(
 
 void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
     bool value) {
-  frame_tree_node_->OnSetHadStickyUserActivationBeforeNavigation(value);
+  browsing_context_state_->OnSetHadStickyUserActivationBeforeNavigation(value);
 }
 
 void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
@@ -12207,7 +12207,7 @@ bool RenderFrameHostImpl::IsDOMContentLoaded() {
 }
 
 void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
-  frame_tree_node_->SetIsAdSubframe(is_ad_subframe);
+  browsing_context_state_->SetIsAdSubframe(is_ad_subframe);
 }
 
 std::pair<blink::mojom::AuthenticatorStatus, bool>

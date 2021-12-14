@@ -47,4 +47,68 @@ void BrowsingContextState::UpdateFramePolicy(
         new_frame_policy.required_document_policy;
   }
 }
+
+void BrowsingContextState::SetCurrentOrigin(
+    const url::Origin& origin,
+    bool is_potentially_trustworthy_unique_origin) {
+  if (origin.IsSameOriginWith(replication_state_->origin) &&
+      replication_state_->has_potentially_trustworthy_unique_origin ==
+          is_potentially_trustworthy_unique_origin) {
+    return;
+  }
+
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()->SetReplicatedOrigin(
+        origin, is_potentially_trustworthy_unique_origin);
+  }
+
+  replication_state_->origin = origin;
+  replication_state_->has_potentially_trustworthy_unique_origin =
+      is_potentially_trustworthy_unique_origin;
+}
+
+void BrowsingContextState::SetInsecureRequestPolicy(
+    blink::mojom::InsecureRequestPolicy policy) {
+  if (policy == replication_state_->insecure_request_policy)
+    return;
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureRequestPolicy(
+        policy);
+  }
+  replication_state_->insecure_request_policy = policy;
+}
+
+void BrowsingContextState::SetInsecureNavigationsSet(
+    const std::vector<uint32_t>& insecure_navigations_set) {
+  DCHECK(std::is_sorted(insecure_navigations_set.begin(),
+                        insecure_navigations_set.end()));
+  if (insecure_navigations_set == replication_state_->insecure_navigations_set)
+    return;
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureNavigationsSet(
+        insecure_navigations_set);
+  }
+  replication_state_->insecure_navigations_set = insecure_navigations_set;
+}
+
+void BrowsingContextState::OnSetHadStickyUserActivationBeforeNavigation(
+    bool value) {
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()
+        ->SetHadStickyUserActivationBeforeNavigation(value);
+  }
+  replication_state_->has_received_user_gesture_before_nav = value;
+}
+
+void BrowsingContextState::SetIsAdSubframe(bool is_ad_subframe) {
+  if (is_ad_subframe == replication_state_->is_ad_subframe)
+    return;
+
+  replication_state_->is_ad_subframe = is_ad_subframe;
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()->SetReplicatedIsAdSubframe(
+        is_ad_subframe);
+  }
+}
+
 }  // namespace content
