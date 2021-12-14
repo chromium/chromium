@@ -4,6 +4,7 @@
      found in the LICENSE file. -->
 
 <resources>
+    <!-- Colors should be mirrored by Base.Theme.BrowserUI.DialogWhenLarge. -->
     <style name="Base.V21.Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_600</item>
@@ -61,9 +62,68 @@
         <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
         <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>
     </style>
-
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
+
+    <!-- Colors should be mirrored by Base.V21.Theme.BrowserUI. -->
+    <style name="Base.Theme.BrowserUI.DialogWhenLarge" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
+         <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorOnPrimary">@color/baseline_primary_0</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorAccent">@macro/default_control_color_active</item>
+        <item name="android:colorBackground">@color/baseline_neutral_0</item>
+        <item name="colorOnBackground">@color/baseline_neutral_900</item>
+        <item name="colorSurface">@color/baseline_neutral_0</item>
+        <item name="colorOnSurface">@color/baseline_neutral_900</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorError">@color/baseline_error_600</item>
+
+        <!-- Text colors-->
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="android:textColorLink">@color/default_text_color_link</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
+
+        <!-- Widget colors: checkboxes, switches, buttons, etc. -->
+        <item name="colorControlNormal">@macro/default_control_color_normal</item>
+        <item name="colorControlActivated">@macro/default_control_color_active</item>
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+
+        <!-- Custom roles -->
+        <!-- Dynamic roles -->
+        <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
+        <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
+        <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
+        <!-- Non-dynamic roles for switches -->
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_600</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_100</item>
+
+        <!-- Custom semantic names -->
+        <!-- Supports dynamic colors now. -->
+        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
+        <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
+        <!-- Common icon colors for drawables. -->
+        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
+        <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
+        <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
+        <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>
+    </style>
+    <style name="Theme.BrowserUI.DialogWhenLarge" parent="Base.Theme.BrowserUI.DialogWhenLarge"/>
 
     <!-- Unlike |Theme.Chromium.AlertDialog|, this is a complete theme that can be used as an
          activity theme on its own. This should be kept in sync with |Theme.Chromium.AlertDialog|.
