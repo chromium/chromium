@@ -508,6 +508,11 @@ const base::Feature kVaapiVP8Encoder{"VaapiVP8Encoder",
 const base::Feature kVaapiVP9Encoder{"VaapiVP9Encoder",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable global VA-API lock. Disable this to use lock-free VA-API function
+// calls for thread safe backends.
+const base::Feature kGlobalVaapiLock{"GlobalVaapiLock",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable H264 temporal layer encoding with HW encoder on ChromeOS.
 const base::Feature kVaapiH264TemporalLayerHWEncoding{

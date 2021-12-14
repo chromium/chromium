@@ -23,7 +23,8 @@ struct VAContextAndScopedVASurfaceDeleter;
 struct Vp8FrameHeader;
 
 // Class to map a given VABuffer, identified by |buffer_id|, for its lifetime.
-// This class must operate under |lock_| acquired.
+// The |lock_| might be null depending on the user of this class. If |lock_| is
+// not null, this class must operate under |lock_| acquired.
 class ScopedVABufferMapping {
  public:
   // |release_callback| will be called if the mapping of the buffer failed.
@@ -56,8 +57,9 @@ class ScopedVABufferMapping {
 
 // This class tracks the VABuffer life cycle from vaCreateBuffer() to
 // vaDestroyBuffer(). Users of this class are responsible for mapping and
-// unmapping the buffer as needed. The destructor acquires |lock|, but the user
-// of this class must acquire the lock prior to construction.
+// unmapping the buffer as needed. The |lock_| might be null depending on the
+// user of this class. If |lock_| is not null, |lock_| is acquired for
+// destruction purposes.
 class ScopedVABuffer {
  public:
   // Creates ScopedVABuffer. Returns nullptr if creating the va buffer fails.
@@ -94,8 +96,9 @@ class ScopedVABuffer {
 // This class tracks the VAImage life cycle from vaCreateImage() - vaGetImage()
 // to vaDestroyImage(). In between creation and destruction, image()->buf  will
 // try to be be mapped on user space using a ScopedVABufferMapping. All
-// resources will be cleaned up appropriately. |lock| is acquired for
-// destruction purposes.
+// resources will be cleaned up appropriately. The |lock_| might be null
+// depending on the user of this class. If |lock_| is not null, |lock_| is
+// acquired for destruction purposes.
 class ScopedVAImage {
  public:
   ScopedVAImage(base::Lock* lock,

@@ -46,6 +46,10 @@ class NativePixmapDmaBuf;
 class Rect;
 }
 
+#define MAYBE_ASSERT_ACQUIRED(lock) \
+  if (lock)                         \
+    lock->AssertAcquired()
+
 namespace media {
 constexpr unsigned int kInvalidVaRtFormat = 0u;
 
@@ -92,12 +96,15 @@ enum class VAImplementation {
 };
 
 // This class handles VA-API calls and ensures proper locking of VA-API calls
-// to libva, the userspace shim to the HW codec driver. libva is not
-// thread-safe, so we have to perform locking ourselves. This class is fully
+// to libva, the userspace shim to the HW codec driver. The thread safety of
+// libva depends on the backend. If the backend is not thread-safe, we need to
+// maintain a global lock that guards all libva calls. This class is fully
 // synchronous and its constructor, all of its methods, and its destructor must
 // be called on the same sequence. These methods may wait on the |va_lock_|
 // which guards libva calls across all VaapiWrapper instances and other libva
-// call sites.
+// call sites. If the backend is known to be thread safe and
+// |enforce_sequence_affinity_| is true when the |kGlobalVaapiLock| flag is
+// disabled, |va_lock_| will be null and won't guard any libva calls.
 //
 // This class is responsible for managing VAAPI connection, contexts and state.
 // It is also responsible for managing and freeing VABuffers (not VASurfaces),
@@ -615,8 +622,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   const bool enforce_sequence_affinity_;
   base::SequenceCheckerImpl sequence_checker_;
 
-  // Pointer to VADisplayState's member |va_lock_|. Guaranteed to be valid for
-  // the lifetime of VaapiWrapper.
+  // If using global VA lock, this is a pointer to VADisplayState's member
+  // |va_lock_|. Guaranteed to be valid for the lifetime of VaapiWrapper.
   base::Lock* va_lock_;
 
   // VA handles.
