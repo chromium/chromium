@@ -18,6 +18,7 @@
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
+#include "components/query_tiles/switches.h"
 #endif
 
 using optimization_guide::proto::OptimizationTarget;
@@ -31,12 +32,20 @@ namespace {
 constexpr int kDummyFeatureSelectionTTLDays = 1;
 
 #if defined(OS_ANDROID)
+
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
 constexpr int kChromeStartDefaultSelectionTTLDays = 30;
 constexpr int kChromeStartDefaultUnknownTTLDays = 7;
 
 constexpr int kChromeLowUserEngagementSelectionTTLDays = 30;
+
+// See
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java
+const char kNumDaysKeepShowingQueryTiles[] =
+    "num_days_keep_showing_query_tiles";
+const char kNumDaysMVCkicksBelowThreshold[] =
+    "num_days_mv_clicks_below_threshold";
 
 // DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES
 constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
@@ -103,10 +112,15 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   config->segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
   };
-  // TODO(ssid): use experiment params to configure these.
-  config->segment_selection_ttl =
-      base::Days(kQueryTilesDefaultSelectionTTLDays);
-  config->unknown_selection_ttl = base::Days(kQueryTilesDefaultUnknownTTLDays);
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      query_tiles::features::kQueryTilesSegmentation,
+      kNumDaysKeepShowingQueryTiles, kQueryTilesDefaultSelectionTTLDays);
+  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      query_tiles::features::kQueryTilesSegmentation,
+      kNumDaysMVCkicksBelowThreshold, kQueryTilesDefaultUnknownTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
   return config;
 }
 
