@@ -113,7 +113,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
      *                   {@code mAvailableReactions}.
      */
     private void onAssetsFetched(Bitmap[] thumbnails) {
-        boolean success = thumbnails != null && thumbnails.length == mAvailableReactions.size();
+        boolean success = thumbnails != null;
         LightweightReactionsMetrics.recordAssetsFetched(
                 success, System.currentTimeMillis() - mAssetFetchStartTime);
         if (success) {
