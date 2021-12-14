@@ -1117,7 +1117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

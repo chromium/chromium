@@ -1230,7 +1230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.DictionaryAttackResetStatus"
-    enum="CrosTPMDictionaryAttackResetStatusEnum" expires_after="2022-04-10">
+    enum="CrosTPMDictionaryAttackResetStatusEnum" expires_after="2022-06-12">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
   <summary>
@@ -1328,7 +1328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingCommand"
-    enum="TPMCommandCode" expires_after="2022-04-10">
+    enum="TPMCommandCode" expires_after="2022-06-12">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Command code of the first timeout writing TPM command</summary>

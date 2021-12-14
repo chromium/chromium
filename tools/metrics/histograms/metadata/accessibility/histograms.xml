@@ -1121,7 +1121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

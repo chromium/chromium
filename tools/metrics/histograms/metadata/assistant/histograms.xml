@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.DspHotwordDetection"
-    enum="DspHotwordDetectionStatus" expires_after="2022-04-10">
+    enum="DspHotwordDetectionStatus" expires_after="2022-06-12">
   <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>

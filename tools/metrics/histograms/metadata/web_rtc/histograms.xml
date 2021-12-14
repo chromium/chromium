@@ -1163,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.EstimatedSendBitrateInKbps" units="kbps"
-    expires_after="2022-04-11">
+    expires_after="2022-06-12">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average estimated send bitrate during a call, counted from first packet sent
@@ -1201,7 +1201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingAudioRtpPacketsInSeconds" units="s"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last audio RTP

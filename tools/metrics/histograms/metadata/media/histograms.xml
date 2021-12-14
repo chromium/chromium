@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Glitches" units="glitches"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LargestGlitchMs" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.Glitches" units="glitches"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -940,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.LargestGlitchMs" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-06-12">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -3112,7 +3112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2022-04-10">
+    enum="AudioCaptureStartupResult" expires_after="2022-06-12">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
