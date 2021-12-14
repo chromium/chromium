@@ -5,6 +5,7 @@
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,9 +32,13 @@ FakeHpsDBusClient::~FakeHpsDBusClient() {
   g_fake_instance = nullptr;
 }
 
-void FakeHpsDBusClient::AddObserver(Observer* observer) {}
+void FakeHpsDBusClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
 
-void FakeHpsDBusClient::RemoveObserver(Observer* observer) {}
+void FakeHpsDBusClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void FakeHpsDBusClient::GetResultHpsNotify(GetResultHpsNotifyCallback cb) {
   ++hps_notify_count_;
@@ -42,9 +47,13 @@ void FakeHpsDBusClient::GetResultHpsNotify(GetResultHpsNotifyCallback cb) {
       FROM_HERE, base::BindOnce(std::move(cb), hps_notify_result_));
 }
 
-void FakeHpsDBusClient::EnableHpsSense(const hps::FeatureConfig& config) {}
+void FakeHpsDBusClient::EnableHpsSense(const hps::FeatureConfig& config) {
+  ++enable_hps_sense_count_;
+}
 
-void FakeHpsDBusClient::DisableHpsSense() {}
+void FakeHpsDBusClient::DisableHpsSense() {
+  ++disable_hps_sense_count_;
+}
 
 void FakeHpsDBusClient::EnableHpsNotify(const hps::FeatureConfig& config) {
   ++enable_hps_notify_count_;
@@ -58,6 +67,24 @@ void FakeHpsDBusClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback cb) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cb), hps_service_is_available_));
+}
+
+void FakeHpsDBusClient::Restart() {
+  for (auto& observer : observers_) {
+    observer.OnRestart();
+  }
+}
+
+void FakeHpsDBusClient::Reset() {
+  hps_notify_result_.reset();
+  hps_notify_count_ = 0;
+  enable_hps_notify_count_ = 0;
+  disable_hps_notify_count_ = 0;
+  enable_hps_sense_count_ = 0;
+  disable_hps_sense_count_ = 0;
+  hps_service_is_available_ = false;
+
+  observers_.Clear();
 }
 
 }  // namespace chromeos

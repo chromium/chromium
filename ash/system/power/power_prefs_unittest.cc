@@ -18,7 +18,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -190,6 +192,8 @@ class PowerPrefsTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kQuickDim);
+    chromeos::HpsDBusClient::InitializeFake();
     NoSessionAshTestBase::SetUp();
 
     power_policy_controller_ = chromeos::PowerPolicyController::Get();
@@ -272,6 +276,7 @@ class PowerPrefsTest : public NoSessionAshTestBase {
       base::MakeRefCounted<PrefRegistrySimple>();
 
   std::unique_ptr<PrefService> local_state_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PowerPrefsTest, LoginScreen) {
@@ -536,6 +541,9 @@ TEST_F(PowerPrefsTest, AlsLoggingEnabled) {
 }
 
 TEST_F(PowerPrefsTest, SetQuickDimParams) {
+  // Set hps service as available so that hps dbus calls can be recorded.
+  chromeos::FakeHpsDBusClient::Get()->set_hps_service_is_available(true);
+
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   // This will trigger UpdatePowerPolicyFromPrefs and set correct parameters.
@@ -548,6 +556,15 @@ TEST_F(PowerPrefsTest, SetQuickDimParams) {
             ash::GetQuickDimDelay().InMilliseconds());
   EXPECT_EQ(policy.send_feedback_if_undimmed(),
             ash::GetQuickDimFeedbackEnabled());
+
+  // EnableHpsSense should be called when kPowerQuickDimEnabled becomes true.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->enable_hps_sense_count(), 1);
+
+  // DisableHpsSense should be called when kPowerQuickDimEnabled becomes false.
+  prefs->SetBoolean(prefs::kPowerQuickDimEnabled, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->disable_hps_sense_count(), 1);
 }
 
 }  // namespace ash

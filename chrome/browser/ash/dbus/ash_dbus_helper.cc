@@ -167,7 +167,8 @@ void InitializeFeatureListDependentDBus() {
   }
   InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
 
-  if (ash::features::IsSnoopingProtectionEnabled()) {
+  if (ash::features::IsSnoopingProtectionEnabled() ||
+      ash::features::IsQuickDimEnabled()) {
     InitializeDBusClient<chromeos::HpsDBusClient>(bus);
   }
 }
@@ -175,7 +176,8 @@ void InitializeFeatureListDependentDBus() {
 void ShutdownDBus() {
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
-  if (ash::features::IsSnoopingProtectionEnabled()) {
+  if (ash::features::IsSnoopingProtectionEnabled() ||
+      ash::features::IsQuickDimEnabled()) {
     chromeos::HpsDBusClient::Shutdown();
   }
   chromeos::WilcoDtcSupportdClient::Shutdown();
