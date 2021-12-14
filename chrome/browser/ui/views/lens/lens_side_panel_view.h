@@ -36,12 +36,15 @@ class LensSidePanelView : public views::FlexLayoutView {
   // views::FlexLayoutView:
   void OnThemeChanged() override;
 
+  void SetContentVisible(bool visible);
+
  private:
   void CreateAndInstallHeader(base::RepeatingClosure close_callback,
                               base::RepeatingClosure launch_callback);
 
   raw_ptr<views::ImageView> branding_;
   raw_ptr<views::Separator> separator_;
+  raw_ptr<views::WebView> loading_indicator_web_view_;
   raw_ptr<views::WebView> web_view_;
   raw_ptr<views::ImageButton> close_button_;
   raw_ptr<views::ImageButton> launch_button_;
