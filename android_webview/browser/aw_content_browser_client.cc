@@ -494,7 +494,7 @@ bool AwContentBrowserClient::CanCreateWindow(
 
 base::FilePath AwContentBrowserClient::GetDefaultDownloadDirectory() {
   // Android WebView does not currently use the Chromium downloads system.
-  // Download requests are cancelled immedately when recognized; see
+  // Download requests are cancelled immediately when recognized; see
   // AwResourceDispatcherHost::CreateResourceHandlerForDownload. However the
   // download system still tries to start up and calls this before recognizing
   // the request has been cancelled.

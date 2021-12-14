@@ -1144,7 +1144,7 @@ void HTMLDocumentParser::ConstructTreeFromHTMLToken() {
   }
 
   // We clear the token_ in case ConstructTreeFromAtomicToken
-  // synchronously re-enters the parser. We don't clear the token immedately
+  // synchronously re-enters the parser. We don't clear the token immediately
   // for kCharacter tokens because the AtomicHTMLToken avoids copying the
   // characters by keeping a pointer to the underlying buffer in the
   // HTMLToken. Fortunately, kCharacter tokens can't cause us to re-enter
