@@ -680,6 +680,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   full.name = "full";
   full.expiry = base::Time::Now() + base::Days(30);
   full.bidding_url = GURL("https://full.example.com/bid");
+  full.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm");
   full.update_url = GURL("https://full.example.com/update");
   full.trusted_bidding_signals_url = GURL("https://full.example.com/signals");
   full.trusted_bidding_signals_keys =
@@ -711,6 +712,25 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   ASSERT_EQ(1u, storage_interest_groups.size());
   EXPECT_TRUE(
       full.IsEqualForTesting(storage_interest_groups[0].bidding_group->group));
+
+  // Test update as well.
+  InterestGroup updated = full;
+  updated.bidding_url = GURL("https://full.example.com/bid2");
+  updated.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm2");
+  updated.trusted_bidding_signals_url =
+      GURL("https://full.example.com/signals2");
+  updated.trusted_bidding_signals_keys =
+      absl::make_optional(std::vector<std::string>{"a", "b2", "c", "d"});
+  updated.ads->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/ad3"), "metadata3"));
+  updated.ad_components->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/adcomponent3"), "metadata3c"));
+  storage->UpdateInterestGroup(updated);
+
+  storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(updated.IsEqualForTesting(
+      storage_interest_groups[0].bidding_group->group));
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {

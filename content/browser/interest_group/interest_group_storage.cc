@@ -51,21 +51,23 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 3 - 2021/09 - crrev.com/c/3165576
 // Version 4 - 2021/10 - crrev.com/c/3172863
 // Version 5 - 2021/10 - crrev.com/c/3067804
+// Version 6 - 2021/12 - crrev.com/c/3330516
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
 // Version 3 adds a field for ad components.
 // Version 4 adds joining origin and url.
 // Version 5 adds k-anonymity tables and fields.
-const int kCurrentVersionNumber = 5;
+// Version 6 adds WebAssembly helper url.
+const int kCurrentVersionNumber = 6;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
-const int kCompatibleVersionNumber = 5;
+const int kCompatibleVersionNumber = 6;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
-const int kDeprecatedVersionNumber = 4;
+const int kDeprecatedVersionNumber = 5;
 
 enum class KAnonType {
   kOwnerAndName = 1,
@@ -174,7 +176,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV5Schema(sql::Database& db) {
+bool CreateV6Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -187,6 +189,7 @@ bool CreateV5Schema(sql::Database& db) {
         "name TEXT NOT NULL,"
         "joining_url TEXT NOT NULL,"
         "bidding_url TEXT NOT NULL,"
+        "bidding_wasm_helper_url TEXT NOT NULL,"
         "update_url TEXT NOT NULL,"
         "trusted_bidding_signals_url TEXT NOT NULL,"
         "trusted_bidding_signals_keys TEXT NOT NULL,"
@@ -476,13 +479,14 @@ bool DoJoinInterestGroup(sql::Database& db,
             "name,"
             "joining_url,"
             "bidding_url,"
+            "bidding_wasm_helper_url,"
             "update_url,"
             "trusted_bidding_signals_url,"
             "trusted_bidding_signals_keys,"
             "user_bidding_signals,"  // opaque data
             "ads,"
             "ad_components) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
 
   // clang-format on
   if (!join_group.is_valid())
@@ -497,16 +501,17 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(5, data.name);
   join_group.BindString(6, Serialize(joining_url));
   join_group.BindString(7, Serialize(data.bidding_url));
-  join_group.BindString(8, Serialize(data.update_url));
-  join_group.BindString(9, Serialize(data.trusted_bidding_signals_url));
-  join_group.BindString(10, Serialize(data.trusted_bidding_signals_keys));
+  join_group.BindString(8, Serialize(data.bidding_wasm_helper_url));
+  join_group.BindString(9, Serialize(data.update_url));
+  join_group.BindString(10, Serialize(data.trusted_bidding_signals_url));
+  join_group.BindString(11, Serialize(data.trusted_bidding_signals_keys));
   if (data.user_bidding_signals) {
-    join_group.BindString(11, data.user_bidding_signals.value());
+    join_group.BindString(12, data.user_bidding_signals.value());
   } else {
-    join_group.BindNull(11);
+    join_group.BindNull(12);
   }
-  join_group.BindString(12, Serialize(data.ads));
-  join_group.BindString(13, Serialize(data.ad_components));
+  join_group.BindString(13, Serialize(data.ads));
+  join_group.BindString(14, Serialize(data.ad_components));
 
   if (!join_group.Run())
     return false;
@@ -544,6 +549,7 @@ bool DoLoadInterestGroup(sql::Database& db,
       db.GetCachedStatement(SQL_FROM_HERE,
         "SELECT expiration,"
           "bidding_url,"
+          "bidding_wasm_helper_url,"
           "update_url,"
           "trusted_bidding_signals_url,"
           "trusted_bidding_signals_keys,"
@@ -568,14 +574,15 @@ bool DoLoadInterestGroup(sql::Database& db,
   group.owner = owner;
   group.name = name;
   group.bidding_url = DeserializeURL(load.ColumnString(1));
-  group.update_url = DeserializeURL(load.ColumnString(2));
-  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(3));
+  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(2));
+  group.update_url = DeserializeURL(load.ColumnString(3));
+  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(4));
   group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(4));
-  if (load.GetColumnType(5) != sql::ColumnType::kNull)
-    group.user_bidding_signals = load.ColumnString(5);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(6));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(7));
+      DeserializeStringVector(load.ColumnString(5));
+  if (load.GetColumnType(6) != sql::ColumnType::kNull)
+    group.user_bidding_signals = load.ColumnString(6);
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(7));
+  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(8));
 
   return true;
 }
@@ -589,6 +596,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
           "UPDATE interest_groups "
           "SET last_updated=?,"
             "bidding_url=?,"
+            "bidding_wasm_helper_url=?,"
             "update_url=?,"
             "trusted_bidding_signals_url=?,"
             "trusted_bidding_signals_keys=?,"
@@ -603,13 +611,14 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.Reset(true);
   store_group.BindTime(0, last_updated);
   store_group.BindString(1, Serialize(group.bidding_url));
-  store_group.BindString(2, Serialize(group.update_url));
-  store_group.BindString(3, Serialize(group.trusted_bidding_signals_url));
-  store_group.BindString(4, Serialize(group.trusted_bidding_signals_keys));
-  store_group.BindString(5, Serialize(group.ads));
-  store_group.BindString(6, Serialize(group.ad_components));
-  store_group.BindString(7, Serialize(group.owner));
-  store_group.BindString(8, group.name);
+  store_group.BindString(2, Serialize(group.bidding_wasm_helper_url));
+  store_group.BindString(3, Serialize(group.update_url));
+  store_group.BindString(4, Serialize(group.trusted_bidding_signals_url));
+  store_group.BindString(5, Serialize(group.trusted_bidding_signals_keys));
+  store_group.BindString(6, Serialize(group.ads));
+  store_group.BindString(7, Serialize(group.ad_components));
+  store_group.BindString(8, Serialize(group.owner));
+  store_group.BindString(9, group.name);
 
   return store_group.Run();
 }
@@ -640,6 +649,8 @@ bool DoUpdateInterestGroup(sql::Database& db,
 
   if (update.bidding_url)
     stored_group.bidding_url = update.bidding_url;
+  if (update.bidding_wasm_helper_url)
+    stored_group.bidding_wasm_helper_url = update.bidding_wasm_helper_url;
   if (update.trusted_bidding_signals_url)
     stored_group.trusted_bidding_signals_url =
         update.trusted_bidding_signals_url;
@@ -1566,7 +1577,7 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
 
   if (new_db)
-    return CreateV5Schema(*db_);
+    return CreateV6Schema(*db_);
 
   const int db_version = meta_table.GetVersionNumber();
 
