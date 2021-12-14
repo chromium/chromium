@@ -185,6 +185,10 @@ test("media_unittests") {
 
   data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:media_unittests_filters" ]
+  }
+
   if (media_use_ffmpeg) {
     deps += [ "//media/ffmpeg:unit_tests" ]
   }
