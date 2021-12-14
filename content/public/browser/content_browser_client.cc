@@ -1300,4 +1300,10 @@ bool ContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
     BrowserContext* browser_context) {
   return false;
 }
+
+bool ContentBrowserClient::ShouldPreconnectNavigation(
+    BrowserContext* browser_context) {
+  return false;
+}
+
 }  // namespace content

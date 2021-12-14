@@ -2184,6 +2184,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // blink::features::kOriginAgentClusterDefaultEnabled instead.
   virtual bool ShouldDisableOriginAgentClusterDefault(
       BrowserContext* browser_context);
+
+  // Whether a navigation in |browser_context| should preconnect early.
+  virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
 };
 
 }  // namespace content

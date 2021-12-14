@@ -1639,6 +1639,22 @@ NavigationRequest::NavigationRequest(
     }
   }
 #endif
+
+  static constexpr base::Feature kNavigationRequestPreconnect{
+      "NavigationRequestPreconnect", base::FEATURE_DISABLED_BY_DEFAULT};
+  if (base::FeatureList::IsEnabled(kNavigationRequestPreconnect) &&
+      NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
+    BrowserContext* browser_context =
+        frame_tree_node_->navigator().controller().GetBrowserContext();
+    if (GetContentClient()->browser()->ShouldPreconnectNavigation(
+            browser_context)) {
+      auto* storage_partition =
+          frame_tree_node_->current_frame_host()->GetStoragePartition();
+      storage_partition->GetNetworkContext()->PreconnectSockets(
+          1, common_params_->url, true,
+          GetIsolationInfo().network_isolation_key());
+    }
+  }
 }
 
 NavigationRequest::~NavigationRequest() {

@@ -226,6 +226,8 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   bool HasErrorPage(int http_status_code) override;
   bool IsClipboardPasteAllowed(
       content::RenderFrameHost* render_frame_host) override;
+  bool ShouldPreconnectNavigation(
+      content::BrowserContext* browser_context) override;
 
   void CreateFeatureListAndFieldTrials();
 
