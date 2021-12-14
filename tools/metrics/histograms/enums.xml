@@ -89134,6 +89134,24 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
+<enum name="VideoDecoderType">
+  <int value="0" label="None"/>
+  <int value="2" label="FFmpeg Video Decoder"/>
+  <int value="3" label="VPX Video Decoder"/>
+  <int value="4" label="AOM Video Decoder"/>
+  <int value="5" label="Mojo Video Decoder"/>
+  <int value="6" label="Decrypting Video Decoder"/>
+  <int value="7" label="Dav1d Video Decoder"/>
+  <int value="8" label="Fuchsia Video Decoder"/>
+  <int value="9" label="MediaCodec Video Decoder"/>
+  <int value="10" label="Gav1 Video Decoder"/>
+  <int value="11" label="D3D11 Video Decoder"/>
+  <int value="12" label="Vaapi Video Decoder"/>
+  <int value="13" label="Broker Video Decoder"/>
+  <int value="14" label="VDA Video Decoder"/>
+  <int value="16" label="V4l2 Video Decoder"/>
+</enum>
+
 <enum name="VideoFormat">
   <obsolete>
     Deprecated as of 05/2015. Substituted by VideoFramePixelFormat.

@@ -4539,6 +4539,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VaapiLinux.SupportedVideoDecoder"
+    enum="VideoDecoderType" expires_after="2022-02-28">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>videostack-eng@google.com</owner>
+  <summary>
+    Records the usage of VaapiVideoDecoder VaapiVideoDecodeAccelerator based on
+    vulkan support and Vaapi driver version on linux. This is recorded on GPU
+    process startup when hardware accelerated video decoding support is checked.
+  </summary>
+</histogram>
+
 <histogram name="Media.VaapiVideoDecoder.DecodeError" enum="BooleanError"
     expires_after="2022-08-05">
   <owner>mcasas@chromium.org</owner>
