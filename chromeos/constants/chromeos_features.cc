@@ -17,7 +17,7 @@ namespace features {
 // Advertisement monitoring allows applications to register low energy scanners
 // that filter low energy advertisements in a power-efficient manner.
 const base::Feature kBluetoothAdvertisementMonitoring{
-    "BluetoothAdvertisementMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BluetoothAdvertisementMonitoring", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
