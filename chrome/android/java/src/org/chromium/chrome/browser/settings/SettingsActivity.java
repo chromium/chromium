@@ -8,13 +8,16 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -59,6 +62,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
@@ -85,7 +90,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
          */
         boolean onBackPressed();
     }
-
     static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
 
@@ -105,6 +109,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private ScrimCoordinator mScrim;
 
     private BottomSheetController mBottomSheetController;
+
+    @Nullable
+    private UiConfig mUiConfig;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -140,9 +147,35 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
 
+        // Set width constraints
+        configureWideDisplayStyle();
         setStatusBarColor();
-
         initBottomSheet();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Set width constraints
+        configureWideDisplayStyle();
+    }
+
+    /**
+     * When this layout has a wide display style, it will be width constrained to
+     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered
+     * by adding padding to both sides.
+     */
+    private void configureWideDisplayStyle() {
+        if (mUiConfig == null) {
+            int minWidePaddingPixels =
+                    getResources().getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
+            View view = findViewById(R.id.content);
+            mUiConfig = new UiConfig(view);
+            ViewResizer.createAndAttach(view, mUiConfig, 0, minWidePaddingPixels);
+        } else {
+            mUiConfig.updateDisplayStyle();
+        }
     }
 
     /** Set up the bottom sheet for this activity. */

@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -47,8 +47,11 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView.EdgeType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
@@ -104,6 +107,9 @@ public class EditorDialog
     private Runnable mDeleteRunnable;
     private boolean mIsDismissed;
     private Profile mProfile;
+    @Nullable
+    private UiConfig mUiConfig;
+
     /**
      * Builds the editor dialog.
      *
@@ -223,12 +229,11 @@ public class EditorDialog
         // The top shadow is handled by the toolbar, so hide the one used in the field editor.
         FadingEdgeScrollView scrollView =
                 (FadingEdgeScrollView) mLayout.findViewById(R.id.scroll_view);
-        scrollView.setEdgeVisibility(
-                FadingEdgeScrollView.EdgeType.NONE, FadingEdgeScrollView.EdgeType.FADING);
+        scrollView.setEdgeVisibility(EdgeType.NONE, EdgeType.FADING);
 
         // The shadow's top margin doesn't get picked up in the xml; set it programmatically.
         View shadow = mLayout.findViewById(R.id.shadow);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) shadow.getLayoutParams();
+        LayoutParams params = (LayoutParams) shadow.getLayoutParams();
         params.topMargin = toolbar.getLayoutParams().height;
         shadow.setLayoutParams(params);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(
@@ -444,6 +449,25 @@ public class EditorDialog
         mDataView.addView(mFooter);
     }
 
+    /**
+     * When this layout has a wide display style, it will be width constrained to
+     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered
+     * by adding padding to both sides.
+     */
+    public void onConfigurationChanged() {
+        if (mUiConfig == null) {
+            if (mDataView != null) {
+                int minWidePaddingPixels = mActivity.getResources().getDimensionPixelSize(
+                        R.dimen.settings_wide_display_min_padding);
+                mUiConfig = new UiConfig(mDataView);
+                ViewResizer.createAndAttach(mDataView, mUiConfig, 0, minWidePaddingPixels);
+            }
+        } else {
+            mUiConfig.updateDisplayStyle();
+        }
+    }
+
     private void removeTextChangedListenersAndInputFilters() {
         if (mCardInput != null) {
             mCardInput.removeTextChangedListener(mCardNumberFormatter);
@@ -555,6 +579,7 @@ public class EditorDialog
         prepareEditor();
         prepareFooter();
         prepareButtons();
+        onConfigurationChanged();
 
         // Temporarily hide the content to avoid blink before animation starts.
         mLayout.setVisibility(View.INVISIBLE);

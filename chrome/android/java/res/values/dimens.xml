@@ -392,6 +392,10 @@
     <dimen name="overflow_menu_update_min_height">40sp</dimen>
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 
+    <!-- Settings dimensions -->
+    <dimen name="settings_wide_display_min_padding">16dp</dimen>
+
+
     <!-- Sharing Hub dimensions -->
     <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>
     <dimen name="sharing_hub_preview_icon_rounded_corner_radius">4dp</dimen>
