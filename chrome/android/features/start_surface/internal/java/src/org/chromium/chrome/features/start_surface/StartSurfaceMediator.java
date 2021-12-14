@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
@@ -98,6 +99,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
+    private final boolean mExcludeQueryTiles;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -164,8 +166,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
-            JankTracker jankTracker) {
+            boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
+            boolean hadWarmStart, JankTracker jankTracker) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -175,6 +177,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
         mExcludeMVTiles = excludeMVTiles;
+        mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
         mJankTracker = jankTracker;
@@ -346,6 +349,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         // Secondary tasks surface is used for more Tabs or incognito mode single pane, where MV
         // tiles and voice recognition button should be invisible.
         mSecondaryTasksSurfacePropertyModel.set(MV_TILES_VISIBLE, false);
+        mSecondaryTasksSurfacePropertyModel.set(QUERY_TILES_VISIBLE, false);
         mSecondaryTasksSurfacePropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
         mSecondaryTasksSurfacePropertyModel.set(IS_LENS_BUTTON_VISIBLE, false);
     }
@@ -491,6 +495,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             setTabCarouselVisibility(
                     hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
             setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
+            // TODO(qinmin): show query tiles when flag is enabled.
+            setQueryTilesVisibility(false);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController = */ false);
 
@@ -506,6 +512,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             setTabCarouselVisibility(false);
             setMVTilesVisibility(false);
+            setQueryTilesVisibility(false);
             setFakeBoxVisibility(false);
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController = */ false);
@@ -873,6 +880,11 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     private void setMVTilesVisibility(boolean isVisible) {
         if (mExcludeMVTiles || isVisible == mPropertyModel.get(MV_TILES_VISIBLE)) return;
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
+    }
+
+    private void setQueryTilesVisibility(boolean isVisible) {
+        if (mExcludeQueryTiles || isVisible == mPropertyModel.get(QUERY_TILES_VISIBLE)) return;
+        mPropertyModel.set(QUERY_TILES_VISIBLE, isVisible);
     }
 
     private void setFakeBoxVisibility(boolean isVisible) {

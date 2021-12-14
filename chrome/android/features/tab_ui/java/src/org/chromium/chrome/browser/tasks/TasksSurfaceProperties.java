@@ -66,6 +66,8 @@ public class TasksSurfaceProperties {
             .WritableObjectPropertyKey<View.OnClickListener> MORE_TABS_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey MV_TILES_VISIBLE = IS_VISIBLE;
+    public static final PropertyModel.WritableBooleanPropertyKey QUERY_TILES_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
             .WritableObjectPropertyKey<View.OnClickListener> VOICE_SEARCH_BUTTON_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -87,7 +89,7 @@ public class TasksSurfaceProperties {
             INCOGNITO_COOKIE_CONTROLS_TOGGLE_ENFORCEMENT, INCOGNITO_COOKIE_CONTROLS_MANAGER,
             INCOGNITO_LEARN_MORE_CLICK_LISTENER, FAKE_SEARCH_BOX_CLICK_LISTENER,
             FAKE_SEARCH_BOX_TEXT_WATCHER, LENS_BUTTON_CLICK_LISTENER, MORE_TABS_CLICK_LISTENER,
-            MV_TILES_VISIBLE, VOICE_SEARCH_BUTTON_CLICK_LISTENER, TASKS_SURFACE_BODY_TOP_MARGIN,
-            MV_TILES_CONTAINER_TOP_MARGIN, TAB_SWITCHER_TITLE_TOP_MARGIN,
-            RESET_TASK_SURFACE_HEADER_SCROLL_POSITION};
+            MV_TILES_VISIBLE, QUERY_TILES_VISIBLE, VOICE_SEARCH_BUTTON_CLICK_LISTENER,
+            TASKS_SURFACE_BODY_TOP_MARGIN, MV_TILES_CONTAINER_TOP_MARGIN,
+            TAB_SWITCHER_TITLE_TOP_MARGIN, RESET_TASK_SURFACE_HEADER_SCROLL_POSITION};
 }

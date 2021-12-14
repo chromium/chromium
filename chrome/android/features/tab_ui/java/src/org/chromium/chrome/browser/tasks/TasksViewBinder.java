@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTT
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
@@ -91,6 +92,8 @@ class TasksViewBinder {
             view.setMoreTabsOnClickListener(model.get(MORE_TABS_CLICK_LISTENER));
         } else if (propertyKey == MV_TILES_VISIBLE) {
             view.setMostVisitedVisibility(model.get(MV_TILES_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == QUERY_TILES_VISIBLE) {
+            view.setQueryTilesVisibility(model.get(QUERY_TILES_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == VOICE_SEARCH_BUTTON_CLICK_LISTENER) {
             view.getSearchBoxCoordinator().addVoiceSearchButtonClickListener(
                     model.get(VOICE_SEARCH_BUTTON_CLICK_LISTENER));

@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.query_tiles.QueryTileSection;
+import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -53,6 +55,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final TasksSurfaceMediator mMediator;
     private MostVisitedListCoordinator mMostVisitedList;
+    private QueryTileSection mQueryTileSection;
     private final PropertyModel mPropertyModel;
     private final @TabSwitcherType int mTabSwitcherType;
     private final SnackbarManager mSnackbarManager;
@@ -132,8 +135,14 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mMostVisitedList.initialize();
         }
         if (hasQueryTiles) {
-            // TODO(qinmin): show QueryTiles.
+            QueryTileSection queryTileSection =
+                    new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
+                            Profile.getLastUsedRegularProfile(), this::performSearchQuery);
         }
+    }
+
+    private void performSearchQuery(QueryInfo queryInfo) {
+        // TODO(qinmin): load the search result page.
     }
 
     /**

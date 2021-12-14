@@ -280,7 +280,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 new StartSurfaceMediator(controller, mTabModelSelector, mPropertyModel,
                         mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                         mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
-                        this::isActivityFinishingOrDestroyed, excludeMVTiles,
+                        this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
                         startSurfaceOneshotSupplier, hadWarmStart, jankTracker);
 
         // Show feed loading image.

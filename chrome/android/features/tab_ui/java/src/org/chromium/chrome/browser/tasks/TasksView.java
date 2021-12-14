@@ -165,6 +165,13 @@ class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
+     * Set the visibility of the Most Visited Tiles.
+     */
+    void setQueryTilesVisibility(int visibility) {
+        findViewById(R.id.query_tiles_container).setVisibility(visibility);
+    }
+
+    /**
      * Set the {@link android.view.View.OnClickListener} for More Tabs.
      */
     void setMoreTabsOnClickListener(@Nullable View.OnClickListener listener) {

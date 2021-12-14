@@ -1200,7 +1200,8 @@ public class StartSurfaceMediatorUnitTest {
                 isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
                 isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                 mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
-                mStartSurfaceSupplier, hadWarmStart, new DummyJankTracker());
+                true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
+                new DummyJankTracker());
         return mediator;
     }
 }

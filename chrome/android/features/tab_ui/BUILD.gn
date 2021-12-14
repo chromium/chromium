@@ -68,6 +68,7 @@ android_resources("java_resources") {
     "java/res/layout/new_tab_tile_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/price_tracking_dialog_layout.xml",
+    "java/res/layout/query_tiles_layout.xml",
     "java/res/layout/selectable_tab_grid_card_item.xml",
     "java/res/layout/selectable_tab_list_card_item.xml",
     "java/res/layout/single_tab_view_layout.xml",
