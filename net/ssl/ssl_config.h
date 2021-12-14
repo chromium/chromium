@@ -120,7 +120,7 @@ struct NET_EXPORT SSLConfig {
   NextProtoVector alpn_protos;
 
   // True if renegotiation should be allowed for the default application-level
-  // protocol when the peer negotiates neither ALPN nor NPN.
+  // protocol when the peer does not negotiate ALPN.
   bool renego_allowed_default = false;
 
   // The list of application-level protocols to enable renegotiation for.

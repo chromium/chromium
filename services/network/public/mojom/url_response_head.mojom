@@ -65,7 +65,7 @@ struct URLResponseHead {
   // True if the response was delivered using SPDY.
   bool was_fetched_via_spdy = false;
 
-  // True if the response was delivered after NPN is negotiated.
+  // True if the response was delivered over a connection that negotiated ALPN.
   bool was_alpn_negotiated = false;
 
   // True if response could use alternate protocol. However, browser will

@@ -101,7 +101,7 @@ bool GetDomainReliabilityBeaconStatus(
   return false;
 }
 
-// TODO(juliatuttle): Consider using NPN/ALPN instead, if there's a good way to
+// TODO(juliatuttle): Consider using ALPN instead, if there's a good way to
 //                    differentiate HTTP and HTTPS.
 std::string GetDomainReliabilityProtocol(
     net::HttpResponseInfo::ConnectionInfo connection_info,

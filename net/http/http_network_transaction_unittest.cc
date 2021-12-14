@@ -16197,10 +16197,10 @@ TEST_F(HttpNetworkTransactionTest, NpnWithHttpOverSSL) {
   EXPECT_TRUE(response->was_alpn_negotiated);
 }
 
-// Simulate the SSL handshake completing with an NPN negotiation followed by an
+// Simulate the SSL handshake completing with a ALPN negotiation followed by an
 // immediate server closing of the socket.
 // Regression test for https://crbug.com/46369.
-TEST_F(HttpNetworkTransactionTest, SpdyPostNPNServerHangup) {
+TEST_F(HttpNetworkTransactionTest, SpdyPostALPNServerHangup) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");

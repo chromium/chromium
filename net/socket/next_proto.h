@@ -22,7 +22,7 @@ enum NextProto {
   kProtoLast = kProtoQUIC
 };
 
-// List of protocols to use for NPN, used for configuring HttpNetworkSessions.
+// List of protocols to use for ALPN, used for configuring HttpNetworkSessions.
 typedef std::vector<NextProto> NextProtoVector;
 
 NET_EXPORT_PRIVATE NextProto

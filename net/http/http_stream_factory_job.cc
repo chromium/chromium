@@ -90,8 +90,7 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   return dict;
 }
 
-// Returns parameters associated with the Proto (with NPN negotiation) of a HTTP
-// stream.
+// Returns parameters associated with the ALPN protocol of a HTTP stream.
 base::Value NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   base::Value dict(base::Value::Type::DICTIONARY);
 
