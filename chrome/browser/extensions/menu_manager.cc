@@ -61,13 +61,13 @@ const char kTitleKey[] = "title";
 const char kMenuManagerTypeKey[] = "type";
 const char kVisibleKey[] = "visible";
 
-void SetIdKeyValue(base::DictionaryValue* properties,
+void SetIdKeyValue(base::Value& properties,
                    const char* key,
                    const MenuItem::Id& id) {
   if (id.uid == 0)
-    properties->SetString(key, id.string_uid);
+    properties.SetStringKey(key, id.string_uid);
   else
-    properties->SetInteger(key, id.uid);
+    properties.SetIntKey(key, id.uid);
 }
 
 MenuItem::OwnedList MenuItemsFromValue(const std::string& extension_id,
@@ -627,10 +627,11 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
   }
 }
 
-static void AddURLProperty(base::DictionaryValue* dictionary,
-                           const std::string& key, const GURL& url) {
+static void AddURLProperty(base::Value& dictionary,
+                           const std::string& key,
+                           const GURL& url) {
   if (!url.is_empty())
-    dictionary->SetString(key, url.possibly_invalid_spec());
+    dictionary.SetStringKey(key, url.possibly_invalid_spec());
 }
 
 void MenuManager::ExecuteCommand(content::BrowserContext* context,
@@ -653,46 +654,44 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   if (item->type() == MenuItem::RADIO)
     RadioItemSelected(item);
 
-
-  std::unique_ptr<base::DictionaryValue> properties(
-      new base::DictionaryValue());
-  SetIdKeyValue(properties.get(), "menuItemId", item->id());
+  base::Value properties(base::Value::Type::DICTIONARY);
+  SetIdKeyValue(properties, "menuItemId", item->id());
   if (item->parent_id())
-    SetIdKeyValue(properties.get(), "parentMenuItemId", *item->parent_id());
+    SetIdKeyValue(properties, "parentMenuItemId", *item->parent_id());
 
   switch (params.media_type) {
     case blink::mojom::ContextMenuDataMediaType::kImage:
-      properties->SetString("mediaType", "image");
+      properties.SetStringKey("mediaType", "image");
       break;
     case blink::mojom::ContextMenuDataMediaType::kVideo:
-      properties->SetString("mediaType", "video");
+      properties.SetStringKey("mediaType", "video");
       break;
     case blink::mojom::ContextMenuDataMediaType::kAudio:
-      properties->SetString("mediaType", "audio");
+      properties.SetStringKey("mediaType", "audio");
       break;
     default:  {}  // Do nothing.
   }
 
-  AddURLProperty(properties.get(), "linkUrl", params.unfiltered_link_url);
-  AddURLProperty(properties.get(), "srcUrl", params.src_url);
-  AddURLProperty(properties.get(), "pageUrl", params.page_url);
-  AddURLProperty(properties.get(), "frameUrl", params.frame_url);
+  AddURLProperty(properties, "linkUrl", params.unfiltered_link_url);
+  AddURLProperty(properties, "srcUrl", params.src_url);
+  AddURLProperty(properties, "pageUrl", params.page_url);
+  AddURLProperty(properties, "frameUrl", params.frame_url);
 
   if (params.selection_text.length() > 0)
-    properties->SetString("selectionText", params.selection_text);
+    properties.SetStringKey("selectionText", params.selection_text);
 
-  properties->SetBoolean("editable", params.is_editable);
+  properties.SetBoolKey("editable", params.is_editable);
 
   WebViewGuest* webview_guest = WebViewGuest::FromWebContents(web_contents);
   if (webview_guest) {
     // This is used in web_view_internalcustom_bindings.js.
     // The property is not exposed to developer API.
-    properties->SetInteger("webviewInstanceId",
-                           webview_guest->view_instance_id());
+    properties.SetIntKey("webviewInstanceId",
+                         webview_guest->view_instance_id());
   }
 
   base::Value::ListStorage args;
-  args.push_back(base::Value::FromUniquePtrValue(std::move(properties)));
+  args.push_back(std::move(properties));
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
@@ -714,7 +713,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                                             extension)
               ->ToValue()));
     } else {
-      args.push_back(base::DictionaryValue());
+      args.push_back(base::Value(base::Value::Type::DICTIONARY));
     }
   }
 
