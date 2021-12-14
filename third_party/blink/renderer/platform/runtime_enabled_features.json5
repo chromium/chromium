@@ -554,7 +554,7 @@
     {
       // https://drafts.csswg.org/css-cascade-5/#layering
       name: "CSSCascadeLayers",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support case-sensitive attribute selector modifier
