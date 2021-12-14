@@ -52,6 +52,7 @@ if (enable_cast_media_runtime) {
       "//chromecast:chromecast_buildflags",
       "//chromecast/base",
       "//chromecast/browser",
+      "//chromecast/browser/migration",
       "//chromecast/cast_core:cast_runtime_content_client_factories",
       "//chromecast/common",
       "//chromecast/common:resource_delegate",
