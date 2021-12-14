@@ -87,6 +87,9 @@ class MediaItemUIDeviceSelectorView
   void OnDropdownButtonClicked() override;
   bool IsDeviceSelectorExpanded() override;
 
+  // views::View
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
   void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
 
   views::Label* GetExpandDeviceSelectorLabelForTesting();
