@@ -131,6 +131,9 @@ bool UnionTraits<media::mojom::CodecMetadataDataView,
     case media::mojom::CodecMetadataDataView::Tag::VP9: {
       return data.ReadVp9(&out->vp9);
     }
+    case media::mojom::CodecMetadataDataView::Tag::AV1: {
+      return data.ReadAv1(&out->av1);
+    }
   }
   NOTREACHED();
   return false;
@@ -185,6 +188,20 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
   return data.ReadSpatialLayerResolutions(
              &out_metadata->spatial_layer_resolutions) &&
          data.ReadPDiffs(&out_metadata->p_diffs);
+}
+
+// static
+bool StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata>::Read(
+    media::mojom::Av1MetadataDataView data,
+    media::Av1Metadata* out_metadata) {
+  out_metadata->inter_pic_predicted = data.inter_pic_predicted();
+  out_metadata->switch_frame = data.switch_frame();
+  out_metadata->end_of_picture = data.end_of_picture();
+  out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->spatial_idx = data.spatial_idx();
+  return data.ReadSpatialLayerResolutions(
+             &out_metadata->spatial_layer_resolutions) &&
+         data.ReadFDiffs(&out_metadata->f_diffs);
 }
 
 // static

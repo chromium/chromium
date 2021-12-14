@@ -213,11 +213,22 @@ struct Vp9Metadata {
   array<uint8> p_diffs;
 };
 
+struct Av1Metadata {
+  bool inter_pic_predicted;
+  bool switch_frame;
+  bool end_of_picture;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
+  array<uint8> f_diffs;
+};
+
 // Codec specific metadata.
 union CodecMetadata {
   H264Metadata h264;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
+  Av1Metadata av1;
 };
 
 struct BitstreamBufferMetadata {

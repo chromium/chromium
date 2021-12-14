@@ -475,6 +475,8 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     result.temporal_id = metadata.vp9.value().temporal_idx;
   else if (metadata.vp8.has_value())
     result.temporal_id = metadata.vp8.value().temporal_idx;
+  else if (metadata.av1.has_value())
+    result.temporal_id = metadata.av1.value().temporal_idx;
 
   DCHECK_EQ(buffer_id, 0);
   // There is always one output buffer.

@@ -17,6 +17,10 @@ Vp9Metadata::Vp9Metadata() = default;
 Vp9Metadata::~Vp9Metadata() = default;
 Vp9Metadata::Vp9Metadata(const Vp9Metadata&) = default;
 
+Av1Metadata::Av1Metadata() = default;
+Av1Metadata::~Av1Metadata() = default;
+Av1Metadata::Av1Metadata(const Av1Metadata&) = default;
+
 BitstreamBufferMetadata::BitstreamBufferMetadata()
     : payload_size_bytes(0), key_frame(false) {}
 BitstreamBufferMetadata::BitstreamBufferMetadata(
@@ -220,6 +224,15 @@ bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
          l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
          l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
          l.p_diffs == r.p_diffs;
+}
+
+bool operator==(const Av1Metadata& l, const Av1Metadata& r) {
+  return l.inter_pic_predicted == r.inter_pic_predicted &&
+         l.switch_frame == r.switch_frame &&
+         l.end_of_picture == r.end_of_picture &&
+         l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
+         l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
+         l.f_diffs == r.f_diffs;
 }
 
 bool operator==(const BitstreamBufferMetadata& l,
