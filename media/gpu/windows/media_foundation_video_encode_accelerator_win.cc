@@ -52,6 +52,7 @@ const size_t kNumInputBuffers = 3;
 // Media Foundation uses 100 nanosecond units for time, see
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
 const size_t kOneMicrosecondInMFSampleTimeUnits = 10;
+const size_t kPrefixNALLocatedBytePos = 3;
 
 constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
     L"mf.dll",
@@ -1157,7 +1158,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   return S_OK;
 }
 
-int MediaFoundationVideoEncodeAccelerator::AssignTemporalId(bool keyframe) {
+int MediaFoundationVideoEncodeAccelerator::AssignTemporalIdBySvcSpec(
+    bool keyframe) {
   int result = 0;
 
   if (keyframe)
@@ -1181,6 +1183,46 @@ int MediaFoundationVideoEncodeAccelerator::AssignTemporalId(bool keyframe) {
   }
   outputs_since_keyframe_count_++;
   return result;
+}
+
+bool MediaFoundationVideoEncodeAccelerator::AssignTemporalId(
+    Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer,
+    size_t size,
+    int* temporal_id,
+    bool keyframe) {
+  *temporal_id = 0;
+
+  // H264, VP9 and AV1 have hardware SVC support on windows. H264 can parse the
+  // information from Nalu(7.3.1 NAL unit syntax); AV1 can parse the OBU(5.3.3.
+  // OBU extension header syntax), it's future work. Unfortunately, VP9 spec
+  // doesn't provide the temporal information, we can only assign it based on
+  // spec.
+  if (codec_ == VideoCodec::kH264) {
+    // See the 7.3.1 NAL unit syntax in H264 spec.
+    // https://www.itu.int/rec/T-REC-H.264
+    MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
+    h264_parser_.SetStream(scoped_buffer.get(), size);
+    H264NALU nalu;
+    H264Parser::Result result;
+    while ((result = h264_parser_.AdvanceToNextNALU(&nalu)) !=
+           H264Parser::kEOStream) {
+      // Fallback to software when the stream is invalid.
+      if (result == H264Parser::Result::kInvalidStream)
+        return false;
+
+      if (nalu.nal_unit_type == H264NALU::kPrefix) {
+        *temporal_id = (nalu.data[kPrefixNALLocatedBytePos] & 0b1110'0000) >> 5;
+        return true;
+      }
+    }
+  }
+
+  // If we run to this point, it means that we have not assigned temporalId
+  // through parsing stream, we always return true once we parse out temporalId.
+  // Now we will assign the ID based on spec.
+  *temporal_id = AssignTemporalIdBySvcSpec(keyframe);
+
+  return true;
 }
 
 void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
@@ -1229,8 +1271,12 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   const bool keyframe = MFGetAttributeUINT32(
       output_data_buffer.pSample, MFSampleExtension_CleanPoint, false);
-
-  int temporal_id = AssignTemporalId(keyframe);
+  int temporal_id = 0;
+  if (!AssignTemporalId(output_buffer, size, &temporal_id, keyframe)) {
+    DLOG(ERROR) << "Parse temporalId failed.";
+    NotifyError(media::VideoEncodeAccelerator::Error::kPlatformFailureError);
+    return;
+  }
   DVLOG(3) << "Encoded data with size:" << size << " keyframe " << keyframe;
 
   // If no bit stream buffer presents, queue the output first.

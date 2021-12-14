@@ -111,7 +111,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBuffer(scoped_refptr<VideoFrame> frame);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
 
-  int AssignTemporalId(bool keyframe);
+  // Assign TemporalID by bitstream or external state machine(based on SVC
+  // Spec).
+  bool AssignTemporalId(Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer,
+                        size_t size,
+                        int* temporal_id,
+                        bool keyframe);
+
+  int AssignTemporalIdBySvcSpec(bool keyframe);
+
   bool temporalScalableCoding() { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output on |encoder_thread_|.
@@ -159,6 +167,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Counter of outputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t outputs_since_keyframe_count_ = 0;
+
+  // This parser is used to assign temporalId.
+  H264Parser h264_parser_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;
