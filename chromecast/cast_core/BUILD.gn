@@ -373,6 +373,7 @@ cast_executable("core_runtime_simple") {
     ":cast_core",
     "//chromecast:cast_shell_pak",
     "//chromecast:chromecast_locales_pak",
+    "//chromecast/app",
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser:simple_main_parts",
     "//chromecast/utility:simple_client",
@@ -380,12 +381,9 @@ cast_executable("core_runtime_simple") {
   ]
 
   if (enable_cast_media_runtime) {
-    deps += [ "//chromecast/app:app_core" ]
+    deps += [ ":cast_runtime_content_client_factories" ]
   } else {
-    deps += [
-      "//chromecast/app",
-      "//chromecast/browser:simple_client",
-    ]
+    deps += [ "//chromecast/browser:simple_client" ]
   }
 }
 
