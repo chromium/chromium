@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{signo de interrogación}other{# signos de interrogación}}</translation>
 <translation id="3505359110822747654">Contraer los menúes de ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{signo de intercalación}other{# signos de intercalación}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{viñeta blanca}other{# viñetas blancas}}</translation>
 <translation id="352577523970648069">Un campo de texto editable</translation>
 <translation id="3538907380453898475">listadesc</translation>
 <translation id="3549141990712742152">Cortar <ph name="TEXT" /></translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Siguiente casilla de verificación</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botón de selección no seleccionado</translation>
 <translation id="5601172225407283979">Realizar acción predeterminada</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{viñeta cuadrada}other{# viñetas cuadradas}}</translation>
 <translation id="5608798115546226984">Integración de autocompletados</translation>
 <translation id="5616029807486814372">Lección siguiente</translation>
 <translation id="561939826962581046">time</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Listas desplegables</translation>
 <translation id="8666733765751421568">Final de <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Encabezado 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{niveles anidados #}}</translation>
 <translation id="8693391540059827073">Mi estación favorita</translation>
 <translation id="8696284982970258155">Ambrosía</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra vertical}other{# barras verticales}}</translation>

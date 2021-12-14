@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="4588090240171750605">வலப்புறம் நகர்த்து</translation>
 <translation id="4724120544754982507">அறிவிப்பு மையம், <ph name="UNREAD_NOTIFICATION_COUNT" /> படிக்காத அறிவிப்புகள்</translation>
+<translation id="4746179598275229723">நீட்டிப்பு அகற்றப்பட்டது</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 மாதம் உள்ளது}other{# மாதங்கள் உள்ளன}}</translation>
 <translation id="4888938634149558681">அழை</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 நொடி}other{# நொடிகள்}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 நிமிடம் உள்ளது}other{# நிமிடங்கள் உள்ளன}}</translation>
 <translation id="5941711191222866238">சிறிதாக்கு</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 மணிநேரம்}other{# மணிநேரம்}}</translation>
+<translation id="6007284015834422026">நீட்டிப்பு பின் செய்யப்பட்டது</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6117103120090651229">மையத்தில் உள்ள பட்டன்</translation>
 <translation id="6129953537138746214">இடைவெளி</translation>

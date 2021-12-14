@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{vraagteken}other{# vraagtekens}}</translation>
 <translation id="3505359110822747654">Vou ChromeVox-kieslyste in</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{kappie}other{# kappies}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{wit kolpunt}other{# wit kolpunte}}</translation>
 <translation id="352577523970648069">'n Redigeerbare teksveld</translation>
 <translation id="3538907380453898475">bskrwngls</translation>
 <translation id="3549141990712742152">knip <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Volgende merkblokkie</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radioknoppie is ontmerk</translation>
 <translation id="5601172225407283979">Voer verstekhandeling uit</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{vierkantige kolpunt}other{# vierkantige kolpunte}}</translation>
 <translation id="5608798115546226984">Outovoltooiing inlyn</translation>
 <translation id="5616029807486814372">Volgende les</translation>
 <translation id="561939826962581046">tyd</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Aftreklyste</translation>
 <translation id="8666733765751421568">einde van <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Opskrif 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{geneste vlak #}}</translation>
 <translation id="8693391540059827073">My gunstelingseisoen</translation>
 <translation id="8696284982970258155">Heuningdou</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pyp}other{# vertikale pype}}</translation>

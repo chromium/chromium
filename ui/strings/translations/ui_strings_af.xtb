@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4588090240171750605">Rollees na regs</translation>
 <translation id="4724120544754982507">Kennisgewingsentrum, <ph name="UNREAD_NOTIFICATION_COUNT" /> ongeleesde kennisgewings</translation>
+<translation id="4746179598275229723">Uitbreiding is ontspeld</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 maand oor}other{# maande oor}}</translation>
 <translation id="4888938634149558681">Maak oproep</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekonde}other{# sekondes}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekonde oor}other{# sekondes oor}}</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 uur}other{# uur}}</translation>
+<translation id="6007284015834422026">Uitbreiding is vasgespeld</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6117103120090651229">Middelknoppie</translation>
 <translation id="6129953537138746214">Spasie</translation>

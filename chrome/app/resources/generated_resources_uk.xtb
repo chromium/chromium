@@ -255,6 +255,7 @@
 <translation id="1244265436519979884">Триває відновлення Linux</translation>
 <translation id="1244303850296295656">Помилка розширення</translation>
 <translation id="1246863218384630739">Не вдалося встановити <ph name="VM_NAME" />: URL-адреса зображення повернула код помилки <ph name="HTTP_ERROR" />. Зв’яжіться з адміністратором.</translation>
+<translation id="1247071602516579380">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, планшет "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1251366534849411931">Очікується ліва фігурна дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Буде видалено <ph name="TOTAL_USAGE" /> даних, збережених сайтами та встановленими додатками</translation>
 <translation id="1251578593170406502">Пошук мереж мобільного Інтернету…</translation>
@@ -441,6 +442,7 @@
 <translation id="144283815522798837">Вибрано <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Налаштувати активний квиток Kerberos</translation>
 <translation id="1444628761356461360">Цим налаштуванням керує власник пристрою (<ph name="OWNER_EMAIL" />).</translation>
+<translation id="1445005312224723356">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, телефон "<ph name="DEVICE_NAME" />"</translation>
 <translation id="144518587530125858">Не вдалося завантажити "<ph name="IMAGE_PATH" />" для теми.</translation>
 <translation id="1449191289887455076">Натисніть клавішу "<ph name="CURRENTKEY" />" ще раз, щоб підтвердити призначену дію та <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-сторінка в одному файлі</translation>
@@ -873,6 +875,7 @@
 <translation id="1855079636134697549">Камеру ввімкнено</translation>
 <translation id="1856715684130786728">Додати розташування…</translation>
 <translation id="1858585891038687145">Довіряти цьому сертифікату для ідентифікації виробників програмного забезпечення</translation>
+<translation id="1859787252990099899">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, невідомий пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1861262398884155592">Ця папка порожня</translation>
 <translation id="1862311223300693744">Чи встановлено на Вашому пристрої таке програмне забезпечення, як VPN-клієнт, проксі-сервер, брандмауер
     або NAS?</translation>
@@ -1248,6 +1251,7 @@
 <translation id="2242687258748107519">Інформація про файл</translation>
 <translation id="2246549592927364792">Отримувати описи зображень від Google?</translation>
 <translation id="2247738527273549923">Пристроєм керує ваша організація</translation>
+<translation id="2249061317998743208">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, ігровий контролер "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2249111429176737533">Відкрити як вікно з вкладками</translation>
 <translation id="2249605167705922988">напр., 1–5, 8, 11–13</translation>
 <translation id="2251218783371366160">Відкрити за допомогою системного переглядача</translation>
@@ -2011,6 +2015,7 @@
 <translation id="3007771295016901659">Ідентична вкладка</translation>
 <translation id="3008232374986381779">Запускайте інструменти, редактори й ІСР Linux на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
+<translation id="3008396025115884998">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, аудіопристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви сьогодні підключилися до мережі Wi-Fi та завантажили оновлення. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}one{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}few{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}many{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}other{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}}</translation>
 <translation id="3009300415590184725">Дійсно скасувати процес налаштування служби передавання мобільних даних?</translation>
 <translation id="3009779501245596802">Проіндексовані бази даних</translation>
@@ -2317,6 +2322,7 @@
 <translation id="3348038390189153836">Виявлено знімний пристрій</translation>
 <translation id="3348131053948466246">Запропоновано смайли. Щоб переходити між ними, натискайте стрілки вгору або вниз. Щоб вставити смайл, натисніть Enter.</translation>
 <translation id="3349933790966648062">Використання пам’яті</translation>
+<translation id="3354972872297836698">Не вдалося підключитися до пристрою "<ph name="DEVICE_NAME" />"; виберіть пристрій, щоб повторити спробу</translation>
 <translation id="3355936511340229503">Помилка з’єднання</translation>
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3359256513598016054">Обмеження політики сертифіката</translation>
@@ -3148,6 +3154,7 @@
 <translation id="4200689466366162458">Спеціальні слова</translation>
 <translation id="4200983522494130825">Нова &amp;вкладка</translation>
 <translation id="4201546031411513170">Ви можете будь-коли вибрати дані для синхронізації в налаштуваннях.</translation>
+<translation id="4202417625268941299">Безпечний перегляд із розширеним захистом надасть вам найвищий рівень безпеки від Chrome</translation>
 <translation id="420283545744377356">Вимкнути заставку</translation>
 <translation id="4206144641569145248">Прибулець</translation>
 <translation id="4206323443866416204">Надсилання відгуку</translation>
@@ -3656,6 +3663,7 @@
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
 <translation id="4762718786438001384">На диску пристрою дуже мало вільного місця</translation>
+<translation id="4762898026821161650">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, комп’ютер "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4763408175235639573">Файли cookie, створені під час перегляду сторінки</translation>
 <translation id="4765582662863429759">Дозволяє сервісу Android Повідомлення передавати SMS із телефона на Chromebook</translation>
 <translation id="4768332406694066911">Вас ідентифікують сертифікати від цих організацій</translation>
@@ -3838,6 +3846,7 @@
 <translation id="4943691134276646401"><ph name="CHROME_EXTENSION_NAME" /> хоче під’єднатися до послідовного порту</translation>
 <translation id="4944310289250773232">Цей сервіс автентифікації розміщує <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Щоб налаштувати відбиток пальця, дитина має торкнутися кнопки живлення. Пристрій <ph name="DEVICE_TYPE" /> надійно зберігає дані вашої дитини й нікуди не надсилає їх.</translation>
+<translation id="4946459324029651239">Ви отримуєте стандартний захист</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953808748584563296">Стандартний оранжевий аватар</translation>
@@ -4422,6 +4431,7 @@
 <translation id="5575528586625653441">Виникла проблема з демо-запитом на реєстрацію.</translation>
 <translation id="557722062034137776">Скидання пристрою не вплине на ваші облікові записи Google чи дані, синхронізовані з цими обліковими записами. Проте, усі збережені на вашому пристрої файли буде видалено.</translation>
 <translation id="5578059481725149024">Автоматичний вхід</translation>
+<translation id="5581134892342029705">Виконано переклад такою мовою: <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Перевірка драйверів пристроїв Microsoft Windows</translation>
 <translation id="5581972110672966454">Не вдається приєднати пристрій до домену. Повторіть спробу або зв'яжіться з адміністратором чи власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Головне меню</translation>
@@ -5836,6 +5846,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Перевірку безпеки виконано 1 хвилину тому}one{Перевірку безпеки виконано {NUM_MINS} хвилину тому}few{Перевірку безпеки виконано {NUM_MINS} хвилини тому}many{Перевірку безпеки виконано {NUM_MINS} хвилин тому}other{Перевірку безпеки виконано {NUM_MINS} хвилини тому}}</translation>
 <translation id="7057767408836081338">Не вдалось отримати дані додатка. Додаток усе ще запускається…</translation>
 <translation id="7058024590501568315">Прихована мережа</translation>
+<translation id="70582545822664495">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, миша "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7059858479264779982">Увімкнути автозапуск</translation>
 <translation id="7062222374113411376">Дозволити нещодавно закритим сайтам завершувати надсилання й отримання даних (рекомендується)</translation>
 <translation id="7063129466199351735">Обробка ярликів…</translation>
@@ -5999,6 +6010,7 @@
 <translation id="7257173066616499747">Мережі Wi-Fi</translation>
 <translation id="725758059478686223">Служба друку</translation>
 <translation id="7257666756905341374">Читати дані, які ви копіюєте та вставляєте</translation>
+<translation id="7258006747130724016">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, відеокамера "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7258192266780953209">Перетворення</translation>
 <translation id="7258225044283673131">Додаток не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
 <translation id="7262004276116528033">Ця служба входу в обліковий запис зареєстрована в домені <ph name="SAML_DOMAIN" /></translation>
@@ -6795,6 +6807,7 @@
 <translation id="8037117027592400564">Читати весь текст, відтворений за допомогою синтезованого мовлення</translation>
 <translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8038399858950372766">Пристрій <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, клавіатура "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8042142357103597104">Прозорість тексту</translation>
 <translation id="8044262338717486897">Додаток <ph name="LINUX_APP_NAME" /> не відповідає.</translation>
@@ -6934,6 +6947,7 @@
 <translation id="8168071266284693455">Закладки, паролі, історію й інші дані синхронізовано на всіх ваших пристроях</translation>
 <translation id="8168435359814927499">Вміст</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>
+<translation id="8169849063724750395">Увімкнути знову</translation>
 <translation id="8171334254070436367">Сховати всі картки</translation>
 <translation id="8174047975335711832">Інформація про пристрій</translation>
 <translation id="8174876712881364124">Створення резервних копій на Google Диску. Легко відновлюйте дані та переносьте їх на інші пристрої. Ця резервна копія містить дані додатків. Резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google вашої дитини. <ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
@@ -7007,6 +7021,7 @@
 <translation id="8249615410597138718">Надіслати на пристрої</translation>
 <translation id="8249672078237421304">Пропонувати переклад сторінок, якщо їх мова відрізняється від мови у веб-переглядачі</translation>
 <translation id="8251441930213048644">Оновити</translation>
+<translation id="8251509999076836464">Підключення до пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8251578425305135684">Ескіз видалено.</translation>
 <translation id="825238165904109940">Завжди показувати повні URL-адреси</translation>
 <translation id="8252569384384439529">Завантаження…</translation>
@@ -7244,9 +7259,11 @@
 <translation id="8528074251912154910">Додати мови</translation>
 <translation id="8528962588711550376">Виконується вхід.</translation>
 <translation id="8529925957403338845">Не вдалося під’єднатися в миттєвому режимі модема</translation>
+<translation id="8531701051932785007">Безпечний перегляд із розширеним захистом вимкнено</translation>
 <translation id="8534656636775144800">На жаль, не вдалося приєднатися до домену. Повторіть спробу.</translation>
 <translation id="8535005006684281994">URL-адреса відновлення сертифікатів Netscape</translation>
 <translation id="8536956381488731905">Звук натискання клавіш</translation>
+<translation id="8538718737588735385">Увімкнути знову</translation>
 <translation id="8539727552378197395">Ні (HttpOnly)</translation>
 <translation id="8539766201049804895">Оновити</translation>
 <translation id="8540136935098276800">Введіть URL-адресу правильного формату</translation>

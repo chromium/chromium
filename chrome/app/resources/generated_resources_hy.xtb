@@ -1689,6 +1689,7 @@
 <translation id="2707024448553392710">Բաղադրիչի ներբեռնում</translation>
 <translation id="270921614578699633">Միջին</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
+<translation id="2710014902399506864">Ավելացնել նոր հեռախոսահամար</translation>
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2712173769900027643">Թույլտվություն խնդրել</translation>
@@ -2048,6 +2049,7 @@
 <translation id="3055590424724986000">Իմ ընտրած մատակարարի միջոցով</translation>
 <translation id="3058498974290601450">Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում:</translation>
 <translation id="3058517085907878899">Սարքի անվանում</translation>
+<translation id="3059195548603439580">Համակարգի բաղադրիչնե՞րն եք փնտրում։ Անցեք</translation>
 <translation id="3060379269883947824">Միացնել «Ընտրեք և լսեք» գործառույթը</translation>
 <translation id="3060952009917586498">Փոխել սարքի լեզուն։ Ընթացիկ լեզուն՝ <ph name="LANGUAGE" />։</translation>
 <translation id="3060987956645097882">Չհաջողվեց կապ հաստատել ձեր հեռախոսի հետ։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
@@ -2708,6 +2710,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Կապակցվել USB սարքի հետ}one{Կապակցվել # USB սարքի հետ}other{Կապակցվել # USB սարքի հետ}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}one{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}other{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="3765246971671567135">Չհաջողվեց կարդալ անցանց դեմո ռեժիմում աշխատանքի քաղաքականությունը։</translation>
+<translation id="3766115177661377251">Հեռարձակում նոր էկրանին</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Հց</translation>
 <translation id="377050016711188788">Պաղպաղակ</translation>
 <translation id="3771290962915251154">Այս կարգավորումն անջատված է, քանի որ ակտիվ է ծնողական վերահսկողությունը</translation>
@@ -3498,6 +3501,7 @@
 <translation id="4590324241397107707">Տվյալների շտեմարանի պահեստ</translation>
 <translation id="4592891116925567110">Ստիլուսի միջոցով նկարելու հավելված</translation>
 <translation id="4593021220803146968">&amp;Անցնել <ph name="URL" /></translation>
+<translation id="4594577641390224176">Համակարգի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="4595560905247879544">Հավելվածներն ու ընդլայնումները միայն կառավարիչը (<ph name="CUSTODIAN_NAME" />) կարող է փոփոխել:</translation>
 <translation id="4596295440756783523">Դուք ունեք որոշ հավաստագրեր, որոնք նույնականացնում են այս սերվերները</translation>
 <translation id="4598556348158889687">Հիշողության կառավարում</translation>
@@ -4889,6 +4893,7 @@
 <translation id="6085886413119427067">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով</translation>
 <translation id="6086004606538989567">Այս սարքը հասանելի չէ ձեր հաստատած հաշվի համար։</translation>
 <translation id="6086846494333236931">Տեղադրվել է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="6087746524533454243">Դիտարկիչի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="6087960857463881712">Հիացած դեմք</translation>
 <translation id="608912389580139775">Այս էջը ձեր ընթերցանության ցանկում ավելացնելու համար սեղմեք «Էջանիշ» պատկերակը</translation>
 <translation id="6091761513005122595">Թույլտվությունը տրամադրվեց։</translation>
@@ -4987,6 +4992,7 @@
 <translation id="6198102561359457428">Դուրս գրվել և նորից մուտք գործել…</translation>
 <translation id="6198252989419008588">Փոխել PIN-ը</translation>
 <translation id="6200047250927636406">Հեռացնել ֆայլը</translation>
+<translation id="6200151268994853226">Կառավարել ընդլայնումը</translation>
 <translation id="6201608810045805374">Հեռացնե՞լ հաշիվը</translation>
 <translation id="6202304368170870640">Դուք կարող եք օգտագործել ձեր PIN կոդը՝ ձեր սարք մտնելու կամ այն ապակողպելու համար:</translation>
 <translation id="6206311232642889873">Պատ&amp;ճենել պատկերը</translation>
@@ -5274,6 +5280,7 @@
 <translation id="6497789971060331894">Մկնիկով հետադարձ ոլորում</translation>
 <translation id="6498249116389603658">&amp;Ձեր բոլոր լեզուները</translation>
 <translation id="6499143127267478107">Խնամորդի լուծում պրոքսի-սերվերի սկրիպտում…</translation>
+<translation id="6499764981457476645">Մոտակայքում սարքեր չկան</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> հավելվածը հայցում է այս ֆայլը բացելու թույլտվություն՝</translation>
 <translation id="6501957628055559556">Բոլոր կոնտեյներները</translation>
 <translation id="650266656685499220">Ալբոմներ ստեղծելու համար անցեք Google Լուսանկարներ</translation>
@@ -5739,6 +5746,7 @@
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6981553172137913845">Կայքերը գաղտնի այցելելու համար սեղմեք երեք կետով պատկերակին՝ ինկոգնիտո պատուհան բացելու համար։</translation>
+<translation id="6981761993313539853">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ Զուգակցեք միայն այն սարքերի հետ, որոնց վստահում եք։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6983507711977005608">Անջատել կապը մուտքի ակնթարթային կետի հետ</translation>
 <translation id="6983783921975806247">Գրանցված OID</translation>
@@ -6645,6 +6653,7 @@
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Բարելավված Chrome՝ էջերի ցուցանիշների շնորհիվ</translation>
+<translation id="7903290522161827520">Դիտարկիչի բաղադրիչնե՞րն եք փնտրում։ Անցեք</translation>
 <translation id="7903345046358933331">Էջը չի պատասխանում: Կարող եք սպասել պատասխանին կամ փակել էջը:</translation>
 <translation id="7903742244674067440">Ձեր պահված հավաստագրերում նշված են այս հավաստագրման կենտրոնները</translation>
 <translation id="7903925330883316394">Օժանդակ ծրագիր՝ <ph name="UTILITY_TYPE" /></translation>
@@ -7021,6 +7030,7 @@
 <translation id="8271268254812352141">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։ Թարգմանության լեզուները կարող եք կարգավորել <ph name="LINK_BEGIN" />Կայքերի լեզուներ<ph name="LINK_END" /> էջում:</translation>
 <translation id="8271379370373330993">Հաջորդ մի քանի քայլերը ծնողների համար են։ Հաշիվը կարգավորելուց հետո կարող եք վերադարձնել <ph name="DEVICE_TYPE" /> սարքը երեխային։</translation>
 <translation id="8272443605911821513">Կառավարեք ձեր ընդլայնումները՝ «Լրացուցիչ գործիքներում» սեղմելով Ընդլայնումներ:</translation>
+<translation id="8272677921396592934">Սկանավորել QR կոդը տեսախցիկի միջոցով</translation>
 <translation id="8274332263553132018">Հեռարձակել ֆայլը</translation>
 <translation id="8274921654076766238">Խոշորացույցի տեղափոխում ստեղնաշարի միջոցով</translation>
 <translation id="8274924778568117936">Տեղադրման ժամանակ <ph name="DEVICE_TYPE" /> սարքը չանջատեք և չփակեք: Թարմացումից հետո <ph name="DEVICE_TYPE" />-ն ավտոմատ կվերագործարկվի:</translation>
@@ -7701,6 +7711,7 @@
 <translation id="9004754973617721124">Մաքրե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև դրա համար տեղադրված հավելվածի կայքի տվյալներն ու թույլտվությունները</translation>
 <translation id="9004952710076978168">Անհայտ տպիչից ծանուցում է ստացվել:</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
+<translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>
 <translation id="9009369504041480176">Վերբեռնում (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009708085379296446">Ուզում էիք փոխե՞լ այս էջը</translation>
 <translation id="9011163749350026987">Միշտ ցուցադրել պատկերակը</translation>
@@ -7884,6 +7895,7 @@
 <translation id="917510707618656279">Հարցնել, երբ որևէ կայք ուզում է օգտագործել Bluetooth սարքեր</translation>
 <translation id="9176476835295860688">Օգտագործման և դիագնոստիկ տվյալների ուղարկում Ներկայումս այս սարքը ախտորոշման, սարքի և հավելվածի օգտագործման տվյալներն ավտոմատ ուղարկում է Google-ին: Այս տեղեկությունները կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը: Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Այս <ph name="BEGIN_LINK1" />կարգավորումը<ph name="END_LINK1" /> պարտադրված է սեփականատիրոջ կողմից: Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է, այս տվյալները կպահվեն ձեր Google հաշվում։ <ph name="BEGIN_LINK2" />Մանրամասն<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth սարքը միացված է</translation>
+<translation id="9178061802301856367">Ջնջեք մուտքի տվյալները</translation>
 <translation id="9179524979050048593">Օգտանունը մուտքի էկրանին</translation>
 <translation id="9180281769944411366">Այս գործընթացը կարող է տևել մի քանի րոպե: Linux-ի կոնտեյները գործարկվում է:</translation>
 <translation id="9180380851667544951">Կայքը կարող է ցուցադրել ձեր սարքի էկրանը այլ մարդկանց</translation>

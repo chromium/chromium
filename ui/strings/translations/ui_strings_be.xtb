@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Схаваць пароль</translation>
 <translation id="4588090240171750605">Прагартаць управа</translation>
 <translation id="4724120544754982507">Цэнтр апавяшчэнняў. Непрачытаных апавяшчэнняў: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4746179598275229723">Пашырэнне адмацавана</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Застаўся 1 месяц}one{Застаўся # месяц}few{Засталося # месяцы}many{Засталося # месяцаў}other{Засталося # месяца}}</translation>
 <translation id="4888938634149558681">Зрабіць выклік</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунды}many{# секунд}other{# секунды}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Засталася 1 секунда}one{Засталася # секунда}few{Засталося # секунды}many{Засталося # секунд}other{Засталося # секунды}}</translation>
 <translation id="5941711191222866238">Згарнуць</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 гадзіна}one{# гадзіна}few{# гадзіны}many{# гадзін}other{# гадзіны}}</translation>
+<translation id="6007284015834422026">Пашырэнне замацавана</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6117103120090651229">Цэнтральная кнопка</translation>
 <translation id="6129953537138746214">Прабел</translation>

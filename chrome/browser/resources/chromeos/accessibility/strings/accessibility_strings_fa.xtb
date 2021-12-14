@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{علامت سؤال}one{# علامت سؤال}other{# علامت سؤال}}</translation>
 <translation id="3505359110822747654">‏جمع کردن منوهای ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{علامت هشتک}one{# علامت هشتک}other{# علامت هشتک}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{خالک سفید}one{# خالک سفید}other{# خالک سفید}}</translation>
 <translation id="352577523970648069">فیلد نوشتاری قابل ویرایش</translation>
 <translation id="3538907380453898475">فهرست شرح</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> را ببرید.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">کادر انتخاب بعدی</translation>
 <translation id="5598905979683743333"><ph name="NAME" />، دکمه رادیویی انتخاب نشد</translation>
 <translation id="5601172225407283979">انجام عملکرد پیش‌فرض</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{خالک مربعی}one{# خالک مربعی}other{# خالک مربعی}}</translation>
 <translation id="5608798115546226984">تکمیل خودکار به‌خط</translation>
 <translation id="5616029807486814372">درس بعدی</translation>
 <translation id="561939826962581046">زمان</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">فهرست‌های کرکره‌ای</translation>
 <translation id="8666733765751421568">پایان<ph name="TYPE" /></translation>
 <translation id="867187640362843212">عنوان ۵</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{سطح تودرتو #}other{سطح تودرتو #}}</translation>
 <translation id="8693391540059827073">فصل دلخواه من</translation>
 <translation id="8696284982970258155">یشمی محو</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{میله}one{# میله عمودی}other{# میله عمودی}}</translation>

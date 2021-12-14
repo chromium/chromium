@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
 <translation id="4588090240171750605">ညာဖက်သို့ ရွှေ့ရန်</translation>
 <translation id="4724120544754982507">အကြောင်းကြားချက်ဌာန၊ မဖတ်ရသေးသည့် အကြောင်းကြားချက် <ph name="UNREAD_NOTIFICATION_COUNT" /> ခု</translation>
+<translation id="4746179598275229723">‘နောက်ဆက်တွဲ’ ပင်ဖြုတ်ပြီးပြီ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{၁ လ ကျန်သည်}other{# လ ကျန်သည်}}</translation>
 <translation id="4888938634149558681">ဖုန်းခေါ်ရန်</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{၁ စက္ကန့်}other{# စက္ကန့်}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{၁ စက္ကန့်ကျန်၏}other{# စက္ကန့်ကျန်၏}}</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{၁ နာရီ}other{# နာရီ}}</translation>
+<translation id="6007284015834422026">‘နောက်ဆက်တွဲ’ ပင်ထိုးပြီးပြီ</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6117103120090651229">အလယ် ခလုတ်</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>

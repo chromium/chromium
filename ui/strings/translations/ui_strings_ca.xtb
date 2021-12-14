@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4588090240171750605">Desplaçament a la dreta</translation>
 <translation id="4724120544754982507">Centre de notificacions, <ph name="UNREAD_NOTIFICATION_COUNT" /> notificacions no llegides</translation>
+<translation id="4746179598275229723">L'extensió s'ha deixat de fixar</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{D'aquí a 1 mes}other{D'aquí a # mesos}}</translation>
 <translation id="4888938634149558681">Fes una trucada</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segon}other{# segons}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 segon restant}other{# segons restants}}</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 hora}other{# hores}}</translation>
+<translation id="6007284015834422026">L'extensió s'ha fixat</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6117103120090651229">Botó central</translation>
 <translation id="6129953537138746214">Espai</translation>

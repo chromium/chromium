@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{கேள்விக் குறி}other{# கேள்விக் குறிகள்}}</translation>
 <translation id="3505359110822747654">ChromeVox மெனுக்களைச் சுருக்கு</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{கூரைக் குறி}other{# கூரைக் குறிகள்}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{வெள்ளை நிறப் பொட்டுக்குறி}other{# வெள்ளை நிறப் பொட்டுக்குறிகள்}}</translation>
 <translation id="352577523970648069">திருத்தக்கூடிய உரைப் புலம்</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />ஐ வெட்டும்.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">அடுத்த செக்பாக்ஸ்</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ரேடியோ பட்டன் தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="5601172225407283979">இயல்பான செயலைச் செயல்படுத்து</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{சதுரப் பொட்டுக்குறி}other{# சதுரப் பொட்டுக்குறிகள்}}</translation>
 <translation id="5608798115546226984">தானே நிரப்புதல் இன்லைன்</translation>
 <translation id="5616029807486814372">அடுத்த பாடம்</translation>
 <translation id="561939826962581046">நேரம்</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">கீழ் தோன்றும் பட்டிகள்</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> முடிந்தது</translation>
 <translation id="867187640362843212">தலைப்பு 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{உள்ளாக இடப்பட்ட நிலை: #}}</translation>
 <translation id="8693391540059827073">எனக்குப் பிடித்த பருவகாலம்</translation>
 <translation id="8696284982970258155">ஹனிடியூ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{குத்துக் கோடு}other{# செங்குத்தான குத்துக் கோடுகள்}}</translation>

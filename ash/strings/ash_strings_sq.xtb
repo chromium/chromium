@@ -35,6 +35,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="118437560755358292">Fut fjalëkalimin ose kodin PIN për më shumë siguri</translation>
 <translation id="118532027333893379">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
 <translation id="1190678134285018527">Pajisja duhet të kthehet në versionin e mëparshëm</translation>
@@ -338,6 +339,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3307642347673023554">Kaloi në modalitetin e laptopit</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> mund të identifikohet përsëri më vonë.</translation>
 <translation id="3321628682574733415">Kod i gabuar prindi</translation>
+<translation id="3339826665088060472">"Regjistrimi i ekranit", veglat për të nxjerrë pamje ekrani dhe regjistrime ekrani</translation>
 <translation id="3341303451326249809">Pamja e ekranit u regjistrua</translation>
 <translation id="334252345105450327">Nxirr një pamje të ekranit</translation>
 <translation id="3351879221545518001">Aktualisht po transmeton ekranin.</translation>
@@ -394,6 +396,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3606978283550408104">Ekrani "Braille" është i lidhur.</translation>
 <translation id="3615926715408477684">Aktivizimi i të dhënave celulare do të aktivizojë Bluetooth</translation>
 <translation id="3616883743181209306">Menyja u zhvendos në këndin lart djathtas të ekranit.</translation>
+<translation id="3619536907358025872">Cilësimet e "Regjistrimit të ekranit"</translation>
 <translation id="3621202678540785336">Hyrje</translation>
 <translation id="3621712662352432595">Cilësimet e audios</translation>
 <translation id="3626281679859535460">Ndriçimi</translation>
@@ -492,6 +495,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
 <translation id="4274537685965975248">Shkurtorja e tastierës për Alt + Shigjeta poshtë është ndryshuar. Për të përdorur tastin End, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta djathtas.</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
+<translation id="4283888303416325161">Fut fjalëkalimin për më shumë siguri</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="429402653707266969">Aktivizo/çaktivizo vendndodhjen e shiritit të veglave</translation>
 <translation id="4294319844246081198">Mirëmëngjesi <ph name="GIVEN_NAME" />,</translation>
@@ -761,6 +765,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="607652042414456612">Kompjuteri është i zbulueshëm për pajisjet me Bluetooth në afërsi dhe do të shfaqet si "<ph name="NAME" />" me adresën <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Konfirmo shkarkimin e <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">"Asistenti i Google" nuk ofrohet në një sesion për vizitorët.</translation>
 <translation id="6134259848159370930">Kërko në pajisjen tënde, aplikacione, cilësime dhe ueb.</translation>
 <translation id="6137566720514957455">Hap dialogun e heqjes për <ph name="USER_EMAIL_ADDRESS" /></translation>
