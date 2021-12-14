@@ -12307,7 +12307,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrivacySandbox.AggregationService.ReportStatus"
     enum="PrivacySandboxAggregationServiceReportStatus"
-    expires_after="2022-01-16">
+    expires_after="2022-07-16">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -12322,7 +12322,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2022-01-16">
+    expires_after="2022-07-16">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
