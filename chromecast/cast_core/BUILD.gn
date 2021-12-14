@@ -4,26 +4,6 @@
 
 import("//chromecast/chromecast.gni")
 
-group("cast_core") {
-  deps = [
-    ":browser",
-    ":grpc_webui",
-    ":message_port",
-    ":metrics_recorder",
-    ":renderer",
-    ":runtime_service",
-    ":streaming_receiver_session_client",
-  ]
-
-  if (is_linux) {
-    deps += [ ":application_dispatch" ]
-  }
-
-  if (enable_cast_media_runtime) {
-    deps += [ ":cast_runtime_content_client_factories" ]
-  }
-}
-
 cast_source_set("cors_exempt_headers") {
   sources = [
     "cors_exempt_headers.cc",
@@ -241,6 +221,15 @@ cast_source_set("renderer") {
     "//content/public/renderer",
     "//media",
   ]
+
+  if (enable_cast_media_runtime) {
+    sources += [ "cast_content_renderer_client_factory.cc" ]
+  }
+
+  # TODO(vigeni): Doesn't look like this is needed.
+  if (chromecast_branding != "public") {
+    deps += [ "//chromecast/internal/cast_core/runtime:renderer" ]
+  }
 }
 
 cast_source_set("browser") {
@@ -263,8 +252,16 @@ cast_source_set("browser") {
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
   ]
 
+  if (enable_cast_media_runtime) {
+    sources += [ "cast_content_browser_client_factory.cc" ]
+  } else {
+    deps += [ "//chromecast/browser:simple_client" ]
+  }
+
   if (chromecast_branding == "public") {
     sources += [ "cast_runtime_content_browser_client_simple.cc" ]
+  } else {
+    deps += [ "//chromecast/internal/cast_core/runtime:browser" ]
   }
 }
 
@@ -343,34 +340,13 @@ cast_source_set("runtime_service") {
   }
 }
 
-if (enable_cast_media_runtime) {
-  cast_source_set("cast_runtime_content_client_factories") {
-    sources = [
-      "cast_content_browser_client_factory_runtime.cc",
-      "cast_content_renderer_client_factory_runtime.cc",
-    ]
-
-    deps = [
-      ":browser",
-      ":cors_exempt_headers",
-      ":renderer",
-      "//base",
-      "//chromecast/browser",
-      "//chromecast/renderer:renderer_base",
-    ]
-
-    if (chromecast_branding != "public") {
-      deps += [ "//chromecast/internal/cast_core/services" ]
-    }
-  }
-}
-
 # When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_executable("core_runtime_simple") {
   sources = [ "cast_runtime_main.cc" ]
 
   deps = [
-    ":cast_core",
+    ":browser",
+    ":renderer",
     "//chromecast:cast_shell_pak",
     "//chromecast:chromecast_locales_pak",
     "//chromecast/app",
@@ -379,12 +355,6 @@ cast_executable("core_runtime_simple") {
     "//chromecast/utility:simple_client",
     "//content/public/app",
   ]
-
-  if (enable_cast_media_runtime) {
-    deps += [ ":cast_runtime_content_client_factories" ]
-  } else {
-    deps += [ "//chromecast/browser:simple_client" ]
-  }
 }
 
 executable("demo_platform_service") {
@@ -402,24 +372,14 @@ executable("demo_platform_service") {
   deps = [ "//third_party/grpc:grpc++" ]
 }
 
-cast_source_set("cast_core_test_utils") {
+# TODO(b/194439829): Upstream additional metrics unit tests.
+cast_source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "cast_runtime_histogram_flattener_unittest.cc",
     "cast_runtime_metrics_test_helpers.cc",
     "cast_runtime_metrics_test_helpers.h",
-  ]
-
-  deps = [
-    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
-    "//third_party/metrics_proto",
-  ]
-}
-
-# TODO(b/194439829): Upstream additional metrics unit tests.
-test("cast_cast_core_unittests") {
-  sources = [
-    "cast_runtime_histogram_flattener_unittest.cc",
     "cors_exempt_headers_unittest.cc",
     "grpc_resource_data_source_unittest.cc",
     "streaming_receiver_session_client_unittest.cc",
@@ -427,7 +387,6 @@ test("cast_cast_core_unittests") {
 
   deps = [
     ":browser",
-    ":cast_core_test_utils",
     ":cors_exempt_headers",
     ":grpc_webui",
     ":metrics_recorder",
@@ -435,7 +394,6 @@ test("cast_cast_core_unittests") {
     "//base",
     "//base/test:test_support",
     "//chromecast/base/metrics",
-    "//chromecast/browser:simple_client",
     "//chromecast/browser:simple_main_parts",
     "//chromecast/browser:test_support",
     "//chromecast/cast_core/url_rewrite:unit_tests",
@@ -447,9 +405,14 @@ test("cast_cast_core_unittests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
     "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
     "//third_party/grpc:grpc++",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/metrics_proto",
   ]
+}
+
+test("cast_cast_core_unittests") {
+  deps = [ ":unit_tests" ]
 }
