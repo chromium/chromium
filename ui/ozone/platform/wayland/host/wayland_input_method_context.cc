@@ -585,9 +585,13 @@ void WaylandInputMethodContext::MaybeUpdateActivated() {
 
   WaylandWindow* window =
       connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
+  if (!window && !connection_->keyboard())
+    window = connection_->wayland_window_manager()->GetCurrentActiveWindow();
   // Activate Wayland IME only if 1) InputMethod in Chrome has some
   // TextInputClient connected, and 2) the actual keyboard focus of Wayland
   // is given to Chrome, which is notified via wl_keyboard::enter.
+  // If no keyboard is connected, the current active window is used for 2)
+  // instead (https://crbug.com/1168411).
   bool activated = focused_ && window;
   if (activated_ == activated)
     return;

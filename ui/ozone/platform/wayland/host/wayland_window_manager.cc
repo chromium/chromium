@@ -64,6 +64,15 @@ WaylandWindow* WaylandWindowManager::GetWindowWithLargestBounds() const {
   return window_with_largest_bounds;
 }
 
+WaylandWindow* WaylandWindowManager::GetCurrentActiveWindow() const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->IsActive())
+      return window;
+  }
+  return nullptr;
+}
+
 WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
   for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;

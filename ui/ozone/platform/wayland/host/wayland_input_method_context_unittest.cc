@@ -98,6 +98,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 class WaylandInputMethodContextTest : public WaylandTest {
  public:
   WaylandInputMethodContextTest() = default;
+  ~WaylandInputMethodContextTest() override = default;
   WaylandInputMethodContextTest(const WaylandInputMethodContextTest&) = delete;
   WaylandInputMethodContextTest& operator=(
       const WaylandInputMethodContextTest&) = delete;
@@ -105,8 +106,18 @@ class WaylandInputMethodContextTest : public WaylandTest {
   void SetUp() override {
     WaylandTest::SetUp();
 
+    // WaylandInputMethodContext behaves differently when no keyboard is
+    // attached.
+    wl_seat_send_capabilities(server_.seat()->resource(),
+                              WL_SEAT_CAPABILITY_KEYBOARD);
+
     Sync();
 
+    SetUpInternal();
+  }
+
+ protected:
+  void SetUpInternal() {
     input_method_context_delegate_ =
         std::make_unique<TestInputMethodContextDelegate>();
 
@@ -132,7 +143,6 @@ class WaylandInputMethodContextTest : public WaylandTest {
     ASSERT_TRUE(zcr_extended_text_input_);
   }
 
- protected:
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
@@ -146,6 +156,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
 
   // Scenario 1: InputMethod focus is set, then Keyboard focus is set.
   // Unset them in the reversed order.
+
   EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource())).Times(0);
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
   input_method_context_->Focus();
@@ -483,12 +494,51 @@ TEST_P(WaylandInputMethodContextTest,
       input_method_context_delegate_->was_on_set_preedit_region_called());
 }
 
+class WaylandInputMethodContextNoKeyboardTest
+    : public WaylandInputMethodContextTest {
+ public:
+  WaylandInputMethodContextNoKeyboardTest() = default;
+  ~WaylandInputMethodContextNoKeyboardTest() override = default;
+
+  void SetUp() override {
+    WaylandTest::SetUp();
+    SetUpInternal();
+  }
+};
+
+TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
+  // Because there is no keyboard, Activate is called as soon as InputMethod's
+  // TextInputClient focus is met.
+
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
+  input_method_context_->Focus();
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  input_method_context_->Blur();
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandInputMethodContextTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandInputMethodContextTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandInputMethodContextNoKeyboardTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandInputMethodContextNoKeyboardTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
 
