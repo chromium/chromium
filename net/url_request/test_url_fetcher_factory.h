@@ -194,10 +194,8 @@ class TestURLFetcher : public URLFetcher {
   void set_response_code(int response_code) {
     fake_response_code_ = response_code;
   }
-  void set_was_fetched_via_proxy(bool flag);
   void set_was_cached(bool flag);
   void set_response_headers(scoped_refptr<HttpResponseHeaders> headers);
-  void set_backoff_delay(base::TimeDelta backoff_delay);
   void SetDelegateForTests(DelegateForTests* delegate_for_tests);
 
   // Set string data.
@@ -240,7 +238,6 @@ class TestURLFetcher : public URLFetcher {
   scoped_refptr<HttpResponseHeaders> fake_response_headers_;
   HttpRequestHeaders fake_extra_request_headers_;
   int fake_max_retries_;
-  base::TimeDelta fake_backoff_delay_;
   std::unique_ptr<URLFetcherResponseWriter> response_writer_;
 };
 
