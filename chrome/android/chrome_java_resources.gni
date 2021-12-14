@@ -449,7 +449,6 @@ chrome_java_resources = [
   "java/res/drawable-xxxhdpi/unionpay_card.png",
   "java/res/drawable-xxxhdpi/verify_checkmark.png",
   "java/res/drawable/accessibility_tab_switcher_divider.xml",
-  "java/res/drawable/account_picker_background.xml",
   "java/res/drawable/adaptive_toolbar_preference_header.xml",
   "java/res/drawable/arrow_down.xml",
   "java/res/drawable/arrow_up.xml",
