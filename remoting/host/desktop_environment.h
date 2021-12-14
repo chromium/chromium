@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
-#include "remoting/host/desktop_environment_options.h"
 
 namespace webrtc {
 class DesktopCapturer;

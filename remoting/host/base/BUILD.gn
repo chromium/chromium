@@ -13,6 +13,7 @@ source_set("base") {
   ]
 
   public = [
+    "desktop_environment_options.h",
     "host_exit_codes.h",
     "screen_controls.h",
     "screen_resolution.h",
@@ -21,6 +22,7 @@ source_set("base") {
   ]
 
   sources = [
+    "desktop_environment_options.cc",
     "host_exit_codes.cc",
     "screen_resolution.cc",
     "switches.cc",

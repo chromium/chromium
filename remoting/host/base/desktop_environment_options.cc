@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_environment_options.h"
+#include "remoting/host/base/desktop_environment_options.h"
 
 #include <string>
 #include <utility>
 
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if defined(OS_WIN)
-#include "remoting/host/win/evaluate_d3d.h"
-#endif
 
 namespace remoting {
 
@@ -35,22 +31,13 @@ DesktopEnvironmentOptions::DesktopEnvironmentOptions(
 DesktopEnvironmentOptions::DesktopEnvironmentOptions(
     const DesktopEnvironmentOptions& other) = default;
 DesktopEnvironmentOptions::~DesktopEnvironmentOptions() = default;
-DesktopEnvironmentOptions&
-DesktopEnvironmentOptions::operator=(
+DesktopEnvironmentOptions& DesktopEnvironmentOptions::operator=(
     DesktopEnvironmentOptions&& other) = default;
-DesktopEnvironmentOptions&
-DesktopEnvironmentOptions::operator=(
+DesktopEnvironmentOptions& DesktopEnvironmentOptions::operator=(
     const DesktopEnvironmentOptions& other) = default;
 
 void DesktopEnvironmentOptions::Initialize() {
   desktop_capture_options_.set_detect_updated_region(true);
-#if defined (OS_WIN)
-  // Whether DirectX capturer can be enabled depends on various factors,
-  // including how many applications are using related APIs.
-  // WebRTC/DesktopCapturer will take care of those details. This check is used
-  // to ensure D3D APIs are safe to access in the current environment.
-  desktop_capture_options_.set_allow_directx_capturer(IsD3DAvailable());
-#endif
 }
 
 const DesktopCaptureOptions*
@@ -58,8 +45,7 @@ DesktopEnvironmentOptions::desktop_capture_options() const {
   return &desktop_capture_options_;
 }
 
-DesktopCaptureOptions*
-DesktopEnvironmentOptions::desktop_capture_options() {
+DesktopCaptureOptions* DesktopEnvironmentOptions::desktop_capture_options() {
   return &desktop_capture_options_;
 }
 
@@ -131,12 +117,6 @@ void DesktopEnvironmentOptions::set_clipboard_size(
 
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
-#if defined(OS_WIN)
-  absl::optional<bool> directx_capturer = options.GetBool("DirectX-Capturer");
-  if (directx_capturer) {
-    desktop_capture_options_.set_allow_directx_capturer(*directx_capturer);
-  }
-#endif
   // This field is for test purpose. Usually it should not be set to false.
   absl::optional<bool> detect_updated_region =
       options.GetBool("Detect-Updated-Region");
