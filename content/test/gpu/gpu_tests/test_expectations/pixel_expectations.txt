@@ -495,6 +495,7 @@ crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_Web
 # Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
 crbug.com/1274796 [ win nvidia-0x2184 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1274796 [ win intel-0x5912 ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1274796 [ win intel-0x3e92 ] Pixel_WebGPUImportVideoFrame [ RetryOnFailure ]
 crbug.com/1274796 [ win amd-0x7340 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
