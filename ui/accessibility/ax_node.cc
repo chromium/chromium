@@ -172,8 +172,7 @@ AXNode* AXNode::GetUnignoredParent() const {
   // bailout with a fix, which ideally should not call this function under
   // the circumstances hypothesized. Also, add back in the following line:
   // DCHECK(!tree_->GetTreeUpdateInProgressState());
-  if (tree_->GetTreeUpdateInProgressState() || is_data_still_uninitialized_ ||
-      has_data_been_taken_) {
+  if (tree_->GetTreeUpdateInProgressState() || !IsDataValid()) {
     static auto* const crash_key = base::debug::AllocateCrashKeyString(
         "ax_node_err", base::debug::CrashKeySize::Size64);
     std::ostringstream error;
@@ -1509,6 +1508,10 @@ AXNode* AXNode::GetOrderedSet() const {
   }
 
   return result;
+}
+
+bool AXNode::IsDataValid() const {
+  return !is_data_still_uninitialized_ && !has_data_been_taken_;
 }
 
 AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {

@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/string_search.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_safearray.h"
@@ -1664,17 +1666,43 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
     AXNodeID node_id) {
   DCHECK(tree);
 
+  bool should_dump = false;
   if (validation_necessary_for_start_.has_value() &&
       validation_necessary_for_start_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_start_->node_id == node_id) {
-    SetStart(start_->AsValidPosition());
+    if (start_->GetAnchor()->IsDataValid()) {
+      SetStart(start_->AsValidPosition());
+    } else {
+      should_dump = true;
+      SetStart(AXNodePosition::CreateNullPosition());
+    }
     validation_necessary_for_start_ = absl::nullopt;
   }
   if (validation_necessary_for_end_.has_value() &&
       validation_necessary_for_end_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_end_->node_id == node_id) {
-    SetEnd(end_->AsValidPosition());
+    if (end_->GetAnchor()->IsDataValid()) {
+      SetEnd(end_->AsValidPosition());
+    } else {
+      should_dump = true;
+      SetEnd(AXNodePosition::CreateNullPosition());
+    }
     validation_necessary_for_end_ = absl::nullopt;
+  }
+
+  // TODO(bebeaudr): The following dump without crash is to collect data that
+  // will help us understand what causes the endpoints to be positioned on nodes
+  // that are no longer part of the tree. This bad state caused crashes like
+  // https://crbug.com/1278304, but the above mitigation should prevent any
+  // crashes related to this problem going forward.
+  if (should_dump) {
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "text_range_endpoints_on_node_deleted_err",
+        base::debug::CrashKeySize::Size64);
+    std::ostringstream error;
+    error << "AXNode's |data_| is invalid. Unable to maintain a valid range.";
+    base::debug::SetCrashKeyString(crash_key, error.str());
+    base::debug::DumpWithoutCrashing();
   }
 }
 
