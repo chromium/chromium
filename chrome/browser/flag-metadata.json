@@ -5544,7 +5544,7 @@
   {
     "name": "use-winrt-midi-api",
     "owners": [ "toyoshim" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "use-xps-for-printing",
