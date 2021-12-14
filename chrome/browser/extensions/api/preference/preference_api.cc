@@ -446,13 +446,13 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
     return;
   }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->Set(extensions::preference_api_constants::kValue,
-            std::move(transformed_value));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(extensions::preference_api_constants::kValue,
+              std::move(*transformed_value));
   if (incognito) {
     ExtensionPrefs* ep = ExtensionPrefs::Get(profile_);
-    dict->SetBoolean(extensions::preference_api_constants::kIncognitoSpecific,
-                     ep->HasIncognitoPrefValue(browser_pref));
+    dict.SetBoolKey(extensions::preference_api_constants::kIncognitoSpecific,
+                    ep->HasIncognitoPrefValue(browser_pref));
   }
   args.Append(std::move(dict));
 
