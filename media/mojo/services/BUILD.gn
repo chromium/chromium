@@ -70,7 +70,7 @@ component("services") {
     "watch_time_recorder.h",
   ]
 
-  defines = [ "MEDIA_MOJO_IMPLEMENTATION" ]
+  defines = [ "IS_MEDIA_MOJO_IMPL" ]
 
   public_deps = [
     "//base",
