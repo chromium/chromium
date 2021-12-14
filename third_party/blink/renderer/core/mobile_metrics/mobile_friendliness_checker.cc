@@ -192,7 +192,7 @@ int ExtractAndCountAllTapTargets(
     }
     if (Element* element = DynamicTo<Element>(object->GetNode())) {
       // Expand each corner by the size of fingertips.
-      const FloatRect rect = element->GetBoundingClientRectNoLifecycleUpdate();
+      const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
       if (rect.IsEmpty()) {
         object = object->NextInPreOrder();
         continue;

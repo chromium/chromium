@@ -278,10 +278,10 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
          layout_object.IsSVGInline());
-  FloatRect visual_rect(ExtendTextBBoxWithStroke(layout_object, text_bounds));
+  gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
-  return ToGfxRectF(visual_rect);
+  return visual_rect;
 }
 
 bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,

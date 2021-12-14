@@ -972,8 +972,8 @@ static void HandleMetaViewport(
       document_parameters->viewport_meta_zero_values_quirk);
   if (viewport)
     *viewport = description;
-  FloatSize initial_viewport(media_values->DeviceWidth(),
-                             media_values->DeviceHeight());
+  gfx::SizeF initial_viewport(media_values->DeviceWidth(),
+                              media_values->DeviceHeight());
   PageScaleConstraints constraints = description.Resolve(
       initial_viewport, document_parameters->default_viewport_min_width);
   media_values->OverrideViewportDimensions(constraints.layout_size.width(),

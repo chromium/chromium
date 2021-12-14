@@ -396,7 +396,7 @@ PositionWithAffinity LayoutSVGText::PositionForPoint(
 void LayoutSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
                                   MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
+  quads.push_back(LocalToAbsoluteQuad(FloatQuad(StrokeBoundingBox()), mode));
 }
 
 void LayoutSVGText::Paint(const PaintInfo& paint_info) const {

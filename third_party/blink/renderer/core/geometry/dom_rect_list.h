@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -46,7 +47,7 @@ class CORE_EXPORT DOMRectList final : public ScriptWrappable {
   explicit DOMRectList(const Rects& rects) {
     list_.ReserveInitialCapacity(rects.size());
     for (const auto& r : rects)
-      list_.push_back(DOMRect::FromFloatRect(FloatRect(r)));
+      list_.push_back(DOMRect::FromRectF(gfx::RectF(r)));
   }
 
   explicit DOMRectList(const Vector<FloatQuad>&);

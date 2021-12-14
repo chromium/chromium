@@ -85,6 +85,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace gfx {
+class RectF;
+}
+
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
@@ -145,7 +149,6 @@ template <typename EventType>
 class EventWithHitTestResults;
 class ExceptionState;
 class FloatQuad;
-class FloatRect;
 class FontMatchingMetrics;
 class FormController;
 class FrameCallback;
@@ -1384,8 +1387,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void AdjustFloatQuadsForScrollAndAbsoluteZoom(Vector<FloatQuad>&,
                                                 const LayoutObject&) const;
-  void AdjustFloatRectForScrollAndAbsoluteZoom(FloatRect&,
-                                               const LayoutObject&) const;
+  void AdjustRectForScrollAndAbsoluteZoom(gfx::RectF&,
+                                          const LayoutObject&) const;
 
   void SetContextFeatures(ContextFeatures&);
   ContextFeatures& GetContextFeatures() const { return *context_features_; }

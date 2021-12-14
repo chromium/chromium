@@ -2172,7 +2172,7 @@ bool LayoutTableSection::MapToVisualRectInAncestorSpaceInternal(
   // enclosing LayoutFlowThread will convert to visual coordinates.
   if (IsRepeatingHeaderGroup() || IsRepeatingFooterGroup()) {
     transform_state.Flatten();
-    FloatRect rect = transform_state.LastPlanarQuad().BoundingBox();
+    gfx::RectF rect = transform_state.LastPlanarQuad().BoundingBox();
     rect.set_height(Table()->LogicalHeight());
     transform_state.SetQuad(FloatQuad(rect));
     return Table()->MapToVisualRectInAncestorSpaceInternal(

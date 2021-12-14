@@ -148,7 +148,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
       const NGFragmentItem& item = *cursor.CurrentItem();
       if (item.Type() == NGFragmentItem::kSvgText) {
         quads.push_back(LocalToAbsoluteQuad(
-            FloatRect(SVGLayoutSupport::ExtendTextBBoxWithStroke(
+            FloatQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                 *this, cursor.Current().ObjectBoundingBox(cursor))),
             mode));
       }
@@ -158,7 +158,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
   for (InlineFlowBox* box : *LineBoxes()) {
     gfx::RectF box_rect(box->FrameRect());
     quads.push_back(LocalToAbsoluteQuad(
-        FloatRect(SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box_rect)),
+        FloatQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box_rect)),
         mode));
   }
 }

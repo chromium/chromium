@@ -57,13 +57,13 @@ class VisualRectMappingTest : public PaintTestConfigurations,
     auto slow_map_rect = local_rect;
     object.MapToVisualRectInAncestorSpace(&ancestor, slow_map_rect);
 
-    FloatClipRect geometry_mapper_rect(ToGfxRectF(FloatRect(local_rect)));
+    FloatClipRect geometry_mapper_rect((gfx::RectF(local_rect)));
     const FragmentData& fragment_data = object.FirstFragment();
     if (fragment_data.HasLocalBorderBoxProperties()) {
       auto local_rect_copy = local_rect;
       object.MapToVisualRectInAncestorSpace(&ancestor, local_rect_copy,
                                             kUseGeometryMapper);
-      geometry_mapper_rect.SetRect(ToGfxRectF(FloatRect(local_rect_copy)));
+      geometry_mapper_rect.SetRect(gfx::RectF(local_rect_copy));
     }
 
     if (expected_visual_rect_in_ancestor.IsEmpty()) {
@@ -1030,7 +1030,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPreserve3d) {
   matrix.FlattenTo2d();
   matrix *= target->Layer()->CurrentTransform();
   PhysicalRect output =
-      PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
+      PhysicalRect::EnclosingRect(matrix.MapRect(gfx::RectF(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output,
                   kContainsToEnclosingRect);
@@ -1060,7 +1060,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPreserve3dNested) {
   TransformationMatrix matrix = container->Layer()->CurrentTransform();
   matrix *= target->Layer()->CurrentTransform();
   PhysicalRect output =
-      PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
+      PhysicalRect::EnclosingRect(matrix.MapRect(gfx::RectF(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output);
 }
@@ -1092,7 +1092,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPerspective) {
   target->GetTransformFromContainer(container, PhysicalOffset(), target_matrix);
   matrix *= target_matrix;
   PhysicalRect output =
-      PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
+      PhysicalRect::EnclosingRect(matrix.MapRect(gfx::RectF(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output,
                   kContainsToEnclosingRect);
@@ -1125,7 +1125,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPerspectiveNested) {
   target->GetTransformFromContainer(container, PhysicalOffset(), target_matrix);
   matrix *= target_matrix;
   PhysicalRect output =
-      PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
+      PhysicalRect::EnclosingRect(matrix.MapRect(gfx::RectF(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output);
 }
@@ -1165,7 +1165,7 @@ TEST_P(VisualRectMappingTest, PerspectivePlusScroll) {
   transform.FlattenTo2d();
 
   PhysicalRect output =
-      PhysicalRect::EnclosingRect(transform.MapRect(FloatRect(originalRect)));
+      PhysicalRect::EnclosingRect(transform.MapRect(gfx::RectF(originalRect)));
   output.Intersect(container->ClippingRect(PhysicalOffset()));
   CheckVisualRect(*target, *target->View(), originalRect, output);
 }

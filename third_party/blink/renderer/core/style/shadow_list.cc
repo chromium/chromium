@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 
 #include <memory>
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -45,8 +45,9 @@ FloatRectOutsets ShadowList::RectOutsetsIncludingOriginal() const {
   return outsets;
 }
 
-void ShadowList::AdjustRectForShadow(FloatRect& rect) const {
-  rect.Expand(RectOutsetsIncludingOriginal());
+void ShadowList::AdjustRectForShadow(gfx::RectF& rect) const {
+  auto outset = RectOutsetsIncludingOriginal();
+  rect.Outset(outset.Left(), outset.Top(), outset.Right(), outset.Bottom());
 }
 
 }  // namespace blink

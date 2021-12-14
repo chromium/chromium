@@ -34,7 +34,6 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -43,6 +42,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -897,7 +898,7 @@ static float ClampEdgeValue(float f) {
 
 LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
     const FloatQuad& q) const {
-  FloatRect mapped_quad_bounds = ProjectQuad(q).BoundingBox();
+  gfx::RectF mapped_quad_bounds = ProjectQuad(q).BoundingBox();
 
   float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
   float top = ClampEdgeValue(floorf(mapped_quad_bounds.y()));
@@ -961,16 +962,16 @@ FloatPoint3D TransformationMatrix::MapPoint(const FloatPoint3D& p) const {
 }
 
 gfx::Rect TransformationMatrix::MapRect(const gfx::Rect& rect) const {
-  return ToEnclosingRect(MapRect(FloatRect(rect)));
+  return gfx::ToEnclosingRect(MapRect(gfx::RectF(rect)));
 }
 
 LayoutRect TransformationMatrix::MapRect(const LayoutRect& r) const {
-  return EnclosingLayoutRect(MapRect(FloatRect(r)));
+  return EnclosingLayoutRect(MapRect(gfx::RectF(r)));
 }
 
-FloatRect TransformationMatrix::MapRect(const FloatRect& r) const {
+gfx::RectF TransformationMatrix::MapRect(const gfx::RectF& r) const {
   if (IsIdentityOrTranslation()) {
-    FloatRect mapped_rect(r);
+    gfx::RectF mapped_rect(r);
     mapped_rect.Offset(static_cast<float>(matrix_[3][0]),
                        static_cast<float>(matrix_[3][1]));
     return mapped_rect;

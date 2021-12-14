@@ -14,10 +14,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -355,7 +355,7 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   if (!window)
     return;
 
-  FloatRect anchor_rect_in_screen =
+  gfx::RectF anchor_rect_in_screen =
       owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate();
   const float anchor_zoom = owner_select_menu_element_->GetLayoutObject()
                                 ? owner_select_menu_element_->GetLayoutObject()

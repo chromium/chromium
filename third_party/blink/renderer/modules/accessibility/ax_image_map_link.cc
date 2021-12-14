@@ -101,11 +101,11 @@ KURL AXImageMapLink::Url() const {
 }
 
 void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
-                                       FloatRect& out_bounds_in_container,
+                                       gfx::RectF& out_bounds_in_container,
                                        skia::Matrix44& out_container_transform,
                                        bool* clips_children) const {
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
 
   HTMLAreaElement* area = AreaElement();
@@ -122,8 +122,7 @@ void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
   if (!layout_object)
     return;
 
-  out_bounds_in_container =
-      FloatRect(area->GetPath(layout_object).BoundingRect());
+  out_bounds_in_container = area->GetPath(layout_object).BoundingRect();
   *out_container = AXObjectCache().GetOrCreate(layout_object);
 }
 

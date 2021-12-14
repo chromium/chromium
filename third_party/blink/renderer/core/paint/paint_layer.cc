@@ -92,7 +92,6 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
@@ -104,6 +103,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -1723,9 +1723,10 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
   HitTestingTransformState transform_state =
       container_transform_state
           ? *container_transform_state
-          : HitTestingTransformState(recursion_data.location.TransformedPoint(),
-                                     recursion_data.location.TransformedRect(),
-                                     FloatQuad(FloatRect(recursion_data.rect)));
+          : HitTestingTransformState(
+                recursion_data.location.TransformedPoint(),
+                recursion_data.location.TransformedRect(),
+                FloatQuad(gfx::RectF(recursion_data.rect)));
 
   if (container_transform_state &&
       (!transform_container.Preserves3D() ||
@@ -2760,7 +2761,7 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
 
   if (ShouldApplyTransformToBoundingBox(composited_layer, options)) {
     result =
-        PhysicalRect::EnclosingRect(Transform()->MapRect(FloatRect(result)));
+        PhysicalRect::EnclosingRect(Transform()->MapRect(gfx::RectF(result)));
   }
 
   if (ShouldFragmentCompositedBounds(&composited_layer)) {

@@ -19,7 +19,7 @@ String LayoutSize::ToString() const {
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutSize& size) {
-  return ts << FloatSize(size);
+  return ts << gfx::SizeF(size).ToString();
 }
 
 }  // namespace blink

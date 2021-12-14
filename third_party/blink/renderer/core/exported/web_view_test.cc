@@ -273,7 +273,7 @@ class WebViewTest : public testing::Test {
                        const std::string& html_file);
   bool TapElement(WebInputEvent::Type, Element*);
   bool TapElementById(WebInputEvent::Type, const WebString& id);
-  gfx::Size PrintICBSizeFromPageSize(const FloatSize& page_size);
+  gfx::Size PrintICBSizeFromPageSize(const gfx::Size& page_size);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
       WebViewImpl* web_view_impl);
@@ -2720,14 +2720,14 @@ bool WebViewTest::TapElementById(WebInputEvent::Type type,
   return TapElement(type, element);
 }
 
-gfx::Size WebViewTest::PrintICBSizeFromPageSize(const FloatSize& page_size) {
+gfx::Size WebViewTest::PrintICBSizeFromPageSize(const gfx::Size& page_size) {
   // The expected layout size comes from the calculation done in
   // ResizePageRectsKeepingRatio() which is used from PrintContext::begin() to
   // scale the page size.
-  const float ratio = page_size.height() / (float)page_size.width();
-  const int icb_width =
+  float ratio = static_cast<float>(page_size.height()) / page_size.width();
+  int icb_width =
       floor(page_size.width() * PrintContext::kPrintingMinimumShrinkFactor);
-  const int icb_height = floor(icb_width * ratio);
+  int icb_height = floor(icb_width * ratio);
   return gfx::Size(icb_width, icb_height);
 }
 
@@ -5290,7 +5290,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
   WebPrintParams print_params;
   print_params.print_content_area.set_size(page_size);
 
-  gfx::Size expected_size = PrintICBSizeFromPageSize(FloatSize(page_size));
+  gfx::Size expected_size = PrintICBSizeFromPageSize(page_size);
 
   frame->PrintBegin(print_params, WebNode());
 
@@ -5367,7 +5367,7 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   EXPECT_EQ(400, t2->OffsetWidth());
 
   gfx::Size page_size(600, 720);
-  int expected_width = PrintICBSizeFromPageSize(FloatSize(page_size)).width();
+  int expected_width = PrintICBSizeFromPageSize(page_size).width();
 
   WebPrintParams print_params;
   print_params.print_content_area.set_size(page_size);

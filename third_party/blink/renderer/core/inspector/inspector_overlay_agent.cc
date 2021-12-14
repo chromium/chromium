@@ -624,7 +624,7 @@ Response InspectorOverlayAgent::highlightRect(
     Maybe<protocol::DOM::RGBA> color,
     Maybe<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<FloatQuad> quad =
-      std::make_unique<FloatQuad>(FloatRect(x, y, width, height));
+      std::make_unique<FloatQuad>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
       InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
@@ -676,7 +676,7 @@ Response InspectorOverlayAgent::setShowHinge(
 
   DCHECK(frame_impl_->GetFrameView() && GetFrame());
 
-  FloatQuad quad(FloatRect(x, y, width, height));
+  FloatQuad quad(gfx::RectF(x, y, width, height));
   hinge_ =
       MakeGarbageCollected<Hinge>(quad, content_color, outline_color, this);
 

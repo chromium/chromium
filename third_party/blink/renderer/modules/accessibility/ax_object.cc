@@ -5241,11 +5241,11 @@ int AXObject::GetDOMNodeId() const {
 }
 
 void AXObject::GetRelativeBounds(AXObject** out_container,
-                                 FloatRect& out_bounds_in_container,
+                                 gfx::RectF& out_bounds_in_container,
                                  skia::Matrix44& out_container_transform,
                                  bool* clips_children) const {
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
 
   // First check if it has explicit bounds, for example if this element is tied
@@ -5255,7 +5255,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (!explicit_element_rect_.IsEmpty()) {
     *out_container = AXObjectCache().ObjectFromAXID(explicit_container_id_);
     if (*out_container) {
-      out_bounds_in_container = FloatRect(explicit_element_rect_);
+      out_bounds_in_container = gfx::RectF(explicit_element_rect_);
       return;
     }
   }
@@ -5278,7 +5278,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
 
   if (IsWebArea()) {
     if (LocalFrameView* view = layout_object->GetFrame()->View()) {
-      out_bounds_in_container.set_size(FloatSize(view->Size()));
+      out_bounds_in_container.set_size(gfx::SizeF(view->Size()));
 
       // If it's a popup, account for the popup window's offset.
       if (view->GetPage()->GetChromeClient().IsPopup()) {
@@ -5347,7 +5347,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (layout_object->IsBox() && layout_object->GetNode() &&
       layout_object->GetNode()->IsFrameOwnerElement()) {
     out_bounds_in_container =
-        FloatRect(To<LayoutBox>(layout_object)->PhysicalContentBoxRect());
+        gfx::RectF(To<LayoutBox>(layout_object)->PhysicalContentBoxRect());
   }
 
   // If the container has a scroll offset, subtract that out because we want our
@@ -5370,9 +5370,9 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   }
 }
 
-FloatRect AXObject::LocalBoundingBoxRectForAccessibility() {
+gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() {
   if (!GetLayoutObject())
-    return FloatRect();
+    return gfx::RectF();
   DCHECK(GetLayoutObject()->IsText());
   UpdateCachedAttributeValuesIfNeeded();
   return cached_local_bounding_box_rect_for_accessibility_;
@@ -5380,10 +5380,10 @@ FloatRect AXObject::LocalBoundingBoxRectForAccessibility() {
 
 LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
   AXObject* container = nullptr;
-  FloatRect bounds;
+  gfx::RectF bounds;
   skia::Matrix44 transform;
   GetRelativeBounds(&container, bounds, transform);
-  FloatRect computed_bounds(0, 0, bounds.width(), bounds.height());
+  gfx::RectF computed_bounds(0, 0, bounds.width(), bounds.height());
   while (container && container != this) {
     computed_bounds.Offset(bounds.x(), bounds.y());
     if (!container->IsWebArea()) {

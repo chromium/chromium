@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -58,7 +58,7 @@ namespace {
 
 std::unique_ptr<InterpolableValue> TranslateToInterpolableValue(
     SVGTransform* transform) {
-  gfx::PointF translate = transform->Translate();
+  gfx::Vector2dF translate = transform->Translate();
   auto result = std::make_unique<InterpolableList>(2);
   result->Set(0, std::make_unique<InterpolableNumber>(translate.x()));
   result->Set(1, std::make_unique<InterpolableNumber>(translate.y()));
@@ -77,10 +77,10 @@ SVGTransform* TranslateFromInterpolableValue(const InterpolableValue& value) {
 
 std::unique_ptr<InterpolableValue> ScaleToInterpolableValue(
     SVGTransform* transform) {
-  FloatSize scale = transform->Scale();
+  gfx::Vector2dF scale = transform->Scale();
   auto result = std::make_unique<InterpolableList>(2);
-  result->Set(0, std::make_unique<InterpolableNumber>(scale.width()));
-  result->Set(1, std::make_unique<InterpolableNumber>(scale.height()));
+  result->Set(0, std::make_unique<InterpolableNumber>(scale.x()));
+  result->Set(1, std::make_unique<InterpolableNumber>(scale.y()));
   return std::move(result);
 }
 

@@ -2139,7 +2139,7 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
   if (!need_animation)
     return;
 
-  FloatSize target_viewport_size(visual_viewport.Size());
+  gfx::SizeF target_viewport_size(visual_viewport.Size());
   target_viewport_size.Scale(1 / new_scale);
 
   if (element_bounds_in_content.width() <= target_viewport_size.width()) {
@@ -3605,8 +3605,7 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
     visual_viewport.UserDidChangeScale();
   }
 
-  elastic_overscroll_ += FloatSize(args.elastic_overscroll_delta.x(),
-                                   args.elastic_overscroll_delta.y());
+  elastic_overscroll_ += args.elastic_overscroll_delta;
   UpdateBrowserControlsConstraint(args.browser_controls_constraint);
 
   if (args.scroll_gesture_did_end) {

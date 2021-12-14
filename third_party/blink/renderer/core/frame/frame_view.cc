@@ -129,7 +129,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
             .Inverse();
     if (geometry.IsIntersecting()) {
       PhysicalRect intersection_rect = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(geometry.IntersectionRect()))
+          matrix.ProjectQuad(FloatQuad(gfx::RectF(geometry.IntersectionRect())))
               .BoundingBox());
 
       // Don't let EnclosingRect turn an empty rect into a non-empty one.
@@ -160,7 +160,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     PhysicalRect mainframe_intersection_rect;
     if (!geometry.UnclippedIntersectionRect().IsEmpty()) {
       mainframe_intersection_rect = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(geometry.UnclippedIntersectionRect()))
+          matrix
+              .ProjectQuad(
+                  FloatQuad(gfx::RectF(geometry.UnclippedIntersectionRect())))
               .BoundingBox());
 
       if (mainframe_intersection_rect.IsEmpty()) {
@@ -216,7 +218,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   if (ShouldReportMainFrameIntersection()) {
     gfx::Rect projected_rect = ToEnclosingRect(PhysicalRect::EnclosingRect(
         main_frame_transform_matrix
-            .ProjectQuad(FloatRect(gfx::Rect(mainframe_intersection)))
+            .ProjectQuad(FloatQuad(gfx::Rect(mainframe_intersection)))
             .BoundingBox()));
     // Return <0, 0, 0, 0> if there is no area.
     if (projected_rect.IsEmpty())

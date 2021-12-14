@@ -12,7 +12,7 @@ namespace blink {
 
 namespace {
 
-PhysicalRect FromFloatRound(const FloatRect& rect) {
+PhysicalRect FromFloatRound(const gfx::RectF& rect) {
   return {LayoutUnit::FromFloatRound(rect.x()),
           LayoutUnit::FromFloatRound(rect.y()),
           LayoutUnit::FromFloatRound(rect.width()),
@@ -47,8 +47,8 @@ TEST_F(NGInkOverflowTest, Empty) {
 
 struct RectData {
   PhysicalSize size;
-  FloatRect rect;
-  FloatRect expect;
+  gfx::RectF rect;
+  gfx::RectF expect;
   NGInkOverflow::Type type;
 
   NGInkOverflow::Type ExpectedTypeForContents() const {

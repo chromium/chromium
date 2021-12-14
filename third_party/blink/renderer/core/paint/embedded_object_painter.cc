@@ -64,8 +64,8 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
     return;
 
   TextRun text_run(layout_embedded_object_.UnavailablePluginReplacementText());
-  FloatSize text_geometry(font.Width(text_run),
-                          font_data->GetFontMetrics().Height());
+  gfx::SizeF text_geometry(font.Width(text_run),
+                           font_data->GetFontMetrics().Height());
 
   PhysicalRect background_rect(
       LayoutUnit(), LayoutUnit(),
@@ -82,7 +82,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
                         DarkModeFilter::ElementRole::kBackground));
   context.FillRoundedRect(rounded_background_rect, color, auto_dark_mode);
 
-  FloatRect text_rect(gfx::PointF(), text_geometry);
+  gfx::RectF text_rect(gfx::PointF(), text_geometry);
   text_rect.Offset(gfx::PointF(content_rect.Center()) -
                    text_rect.CenterPoint());
   TextRunPaintInfo run_info(text_run);

@@ -122,9 +122,9 @@ class DraggedNodeImageBuilder {
     }
 
     gfx::RectF bounding_box =
-        ToGfxRectF(layer->GetLayoutObject()
-                       .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
-                       .BoundingBox());
+        layer->GetLayoutObject()
+            .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
+            .BoundingBox();
     absl::optional<OverriddenCullRectScope> cull_rect_scope;
     if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
       gfx::RectF cull_rect = bounding_box;

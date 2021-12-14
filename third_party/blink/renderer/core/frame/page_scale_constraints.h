@@ -32,14 +32,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PAGE_SCALE_CONSTRAINTS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
 struct CORE_EXPORT PageScaleConstraints {
   DISALLOW_NEW();
-  FloatSize layout_size;
+  gfx::SizeF layout_size;
 
   float initial_scale;
   float minimum_scale;

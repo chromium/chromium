@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -279,30 +278,26 @@ gfx::Rect AffineTransform::MapRect(const gfx::Rect& rect) const {
   return gfx::ToEnclosingRect(MapRect(gfx::RectF(rect)));
 }
 
-FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
+gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
   if (IsIdentityOrTranslation()) {
     if (!transform_[4] && !transform_[5])
       return rect;
 
-    FloatRect mapped_rect(rect);
+    gfx::RectF mapped_rect = rect;
     mapped_rect.Offset(ClampTo<float>(transform_[4]),
                        ClampTo<float>(transform_[5]));
     return mapped_rect;
   }
 
+  // Still use FloatQuad because FloatQuad::BoundingBox() clamp to int range,
+  // which is required by some callers.
+  // TODO(crbug.com/738465): Find a way to use gfx types.
   FloatQuad result;
   result.set_p1(MapPoint(rect.origin()));
   result.set_p2(MapPoint(rect.top_right()));
   result.set_p3(MapPoint(rect.bottom_right()));
   result.set_p4(MapPoint(rect.bottom_left()));
   return result.BoundingBox();
-}
-
-gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
-  // Still use FloatRect/FloatQuad version because FloatQuad::BoundingBox()
-  // clamp to int range, which is required by some callers.
-  // TODO(crbug.com/738465): Find a way to use gfx types.
-  return ToGfxRectF(MapRect(FloatRect(rect)));
 }
 
 FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {

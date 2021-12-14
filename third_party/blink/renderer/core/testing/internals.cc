@@ -199,6 +199,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8.h"
 
@@ -1246,7 +1247,7 @@ DOMRectReadOnly* Internals::absoluteCaretBounds(
   }
 
   document_->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  return DOMRectReadOnly::FromIntRect(
+  return DOMRectReadOnly::FromRect(
       GetFrame()->Selection().AbsoluteCaretBounds());
 }
 
@@ -1270,7 +1271,7 @@ DOMRectReadOnly* Internals::boundingBox(Element* element) {
   LayoutObject* layout_object = element->GetLayoutObject();
   if (!layout_object)
     return DOMRectReadOnly::Create(0, 0, 0, 0);
-  return DOMRectReadOnly::FromIntRect(layout_object->AbsoluteBoundingBoxRect());
+  return DOMRectReadOnly::FromRect(layout_object->AbsoluteBoundingBoxRect());
 }
 
 void Internals::setMarker(Document* document,
@@ -1666,7 +1667,7 @@ String Internals::viewportAsText(Document* document,
 
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints =
-      description.Resolve(FloatSize(initial_viewport_size), Length());
+      description.Resolve(gfx::SizeF(initial_viewport_size), Length());
 
   constraints.FitToContentsWidth(constraints.layout_size.width(),
                                  available_width);
@@ -2245,8 +2246,8 @@ HitTestLayerRectList* Internals::touchEventTargetLayerRects(
 
       for (const gfx::Rect& hit_test_rect : layer_hit_test_rects) {
         if (!hit_test_rect.IsEmpty()) {
-          hit_test_rects->Append(DOMRectReadOnly::FromIntRect(layer_rect),
-                                 DOMRectReadOnly::FromIntRect(hit_test_rect));
+          hit_test_rects->Append(DOMRectReadOnly::FromRect(layer_rect),
+                                 DOMRectReadOnly::FromRect(hit_test_rect));
         }
       }
     }
@@ -2965,7 +2966,7 @@ DOMRectList* Internals::AnnotatedRegions(Document* document,
   Vector<FloatQuad> quads;
   for (const AnnotatedRegionValue& region : regions) {
     if (region.draggable == draggable)
-      quads.push_back(FloatQuad(FloatRect(region.bounds)));
+      quads.push_back(FloatQuad(gfx::RectF(region.bounds)));
   }
   return MakeGarbageCollected<DOMRectList>(quads);
 }
@@ -3239,8 +3240,8 @@ DOMRect* Internals::selectionBounds(ExceptionState& exception_state) {
 
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
-  return DOMRect::FromFloatRect(
-      FloatRect(GetFrame()->Selection().AbsoluteUnclippedBounds()));
+  return DOMRect::FromRectF(
+      gfx::RectF(GetFrame()->Selection().AbsoluteUnclippedBounds()));
 }
 
 String Internals::markerTextForListItem(Element* element) {

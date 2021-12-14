@@ -34,7 +34,6 @@
 #include <iosfwd>
 
 #include "base/compiler_specific.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -61,7 +60,7 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(LayoutPoint(x, y)), size_(LayoutSize(width, height)) {}
   constexpr LayoutRect(int x, int y, int width, int height)
       : location_(LayoutPoint(x, y)), size_(LayoutSize(width, height)) {}
-  constexpr LayoutRect(const gfx::PointF& location, const FloatSize& size)
+  constexpr LayoutRect(const gfx::PointF& location, const gfx::SizeF& size)
       : location_(location), size_(size) {}
   constexpr LayoutRect(const DoublePoint& location, const DoubleSize& size)
       : location_(location), size_(size) {}
@@ -71,15 +70,10 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(rect.origin()), size_(rect.size()) {}
 
   // Don't do these implicitly since they are lossy.
-  constexpr explicit LayoutRect(const FloatRect& r)
-      : location_(r.origin()), size_(r.size()) {}
   constexpr explicit LayoutRect(const gfx::RectF& r)
       : location_(r.origin()), size_(r.size()) {}
   explicit LayoutRect(const DoubleRect&);
 
-  constexpr explicit operator FloatRect() const {
-    return FloatRect(X(), Y(), Width(), Height());
-  }
   constexpr explicit operator gfx::RectF() const {
     return gfx::RectF(X(), Y(), Width(), Height());
   }
@@ -340,14 +334,6 @@ inline gfx::Rect ToEnclosingRect(const LayoutRect& rect) {
   // skips internal clamping to improve performance.
   return gfx::Rect(location.x(), location.y(), max_point.x() - location.x(),
                    max_point.y() - location.y());
-}
-
-inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
-  LayoutUnit x = LayoutUnit::FromFloatFloor(rect.x());
-  LayoutUnit y = LayoutUnit::FromFloatFloor(rect.y());
-  LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.right());
-  LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.bottom());
-  return LayoutRect(x, y, max_x - x, max_y - y);
 }
 
 inline LayoutRect EnclosingLayoutRect(const gfx::RectF& rect) {

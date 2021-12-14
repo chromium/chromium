@@ -35,12 +35,12 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -136,7 +136,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 
     // In find-in-page coordinates.
     // Lazily calculated by updateFindMatchRects.
-    FloatRect rect_;
+    gfx::RectF rect_;
   };
 
   void Trace(Visitor*) const;

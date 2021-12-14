@@ -35,11 +35,11 @@
 #include "build/build_config.h"
 #include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 class PointF;
@@ -208,10 +208,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the rect into the z=0 plane
-  FloatRect MapRect(const FloatRect&) const;
-  gfx::RectF MapRect(const gfx::RectF& r) const {
-    return ToGfxRectF(MapRect(FloatRect(r)));
-  }
+  gfx::RectF MapRect(const gfx::RectF&) const;
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
@@ -472,9 +469,9 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // If this transformation is identity or 2D translation, returns the
   // translation.
-  FloatSize To2DTranslation() const {
+  gfx::Vector2dF To2DTranslation() const {
     DCHECK(IsIdentityOr2DTranslation());
-    return FloatSize(matrix_[3][0], matrix_[3][1]);
+    return gfx::Vector2dF(matrix_[3][0], matrix_[3][1]);
   }
 
   typedef float FloatMatrix4[16];

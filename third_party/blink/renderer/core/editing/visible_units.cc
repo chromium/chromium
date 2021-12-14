@@ -1303,9 +1303,9 @@ static Vector<FloatQuad> ComputeTextBounds(
 }
 
 template <typename Strategy>
-static FloatRect ComputeTextRectTemplate(
+static gfx::RectF ComputeTextRectTemplate(
     const EphemeralRangeTemplate<Strategy>& range) {
-  FloatRect result;
+  gfx::RectF result;
   for (auto rect : ComputeTextBounds<Strategy>(range))
     result.Union(rect.BoundingBox());
   return result;
@@ -1319,7 +1319,7 @@ gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree& range) {
   return ToEnclosingRect(ComputeTextRectTemplate(range));
 }
 
-FloatRect ComputeTextFloatRect(const EphemeralRange& range) {
+gfx::RectF ComputeTextRectF(const EphemeralRange& range) {
   return ComputeTextRectTemplate(range);
 }
 

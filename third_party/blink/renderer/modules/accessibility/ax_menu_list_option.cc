@@ -145,12 +145,12 @@ bool AXMenuListOption::ComputeAccessibilityIsIgnored(
 
 void AXMenuListOption::GetRelativeBounds(
     AXObject** out_container,
-    FloatRect& out_bounds_in_container,
+    gfx::RectF& out_bounds_in_container,
     skia::Matrix44& out_container_transform,
     bool* clips_children) const {
   DCHECK(!IsDetached());
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
 
   // When a <select> is collapsed, the bounds of its options are the same as

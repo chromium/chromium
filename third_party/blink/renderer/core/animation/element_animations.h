@@ -85,7 +85,7 @@ class CORE_EXPORT ElementAnimations final
   }
   bool IsAnimationStyleChange() const { return animation_style_change_; }
 
-  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
   void Trace(Visitor*) const;

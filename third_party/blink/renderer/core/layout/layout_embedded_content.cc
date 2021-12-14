@@ -360,14 +360,14 @@ void LayoutEmbeddedContent::UpdateGeometry(
   PhysicalRect replaced_rect = ReplacedContentRect();
   TransformState transform_state(TransformState::kApplyTransformDirection,
                                  gfx::PointF(),
-                                 FloatQuad(FloatRect(replaced_rect)));
+                                 FloatQuad(gfx::RectF(replaced_rect)));
   MapLocalToAncestor(nullptr, transform_state, 0);
   transform_state.Flatten();
   PhysicalOffset absolute_location =
       PhysicalOffset::FromPointFRound(transform_state.LastPlanarPoint());
   PhysicalRect absolute_replaced_rect = replaced_rect;
   absolute_replaced_rect.Move(absolute_location);
-  FloatRect absolute_bounding_box =
+  gfx::RectF absolute_bounding_box =
       transform_state.LastPlanarQuad().BoundingBox();
   gfx::Rect frame_rect(gfx::Point(),
                        ToPixelSnappedRect(absolute_replaced_rect).size());

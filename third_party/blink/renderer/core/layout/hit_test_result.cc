@@ -531,7 +531,7 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
       AddNodeToListBasedTestResultInternal(node, location);
   if (!should_check_containment)
     return behavior;
-  return quad.ContainsQuad(FloatRect(location.BoundingBox()))
+  return quad.ContainsQuad(FloatQuad(gfx::RectF(location.BoundingBox())))
              ? kStopHitTesting
              : kContinueHitTesting;
 }

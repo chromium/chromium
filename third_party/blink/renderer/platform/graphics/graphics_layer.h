@@ -34,7 +34,6 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
@@ -55,6 +54,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace cc {
 class DisplayItemList;

@@ -206,7 +206,7 @@ absl::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments()
   for (auto const& web_segment : web_segments) {
     blink::FloatQuad quad = blink::FloatQuad(web_segment);
     quad.Scale(scale_factor, scale_factor);
-    viewport_segments.push_back(DOMRect::FromFloatRect(quad.BoundingBox()));
+    viewport_segments.push_back(DOMRect::FromRectF(quad.BoundingBox()));
   }
 
   return viewport_segments;

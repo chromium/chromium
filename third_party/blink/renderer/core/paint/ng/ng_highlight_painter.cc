@@ -173,7 +173,7 @@ void NGHighlightPainter::SelectionPaintState::ComputeSelectionRectIfNeeded() {
     PhysicalRect rotated = writing_mode_rotation_
                                ? PhysicalRect::EnclosingRect(
                                      writing_mode_rotation_->Inverse().MapRect(
-                                         FloatRect(physical)))
+                                         gfx::RectF(physical)))
                                : physical;
     selection_rect_.emplace(SelectionRect{physical, rotated});
   }

@@ -81,14 +81,14 @@ static inline float ClampToIntRange(float value) {
   return value;
 }
 
-FloatRect FloatQuad::BoundingBox() const {
+gfx::RectF FloatQuad::BoundingBox() const {
   float left = ClampToIntRange(Min4(p1_.x(), p2_.x(), p3_.x(), p4_.x()));
   float top = ClampToIntRange(Min4(p1_.y(), p2_.y(), p3_.y(), p4_.y()));
 
   float right = ClampToIntRange(Max4(p1_.x(), p2_.x(), p3_.x(), p4_.x()));
   float bottom = ClampToIntRange(Max4(p1_.y(), p2_.y(), p3_.y(), p4_.y()));
 
-  return FloatRect(left, top, right - left, bottom - top);
+  return gfx::RectF(left, top, right - left, bottom - top);
 }
 
 static inline bool WithinEpsilon(float a, float b) {
@@ -120,7 +120,7 @@ bool FloatQuad::ContainsQuad(const FloatQuad& other) const {
 }
 
 static inline gfx::PointF RightMostCornerToVector(
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     const gfx::Vector2dF& vector) {
   // Return the corner of the rectangle that if it is to the left of the vector
   // would mean all of the rectangle is to the left of the vector.
@@ -144,7 +144,7 @@ static inline gfx::PointF RightMostCornerToVector(
   return point;
 }
 
-bool FloatQuad::IntersectsRect(const FloatRect& rect) const {
+bool FloatQuad::IntersectsRect(const gfx::RectF& rect) const {
   // IntersectsRect is only valid on convex quads which an empty quad is not.
   DCHECK(!IsEmpty());
 

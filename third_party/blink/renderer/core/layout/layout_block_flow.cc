@@ -2521,7 +2521,7 @@ void LayoutBlockFlow::QuadsForSelfInternal(Vector<FloatQuad>& quads,
   if (map_to_absolute)
     quads.push_back(LocalRectToAbsoluteQuad(local_rect, mode));
   else
-    quads.push_back(FloatQuad(FloatRect(local_rect)));
+    quads.push_back(FloatQuad(gfx::RectF(local_rect)));
 }
 
 LayoutObject* LayoutBlockFlow::HoverAncestor() const {

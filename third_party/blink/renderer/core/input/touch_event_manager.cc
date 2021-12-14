@@ -212,9 +212,9 @@ Touch* TouchEventManager::CreateDomTouch(
       gfx::ScalePoint(target_frame->View()->RootFrameToDocument(
                           transformed_event.PositionInWidget()),
                       scale_factor);
-  FloatSize adjusted_radius =
-      FloatSize(transformed_event.width / 2.f, transformed_event.height / 2.f)
-          .ScaledBy(scale_factor);
+  gfx::SizeF adjusted_radius = gfx::ScaleSize(
+      gfx::SizeF(transformed_event.width / 2.f, transformed_event.height / 2.f),
+      scale_factor);
 
   return MakeGarbageCollected<Touch>(
       target_frame, touch_node, point_attr->event_.id,

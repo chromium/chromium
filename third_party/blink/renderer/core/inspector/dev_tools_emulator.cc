@@ -18,13 +18,13 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace {
 
@@ -480,8 +480,8 @@ void DevToolsEmulator::OverrideVisibleRect(
 
   // Don't apply viewport_override_->scale because all coordinates here are
   // under the same scale.
-  gfx::Rect visible_rect_in_document = ToEnclosingRect(
-      FloatRect(viewport_override_->position, FloatSize(viewport_size)));
+  gfx::Rect visible_rect_in_document = gfx::ToEnclosingRect(
+      gfx::RectF(viewport_override_->position, gfx::SizeF(viewport_size)));
   *visible_rect_in_frame =
       frame->GetFrameView()->DocumentToFrame(visible_rect_in_document);
 }

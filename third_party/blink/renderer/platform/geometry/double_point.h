@@ -26,7 +26,7 @@ class PLATFORM_EXPORT DoublePoint {
 
   constexpr explicit DoublePoint(const gfx::Size& s)
       : x_(s.width()), y_(s.height()) {}
-  constexpr explicit DoublePoint(const FloatSize& s)
+  constexpr explicit DoublePoint(const gfx::SizeF& s)
       : x_(s.width()), y_(s.height()) {}
   constexpr explicit DoublePoint(const DoubleSize& size)
       : x_(size.Width()), y_(size.Height()) {}

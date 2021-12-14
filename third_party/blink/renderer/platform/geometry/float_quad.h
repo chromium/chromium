@@ -30,12 +30,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_QUAD_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 struct SkPoint;
@@ -57,19 +57,13 @@ class PLATFORM_EXPORT FloatQuad {
                       const gfx::PointF& p4)
       : p1_(p1), p2_(p2), p3_(p3), p4_(p4) {}
 
-  constexpr FloatQuad(const FloatRect& in_rect)
-      : p1_(in_rect.origin()),
-        p2_(in_rect.right(), in_rect.y()),
-        p3_(in_rect.right(), in_rect.bottom()),
-        p4_(in_rect.x(), in_rect.bottom()) {}
-
   explicit constexpr FloatQuad(const gfx::RectF& in_rect)
       : p1_(in_rect.origin()),
         p2_(in_rect.right(), in_rect.y()),
         p3_(in_rect.right(), in_rect.bottom()),
         p4_(in_rect.x(), in_rect.bottom()) {}
 
-  explicit FloatQuad(const gfx::Rect& in_rect)
+  explicit constexpr FloatQuad(const gfx::Rect& in_rect)
       : p1_(in_rect.origin()),
         p2_(in_rect.right(), in_rect.y()),
         p3_(in_rect.right(), in_rect.bottom()),
@@ -99,10 +93,10 @@ class PLATFORM_EXPORT FloatQuad {
   // "slanted" empty quads.
   bool IsEmpty() const { return BoundingBox().IsEmpty(); }
 
-  // Tests whether this quad can be losslessly represented by a FloatRect,
+  // Tests whether this quad can be losslessly represented by a gfx::RectF,
   // that is, if two edges are parallel to the x-axis and the other two
   // are parallel to the y-axis. If this method returns true, the
-  // corresponding FloatRect can be retrieved with boundingBox().
+  // corresponding gfx::RectF can be retrieved with boundingBox().
   bool IsRectilinear() const;
 
   // Tests whether the given point is inside, or on an edge or corner of this
@@ -119,10 +113,7 @@ class PLATFORM_EXPORT FloatQuad {
   // This only works for convex quads.
   // This intersection is edge-inclusive and will return true even if the
   // intersecting area is empty (i.e., the intersection is a line or a point).
-  bool IntersectsRect(const FloatRect&) const;
-  bool IntersectsRect(const gfx::RectF& rect) const {
-    return IntersectsRect(FloatRect(rect));
-  }
+  bool IntersectsRect(const gfx::RectF&) const;
 
   // Test whether any part of the circle/ellipse intersects with this quad.
   // Note that these two functions only work for convex quads.
@@ -139,12 +130,11 @@ class PLATFORM_EXPORT FloatQuad {
                        (p1_.y() + p2_.y() + p3_.y() + p4_.y()) / 4.0);
   }
 
-  FloatRect BoundingBox() const;
+  gfx::RectF BoundingBox() const;
   gfx::Rect EnclosingBoundingBox() const {
-    return ToEnclosingRect(BoundingBox());
+    return gfx::ToEnclosingRect(BoundingBox());
   }
 
-  void Move(const FloatSize& offset) { Move(ToGfxVector2dF(offset)); }
   void Move(const gfx::Vector2dF& offset) {
     p1_ += offset;
     p2_ += offset;
@@ -183,13 +173,13 @@ class PLATFORM_EXPORT FloatQuad {
   gfx::PointF p4_;
 };
 
-inline FloatQuad& operator+=(FloatQuad& a, const FloatSize& b) {
+inline FloatQuad& operator+=(FloatQuad& a, const gfx::Vector2dF& b) {
   a.Move(b);
   return a;
 }
 
-inline FloatQuad& operator-=(FloatQuad& a, const FloatSize& b) {
-  a.Move(-b.width(), -b.height());
+inline FloatQuad& operator-=(FloatQuad& a, const gfx::Vector2dF& b) {
+  a.Move(-b);
   return a;
 }
 

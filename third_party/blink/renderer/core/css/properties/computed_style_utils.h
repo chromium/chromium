@@ -127,7 +127,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const LayoutObject*,
                                          const ComputedStyle&);
   static CSSValue* ValueForGridPosition(const GridPosition&);
-  static FloatSize UsedBoxSize(const LayoutObject&);
+  static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);
   static CSSValue* ValueForTextDecorationSkipInk(ETextDecorationSkipInk);

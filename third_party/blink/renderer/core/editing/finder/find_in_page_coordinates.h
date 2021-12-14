@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 class LayoutObject;
@@ -54,9 +54,9 @@ class LayoutObject;
 // of their container.  The provided methods support scroll:overflow and are
 // CSS position and transform-friendly.
 
-CORE_EXPORT FloatRect FindInPageRectFromAbsoluteRect(const FloatRect&,
-                                                     const LayoutObject*);
-CORE_EXPORT FloatRect FindInPageRectFromRange(const EphemeralRange&);
+CORE_EXPORT gfx::RectF FindInPageRectFromAbsoluteRect(const gfx::RectF&,
+                                                      const LayoutObject*);
+CORE_EXPORT gfx::RectF FindInPageRectFromRange(const EphemeralRange&);
 
 }  // namespace blink
 

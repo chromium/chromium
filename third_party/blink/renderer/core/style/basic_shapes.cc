@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 

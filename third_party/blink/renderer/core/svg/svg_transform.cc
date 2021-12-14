@@ -21,9 +21,9 @@
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
 #include "base/cxx17_backports.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -80,8 +80,9 @@ void SVGTransform::SetTranslate(float tx, float ty) {
   matrix_.Translate(tx, ty);
 }
 
-gfx::PointF SVGTransform::Translate() const {
-  return gfx::PointF(ClampTo<float>(matrix_.E()), ClampTo<float>(matrix_.F()));
+gfx::Vector2dF SVGTransform::Translate() const {
+  return gfx::Vector2dF(ClampTo<float>(matrix_.E()),
+                        ClampTo<float>(matrix_.F()));
 }
 
 void SVGTransform::SetScale(float sx, float sy) {
@@ -93,8 +94,9 @@ void SVGTransform::SetScale(float sx, float sy) {
   matrix_.ScaleNonUniform(sx, sy);
 }
 
-FloatSize SVGTransform::Scale() const {
-  return FloatSize::NarrowPrecision(matrix_.A(), matrix_.D());
+gfx::Vector2dF SVGTransform::Scale() const {
+  return gfx::Vector2dF(ClampTo<float>(matrix_.A()),
+                        ClampTo<float>(matrix_.D()));
 }
 
 void SVGTransform::SetRotate(float angle, float cx, float cy) {

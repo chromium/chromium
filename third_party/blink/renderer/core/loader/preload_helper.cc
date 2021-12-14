@@ -99,8 +99,8 @@ MediaValuesCached* CreateMediaValues(
   MediaValuesCached* media_values =
       MakeGarbageCollected<MediaValuesCached>(document);
   if (viewport_description) {
-    FloatSize initial_viewport(media_values->DeviceWidth(),
-                               media_values->DeviceHeight());
+    gfx::SizeF initial_viewport(media_values->DeviceWidth(),
+                                media_values->DeviceHeight());
     PageScaleConstraints constraints = viewport_description->Resolve(
         initial_viewport, document.GetViewportData().ViewportDefaultMinWidth());
     media_values->OverrideViewportDimensions(constraints.layout_size.width(),

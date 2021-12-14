@@ -66,7 +66,7 @@ class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
 };
 
 // Used when LayoutClipRect and PaintClipRect are the same.
-// |expected_arg| can be FloatRect or FloatRoundedRect.
+// |expected_arg| can be gfx::RectF or FloatRoundedRect.
 #define EXPECT_CLIP_RECT(expected_arg, clip_node)                     \
   do {                                                                \
     FloatRoundedRect expected((expected_arg));                        \

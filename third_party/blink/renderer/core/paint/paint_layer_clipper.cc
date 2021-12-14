@@ -152,14 +152,14 @@ PhysicalRect PaintLayerClipper::LocalClipRect(
                                     .FirstFragment()
                                     .LocalBorderBoxProperties()
                                     .Transform();
-  FloatRect clipped_rect_in_local_space(premapped_rect);
+  gfx::RectF clipped_rect_in_local_space(premapped_rect);
   GeometryMapper::SourceToDestinationRect(
       clip_root_layer_transform, layer_transform, clipped_rect_in_local_space);
   // TODO(chrishtr): not correct for fragmentation.
   clipped_rect_in_local_space.Offset(
       -gfx::Vector2dF(layer_->GetLayoutObject().FirstFragment().PaintOffset()));
 
-  return PhysicalRect::FastAndLossyFromFloatRect(clipped_rect_in_local_space);
+  return PhysicalRect::FastAndLossyFromRectF(clipped_rect_in_local_space);
 }
 
 void PaintLayerClipper::CalculateRectsWithGeometryMapper(
@@ -179,12 +179,12 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
       DCHECK_EQ(&fragment_data, context.root_fragment);
     } else {
       layer_bounds.Move(fragment_data.PaintOffset());
-      FloatRect float_bounds(layer_bounds);
+      gfx::RectF float_bounds(layer_bounds);
       GeometryMapper::SourceToDestinationRect(
           fragment_data.PreTransform(),
           context.root_fragment->LocalBorderBoxProperties().Transform(),
           float_bounds);
-      layer_bounds = PhysicalRect::FastAndLossyFromFloatRect(float_bounds);
+      layer_bounds = PhysicalRect::FastAndLossyFromRectF(float_bounds);
       layer_bounds.offset -= context.root_fragment->PaintOffset();
     }
   }
@@ -374,7 +374,7 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
     if (is_clipping_root)
       clip_behavior = kIgnoreOverlayScrollbarSize;
 
-    FloatClipRect clip_rect(ToGfxRectF(FloatRect(LocalVisualRect(context))));
+    FloatClipRect clip_rect(gfx::RectF(LocalVisualRect(context)));
     clip_rect.Move(gfx::Vector2dF(fragment_data.PaintOffset()));
 
     GeometryMapper::LocalToAncestorVisualRect(source_property_tree_state,

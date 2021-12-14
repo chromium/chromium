@@ -116,7 +116,7 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
                                         double x,
                                         double y,
                                         double wrap_width,
-                                        FloatRect& bounds);
+                                        gfx::RectF& bounds);
 
   void Dispose();
 

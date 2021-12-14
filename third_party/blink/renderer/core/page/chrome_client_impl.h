@@ -263,7 +263,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 
-  FloatSize ElasticOverscroll() const override;
+  gfx::Vector2dF ElasticOverscroll() const override;
 
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override;
   void UnregisterPopupOpeningObserver(PopupOpeningObserver*) override;

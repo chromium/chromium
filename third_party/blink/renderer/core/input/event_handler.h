@@ -361,8 +361,6 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   WebInputEventResult HandleGestureShowPress();
 
-  bool ShouldBrowserControlsConsumeScroll(FloatSize) const;
-
   bool RootFrameTrackedActivePointerInCurrentFrame(PointerId pointer_id) const;
 
   void CaptureMouseEventsToWidget(bool);

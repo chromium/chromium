@@ -141,7 +141,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void AbsoluteQuadsForRange(Vector<FloatQuad>&,
                              unsigned start_offset = 0,
                              unsigned end_offset = INT_MAX) const;
-  FloatRect LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   enum ClippingOption { kNoClipping, kClipToEllipsis };
   void LocalQuadsInFlippedBlocksDirection(Vector<FloatQuad>&,

@@ -17,15 +17,15 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 namespace {
 // Computes the rect of valid scroll offsets reachable by user scrolls for the
 // scrollable area.
-FloatRect GetUserScrollableRect(const ScrollableArea& area) {
-  FloatRect user_scrollable_rect;
+gfx::RectF GetUserScrollableRect(const ScrollableArea& area) {
+  gfx::RectF user_scrollable_rect;
   ScrollOffset scrollable_size =
       area.MaximumScrollOffset() - area.MinimumScrollOffset();
   if (area.UserInputScrollable(kHorizontalScrollbar)) {
@@ -320,8 +320,11 @@ mojom::blink::ColorScheme RootFrameViewport::UsedColorScheme() const {
 ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(
     const ScrollOffset& offset) const {
   ScrollOffset scroll_offset = offset;
-  FloatRect user_scrollable = GetUserScrollableRect(LayoutViewport()) +
-                              GetUserScrollableRect(GetVisualViewport());
+  gfx::RectF layout_scrollable = GetUserScrollableRect(LayoutViewport());
+  gfx::RectF visual_scrollable = GetUserScrollableRect(GetVisualViewport());
+  gfx::RectF user_scrollable(
+      layout_scrollable.origin() + visual_scrollable.OffsetFromOrigin(),
+      layout_scrollable.size() + visual_scrollable.size());
   scroll_offset.set_x(
       ClampTo(scroll_offset.x(), user_scrollable.x(), user_scrollable.right()));
   scroll_offset.set_y(ClampTo(scroll_offset.y(), user_scrollable.y(),

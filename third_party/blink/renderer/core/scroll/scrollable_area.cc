@@ -198,8 +198,7 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(ScrollGranularity granularity,
   if (granularity == ScrollGranularity::kScrollByPercentage) {
     LocalFrame* local_frame = GetLayoutBox()->GetFrame();
     DCHECK(local_frame);
-    gfx::SizeF viewport = ToGfxSizeF(
-        FloatSize(local_frame->GetPage()->GetVisualViewport().Size()));
+    gfx::SizeF viewport(local_frame->GetPage()->GetVisualViewport().Size());
 
     // Convert to screen coordinates (physical pixels).
     float page_scale_factor = local_frame->GetPage()->PageScaleFactor();

@@ -468,9 +468,9 @@ Response InspectorLayerTreeAgent::replaySnapshot(const String& snapshot_id,
   return Response::Success();
 }
 
-static void ParseRect(protocol::DOM::Rect* object, FloatRect* rect) {
-  *rect = FloatRect(object->getX(), object->getY(), object->getWidth(),
-                    object->getHeight());
+static void ParseRect(protocol::DOM::Rect* object, gfx::RectF* rect) {
+  *rect = gfx::RectF(object->getX(), object->getY(), object->getWidth(),
+                     object->getHeight());
 }
 
 Response InspectorLayerTreeAgent::profileSnapshot(
@@ -483,7 +483,7 @@ Response InspectorLayerTreeAgent::profileSnapshot(
   Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
-  FloatRect rect;
+  gfx::RectF rect;
   if (clip_rect.isJust())
     ParseRect(clip_rect.fromJust(), &rect);
   auto timings = snapshot->Profile(min_repeat_count.fromMaybe(1),

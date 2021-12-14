@@ -20,7 +20,7 @@
 
 namespace blink {
 
-// Clips can use FloatRect::Intersect or FloatRect::InclusiveIntersect.
+// Clips can use gfx::RectF::Intersect or gfx::RectF::InclusiveIntersect.
 enum InclusiveIntersectOrNot { kNonInclusiveIntersect, kInclusiveIntersect };
 
 // When performing overlap testing during compositing, we may need to expand the
@@ -168,7 +168,7 @@ class PLATFORM_EXPORT GeometryMapper {
 
   // Same as SourceToDestinationProjection() except that it maps the rect
   // rather than returning the matrix.
-  // |mapping_rect| is both input and output. Its type can be FloatRect,
+  // |mapping_rect| is both input and output. Its type can be gfx::RectF,
   // LayoutRect, gfx::Rect, gfx::Rect or gfx::RectF.
   template <typename Rect>
   static void SourceToDestinationRect(
@@ -267,11 +267,11 @@ class PLATFORM_EXPORT GeometryMapper {
   // still used, however).
   //
   // If kInclusiveIntersect is set, clipping operations will
-  // use FloatRect::InclusiveIntersect, and the return value of
+  // use gfx::RectF::InclusiveIntersect, and the return value of
   // InclusiveIntersect will be propagated to the return value of this method.
   // Otherwise, clipping operations will use LayoutRect::intersect, and the
   // return value will be true only if the clipped rect has non-zero area.
-  // See the documentation for FloatRect::InclusiveIntersect for more
+  // See the documentation for gfx::RectF::InclusiveIntersect for more
   // information.
   static bool LocalToAncestorVisualRect(
       const PropertyTreeStateOrAlias& local_state,
@@ -340,7 +340,7 @@ class PLATFORM_EXPORT GeometryMapper {
       ExpandVisualRectForCompositingOverlapOrNot,
       bool& success);
 
-  static void MoveRect(FloatRect& rect, const gfx::Vector2dF& delta) {
+  static void MoveRect(gfx::RectF& rect, const gfx::Vector2dF& delta) {
     rect.Offset(delta.x(), delta.y());
   }
 
@@ -352,10 +352,6 @@ class PLATFORM_EXPORT GeometryMapper {
     gfx::RectF rect_f(rect);
     MoveRect(rect_f, delta);
     rect = gfx::ToEnclosingRect(rect_f);
-  }
-
-  static void MoveRect(gfx::RectF& rect, const gfx::Vector2dF& delta) {
-    rect.Offset(delta);
   }
 
   friend class GeometryMapperTest;

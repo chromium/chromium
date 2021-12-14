@@ -202,9 +202,9 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       // actual painting of the selection_rect, this is done below by
       // concatenating a rotation matrix on the context.
       if (!style_to_use.IsHorizontalWritingMode()) {
-        FloatRect rotated_selection =
+        gfx::RectF rotated_selection =
             TextPainterBase::Rotation(box_rect, TextPainterBase::kClockwise)
-                .MapRect(static_cast<FloatRect>(selection_rect));
+                .MapRect(static_cast<gfx::RectF>(selection_rect));
         selection_rect = PhysicalRect::EnclosingRect(rotated_selection);
       }
       selection_recorder.emplace(

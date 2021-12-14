@@ -3545,7 +3545,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
 }
 
 void AXNodeObject::GetRelativeBounds(AXObject** out_container,
-                                     FloatRect& out_bounds_in_container,
+                                     gfx::RectF& out_bounds_in_container,
                                      skia::Matrix44& out_container_transform,
                                      bool* clips_children) const {
   if (GetLayoutObject()) {
@@ -3560,7 +3560,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
 #endif
 
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
 
   // First check if it has explicit bounds, for example if this element is tied
@@ -3570,7 +3570,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   if (!explicit_element_rect_.IsEmpty()) {
     *out_container = AXObjectCache().ObjectFromAXID(explicit_container_id_);
     if (*out_container) {
-      out_bounds_in_container = FloatRect(explicit_element_rect_);
+      out_bounds_in_container = gfx::RectF(explicit_element_rect_);
       return;
     }
   }
@@ -3581,12 +3581,12 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   if ((GetNode()->parentElement() &&
        GetNode()->parentElement()->IsInCanvasSubtree()) ||
       (element && element->HasDisplayContentsStyle())) {
-    Vector<FloatRect> rects;
+    Vector<gfx::RectF> rects;
     for (Node& child : NodeTraversal::ChildrenOf(*GetNode())) {
       if (child.IsHTMLElement()) {
         if (AXObject* obj = AXObjectCache().Get(&child)) {
           AXObject* container;
-          FloatRect bounds;
+          gfx::RectF bounds;
           obj->GetRelativeBounds(&container, bounds, out_container_transform,
                                  clips_children);
           if (container) {
@@ -3598,7 +3598,8 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
     }
 
     if (*out_container) {
-      out_bounds_in_container = UnionRects(rects);
+      for (auto& rect : rects)
+        out_bounds_in_container.Union(rect);
       return;
     }
   }
@@ -3615,8 +3616,8 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
           clips_children);
       if (*out_container) {
         out_bounds_in_container.set_size(
-            FloatSize(out_bounds_in_container.width(),
-                      std::min(10.0f, out_bounds_in_container.height())));
+            gfx::SizeF(out_bounds_in_container.width(),
+                       std::min(10.0f, out_bounds_in_container.height())));
       }
       break;
     }

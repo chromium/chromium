@@ -109,7 +109,7 @@ void DrawDocumentMarker(GraphicsContext& context,
   PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
-      sk_ref_sp(marker), FloatRect(0, 0, kMarkerWidth, kMarkerHeight),
+      sk_ref_sp(marker), SkRect::MakeWH(kMarkerWidth, kMarkerHeight),
       SkTileMode::kRepeat, SkTileMode::kClamp, &local_matrix));
 
   // Apply the origin translation as a global transform.  This ensures that the

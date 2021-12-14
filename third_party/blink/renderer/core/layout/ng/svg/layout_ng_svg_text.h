@@ -41,7 +41,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
   void AbsoluteQuads(Vector<FloatQuad>& quads,
                      MapCoordinatesFlags mode) const override;
-  FloatRect LocalBoundingBoxRectForAccessibility() const override;
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,

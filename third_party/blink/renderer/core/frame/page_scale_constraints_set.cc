@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -65,7 +66,7 @@ void PageScaleConstraintsSet::UpdatePageDefinedConstraints(
     const ViewportDescription& description,
     const Length& legacy_fallback_width) {
   page_defined_constraints_ =
-      description.Resolve(FloatSize(icb_size_), legacy_fallback_width);
+      description.Resolve(gfx::SizeF(icb_size_), legacy_fallback_width);
 
   constraints_dirty_ = true;
 }
@@ -158,15 +159,15 @@ static float ComputeDeprecatedTargetDensityDPIFactor(
   return target_dpi > 0 ? 160.0f / target_dpi : 1.0f;
 }
 
-static float GetLayoutWidthForNonWideViewport(const FloatSize& device_size,
+static float GetLayoutWidthForNonWideViewport(const gfx::Size& device_size,
                                               float initial_scale) {
   return initial_scale == -1 ? device_size.width()
                              : device_size.width() / initial_scale;
 }
 
 static float ComputeHeightByAspectRatio(float width,
-                                        const FloatSize& device_size) {
-  return width * (device_size.height() / device_size.width());
+                                        const gfx::Size& device_size) {
+  return width * device_size.height() / device_size.width();
 }
 
 void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
@@ -179,7 +180,7 @@ void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
 }
 
 gfx::Size PageScaleConstraintsSet::GetLayoutSize() const {
-  return ToFlooredSize(ComputeConstraintsStack().layout_size);
+  return gfx::ToFlooredSize(ComputeConstraintsStack().layout_size);
 }
 
 void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
@@ -238,17 +239,17 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         description.zoom != 1.0f) {
       if (layout_fallback_width)
         adjusted_layout_size_width = layout_fallback_width;
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
     } else if (!use_wide_viewport) {
       const float non_wide_scale =
           description.zoom < 1 && !description.max_width.IsDeviceWidth() &&
                   !description.max_width.IsDeviceHeight()
               ? -1
               : old_initial_scale;
-      adjusted_layout_size_width = GetLayoutWidthForNonWideViewport(
-                                       FloatSize(icb_size_), non_wide_scale) /
-                                   target_density_dpi_factor;
+      adjusted_layout_size_width =
+          GetLayoutWidthForNonWideViewport(icb_size_, non_wide_scale) /
+          target_density_dpi_factor;
       float new_initial_scale = target_density_dpi_factor;
       if (user_agent_constraints_.initial_scale != -1 &&
           (description.max_width.IsDeviceWidth() ||
@@ -258,8 +259,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         adjusted_layout_size_width /= user_agent_constraints_.initial_scale;
         new_initial_scale = user_agent_constraints_.initial_scale;
       }
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
       if (description.zoom < 1) {
         page_defined_constraints_.initial_scale = new_initial_scale;
         if (page_defined_constraints_.minimum_scale != -1)
@@ -285,8 +286,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         description.max_width.IsDeviceWidth()) {
       adjusted_layout_size_width =
           icb_size_.width() / target_density_dpi_factor;
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
     }
   }
 

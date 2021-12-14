@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -80,10 +81,11 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
   return *map;
 }
 
-FloatRect DeNormalizeRect(const gfx::RectF& normalized, const gfx::Rect& base) {
-  FloatRect result(normalized);
+gfx::RectF DeNormalizeRect(const gfx::RectF& normalized,
+                           const gfx::Rect& base) {
+  gfx::RectF result = normalized;
   result.Scale(base.width(), base.height());
-  result.MoveBy(gfx::PointF(base.origin()));
+  result.Offset(base.OffsetFromOrigin());
   return result;
 }
 
@@ -741,10 +743,10 @@ void RemoteFrame::ScrollRectToVisible(
           ->RootFrameToDocument(ToEnclosingRect(
               owner_element->GetDocument().View()->ConvertToRootFrame(
                   absolute_rect)));
-  gfx::Rect element_bounds_in_document = ToEnclosingRect(
+  gfx::Rect element_bounds_in_document = gfx::ToEnclosingRect(
       DeNormalizeRect(relative_element_bounds, rect_in_document));
-  gfx::Rect caret_bounds_in_document =
-      ToEnclosingRect(DeNormalizeRect(relative_caret_bounds, rect_in_document));
+  gfx::Rect caret_bounds_in_document = gfx::ToEnclosingRect(
+      DeNormalizeRect(relative_caret_bounds, rect_in_document));
 
   // This is due to something such as scroll focused editable element into
   // view on Android which also requires an automatic zoom into legible scale.

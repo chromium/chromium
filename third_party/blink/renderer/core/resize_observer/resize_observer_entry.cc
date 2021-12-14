@@ -13,10 +13,10 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -27,14 +27,14 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
     if (auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(target)) {
       LayoutSize bounding_box_size =
           LayoutSize(svg_graphics_element->GetBBox().size());
-      content_rect_ = DOMRectReadOnly::FromFloatRect(
-          FloatRect(gfx::PointF(), FloatSize(bounding_box_size)));
+      content_rect_ = DOMRectReadOnly::FromRectF(
+          gfx::RectF(gfx::PointF(), gfx::SizeF(bounding_box_size)));
       ResizeObserverSize* size = ResizeObserverSize::Create(
           bounding_box_size.Width(), bounding_box_size.Height());
       content_box_size_.push_back(size);
       border_box_size_.push_back(size);
       bounding_box_size.Scale(style.EffectiveZoom());
-      FloatSize snapped_device_pixel_content_box =
+      gfx::SizeF snapped_device_pixel_content_box =
           ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
               bounding_box_size, layout_object, style);
       ResizeObserverSize* device_pixel_content_box_size =
@@ -49,11 +49,11 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
       content_rect_ =
           ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
 
-      FloatSize content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+      gfx::SizeF content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
           ResizeObserverBoxOptions::kContentBox, layout_object, style);
-      FloatSize border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+      gfx::SizeF border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
           ResizeObserverBoxOptions::kBorderBox, layout_object, style);
-      FloatSize device_pixel_content_box =
+      gfx::SizeF device_pixel_content_box =
           ResizeObserverUtilities::ComputeZoomAdjustedBox(
               ResizeObserverBoxOptions::kDevicePixelContentBox, layout_object,
               style);
@@ -72,7 +72,7 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
     }
   }
   if (!content_rect_)
-    content_rect_ = DOMRectReadOnly::FromFloatRect(FloatRect());
+    content_rect_ = DOMRectReadOnly::FromRectF(gfx::RectF());
   if (content_box_size_.size() == 0)
     content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
   if (border_box_size_.size() == 0)

@@ -336,7 +336,7 @@ void FullscreenController::UpdatePageScaleConstraints(bool reset_constraints) {
     web_view_base_->GetPageScaleConstraintsSet().SetNeedsReset(true);
   } else {
     fullscreen_constraints = PageScaleConstraints(1.0, 1.0, 1.0);
-    fullscreen_constraints.layout_size = FloatSize(web_view_base_->Size());
+    fullscreen_constraints.layout_size = gfx::SizeF(web_view_base_->Size());
   }
   web_view_base_->GetPageScaleConstraintsSet().SetFullscreenConstraints(
       fullscreen_constraints);

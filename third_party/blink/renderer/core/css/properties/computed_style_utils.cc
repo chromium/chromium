@@ -1554,21 +1554,21 @@ static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
           IsA<SVGRectElement>(layout_object.GetNode()));
 }
 
-FloatSize ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
+gfx::SizeF ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
   if (layout_object.IsSVGChild() &&
       IsSVGObjectWithWidthAndHeight(layout_object)) {
-    FloatSize size(layout_object.ObjectBoundingBox().size());
+    gfx::SizeF size = layout_object.ObjectBoundingBox().size();
     // The object bounding box does not have zoom applied. Multiply with zoom
     // here since we'll divide by it when we produce the CSS value.
     size.Scale(layout_object.StyleRef().EffectiveZoom());
     return size;
   }
   if (!layout_object.IsBox())
-    return FloatSize();
+    return gfx::SizeF();
   const auto& box = To<LayoutBox>(layout_object);
-  return FloatSize(box.StyleRef().BoxSizing() == EBoxSizing::kBorderBox
-                       ? box.BorderBoxRect().Size()
-                       : box.ComputedCSSContentBoxRect().Size());
+  return gfx::SizeF(box.StyleRef().BoxSizing() == EBoxSizing::kBorderBox
+                        ? box.BorderBoxRect().Size()
+                        : box.ComputedCSSContentBoxRect().Size());
 }
 
 CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(

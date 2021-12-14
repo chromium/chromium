@@ -266,7 +266,7 @@ CORE_EXPORT PositionInFlatTree SkipWhitespace(const PositionInFlatTree&);
 
 CORE_EXPORT gfx::Rect ComputeTextRect(const EphemeralRange&);
 gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
-FloatRect ComputeTextFloatRect(const EphemeralRange&);
+gfx::RectF ComputeTextRectF(const EphemeralRange&);
 
 // |FirstRectForRange| requires up-to-date layout.
 gfx::Rect FirstRectForRange(const EphemeralRange&);

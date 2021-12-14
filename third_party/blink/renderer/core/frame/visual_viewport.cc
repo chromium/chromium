@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -74,6 +73,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -439,15 +439,15 @@ void VisualViewport::MainFrameDidChangeSize() {
 
 gfx::RectF VisualViewport::VisibleRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  FloatSize visible_size(size_);
+  gfx::SizeF visible_size(size_);
 
   if (scrollbar_inclusion == kExcludeScrollbars)
-    visible_size = FloatSize(ExcludeScrollbars(size_));
+    visible_size = gfx::SizeF(ExcludeScrollbars(size_));
 
   visible_size.Enlarge(0, browser_controls_adjustment_);
   visible_size.Scale(1 / scale_);
 
-  return gfx::RectF(ScrollPosition(), ToGfxSizeF(visible_size));
+  return gfx::RectF(ScrollPosition(), visible_size);
 }
 
 gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
@@ -800,7 +800,7 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
 
   // TODO(bokan): We probably shouldn't be storing the bounds in a float.
   // crbug.com/470718.
-  FloatSize frame_view_size(ContentsSize());
+  gfx::SizeF frame_view_size(ContentsSize());
 
   if (browser_controls_adjustment_) {
     float min_scale =
@@ -809,14 +809,14 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
   }
 
   frame_view_size.Scale(scale_);
-  frame_view_size = FloatSize(ToFlooredSize(frame_view_size));
+  frame_view_size = gfx::SizeF(ToFlooredSize(frame_view_size));
 
-  FloatSize viewport_size(size_);
+  gfx::SizeF viewport_size(size_);
   viewport_size.Enlarge(0, ceilf(browser_controls_adjustment_));
 
-  FloatSize max_position = frame_view_size - viewport_size;
+  gfx::SizeF max_position = frame_view_size - viewport_size;
   max_position.Scale(1 / scale_);
-  return ScrollOffset(ToGfxVector2dF(max_position));
+  return ScrollOffset(max_position.width(), max_position.height());
 }
 
 gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
@@ -826,11 +826,11 @@ gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
 
   LocalFrameView* view = LocalMainFrame()->View();
 
-  FloatSize scaled_size(ExcludeScrollbars(size_));
+  gfx::SizeF scaled_size(ExcludeScrollbars(size_));
   scaled_size.Scale(1 / scale);
 
   gfx::Size visual_viewport_max =
-      ToFlooredSize(FloatSize(ContentsSize()) - scaled_size);
+      gfx::ToFlooredSize(gfx::SizeF(ContentsSize()) - scaled_size);
   gfx::Vector2d max =
       view->LayoutViewport()->MaximumScrollOffsetInt() +
       gfx::Vector2d(visual_viewport_max.width(), visual_viewport_max.height());
@@ -949,9 +949,9 @@ void VisualViewport::ClampToBoundaries() {
   SetLocation(gfx::PointAtOffsetFromOrigin(offset_));
 }
 
-FloatRect VisualViewport::ViewportToRootFrame(
-    const FloatRect& rect_in_viewport) const {
-  FloatRect rect_in_root_frame = rect_in_viewport;
+gfx::RectF VisualViewport::ViewportToRootFrame(
+    const gfx::RectF& rect_in_viewport) const {
+  gfx::RectF rect_in_root_frame = rect_in_viewport;
   rect_in_root_frame.Scale(1 / Scale());
   rect_in_root_frame.Offset(GetScrollOffset());
   return rect_in_root_frame;
@@ -960,12 +960,12 @@ FloatRect VisualViewport::ViewportToRootFrame(
 gfx::Rect VisualViewport::ViewportToRootFrame(
     const gfx::Rect& rect_in_viewport) const {
   // FIXME: How to snap to pixels?
-  return ToEnclosingRect(ViewportToRootFrame(FloatRect(rect_in_viewport)));
+  return ToEnclosingRect(ViewportToRootFrame(gfx::RectF(rect_in_viewport)));
 }
 
-FloatRect VisualViewport::RootFrameToViewport(
-    const FloatRect& rect_in_root_frame) const {
-  FloatRect rect_in_viewport = rect_in_root_frame;
+gfx::RectF VisualViewport::RootFrameToViewport(
+    const gfx::RectF& rect_in_root_frame) const {
+  gfx::RectF rect_in_viewport = rect_in_root_frame;
   rect_in_viewport.Offset(-GetScrollOffset());
   rect_in_viewport.Scale(Scale());
   return rect_in_viewport;
@@ -974,7 +974,7 @@ FloatRect VisualViewport::RootFrameToViewport(
 gfx::Rect VisualViewport::RootFrameToViewport(
     const gfx::Rect& rect_in_root_frame) const {
   // FIXME: How to snap to pixels?
-  return ToEnclosingRect(RootFrameToViewport(FloatRect(rect_in_root_frame)));
+  return ToEnclosingRect(RootFrameToViewport(gfx::RectF(rect_in_root_frame)));
 }
 
 gfx::PointF VisualViewport::ViewportToRootFrame(

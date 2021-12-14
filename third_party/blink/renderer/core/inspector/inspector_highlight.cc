@@ -40,12 +40,12 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -377,7 +377,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
 
   DCHECK(element->GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
-  FloatRect bounding_box = element->GetBoundingClientRectNoLifecycleUpdate();
+  gfx::RectF bounding_box = element->GetBoundingClientRectNoLifecycleUpdate();
   element_info->setString("nodeWidth", String::Number(bounding_box.width()));
   element_info->setString("nodeHeight", String::Number(bounding_box.height()));
 
@@ -626,10 +626,6 @@ PhysicalOffset LocalToAbsolutePoint(Node* node,
       PhysicalOffset::FromPointFRound(abs_point_in_viewport);
   scaled_abs_point.Scale(scale);
   return scaled_abs_point;
-}
-
-FloatQuad ToFloatQuad(const gfx::RectF& rect) {
-  return FloatRect(rect);
 }
 
 String SnapAlignToString(const cc::SnapAlignment& value) {
@@ -1494,8 +1490,8 @@ std::unique_ptr<protocol::Array<double>> RectForPhysicalRect(
 // Returns |layout_object|'s bounding box in document coordinates.
 PhysicalRect RectInRootFrame(const LayoutObject* layout_object) {
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
-  PhysicalRect rect_in_absolute = PhysicalRect::EnclosingRect(
-      layout_object->AbsoluteBoundingBoxFloatRect());
+  PhysicalRect rect_in_absolute =
+      PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
   return local_frame_view
              ? local_frame_view->ConvertToRootFrame(rect_in_absolute)
              : rect_in_absolute;
@@ -2194,7 +2190,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
     return nullptr;
 
   FloatQuad snapport_quad =
-      layout_box->LocalToAbsoluteQuad(ToFloatQuad(container_data->rect()));
+      layout_box->LocalToAbsoluteQuad(FloatQuad(container_data->rect()));
   scroll_snap_info->setValue("snapport",
                              BuildPathFromQuad(containing_view, snapport_quad));
 
@@ -2223,8 +2219,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
     std::unique_ptr<protocol::DictionaryValue> result_area =
         protocol::DictionaryValue::create();
 
-    FloatQuad area_quad =
-        layout_box->LocalToAbsoluteQuad(ToFloatQuad(data.rect));
+    FloatQuad area_quad = layout_box->LocalToAbsoluteQuad(FloatQuad(data.rect));
     result_area->setValue("path",
                           BuildPathFromQuad(containing_view, area_quad));
 

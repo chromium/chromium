@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

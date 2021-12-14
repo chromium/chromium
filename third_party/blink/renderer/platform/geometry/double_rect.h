@@ -12,11 +12,11 @@
 
 namespace gfx {
 class Rect;
+class RectF;
 }
 
 namespace blink {
 
-class FloatRect;
 class LayoutRect;
 
 class PLATFORM_EXPORT DoubleRect {
@@ -29,7 +29,7 @@ class PLATFORM_EXPORT DoubleRect {
   constexpr DoubleRect(double x, double y, double width, double height)
       : location_(DoublePoint(x, y)), size_(DoubleSize(width, height)) {}
   DoubleRect(const gfx::Rect&);
-  DoubleRect(const FloatRect&);
+  DoubleRect(const gfx::RectF&);
   DoubleRect(const LayoutRect&);
 
   constexpr DoublePoint Location() const { return location_; }

@@ -118,11 +118,11 @@ static inline float ViewportLengthPercent(const float width_or_height) {
   return width_or_height / 100;
 }
 
-static inline float ViewportMinPercent(const FloatSize& viewport_size) {
+static inline float ViewportMinPercent(const gfx::SizeF& viewport_size) {
   return std::min(viewport_size.width(), viewport_size.height()) / 100;
 }
 
-static inline float ViewportMaxPercent(const FloatSize& viewport_size) {
+static inline float ViewportMaxPercent(const gfx::SizeF& viewport_size) {
   return std::max(viewport_size.width(), viewport_size.height()) / 100;
 }
 
@@ -140,7 +140,7 @@ static inline float DimensionForViewportUnit(const SVGElement* context,
   if (!style)
     return 0;
 
-  FloatSize viewport_size(view->Width(), view->Height());
+  gfx::SizeF viewport_size(view->Width(), view->Height());
 
   switch (unit) {
     case CSSPrimitiveValue::UnitType::kViewportWidth:

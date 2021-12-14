@@ -57,11 +57,11 @@ AXInlineTextBox::AXInlineTextBox(
     : AXObject(ax_object_cache), inline_text_box_(std::move(inline_text_box)) {}
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
-                                        FloatRect& out_bounds_in_container,
+                                        gfx::RectF& out_bounds_in_container,
                                         skia::Matrix44& out_container_transform,
                                         bool* clips_children) const {
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
 
   if (!inline_text_box_ || !ParentObject() ||
@@ -70,11 +70,11 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   }
 
   *out_container = ParentObject();
-  out_bounds_in_container = FloatRect(inline_text_box_->LocalBounds());
+  out_bounds_in_container = gfx::RectF(inline_text_box_->LocalBounds());
 
   // Subtract the local bounding box of the parent because they're
   // both in the same coordinate system.
-  FloatRect parent_bounding_box =
+  gfx::RectF parent_bounding_box =
       ParentObject()->LocalBoundingBoxRectForAccessibility();
   out_bounds_in_container.Offset(-parent_bounding_box.OffsetFromOrigin());
 }

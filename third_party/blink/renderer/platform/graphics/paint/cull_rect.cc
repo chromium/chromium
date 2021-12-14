@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 
 #include "base/containers/adapters.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
@@ -13,6 +12,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -28,7 +28,7 @@ static int LocalPixelDistanceToExpand(
   // composited scroll translation or other composited transform.
   static constexpr int kPixelDistanceToExpand = 4000;
 
-  FloatRect rect(0, 0, 1, 1);
+  gfx::RectF rect(0, 0, 1, 1);
   GeometryMapper::SourceToDestinationRect(root_transform, local_transform,
                                           rect);
   // Now rect.Size() is the size of a screen pixel in local coordinates.

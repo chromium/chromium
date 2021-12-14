@@ -41,14 +41,14 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
 // TODO(crbug.com/940846): Consider using double-type without casting and
-// DoublePoint & DoubleRect instead of gfx::PointF & FloatRect.
+// DoublePoint & DoubleRect instead of gfx::PointF & gfx::RectF.
 
 void CanvasPath::closePath() {
   if (UNLIKELY(path_.IsEmpty()))

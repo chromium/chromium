@@ -30,9 +30,9 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

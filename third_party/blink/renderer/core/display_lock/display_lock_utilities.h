@@ -55,7 +55,7 @@ class CORE_EXPORT DisplayLockUtilities {
         DocumentUpdateReason reason);
     friend VisibleSelection
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
-    friend FloatRect Range::BoundingRect() const;
+    friend gfx::RectF Range::BoundingRect() const;
     friend DOMRectList* Range::getClientRects() const;
 
     friend class DisplayLockContext;

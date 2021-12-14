@@ -107,7 +107,7 @@ class PaintRecordMatcher
 
 #define EXPECT_EFFECT_BOUNDS(x, y, width, height, op_buffer, index)         \
   do {                                                                      \
-    FloatRect bounds;                                                       \
+    SkRect bounds;                                                          \
     if (const auto* save_layer_alpha =                                      \
             (op_buffer).GetOpAtForTesting<cc::SaveLayerAlphaOp>(index)) {   \
       bounds = save_layer_alpha->bounds;                                    \
@@ -117,7 +117,7 @@ class PaintRecordMatcher
     } else {                                                                \
       FAIL() << "No SaveLayer[Alpha]Op at " << index;                       \
     }                                                                       \
-    EXPECT_EQ(FloatRect(x, y, width, height), bounds);                      \
+    EXPECT_EQ(SkRect::MakeXYWH(x, y, width, height), bounds);               \
   } while (false)
 
 #define EXPECT_TRANSFORM_MATRIX(transform, op_buffer, index)                 \

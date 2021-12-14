@@ -301,7 +301,7 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         MinimumValueForLength(container_style->ScrollPaddingLeft(),
                               container_rect.Width()));
     container_rect.Contract(container_padding);
-    snap_container_data.set_rect(ToGfxRectF(FloatRect(container_rect)));
+    snap_container_data.set_rect(gfx::RectF(container_rect));
 
     if (snap_container_data.scroll_snap_type().strictness ==
         cc::SnapStrictness::kProximity) {
@@ -413,7 +413,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);
-  snap_area_data.rect = ToGfxRectF(FloatRect(area_rect));
+  snap_area_data.rect = gfx::RectF(area_rect);
 
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 

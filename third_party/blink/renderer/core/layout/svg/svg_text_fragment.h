@@ -66,7 +66,7 @@ struct SVGTextFragment {
   }
 
   FloatQuad BoundingQuad(float baseline) const {
-    FloatQuad fragment_quad(FloatRect(x, y - baseline, width, height));
+    FloatQuad fragment_quad(gfx::RectF(x, y - baseline, width, height));
     if (!IsTransformed())
       return fragment_quad;
     return BuildNormalFragmentTransform().MapQuad(fragment_quad);

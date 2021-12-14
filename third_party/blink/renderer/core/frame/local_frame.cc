@@ -2040,8 +2040,8 @@ void LocalFrame::SetViewportIntersectionFromParent(
 
     intersection_state.main_frame_transform.TransformRect(&transform_rect);
     gfx::Rect rect = ToEnclosingRect(
-        FloatRect(transform_rect.x(), transform_rect.y(),
-                  transform_rect.width(), transform_rect.height()));
+        gfx::RectF(transform_rect.x(), transform_rect.y(),
+                   transform_rect.width(), transform_rect.height()));
 
     // Return <0, 0, 0, 0> if there is no area.
     if (rect.IsEmpty())

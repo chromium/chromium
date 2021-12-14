@@ -2451,8 +2451,8 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return Response::ServerError("Node does not have a layout object");
-  PhysicalRect rect_to_scroll = PhysicalRect::EnclosingRect(
-      layout_object->AbsoluteBoundingBoxFloatRect());
+  PhysicalRect rect_to_scroll =
+      PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
   if (rect.isJust()) {
     rect_to_scroll.SetX(rect_to_scroll.X() +
                         LayoutUnit(rect.fromJust()->getX()));

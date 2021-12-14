@@ -19,7 +19,7 @@ TEST(FloatQuadTest, ToString) {
 TEST(FloatQuadTest, BoundingBox) {
   FloatQuad quad(gfx::PointF(2, 3), gfx::PointF(5, 7), gfx::PointF(11, 13),
                  gfx::PointF(17, 19));
-  FloatRect rect = quad.BoundingBox();
+  gfx::RectF rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), 2);
   EXPECT_EQ(rect.y(), 3);
   EXPECT_EQ(rect.width(), 17 - 2);
@@ -30,7 +30,7 @@ TEST(FloatQuadTest, BoundingBoxSaturateInf) {
   constexpr double inf = std::numeric_limits<double>::infinity();
   FloatQuad quad(gfx::PointF(-inf, 3), gfx::PointF(5, inf), gfx::PointF(11, 13),
                  gfx::PointF(17, 19));
-  FloatRect rect = quad.BoundingBox();
+  gfx::RectF rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), std::numeric_limits<int>::min());
   EXPECT_EQ(rect.y(), 3.0f);
   EXPECT_EQ(rect.width(), 17.0f - std::numeric_limits<int>::min());
@@ -42,7 +42,7 @@ TEST(FloatQuadTest, BoundingBoxSaturateLarge) {
   constexpr double large = std::numeric_limits<float>::max() * 4;
   FloatQuad quad(gfx::PointF(-large, 3), gfx::PointF(5, large),
                  gfx::PointF(11, 13), gfx::PointF(17, 19));
-  FloatRect rect = quad.BoundingBox();
+  gfx::RectF rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), std::numeric_limits<int>::min());
   EXPECT_EQ(rect.y(), 3.0f);
   EXPECT_EQ(rect.width(), 17.0f - std::numeric_limits<int>::min());
@@ -52,39 +52,39 @@ TEST(FloatQuadTest, BoundingBoxSaturateLarge) {
 
 TEST(FloatQuadTest, RectIntersectionIsInclusive) {
   // A rectilinear quad at (10, 10) with dimensions 10x10.
-  FloatQuad quad(FloatRect(10, 10, 10, 10));
+  FloatQuad quad(gfx::RectF(10, 10, 10, 10));
 
   // A rect fully contained in the quad should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(11, 11, 8, 8)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(11, 11, 8, 8)));
 
   // A point fully contained in the quad should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(11, 11, 0, 0)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(11, 11, 0, 0)));
 
   // A rect that touches the quad only at the point (10, 10) should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(9, 9, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(9, 9, 1, 1)));
 
   // A rect that touches the quad only on the left edge should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(9, 11, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(9, 11, 1, 1)));
 
   // A rect that touches the quad only on the top edge should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(11, 9, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(11, 9, 1, 1)));
 
   // A rect that touches the quad only on the right edge should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(20, 11, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(20, 11, 1, 1)));
 
   // A rect that touches the quad only on the bottom edge should intersect.
-  EXPECT_TRUE(quad.IntersectsRect(FloatRect(11, 20, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRect(gfx::RectF(11, 20, 1, 1)));
 
   // A rect that is fully outside the quad should not intersect.
-  EXPECT_FALSE(quad.IntersectsRect(FloatRect(8, 8, 1, 1)));
+  EXPECT_FALSE(quad.IntersectsRect(gfx::RectF(8, 8, 1, 1)));
 
   // A point that is fully outside the quad should not intersect.
-  EXPECT_FALSE(quad.IntersectsRect(FloatRect(9, 9, 0, 0)));
+  EXPECT_FALSE(quad.IntersectsRect(gfx::RectF(9, 9, 0, 0)));
 }
 
 TEST(FloatQuadTest, CircleIntersectionIsInclusive) {
   // A rectilinear quad at (10, 10) with dimensions 10x10.
-  FloatQuad quad(FloatRect(10, 10, 10, 10));
+  FloatQuad quad(gfx::RectF(10, 10, 10, 10));
 
   // A circle fully contained in the top-left of the quad should intersect.
   EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(12, 12), 1));

@@ -178,8 +178,8 @@ class DOMTreeIterator {
 // static
 PhysicalRect InspectorDOMSnapshotAgent::RectInDocument(
     const LayoutObject* layout_object) {
-  PhysicalRect rect_in_absolute = PhysicalRect::EnclosingRect(
-      layout_object->AbsoluteBoundingBoxFloatRect());
+  PhysicalRect rect_in_absolute =
+      PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   // Don't do frame to document coordinate transformation for layout view,
   // whose bounding box is not affected by scroll offset.

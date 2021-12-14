@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -61,7 +62,7 @@ float FrameScale(const LocalFrameView* frame_view) {
 
 gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
   gfx::Point visual_viewport;
-  FloatSize overscroll_offset;
+  gfx::Vector2dF overscroll_offset;
   if (frame_view) {
     LocalFrameView* root_view = frame_view->GetFrame().LocalFrameRoot().View();
     if (root_view) {
@@ -71,8 +72,7 @@ gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
           root_view->GetPage()->GetChromeClient().ElasticOverscroll();
     }
   }
-  return gfx::Vector2dF(visual_viewport.x() + overscroll_offset.width(),
-                        visual_viewport.y() + overscroll_offset.height());
+  return visual_viewport.OffsetFromOrigin() + overscroll_offset;
 }
 
 void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,

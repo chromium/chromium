@@ -698,7 +698,7 @@ inline bool PaintFastBottomLayer(const Document* document,
           geometry.TileSize().height < image_rect.height())
         return false;
 
-      // Use FastAndLossyFromFloatRect when converting the image border rect.
+      // Use FastAndLossyFromRectF when converting the image border rect.
       // At this point it should have been derived from a snapped rectangle, so
       // the conversion from float should be as precise as it can be.
       const PhysicalRect dest_rect =
@@ -834,7 +834,7 @@ FloatRoundedRect RoundedBorderRectForClip(
   }
 
   // Clip to the padding or content boxes as necessary.
-  // Use FastAndLossyFromFloatRect because we know it has been pixel snapped.
+  // Use FastAndLossyFromRectF because we know it has been pixel snapped.
   PhysicalRect border_rect = PhysicalRect::FastAndLossyFromRectF(border.Rect());
   if (bg_layer.Clip() == EFillBox::kContent) {
     border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(

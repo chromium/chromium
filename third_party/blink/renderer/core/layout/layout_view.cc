@@ -501,7 +501,7 @@ bool LayoutView::MapToVisualRectInAncestorSpace(
     return intersects;
 
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 FloatQuad(FloatRect(rect)));
+                                 FloatQuad(gfx::RectF(rect)));
   intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
                                                       mode, visual_rect_flags);
   transform_state.Flatten();
@@ -545,7 +545,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
         transform_state.LastPlanarQuad().BoundingBox());
     bool retval = GetFrameView()->MapToVisualRectInRemoteRootFrame(
         rect, !(visual_rect_flags & kDontApplyMainFrameOverflowClip));
-    transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+    transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
     return retval;
   }
 
@@ -555,7 +555,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     PhysicalRect view_rectangle = ViewRect();
     if (visual_rect_flags & kEdgeInclusive) {
       if (!rect.InclusiveIntersect(view_rectangle)) {
-        transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+        transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
         return false;
       }
     } else {
@@ -570,14 +570,14 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
 
     // Adjust for frame border.
     rect.Move(obj->PhysicalContentBoxOffset());
-    transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+    transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
 
     return obj->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, visual_rect_flags);
   }
 
   // This can happen, e.g., if the iframe element has display:none.
-  transform_state.SetQuad(FloatQuad(FloatRect()));
+  transform_state.SetQuad(FloatQuad(gfx::RectF()));
   return false;
 }
 
@@ -864,10 +864,10 @@ bool LayoutView::BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
          !frame_view_->BaseBackgroundColor().HasAlpha();
 }
 
-FloatSize LayoutView::ViewportSizeForViewportUnits() const {
+gfx::SizeF LayoutView::ViewportSizeForViewportUnits() const {
   NOT_DESTROYED();
   return GetFrameView() ? GetFrameView()->ViewportSizeForViewportUnits()
-                        : FloatSize();
+                        : gfx::SizeF();
 }
 
 void LayoutView::WillBeDestroyed() {

@@ -1032,10 +1032,12 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
       if (!transform_depends_on_point)
         mapping_to_absolute.emplace(LocalToAbsoluteTransform(mode));
     }
-    if (transform_depends_on_point)
-      quads.push_back(LocalToAbsoluteQuad(FloatQuad(FloatRect(rect)), mode));
-    else
-      quads.push_back(mapping_to_absolute->MapQuad(FloatQuad(FloatRect(rect))));
+    if (transform_depends_on_point) {
+      quads.push_back(LocalToAbsoluteQuad(FloatQuad(gfx::RectF(rect)), mode));
+    } else {
+      quads.push_back(
+          mapping_to_absolute->MapQuad(FloatQuad(gfx::RectF(rect))));
+    }
   };
 
   CollectLineBoxRects(
@@ -1043,7 +1045,7 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
         if (map_to_absolute)
           PushAbsoluteQuad(rect);
         else
-          quads.push_back(FloatQuad(FloatRect(rect)));
+          quads.push_back(FloatQuad(gfx::RectF(rect)));
       });
   if (quads.IsEmpty()) {
     if (map_to_absolute)
@@ -1916,11 +1918,11 @@ void LayoutInline::AddOutlineRectsForContinuations(
   }
 }
 
-FloatRect LayoutInline::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
       PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
-  return FloatRect(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
+  return gfx::RectF(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
 }
 
 void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {

@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "v8/include/v8.h"
 
 namespace blink {

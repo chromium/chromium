@@ -1602,7 +1602,7 @@ DOMRectList* Range::getClientRects() const {
 }
 
 DOMRect* Range::getBoundingClientRect() const {
-  return DOMRect::FromFloatRect(BoundingRect());
+  return DOMRect::FromRectF(BoundingRect());
 }
 
 // TODO(editing-dev): We should make
@@ -1713,7 +1713,7 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
   }
 }
 
-FloatRect Range::BoundingRect() const {
+gfx::RectF Range::BoundingRect() const {
   absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
   if (!collapsed()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
@@ -1727,7 +1727,7 @@ FloatRect Range::BoundingRect() const {
   Vector<FloatQuad> quads;
   GetBorderAndTextQuads(quads);
 
-  FloatRect result;
+  gfx::RectF result;
   for (const FloatQuad& quad : quads)
     result.Union(quad.BoundingBox());  // Skips empty rects.
 

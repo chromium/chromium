@@ -132,7 +132,7 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   transform_state.Flatten();
   LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
   rect = FragmentsBoundingBox(rect);
-  transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+  transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }

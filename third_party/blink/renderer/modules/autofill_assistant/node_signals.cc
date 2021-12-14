@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -35,7 +34,7 @@ bool IsVisible(const Element& element) {
     return false;
   }
 
-  FloatRect rect = element.GetBoundingClientRectNoLifecycleUpdate();
+  gfx::RectF rect = element.GetBoundingClientRectNoLifecycleUpdate();
   if (rect.width() < 1e-6 || rect.height() < 1e-6) {
     return false;
   }

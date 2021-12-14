@@ -1188,11 +1188,11 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
 #endif
 
   AXObject* container = nullptr;
-  FloatRect bounds;
+  gfx::RectF bounds;
   private_->GetRelativeBounds(&container, bounds, container_transform,
                               clips_children);
   offset_container = WebAXObject(container);
-  bounds_in_container = ToGfxRectF(bounds);
+  bounds_in_container = bounds;
 }
 
 void WebAXObject::GetAllObjectsWithChangedBounds(

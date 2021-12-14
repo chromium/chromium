@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_DOUBLE_SIZE_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -25,7 +27,7 @@ class PLATFORM_EXPORT DoubleSize {
       : width_(width), height_(height) {}
   constexpr explicit DoubleSize(const gfx::Size& p)
       : width_(p.width()), height_(p.height()) {}
-  constexpr DoubleSize(const FloatSize& s)
+  constexpr DoubleSize(const gfx::SizeF& s)
       : width_(s.width()), height_(s.height()) {}
   explicit DoubleSize(const LayoutSize&);
   explicit DoubleSize(const gfx::Vector2dF& v)

@@ -26,9 +26,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -87,10 +87,7 @@ class CORE_EXPORT HitTestLocation {
 
   // Uses floating-point intersection, which uses inclusive intersection
   // (see LayoutRect::InclusiveIntersect for a definition)
-  bool Intersects(const FloatRect&) const;
-  bool Intersects(const gfx::RectF& r) const {
-    return Intersects(FloatRect(r));
-  }
+  bool Intersects(const gfx::RectF&) const;
   bool Intersects(const FloatRoundedRect&) const;
   bool Intersects(const FloatQuad&) const;
   bool ContainsPoint(const gfx::PointF&) const;

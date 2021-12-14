@@ -21,9 +21,10 @@
 
 #include <math.h>
 
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -69,10 +70,10 @@ SVGTransformDistance::SVGTransformDistance(
       break;
     }
     case SVGTransformType::kScale: {
-      float scale_x = to_svg_transform->Scale().width() -
-                      from_svg_transform->Scale().width();
-      float scale_y = to_svg_transform->Scale().height() -
-                      from_svg_transform->Scale().height();
+      float scale_x =
+          to_svg_transform->Scale().x() - from_svg_transform->Scale().x();
+      float scale_y =
+          to_svg_transform->Scale().y() - from_svg_transform->Scale().y();
       transform_.ScaleNonUniform(scale_x, scale_y);
       break;
     }
@@ -146,10 +147,10 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
       return transform;
     }
     case SVGTransformType::kScale: {
-      FloatSize scale = second->Scale();
+      gfx::Vector2dF scale = second->Scale();
       scale.Scale(repeat_count);
       scale += first->Scale();
-      transform->SetScale(scale.width(), scale.height());
+      transform->SetScale(scale.x(), scale.y());
       return transform;
     }
     case SVGTransformType::kSkewx:
@@ -177,16 +178,17 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
     case SVGTransformType::kUnknown:
       return MakeGarbageCollected<SVGTransform>();
     case SVGTransformType::kTranslate: {
-      gfx::PointF translation = transform->Translate();
+      gfx::Vector2dF translation = transform->Translate();
       translation += gfx::Vector2dF(ClampTo<float>(transform_.E()),
                                     ClampTo<float>(transform_.F()));
       new_transform->SetTranslate(translation.x(), translation.y());
       return new_transform;
     }
     case SVGTransformType::kScale: {
-      FloatSize scale = transform->Scale();
-      scale += FloatSize::NarrowPrecision(transform_.A(), transform_.D());
-      new_transform->SetScale(scale.width(), scale.height());
+      gfx::Vector2dF scale = transform->Scale();
+      scale += gfx::Vector2dF(ClampTo<float>(transform_.A()),
+                              ClampTo<float>(transform_.D()));
+      new_transform->SetScale(scale.x(), scale.y());
       return new_transform;
     }
     case SVGTransformType::kRotate: {

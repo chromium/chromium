@@ -6306,31 +6306,32 @@ static float MmToPx(float mm) {
 static float InchToPx(float inch) {
   return inch * kCssPixelsPerInch;
 }
-static FloatSize GetPageSizeFromName(const CSSIdentifierValue& page_size_name) {
+static gfx::SizeF GetPageSizeFromName(
+    const CSSIdentifierValue& page_size_name) {
   switch (page_size_name.GetValueID()) {
     case CSSValueID::kA5:
-      return FloatSize(MmToPx(148), MmToPx(210));
+      return gfx::SizeF(MmToPx(148), MmToPx(210));
     case CSSValueID::kA4:
-      return FloatSize(MmToPx(210), MmToPx(297));
+      return gfx::SizeF(MmToPx(210), MmToPx(297));
     case CSSValueID::kA3:
-      return FloatSize(MmToPx(297), MmToPx(420));
+      return gfx::SizeF(MmToPx(297), MmToPx(420));
     case CSSValueID::kB5:
-      return FloatSize(MmToPx(176), MmToPx(250));
+      return gfx::SizeF(MmToPx(176), MmToPx(250));
     case CSSValueID::kB4:
-      return FloatSize(MmToPx(250), MmToPx(353));
+      return gfx::SizeF(MmToPx(250), MmToPx(353));
     case CSSValueID::kJisB5:
-      return FloatSize(MmToPx(182), MmToPx(257));
+      return gfx::SizeF(MmToPx(182), MmToPx(257));
     case CSSValueID::kJisB4:
-      return FloatSize(MmToPx(257), MmToPx(364));
+      return gfx::SizeF(MmToPx(257), MmToPx(364));
     case CSSValueID::kLetter:
-      return FloatSize(InchToPx(8.5), InchToPx(11));
+      return gfx::SizeF(InchToPx(8.5), InchToPx(11));
     case CSSValueID::kLegal:
-      return FloatSize(InchToPx(8.5), InchToPx(14));
+      return gfx::SizeF(InchToPx(8.5), InchToPx(14));
     case CSSValueID::kLedger:
-      return FloatSize(InchToPx(11), InchToPx(17));
+      return gfx::SizeF(InchToPx(11), InchToPx(17));
     default:
       NOTREACHED();
-      return FloatSize(0, 0);
+      return gfx::SizeF(0, 0);
   }
 }
 
@@ -6376,7 +6377,7 @@ void Size::ApplyInherit(StyleResolverState& state) const {}
 
 void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
   state.Style()->ResetPageSizeType();
-  FloatSize size;
+  gfx::SizeF size;
   PageSizeType page_size_type = PageSizeType::kAuto;
   const auto& list = To<CSSValueList>(value);
   if (list.length() == 2) {
@@ -6386,7 +6387,7 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
     auto* first_primitive_value = DynamicTo<CSSPrimitiveValue>(first);
     if (first_primitive_value && first_primitive_value->IsLength()) {
       // <length>{2}
-      size = FloatSize(
+      size = gfx::SizeF(
           first_primitive_value->ComputeLength<float>(
               state.CssToLengthConversionData().CopyWithAdjustedZoom(1.0)),
           To<CSSPrimitiveValue>(second).ComputeLength<float>(
@@ -6400,7 +6401,7 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
              To<CSSIdentifierValue>(second).GetValueID() ==
                  CSSValueID::kPortrait);
       if (To<CSSIdentifierValue>(second).GetValueID() == CSSValueID::kLandscape)
-        size = size.TransposedSize();
+        size.Transpose();
     }
     page_size_type = PageSizeType::kFixed;
   } else {
@@ -6413,7 +6414,7 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
       page_size_type = PageSizeType::kFixed;
       float width = first_primitive_value->ComputeLength<float>(
           state.CssToLengthConversionData().CopyWithAdjustedZoom(1.0));
-      size = FloatSize(width, width);
+      size = gfx::SizeF(width, width);
     } else {
       const auto& ident = To<CSSIdentifierValue>(first);
       switch (ident.GetValueID()) {

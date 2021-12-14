@@ -631,7 +631,7 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
     layout_object->GetTransformFromContainer(container_layout_object,
                                              PhysicalOffset(), transform);
     *overflow =
-        PhysicalRect::EnclosingRect(transform.MapRect(FloatRect(*overflow)));
+        PhysicalRect::EnclosingRect(transform.MapRect(gfx::RectF(*overflow)));
   }
 }
 

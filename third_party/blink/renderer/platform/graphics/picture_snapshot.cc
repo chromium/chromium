@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
 
 #include <memory>
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/profiling_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/replaying_canvas.h"
@@ -43,7 +42,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -55,13 +56,13 @@ scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
   DCHECK(!tiles.IsEmpty());
   Vector<sk_sp<SkPicture>> pictures;
   pictures.ReserveCapacity(tiles.size());
-  FloatRect union_rect;
+  gfx::RectF union_rect;
   for (const auto& tile_stream : tiles) {
     sk_sp<SkPicture> picture = std::move(tile_stream->picture);
     if (!picture)
       return nullptr;
-    FloatRect cull_rect(picture->cullRect());
-    cull_rect.MoveBy(tile_stream->layer_offset);
+    gfx::RectF cull_rect = gfx::SkRectToRectF(picture->cullRect());
+    cull_rect.Offset(tile_stream->layer_offset.OffsetFromOrigin());
     union_rect.Union(cull_rect);
     pictures.push_back(std::move(picture));
   }
@@ -128,7 +129,7 @@ Vector<uint8_t> PictureSnapshot::Replay(unsigned from_step,
 Vector<Vector<base::TimeDelta>> PictureSnapshot::Profile(
     unsigned min_repeat_count,
     base::TimeDelta min_duration,
-    const FloatRect* clip_rect) const {
+    const gfx::RectF* clip_rect) const {
   Vector<Vector<base::TimeDelta>> timings;
   timings.ReserveInitialCapacity(min_repeat_count);
   const SkIRect bounds = picture_->cullRect().roundOut();

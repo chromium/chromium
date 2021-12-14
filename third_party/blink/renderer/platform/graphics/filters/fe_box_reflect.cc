@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_box_reflect.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 

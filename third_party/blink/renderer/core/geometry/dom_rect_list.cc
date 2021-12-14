@@ -33,7 +33,7 @@ DOMRectList::DOMRectList() = default;
 DOMRectList::DOMRectList(const Vector<FloatQuad>& quads) {
   list_.ReserveInitialCapacity(quads.size());
   for (const auto& quad : quads)
-    list_.push_back(DOMRect::FromFloatRect(quad.BoundingBox()));
+    list_.push_back(DOMRect::FromRectF(quad.BoundingBox()));
 }
 
 unsigned DOMRectList::length() const {

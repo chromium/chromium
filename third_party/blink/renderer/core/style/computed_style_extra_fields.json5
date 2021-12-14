@@ -604,10 +604,10 @@
     {
       name: "PageSize",
       field_template: "external",
-      type_name: "FloatSize",
+      type_name: "gfx::SizeF",
       field_group: "*",
-      default_value: "FloatSize()",
-      include_paths: ["third_party/blink/renderer/platform/geometry/float_size.h"],
+      default_value: "gfx::SizeF()",
+      include_paths: ["ui/gfx/geometry/size_f.h"],
     },
     {
       name: "OutlineStyleIsAuto",

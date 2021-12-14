@@ -128,7 +128,7 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
                          IntersectionGeometry::kUseOverflowClipEdge);
   } else if (target->IsLayoutInline()) {
     result.first = PhysicalRect::EnclosingRect(
-        To<LayoutBoxModelObject>(target)->LocalBoundingBoxFloatRect());
+        To<LayoutBoxModelObject>(target)->LocalBoundingBoxRectF());
   } else {
     result.first = To<LayoutText>(target)->PhysicalLinesBoundingBox();
   }
@@ -382,9 +382,11 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .Inverse();
       intersection_rect_ = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(intersection_rect_)).BoundingBox());
+          matrix.ProjectQuad(FloatQuad(gfx::RectF(intersection_rect_)))
+              .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(unclipped_intersection_rect_))
+          matrix
+              .ProjectQuad(FloatQuad(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
       // intersection_rect_ is in the coordinate system of the implicit root;
       // map it down the to absolute coordinates for the target's document.
@@ -394,21 +396,21 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // same as root's document).
       intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(FloatRect(intersection_rect_)))
+              .MapQuad(FloatQuad(gfx::RectF(intersection_rect_)))
               .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(FloatRect(unclipped_intersection_rect_)))
+              .MapQuad(FloatQuad(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
     }
   } else {
     intersection_rect_ = PhysicalRect();
   }
   // Map root_rect_ from root's coordinate system to absolute coordinates.
-  root_rect_ =
-      PhysicalRect::EnclosingRect(root_geometry.root_to_document_transform
-                                      .MapQuad(FloatQuad(FloatRect(root_rect_)))
-                                      .BoundingBox());
+  root_rect_ = PhysicalRect::EnclosingRect(
+      root_geometry.root_to_document_transform
+          .MapQuad(FloatQuad(gfx::RectF(root_rect_)))
+          .BoundingBox());
 
   // Some corner cases for threshold index:
   //   - If target rect is zero area, because it has zero width and/or zero
@@ -462,14 +464,14 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
 
   if (flags_ & kShouldConvertToCSSPixels) {
-    FloatRect target_float_rect(target_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(target_float_rect, *target);
+    gfx::RectF target_float_rect(target_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(target_float_rect, *target);
     target_rect_ = PhysicalRect::EnclosingRect(target_float_rect);
-    FloatRect intersection_float_rect(intersection_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(intersection_float_rect, *target);
+    gfx::RectF intersection_float_rect(intersection_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(intersection_float_rect, *target);
     intersection_rect_ = PhysicalRect::EnclosingRect(intersection_float_rect);
-    FloatRect root_float_rect(root_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(root_float_rect, *root);
+    gfx::RectF root_float_rect(root_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(root_float_rect, *root);
     root_rect_ = PhysicalRect::EnclosingRect(root_float_rect);
   }
 

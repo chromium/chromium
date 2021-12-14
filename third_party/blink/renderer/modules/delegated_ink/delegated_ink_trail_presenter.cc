@@ -115,7 +115,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   border_box_rect_absolute.Intersect(PhysicalRect(
       local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
 
-  gfx::RectF area = ToGfxRectF(FloatRect(border_box_rect_absolute));
+  gfx::RectF area = gfx::RectF(border_box_rect_absolute);
 
   // This is used to know if the user starts inking with the pointer down or
   // not, so that we can stop drawing delegated ink trails as quickly as

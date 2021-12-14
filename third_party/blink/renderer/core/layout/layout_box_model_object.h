@@ -543,7 +543,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                      MapCoordinatesFlags mode = 0) const override;
 
   // Returns the bounodiong box of all quads returned by LocalQuads.
-  FloatRect LocalBoundingBoxFloatRect() const;
+  gfx::RectF LocalBoundingBoxRectF() const;
 
   virtual LayoutUnit OverrideContainingBlockContentWidth() const {
     NOT_DESTROYED();

@@ -43,11 +43,11 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -276,7 +276,7 @@ static bool CheckExifHeader(jpeg_saved_marker_ptr marker,
 
 struct DecodedImageMetaData {
   ImageOrientation orientation;
-  FloatSize resolution;
+  gfx::SizeF resolution;
   gfx::Size size;
   unsigned resolution_unit { 0 };
 };

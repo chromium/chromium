@@ -160,12 +160,14 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawRect(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawOval(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     default: {
       PathWithTemporaryWindingRule path_with_winding(
@@ -186,12 +188,14 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawRect(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawOval(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     default:
       DCHECK(layout_svg_shape_.HasPath());

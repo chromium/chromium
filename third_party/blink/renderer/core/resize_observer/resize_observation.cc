@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

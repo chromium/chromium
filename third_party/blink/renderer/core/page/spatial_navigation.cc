@@ -163,28 +163,27 @@ bool IsFragmentedInline(const LayoutObject& layout_object) {
   return LineBoxes(layout_object) > 1;
 }
 
-FloatRect RectInViewport(const Node& node) {
+gfx::RectF RectInViewport(const Node& node) {
   LocalFrameView* frame_view = node.GetDocument().View();
   if (!frame_view)
-    return FloatRect();
+    return gfx::RectF();
 
   DCHECK(!frame_view->NeedsLayout());
 
   LayoutObject* object = node.GetLayoutObject();
   if (!object)
-    return FloatRect();
+    return gfx::RectF();
 
   PhysicalRect rect_in_root_frame = NodeRectInRootFrame(&node);
 
   // Convert to the visual viewport which will account for pinch zoom.
   VisualViewport& visual_viewport =
       object->GetDocument().GetPage()->GetVisualViewport();
-  FloatRect rect_in_viewport =
-      visual_viewport.RootFrameToViewport(FloatRect(rect_in_root_frame));
+  gfx::RectF rect_in_viewport =
+      visual_viewport.RootFrameToViewport(gfx::RectF(rect_in_root_frame));
 
   // RootFrameToViewport doesn't clip so manually apply the viewport clip here.
-  FloatRect viewport_rect =
-      FloatRect(gfx::PointF(), FloatSize(visual_viewport.Size()));
+  gfx::RectF viewport_rect(gfx::SizeF(visual_viewport.Size()));
   rect_in_viewport.Intersect(viewport_rect);
 
   return rect_in_viewport;

@@ -217,7 +217,7 @@ inline LayoutSize ToLayoutSize(const LayoutPoint& p) {
   return LayoutSize(p.X(), p.Y());
 }
 
-inline LayoutPoint FlooredLayoutPoint(const FloatSize& s) {
+inline LayoutPoint FlooredLayoutPoint(const gfx::SizeF& s) {
   return FlooredLayoutPoint(gfx::PointF(s.width(), s.height()));
 }
 

@@ -518,13 +518,15 @@ TEST_F(KeyframeEffectTest, TranslationTransformsPreserveAxisAlignment) {
   auto* effect =
       GetTwoFrameEffect(CSSPropertyID::kTransform, "translate(10px, 10px)",
                         "translate(20px, 20px)");
-  EXPECT_TRUE(effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
+  EXPECT_TRUE(
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(gfx::SizeF()));
 }
 
 TEST_F(KeyframeEffectTest, ScaleTransformsPreserveAxisAlignment) {
   auto* effect =
       GetTwoFrameEffect(CSSPropertyID::kTransform, "scale(2)", "scale(3)");
-  EXPECT_TRUE(effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
+  EXPECT_TRUE(
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(gfx::SizeF()));
 }
 
 TEST_F(KeyframeEffectTest, RotationTransformsDoNotPreserveAxisAlignment) {
@@ -532,13 +534,13 @@ TEST_F(KeyframeEffectTest, RotationTransformsDoNotPreserveAxisAlignment) {
                                    "rotate(20deg)");
 
   EXPECT_FALSE(
-      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(gfx::SizeF()));
 }
 
 TEST_F(KeyframeEffectTest, RotationsDoNotPreserveAxisAlignment) {
   auto* effect = GetTwoFrameEffect(CSSPropertyID::kRotate, "10deg", "20deg");
   EXPECT_FALSE(
-      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(gfx::SizeF()));
 }
 
 }  // namespace blink

@@ -1225,10 +1225,10 @@ void LayoutBox::AbsoluteQuads(Vector<FloatQuad>& quads,
   quads.push_back(LocalRectToAbsoluteQuad(PhysicalBorderBoxRect(), mode));
 }
 
-FloatRect LayoutBox::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return FloatRect(0, 0, frame_rect_.Width().ToFloat(),
-                   frame_rect_.Height().ToFloat());
+  return gfx::RectF(0, 0, frame_rect_.Width().ToFloat(),
+                    frame_rect_.Height().ToFloat());
 }
 
 void LayoutBox::UpdateAfterLayout() {
@@ -2149,7 +2149,7 @@ bool LayoutBox::ApplyBoxClips(
     rect.Intersect(clip_rect);
     does_intersect = !rect.IsEmpty();
   }
-  transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+  transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
 
   return does_intersect;
 }
@@ -4160,7 +4160,7 @@ void LayoutBox::InflateVisualRectForFilter(
   PhysicalRect rect = PhysicalRect::EnclosingRect(
       transform_state.LastPlanarQuad().BoundingBox());
   transform_state.SetQuad(
-      FloatQuad(FloatRect(Layer()->MapRectForFilter(rect))));
+      FloatQuad(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
 static bool ShouldRecalculateMinMaxWidthsAffectedByAncestor(

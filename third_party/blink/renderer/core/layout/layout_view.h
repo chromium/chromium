@@ -293,7 +293,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   // Returns the viewport size in (CSS pixels) that vh and vw units are
   // calculated from.
-  FloatSize ViewportSizeForViewportUnits() const;
+  gfx::SizeF ViewportSizeForViewportUnits() const;
 
   void PushLayoutState(LayoutState& layout_state) {
     NOT_DESTROYED();

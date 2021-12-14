@@ -116,6 +116,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -1662,8 +1663,8 @@ bool EventHandler::GestureCorrespondsToAdjustedTouch(
   // Check if the adjusted point is in the gesture event tap rect.
   // If not, should not use this touch point in following events.
   if (should_use_touch_event_adjusted_point_) {
-    FloatSize size(event.TapAreaInRootFrame());
-    FloatRect tap_rect(
+    gfx::SizeF size = event.TapAreaInRootFrame();
+    gfx::RectF tap_rect(
         event.PositionInRootFrame() -
             gfx::Vector2dF(size.width() * 0.5, size.height() * 0.5),
         size);

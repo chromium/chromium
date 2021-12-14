@@ -369,9 +369,6 @@ TEST_P(PrintContextTest, LinkedTarget) {
 
   const Vector<MockPageContextCanvas::Operation>& operations =
       canvas.RecordedOperations();
-  for (const auto& operation : operations) {
-    LOG(INFO) << (operation.type ? "Point" : "Rect") << operation.rect;
-  }
   ASSERT_EQ(8u, operations.size());
   // The DrawRect operations come from a stable iterator.
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);

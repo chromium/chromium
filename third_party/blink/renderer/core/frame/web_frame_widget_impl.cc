@@ -158,11 +158,10 @@ const float kIdealPaddingRatio = 0.3f;
 
 // Returns a rect which is offset and scaled accordingly to |base_rect|'s
 // location and size.
-FloatRect NormalizeRect(const gfx::Rect& to_normalize,
-                        const gfx::Rect& base_rect) {
-  FloatRect result(to_normalize);
-  result.set_origin(
-      gfx::PointF(to_normalize.origin() - base_rect.OffsetFromOrigin()));
+gfx::RectF NormalizeRect(const gfx::Rect& to_normalize,
+                         const gfx::Rect& base_rect) {
+  gfx::RectF result(to_normalize);
+  result.Offset(base_rect.OffsetFromOrigin());
   result.Scale(1.0 / base_rect.width(), 1.0 / base_rect.height());
   return result;
 }
@@ -4331,10 +4330,10 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   mojom::blink::ScrollIntoViewParamsPtr params =
       ScrollAlignment::CreateScrollIntoViewParams();
   params->zoom_into_rect = View()->ShouldZoomToLegibleScale(element);
-  params->relative_element_bounds = ToGfxRectF(NormalizeRect(
-      IntersectRects(absolute_element_bounds, maximal_rect), maximal_rect));
-  params->relative_caret_bounds = ToGfxRectF(NormalizeRect(
-      IntersectRects(absolute_caret_bounds, maximal_rect), maximal_rect));
+  params->relative_element_bounds = NormalizeRect(
+      IntersectRects(absolute_element_bounds, maximal_rect), maximal_rect);
+  params->relative_caret_bounds = NormalizeRect(
+      IntersectRects(absolute_caret_bounds, maximal_rect), maximal_rect);
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   out_rect_to_scroll = PhysicalRect(maximal_rect);
   return params;

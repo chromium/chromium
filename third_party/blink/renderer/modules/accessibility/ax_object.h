@@ -847,11 +847,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // If the object clips its children, for example by having overflow:hidden,
   // set |clips_children| to true.
   virtual void GetRelativeBounds(AXObject** out_container,
-                                 FloatRect& out_bounds_in_container,
+                                 gfx::RectF& out_bounds_in_container,
                                  skia::Matrix44& out_container_transform,
                                  bool* clips_children = nullptr) const;
 
-  FloatRect LocalBoundingBoxRectForAccessibility();
+  gfx::RectF LocalBoundingBoxRectForAccessibility();
 
   // Get the bounds in frame-relative coordinates as a LayoutRect.
   LayoutRect GetBoundsInFrameCoordinates() const;
@@ -1446,7 +1446,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;
   mutable int cached_aria_row_index_;
-  mutable FloatRect cached_local_bounding_box_rect_for_accessibility_;
+  mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 

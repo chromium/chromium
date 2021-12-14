@@ -979,7 +979,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AbsoluteQuads(Vector<FloatQuad>&,
                      MapCoordinatesFlags mode = 0) const override;
-  FloatRect LocalBoundingBoxRectForAccessibility() const override;
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
 
   void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
     NOT_DESTROYED();

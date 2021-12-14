@@ -27,12 +27,12 @@ bool AXValidationMessage::ComputeAccessibilityIsIgnored(
 // control. If this becomes an issue, return the bounds of the alert itself.
 void AXValidationMessage::GetRelativeBounds(
     AXObject** out_container,
-    FloatRect& out_bounds_in_container,
+    gfx::RectF& out_bounds_in_container,
     skia::Matrix44& out_container_transform,
     bool* clips_children) const {
   DCHECK(out_container);
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
+  out_bounds_in_container = gfx::RectF();
   out_container_transform.setIdentity();
   if (clips_children)
     *clips_children = false;
@@ -49,7 +49,7 @@ void AXValidationMessage::GetRelativeBounds(
 
   if (form_control.GetLayoutObject()) {
     out_bounds_in_container =
-        FloatRect(form_control.GetLayoutObject()->AbsoluteBoundingBoxRect());
+        gfx::RectF(form_control.GetLayoutObject()->AbsoluteBoundingBoxRect());
   }
 }
 

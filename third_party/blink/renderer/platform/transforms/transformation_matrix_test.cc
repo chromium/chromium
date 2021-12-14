@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -114,9 +115,9 @@ TEST(TransformationMatrixTest, Is2DProportionalUpscaleAndOr2DTranslation) {
 
 TEST(TransformationMatrixTest, To2DTranslation) {
   TransformationMatrix matrix;
-  EXPECT_EQ(FloatSize(), matrix.To2DTranslation());
+  EXPECT_EQ(gfx::Vector2dF(), matrix.To2DTranslation());
   matrix.Translate(30, -40);
-  EXPECT_EQ(FloatSize(30, -40), matrix.To2DTranslation());
+  EXPECT_EQ(gfx::Vector2dF(30, -40), matrix.To2DTranslation());
 }
 
 TEST(TransformationMatrixTest, ApplyTransformOrigin) {

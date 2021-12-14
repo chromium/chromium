@@ -2608,7 +2608,7 @@ void Document::GetPageDescription(uint32_t page_index,
         std::swap(width, height);
       break;
     case PageSizeType::kFixed: {
-      FloatSize size = style->PageSize();
+      gfx::SizeF size = style->PageSize();
       width = size.width();
       height = size.height();
       break;
@@ -7268,13 +7268,13 @@ void Document::AdjustFloatQuadsForScrollAndAbsoluteZoom(
   }
 }
 
-void Document::AdjustFloatRectForScrollAndAbsoluteZoom(
-    FloatRect& rect,
+void Document::AdjustRectForScrollAndAbsoluteZoom(
+    gfx::RectF& rect,
     const LayoutObject& layout_object) const {
   if (!View())
     return;
 
-  AdjustForAbsoluteZoom::AdjustFloatRect(rect, layout_object);
+  AdjustForAbsoluteZoom::AdjustRectF(rect, layout_object);
 }
 
 void Document::SetThreadedParsingEnabledForTesting(bool enabled) {

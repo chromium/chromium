@@ -31,7 +31,7 @@ ALIGNMENT_ORDER = [
     'TranslateTransformOperation',
     'GridTrackList',
     'Vector<GridTrackSize, 1>',
-    'absl::optional<IntSize>',
+    'absl::optional<gfx::Size>',
     'double',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
@@ -62,7 +62,7 @@ ALIGNMENT_ORDER = [
     'ScrollMargin',
     'LengthBox',
     'LengthSize',
-    'FloatSize',
+    'gfx::SizeF',
     'LengthPoint',
     'Length',
     'UnzoomedLength',

@@ -153,7 +153,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
@@ -178,6 +177,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 // Used to check for dirty layouts violating document lifecycle rules.
 // If arg evaluates to true, the program will continue. If arg evaluates to
@@ -220,7 +220,7 @@ FloatQuad GetQuadForTimelinePaintEvent(const scoped_refptr<cc::Layer>& layer) {
   gfx::RectF rect(layer->update_rect());
   if (layer->transform_tree_index() != -1)
     layer->ScreenSpaceTransform().TransformRect(&rect);
-  return FloatQuad(FloatRect(rect));
+  return FloatQuad(rect);
 }
 
 // Default value for how long we want to delay the
@@ -945,16 +945,16 @@ void LocalFrameView::SetNeedsPaintPropertyUpdate() {
     layout_view->SetNeedsPaintPropertyUpdate();
 }
 
-FloatSize LocalFrameView::ViewportSizeForViewportUnits() const {
+gfx::SizeF LocalFrameView::ViewportSizeForViewportUnits() const {
   float zoom = 1;
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())
     zoom = GetFrame().PageZoomFactor();
 
   auto* layout_view = GetLayoutView();
   if (!layout_view)
-    return FloatSize();
+    return gfx::SizeF();
 
-  FloatSize layout_size;
+  gfx::SizeF layout_size;
   layout_size.set_width(layout_view->ViewWidth(kIncludeScrollbars) / zoom);
   layout_size.set_height(layout_view->ViewHeight(kIncludeScrollbars) / zoom);
 
@@ -982,8 +982,8 @@ FloatSize LocalFrameView::ViewportSizeForViewportUnits() const {
   return layout_size;
 }
 
-FloatSize LocalFrameView::ViewportSizeForMediaQueries() const {
-  FloatSize viewport_size(layout_size_);
+gfx::SizeF LocalFrameView::ViewportSizeForMediaQueries() const {
+  gfx::SizeF viewport_size(layout_size_);
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())
     viewport_size.Scale(1 / GetFrame().PageZoomFactor());
   return viewport_size;

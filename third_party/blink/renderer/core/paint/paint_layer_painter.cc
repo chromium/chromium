@@ -83,7 +83,7 @@ PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
           ? fragment.PaintProperties()->ReplacedContentTransform()
           : nullptr;
   if (replaced_transform) {
-    FloatRect float_contents_visual_rect(contents_visual_rect);
+    gfx::RectF float_contents_visual_rect(contents_visual_rect);
     GeometryMapper::SourceToDestinationRect(*replaced_transform->Parent(),
                                             *replaced_transform,
                                             float_contents_visual_rect);

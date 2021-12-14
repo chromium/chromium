@@ -57,7 +57,7 @@ class LayoutSVGModelObject : public LayoutObject {
 
   void AbsoluteQuads(Vector<FloatQuad>&,
                      MapCoordinatesFlags mode = 0) const override;
-  FloatRect LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,

@@ -33,8 +33,8 @@
 #include <memory>
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_interval.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 

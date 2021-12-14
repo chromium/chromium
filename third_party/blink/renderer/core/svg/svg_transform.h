@@ -27,9 +27,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
 
+namespace gfx {
+class Vector2dF;
+}
+
 namespace blink {
 
-class FloatSize;
 class SVGTransformTearOff;
 
 enum class SVGTransformType {
@@ -83,8 +86,8 @@ class SVGTransform final : public SVGListablePropertyBase {
   void SetSkewY(float angle);
 
   // Internal use only (animation system)
-  gfx::PointF Translate() const;
-  FloatSize Scale() const;
+  gfx::Vector2dF Translate() const;
+  gfx::Vector2dF Scale() const;
 
   String ValueAsString() const override;
 

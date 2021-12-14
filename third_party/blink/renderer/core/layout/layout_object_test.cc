@@ -728,8 +728,8 @@ TEST_F(LayoutObjectTest, VisualRect) {
     }
     const char* GetName() const final { return "MockLayoutObject"; }
     void UpdateLayout() final {}
-    FloatRect LocalBoundingBoxRectForAccessibility() const final {
-      return FloatRect();
+    gfx::RectF LocalBoundingBoxRectForAccessibility() const final {
+      return gfx::RectF();
     }
   };
 

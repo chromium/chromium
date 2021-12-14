@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 class ScopedDeferMainFrameUpdate;
@@ -495,7 +496,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   PageScaleConstraintsSet& GetPageScaleConstraintsSet() const;
 
-  FloatSize ElasticOverscroll() const { return elastic_overscroll_; }
+  gfx::Vector2dF ElasticOverscroll() const { return elastic_overscroll_; }
 
   class ChromeClient& GetChromeClient() const {
     return *chrome_client_.Get();
@@ -850,7 +851,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   float zoom_factor_override_ = 0.f;
 
-  FloatSize elastic_overscroll_;
+  gfx::Vector2dF elastic_overscroll_;
 
   // If true, we send IPC messages when |preferred_size_| changes.
   bool send_preferred_size_changes_ = false;

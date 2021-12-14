@@ -739,8 +739,6 @@ component("platform") {
     "geometry/calculation_expression_node.h",
     "geometry/calculation_value.cc",
     "geometry/calculation_value.h",
-    "geometry/cg/float_rect_cg.cc",
-    "geometry/cg/float_size_cg.cc",
     "geometry/double_point.cc",
     "geometry/double_point.h",
     "geometry/double_rect.cc",
@@ -755,14 +753,10 @@ component("platform") {
     "geometry/float_polygon.h",
     "geometry/float_quad.cc",
     "geometry/float_quad.h",
-    "geometry/float_rect.cc",
-    "geometry/float_rect.h",
     "geometry/float_rect_outsets.cc",
     "geometry/float_rect_outsets.h",
     "geometry/float_rounded_rect.cc",
     "geometry/float_rounded_rect.h",
-    "geometry/float_size.cc",
-    "geometry/float_size.h",
     "geometry/geometry_as_json.h",
     "geometry/geometry_hash_traits.h",
     "geometry/int_rect_outsets.h",
@@ -1756,11 +1750,6 @@ component("platform") {
       "Carbon.framework",
       "Foundation.framework",
     ]
-  } else {
-    sources -= [
-      "geometry/cg/float_rect_cg.cc",
-      "geometry/cg/float_size_cg.cc",
-    ]
   }
 
   if (is_win) {
@@ -2059,9 +2048,7 @@ source_set("blink_platform_unittests_sources") {
     "geometry/float_box_test_helpers.h",
     "geometry/float_polygon_test.cc",
     "geometry/float_quad_test.cc",
-    "geometry/float_rect_test.cc",
     "geometry/float_rounded_rect_test.cc",
-    "geometry/float_size_test.cc",
     "geometry/geometry_test_helpers.cc",
     "geometry/geometry_test_helpers.h",
     "geometry/layout_rect_test.cc",

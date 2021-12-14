@@ -29,7 +29,7 @@ const HitTestLocation* InverseTransformLocationIfNeeded(
     // be mapped to NxN screen pixels if scaling factor is N.
     storage.emplace(transformed_point,
                     PhysicalRect::EnclosingRect(
-                        inverse.MapRect(FloatRect(location.BoundingBox()))));
+                        inverse.MapRect(gfx::RectF(location.BoundingBox()))));
   }
   return &*storage;
 }

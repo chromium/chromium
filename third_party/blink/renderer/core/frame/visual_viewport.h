@@ -40,11 +40,11 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
@@ -163,9 +163,9 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces.
   // These methods are used to convert coordinates from/to viewport to root
   // frame. Root frame coordinates x page scale(pinch zoom) -> Viewport
-  FloatRect ViewportToRootFrame(const FloatRect&) const;
+  gfx::RectF ViewportToRootFrame(const gfx::RectF&) const;
   gfx::Rect ViewportToRootFrame(const gfx::Rect&) const;
-  FloatRect RootFrameToViewport(const FloatRect&) const;
+  gfx::RectF RootFrameToViewport(const gfx::RectF&) const;
   gfx::Rect RootFrameToViewport(const gfx::Rect&) const;
 
   gfx::PointF ViewportToRootFrame(const gfx::PointF&) const;

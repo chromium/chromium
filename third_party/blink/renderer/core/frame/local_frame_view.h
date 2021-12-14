@@ -67,6 +67,10 @@ using PaintRecord = PaintOpBuffer;
 struct PaintBenchmarkResult;
 }
 
+namespace gfx {
+class SizeF;
+}
+
 namespace ui {
 class Cursor;
 }
@@ -77,7 +81,6 @@ class ChromeClient;
 class CompositorAnimationTimeline;
 class DarkModeFilter;
 class DocumentLifecycle;
-class FloatSize;
 class FragmentAnchor;
 class Frame;
 class FrameViewAutoSizeInfo;
@@ -639,11 +642,11 @@ class CORE_EXPORT LocalFrameView final
   // Viewport size that should be used for viewport units (i.e. 'vh'/'vw').
   // May include the size of browser controls. See implementation for further
   // documentation.
-  FloatSize ViewportSizeForViewportUnits() const;
+  gfx::SizeF ViewportSizeForViewportUnits() const;
 
   // Initial containing block size for evaluating viewport-dependent media
   // queries.
-  FloatSize ViewportSizeForMediaQueries() const;
+  gfx::SizeF ViewportSizeForMediaQueries() const;
 
   void EnqueueScrollAnchoringAdjustment(ScrollableArea*);
   void DequeueScrollAnchoringAdjustment(ScrollableArea*);

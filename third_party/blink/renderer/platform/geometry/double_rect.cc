@@ -4,17 +4,17 @@
 
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
 DoubleRect::DoubleRect(const gfx::Rect& r)
     : location_(r.origin()), size_(r.size()) {}
 
-DoubleRect::DoubleRect(const FloatRect& r)
+DoubleRect::DoubleRect(const gfx::RectF& r)
     : location_(r.origin()), size_(r.size()) {}
 
 DoubleRect::DoubleRect(const LayoutRect& r)

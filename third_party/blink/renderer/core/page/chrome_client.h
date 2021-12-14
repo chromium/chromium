@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 // To avoid conflicts with the CreateWindow macro from the Windows SDK...
 #undef CreateWindow
@@ -498,7 +499,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void UnregisterPopupOpeningObserver(PopupOpeningObserver*) = 0;
   virtual void NotifyPopupOpeningObservers() const = 0;
 
-  virtual FloatSize ElasticOverscroll() const { return FloatSize(); }
+  virtual gfx::Vector2dF ElasticOverscroll() const { return gfx::Vector2dF(); }
 
   virtual void InstallSupplements(LocalFrame&);
 

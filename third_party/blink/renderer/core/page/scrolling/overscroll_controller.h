@@ -6,12 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_OVERSCROLL_CONTROLLER_H_
 
 #include "cc/input/overscroll_behavior.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class PointF;
-class Vector2dF;
 }
 
 namespace blink {

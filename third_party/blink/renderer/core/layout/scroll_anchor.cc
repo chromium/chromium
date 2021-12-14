@@ -130,10 +130,11 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
     NOTREACHED();
   }
 
-  LayoutRect relative_bounds = LayoutRect(
-      scroller
-          ->LocalToVisibleContentQuad(FloatRect(local_bounds), layout_object)
-          .BoundingBox());
+  LayoutRect relative_bounds =
+      LayoutRect(scroller
+                     ->LocalToVisibleContentQuad(
+                         FloatQuad(gfx::RectF(local_bounds)), layout_object)
+                     .BoundingBox());
 
   return relative_bounds;
 }
@@ -730,7 +731,7 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // and attempt to re-find the anchor. The user-visible effect should end up
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
-    FloatRect bounding_box = anchor_object->AbsoluteBoundingBoxFloatRect();
+    gfx::RectF bounding_box = anchor_object->AbsoluteBoundingBoxRectF();
     gfx::PointF location_point =
         anchor_object->Style()->IsFlippedBlocksWritingMode()
             ? bounding_box.top_right()

@@ -35,7 +35,7 @@ HitTestLocation::HitTestLocation(const PhysicalOffset& point)
     : point_(point),
       bounding_box_(RectForPoint(point)),
       transformed_point_(point),
-      transformed_rect_(FloatRect(bounding_box_)),
+      transformed_rect_(gfx::RectF(bounding_box_)),
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
@@ -43,7 +43,7 @@ HitTestLocation::HitTestLocation(const gfx::PointF& point)
     : point_(PhysicalOffset::FromPointFFloor(point)),
       bounding_box_(RectForPoint(point_)),
       transformed_point_(point),
-      transformed_rect_(FloatRect(bounding_box_)),
+      transformed_rect_(gfx::RectF(bounding_box_)),
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
@@ -52,7 +52,7 @@ HitTestLocation::HitTestLocation(const gfx::PointF& point,
     : point_(PhysicalOffset::FromPointFFloor(point)),
       bounding_box_(bounding_box),
       transformed_point_(point),
-      transformed_rect_(FloatRect(bounding_box)),
+      transformed_rect_(gfx::RectF(bounding_box)),
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
@@ -73,7 +73,7 @@ HitTestLocation::HitTestLocation(const PhysicalRect& rect)
       transformed_point_(point_),
       is_rect_based_(true),
       is_rectilinear_(true) {
-  transformed_rect_ = FloatQuad(FloatRect(bounding_box_));
+  transformed_rect_ = FloatQuad(gfx::RectF(bounding_box_));
 }
 
 HitTestLocation::HitTestLocation(const HitTestLocation& other,
@@ -106,7 +106,7 @@ void HitTestLocation::Move(const PhysicalOffset& offset) {
   point_ += offset;
   bounding_box_.Move(offset);
   transformed_point_ += gfx::Vector2dF(offset);
-  transformed_rect_.Move(FloatSize(offset));
+  transformed_rect_.Move(gfx::Vector2dF(offset));
 }
 
 bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
@@ -129,10 +129,10 @@ bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
     return true;
 
   // Otherwise we need to do a slower quad based intersection test.
-  return transformed_rect_.IntersectsRect(FloatRect(rect));
+  return transformed_rect_.IntersectsRect(gfx::RectF(rect));
 }
 
-bool HitTestLocation::Intersects(const FloatRect& rect) const {
+bool HitTestLocation::Intersects(const gfx::RectF& rect) const {
   if (is_rect_based_)
     return transformed_rect_.IntersectsRect(rect);
   return rect.InclusiveContains(transformed_point_);

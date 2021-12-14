@@ -726,7 +726,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<FloatQuad>& quads,
         gfx::RectF float_rect(rect);
         float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
-            FloatRect(float_rect));
+            FloatQuad(float_rect));
         const float scaling_factor = item.SvgScalingFactor();
         quad.Scale(1 / scaling_factor, 1 / scaling_factor);
         quad = LocalToAbsoluteQuad(quad);
@@ -790,18 +790,18 @@ void LayoutText::AbsoluteQuadsForRange(Vector<FloatQuad>& quads,
   }
 }
 
-FloatRect LayoutText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  FloatRect result;
+  gfx::RectF result;
   const LayoutBlock* block_for_flipping =
       UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   CollectLineBoxRects(
       [this, &result, block_for_flipping](const PhysicalRect& r) {
         LayoutRect rect = FlipForWritingMode(r, block_for_flipping);
-        result.Union(FloatRect(rect));
+        result.Union(gfx::RectF(rect));
       },
       kClipToEllipsis);
-  // TODO(wangxianzhu): This is one of a few cases that a FloatRect is required
+  // TODO(wangxianzhu): This is one of a few cases that a gfx::RectF is required
   // to be in flipped blocks direction. Should eliminite them.
   return result;
 }
@@ -2475,9 +2475,9 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
         continue;
       PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
       if (svg_inline_text) {
-        FloatRect float_rect(item_rect);
+        gfx::RectF float_rect(item_rect);
         const NGFragmentItem& item = *cursor.CurrentItem();
-        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
+        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);

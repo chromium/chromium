@@ -594,16 +594,16 @@ void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
   }
 }
 
-FloatRect LayoutBoxModelObject::LocalBoundingBoxFloatRect() const {
+gfx::RectF LayoutBoxModelObject::LocalBoundingBoxRectF() const {
   NOT_DESTROYED();
   Vector<FloatQuad> quads;
   LocalQuads(quads);
 
   wtf_size_t n = quads.size();
   if (n == 0)
-    return FloatRect();
+    return gfx::RectF();
 
-  FloatRect result = quads[0].BoundingBox();
+  gfx::RectF result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
     result.Union(quads[i].BoundingBox());
   return result;

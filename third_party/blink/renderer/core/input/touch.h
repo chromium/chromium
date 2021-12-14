@@ -30,10 +30,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -49,7 +49,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
                        int identifier,
                        const gfx::PointF& screen_pos,
                        const gfx::PointF& page_pos,
-                       const FloatSize& radius,
+                       const gfx::SizeF& radius,
                        float rotation_angle,
                        float force) {
     return MakeGarbageCollected<Touch>(frame, target, identifier, screen_pos,
@@ -65,7 +65,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         int identifier,
         const gfx::PointF& screen_pos,
         const gfx::PointF& page_pos,
-        const FloatSize& radius,
+        const gfx::SizeF& radius,
         float rotation_angle,
         float force);
 
@@ -74,7 +74,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const gfx::PointF& client_pos,
         const gfx::PointF& screen_pos,
         const gfx::PointF& page_pos,
-        const FloatSize& radius,
+        const gfx::SizeF& radius,
         float rotation_angle,
         float force,
         LayoutPoint absolute_location);
@@ -112,7 +112,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   // Position relative to the page in CSS px.
   gfx::PointF page_pos_;
   // Radius in CSS px.
-  FloatSize radius_;
+  gfx::SizeF radius_;
   float rotation_angle_;
   float force_;
   // FIXME(rbyers): Shouldn't we be able to migrate callers to relying on

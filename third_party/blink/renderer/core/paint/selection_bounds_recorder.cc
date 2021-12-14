@@ -100,12 +100,12 @@ void SetBoundEdge(gfx::Rect selection_rect,
 PhysicalOffset GetSamplePointForVisibility(const PhysicalOffset& edge_start,
                                            const PhysicalOffset& edge_end,
                                            float zoom_factor) {
-  FloatSize diff(edge_start - edge_end);
+  gfx::Vector2dF diff(edge_start - edge_end);
   // Adjust by ~1px to avoid integer snapping error. This logic is the same
   // as that in ComputeViewportSelectionBound in cc.
-  diff.Scale(zoom_factor / diff.DiagonalLength());
+  diff.Scale(zoom_factor / diff.Length());
   PhysicalOffset sample_point = edge_end;
-  sample_point += PhysicalOffset::FromFloatSizeRound(diff);
+  sample_point += PhysicalOffset::FromVector2dFRound(diff);
   return sample_point;
 }
 

@@ -1572,12 +1572,12 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // No size change and animation does not require a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Restart animation on a width change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 200));
+      gfx::SizeF(200, 200));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 
   GetDocument().GetPendingAnimations().Update(nullptr, true);
@@ -1585,7 +1585,7 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // Restart animation on a height change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 300));
+      gfx::SizeF(200, 300));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
@@ -1616,19 +1616,19 @@ TEST_P(AnimationAnimationTestCompositing,
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
                           ASSERT_NO_EXCEPTION);
 
   // Transform is not height dependent and a change to the height does not force
   // an animation restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 300));
+      gfx::SizeF(100, 300));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Width change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 300));
+      gfx::SizeF(200, 300));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
@@ -1659,19 +1659,19 @@ TEST_P(AnimationAnimationTestCompositing,
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
                           ASSERT_NO_EXCEPTION);
 
   // Transform is not width dependent and a change to the width does not force
   // an animation restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(300, 200));
+      gfx::SizeF(300, 200));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Height change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(300, 400));
+      gfx::SizeF(300, 400));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 

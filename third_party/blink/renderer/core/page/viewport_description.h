@@ -33,9 +33,9 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -93,7 +93,7 @@ struct CORE_EXPORT ViewportDescription {
         user_zoom_is_explicit(false) {}
 
   // All arguments are in CSS units.
-  PageScaleConstraints Resolve(const FloatSize& initial_viewport_size,
+  PageScaleConstraints Resolve(const gfx::SizeF& initial_viewport_size,
                                const Length& legacy_fallback_width) const;
 
   // When --use-zoom-for-dsf is enabled, if the type is kFixed, these Length
@@ -158,7 +158,7 @@ struct CORE_EXPORT ViewportDescription {
  private:
   enum Direction { kHorizontal, kVertical };
   static float ResolveViewportLength(const Length&,
-                                     const FloatSize& initial_viewport_size,
+                                     const gfx::SizeF& initial_viewport_size,
                                      Direction);
 
   // Optional is used to identify if |viewport_fit_| has been explicitly set.

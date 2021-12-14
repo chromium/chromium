@@ -59,10 +59,10 @@ void TransformState::TranslateTransform(const PhysicalOffset& offset) {
 }
 
 void TransformState::TranslateMappedCoordinates(const PhysicalOffset& offset) {
-  FloatSize adjusted_offset((direction_ == kApplyTransformDirection) ? offset
-                                                                     : -offset);
+  gfx::Vector2dF adjusted_offset(
+      (direction_ == kApplyTransformDirection) ? offset : -offset);
   if (map_point_)
-    last_planar_point_ += ToGfxVector2dF(adjusted_offset);
+    last_planar_point_ += adjusted_offset;
   if (map_quad_)
     last_planar_quad_.Move(adjusted_offset);
 }
@@ -112,7 +112,7 @@ void TransformState::ApplyTransform(
     const TransformationMatrix& transform_from_container,
     TransformAccumulation accumulate) {
   if (transform_from_container.IsIntegerTranslation()) {
-    Move(PhysicalOffset::FromFloatSizeRound(
+    Move(PhysicalOffset::FromVector2dFRound(
              transform_from_container.To2DTranslation()),
          accumulate);
     return;
@@ -173,9 +173,9 @@ PhysicalOffset TransformState::MappedPoint() const {
 
 FloatQuad TransformState::MappedQuad() const {
   FloatQuad quad = last_planar_quad_;
-  quad.Move(FloatSize((direction_ == kApplyTransformDirection)
-                          ? accumulated_offset_
-                          : -accumulated_offset_));
+  quad.Move(gfx::Vector2dF((direction_ == kApplyTransformDirection)
+                               ? accumulated_offset_
+                               : -accumulated_offset_));
   if (!accumulated_transform_)
     return quad;
 

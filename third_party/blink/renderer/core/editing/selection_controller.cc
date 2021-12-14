@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 

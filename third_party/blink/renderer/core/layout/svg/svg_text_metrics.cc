@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_metrics.h"
 
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

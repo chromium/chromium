@@ -472,7 +472,7 @@ const CSSProperty** TransformProperties() {
 }  // namespace
 
 bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   static const auto** properties = TransformProperties();
   bool preserves_axis_alignment = true;
   bool has_transform = false;

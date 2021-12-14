@@ -1759,8 +1759,9 @@ TEST_F(MapCoordinatesTest, Transform3DWithOffset) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(FloatRect(0, 100, 100, 100),
-            MapLocalToAncestor(target, nullptr, FloatRect(0, 0, 100, 100)));
+  EXPECT_EQ(FloatQuad(gfx::RectF(0, 100, 100, 100)),
+            MapLocalToAncestor(target, nullptr,
+                               FloatQuad(gfx::RectF(0, 0, 100, 100))));
 }
 
 TEST_F(MapCoordinatesTest, Transform3DWithOffset2) {
@@ -1781,8 +1782,9 @@ TEST_F(MapCoordinatesTest, Transform3DWithOffset2) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(FloatRect(0, 200, 200, 200),
-            MapLocalToAncestor(target, nullptr, FloatRect(0, 0, 100, 100)));
+  EXPECT_EQ(FloatQuad(gfx::RectF(0, 200, 200, 200)),
+            MapLocalToAncestor(target, nullptr,
+                               FloatQuad(gfx::RectF(0, 0, 100, 100))));
 }
 
 // This test verifies that the mapped location of a div within a scroller

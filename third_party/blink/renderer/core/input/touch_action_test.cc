@@ -284,8 +284,8 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
     if (!rects->length())
       continue;
     Persistent<DOMRect> r = rects->item(0);
-    FloatRect client_float_rect =
-        FloatRect(r->left(), r->top(), r->width(), r->height());
+    gfx::RectF client_float_rect =
+        gfx::RectF(r->left(), r->top(), r->width(), r->height());
     gfx::Rect client_rect = ToEnclosedRect(client_float_rect);
     for (int loc_idx = 0; loc_idx < 3; loc_idx++) {
       gfx::Point frame_point;

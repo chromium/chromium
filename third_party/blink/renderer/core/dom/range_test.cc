@@ -303,7 +303,7 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   //  x|x "
   auto* const range = MakeGarbageCollected<Range>(
       GetDocument(), div->firstChild(), 1, div->firstChild(), 4);
-  const FloatRect rect_before = range->BoundingRect();
+  const gfx::RectF rect_before = range->BoundingRect();
   EXPECT_GT(rect_before.width(), 0);
   EXPECT_GT(rect_before.height(), 0);
   Selection().SetSelectionAndEndTyping(
@@ -312,7 +312,7 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
           .Build());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(Selection().SelectedText(), "x x");
-  const FloatRect rect_after = range->BoundingRect();
+  const gfx::RectF rect_after = range->BoundingRect();
   EXPECT_EQ(rect_before, rect_after);
 }
 
@@ -368,22 +368,22 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
   const Text& text4 = *To<Text>(GetElementById("c4")->firstChild());
 
   EXPECT_THAT(GetBorderAndTextQuads(Position(text1, 0), Position(text1, 1)),
-              ElementsAre(FloatRect(3, 0, 20, 20)));
+              ElementsAre(FloatQuad(gfx::RectF(3, 0, 20, 20))));
 
   if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
     EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(FloatRect(2, 20, 22, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(2, 20, 22, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(FloatRect(2, 40, 22, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(2, 40, 22, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(FloatRect(2, 60, 22, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(2, 60, 22, 20))));
   } else {
     EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(FloatRect(3, 20, 20, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(3, 20, 20, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(FloatRect(3, 40, 20, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(3, 40, 20, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(FloatRect(3, 60, 20, 20)));
+                ElementsAre(FloatQuad(gfx::RectF(3, 60, 20, 20))));
   }
 }
 

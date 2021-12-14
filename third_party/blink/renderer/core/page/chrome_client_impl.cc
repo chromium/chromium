@@ -1176,7 +1176,7 @@ void ChromeClientImpl::NotifyPopupOpeningObservers() const {
     observer->WillOpenPopup();
 }
 
-FloatSize ChromeClientImpl::ElasticOverscroll() const {
+gfx::Vector2dF ChromeClientImpl::ElasticOverscroll() const {
   return web_view_->ElasticOverscroll();
 }
 
