@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -23,6 +25,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -56,6 +59,8 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     private View mView;
     private View mFrame;
 
+    private FeatureList.TestValues mTestValues;
+
     public ContextMenuRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -64,6 +69,11 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+
+        mTestValues = new TestValues();
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, false);
+        FeatureList.setTestValues(mTestValues);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems = new ModelList();
             mAdapter = new ModelListAdapter(mListItems);
@@ -103,6 +113,7 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
             NightModeTestUtils.tearDownNightModeForDummyUiActivity();
             mListItems.clear();
         });
+        FeatureList.setTestValues(null);
         super.tearDownTest();
     }
 
@@ -110,37 +121,56 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink() throws IOException {
-        doTestContextMenuViewWithLink("context_menu_with_link", /*hideHeaderImage=*/false);
+        doTestContextMenuViewWithLink("context_menu_with_link");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithLink_Popup() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        doTestContextMenuViewWithLink("context_menu_with_link_popup");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink_HideHeaderImage() throws IOException {
-        doTestContextMenuViewWithLink("context_menu_with_link_popup", /*hideHeaderImage=*/true);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
+                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+        doTestContextMenuViewWithLink("context_menu_with_link_no_header");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithImageLink() throws IOException {
-        doTestContextMenuViewWithImageLink(
-                "context_menu_with_image_link", /*hideHeaderImage=*/false);
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink_Popup() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithImageLink_HideHeaderImage() throws IOException {
-        doTestContextMenuViewWithImageLink(
-                "context_menu_with_image_link_popup", /*hideHeaderImage=*/true);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
+                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link_no_header");
     }
 
-    private void doTestContextMenuViewWithLink(String id, boolean hideHeaderImage)
-            throws IOException {
+    private void doTestContextMenuViewWithLink(String id) throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mListItems.add(new ListItem(ListItemType.HEADER,
-                    getHeaderModel("", "www.google.com", false, hideHeaderImage)));
+            mListItems.add(
+                    new ListItem(ListItemType.HEADER, getHeaderModel("", "www.google.com", false)));
             mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             mListItems.add((
                     new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in new tab"))));
@@ -154,11 +184,10 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
         mRenderTestRule.render(mFrame, id);
     }
 
-    private void doTestContextMenuViewWithImageLink(String id, boolean hideHeaderImage)
-            throws IOException {
+    private void doTestContextMenuViewWithImageLink(String id) throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mListItems.add(new ListItem(ListItemType.HEADER,
-                    getHeaderModel("Capybara", "www.google.com", true, hideHeaderImage)));
+            mListItems.add(new ListItem(
+                    ListItemType.HEADER, getHeaderModel("Capybara", "www.google.com", true)));
             mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             mListItems.add((
                     new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in new tab"))));
@@ -180,28 +209,22 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     }
 
     private PropertyModel getHeaderModel(
-            String title, CharSequence url, boolean hasImageThumbnail, boolean hideHeaderImage) {
+            String title, CharSequence url, boolean hasImageThumbnail) {
+        PropertyModel model = ContextMenuHeaderCoordinator.buildModel(getActivity(), title, url);
         Bitmap image;
         if (hasImageThumbnail) {
             image = BitmapFactory.decodeFile(
                     UrlUtils.getIsolatedTestFilePath("chrome/test/data/android/capybara.jpg"));
         } else {
-            final int size = getActivity().getResources().getDimensionPixelSize(
-                    R.dimen.context_menu_header_monogram_size);
+            final int size = model.get(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL);
             image = BitmapFactory.decodeFile(UrlUtils.getIsolatedTestFilePath(
                     "chrome/test/data/android/UiCapture/cloud.png"));
             image = Bitmap.createScaledBitmap(image, size, size, true);
         }
 
-        return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                .with(ContextMenuHeaderProperties.TITLE, title)
-                .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
-                .with(ContextMenuHeaderProperties.URL, url)
-                .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
-                .with(ContextMenuHeaderProperties.IMAGE, image)
-                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImageThumbnail)
-                .with(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, hideHeaderImage)
-                .build();
+        model.set(ContextMenuHeaderProperties.IMAGE, image);
+        model.set(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImageThumbnail);
+        return model;
     }
 
     private PropertyModel getItemModel(String title) {

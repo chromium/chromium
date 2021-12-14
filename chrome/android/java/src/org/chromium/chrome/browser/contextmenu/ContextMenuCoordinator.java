@@ -60,6 +60,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
     private static final int INVALID_ITEM_ID = -1;
 
+    /** Experiment params for {@link ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE}. */
+    static final String HIDE_HEADER_IMAGE_PARAM = "hide_header_image";
+
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
     private ContextMenuChipController mChipController;
