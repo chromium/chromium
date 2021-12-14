@@ -89,14 +89,14 @@
   <div class="more-actions">
     <span id="devModeLabel">$i18n{toolbarDevMode}</span>
     <cr-tooltip-icon hidden="[[!shouldDisableDevMode_(
-        devModeControlledByPolicy, isSupervised)]]"
-        tooltip-text="[[getTooltipText_(isSupervised)]]"
-        icon-class="[[getIcon_(isSupervised)]]"
-        icon-aria-label="[[getTooltipText_(isSupervised)]]">
+        devModeControlledByPolicy, isChildAccount)]]"
+        tooltip-text="[[getTooltipText_(isChildAccount)]]"
+        icon-class="[[getIcon_(isChildAccount)]]"
+        icon-aria-label="[[getTooltipText_(isChildAccount)]]">
     </cr-tooltip-icon>
     <cr-toggle id="devMode" on-change="onDevModeToggleChange_"
         disabled="[[shouldDisableDevMode_(
-            devModeControlledByPolicy, isSupervised)]]"
+            devModeControlledByPolicy, isChildAccount)]]"
         checked="[[inDevMode]]" aria-labelledby="devModeLabel">
     </cr-toggle>
   </div>

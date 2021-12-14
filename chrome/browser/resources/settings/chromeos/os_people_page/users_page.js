@@ -40,7 +40,7 @@ Polymer({
     isChild_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isSupervised');
+        return loadTimeData.getBoolean('isChildAccount');
       },
     },
 

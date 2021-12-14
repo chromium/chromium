@@ -210,7 +210,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           profile->IsGuestSession());
 #endif
 
-  html_source->AddBoolean("isSupervised", profile->IsChild());
+  html_source->AddBoolean("isChildAccount", profile->IsChild());
 }
 
 void AddA11yStrings(content::WebUIDataSource* html_source) {

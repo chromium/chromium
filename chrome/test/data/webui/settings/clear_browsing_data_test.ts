@@ -604,7 +604,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   });
 
   test('history rows are hidden for supervised users', function() {
-    assertFalse(loadTimeData.getBoolean('isSupervised'));
+    assertFalse(loadTimeData.getBoolean('isChildAccount'));
     assertFalse(element.shadowRoot!
                     .querySelector<SettingsCheckboxElement>(
                         '#browsingCheckbox')!.hidden);
@@ -617,7 +617,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     element.remove();
     testBrowserProxy.reset();
-    loadTimeData.overrideValues({isSupervised: true});
+    loadTimeData.overrideValues({isChildAccount: true});
 
     element = document.createElement('settings-clear-browsing-data-dialog');
     document.body.appendChild(element);

@@ -37,7 +37,7 @@ suite(extension_toolbar_tests.suiteName, function() {
     document.body.appendChild(toolbar);
     toolbar.inDevMode = false;
     toolbar.devModeControlledByPolicy = false;
-    toolbar.isSupervised = false;
+    toolbar.isChildAccount = false;
     if (isChromeOS) {
       toolbar.kioskEnabled = false;
     }
@@ -88,8 +88,8 @@ suite(extension_toolbar_tests.suiteName, function() {
     flush();
     assertFalse(toggle.disabled);
 
-    // Test that the dev-mode toggle is disabled when the user is supervised.
-    toolbar.set('isSupervised', true);
+    // Test that the dev-mode toggle is disabled for child account users.
+    toolbar.set('isChildAccount', true);
     flush();
     assertTrue(toggle.disabled);
   });

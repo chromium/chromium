@@ -277,7 +277,7 @@ export class SettingsAppearancePageElement extends
   /** @return Whether to show the "USE GTK+" button. */
   private showUseSystem_(themeId: string, useSystemTheme: boolean): boolean {
     return (!!themeId || !useSystemTheme) &&
-        !this.appearanceBrowserProxy_.isSupervised();
+        !this.appearanceBrowserProxy_.isChildAccount();
   }
 
   /**

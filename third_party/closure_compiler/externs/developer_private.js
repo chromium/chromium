@@ -333,7 +333,7 @@ chrome.developerPrivate.ExtensionInfo;
  *   inDeveloperMode: boolean,
  *   isDeveloperModeControlledByPolicy: boolean,
  *   isIncognitoAvailable: boolean,
- *   isSupervised: boolean
+ *   isChildAccount: boolean
  * }}
  */
 chrome.developerPrivate.ProfileInfo;

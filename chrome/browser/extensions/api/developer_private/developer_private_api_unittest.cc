@@ -1897,7 +1897,7 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
   function->SetRenderFrameHost(web_contents->GetMainFrame());
   std::string error = extension_function_test_utils::RunFunctionAndReturnError(
       function.get(), "[]", browser());
-  EXPECT_THAT(error, testing::HasSubstr("Supervised"));
+  EXPECT_THAT(error, testing::HasSubstr("Child account"));
 }
 #endif
 

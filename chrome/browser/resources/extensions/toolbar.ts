@@ -61,7 +61,7 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
       },
 
       devModeControlledByPolicy: Boolean,
-      isSupervised: Boolean,
+      isChildAccount: Boolean,
 
       // <if expr="chromeos">
       kioskEnabled: Boolean,
@@ -83,7 +83,7 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   delegate: ToolbarDelegate;
   inDevMode: boolean;
   devModeControlledByPolicy: boolean;
-  isSupervised: boolean;
+  isChildAccount: boolean;
 
   // <if expr="chromeos">
   kioskEnabled: boolean;
@@ -109,17 +109,17 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   }
 
   private shouldDisableDevMode_(): boolean {
-    return this.devModeControlledByPolicy || this.isSupervised;
+    return this.devModeControlledByPolicy || this.isChildAccount;
   }
 
   private getTooltipText_(): string {
     return this.i18n(
-        this.isSupervised ? 'controlledSettingChildRestriction' :
-                            'controlledSettingPolicy');
+        this.isChildAccount ? 'controlledSettingChildRestriction' :
+                              'controlledSettingPolicy');
   }
 
   private getIcon_(): string {
-    return this.isSupervised ? 'cr20:kite' : 'cr20:domain';
+    return this.isChildAccount ? 'cr20:kite' : 'cr20:domain';
   }
 
   private onDevModeToggleChange_(e: CustomEvent<boolean>) {

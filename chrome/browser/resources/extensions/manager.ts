@@ -118,7 +118,7 @@ class ExtensionsManagerElement extends PolymerElement {
         value: false,
       },
 
-      isSupervised_: {
+      isChildAccount_: {
         type: Boolean,
         value: false,
       },
@@ -208,7 +208,7 @@ class ExtensionsManagerElement extends PolymerElement {
   showActivityLog: boolean;
   useNewSiteAccessPage: boolean;
   devModeControlledByPolicy: boolean;
-  private isSupervised_: boolean;
+  private isChildAccount_: boolean;
   private incognitoAvailable_: boolean;
   filter: string;
   private errorPageItem_?: chrome.developerPrivate.ExtensionInfo;
@@ -262,7 +262,7 @@ class ExtensionsManagerElement extends PolymerElement {
 
     const onProfileStateChanged =
         (profileInfo: chrome.developerPrivate.ProfileInfo) => {
-          this.isSupervised_ = profileInfo.isSupervised;
+          this.isChildAccount_ = profileInfo.isChildAccount;
           this.incognitoAvailable_ = profileInfo.isIncognitoAvailable;
           this.devModeControlledByPolicy =
               profileInfo.isDeveloperModeControlledByPolicy;

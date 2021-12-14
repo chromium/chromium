@@ -248,7 +248,7 @@ declare global {
         inDeveloperMode: boolean,
         isDeveloperModeControlledByPolicy: boolean,
         isIncognitoAvailable: boolean,
-        isSupervised: boolean,
+        isChildAccount: boolean,
       };
 
       export type ExtensionConfigurationUpdate = {

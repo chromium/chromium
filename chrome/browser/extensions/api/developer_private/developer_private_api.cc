@@ -129,8 +129,8 @@ const char kManifestKeyIsRequiredError[] =
     "The 'manifestKey' argument is required for manifest files.";
 const char kCouldNotFindWebContentsError[] =
     "Could not find a valid web contents.";
-const char kCannotUpdateSupervisedProfileSettingsError[] =
-    "Cannot change settings for a supervised profile.";
+const char kCannotUpdateChildAccountProfileSettingsError[] =
+    "Cannot change settings for a child account profile.";
 const char kNoOptionsPageForExtensionError[] =
     "Extension does not have an options page.";
 const char kCannotRepairHealthyExtension[] =
@@ -308,7 +308,7 @@ DeveloperPrivateAPI::GetFactoryInstance() {
 std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
-  info->is_supervised = profile->IsChild();
+  info->is_child_account = profile->IsChild();
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
@@ -316,7 +316,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
                                  IncognitoModePrefs::Availability::kDisabled;
   info->is_developer_mode_controlled_by_policy = pref->IsManaged();
   info->in_developer_mode =
-      !info->is_supervised &&
+      !info->is_child_account &&
       prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode);
   info->can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
@@ -896,7 +896,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
     if (profile->IsChild())
-      return RespondNow(Error(kCannotUpdateSupervisedProfileSettingsError));
+      return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode,
                       *update.in_developer_mode);
   }
@@ -1110,7 +1110,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->IsChild()) {
     return RespondNow(
-        Error("Supervised users cannot load unpacked extensions."));
+        Error("Child account users cannot load unpacked extensions."));
   }
   PrefService* prefs = profile->GetPrefs();
   if (!prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {

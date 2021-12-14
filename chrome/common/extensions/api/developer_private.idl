@@ -261,7 +261,7 @@ namespace developerPrivate {
     boolean inDeveloperMode;
     boolean isDeveloperModeControlledByPolicy;
     boolean isIncognitoAvailable;
-    boolean isSupervised;
+    boolean isChildAccount;
   };
 
   // DEPRECATED: Prefer ExtensionInfo.

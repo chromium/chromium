@@ -162,10 +162,10 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
-      isSupervised_: {
+      isChildAccount_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isSupervised');
+          return loadTimeData.getBoolean('isChildAccount');
         },
       },
 
@@ -271,7 +271,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
-  private isSupervised_: boolean;
+  private isChildAccount_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;
