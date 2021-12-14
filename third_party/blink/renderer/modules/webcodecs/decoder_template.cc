@@ -82,7 +82,8 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
   main_thread_task_runner_ =
       context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
-  logger_ = std::make_unique<CodecLogger>(context, main_thread_task_runner_);
+  logger_ = std::make_unique<CodecLogger<media::Status>>(
+      context, main_thread_task_runner_);
 
   logger_->log()->SetProperty<media::MediaLogProperty::kFrameUrl>(
       context->Url().GetString().Ascii());

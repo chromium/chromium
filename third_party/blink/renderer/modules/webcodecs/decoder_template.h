@@ -204,7 +204,7 @@ class MODULES_EXPORT DecoderTemplate
   // Could be a configure, flush, or reset. Decodes go in |pending_decodes_|.
   Member<Request> pending_request_;
 
-  std::unique_ptr<CodecLogger> logger_;
+  std::unique_ptr<CodecLogger<media::Status>> logger_;
 
   // Empty - GPU factories haven't been retrieved yet.
   // nullptr - We tried to get GPU factories, but acceleration is unavailable.

@@ -137,7 +137,7 @@ class MODULES_EXPORT EncoderBase
 
   void TraceQueueSizes() const;
 
-  std::unique_ptr<CodecLogger> logger_;
+  std::unique_ptr<CodecLogger<media::Status>> logger_;
 
   std::unique_ptr<MediaEncoderType> media_encoder_;
 

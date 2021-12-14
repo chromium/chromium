@@ -63,8 +63,8 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
   auto* context = ExecutionContext::From(script_state);
   callback_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
-  logger_ =
-      std::make_unique<CodecLogger>(GetExecutionContext(), callback_runner_);
+  logger_ = std::make_unique<CodecLogger<media::Status>>(GetExecutionContext(),
+                                                         callback_runner_);
 
   media::MediaLog* log = logger_->log();
 
