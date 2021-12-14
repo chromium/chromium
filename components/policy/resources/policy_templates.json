@@ -17385,22 +17385,6 @@
       Please note that this policy weakens the protection of local IPs if needed by administrators.''',
     },
     {
-      'name': 'WebRestrictionsAuthority',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
-      'id': 341,
-      'type': 'string',
-      'schema' : { 'type': 'string' },
-      'tags': ['filtering', 'admin-sharing'],
-      'future_on': ['webview_android'],
-      'caption': '''Set an external source of URL restrictions''',
-      'desc' : '''When this policy is set to a non-empty string the WebView will read URL restrictions from the content provider with the given authority name.''',
-      'features': {
-        'dynamic_refresh': True,
-        'per_profile': False,
-      },
-      'example_value': 'com.android.chrome.SupervisedUserProvider'
-    },
-    {
       'name': 'ComponentUpdatesEnabled',
       'owners': ['file://components/update_client/OWNERS', 'sorin@chromium.org'],
       'type': 'main',
@@ -30102,7 +30086,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
   'highest_id_currently_used': 934,
   'highest_atomic_group_id_currently_used': 41

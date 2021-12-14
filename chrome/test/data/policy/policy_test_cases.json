@@ -12095,9 +12095,6 @@
   "SystemTimezoneAutomaticDetection": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
-  "WebRestrictionsAuthority": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
-  },
   "TaskManagerEndProcessEnabled": {
     "os": [
       "win",

@@ -26960,7 +26960,6 @@ Called by update_document_policy_enum.py.-->
   <int value="338" label="NTPContentSuggestionsEnabled"/>
   <int value="339" label="WebRtcUdpPortRange"/>
   <int value="340" label="EnableSha1ForLocalAnchors"/>
-  <int value="341" label="WebRestrictionsAuthority"/>
   <int value="342" label="ComponentUpdatesEnabled"/>
   <int value="343" label="ExternalStorageReadOnly"/>
   <int value="344" label="RemoteAccessHostAllowUiAccessForRemoteAssistance"/>
