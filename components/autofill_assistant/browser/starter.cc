@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/cup_impl.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
@@ -78,6 +79,7 @@ std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
   return std::make_unique<ServiceRequestSenderImpl>(
       browser_context,
       /* access_token_fetcher = */ nullptr,
+      std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
       ApiKeyFetcher().GetAPIKey(delegate->GetChannel()),
       /* auth_enabled = */ false,

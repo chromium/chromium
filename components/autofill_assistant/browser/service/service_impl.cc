@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/cup_factory.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -44,6 +45,7 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
     const ServerUrlFetcher& url_fetcher) {
   auto request_sender = std::make_unique<ServiceRequestSenderImpl>(
       context, client->GetAccessTokenFetcher(),
+      std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
       ApiKeyFetcher().GetAPIKey(client->GetChannel()),
       /* auth_enabled = */ "false" !=
@@ -88,7 +90,7 @@ void ServiceImpl::GetScriptsForUrl(const GURL& url,
                                ProtocolUtils::CreateGetScriptsRequest(
                                    url, client_context_->AsProto(),
                                    trigger_context.GetScriptParameters()),
-                               std::move(callback));
+                               std::move(callback), RpcType::SUPPORTS_SCRIPT);
 }
 
 void ServiceImpl::GetActions(const std::string& script_path,
@@ -139,7 +141,7 @@ void ServiceImpl::SendGetActions(const std::string& script_path,
           script_path, url, global_payload, script_payload,
           client_context_->AsProto(), trigger_context.GetScriptParameters(),
           script_store_config_),
-      std::move(callback));
+      std::move(callback), RpcType::GET_ACTIONS);
 }
 
 void ServiceImpl::GetNextActions(
@@ -155,7 +157,7 @@ void ServiceImpl::GetNextActions(
       ProtocolUtils::CreateNextScriptActionsRequest(
           previous_global_payload, previous_script_payload, processed_actions,
           timing_stats, client_context_->AsProto()),
-      std::move(callback));
+      std::move(callback), RpcType::GET_ACTIONS);
 }
 
 }  // namespace autofill_assistant

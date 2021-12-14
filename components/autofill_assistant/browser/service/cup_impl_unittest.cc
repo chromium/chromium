@@ -13,92 +13,16 @@ namespace {
 
 class CUPImplTest : public testing::Test {
  public:
-  CUPImplTest() : cup_{autofill_assistant::CUPImpl::CreateQuerySigner()} {}
+  CUPImplTest()
+      : cup_{autofill_assistant::cup::CUPImpl::CreateQuerySigner(),
+             autofill_assistant::RpcType::GET_ACTIONS} {}
   ~CUPImplTest() override = default;
 
  protected:
-  autofill_assistant::CUPImpl cup_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  void InitCupFeatures(bool enableSigning, bool enableVerifying) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-
-    if (enableSigning) {
-      enabled_features.push_back(autofill_assistant::features::
-                                     kAutofillAssistantSignGetActionsRequests);
-    } else {
-      disabled_features.push_back(autofill_assistant::features::
-                                      kAutofillAssistantSignGetActionsRequests);
-    }
-
-    if (enableVerifying) {
-      enabled_features.push_back(
-          autofill_assistant::features::
-              kAutofillAssistantVerifyGetActionsResponses);
-    } else {
-      disabled_features.push_back(
-          autofill_assistant::features::
-              kAutofillAssistantVerifyGetActionsResponses);
-    }
-
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  autofill_assistant::cup::CUPImpl cup_;
 };
 
-TEST_F(CUPImplTest, ShouldSignGetActionsRequestWhenFeatureActivated) {
-  InitCupFeatures(true, false);
-
-  EXPECT_TRUE(autofill_assistant::CUPImpl::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPImplTest, ShouldNotSignGetActionsRequestWhenFeatureNotActivated) {
-  InitCupFeatures(false, false);
-
-  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPImplTest, ShouldNotSignNotGetActionsRequest) {
-  InitCupFeatures(true, false);
-
-  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
-}
-
-TEST_F(CUPImplTest, ShouldVerifyGetActionsResponseWhenFeatureActivated) {
-  InitCupFeatures(true, true);
-
-  EXPECT_TRUE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPImplTest, ShouldNotVerifyGetActionsResponseWhenFeatureNotActivated) {
-  InitCupFeatures(true, false);
-
-  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPImplTest, ShouldNotVerifyGetActionsResponseWhenSigningNotActivated) {
-  InitCupFeatures(false, true);
-
-  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPImplTest, ShouldNotVerifyNotGetActionsResponse) {
-  InitCupFeatures(true, true);
-
-  EXPECT_FALSE(autofill_assistant::CUPImpl::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
-}
-
 TEST_F(CUPImplTest, PacksAndSignsGetActionsRequest) {
-  InitCupFeatures(true, false);
-
   autofill_assistant::ScriptActionRequestProto user_request;
   user_request.mutable_client_context()->set_experiment_ids("test");
   std::string user_request_str;
@@ -125,8 +49,6 @@ TEST_F(CUPImplTest, UnpacksTrustedGetActionsResponse) {
 }
 
 TEST_F(CUPImplTest, FailsToUnpackNonTrustedGetActionsResponse) {
-  InitCupFeatures(true, true);
-
   autofill_assistant::ScriptActionRequestProto user_request;
   user_request.mutable_client_context()->set_experiment_ids("123");
   std::string user_request_str;

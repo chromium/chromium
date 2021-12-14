@@ -78,7 +78,8 @@ void TriggerScriptCoordinator::Start(
           deeplink_url_, client_context,
           trigger_context_->GetScriptParameters()),
       base::BindOnce(&TriggerScriptCoordinator::OnGetTriggerScripts,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
 }
 
 void TriggerScriptCoordinator::OnGetTriggerScripts(

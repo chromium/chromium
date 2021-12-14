@@ -58,8 +58,8 @@ class ServiceImplTest : public testing::Test {
 
 TEST_F(ServiceImplTest, GetScriptsForUrl) {
   EXPECT_CALL(*mock_client_context_, Update);
-  EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kScriptServerUrl), _, _))
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kScriptServerUrl), _, _,
+                                                   RpcType::SUPPORTS_SCRIPT))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response")));
@@ -74,7 +74,7 @@ TEST_F(ServiceImplTest, GetActions) {
       .WillOnce(RunOnceCallback<0>("token"));
   EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken("token"));
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response")));
@@ -99,7 +99,7 @@ TEST_F(ServiceImplTest, GetActionsForwardsScriptStoreConfig) {
 
   std::string get_actions_request;
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(SaveArg<1>(&get_actions_request));
 
   ScriptStoreConfig set_config;
@@ -131,7 +131,7 @@ TEST_F(ServiceImplTest, GetActionsWithoutClientToken) {
   EXPECT_CALL(mock_client_, FetchPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response")));
@@ -152,7 +152,7 @@ TEST_F(ServiceImplTest, GetActionsDoesNotReloadClientToken) {
   EXPECT_CALL(mock_client_, FetchPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response")));
@@ -166,7 +166,7 @@ TEST_F(ServiceImplTest, GetActionsDoesNotReloadClientToken) {
 TEST_F(ServiceImplTest, GetNextActions) {
   EXPECT_CALL(*mock_client_context_, Update);
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_OK, std::string("response")));

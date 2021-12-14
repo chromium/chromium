@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
+#include "components/autofill_assistant/browser/service/cup_factory.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -33,6 +34,7 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   ServiceRequestSenderImpl(
       content::BrowserContext* context,
       AccessTokenFetcher* access_token_fetcher,
+      std::unique_ptr<cup::CUPFactory> cup_factory,
       std::unique_ptr<SimpleURLLoaderFactory> loader_factory,
       const std::string& api_key,
       bool auth_enabled,
@@ -42,18 +44,27 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   ServiceRequestSenderImpl& operator=(const ServiceRequestSenderImpl&) = delete;
 
   // Sends |request_body| to |url|. Depending on configuration, the request
-  // will be authenticated either with an Oauth access token or the api key.
-  // Returns the http status code and the response itself. If the returned http
-  // headers could not be parsed, the http code will be 0.
+  // will be authenticated either with an Oauth access token or the api key. The
+  // |rpc_type| will be used to decide whether to use CUP verification. Returns
+  // the http status code and the response itself. If the returned http headers
+  // could not be parsed, the http code will be 0.
   //
   // When an auth-request first fails with a 401, the access token is
   // invalidated and fetched again. If the request fails again, the request
   // is considered failed and the callback is invoked.
   void SendRequest(const GURL& url,
                    const std::string& request_body,
-                   ResponseCallback callback) override;
+                   ResponseCallback callback,
+                   RpcType rpc_type) override;
 
  private:
+  // Unlike |ServiceRequestSenderImpl::SendRequest|, assumes that any necessary
+  // CUP signing and validation is already done or accounted for in the
+  // |callback|.
+  void InternalSendRequest(const GURL& url,
+                           const std::string& request_body,
+                           ResponseCallback callback);
+
   void SendRequestAuth(const GURL& url,
                        const std::string& request_body,
                        const std::string& access_token,
@@ -74,6 +85,7 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
 
   raw_ptr<content::BrowserContext> context_ = nullptr;
   raw_ptr<AccessTokenFetcher> access_token_fetcher_ = nullptr;
+  std::unique_ptr<cup::CUPFactory> cup_factory_;
   std::unique_ptr<SimpleURLLoaderFactory> loader_factory_;
 
   // API key to add to the URL of unauthenticated requests.

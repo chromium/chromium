@@ -5,10 +5,9 @@
 #include "cup_impl.h"
 
 #include "base/base64.h"
-#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/client_update_protocol/ecdsa.h"
 
@@ -27,38 +26,24 @@ std::string GetKey(const char* key_bytes_base64) {
              : std::string();
 }
 
-bool ShouldSignGetActionsRequests() {
-  return base::FeatureList::IsEnabled(
-      autofill_assistant::features::kAutofillAssistantSignGetActionsRequests);
-}
-
-bool ShouldVerifyGetActionsResponses() {
-  return ShouldSignGetActionsRequests() &&
-         base::FeatureList::IsEnabled(
-             autofill_assistant::features::
-                 kAutofillAssistantVerifyGetActionsResponses);
-}
-
 }  // namespace
 
 namespace autofill_assistant {
+
+namespace cup {
 
 std::unique_ptr<client_update_protocol::Ecdsa> CUPImpl::CreateQuerySigner() {
   return client_update_protocol::Ecdsa::Create(kKeyVersion,
                                                GetKey(kKeyPubBytesBase64));
 }
 
-bool CUPImpl::ShouldSignRequests(RpcType rpc_type) {
-  return ShouldSignGetActionsRequests() && rpc_type == RpcType::GET_ACTIONS;
-}
-
-bool CUPImpl::ShouldVerifyResponses(RpcType rpc_type) {
-  return ShouldVerifyGetActionsResponses() && rpc_type == RpcType::GET_ACTIONS;
-}
-
-CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer)
+CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer,
+                 RpcType rpc_type)
     : query_signer_{std::move(query_signer)} {
   DCHECK(query_signer_);
+
+  // Only GET_ACTIONS calls have support for CUP at this moment.
+  DCHECK(rpc_type == RpcType::GET_ACTIONS);
 }
 
 CUPImpl::~CUPImpl() = default;
@@ -109,5 +94,7 @@ absl::optional<std::string> CUPImpl::UnpackGetActionsResponse(
 client_update_protocol::Ecdsa& CUPImpl::GetQuerySigner() {
   return *query_signer_.get();
 }
+
+}  // namespace cup
 
 }  // namespace autofill_assistant

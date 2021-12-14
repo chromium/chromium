@@ -657,9 +657,10 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
         trigger_script_coordinator_->PerformTriggerScriptAction(
             TriggerScriptProto::ACCEPT);
       });
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(
           WithArgs<1, 2>([&](const std::string& request_body,
                              ServiceRequestSender::ResponseCallback& callback) {
@@ -1076,9 +1077,10 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
       features::kAutofillAssistantInCCTTriggering);
   starter_->CheckSettings();
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(
           WithArgs<1, 2>([&](const std::string& request_body,
                              ServiceRequestSender::ResponseCallback& callback) {
@@ -1183,9 +1185,10 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
       .Times(0);
   SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
                                    CreateTriggerScriptResponseForTest()));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(1);
@@ -1422,9 +1425,10 @@ TEST_F(StarterTest, FailedTriggerScriptFetchesForImplicitStartupAreCached) {
       features::kAutofillAssistantInCCTTriggering);
   starter_->CheckSettings();
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, std::string()));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(0);
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
@@ -1479,9 +1483,10 @@ TEST_F(StarterTest,
       features::kAutofillAssistantInCCTTriggering);
   starter_->CheckSettings();
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
                                    CreateTriggerScriptResponseForTest()));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
@@ -1540,9 +1545,10 @@ TEST_F(StarterTest, EmptyTriggerScriptFetchesForImplicitStartupAreCached) {
       features::kAutofillAssistantInCCTTriggering);
   starter_->CheckSettings();
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(
           WithArg<2>([&](ServiceRequestSender::ResponseCallback& callback) {
             // Empty response == no trigger scripts available.
@@ -2017,9 +2023,10 @@ TEST_F(StarterTest, CommandLineScriptParametersAreAddedToImplicitTriggers) {
                                        mock_runtime_manager_.GetWeakPtr(),
                                        task_environment()->GetMockTickClock());
 
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(WithArg<1>([&](const std::string& request_body) {
         GetTriggerScriptsRequestProto request;
         ASSERT_TRUE(request.ParseFromString(request_body));
@@ -2086,9 +2093,10 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsAllMatchingIntents) {
   fake_platform_delegate.trigger_script_request_sender_for_test_ =
       std::move(service_request_sender);
 
-  EXPECT_CALL(*service_request_sender_ptr,
-              OnSendRequest(
-                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+  EXPECT_CALL(
+      *service_request_sender_ptr,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(WithArg<1>([&](const std::string& request_body) {
         GetTriggerScriptsRequestProto request;
         ASSERT_TRUE(request.ParseFromString(request_body));
