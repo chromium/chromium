@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
@@ -122,6 +123,9 @@ void PermissionChip::AddedToWidget() {
   if (!should_start_open_) {
     GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
         IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
+#if defined(OS_MAC)
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#endif
   }
 }
 
