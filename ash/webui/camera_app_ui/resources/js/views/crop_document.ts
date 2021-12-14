@@ -25,12 +25,11 @@ const MOVEMENT_ANNOUNCER_INTERVAL_MS = 2000;
 
 /**
  * Maps from sign of x, y movement to corresponding i18n labels to be announced.
- * @type {!Map<number, !Map<number, I18nString>>}
  */
 const MOVEMENT_ANNOUNCE_LABELS = new Map([
   [
     -1,
-    new Map([
+    new Map<number, I18nString>([
       [-1, I18nString.MOVING_IN_TOP_LEFT_DIRECTION],
       [0, I18nString.MOVING_IN_LEFT_DIRECTION],
       [1, I18nString.MOVING_IN_BOTTOM_LEFT_DIRECTION],
@@ -38,14 +37,14 @@ const MOVEMENT_ANNOUNCE_LABELS = new Map([
   ],
   [
     0,
-    new Map([
+    new Map<number, I18nString>([
       [-1, I18nString.MOVING_IN_TOP_DIRECTION],
       [1, I18nString.MOVING_IN_BOTTOM_DIRECTION],
     ]),
   ],
   [
     1,
-    new Map([
+    new Map<number, I18nString>([
       [-1, I18nString.MOVING_IN_TOP_RIGHT_DIRECTION],
       [0, I18nString.MOVING_IN_RIGHT_DIRECTION],
       [1, I18nString.MOVING_IN_BOTTOM_RIGHT_DIRECTION],
@@ -58,58 +57,40 @@ const MOVEMENT_ANNOUNCE_LABELS = new Map([
  */
 class MovementAnnouncer {
   /**
-   * @public
+   * Interval to throttle the consecutive announcement.
    */
-  constructor() {
-    /**
-     * Interval to throttle the consecutive announcement.
-     * @type {?util.DelayInterval}
-     * @private
-     */
-    this.announceInterval_ = null;
-
-    /**
-     * X component of last not announced movement.
-     * @type {number}
-     * @private
-     */
-    this.lastXMovement_ = 0;
-
-    /**
-     * Y component of last not announced movement.
-     * @type {number}
-     * @private
-     */
-    this.lastYMovement_ = 0;
-  }
+  private announceInterval: util.DelayInterval|null = null;
 
   /**
-   * @param {number} dx
-   * @param {number} dy
+   * X component of last not announced movement.
    */
-  updateMovement(dx, dy) {
-    this.lastXMovement_ = dx;
-    this.lastYMovement_ = dy;
-    if (this.announceInterval_ === null) {
-      this.announceInterval_ = new util.DelayInterval(() => {
-        this.announce_();
+  private lastXMovement = 0;
+
+  /**
+   * Y component of last not announced movement.
+   */
+  private lastYMovement = 0;
+
+  updateMovement(dx: number, dy: number) {
+    this.lastXMovement = dx;
+    this.lastYMovement = dy;
+    if (this.announceInterval === null) {
+      this.announceInterval = new util.DelayInterval(() => {
+        this.announce();
       }, MOVEMENT_ANNOUNCER_START_DELAY_MS, MOVEMENT_ANNOUNCER_INTERVAL_MS);
     }
   }
 
-  /**
-   * @private
-   */
-  announce_() {
-    if (this.lastXMovement_ === 0 && this.lastYMovement_ === 0) {
-      this.announceInterval_.stop();
-      this.announceInterval_ = null;
+  private announce() {
+    if (this.lastXMovement === 0 && this.lastYMovement === 0) {
+      this.announceInterval.stop();
+      this.announceInterval = null;
       return;
     }
-    const signX = Math.sign(this.lastXMovement_);
-    const signY = Math.sign(this.lastYMovement_);
+    const signX = Math.sign(this.lastXMovement);
+    const signY = Math.sign(this.lastYMovement);
     speak(MOVEMENT_ANNOUNCE_LABELS.get(signX).get(signY));
-    this.lastXMovement_ = this.lastYMovement_ = 0;
+    this.lastXMovement = this.lastYMovement = 0;
   }
 }
 
@@ -127,85 +108,59 @@ const ROTATIONS = [
   Rotation.ANGLE_270,
 ];
 
-/**
- * @typedef {{
- *   el: !HTMLDivElement,
- *   pt: !Point,
- *   pointerId: ?number,
- * }}
- */
-let Corner;  // eslint-disable-line no-unused-vars
+interface Corner {
+  el: HTMLDivElement;
+  pt: Point;
+  pointerId: number|null;
+}
 
 /**
  * View controller for review document crop area page.
  */
 export class CropDocument extends Review {
+  private imageFrame: HTMLDivElement;
+
   /**
-   * @public
+   * Size of image frame.
    */
+  private frameSize = new Size(0, 0);
+
+  /**
+   * The original size of the image to be cropped.
+   */
+  private imageOriginalSize: Size|null = null;
+
+  /**
+   * Space size coordinates in |this.corners_|. Will change when image client
+   * area resized.
+   */
+  private cornerSpaceSize: Size|null = null;
+
+  private cropAreaContainer: SVGElement;
+  private cropArea: SVGPolygonElement;
+
+  /**
+   * Index of |ROTATION| as current photo rotation.
+   */
+  private rotation = 0;
+
+  private initialCorners: Point[]|null = null;
+  private corners: Corner[];
+
   constructor() {
     super(ViewName.CROP_DOCUMENT);
 
-    /**
-     * @const {!HTMLDivElement}
-     * @private
-     */
-    this.imageFrame_ = dom.getFrom(this.root, '.review-frame', HTMLDivElement);
+    this.imageFrame = dom.getFrom(this.root, '.review-frame', HTMLDivElement);
 
-    /**
-     * Size of image frame.
-     * @type {?Size}
-     * @private
-     */
-    this.frameSize_ = new Size(0, 0);
-
-    /**
-     * The original size of the image to be cropped.
-     * @type {?Size}
-     * @private
-     */
-    this.imageOriginalSize_ = null;
-
-    /**
-     * Space size coordinates in |this.corners_|. Will change when image client
-     * area resized.
-     * @type {?Size}
-     * @private
-     */
-    this.cornerSpaceSize_ = null;
-
-    /**
-     * @const {!SVGElement}
-     * @private
-     */
-    this.cropAreaContainer_ =
+    this.cropAreaContainer =
         dom.getFrom(this.root, '.crop-area-container', SVGElement);
 
-    /**
-     * @const {!SVGPolygonElement}
-     * @private
-     */
-    this.cropArea_ = dom.getFrom(this.image, '.crop-area', SVGPolygonElement);
-
-    /**
-     * Index of |ROTATION| as current photo rotation.
-     * @type {number}
-     * @private
-     */
-    this.rotation_ = 0;
-
-    /**
-     * @type {?Array<!Point>}
-     * @private
-     */
-    this.initialCorners_ = null;
+    this.cropArea = dom.getFrom(this.image, '.crop-area', SVGPolygonElement);
 
     /**
      * Coordinates of document with respect to |this.cornerSpaceSize_|.
-     * @type {!Array<!Corner>}
-     * @private
      */
-    this.corners_ = (() => {
+    this.corners = (() => {
       const ret = [];
       for (let i = 0; i < 4; i++) {
         const tpl = util.instantiateTemplate('#document-drag-point-template');
@@ -220,39 +175,38 @@ export class CropDocument extends Review {
     })();
 
     const updateRotation = (newRotation) => {
-      this.rotation_ = newRotation;
-      this.updateImage_();
-      this.updateCornerElAriaLabel_();
+      this.rotation = newRotation;
+      this.updateImage();
+      this.updateCornerElAriaLabel();
     };
 
     const clockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_clockwise_button]',
         HTMLButtonElement);
     clockwiseBtn.addEventListener('click', () => {
-      updateRotation((this.rotation_ + 1) % ROTATIONS.length);
+      updateRotation((this.rotation + 1) % ROTATIONS.length);
     });
 
     const counterclockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_counterclockwise_button]',
         HTMLButtonElement);
     counterclockwiseBtn.addEventListener('click', () => {
-      updateRotation(
-          (this.rotation_ + ROTATIONS.length - 1) % ROTATIONS.length);
+      updateRotation((this.rotation + ROTATIONS.length - 1) % ROTATIONS.length);
     });
 
     const cornerSize = (() => {
-      const style = this.corners_[0].el.computedStyleMap();
+      const style = this.corners[0].el.computedStyleMap();
       const width = util.getStyleValueInPx(style, 'width');
       const height = util.getStyleValueInPx(style, 'height');
       return new Size(width, height);
     })();
 
-    this.corners_.forEach((corn) => {
+    this.corners.forEach((corn) => {
       // Start dragging on one corner.
       corn.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         assert(e.target === corn.el);
-        this.setDragging_(corn, assertInstanceof(e, PointerEvent).pointerId);
+        this.setDragging(corn, assertInstanceof(e, PointerEvent).pointerId);
       });
 
       // Use arrow key to move corner.
@@ -265,7 +219,7 @@ export class CropDocument extends Review {
         new Vector(0, 1),
         new Vector(1, 0),
       ];
-      const pressedKeyIndices = new Set();
+      const pressedKeyIndices = new Set<number>();
       let keyInterval = null;
       const clearKeydown = () => {
         if (keyInterval !== null) {
@@ -276,7 +230,7 @@ export class CropDocument extends Review {
       };
       const announcer = new MovementAnnouncer();
 
-      corn.el.addEventListener('blur', (e) => {
+      corn.el.addEventListener('blur', () => {
         clearKeydown();
       });
 
@@ -294,19 +248,19 @@ export class CropDocument extends Review {
             const announceMoveXY = KEY_MOVEMENTS[keyIdx];
             announceMoveX += announceMoveXY.x;
             announceMoveY += announceMoveXY.y;
-            const moveXY = KEY_MOVEMENTS[(keyIdx + this.rotation_) % 4];
+            const moveXY = KEY_MOVEMENTS[(keyIdx + this.rotation) % 4];
             moveX += moveXY.x;
             moveY += moveXY.y;
           }
           announcer.updateMovement(announceMoveX, announceMoveY);
           const {x: curX, y: curY} = corn.pt;
           const nextPt = new Point(curX + moveX, curY + moveY);
-          const validPt = this.mapToValidArea_(corn, nextPt);
+          const validPt = this.mapToValidArea(corn, nextPt);
           if (validPt === null) {
             return;
           }
           corn.pt = validPt;
-          this.updateCornerEl_();
+          this.updateCornerEl();
         };
         pressedKeyIndices.add(keyIdx);
         move();
@@ -336,7 +290,7 @@ export class CropDocument extends Review {
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
       this.image.addEventListener(eventName, (e) => {
         e.preventDefault();
-        this.clearDragging_(assertInstanceof(e, PointerEvent).pointerId);
+        this.clearDragging(assertInstanceof(e, PointerEvent).pointerId);
       });
     }
 
@@ -345,7 +299,7 @@ export class CropDocument extends Review {
       e.preventDefault();
 
       const pointerId = assertInstanceof(e, PointerEvent).pointerId;
-      const corn = this.findDragging_(pointerId);
+      const corn = this.findDragging(pointerId);
       if (corn === null) {
         return;
       }
@@ -356,18 +310,18 @@ export class CropDocument extends Review {
       const target = assertInstanceof(e.target, HTMLElement);
       // The offsetX, offsetY of corners.el are measured from their own left,
       // top.
-      if (this.corners_.find(({el}) => el === target) !== undefined) {
+      if (this.corners.find(({el}) => el === target) !== undefined) {
         const style = target.attributeStyleMap;
         dragX += util.getStyleValueInPx(style, 'left') - cornerSize.width / 2;
         dragY += util.getStyleValueInPx(style, 'top') - cornerSize.height / 2;
       }
 
-      const validPt = this.mapToValidArea_(corn, new Point(dragX, dragY));
+      const validPt = this.mapToValidArea(corn, new Point(dragX, dragY));
       if (validPt === null) {
         return;
       }
       corn.pt = validPt;
-      this.updateCornerEl_();
+      this.updateCornerEl();
     });
 
     // Prevent contextmenu popup triggered by long touch.
@@ -379,49 +333,36 @@ export class CropDocument extends Review {
   }
 
   /**
-   * @param {!Array<!Point>} corners Initial guess from corner detector.
-   * @return {!Promise<{corners: !Array<!Point>, rotation: !Rotation}>} Returns
-   *     new selected corners to be cropped and its rotation.
+   * @param corners Initial guess from corner detector.
+   * @return Returns new selected corners to be cropped and its rotation.
    */
-  async reviewCropArea(corners) {
-    this.initialCorners_ = corners;
-    this.cornerSpaceSize_ = null;
+  async reviewCropArea(corners: Point[]):
+      Promise<{corners: Point[], rotation: Rotation}> {
+    this.initialCorners = corners;
+    this.cornerSpaceSize = null;
     await super.startReview({
       positive: new Options(
           new Option(I18nString.LABEL_CROP_DONE, {exitValue: true}),
           ),
       negative: new Options(),
     });
-    const newCorners = this.corners_.map(
+    const newCorners = this.corners.map(
         ({pt: {x, y}}) => new Point(
-            x / this.cornerSpaceSize_.width, y / this.cornerSpaceSize_.height));
-    return {corners: newCorners, rotation: ROTATIONS[this.rotation_]};
+            x / this.cornerSpaceSize.width, y / this.cornerSpaceSize.height));
+    return {corners: newCorners, rotation: ROTATIONS[this.rotation]};
   }
 
-  /**
-   * @param {!Corner} corn
-   * @param {number} pointerId
-   * @private
-   */
-  setDragging_(corn, pointerId) {
+  private setDragging(corn: Corner, pointerId: number) {
     corn.el.classList.add('dragging');
     corn.pointerId = pointerId;
   }
 
-  /**
-   * @param {number} pointerId
-   * @return {?Corner}
-   */
-  findDragging_(pointerId) {
-    return this.corners_.find(({pointerId: id}) => id === pointerId) || null;
+  private findDragging(pointerId: number): Corner|null {
+    return this.corners.find(({pointerId: id}) => id === pointerId) || null;
   }
 
-  /**
-   * @param {number} pointerId
-   * @private
-   */
-  clearDragging_(pointerId) {
-    const corn = this.findDragging_(pointerId);
+  private clearDragging(pointerId: number) {
+    const corn = this.findDragging(pointerId);
     if (corn === null) {
       return;
     }
@@ -429,24 +370,18 @@ export class CropDocument extends Review {
     corn.pointerId = null;
   }
 
-  /**
-   * @param {!Corner} corn
-   * @param {!Point} pt
-   * @return {?Point}
-   * @private
-   */
-  mapToValidArea_(corn, pt) {
+  private mapToValidArea(corn: Corner, pt: Point): Point|null {
     pt = new Point(
-        Math.max(Math.min(pt.x, this.cornerSpaceSize_.width), 0),
-        Math.max(Math.min(pt.y, this.cornerSpaceSize_.height), 0));
+        Math.max(Math.min(pt.x, this.cornerSpaceSize.width), 0),
+        Math.max(Math.min(pt.y, this.cornerSpaceSize.height), 0));
 
-    const idx = this.corners_.findIndex((c) => c === corn);
+    const idx = this.corners.findIndex((c) => c === corn);
     assert(idx !== -1);
-    const prevPt = this.corners_[(idx + 3) % 4].pt;
-    const nextPt = this.corners_[(idx + 1) % 4].pt;
-    const restPt = this.corners_[(idx + 2) % 4].pt;
+    const prevPt = this.corners[(idx + 3) % 4].pt;
+    const nextPt = this.corners[(idx + 1) % 4].pt;
+    const restPt = this.corners[(idx + 2) % 4].pt;
     const closestDist =
-        Math.min(this.cornerSpaceSize_.width, this.cornerSpaceSize_.height) *
+        Math.min(this.cornerSpaceSize.width, this.cornerSpaceSize.height) *
         CLOSEST_DISTANCE_RATIO;
     const prevDir = vectorFromPoints(restPt, prevPt).direction();
     const prevBorder = (new Line(prevPt, prevDir)).moveParallel(closestDist);
@@ -470,7 +405,7 @@ export class CropDocument extends Review {
       // May completely overlapped.
       return null;
     }
-    const box = new Box(assertInstanceof(this.cornerSpaceSize_, Size));
+    const box = new Box(assertInstanceof(this.cornerSpaceSize, Size));
 
     // Find boundary points of valid area by cases of whether |prevBorderPt| and
     // |nextBorderPt| are inside/outside the box.
@@ -505,31 +440,28 @@ export class CropDocument extends Review {
     }
 
     /**
-     * @param {!Point} pt1
-     * @param {!Point} pt2
-     * @param {!Point} pt3
-     * @return {{dist2: number, nearest: !Point}} Square distance of |pt3| to
-     *     segment formed by |pt1| and |pt2| and the corresponding nearest
-     *     point on the segment.
+     * @return Square distance of |pt3| to segment formed by |pt1| and |pt2|
+     *     and the corresponding nearest point on the segment.
      */
-    const distToSegment = (pt1, pt2, pt3) => {
-      // Minimum Distance between a Point and a Line:
-      // http://paulbourke.net/geometry/pointlineplane/
-      const v12 = vectorFromPoints(pt2, pt1);
-      const v13 = vectorFromPoints(pt3, pt1);
-      const u = (v12.x * v13.x + v12.y * v13.y) / v12.length2();
-      if (u <= 0) {
-        return {dist2: v13.length2(), nearest: pt1};
-      }
-      if (u >= 1) {
-        return {dist2: vectorFromPoints(pt3, pt2).length2(), nearest: pt2};
-      }
-      const projection = vectorFromPoints(pt1).add(v12.multiply(u)).point();
-      return {
-        dist2: vectorFromPoints(projection, pt3).length2(),
-        nearest: projection,
-      };
-    };
+    const distToSegment = (pt1: Point, pt2: Point, pt3: Point):
+        {dist2: number, nearest: Point} => {
+          // Minimum Distance between a Point and a Line:
+          // http://paulbourke.net/geometry/pointlineplane/
+          const v12 = vectorFromPoints(pt2, pt1);
+          const v13 = vectorFromPoints(pt3, pt1);
+          const u = (v12.x * v13.x + v12.y * v13.y) / v12.length2();
+          if (u <= 0) {
+            return {dist2: v13.length2(), nearest: pt1};
+          }
+          if (u >= 1) {
+            return {dist2: vectorFromPoints(pt3, pt2).length2(), nearest: pt2};
+          }
+          const projection = vectorFromPoints(pt1).add(v12.multiply(u)).point();
+          return {
+            dist2: vectorFromPoints(projection, pt3).length2(),
+            nearest: projection,
+          };
+        };
 
     // Project |pt| to nearest point on boundary.
     let mn = Infinity;
@@ -545,30 +477,24 @@ export class CropDocument extends Review {
     return assertInstanceof(mnPt, Point);
   }
 
-  /**
-   * @private
-   */
-  updateCornerEl_() {
-    const cords = this.corners_.map(({pt: {x, y}}) => `${x},${y}`).join(' ');
-    this.cropArea_.setAttribute('points', cords);
-    this.corners_.forEach((corn) => {
+  private updateCornerEl() {
+    const cords = this.corners.map(({pt: {x, y}}) => `${x},${y}`).join(' ');
+    this.cropArea.setAttribute('points', cords);
+    this.corners.forEach((corn) => {
       const style = corn.el.attributeStyleMap;
       style.set('left', CSS.px(corn.pt.x));
       style.set('top', CSS.px(corn.pt.y));
     });
   }
 
-  /**
-   * @private
-   */
-  updateCornerElAriaLabel_() {
+  private updateCornerElAriaLabel() {
     [I18nString.LABEL_DOCUMENT_TOP_LEFT_CORNER,
      I18nString.LABEL_DOCUMENT_BOTTOM_LEFT_CORNER,
      I18nString.LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER,
      I18nString.LABEL_DOCUMENT_TOP_RIGHT_CORNER,
     ].forEach((label, index) => {
       const cornEl =
-          this.corners_[(this.rotation_ + index) % this.corners_.length].el;
+          this.corners[(this.rotation + index) % this.corners.length].el;
       cornEl.setAttribute('i18n-aria', label);
     });
     util.setupI18nElements(this.root);
@@ -577,17 +503,16 @@ export class CropDocument extends Review {
   /**
    * Updates image position/size with respect to |this.rotation_|,
    * |this.frameSize_| and |this.imageOriginalSize_|.
-   * @private
    */
-  updateImage_() {
-    const {width: frameW, height: frameH} = this.frameSize_;
-    const {width: rawImageW, height: rawImageH} = this.imageOriginalSize_;
+  private updateImage() {
+    const {width: frameW, height: frameH} = this.frameSize;
+    const {width: rawImageW, height: rawImageH} = this.imageOriginalSize;
     const style = this.image.attributeStyleMap;
 
     let rotatedW = rawImageW;
     let rotatedH = rawImageH;
-    if (ROTATIONS[this.rotation_] === Rotation.ANGLE_90 ||
-        ROTATIONS[this.rotation_] === Rotation.ANGLE_270) {
+    if (ROTATIONS[this.rotation] === Rotation.ANGLE_90 ||
+        ROTATIONS[this.rotation] === Rotation.ANGLE_270) {
       [rotatedW, rotatedH] = [rotatedH, rotatedW];
     }
     const scale = Math.min(1, frameW / rotatedW, frameH / rotatedH);
@@ -595,47 +520,44 @@ export class CropDocument extends Review {
     const newImageH = scale * rawImageH;
     style.set('width', CSS.px(newImageW));
     style.set('height', CSS.px(newImageH));
-    this.cropAreaContainer_.setAttribute(
+    this.cropAreaContainer.setAttribute(
         'viewBox', `0 0 ${newImageW} ${newImageH}`);
 
     // Update corner space.
-    if (this.cornerSpaceSize_ === null) {
-      this.initialCorners_.forEach(({x, y}, idx) => {
-        this.corners_[idx].pt = new Point(x * newImageW, y * newImageH);
+    if (this.cornerSpaceSize === null) {
+      this.initialCorners.forEach(({x, y}, idx) => {
+        this.corners[idx].pt = new Point(x * newImageW, y * newImageH);
       });
-      this.initialCorners_ = null;
+      this.initialCorners = null;
     } else {
-      const oldImageW = this.cornerSpaceSize_?.width || newImageW;
-      const oldImageH = this.cornerSpaceSize_?.height || newImageH;
-      this.corners_.forEach((corn) => {
+      const oldImageW = this.cornerSpaceSize?.width || newImageW;
+      const oldImageH = this.cornerSpaceSize?.height || newImageH;
+      this.corners.forEach((corn) => {
         corn.pt = new Point(
             corn.pt.x / oldImageW * newImageW,
             corn.pt.y / oldImageH * newImageH);
       });
     }
-    this.cornerSpaceSize_ = new Size(newImageW, newImageH);
+    this.cornerSpaceSize = new Size(newImageW, newImageH);
 
     const originX =
-        frameW / 2 + rotatedW * scale / 2 * [-1, 1, 1, -1][this.rotation_];
+        frameW / 2 + rotatedW * scale / 2 * [-1, 1, 1, -1][this.rotation];
     const originY =
-        frameH / 2 + rotatedH * scale / 2 * [-1, -1, 1, 1][this.rotation_];
+        frameH / 2 + rotatedH * scale / 2 * [-1, -1, 1, 1][this.rotation];
     style.set('left', CSS.px(originX));
     style.set('top', CSS.px(originY));
 
-    const deg = ROTATIONS[this.rotation_];
+    const deg = ROTATIONS[this.rotation];
     style.set(
         'transform', new CSSTransformValue([new CSSRotate(CSS.deg(deg))]));
 
-    this.updateCornerEl_();
+    this.updateCornerEl();
   }
 
-  /**
-   * @override
-   */
-  async setReviewPhoto(blob) {
+  async setReviewPhoto(blob: Blob): Promise<void> {
     const image = new Image();
     await this.loadImage(image, blob);
-    this.imageOriginalSize_ = new Size(image.width, image.height);
+    this.imageOriginalSize = new Size(image.width, image.height);
     const style = this.image.attributeStyleMap;
     if (style.has('background-image')) {
       const oldUrl = style.get('background-image')
@@ -645,23 +567,20 @@ export class CropDocument extends Review {
     }
     style.set('background-image', `url('${image.src}')`);
 
-    this.rotation_ = 0;
-    this.updateCornerElAriaLabel_();
+    this.rotation = 0;
+    this.updateCornerElAriaLabel();
   }
 
-  /**
-   * @override
-   */
-  layout() {
+  layout(): void {
     super.layout();
 
-    const rect = this.imageFrame_.getBoundingClientRect();
-    this.frameSize_ = new Size(rect.width, rect.height);
-    this.updateImage_();
+    const rect = this.imageFrame.getBoundingClientRect();
+    this.frameSize = new Size(rect.width, rect.height);
+    this.updateImage();
     // Clear all dragging corners.
-    for (const corn of this.corners_) {
+    for (const corn of this.corners) {
       if (corn.pointerId !== null) {
-        this.clearDragging_(corn.pointerId);
+        this.clearDragging(corn.pointerId);
       }
     }
   }
