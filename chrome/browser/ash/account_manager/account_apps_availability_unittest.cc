@@ -396,11 +396,29 @@ TEST_F(AccountAppsAvailabilityTest,
       observation{&mock_observer};
   observation.Observe(account_apps_availability.get());
 
-  EXPECT_CALL(mock_observer,
-              OnAccountAvailableInArc(AccountEqual(secondary_account_1)))
-      .Times(1);
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_observer,
+                OnAccountAvailableInArc(AccountEqual(secondary_account_1)))
+        .Times(1);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_observer,
+                OnAccountUnavailableInArc(AccountEqual(secondary_account_1)))
+        .Times(1);
+  }
+
   // [Account is available in ARC] Account is upserted - observer is called.
   identity_test_env()->SetRefreshTokenForAccount(
+      secondary_account_1_info.account_id);
+  // Wait for async calls to finish.
+  base::RunLoop().RunUntilIdle();
+  checkpoint.Call(1);
+
+  // [Account is available in ARC] Account is removed - observer is
+  // called.
+  identity_test_env()->RemoveRefreshTokenForAccount(
       secondary_account_1_info.account_id);
   // Wait for async calls to finish.
   base::RunLoop().RunUntilIdle();
@@ -436,6 +454,9 @@ TEST_F(AccountAppsAvailabilityTest,
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_observer, OnAccountAvailableInArc(_)).Times(0);
     EXPECT_CALL(mock_observer, OnAccountUnavailableInArc(_)).Times(0);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_observer, OnAccountAvailableInArc(_)).Times(0);
+    EXPECT_CALL(mock_observer, OnAccountUnavailableInArc(_)).Times(0);
   }
 
   // Remove an account from ARC.
@@ -446,6 +467,14 @@ TEST_F(AccountAppsAvailabilityTest,
   // [Account is NOT available in ARC] Account is upserted - observer is not
   // called.
   identity_test_env()->SetRefreshTokenForAccount(
+      secondary_account_1_info.account_id);
+  // Wait for async calls to finish.
+  base::RunLoop().RunUntilIdle();
+  checkpoint.Call(2);
+
+  // [Account is NOT available in ARC] Account is removed - observer is not
+  // called.
+  identity_test_env()->RemoveRefreshTokenForAccount(
       secondary_account_1_info.account_id);
   // Wait for async calls to finish.
   base::RunLoop().RunUntilIdle();

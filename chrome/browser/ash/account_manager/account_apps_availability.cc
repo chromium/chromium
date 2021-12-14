@@ -146,6 +146,15 @@ absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
   return is_available_in_arc.value_or(true);
 }
 
+void RemoveAccountFromPrefs(PrefService* prefs, const std::string& gaia_id) {
+  DCHECK(!IsPrimaryGaiaAccount(gaia_id));
+
+  DictionaryPrefUpdate update(prefs,
+                              account_manager::prefs::kAccountAppsAvailability);
+  const bool success = update->RemoveKey(gaia_id);
+  DCHECK(success);
+}
+
 void AddAccountToPrefs(PrefService* prefs,
                        const std::string& gaia_id,
                        bool is_available_in_arc) {
@@ -333,7 +342,13 @@ void AccountAppsAvailability::OnAccountRemoved(
     return;
   }
 
-  NOTIMPLEMENTED();
+  absl::optional<bool> current_status =
+      IsAccountAvailableInArc(prefs_, account.key.id());
+  RemoveAccountFromPrefs(prefs_, account.key.id());
+  if (!current_status.has_value() || !current_status.value())
+    return;
+
+  NotifyObservers(account, /*is_available_in_arc=*/false);
 }
 
 bool AccountAppsAvailability::IsInitialized() const {
