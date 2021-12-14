@@ -69,8 +69,7 @@ void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
     return;
   }
 
-  BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
-  if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
+  if (base::Contains(device->GetUUIDs(), GetSerialPortProfileUUID())) {
     auto split_callback = base::SplitOnceCallback(std::move(callback));
     device->ConnectToService(
         GetSerialPortProfileUUID(),
