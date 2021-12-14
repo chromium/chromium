@@ -26,7 +26,7 @@ CdmInfo::CdmInfo(const std::string& key_system,
       version(version),
       path(path),
       file_system_id(file_system_id) {
-  DCHECK(!capability || !capability->encryption_schemes.empty());
+  DCHECK(!this->capability || !this->capability->encryption_schemes.empty());
 }
 
 CdmInfo::CdmInfo(const std::string& key_system,
@@ -37,7 +37,7 @@ CdmInfo::CdmInfo(const std::string& key_system,
       robustness(robustness),
       capability(std::move(capability)),
       type(type) {
-  DCHECK(!capability || !capability->encryption_schemes.empty());
+  DCHECK(!this->capability || !this->capability->encryption_schemes.empty());
 }
 
 CdmInfo::CdmInfo(const CdmInfo& other) = default;
