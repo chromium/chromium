@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/guid.h"
 #include "base/strings/string_util.h"
-#include "base/unguessable_token.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -21,19 +21,25 @@ namespace content {
 namespace {
 
 GURL GenerateURN() {
-  return GURL(kURNUUIDprefix + base::UnguessableToken::Create().ToString());
+  return GURL(kURNUUIDprefix +
+              base::GUID::GenerateRandomV4().AsLowercaseString());
 }
 
 }  // namespace
 
 const char kURNUUIDprefix[] = "urn:uuid:";
+const int kURNUUIDDashLocations[4] = {17, 22, 27, 32};
 
 bool FencedFrameURLMapping::IsValidUrnUuidURL(const GURL& url) {
   if (!url.is_valid())
     return false;
   std::string spec = url.spec();
   return base::StartsWith(spec, kURNUUIDprefix,
-                          base::CompareCase::INSENSITIVE_ASCII);
+                          base::CompareCase::INSENSITIVE_ASCII) &&
+         spec.at(kURNUUIDDashLocations[0]) == '-' &&
+         spec.at(kURNUUIDDashLocations[1]) == '-' &&
+         spec.at(kURNUUIDDashLocations[2]) == '-' &&
+         spec.at(kURNUUIDDashLocations[3]) == '-';
 }
 
 FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(

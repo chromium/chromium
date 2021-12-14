@@ -1838,7 +1838,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckInvalidUrnError) {
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(0));
 
-  GURL urn_uuid = GURL("urn:uuid:123456789");
+  GURL urn_uuid = GURL("urn:uuid:12345678-9abc-def0-1234-56789abcdef0");
   EXPECT_TRUE(urn_uuid.is_valid());
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
   EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                         initial_frame_url, initial_frame_url));
 
-  GURL urn_uuid("urn:uuid:C36973B5E5D9DE59E4C4364F137B3C7A");
+  GURL urn_uuid("urn:uuid:c36973b5-e5d9-de59-e4c4-364f137b3c7a");
 
   // We expect iframe navigations to invalid URNs to fail, regardless of if the
   // feature is enabled.

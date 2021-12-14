@@ -4,6 +4,7 @@
 
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -115,7 +116,7 @@ TEST(FencedFrameURLMappingTest, AddAndConvert) {
 
 TEST(FencedFrameURLMappingTest, NonExistentUUID) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  GURL urn_uuid("urn:uuid:C36973B5E5D9DE59E4C4364F137B3C7A");
+  GURL urn_uuid("urn:uuid:c36973b5-e5d9-de59-e4c4-364f137b3c7a");
   absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ad_components;
   absl::optional<GURL> result =
       fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid,
@@ -240,6 +241,25 @@ TEST(
                                  /*add_to_new_map=*/false,
                                  *pending_ad_components,
                                  /*expected_mapped_urls=*/ad_component_urls);
+}
+
+// Test the correctness of the URN format. The URN is expected to be in the
+// format "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
+TEST(FencedFrameURLMappingTest, HasCorrectFormat) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  GURL test_url("https://foo.test");
+  GURL urn_uuid = fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+  std::string spec = urn_uuid.spec();
+
+  ASSERT_TRUE(base::StartsWith(
+      spec, "urn:uuid:", base::CompareCase::INSENSITIVE_ASCII));
+
+  EXPECT_EQ(spec.at(17), '-');
+  EXPECT_EQ(spec.at(22), '-');
+  EXPECT_EQ(spec.at(27), '-');
+  EXPECT_EQ(spec.at(32), '-');
+
+  EXPECT_TRUE(fenced_frame_url_mapping.IsValidUrnUuidURL(urn_uuid));
 }
 
 }  // namespace content
