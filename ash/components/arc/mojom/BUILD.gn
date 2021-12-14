@@ -163,10 +163,14 @@ mojom("mojom") {
           move_only = true
         },
       ]
-      traits_headers = [ "//ash/components/arc/mojom/ime_mojom_traits.h" ]
+
+      traits_headers = [ "ime_mojom_traits.h" ]
+      traits_sources = [ "ime_mojom_traits.cc" ]
       traits_public_deps = [
         "//ui/base/ime",
+        "//ui/base/ime:text_input_types",
         "//ui/events",
+        "//ui/events/ozone/layout",
       ]
     },
     {
@@ -399,19 +403,6 @@ mojom("protected_buffer_manager") {
   ]
 }
 
-source_set("mojom_traits") {
-  sources = [
-    "ime_mojom_traits.cc",
-    "ime_mojom_traits.h",
-  ]
-
-  deps = [
-    ":mojom",
-    "//ui/base/ime:text_input_types",
-    "//ui/events",
-    "//ui/events/ozone/layout",
-  ]
-}
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -421,7 +412,6 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
-    ":mojom_traits",
     "//media",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
