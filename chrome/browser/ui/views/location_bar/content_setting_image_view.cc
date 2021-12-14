@@ -113,6 +113,8 @@ void ContentSettingImageView::Update() {
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
         content_setting_image_model_->explanatory_string_id()));
+    GetViewAccessibility().OverrideDescription(
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT));
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }

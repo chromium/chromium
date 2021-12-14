@@ -78,6 +78,8 @@ using content_settings::PageSpecificContentSettings;
 //   ContentSettingMediaImageModel              - media
 //   ContentSettingFramebustBlockImageModel     - blocked framebust
 
+constexpr bool kNotifyAccessibility = true;
+
 class ContentSettingBlockedImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingBlockedImageModel(ImageType image_type,
@@ -508,7 +510,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 // Geolocation -----------------------------------------------------------------
 
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
-    : ContentSettingImageModel(ImageType::GEOLOCATION) {}
+    : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
 
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -581,6 +583,8 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   set_tooltip(l10n_util::GetStringUTF16(is_allowed
                                             ? IDS_ALLOWED_GEOLOCATION_MESSAGE
                                             : IDS_BLOCKED_GEOLOCATION_MESSAGE));
+  set_explanatory_string_id(is_allowed ? IDS_ALLOWED_GEOLOCATION_MESSAGE
+                                       : IDS_BLOCKED_GEOLOCATION_MESSAGE);
 
   return true;
 }
@@ -729,7 +733,7 @@ bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
 // Media -----------------------------------------------------------------------
 
 ContentSettingMediaImageModel::ContentSettingMediaImageModel()
-    : ContentSettingImageModel(ImageType::MEDIASTREAM) {}
+    : ContentSettingImageModel(ImageType::MEDIASTREAM, kNotifyAccessibility) {}
 
 bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -834,6 +838,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
                            : IDS_MICROPHONE_ACCESSED;
   }
   set_tooltip(l10n_util::GetStringUTF16(id));
+  set_explanatory_string_id(id);
 
   return true;
 }

@@ -326,20 +326,23 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
   UpdateModelAndVerifyStates(
       content_setting_image_model.get(), /* is_visible = */ true,
-      /* tooltip_empty = */ false, IDS_ALLOWED_GEOLOCATION_MESSAGE, 0);
+      /* tooltip_empty = */ false, IDS_ALLOWED_GEOLOCATION_MESSAGE,
+      IDS_ALLOWED_GEOLOCATION_MESSAGE);
 
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_BLOCK);
   content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
   UpdateModelAndVerifyStates(
       content_setting_image_model.get(), /* is_visible = */ true,
-      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+      IDS_BLOCKED_GEOLOCATION_MESSAGE);
 
   geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kDenied);
   UpdateModelAndVerifyStates(
       content_setting_image_model.get(), /* is_visible = */ true,
-      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+      IDS_BLOCKED_GEOLOCATION_MESSAGE);
 
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
   UpdateModelAndVerifyStates(
@@ -392,7 +395,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
   content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
   UpdateModelAndVerifyStates(
       content_setting_image_model.get(), /* is_visible = */ true,
-      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+      IDS_BLOCKED_GEOLOCATION_MESSAGE);
 }
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
