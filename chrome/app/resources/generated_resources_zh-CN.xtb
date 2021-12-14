@@ -2653,7 +2653,6 @@
 <translation id="3732078975418297900">第 <ph name="ERROR_LINE" /> 行存在错误</translation>
 <translation id="3732530910372558017">PIN 码不得超过 63 个字符</translation>
 <translation id="3732857534841813090">Google 助理相关信息</translation>
-<translation id="3733127536501031542">带有递升式验证机制的 SSL 服务器</translation>
 <translation id="3733296813637058299">我们将为您安装这些应用。您可在 Play 商店中找到更多适用于您的 <ph name="DEVICE_TYPE" /> 的应用。</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
@@ -2996,7 +2995,6 @@
 <translation id="4068776064906523561">已保存的指纹</translation>
 <translation id="407173827865827707">点击时</translation>
 <translation id="4072701974556190758">系统会将该密码保存在您的 Google 帐号 (<ph name="ACCOUNT" />) 中。您无需记住该密码。</translation>
-<translation id="4074900173531346617">电子邮件签名人证书</translation>
 <translation id="407520071244661467">缩放</translation>
 <translation id="407543464472585404"><ph name="NAME" />的个人资料已关联到 <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">无法投射“<ph name="FILE_NAME" />”。</translation>
@@ -4308,7 +4306,6 @@
 <translation id="5517304475148761050">此应用需要获得对 Play 商店的访问权限</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">当网站想查看复制到剪贴板的文字和图片时询问您</translation>
-<translation id="5518584115117143805">电子邮件加密证书</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
@@ -6149,7 +6146,6 @@
 <translation id="7506242536428928412">若要使用您的新安全密钥，请设置新 PIN 码</translation>
 <translation id="7506541170099744506">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务。</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
-<translation id="7507930499305566459">状态响应程序证书</translation>
 <translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7509539379068593709">卸载应用</translation>
@@ -7397,7 +7393,6 @@
 <translation id="8778328560035799409">您目前已分配的开关将被清除</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
-<translation id="878069093594050299">此证书已通过验证，具有以下用法：</translation>
 <translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>

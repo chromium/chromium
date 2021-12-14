@@ -2669,7 +2669,6 @@
 <translation id="3732078975418297900">خطا در خط <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">پین باید حداکثر ۶۳ نویسه داشته باشد</translation>
 <translation id="3732857534841813090">‏اطلاعات مربوط به «دستیار Google»</translation>
-<translation id="3733127536501031542">‏سرور SSL با ارتقا</translation>
 <translation id="3733296813637058299">‏این برنامه‌ها را برایتان نصب می‌کنیم. در «فروشگاه Play» می‌توانید برنامه‌های بیشتری برای <ph name="DEVICE_TYPE" /> پیدا کنید.</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3738632186060045350">داده‌های <ph name="DEVICE_TYPE" /> پس از ۲۴ ساعت حذف خواهد شد</translation>
@@ -3013,7 +3012,6 @@
 <translation id="4068776064906523561">اثرانگشت‌های ذخیره‌شده</translation>
 <translation id="407173827865827707">با کلیک</translation>
 <translation id="4072701974556190758">‏گذرواژه در «حساب Google» (<ph name="ACCOUNT" />) شما ذخیره خواهد شد. لازم نیست آن را به‌خاطر بسپارید.</translation>
-<translation id="4074900173531346617">گواهی امضاکننده ایمیل</translation>
 <translation id="407520071244661467">مقیاس</translation>
 <translation id="407543464472585404">نمایه <ph name="NAME" /> به <ph name="EMAIL" /> پیوند شده است</translation>
 <translation id="4075639477629295004">ارسال محتوای <ph name="FILE_NAME" /> امکان‌پذیر نیست.</translation>
@@ -4326,7 +4324,6 @@
 <translation id="5517304475148761050">‏این برنامه باید به «فروشگاه Play» دسترسی پیدا کند</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">وقتی سایتی می‌خواهد به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند، سؤال شود.</translation>
-<translation id="5518584115117143805">گواهی رمزگذاری ایمیل</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">آیا این همان صفحه اصلی مورد انتظار شماست؟</translation>
 <translation id="5522156646677899028">این برنامه افزودنی از لحاظ امنیتی اصلاً مطمئن نیست.</translation>
@@ -6167,7 +6164,6 @@
 <translation id="7506242536428928412">برای استفاده از کلید امنیتی جدید، پین جدیدی تنظیم کنید</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> شما باموفقیت برای مدیریت شرکت ثبت شد.</translation>
 <translation id="7507207699631365376">به <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این ارائه‌دهنده بروید</translation>
-<translation id="7507930499305566459">گواهی وضعیت پاسخگو</translation>
 <translation id="7509097596023256288">درحال راه‌اندازی مدیریت</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7509539379068593709">حذف نصب برنامه</translation>
@@ -7417,7 +7413,6 @@
 <translation id="8778328560035799409">کلیدهایی که قبلاً اختصاص داده‌اید پاک خواهند شد</translation>
 <translation id="8780123805589053431">‏دریافت توضیحات تصویر از Google</translation>
 <translation id="8780443667474968681">جستجوی گفتاری خاموش شده است.</translation>
-<translation id="878069093594050299">این گواهی برای استفاده‌های زیر تأیید شده است:</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
 <translation id="8782565991310229362">راه‌اندازی برنامه کاربردی کیوسک لغو شد.</translation>
 <translation id="8783834180813871000">کد مرتبط‌سازی بلوتوث را تایپ کنید، سپس کلید «بازگشت» یا «ورود» را فشار دهید.</translation>

@@ -2675,7 +2675,6 @@
 <translation id="3732078975418297900">Помилка в рядку <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-код має містити не більше 63 символів</translation>
 <translation id="3732857534841813090">Інформація, пов'язана з Google Асистентом</translation>
-<translation id="3733127536501031542">SSL-сервер із підвищенням</translation>
 <translation id="3733296813637058299">Ці додатки буде встановлено. Більше додатків для вашого пристрою <ph name="DEVICE_TYPE" /> можна знайти в магазині Google Play.</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3738632186060045350">Дані пристрою <ph name="DEVICE_TYPE" /> буде видалено через 24 години</translation>
@@ -3019,7 +3018,6 @@
 <translation id="4068776064906523561">Збережені відбитки пальців</translation>
 <translation id="407173827865827707">Після натискання</translation>
 <translation id="4072701974556190758">Пароль буде збережено в обліковому записі Google, <ph name="ACCOUNT" />. Вам не доведеться його запам’ятовувати.</translation>
-<translation id="4074900173531346617">Сертифікат підписувача електронної пошти</translation>
 <translation id="407520071244661467">Масштаб</translation>
 <translation id="407543464472585404">Профіль користувача <ph name="NAME" /> зв'язано з електронною адресою <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Не вдається транслювати файл <ph name="FILE_NAME" />.</translation>
@@ -4332,7 +4330,6 @@
 <translation id="5517304475148761050">Цьому додатку потрібен доступ до Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Запитувати, коли сайт хоче переглядати тексти й зображення в буфері обміну</translation>
-<translation id="5518584115117143805">Сертифікат шифрування електронної пошти</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Це домашня сторінка, яку ви очікували?</translation>
 <translation id="5522156646677899028">Це розширення містить серйозну загрозу безпеці.</translation>
@@ -6173,7 +6170,6 @@
 <translation id="7506242536428928412">Щоб використовувати новий ключ безпеки, призначте новий PIN-код</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> зареєстровано для корпоративного керування.</translation>
 <translation id="7507207699631365376">Переглянути <ph name="BEGIN_LINK" />політику конфіденційності<ph name="END_LINK" /> цього постачальника</translation>
-<translation id="7507930499305566459">Сертифікат відповідача статусу</translation>
 <translation id="7509097596023256288">Налаштовується керування</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7509539379068593709">Видалити додаток</translation>
@@ -7425,7 +7421,6 @@
 <translation id="8778328560035799409">Поточні призначені перемикачі буде видалено</translation>
 <translation id="8780123805589053431">Отримати описи зображень від Google</translation>
 <translation id="8780443667474968681">Голосовий пошук вимкнено.</translation>
-<translation id="878069093594050299">Цей сертифікат підтверджено для використання таким чином:</translation>
 <translation id="8781834595282316166">Нова вкладка в групі</translation>
 <translation id="8782565991310229362">Скасовано запуск програми для терміналів.</translation>
 <translation id="8783834180813871000">Введіть код підключення через Bluetooth і натисніть Return або Enter.</translation>

@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1513352483775369820">Yer işaretleri ve web geçmişi</translation>
 <translation id="1513858653616922153">Şifreyi sil</translation>
+<translation id="1518421282666914498">İfade GIF'i <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Son etkin olduğu zaman:</translation>
 <translation id="1538801903729528855">Web'de daha iyi ses deneyimi elde edin</translation>
 <translation id="1544826120773021464">Google hesabınızı yönetmek için "Hesabı yönet" düğmesine dokunun</translation>
@@ -574,6 +575,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4532845899244822526">Klasör seçin</translation>
 <translation id="4538018662093857852">Basit modu aç</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme, <ph name="TAB_COUNT_INCOGNITO" /> gizli mod}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Burada şifrenizi görüntülemek veya kopyalamak için bu cihazda ekran kilidini ayarlayın.</translation>
 <translation id="4554077758708533499">USB kablosuyla bağlandı</translation>
 <translation id="4557685098773234337">Buraya daha hızlı ulaşmak için bu sayfayı ana ekranınıza ekleyin</translation>
@@ -926,6 +928,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6532866250404780454">Chrome'da ziyaret ettiğiniz siteler gösterilmez. Tüm site zamanlayıcıları silinir.</translation>
 <translation id="6534565668554028783">Google çok geç yanıt verdi</translation>
 <translation id="6539092367496845964">Bir sorun oldu. Daha sonra tekrar deneyin.</translation>
+<translation id="6541042852576515209">Yeniden boyutlandır ve döndür</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 saat önce kontrol edildi}other{# saat önce kontrol edildi}}</translation>
 <translation id="6545017243486555795">Tüm Verileri Temizle</translation>
 <translation id="6546511553472444032">Dosya zararlı olabilir</translation>
@@ -1078,6 +1081,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7444811645081526538">Diğer kategoriler</translation>
 <translation id="7453467225369441013">Çoğu sitedeki oturumunuz kapatılır. Google Hesabınızdaki oturumunuz kapatılmaz.</translation>
 <translation id="7454641608352164238">Yeterli alan yok</translation>
+<translation id="7468819939926272717">Bir ifade seçin</translation>
 <translation id="7474822150871987353">Sayfadan ayrılmadan web sitelerindeki konular hakkında bilgi edinin. Sayfadan bir veya daha fazla kelime seçerek arama yapın.</translation>
 <translation id="7475192538862203634">Bunu çok sık görüyorsanız bu <ph name="BEGIN_LINK" />önerileri<ph name="END_LINK" /> deneyin.</translation>
 <translation id="7475688122056506577">SD kart bulunamadı. Bazı dosyalarınız eksik olabilir.</translation>
@@ -1160,6 +1164,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Okunmamış <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sayfanız var}other{Okunmamış <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sayfanız var}}</translation>
 <translation id="7882131421121961860">Geçmiş bulunamadı</translation>
 <translation id="7886917304091689118">Chrome'da çalıştırılıyor</translation>
+<translation id="7887334752153342268">Yinele</translation>
 <translation id="789763218334337857">Chrome'u kullanma</translation>
 <translation id="7903184275147100332">Bu işlem bir dakika sürebilir</translation>
 <translation id="7919123827536834358">Şu dilleri otomatik olarak çevir</translation>

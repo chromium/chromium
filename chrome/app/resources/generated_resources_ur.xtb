@@ -2656,7 +2656,6 @@
 <translation id="3732078975418297900">لائن <ph name="ERROR_LINE" /> پر خرابی ہے</translation>
 <translation id="3732530910372558017">‏PIN زیادہ سے زیادہ 63 حروف پر مشتمل ہونا چاہیے</translation>
 <translation id="3732857534841813090">‏Google اسسٹنٹ سے متعلق معلومات</translation>
-<translation id="3733127536501031542">‏Step-up والا SSL سرور</translation>
 <translation id="3733296813637058299">‏ہم آپ کیلئے وہ ایپس انسٹال کریں گے۔ آپ Play اسٹور میں اپنے <ph name="DEVICE_TYPE" /> کیلئے مزید ایپس تلاش کر سکتے ہیں۔</translation>
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> آلہ کا ڈیٹا 24 گھنٹے کے اندر حذف کر دیا جائے گا</translation>
@@ -3000,7 +2999,6 @@
 <translation id="4068776064906523561">محفوظ کردہ فنگر پرنٹس</translation>
 <translation id="407173827865827707">کلک کرنے پر</translation>
 <translation id="4072701974556190758">‏پاس ورڈ آپ کے Google اکاؤنٹ میں محفوظ کیا جائے گا، <ph name="ACCOUNT" />۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے۔</translation>
-<translation id="4074900173531346617">ای میل دستخط کنندہ سرٹیفیکیٹ</translation>
 <translation id="407520071244661467">اسکیل</translation>
 <translation id="407543464472585404"><ph name="NAME" /> کی پروفائل <ph name="EMAIL" /> سے لنک ہے</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> کاسٹ کرنے سے قاصر ہے۔</translation>
@@ -4311,7 +4309,6 @@
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">جب کوئی سائٹ کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہے تو پوچھیں</translation>
-<translation id="5518584115117143805">ای میل مرموز کاری سرٹیفیکیٹ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
@@ -6152,7 +6149,6 @@
 <translation id="7506242536428928412">‏اپنی نئی سیکیورٹی کلید استعمال کرنے کیلئے، ایک نیا PIN سیٹ کریں</translation>
 <translation id="7506541170099744506">آپ کے <ph name="DEVICE_TYPE" /> کا انٹرپرائز کے نظم و نسق کیلئے کامیابی سے اندراج کر لیا گیا ہے۔</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
-<translation id="7507930499305566459">صورتحال کا جواب دہندہ سرٹیفیکیٹ</translation>
 <translation id="7509097596023256288">مینیجمنٹ سیٹ اپ کیا جا رہا ہے</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7509539379068593709">ایپ کو اَن انسٹال کریں</translation>
@@ -7400,7 +7396,6 @@
 <translation id="8778328560035799409">آپ کے فی الحال تفویض کردہ سوئچز صاف کر دیے جائیں گے</translation>
 <translation id="8780123805589053431">‏Google سے تصویر کی تفصیلات حاصل کریں</translation>
 <translation id="8780443667474968681">صوتی تلاش بند کر دی گئی ہے۔</translation>
-<translation id="878069093594050299">اس سرٹیفکیٹ کی توثیق درج ذیل استعمالات کیلئے کر دی گئی ہے:</translation>
 <translation id="8781834595282316166">گروپ میں نیا ٹیب</translation>
 <translation id="8782565991310229362">کیوسک ایپلیکیشن کی شروعات منسوخ ہو گئی۔</translation>
 <translation id="8783834180813871000">‏بلوٹوتھ جوڑا بنانے کا کوڈ ٹائپ کریں پھر Return یا Enter دبائیں۔</translation>

@@ -2657,7 +2657,6 @@
 <translation id="3732078975418297900">შეცდომა ხაზზე <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-კოდის სიგრძე უნდა იყოს მაქსიმუმ 63 სიმბოლო</translation>
 <translation id="3732857534841813090">Google ასისტენტთან დაკავშირებული ინფორმაცია</translation>
-<translation id="3733127536501031542">SSL სერვერი დაყენებით</translation>
 <translation id="3733296813637058299">ეს აპები დაინსტალირდება თქვენთვის. თქვენი <ph name="DEVICE_TYPE" />-ისთვის სხვა აპების პოვნა შეგიძლიათ Play Store-ში.</translation>
 <translation id="3735740477244556633">დალაგება</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-ზე არსებული მონაცემები წაიშლება 24 საათში</translation>
@@ -3001,7 +3000,6 @@
 <translation id="4068776064906523561">შენახული თითის ანაბეჭდები</translation>
 <translation id="407173827865827707">დაწკაპუნებისას</translation>
 <translation id="4072701974556190758">პაროლი შეინახება თქვენს Google ანგარიშში (<ph name="ACCOUNT" />). მისი დამახსოვრება არ მოგიწევთ.</translation>
-<translation id="4074900173531346617">ელფოსტის ხელმოწერის სერტიფიკატი</translation>
 <translation id="407520071244661467">მასშტაბირება</translation>
 <translation id="407543464472585404"><ph name="NAME" />-ის პროფილი მიბმულია <ph name="EMAIL" />-თან</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> ვერ ტრანსლირდება.</translation>
@@ -4313,7 +4311,6 @@
 <translation id="5517304475148761050">ეს აპი საჭიროებს წვდომას Play Store-ზე</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> — <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">შეკითხვა, როცა საიტს სურს გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვა</translation>
-<translation id="5518584115117143805">ელფოსტის დაშიფვრის სერტიფიკატი</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">არის ეს ის საწყისი გვერდი, რომელსაც მოელოდით?</translation>
 <translation id="5522156646677899028">ეს გაფართოება შეიცავს უსაფრთხოების სერიოზულ ხარვეზს.</translation>
@@ -6154,7 +6151,6 @@
 <translation id="7506242536428928412">უსაფრთხოების ახალი გასაღების გამოსაყენებლად დააყენეთ ახალი PIN-კოდი</translation>
 <translation id="7506541170099744506">თქვენი <ph name="DEVICE_TYPE" /> წარმატებით დარეგისტრირდა კორპორატიული მართვისთვის.</translation>
 <translation id="7507207699631365376">ამ პროვაიდერის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> ნახვა</translation>
-<translation id="7507930499305566459">სტატუსის მოპასუხის სერტიფიკატი</translation>
 <translation id="7509097596023256288">მიმდინარეობს მართვის დაყენება</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>
 <translation id="7509539379068593709">აპის დეინსტალაცია</translation>
@@ -7401,7 +7397,6 @@
 <translation id="8778328560035799409">ამჟამად მიკუთვნებული გადამრთველები გასუფთავდება</translation>
 <translation id="8780123805589053431">სურათების აღწერილობების მიღება Google-ისგან</translation>
 <translation id="8780443667474968681">ხმოვანი ძიება გამოირთო.</translation>
-<translation id="878069093594050299">ეს სერთიფიკატი უკვე შემოწმებულია შემდეგი მოხმარებისთვის:</translation>
 <translation id="8781834595282316166">ახალი ჩანართი ჯგუფში</translation>
 <translation id="8782565991310229362">კიოსკის განაცხადის გაშვება გაუქმდა.</translation>
 <translation id="8783834180813871000">აკრიფეთ Bluetooth-დაწყვილების კოდი და დააჭირეთ Return-ს ან Enter-ს.</translation>

@@ -2672,7 +2672,6 @@
 <translation id="3732078975418297900">लाइन <ph name="ERROR_LINE" /> पर गड़बड़ी</translation>
 <translation id="3732530910372558017">पिन में ज़्यादा से ज़्यादा 63 वर्ण हो सकते हैं</translation>
 <translation id="3732857534841813090">Google Assistant से जुड़ी जानकारी</translation>
-<translation id="3733127536501031542">स्टेप-अप वाला SSL सर्वर</translation>
 <translation id="3733296813637058299">हम आपके लिए वे ऐप्लिकेशन इंस्टॉल कर देंगे. आप 'Play Store' में जाकर, अपने <ph name="DEVICE_TYPE" /> के लिए और भी ऐप्लिकेशन डाउनलोड कर सकते हैं.</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> का डेटा 24 घंटे में मिटा दिया जाएगा</translation>
@@ -3015,7 +3014,6 @@
 <translation id="4068776064906523561">सहेजे गए फ़िंगरप्रिंट</translation>
 <translation id="407173827865827707">क्लिक करने पर</translation>
 <translation id="4072701974556190758">पासवर्ड आपके Google खाते (<ph name="ACCOUNT" />) में सेव हो जाएगा. आपको इसे याद नहीं रखना पड़ेगा.</translation>
-<translation id="4074900173531346617">ईमेल हस्ताक्षरकर्ता प्रमाणपत्र</translation>
 <translation id="407520071244661467">स्केल</translation>
 <translation id="407543464472585404"><ph name="NAME" /> की प्रोफ़ाइल <ph name="EMAIL" /> से लिंक है</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> कास्ट नहीं हो पा रहा है.</translation>
@@ -4328,7 +4326,6 @@
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">जब कोई साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखना चाहे, तो इसके लिए पूछें</translation>
-<translation id="5518584115117143805">ईमेल सुरक्षित करने का तरीकों के लिए प्रमाणपत्र</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
 <translation id="5522156646677899028">इस एक्सटेंशन में गंभीर सुरक्षा भेद्यता शामिल है.</translation>
@@ -6169,7 +6166,6 @@
 <translation id="7506242536428928412">अपनी नई सुरक्षा कुंजी इस्तेमाल करने के लिए एक नया पिन सेट अप करें</translation>
 <translation id="7506541170099744506">आपका <ph name="DEVICE_TYPE" /> एंटरप्राइज़ प्रबंधन के लिए सफलतापूर्वक नामांकित हो गया है.</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
-<translation id="7507930499305566459">स्थिति प्रतिसादी प्रमाणपत्र</translation>
 <translation id="7509097596023256288">मैनेजमेंट सेट अप किया जा रहा है</translation>
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>
 <translation id="7509539379068593709">ऐप्लिकेशन अनइंस्टॉल करें</translation>
@@ -7418,7 +7414,6 @@
 <translation id="8778328560035799409">जिन स्विच को आपने फ़िलहाल असाइन किया है वे हटा दिए जाएंगे</translation>
 <translation id="8780123805589053431">Google से इमेज के बारे में जानकारी पाएं</translation>
 <translation id="8780443667474968681">बोलकर खोजने की सेवा बंद कर दी गई है.</translation>
-<translation id="878069093594050299">इस प्रमाणपत्र को निम्न उपयोगों के लिए सत्यापित किया गया है:</translation>
 <translation id="8781834595282316166">ग्रुप में नया टैब जोड़ें</translation>
 <translation id="8782565991310229362">कियोस्क ऐप्स  लॉन्च रद्द किया गया.</translation>
 <translation id="8783834180813871000">ब्लूटूथ इस्तेमाल करके दूसरे डिवाइस से जोड़ने का कोड लिखें. इसके बाद, Return या Enter दबाएं.</translation>

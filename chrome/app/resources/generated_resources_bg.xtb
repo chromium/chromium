@@ -2668,7 +2668,6 @@
 <translation id="3732078975418297900">Грешка в ред <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">ПИН кодът трябва да е с дължина най-много 63 знака</translation>
 <translation id="3732857534841813090">Информация, свързана с Google Асистент</translation>
-<translation id="3733127536501031542">SSL сървър с повишаване на сигурността</translation>
 <translation id="3733296813637058299">Ще инсталираме тези приложения за вас. В Google Play Магазин можете да намерите още приложения за устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3735740477244556633">Сортиране по</translation>
 <translation id="3738632186060045350">Данните на устройството ви <ph name="DEVICE_TYPE" /> ще бъдат изтрити след 24 часа</translation>
@@ -3013,7 +3012,6 @@
 <translation id="4068776064906523561">Запазени отпечатъци</translation>
 <translation id="407173827865827707">При кликване</translation>
 <translation id="4072701974556190758">Паролата ще бъде запазена в профила ви в Google (<ph name="ACCOUNT" />). Не е необходимо да я помните.</translation>
-<translation id="4074900173531346617">Сертификат за подписване на имейли</translation>
 <translation id="407520071244661467">Мащаб</translation>
 <translation id="407543464472585404">Потребителският профил на <ph name="NAME" /> е свързан с(ъс) <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Предаването на „<ph name="FILE_NAME" />“ не е възможно.</translation>
@@ -4326,7 +4324,6 @@
 <translation id="5517304475148761050">Това приложение изисква достъп до Google Play Магазин</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Извеждане на запитване, когато сайт иска да преглежда текста и изображенията, копирани в буферната памет</translation>
-<translation id="5518584115117143805">Сертификат за шифроване на имейли</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
 <translation id="5522156646677899028">Това разширение съдържа сериозна уязвимост в сигурността.</translation>
@@ -6168,7 +6165,6 @@
 <translation id="7506242536428928412">За да използвате новия си ключ за сигурност, задайте нов ПИН</translation>
 <translation id="7506541170099744506">Устройството ви <ph name="DEVICE_TYPE" /> е успешно записано за корпоративно управление.</translation>
 <translation id="7507207699631365376">Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на този доставчик</translation>
-<translation id="7507930499305566459">Сертификат за състоянието на респондер</translation>
 <translation id="7509097596023256288">Управлението се настройва</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7509539379068593709">Деинсталиране на приложението</translation>
@@ -7417,7 +7413,6 @@
 <translation id="8778328560035799409">Зададените превключватели ще бъдат изчистени</translation>
 <translation id="8780123805589053431">Изтегляне от Google на описания за изображенията</translation>
 <translation id="8780443667474968681">Функцията за гласово търсене е изключена.</translation>
-<translation id="878069093594050299">Този сертификат бе удостоверен за следните употреби:</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
 <translation id="8782565991310229362">Стартирането на павилионното приложение е анулирано.</translation>
 <translation id="8783834180813871000">Въведете кода за сдвояване през Bluetooth, след което натиснете Return или Enter.</translation>

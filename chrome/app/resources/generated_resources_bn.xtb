@@ -2672,7 +2672,6 @@
 <translation id="3732078975418297900"><ph name="ERROR_LINE" /> নম্বর লাইনে কোনও ভুল আছে</translation>
 <translation id="3732530910372558017">পিন সর্বাধিক ৬৩ অক্ষরের হতে পারে</translation>
 <translation id="3732857534841813090">Google Assistant সম্পর্কিত তথ্য</translation>
-<translation id="3733127536501031542">স্টেপ-আপ সহ SSL সার্ভার</translation>
 <translation id="3733296813637058299">আমরা আপনার জন্য সেই সেইসব অ্যাপ ইনস্টল করে দেব। Play স্টোরে আপনার <ph name="DEVICE_TYPE" />-এর জন্য আরও অ্যাপ খুঁজে পাবেন।</translation>
 <translation id="3735740477244556633">এই অনুসারে সাজান</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-এর ডেটা ২৪ ঘণ্টার মধ্যে মুছে যাবে</translation>
@@ -3015,7 +3014,6 @@
 <translation id="4068776064906523561">সংরক্ষিত আঙ্গুলের ছাপগুলি</translation>
 <translation id="407173827865827707">ক্লিক করা হলে</translation>
 <translation id="4072701974556190758">পাসওয়ার্ড আপনার <ph name="ACCOUNT" /> নামের Google অ্যাকাউন্টে সেভ করা হবে। আপনাকে এটি মনে রাখতে হবে না।</translation>
-<translation id="4074900173531346617">ইমেল স্বাক্ষরকারী সার্টিফিকেট</translation>
 <translation id="407520071244661467">স্কেল</translation>
 <translation id="407543464472585404"><ph name="NAME" />-এর প্রোফাইল <ph name="EMAIL" />-এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> কে কাস্ট করা যায়নি।</translation>
@@ -4328,7 +4326,6 @@
 <translation id="5517304475148761050">Play Store অ্যাক্সেস করতে এই অ্যাপকে অনুমতি দিতে হবে</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি কোনও সাইট দেখতে চাইলে আপনাকে জিজ্ঞেস করা হবে</translation>
-<translation id="5518584115117143805">ইমেল এনক্রিপশন সার্টিফিকেট</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">আপনি কি এই পৃষ্ঠাটিকে হোম পৃষ্টা হিসেবে আশা করছিলেন?</translation>
 <translation id="5522156646677899028">এই এক্সটেনশনটিতে একটি গুরুতর নিরাপত্তার দুর্বলতা রয়েছে৷</translation>
@@ -6170,7 +6167,6 @@
 <translation id="7506242536428928412">নতুন নিরাপত্তা কী ব্যবহার করতে, নতুন পিন সেট করুন</translation>
 <translation id="7506541170099744506">আপনার <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ পরিচালনার জন্য সফলভাবে নথিভুক্ত হয়েছে।</translation>
 <translation id="7507207699631365376">এই পরিষেবা প্রদানকারীর <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> দেখুন</translation>
-<translation id="7507930499305566459">স্থিতি প্রতিক্রিয়া সার্টিফিকেট</translation>
 <translation id="7509097596023256288">ম্যানেজমেন্ট সেট আপ করা হচ্ছে</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7509539379068593709">অ্যাপ আনইনস্টল করুন</translation>
@@ -7419,7 +7415,6 @@
 <translation id="8778328560035799409">আপনার বর্তমানে অ্যাসাইন করা সুইচগুলি মুছে যাবে</translation>
 <translation id="8780123805589053431">Google থেকে ছবির বিবরণ পান</translation>
 <translation id="8780443667474968681">ভয়েস সার্চ বন্ধ করা হয়েছে।</translation>
-<translation id="878069093594050299">এই সার্টিফিকেটটি নিম্নলিখিত ব্যবহারগুলির জন্য যাচাইকৃত:</translation>
 <translation id="8781834595282316166">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="8782565991310229362">Kiosk অ্যাপ্লিকেশন লঞ্চ বাতিল হয়েছে৷</translation>
 <translation id="8783834180813871000">ব্লুটুথ পেয়ার করার কোড টাইপ করুন, তারপরে 'ফিরে আসুন' বা 'এন্টার করুন' বোতামে প্রেস করুন।</translation>

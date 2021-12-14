@@ -2659,7 +2659,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3732078975418297900"><ph name="ERROR_LINE" /> qatorida xato bor</translation>
 <translation id="3732530910372558017">PIN kod kamida 63 ta belgidan iborat boʻlsin</translation>
 <translation id="3732857534841813090">Google Assistentga aloqador axborot</translation>
-<translation id="3733127536501031542">Darajasi ko‘tarilgan SSL-server</translation>
 <translation id="3733296813637058299">Bu ilovalarni siz uchun oʻrnatib beramiz. <ph name="DEVICE_TYPE" /> qurilmangiz uchun yana boshqa ilovalarni Play Marketdan topishingiz mumkin.</translation>
 <translation id="3735740477244556633">Saralash tartibi</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> axborotlari 24 soat ichida tozalanadi</translation>
@@ -3003,7 +3002,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4068776064906523561">Saqlangan barmoq izlari</translation>
 <translation id="407173827865827707">Bosilganda</translation>
 <translation id="4072701974556190758">Parol Google hisobingizda (<ph name="ACCOUNT" />) saqlanadi. Uni eslab qolish shart emas.</translation>
-<translation id="4074900173531346617">E-pochtani imzolash sertifikati</translation>
 <translation id="407520071244661467">Masshtab</translation>
 <translation id="407543464472585404"><ph name="NAME" /> profili <ph name="EMAIL" /> hisobiga ulangan</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> translatsiya qilinmadi.</translation>
@@ -4316,7 +4314,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5517304475148761050">Bu ilova Play Marketga kirishni talab etadi</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Saytlar klipbordga nusxalangan matn va rasmlarni ko‘rmoqchi bo‘lganda xabar berilsin</translation>
-<translation id="5518584115117143805">Email shifr sertifikati</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Bu boshqa bosh sahifami?</translation>
 <translation id="5522156646677899028">Bu kengaytmada havfsizlikka ta’sir qiladigan jiddiy zaiflik aniqlandi.</translation>
@@ -6158,7 +6155,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7506242536428928412">Yangi elektron kalitdan foydalanish uchun yangi PIN kod oʻrnating</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> qurilmangiz korporativ domen ro‘yxatidan o‘tkazildi.</translation>
 <translation id="7507207699631365376">Bu taʼminotchining <ph name="BEGIN_LINK" />maxfiylik siyosati<ph name="END_LINK" /> bilan tanishish.</translation>
-<translation id="7507930499305566459">Status Responder sertifikati</translation>
 <translation id="7509097596023256288">Boshqaruv sozlanmoqda</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7509539379068593709">Ilovani oʻchirish</translation>
@@ -7405,7 +7401,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8778328560035799409">Joriy belgilangan kalitlar tozalanadi</translation>
 <translation id="8780123805589053431">Rasmlarni tavsiflash (Google orqali)</translation>
 <translation id="8780443667474968681">Ovozli qidiruv o‘chiq.</translation>
-<translation id="878069093594050299">Bu sertifikat quyidagi maqsadlarda foydalanilishi uchun tekshirildi:</translation>
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
 <translation id="8783834180813871000">Bluetooth ulanish kodini kiriting va keyin Return yoki Enter tugmasini bosing.</translation>

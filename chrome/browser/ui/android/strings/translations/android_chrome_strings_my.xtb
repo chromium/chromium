@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
+<translation id="1518421282666914498">ခံစားချက် GIF (ပုံနှင့်ဆိုင်သော ဖိုင်အမျိုးအစားတစ်ခု) <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ယနေ့ အသုံးပြုထားသည်</translation>
 <translation id="1538801903729528855">ဝဘ်တွင် ပိုမိုကောင်းမွန်သော အသံအသုံးပြုမှုဖြင့် ဆောင်ရွက်လိုက်ပါ</translation>
 <translation id="1544826120773021464">သင့် Google အကောင့်ကို စီမံခန့်ခွဲရန် "အကောင့် စီမံခန့်ခွဲရန်" ခလုတ်ကို တို့ပါ</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
 <translation id="4538018662093857852">'အပေါ့စားမုဒ်' ဖွင့်ရန်</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">သင့်စကားဝှက်ကို ဤနေရာတွင် ကြည့်ရန် သို့မဟုတ် မိတ္တူကူးရန်အတွက် ဤစက်ပစ္စည်းတွင် မျက်နှာပြင်လော့ခ်ကို သတ်မှတ်ပါ။</translation>
 <translation id="4554077758708533499">USB ကြိုးနှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="4557685098773234337">ဤနေရာသို့ ပိုမိုမြန်ဆန်စွာဝင်ကြည့်ရန် ဤစာမျက်နှာကို သင့် 'ပင်မစာမျက်နှာ' သို့ထည့်ပါ</translation>
@@ -925,6 +927,7 @@
 <translation id="6532866250404780454">Chrome တွင် သင်ဖွင့်ကြည့်ထားသည့် ဝဘ်ဆိုက်များကို ပြသမည် မဟုတ်ပါ။ ဝဘ်ဆိုက်တိုင်မာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="6534565668554028783">Google ၏ တုံ့ပြန်ချိန် အလွန်ကြာပါသည်</translation>
 <translation id="6539092367496845964">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="6541042852576515209">အရွယ်အစားပြန်ပြုပြင်ရန်နှင့် လှည့်ရန်</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{လွန်ခဲ့သော ၁ နာရီက စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # နာရီက စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="6545017243486555795">ဒေတာများအားလုံးကိုရှင်းလင်းရန်</translation>
 <translation id="6546511553472444032">ဖိုင်မှာ အန္တရာယ်ရှိနိုင်သည်</translation>
@@ -1077,6 +1080,7 @@
 <translation id="7444811645081526538">နောက်ထပ် အမျိုးအစားများ</translation>
 <translation id="7453467225369441013">ဝဘ်ဆိုက်အများစုမှနေ၍ ထွက်သွားစေမည်ဖြစ်သော်လည်း သင့် Google အကောင့်ကို ထွက်လိုက်မည် မဟုတ်ပါ။</translation>
 <translation id="7454641608352164238">နေရာအလုံအလောက် မရှိပါ</translation>
+<translation id="7468819939926272717">ခံစားချက် ရွေးရန်</translation>
 <translation id="7474822150871987353">စာမျက်နှာမှမထွက်ဘဲ ဝဘ်ဆိုက်များရှိ အကြောင်းအရာများအကြောင်း လေ့လာနိုင်သည်။ စာမျက်နှာရှိ စကားလုံးတစ်လုံးနှင့်အထက်ကို ရှာဖွေရန် ရွေးနိုင်သည်။</translation>
 <translation id="7475192538862203634">သင်သည် ဒါကို မကြာခဏ မြင်နေရလျှင်၊ <ph name="BEGIN_LINK" />အကြံပြုချက်များ<ph name="END_LINK" />ကို စမ်းကြည့်ပါ။</translation>
 <translation id="7475688122056506577">SD ကတ် မတွေ့ပါ။ သင့်ဖိုင်အချို့ ပျောက်နေနိုင်ပါသည်။</translation>
@@ -1159,6 +1163,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{မဖတ်ရသေးသော စာမျက်နှာ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> မျက်နှာ ရှိသည်}other{မဖတ်ရသေးသော စာမျက်နှာ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> မျက်နှာ ရှိသည်}}</translation>
 <translation id="7882131421121961860">မည်သည့် မှတ်တမ်းမျှ မတွေ့ပါ</translation>
 <translation id="7886917304091689118">Chrome တွင် ဖွင့်ထားသည်</translation>
+<translation id="7887334752153342268">မူပွားယူရန်</translation>
 <translation id="789763218334337857">Chrome အသုံးပြုနည်း</translation>
 <translation id="7903184275147100332">တစ်မိနစ်ခန့် ကြာနိုင်သည်</translation>
 <translation id="7919123827536834358">ဤဘာသာစကားများကို အလိုအလျောက် ပြန်ဆိုပါ</translation>

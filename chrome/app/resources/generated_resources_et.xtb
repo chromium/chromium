@@ -2663,7 +2663,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3732078975418297900">Viga real <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-koodi pikkus tohib olla kuni 63 tähemärki</translation>
 <translation id="3732857534841813090">Google'i assistendiga seotud teave</translation>
-<translation id="3733127536501031542">SSL-server koos seadistamisega</translation>
 <translation id="3733296813637058299">Installime need rakendused teie eest. Play poest leiate oma seadme <ph name="DEVICE_TYPE" /> jaoks rohkem rakendusi.</translation>
 <translation id="3735740477244556633">Sortimisalus:</translation>
 <translation id="3738632186060045350">Seadme <ph name="DEVICE_TYPE" /> andmed kustutatakse 24 tunni pärast</translation>
@@ -3007,7 +3006,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4068776064906523561">Salvestatud sõrmejäljed</translation>
 <translation id="407173827865827707">Klõpsamisel</translation>
 <translation id="4072701974556190758">Parool salvestatakse teie Google'i kontole <ph name="ACCOUNT" />. Te ei pea seda meelde jätma.</translation>
-<translation id="4074900173531346617">Meili allkirjastamise sertifikaat</translation>
 <translation id="407520071244661467">Skaleeri</translation>
 <translation id="407543464472585404">Kasutaja <ph name="NAME" /> profiil on lingitud e-posti aadressiga <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Faili <ph name="FILE_NAME" /> ei saa üle kanda.</translation>
@@ -4319,7 +4317,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5517304475148761050">See rakendus nõuab juurdepääsu Play poele</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Küsi, kui sait soovib näha lõikelauale kopeeritud teksti ja kujutisi</translation>
-<translation id="5518584115117143805">Meili krüpteerimise sertifikaat</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Kas see on avaleht, mida ootasite?</translation>
 <translation id="5522156646677899028">See laiendus sisaldab tõsist turvaauku.</translation>
@@ -6160,7 +6157,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7506242536428928412">Oma uue turvavõtme kasutamiseks seadistage uus PIN-kood</translation>
 <translation id="7506541170099744506">Teie <ph name="DEVICE_TYPE" /> registreeriti ettevõtte halduse jaoks.</translation>
 <translation id="7507207699631365376">Vaadake selle teenusepakkuja <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" /></translation>
-<translation id="7507930499305566459">Olekuvastaja sertifikaat</translation>
 <translation id="7509097596023256288">Halduse seadistamine</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
 <translation id="7509539379068593709">Desinstalli rakendus</translation>
@@ -7409,7 +7405,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8778328560035799409">Teie praegu määratud lülitid kustutatakse</translation>
 <translation id="8780123805589053431">Google'ist piltide kirjelduste hankimine</translation>
 <translation id="8780443667474968681">Häälotsing on välja lülitatud.</translation>
-<translation id="878069093594050299">Sellel sertifikaadil on järgmised kinnitatud kasutusalad:</translation>
 <translation id="8781834595282316166">Uus vaheleht grupis</translation>
 <translation id="8782565991310229362">Kioski rakenduse käivitamine tühistati.</translation>
 <translation id="8783834180813871000">Sisestage Bluetoothi sidumiskood ja vajutage seejärel sisestusklahvi.</translation>

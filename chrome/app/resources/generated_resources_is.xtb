@@ -2672,7 +2672,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3732078975418297900">Villa í línu <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-númer getur að hámarki verið 63 stafir</translation>
 <translation id="3732857534841813090">Upplýsingar sem tengjast Google hjálpara</translation>
-<translation id="3733127536501031542">SSL-þjónn með uppreiknun</translation>
 <translation id="3733296813637058299">Við setjum upp þessi forrit fyrir þig. Þú getur fundið fleiri forrit fyrir <ph name="DEVICE_TYPE" /> í Play Store.</translation>
 <translation id="3735740477244556633">Raða eftir</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gögnum verður eytt eftir sólarhring</translation>
@@ -3016,7 +3015,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4068776064906523561">Vistuð fingraför</translation>
 <translation id="407173827865827707">Við smell</translation>
 <translation id="4072701974556190758">Aðgangsorð verður vistað á Google reikningnum þínum, <ph name="ACCOUNT" />. Þú þarft ekki að leggja það á minnið.</translation>
-<translation id="4074900173531346617">Vottorð tölvupóstsundirritunar</translation>
 <translation id="407520071244661467">Breyta stærð</translation>
 <translation id="407543464472585404">Prófíllinn sem <ph name="NAME" /> á er tengdur <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Ekki er hægt að senda <ph name="FILE_NAME" /> út.</translation>
@@ -4329,7 +4327,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5517304475148761050">Þetta forrit krefst aðgangs að Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Spyrja þegar vefsvæði vill sjá texta og myndir sem þú afritar á klippiborðið</translation>
-<translation id="5518584115117143805">Dulkóðunarvottorð tölvupósts</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Er þetta heimasíðan sem þú bjóst við?</translation>
 <translation id="5522156646677899028">Þessi viðbót inniheldur alvarlegan öryggisgalla.</translation>
@@ -6170,7 +6167,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7506242536428928412">Stilltu nýtt PIN-númer til að geta notað nýja öryggislykilinn</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> var skráð í umsjón fyrirtækis.</translation>
 <translation id="7507207699631365376">Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> þjónustuveitu</translation>
-<translation id="7507930499305566459">Vottorð stöðusvarveitu</translation>
 <translation id="7509097596023256288">Uppsetning umsjónar</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7509539379068593709">Fjarlægja forrit</translation>
@@ -7419,7 +7415,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8778328560035799409">Rofar sem þegar er búið að úthluta verða hreinsaðir</translation>
 <translation id="8780123805589053431">Fá lýsingar á myndum frá Google</translation>
 <translation id="8780443667474968681">Slökkt hefur verið á raddleit.</translation>
-<translation id="878069093594050299">Þetta vottorð hefur verið sannvottað til eftirfarandi nota:</translation>
 <translation id="8781834595282316166">Nýr flipi í hópi</translation>
 <translation id="8782565991310229362">Hætt við að ræsa sjálfsalaforrit.</translation>
 <translation id="8783834180813871000">Sláðu inn Bluetooth-pörunarkóðann og ýttu svo á Return eða Enter.</translation>

@@ -2672,7 +2672,6 @@
 <translation id="3732078975418297900"><ph name="ERROR_LINE" />வது வரியில் பிழை</translation>
 <translation id="3732530910372558017">பின்னில் அதிகப்பட்சம் 63 எழுத்துகள் வரை இருக்க வேண்டும்</translation>
 <translation id="3732857534841813090">Google Assistantடிற்குத் தொடர்புடைய தகவல்கள்</translation>
-<translation id="3733127536501031542">அதிகமாக்குதலுடனான SSL சேவையகம்</translation>
 <translation id="3733296813637058299">உங்களுக்காக அந்த ஆப்ஸை நிறுவுவோம். உங்கள் <ph name="DEVICE_TYPE" />க்கான மேலும் பல ஆப்ஸை Play Storeரில் கண்டறியலாம்.</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> தரவு 24 மணிநேரத்தில் நீக்கப்படும்</translation>
@@ -3016,7 +3015,6 @@
 <translation id="4068776064906523561">சேமித்த கைரேகைகள்</translation>
 <translation id="407173827865827707">கிளிக் செய்யும் போது</translation>
 <translation id="4072701974556190758">உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) கடவுச்சொல் சேமிக்கப்படும். இதை நினைவில்கொள்ளத் தேவையில்லை.</translation>
-<translation id="4074900173531346617">மின்னஞ்சல் கையொப்பமிடுநர் சான்றிதழ்</translation>
 <translation id="407520071244661467">அளவு</translation>
 <translation id="407543464472585404"><ph name="NAME" /> இன் சுயவிவரம் <ph name="EMAIL" /> உடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" />ஐ அலைபரப்ப முடியவில்லை.</translation>
@@ -4329,7 +4327,6 @@
 <translation id="5517304475148761050">இந்த ஆப்ஸிற்கு Play Storeருக்கான அணுகல் வேண்டும்</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும் பார்ப்பதற்குத் தளம் விரும்பும் போது, கேள்</translation>
-<translation id="5518584115117143805">மின்னஞ்சல் என்க்ரிப்ஷன் சான்றிதழ்</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">இந்த முகப்புப் பக்கம் நீங்கள் எதிர்பார்த்தது போன்று உள்ளதா?</translation>
 <translation id="5522156646677899028">இந்த நீட்டிப்பு தீவிர பாதுகாப்புப் பாதிப்பைக் கொண்டுள்ளது.</translation>
@@ -6171,7 +6168,6 @@
 <translation id="7506242536428928412">உங்கள் புதிய பாதுகாப்பு விசையைப் பயன்படுத்த, புதிய பின்னை (PIN) அமைக்கவும்</translation>
 <translation id="7506541170099744506">உங்கள் <ph name="DEVICE_TYPE" /> சாதனம், நிறுவன மேலாண்மைக்குப் பதிவுசெய்யப்பட்டது.</translation>
 <translation id="7507207699631365376">இந்த வழங்குநரின் <ph name="BEGIN_LINK" />தனியுரிமைக் கொள்கையைக்<ph name="END_LINK" /> காட்டு</translation>
-<translation id="7507930499305566459">நிலை பதிலளிப்பாளர் சான்றிதழ்</translation>
 <translation id="7509097596023256288">நிர்வாகத்தை அமைக்கிறது</translation>
 <translation id="7509246181739783082">உங்கள் அடையாளத்தைச் சரிபார்த்தல்</translation>
 <translation id="7509539379068593709">ஆப்ஸை நிறுவல் நீக்கு</translation>
@@ -7420,7 +7416,6 @@
 <translation id="8778328560035799409">தற்போதுள்ள ஸ்விட்ச் ஒதுக்கீடுகள் அழிக்கப்படும்</translation>
 <translation id="8780123805589053431">பட விவரங்களை Googleளிலிருந்து பெறுக</translation>
 <translation id="8780443667474968681">குரல் தேடல் முடக்கப்பட்டுள்ளது.</translation>
-<translation id="878069093594050299">பின்வரும் பயன்பாடுகளுக்காக, இந்த சான்றிதழானது சரிபார்க்கப்பட்டது:</translation>
 <translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
 <translation id="8782565991310229362">Kiosk ஆப்ஸின் துவக்கம் ரத்தானது.</translation>
 <translation id="8783834180813871000">புளூடூத் இணைத்தல் குறியீட்டை உள்ளிட்டு Return அல்லது Enterரை அழுத்தவும்.</translation>

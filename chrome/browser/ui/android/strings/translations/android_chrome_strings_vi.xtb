@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
+<translation id="1518421282666914498">GIF biểu tượng cảm xúc <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="1538801903729528855">Cải thiện trải nghiệm nhập liệu bằng giọng nói trên web</translation>
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
@@ -574,6 +575,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4532845899244822526">Chọn thư mục</translation>
 <translation id="4538018662093857852">Bật Chế độ thu gọn</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Để xem hoặc sao chép mật khẩu của bạn tại đây, hãy đặt khóa màn hình trên thiết bị này.</translation>
 <translation id="4554077758708533499">Đã kết nối bằng cáp USB</translation>
 <translation id="4557685098773234337">Để truy cập trang này nhanh hơn, hãy thêm trang vào Màn hình chính</translation>
@@ -926,6 +928,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6532866250404780454">Các trang web bạn truy cập trên Chrome sẽ không hiển thị. Tất cả lịch hẹn giờ trên trang web sẽ bị xóa.</translation>
 <translation id="6534565668554028783">Google mất quá nhiều thời gian để phản hồi</translation>
 <translation id="6539092367496845964">Đã xảy ra lỗi. Hãy thử lại sau.</translation>
+<translation id="6541042852576515209">Đổi kích thước và xoay</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Đã kiểm tra 1 giờ trước}other{Đã kiểm tra # giờ trước}}</translation>
 <translation id="6545017243486555795">Xóa tất cả dữ liệu</translation>
 <translation id="6546511553472444032">Tệp có thể gây hại</translation>
@@ -1078,6 +1081,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7444811645081526538">Danh mục khác</translation>
 <translation id="7453467225369441013">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="7454641608352164238">Không đủ dung lượng</translation>
+<translation id="7468819939926272717">Chọn một biểu tượng cảm xúc</translation>
 <translation id="7474822150871987353">Tìm hiểu về các chủ đề trên trang web mà không cần rời khỏi trang. Bạn có thể tìm kiếm bằng cách chọn một hoặc nhiều từ trên trang.</translation>
 <translation id="7475192538862203634">Nếu bạn thường xuyên thấy thông báo này, hãy thử các <ph name="BEGIN_LINK" />đề xuất<ph name="END_LINK" /> sau.</translation>
 <translation id="7475688122056506577">Không tìm thấy thẻ SD. Một số tệp của bạn có thể bị thiếu.</translation>
@@ -1160,6 +1164,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
 <translation id="7882131421121961860">Không tìm thấy nội dung nào khớp</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
+<translation id="7887334752153342268">Nhân đôi</translation>
 <translation id="789763218334337857">Cách sử dụng Chrome</translation>
 <translation id="7903184275147100332">Quá trình này có thể mất ít phút</translation>
 <translation id="7919123827536834358">Tự động dịch những ngôn ngữ này</translation>

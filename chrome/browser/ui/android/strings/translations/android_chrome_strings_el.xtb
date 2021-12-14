@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1513352483775369820">Σελιδοδείκτες και ιστορικό ιστού</translation>
 <translation id="1513858653616922153">Διαγραφή κωδικού πρόσβασης</translation>
+<translation id="1518421282666914498">GIF συναισθημάτων <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Ενεργή σήμερα</translation>
 <translation id="1538801903729528855">Αποκτήστε μια καλύτερη εμπειρία φωνής στον ιστό</translation>
 <translation id="1544826120773021464">Για να διαχειριστείτε τον Λογαριασμό σας Google, πατήστε το κουμπί Διαχείριση λογαριασμού.</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
 <translation id="4538018662093857852">Ενεργοποίηση λειτουργίας Lite</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Για να δείτε ή να αντιγράψετε τον κωδικό πρόσβασης εδώ, ρυθμίστε το κλείδωμα οθόνης σε αυτήν τη συσκευή.</translation>
 <translation id="4554077758708533499">Συνδέθηκε με καλώδιο USB</translation>
 <translation id="4557685098773234337">Προσθέστε αυτήν τη σελίδα στην αρχική οθόνη για ταχύτερη μετάβαση.</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">Δεν θα εμφανίζονται οι ιστότοποι που επισκέπτεστε στο Chrome. Όλα τα χρονόμετρα ιστοτόπων θα διαγραφούν.</translation>
 <translation id="6534565668554028783">Η απάντηση από το Google καθυστέρησε υπερβολικά</translation>
 <translation id="6539092367496845964">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά αργότερα.</translation>
+<translation id="6541042852576515209">Αλλαγή μεγέθους και περιστροφή</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ελέγχθηκε πριν από μία ώρα}other{Ελέγχθηκε πριν από # ώρες}}</translation>
 <translation id="6545017243486555795">Διαγραφή όλων των δεδομένων</translation>
 <translation id="6546511553472444032">Το αρχείο μπορεί να είναι επιβλαβές</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">Περισσότερες κατηγορίες</translation>
 <translation id="7453467225369441013">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. Δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google.</translation>
 <translation id="7454641608352164238">Ανεπαρκής χώρος</translation>
+<translation id="7468819939926272717">Επιλέξτε ένα συναίσθημα</translation>
 <translation id="7474822150871987353">Μάθετε περισσότερα για θέματα σε ιστοτόπους, χωρίς να απομακρυνθείτε από τη σελίδα. Επιλέξτε μία ή περισσότερες λέξεις στη σελίδα για να τις αναζητήσετε.</translation>
 <translation id="7475192538862203634">Εάν αυτό το μήνυμα εμφανίζεται συχνά, δοκιμάστε αυτές τις <ph name="BEGIN_LINK" />προτάσεις<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Η κάρτα SD δεν βρέθηκε. Μπορεί να λείπουν μερικά από τα αρχεία σας.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> μη αναγνωσμένη σελίδα}other{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="7882131421121961860">Δεν βρέθηκε ιστορικό</translation>
 <translation id="7886917304091689118">Εκτέλεση στο Chrome</translation>
+<translation id="7887334752153342268">Αντιγραφή</translation>
 <translation id="789763218334337857">Τρόπος χρήσης του Chrome</translation>
 <translation id="7903184275147100332">Μπορεί να χρειαστεί λίγα λεπτά</translation>
 <translation id="7919123827536834358">Αυτόματη μετάφραση αυτών των γλωσσών</translation>

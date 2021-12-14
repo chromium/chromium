@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">සෙවුම් යන්ත්‍රය</translation>
 <translation id="1513352483775369820">පිටුසන් සහ වෙබ් ඉතිහාසය</translation>
 <translation id="1513858653616922153">මුරපදය මකන්න</translation>
+<translation id="1518421282666914498">හැඟීම් GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">අද ක්‍රියාත්මකයි</translation>
 <translation id="1538801903729528855">වෙබයෙහි වඩා හොඳ හඬ අත්දැකීමක් ලබා ගන්න</translation>
 <translation id="1544826120773021464">ඔබේ Google ගිණුම කළමනා කිරීමට, "ගිණුම කළමනා කරන්න" බොත්තමට තට්ටු කරන්න</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="4538018662093857852">සැහැල්ලු ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{ටැබ <ph name="TAB_COUNT_ONE" />}one{ටැබ <ph name="TAB_COUNT_MANY" />, අප්‍රකට <ph name="TAB_COUNT_INCOGNITO" />}other{ටැබ <ph name="TAB_COUNT_MANY" />, අප්‍රකට <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">ඔබේ මුරපදය මෙහි බැලීමට හෝ පිටපත් කිරීම සඳහා, මෙම උපාංගයේ තිර අගුල සකසන්න.</translation>
 <translation id="4554077758708533499">USB කේබලය සමගින් සම්බන්ධයි</translation>
 <translation id="4557685098773234337">ඉක්මණින් මෙහි පැමිණීමට, මෙම පිටුව ඔබගේ මුල් තිරයට එක් කරන්න</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">ඔබ Chrome තුළ පිවිසෙන අඩවි පෙන්වනු නොලැබේ. සියලුම අඩවි මුහුර්තක මකනු ඇත.</translation>
 <translation id="6534565668554028783">Google ප්‍රතිචාර දැක්වීමට දිගු කාලයක් ගත්තේය</translation>
 <translation id="6539092367496845964">යම් දෙයක් වැරදිණි. පසුව නැවත උත්සාහ කරන්න.</translation>
+<translation id="6541042852576515209">ප්‍රතිප්‍රමාණ කරන්න සහ කරකවන්න</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{පැය 1කට පෙර පරීක්ෂා කරන ලදි}one{පැය #කට පෙර පරීක්ෂා කරන ලදි}other{පැය #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="6545017243486555795">සියලු දත්ත හිස් කරන්න</translation>
 <translation id="6546511553472444032">ගොනුව හානිකර විය හැකිය</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">තවත් ප්‍රවර්ග</translation>
 <translation id="7453467225369441013">ඔබව බොහෝ අඩවිවලින් වරනු ඇත. ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත.</translation>
 <translation id="7454641608352164238">ප්‍රමාණවත් ඉඩක් නොමැත</translation>
+<translation id="7468819939926272717">හැඟීමක් තෝරන්න</translation>
 <translation id="7474822150871987353">පිටුව හැර යාමෙන් තොරව වෙබ් අඩවිවල මාතෘකා පිළිබඳ දැන ගන්න. ඒවා සෙවීම සඳහා පිටුවේ ඇති වචන එකක් හෝ කිහිපයක් තෝරන්න.</translation>
 <translation id="7475192538862203634">ඔබ මෙය නිතර දකින්නේ නම්, මෙම <ph name="BEGIN_LINK" />යෝජනා<ph name="END_LINK" /> උත්සාහ කරන්න.</translation>
 <translation id="7475688122056506577">SD පත හමු නොවිණි. ඔබේ සමහර ගොනු අස්ථානගත විය හැකිය.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ඔබට නොකියවූ පිටු <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />ක් ඇත}one{ඔබට නොකියවූ පිටු <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />ක් ඇත}other{ඔබට නොකියවූ පිටු <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />ක් ඇත}}</translation>
 <translation id="7882131421121961860">ඉතිහාසයක් හමු නොවිණි</translation>
 <translation id="7886917304091689118">Chrome තුළ ධාවනය වේ</translation>
+<translation id="7887334752153342268">ද්විතීයකරණය</translation>
 <translation id="789763218334337857">Chrome භාවිත කරන ආකාරය</translation>
 <translation id="7903184275147100332">මෙයට මිනිත්තුවක් ගත විය හැකිය</translation>
 <translation id="7919123827536834358">මෙම භාෂා ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>

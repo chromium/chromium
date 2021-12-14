@@ -2672,7 +2672,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3732078975418297900">Lỗi trên dòng <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Mã PIN chỉ được dài tối đa 63 ký tự</translation>
 <translation id="3732857534841813090">Thông tin liên quan đến Trợ lý Google</translation>
-<translation id="3733127536501031542">Máy chủ SSL với Step-up</translation>
 <translation id="3733296813637058299">Chúng tôi sẽ cài đặt các ứng dụng đó cho bạn. Bạn có thể tìm thêm ứng dụng cho <ph name="DEVICE_TYPE" /> của mình trong Cửa hàng Play.</translation>
 <translation id="3735740477244556633">Sắp xếp theo</translation>
 <translation id="3738632186060045350">Dữ liệu trên <ph name="DEVICE_TYPE" /> sẽ bị xóa sau 24 giờ</translation>
@@ -3016,7 +3015,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4068776064906523561">Vân tay đã lưu</translation>
 <translation id="407173827865827707">Khi nhấp chuột</translation>
 <translation id="4072701974556190758">Mật khẩu sẽ được lưu trong Tài khoản Google, <ph name="ACCOUNT" />. Bạn sẽ không phải nhớ mật khẩu.</translation>
-<translation id="4074900173531346617">Chứng chỉ Người ký Email</translation>
 <translation id="407520071244661467">Tỷ lệ</translation>
 <translation id="407543464472585404">Hồ sơ của <ph name="NAME" /> được liên kết với <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Không thể truyền <ph name="FILE_NAME" />.</translation>
@@ -4329,7 +4327,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5517304475148761050">Ứng dụng này cần có quyền truy cập vào Cửa hàng Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> — <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Hỏi khi một trang web muốn xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm</translation>
-<translation id="5518584115117143805">Chứng chỉ Mã hóa Email</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Đây có phải là trang chủ bạn muốn không?</translation>
 <translation id="5522156646677899028">Tiện ích này chứa lỗ hổng bảo mật nghiêm trọng.</translation>
@@ -6170,7 +6167,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7506242536428928412">Để sử dụng khóa bảo mật mới của bạn, hãy đặt một mã PIN mới</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> của bạn đã được đăng ký thành công cho quản lý doanh nghiệp.</translation>
 <translation id="7507207699631365376">Xem <ph name="BEGIN_LINK" />chính sách quyền riêng tư<ph name="END_LINK" /> của nhà cung cấp này</translation>
-<translation id="7507930499305566459">Chứng chỉ Trả lời Trạng thái</translation>
 <translation id="7509097596023256288">Thiết lập tính năng quản lý</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
 <translation id="7509539379068593709">Gỡ cài đặt ứng dụng</translation>
@@ -7419,7 +7415,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8778328560035799409">Các công tắc hiện đã gán của bạn sẽ bị xóa</translation>
 <translation id="8780123805589053431">Lấy nội dung mô tả hình ảnh từ Google</translation>
 <translation id="8780443667474968681">Tính năng tìm kiếm bằng giọng nói đã bị tắt.</translation>
-<translation id="878069093594050299">Chứng chỉ này đã được xác minh cho các mục đích sử dụng sau:</translation>
 <translation id="8781834595282316166">Thẻ mới trong nhóm</translation>
 <translation id="8782565991310229362">Đã hủy chạy ứng dụng kiosk.</translation>
 <translation id="8783834180813871000">Nhập mã ghép nối Bluetooth, sau đó nhấn phím Return hoặc Enter.</translation>

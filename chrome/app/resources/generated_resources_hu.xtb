@@ -2670,7 +2670,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3732078975418297900">Hiba a következő sorban: <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">A PIN-kód legfeljebb 63 karakterből állhat</translation>
 <translation id="3732857534841813090">A Google Segéddel kapcsolatos információk</translation>
-<translation id="3733127536501031542">SSL-szerver Step-up használatával</translation>
 <translation id="3733296813637058299">Telepítjük Önnek ezeket az alkalmazásokat. További alkalmazásokat találhat <ph name="DEVICE_TYPE" /> eszközéhez a Play Áruházban.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3738632186060045350">A(z) <ph name="DEVICE_TYPE" /> eszközön lévő adatok 24 órán belül törlődnek</translation>
@@ -3013,7 +3012,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4068776064906523561">Mentett ujjlenyomatok</translation>
 <translation id="407173827865827707">Kattintásra</translation>
 <translation id="4072701974556190758">Jelszava mentésre kerül Google-fiókjába (<ph name="ACCOUNT" />). Így nem kell észben tartania.</translation>
-<translation id="4074900173531346617">E-mail aláíró tanúsítvány</translation>
 <translation id="407520071244661467">Átméretezés</translation>
 <translation id="407543464472585404"><ph name="NAME" /> profilja ehhez az e-mail-címhez van társítva: <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Nem lehet átküldeni a következőt: <ph name="FILE_NAME" />.</translation>
@@ -4327,7 +4325,6 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5517304475148761050">Ennek az alkalmazásnak hozzáférésre van szüksége a Play Áruházhoz</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Kérdezzen rá, amikor az adott webhely szeretné megtekinteni a vágólapra másolt szövegeket és képeket</translation>
-<translation id="5518584115117143805">E-mail titkosítási tanúsítvány</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Erre a kezdőoldalra számított?</translation>
 <translation id="5522156646677899028">Ez a bővítmény komoly biztonsági rést tartalmaz.</translation>
@@ -6169,7 +6166,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7506242536428928412">Az új biztonsági kulcs használatához állítson be új PIN-kódot.</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> eszközének vállalati kezelés céljából történő rögzítése sikerült.</translation>
 <translation id="7507207699631365376">Olvassa el a szolgáltató <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" /></translation>
-<translation id="7507930499305566459">Állapotjelentő tanúsítvány</translation>
 <translation id="7509097596023256288">Kezelés beállítása</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>
 <translation id="7509539379068593709">Alkalmazás eltávolítása</translation>
@@ -7417,7 +7413,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8778328560035799409">A jelenleg hozzárendelt kapcsolók törlődnek</translation>
 <translation id="8780123805589053431">Képleírások lekérése a Google-tól</translation>
 <translation id="8780443667474968681">A hangalapú keresés ki van kapcsolva.</translation>
-<translation id="878069093594050299">Ezt a tanúsítványt a következő célokra lehet felhasználni:</translation>
 <translation id="8781834595282316166">Új lap a csoportban</translation>
 <translation id="8782565991310229362">Kiosk-alkalmazás indítása visszavonva.</translation>
 <translation id="8783834180813871000">Írja be a párosítókódot, majd nyomja meg az Enter vagy a Return billentyűt</translation>

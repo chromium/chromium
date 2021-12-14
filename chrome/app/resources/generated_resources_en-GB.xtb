@@ -2672,7 +2672,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3732078975418297900">Error on line <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN must be at most 63 characters</translation>
 <translation id="3732857534841813090">Google Assistant related information</translation>
-<translation id="3733127536501031542">SSL Server with Step-up</translation>
 <translation id="3733296813637058299">We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE" /> in the Play Store.</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> data will be deleted in 24 hours</translation>
@@ -3016,7 +3015,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4068776064906523561">Saved fingerprints</translation>
 <translation id="407173827865827707">On click</translation>
 <translation id="4072701974556190758">Password will be saved in your Google Account, <ph name="ACCOUNT" />. You won’t have to remember it.</translation>
-<translation id="4074900173531346617">Email signer certificate</translation>
 <translation id="407520071244661467">Scale</translation>
 <translation id="407543464472585404"><ph name="NAME" />'s profile is linked to <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Unable to cast <ph name="FILE_NAME" />.</translation>
@@ -4329,7 +4327,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5517304475148761050">This app requires access to the Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Ask when a site wants to see text and images copied to the clipboard</translation>
-<translation id="5518584115117143805">Email Encryption Certificate</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
 <translation id="5522156646677899028">This extension contains a serious security vulnerability.</translation>
@@ -6170,7 +6167,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7506242536428928412">To use your new security key, set a new PIN</translation>
 <translation id="7506541170099744506">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management.</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
-<translation id="7507930499305566459">Status Responder Certificate</translation>
 <translation id="7509097596023256288">Setting up management</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7509539379068593709">Uninstall app</translation>
@@ -7419,7 +7415,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8778328560035799409">Your currently assigned switches will be cleared</translation>
 <translation id="8780123805589053431">Get image descriptions from Google</translation>
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
-<translation id="878069093594050299">This certificate has been verified for the following usages:</translation>
 <translation id="8781834595282316166">New Tab in Group</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>

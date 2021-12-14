@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
+<translation id="1518421282666914498">ഇമോഷൻ GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
 <translation id="1538801903729528855">വെബിൽ മികച്ച ശബ്‌ദാനുഭവം നേടൂ</translation>
 <translation id="1544826120773021464">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യാൻ, "അക്കൗണ്ട് മാനേജ് ചെയ്യുക" ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4538018662093857852">ലൈറ്റ് മോഡ് ഓണാക്കുക</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">ഇവിടെ ‌നിങ്ങളുടെ ‌പാസ്‌വേഡ് കാണാനും പകർത്താനും കഴിയും, ഈ ഉപകരണത്തിൽ സ്‌ക്രീൻ ലോക്ക് ‌സജ്ജമാക്കുക.</translation>
 <translation id="4554077758708533499">USB കേബിൾ ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്തു</translation>
 <translation id="4557685098773234337">ഇവിടെ വേഗത്തിൽ എത്താൻ, നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് ഈ പേജ് ചേർക്കുക</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">നിങ്ങൾ Chrome-ൽ സന്ദർശിക്കുന്ന സൈറ്റുകൾ കാണിക്കില്ല. എല്ലാ സൈറ്റ് ടൈമറുകളും ഇല്ലാതാക്കപ്പെടും.</translation>
 <translation id="6534565668554028783">Google പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുത്തു</translation>
 <translation id="6539092367496845964">എന്തോ കുഴപ്പം സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="6541042852576515209">വലുപ്പം മാറ്റി റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{ഒരു മണിക്കൂർ മുമ്പ് പരിശോധിച്ചു}other{# മണിക്കൂർ മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="6545017243486555795">എല്ലാ വിവരങ്ങളും മായ്‌ക്കുക</translation>
 <translation id="6546511553472444032">ഫയൽ ദോഷകരമായേക്കാം</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">കൂടുതൽ‍ വിഭാഗങ്ങള്‍</translation>
 <translation id="7453467225369441013">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും. നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല.</translation>
 <translation id="7454641608352164238">വേണ്ടത്ര ഇടമില്ല</translation>
+<translation id="7468819939926272717">ഒരു ഇമോഷൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7474822150871987353">പേജ് വിട്ടുപോകാതെ തന്നെ വെബ്‌സൈറ്റുകളിലെ വിഷയങ്ങളെക്കുറിച്ച് അറിയുക. തിരയാൻ, പേജിലെ ഒന്നോ അതിലധികമോ വാക്കുകൾ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7475192538862203634">നിങ്ങൾ ഇത് പതിവായി കാണുന്നുണ്ടെങ്കിൽ, ഈ <ph name="BEGIN_LINK" />നിർദ്ദേശങ്ങൾ<ph name="END_LINK" /> പരീക്ഷിക്കൂ.</translation>
 <translation id="7475688122056506577">SD കാർഡ് കണ്ടെത്തിയില്ല. നിങ്ങളുടെ ചില ഫയലുകൾ നഷ്‌ടപ്പെട്ടേക്കാം.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{നിങ്ങൾക്ക് വായിക്കാത്ത <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> പേജ് ഉണ്ട്}other{നിങ്ങൾക്ക് വായിക്കാത്ത <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> പേജുകൾ ഉണ്ട്}}</translation>
 <translation id="7882131421121961860">ചരിത്രം കണ്ടില്ല</translation>
 <translation id="7886917304091689118">Chrome-ൽ റൺ ചെയ്യുന്നു</translation>
+<translation id="7887334752153342268">തനിപ്പകര്‍പ്പ്</translation>
 <translation id="789763218334337857">Chrome എങ്ങനെ ഉപയോഗിക്കാം</translation>
 <translation id="7903184275147100332">ഇതിന് ഒരു മിനിറ്റ് എടുത്തേക്കാം</translation>
 <translation id="7919123827536834358">ഈ ഭാഷകൾ സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>

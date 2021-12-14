@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
+<translation id="1518421282666914498">Զմայլիկով GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="1538801903729528855">Օգտագործեք ձայնային ներածումը համացանցում</translation>
 <translation id="1544826120773021464">Google հաշիվը կառավարելու համար հպեք «Կառավարել հաշիվը» կոճակին</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
 <translation id="4538018662093857852">Միացնել Lite ռեժիմը</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Ձեր գաղտնաբառն այստեղ տեսնելու կամ պատճենելու համար այս սարքում միացրեք էկրանի կողպումը:</translation>
 <translation id="4554077758708533499">Միացված է USB մալուխով</translation>
 <translation id="4557685098773234337">Այս կայքն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին</translation>
@@ -926,6 +928,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6532866250404780454">Chrome-ում ձեր այցելած կայքերը չեն ցուցադրվի։ Բոլոր կայքերի ժամաչափերը կջնջվեն։</translation>
 <translation id="6534565668554028783">Google-ը չափազանց երկար է պատասխանում</translation>
 <translation id="6539092367496845964">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
+<translation id="6541042852576515209">Չափափոխել և պտտել</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ստուգվել է 1 ժամ առաջ}one{Ստուգվել է # ժամ առաջ}other{Ստուգվել է # ժամ առաջ}}</translation>
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
 <translation id="6546511553472444032">Ֆայլը կարող է վտանգավոր լինել</translation>
@@ -1078,6 +1081,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7444811645081526538">Այլ կատեգորիաներ</translation>
 <translation id="7453467225369441013">Դուք դուրս կգրվեք կայքերի մեծ մասից, բայց կմնաք Google հաշվում:</translation>
 <translation id="7454641608352164238">Բավարար տարածք չկա</translation>
+<translation id="7468819939926272717">Ընտրեք զմայլիկ</translation>
 <translation id="7474822150871987353">Իմացեք ավելին կայքի բովանդակության մասին՝ առանց էջից դուրս գալու։ Էջում ընտրեք մեկ կամ մի քանի բառ՝ դրանք որոնելու համար։</translation>
 <translation id="7475192538862203634">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, օգտվեք այս <ph name="BEGIN_LINK" />խորհուրդներից<ph name="END_LINK" />:</translation>
 <translation id="7475688122056506577">SD քարտը չհաջողվեց գտնել: Որոշ ֆայլեր կարող են այլևս չլինել:</translation>
@@ -1160,6 +1164,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> չկարդացված էջ}one{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}other{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}}</translation>
 <translation id="7882131421121961860">Պատմությունը դատարկ է</translation>
 <translation id="7886917304091689118">Այս էջն արդեն բացված է Chrome-ում</translation>
+<translation id="7887334752153342268">Կրկնօրինակել</translation>
 <translation id="789763218334337857">Ինչպես օգտագործել Chrome-ը</translation>
 <translation id="7903184275147100332">Սա կարող է մեկ րոպե տևել</translation>
 <translation id="7919123827536834358">Ավտոմատ թարգմանել այս լեզուներով էջերը</translation>

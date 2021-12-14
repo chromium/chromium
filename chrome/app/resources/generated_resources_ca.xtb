@@ -2656,7 +2656,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3732078975418297900">Hi ha un error a la línia <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">El PIN pot tenir com a màxim 63 caràcters</translation>
 <translation id="3732857534841813090">Informació relacionada amb l'Assistent de Google</translation>
-<translation id="3733127536501031542">Servidor SSL amb entrada progressiva</translation>
 <translation id="3733296813637058299">T'instal·larem aquestes aplicacions. Pots trobar més aplicacions per al teu <ph name="DEVICE_TYPE" /> a Play Store.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3738632186060045350">Les dades del dispositiu <ph name="DEVICE_TYPE" /> se suprimiran en un termini de 24 hores</translation>
@@ -2999,7 +2998,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4068776064906523561">Empremtes digitals desades</translation>
 <translation id="407173827865827707">En fer clic</translation>
 <translation id="4072701974556190758">La contrasenya es desarà al teu Compte de Google, <ph name="ACCOUNT" />. No caldrà que la memoritzis.</translation>
-<translation id="4074900173531346617">Certificat del signant del correu electrònic</translation>
 <translation id="407520071244661467">Canvia l'escala</translation>
 <translation id="407543464472585404">El perfil de <ph name="NAME" /> està enllaçat a <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">No es pot emetre <ph name="FILE_NAME" /></translation>
@@ -4312,7 +4310,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5517304475148761050">Aquesta aplicació requereix accés a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Pregunta'm quan un lloc web vulgui veure el text i les imatges copiats al porta-retalls</translation>
-<translation id="5518584115117143805">Certificat d'encriptació de correu electrònic</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Aquesta pàgina d'inici és la que esperàveu?</translation>
 <translation id="5522156646677899028">Aquesta extensió conté una vulnerabilitat de seguretat greu.</translation>
@@ -6154,7 +6151,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7506242536428928412">Per utilitzar la nova clau de seguretat, defineix un PIN nou</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> s'ha inscrit correctament a la gestió empresarial.</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> d'aquest proveïdor</translation>
-<translation id="7507930499305566459">Certificat de resposta d'estat</translation>
 <translation id="7509097596023256288">Configuració de la gestió</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7509539379068593709">Desinstal·la l'aplicació</translation>
@@ -7404,7 +7400,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8778328560035799409">Els interruptors que tens assignats actualment s'esborraran</translation>
 <translation id="8780123805589053431">Obtén descripcions d'imatges de Google</translation>
 <translation id="8780443667474968681">La cerca per veu s'ha desactivat.</translation>
-<translation id="878069093594050299">Aquest certificat s'ha verificat per als usos següents:</translation>
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
 <translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>

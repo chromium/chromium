@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1513352483775369820">Закладки й історія веб-пошуку</translation>
 <translation id="1513858653616922153">Видалити пароль</translation>
+<translation id="1518421282666914498">Файл GIF для емоції <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">У мережі сьогодні</translation>
 <translation id="1538801903729528855">Кращий голосовий пошук в Інтернеті</translation>
 <translation id="1544826120773021464">Щоб налаштувати обліковий запис Google, натисніть кнопку "Керувати обліковим записом"</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">Вибрати папку</translation>
 <translation id="4538018662093857852">Увімкнути спрощений режим</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Щоб переглядати та копіювати пароль тут, налаштуйте на цьому пристрої блокування екрана.</translation>
 <translation id="4554077758708533499">Підключено за допомогою кабелю USB</translation>
 <translation id="4557685098773234337">Щоб швидше переходити на цю сторінку, додайте її на головний екран</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">Відвідані в Chrome веб-сайти не відображатимуться. Усі таймери для них буде видалено.</translation>
 <translation id="6534565668554028783">Google довго не відповідає</translation>
 <translation id="6539092367496845964">Сталася помилка. Спробуйте пізніше.</translation>
+<translation id="6541042852576515209">Змініть розмір і оберніть</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Перевірено 1 годину тому}one{Перевірено # годину тому}few{Перевірено # години тому}many{Перевірено # годин тому}other{Перевірено # години тому}}</translation>
 <translation id="6545017243486555795">Видалити всі дані</translation>
 <translation id="6546511553472444032">Файл може бути шкідливим</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">Інші категорії</translation>
 <translation id="7453467225369441013">Ви вийдете з більшості сайтів, але не вийдете з облікового запису Google.</translation>
 <translation id="7454641608352164238">Замало місця</translation>
+<translation id="7468819939926272717">Виберіть емоцію</translation>
 <translation id="7474822150871987353">Ви можете знаходити додаткову інформацію, не покидаючи веб-сторінку. Виділіть одне чи кілька слів на сторінці та отримайте результати пошуку.</translation>
 <translation id="7475192538862203634">Якщо ви часто бачите таку сторінку, скористайтеся цими <ph name="BEGIN_LINK" />пропозиціями<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Карту SD не знайдено. Деякі файли можуть бути відсутні.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочитана сторінка}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитана сторінка}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитані сторінки}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитаних сторінок}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитаної сторінки}}</translation>
 <translation id="7882131421121961860">Історії не знайдено</translation>
 <translation id="7886917304091689118">Відкрито в Chrome</translation>
+<translation id="7887334752153342268">Створити копію</translation>
 <translation id="789763218334337857">Як користуватися веб-переглядачем Chrome</translation>
 <translation id="7903184275147100332">Це може тривати хвилину</translation>
 <translation id="7919123827536834358">Перекладати ці мови автоматично</translation>

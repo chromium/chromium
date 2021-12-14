@@ -683,6 +683,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3223287115535306850">Ikona e ngarkimit për hapjen e aplikacionit</translation>
+<translation id="3225347164936328585">Duke duartrokitur</translation>
 <translation id="3225919329040284222">Serveri paraqiti një certifikatë që nuk përputhet me pritshmëritë e integruara. Këto pritshmëri përfshihen për uebsajte të caktuara të sigurisë së lartë, me qëllim që të të mbrojnë.</translation>
 <translation id="3226128629678568754">Shtyp butonin e ringarkimit për të dorëzuar përsëri të dhënat që duhen për të ngarkuar faqen.</translation>
 <translation id="3226387218769101247">Miniaturat</translation>
@@ -718,6 +719,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3329013043687509092">Ngopje</translation>
 <translation id="3333762389743153920">Nuk është e përshtatshme për kartë virtuale</translation>
 <translation id="3338095232262050444">E sigurt</translation>
+<translation id="3345782426586609320">Sy</translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
@@ -1071,6 +1073,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4390472908992056574">Buza</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4406896451731180161">rezultatet e kërkimit</translation>
+<translation id="4407755609041463909">Zjarr</translation>
 <translation id="4408413947728134509">Kukit <ph name="NUM_COOKIES" /></translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415426530740016218">Adresa e marrjes</translation>
@@ -1378,6 +1381,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5344579389779391559">Kjo faqe mund të përpiqet të të tarifojë në para</translation>
 <translation id="5347645913823149105">Butoni "Personalizo fontet në Chrome". Shtyp "Enter" për të personalizuar madhësitë e fonteve dhe llojin e karaktereve në Chrome</translation>
 <translation id="5355557959165512791">Nuk mund ta vizitosh <ph name="SITE" /> tani, sepse certifikata e tij është revokuar. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, prandaj kjo faqe ndoshta do të punojë më vonë.</translation>
+<translation id="5356837363448394805">Skuqur</translation>
 <translation id="536296301121032821">Dështoi në ruajtjen e cilësimeve të politikës.</translation>
 <translation id="5363309033720083897">Porta seriale e lejuar nga administratori yt</translation>
 <translation id="5371425731340848620">Përditëso kartën</translation>
@@ -1608,6 +1612,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="622039917539443112">Palosje paralele</translation>
 <translation id="6221345481584921695">Kohët e fundit "Shfletimi i sigurt" i Google <ph name="BEGIN_LINK" />zbuloi softuerin keqdashës<ph name="END_LINK" /> në <ph name="SITE" />. Sajtet e uebit që normalisht janë të sigurta, ndonjëherë infektohen me softuerë keqdashës. Përmbajtja keqdashëse vjen nga <ph name="SUBRESOURCE_HOST" />, një shpërndarës i njohur softuerësh keqdashës.</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
+<translation id="6233160458685643793">Duke qeshur</translation>
 <translation id="6234122620015464377">Prerje pas çdo dokumenti</translation>
 <translation id="6240447795304464094">Logo e Google Pay</translation>
 <translation id="6241121617266208201">Fshih sugjerimet</translation>
@@ -1659,6 +1664,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i mbyllur</translation>
 <translation id="6393956493820063117">Ngjitja nga <ph name="ORIGIN_NAME" /> te kjo vendndodhje është bllokuar nga politika e administratorit</translation>
+<translation id="6398277657359595425">Duke qarë me zë të lartë</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
@@ -1733,6 +1739,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6660413144148052430">vendndodhja</translation>
 <translation id="6662457027866368246">Ruli i parë</translation>
 <translation id="666259744093848177">(x86_64 i përkthyer)</translation>
+<translation id="6663846344464066639">Duar të bashkuara</translation>
 <translation id="6665553082534466207">Tri shpime djathtas</translation>
 <translation id="6671697161687535275">Të hiqet sugjerimi i formularit nga Chromium?</translation>
 <translation id="6685834062052613830">Dil dhe përfundo konfigurimin</translation>
@@ -1801,6 +1808,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
+<translation id="6946722113367118030">Duke menduar</translation>
 <translation id="6948051842255602737">Loja mbaroi. Rezultati yt është <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Për të parë mënyrat dhe kërkesat e marrjes, zgjidh një adresë</translation>
 <translation id="6949872517221025916">Rivendos fjalëkalimin</translation>

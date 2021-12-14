@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1513352483775369820">Záložky a webová historie</translation>
 <translation id="1513858653616922153">Vymazat heslo</translation>
+<translation id="1518421282666914498">GIF emoce <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="1538801903729528855">Využijte vylepšené hlasové služby na webu</translation>
 <translation id="1544826120773021464">Chcete-li spravovat svůj účet Google, klepněte na tlačítko Spravovat účet</translation>
@@ -574,6 +575,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4532845899244822526">Výběr složky</translation>
 <translation id="4538018662093857852">Zapnout zjednodušený režim</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">Chcete-li zde zobrazovat či kopírovat hesla, nastavte v tomto zařízení zámek obrazovky.</translation>
 <translation id="4554077758708533499">Připojeno kabelem USB</translation>
 <translation id="4557685098773234337">Přidejte si stránku na plochu, abyste se na ni dostali rychleji</translation>
@@ -926,6 +928,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6532866250404780454">Weby navštívené v Chromu se nebudou zobrazovat. Všechny časovače webů budou smazány.</translation>
 <translation id="6534565668554028783">Odpověď Googlu trvala příliš dlouho</translation>
 <translation id="6539092367496845964">Něco se pokazilo. Zkuste to později.</translation>
+<translation id="6541042852576515209">Změnit velikost a otočit</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Zkontrolováno před hodinou}few{Zkontrolováno před # hodinami}many{Zkontrolováno před # hodiny}other{Zkontrolováno před # hodinami}}</translation>
 <translation id="6545017243486555795">Vymazat všechna data</translation>
 <translation id="6546511553472444032">Soubor může být škodlivý</translation>
@@ -1078,6 +1081,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7444811645081526538">Další kategorie</translation>
 <translation id="7453467225369441013">Odhlásí vás z většiny webů. Z účtu Google odhlášeni nebudete.</translation>
 <translation id="7454641608352164238">Nedostatek místa</translation>
+<translation id="7468819939926272717">Zvolte emoci</translation>
 <translation id="7474822150871987353">Vyhledávejte informace o tématech zmíněných na stránce, aniž byste stránku museli opustit. Slova na stránce můžete vyhledat jednoduše tím, že je vyberete.</translation>
 <translation id="7475192538862203634">Pokud se vám tato stránka zobrazuje často, vyzkoušejte tyto <ph name="BEGIN_LINK" />návrhy<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD karta nebyla nalezena. Některé vaše soubory mohou chybět.</translation>
@@ -1160,6 +1164,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nepřečtenou stránku}few{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}many{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}other{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtených stránek}}</translation>
 <translation id="7882131421121961860">Nebyla nalezena žádná historie</translation>
 <translation id="7886917304091689118">Spuštěno v Chromu</translation>
+<translation id="7887334752153342268">Duplikovat</translation>
 <translation id="789763218334337857">Práce s prohlížečem Chrome</translation>
 <translation id="7903184275147100332">Může to chvíli trvat</translation>
 <translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>

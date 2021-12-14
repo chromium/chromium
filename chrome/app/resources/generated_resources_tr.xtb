@@ -2655,7 +2655,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3732078975418297900"><ph name="ERROR_LINE" />. satırda hata</translation>
 <translation id="3732530910372558017">PIN en fazla 63 karakter olmalı</translation>
 <translation id="3732857534841813090">Google Asistan'la ilgili bilgiler</translation>
-<translation id="3733127536501031542">İlerlemeli SSL Sunucusu</translation>
 <translation id="3733296813637058299">Bu uygulamaları sizin için yükleyeceğiz. Play Store'da <ph name="DEVICE_TYPE" /> cihazınız için daha fazla uygulama bulabilirsiniz.</translation>
 <translation id="3735740477244556633">Sıralama ölçütü</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> verileri 24 saat içinde silinecek</translation>
@@ -2999,7 +2998,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4068776064906523561">Kayıtlı parmak izleri</translation>
 <translation id="407173827865827707">Tıklandığında</translation>
 <translation id="4072701974556190758">Şifreniz <ph name="ACCOUNT" /> Google Hesabınızda kaydedilir. Ezberlemeniz gerekmiyor.</translation>
-<translation id="4074900173531346617">E-posta İmza Sahibi Sertifikası</translation>
 <translation id="407520071244661467">Ölçek</translation>
 <translation id="407543464472585404"><ph name="NAME" /> adlı kişinin profili <ph name="EMAIL" /> hesabına bağlı</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> yayınlanamıyor.</translation>
@@ -4311,7 +4309,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5517304475148761050">Bu uygulama Play Store'a erişim gerektiriyor</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Siteler panoya kopyalanan metin ve resimleri görmek istediğinde sorulsun</translation>
-<translation id="5518584115117143805">E-posta Şifreleme Sertifikası</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Bu beklediğiniz ana sayfa mı?</translation>
 <translation id="5522156646677899028">Bu uzantı önemli bir güvenlik açığı içeriyor.</translation>
@@ -6153,7 +6150,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7506242536428928412">Yeni güvenlik anahtarınızı kullanmak için yeni bir PIN ayarlayın.</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> cihazınız kurumsal yönetim için başarıyla kaydettirildi.</translation>
 <translation id="7507207699631365376">Bu sağlayıcının <ph name="BEGIN_LINK" />gizlilik politikasına<ph name="END_LINK" /> bakın</translation>
-<translation id="7507930499305566459">Durum Yanıtlayıcı Sertifikası</translation>
 <translation id="7509097596023256288">Yönetim kuruluyor</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
 <translation id="7509539379068593709">Uygulamayı Kaldır</translation>
@@ -7400,7 +7396,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8778328560035799409">Atamış olduğunuz anahtarlar temizlenecek</translation>
 <translation id="8780123805589053431">Google'dan resim açıklamaları al</translation>
 <translation id="8780443667474968681">Sesli arama özelliği kapatıldı.</translation>
-<translation id="878069093594050299">Bu sertifika, aşağıdaki kullanımlar için doğrulanmıştır:</translation>
 <translation id="8781834595282316166">Grupta Yeni Sekme</translation>
 <translation id="8782565991310229362">Kiosk uygulaması başlatma iptal edildi.</translation>
 <translation id="8783834180813871000">Bluetoth eşleme kodunu yazıp Return veya Enter tuşuna basın.</translation>

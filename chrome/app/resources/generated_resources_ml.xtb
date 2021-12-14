@@ -2656,7 +2656,6 @@
 <translation id="3732078975418297900"><ph name="ERROR_LINE" />-മത്തെ വരിയിൽ പിശക്</translation>
 <translation id="3732530910372558017">‌പിൻ നമ്പറിൽ അടങ്ങിയിരിക്കാവുന്ന പരമാവധി പ്രതീകങ്ങൾ 63 ആണ്</translation>
 <translation id="3732857534841813090">Google Assistant നൽകുന്ന ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
-<translation id="3733127536501031542">സ്റ്റെപ്പ്-അപ്പ് ഉള്ള SSL സെര്‍വര്‍</translation>
 <translation id="3733296813637058299">ആ ആപ്പുകൾ ഞങ്ങൾ നിങ്ങൾക്കായി ഇൻസ്റ്റാൾ ചെയ്യും. നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിനുള്ള കൂടുതൽ ആപ്പുകൾ Play Store-ൽ കണ്ടെത്താം.</translation>
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ഡാറ്റ 24 മണിക്കൂറിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
@@ -2999,7 +2998,6 @@
 <translation id="4068776064906523561">സംരക്ഷിച്ച വിരലടയാളങ്ങൾ</translation>
 <translation id="407173827865827707">ക്ലിക്കിൽ</translation>
 <translation id="4072701974556190758">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ പാസ്‌വേഡ് സംരക്ഷിക്കും. നിങ്ങൾ ഇത് ഓർത്തിരിക്കേണ്ടതില്ല.</translation>
-<translation id="4074900173531346617">സൈനര്‍‌ സര്‍‌ട്ടിഫിക്കറ്റ് ഇമെയില്‍‌ അയയ്‌ക്കുക</translation>
 <translation id="407520071244661467">സ്കെയിൽ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> എന്നയാളുടെ പ്രൊഫൈൽ <ph name="EMAIL" /> എന്നതിലേക്ക് ലിങ്ക് ചെയ്തു</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> കാസ്‌റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
@@ -4311,7 +4309,6 @@
 <translation id="5517304475148761050">ഈ ആപ്പിന് Play Store-ലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണാൻ ഒരു സൈറ്റ് ആഗ്രഹിക്കുമ്പോൾ ചോദിക്കുക</translation>
-<translation id="5518584115117143805">ഇമെയില്‍‌ എന്‍‌ക്രിപ്ഷന്‍‌ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">നിങ്ങൾ പ്രതീക്ഷിച്ച ഹോം പേജ് ഇതാണോ?</translation>
 <translation id="5522156646677899028">ഈ വിപുലീകരണത്തിൽ ഗുരുതരമായ സുരക്ഷാ പ്രശ്നമടങ്ങിയിരിക്കുന്നു.</translation>
@@ -6154,7 +6151,6 @@
 <translation id="7506242536428928412">നിങ്ങളുടെ പുതിയ സുരക്ഷാ കീ ഉപയോഗിക്കുന്നതിന്, ഒരു പുതിയ പിൻ സജ്ജീകരിക്കുക</translation>
 <translation id="7506541170099744506">എന്റർപ്രൈസ് മാനേജ്‌മെന്റിന് വേണ്ടി നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തെ എൻറോൾ ചെ‌യ്‌തു.</translation>
 <translation id="7507207699631365376">ഈ ദാതാവിന്റെ <ph name="BEGIN_LINK" />സ്വകാര്യതാ നയം<ph name="END_LINK" /> കാണുക</translation>
-<translation id="7507930499305566459">സ്റ്റാറ്റസ് റെസ്‌പോണ്ടര്‍‌ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="7509097596023256288">മാനേജ്മെന്റ് സജ്ജീകരിക്കുന്നു</translation>
 <translation id="7509246181739783082">ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="7509539379068593709">ആപ്പ് അൺഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
@@ -7401,7 +7397,6 @@
 <translation id="8778328560035799409">നിലവിൽ നിങ്ങൾ അസൈൻ ചെയ്‌തിരിക്കുന്ന സ്വിച്ചുകൾ മായ്ക്കും</translation>
 <translation id="8780123805589053431">Google-ൽ നിന്ന് ചിത്ര വിവരണങ്ങൾ നേടുക</translation>
 <translation id="8780443667474968681">ശബ്‌ദ തിരയൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
-<translation id="878069093594050299">ഇനിപ്പറയുന്ന ഉപയോഗങ്ങള്‍‌ക്കായി ഈ സര്‍‌ട്ടിഫിക്കറ്റ് പരിശോധിച്ചു:</translation>
 <translation id="8781834595282316166">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="8782565991310229362">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യൽ റദ്ദാക്കി.</translation>
 <translation id="8783834180813871000">Bluetooth ജോടിയാക്കൽ കോഡ് ടൈപ്പ് ചെയ്‌ത ശേഷം 'മടങ്ങുക' അല്ലെങ്കിൽ 'എന്റർ' അമർത്തുക.</translation>

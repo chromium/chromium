@@ -2672,7 +2672,6 @@
 <translation id="3732078975418297900">Σφάλμα στη γραμμή <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Το PIN θα πρέπει να περιέχει το πολύ 63 χαρακτήρες</translation>
 <translation id="3732857534841813090">Σχετικές πληροφορίες Βοηθού Google</translation>
-<translation id="3733127536501031542">Διακομιστής SSL με αναβάθμιση</translation>
 <translation id="3733296813637058299">Θα εγκαταστήσουμε αυτές τις εφαρμογές για εσάς. Μπορείτε να βρείτε περισσότερες εφαρμογές για τη συσκευή σας <ph name="DEVICE_TYPE" /> στο Play Store.</translation>
 <translation id="3735740477244556633">Ταξινόμηση κατά</translation>
 <translation id="3738632186060045350">Τα δεδομένα της συσκευής <ph name="DEVICE_TYPE" /> θα διαγραφούν εντός 24 ωρών</translation>
@@ -3016,7 +3015,6 @@
 <translation id="4068776064906523561">Αποθηκευμένα δακτυλικά αποτυπώματα</translation>
 <translation id="407173827865827707">Όταν κάνετε κλικ</translation>
 <translation id="4072701974556190758">Ο κωδικός πρόσβασης θα αποθηκευτεί στον Λογαριασμό σας Google, <ph name="ACCOUNT" />. Δεν χρειάζεται να τον θυμάστε.</translation>
-<translation id="4074900173531346617">Πιστοποιητικό υπηρεσίας υπογραφής ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="407520071244661467">Κλίμακα</translation>
 <translation id="407543464472585404">Το προφίλ του χρήστη <ph name="NAME" /> έχει συνδεθεί στη διεύθυνση <ph name="EMAIL" />.</translation>
 <translation id="4075639477629295004">Δεν είναι δυνατή η μετάδοση του αρχείου <ph name="FILE_NAME" />.</translation>
@@ -4329,7 +4327,6 @@
 <translation id="5517304475148761050">Αυτή η εφαρμογή απαιτεί πρόσβαση στο Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
-<translation id="5518584115117143805">Πιστοποιητικό κρυπτογράφησης ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Είναι αυτή η αρχική σελίδα που περιμένατε;</translation>
 <translation id="5522156646677899028">Αυτή η επέκταση περιλαμβάνει μια σοβαρή ευπάθεια ασφαλείας.</translation>
@@ -6171,7 +6168,6 @@
 <translation id="7506242536428928412">Για να χρησιμοποιήσετε το νέο κλειδί ασφαλείας, ορίστε ένα νέο PIN.</translation>
 <translation id="7506541170099744506">Η συσκευή <ph name="DEVICE_TYPE" /> εγγράφηκε με επιτυχία για διαχείριση επιχειρήσεων.</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
-<translation id="7507930499305566459">Πιστοποιητικό απόκρισης κατάστασης</translation>
 <translation id="7509097596023256288">Ρύθμιση διαχείρισης</translation>
 <translation id="7509246181739783082">Επαλήθευση της ταυτότητάς σας</translation>
 <translation id="7509539379068593709">Απεγκατάσταση εφαρμογής</translation>
@@ -7418,7 +7414,6 @@
 <translation id="8778328560035799409">Οι τρέχοντες αντιστοιχισμένοι διακόπτες θα διαγραφούν.</translation>
 <translation id="8780123805589053431">Λήψη περιγραφών εικόνων από την Google</translation>
 <translation id="8780443667474968681">Η Φωνητική αναζήτηση απενεργοποιήθηκε.</translation>
-<translation id="878069093594050299">Το πιστοποιητικό επαληθεύτηκε για τις ακόλουθες χρήσεις:</translation>
 <translation id="8781834595282316166">Νέα καρτέλα στην ομάδα</translation>
 <translation id="8782565991310229362">Η εκκίνηση της εφαρμογής kiosk ακυρώθηκε.</translation>
 <translation id="8783834180813871000">Πληκτρολογήστε τον κωδικό σύζευξης του Bluetooth και, στη συνέχεια, πιέστε το πλήκτρο Return ή το Enter.</translation>

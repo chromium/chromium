@@ -681,6 +681,7 @@
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
 <translation id="3218181027817787318">सापेक्ष</translation>
 <translation id="3223287115535306850">एप लोड गरिँदै छ</translation>
+<translation id="3225347164936328585">ताली बजाइरहेको</translation>
 <translation id="3225919329040284222">सर्भरले अन्तर्निर्मित अपेक्षाहरूसँग नमिल्ने प्रमाणपत्र प्रस्तुत गर्‍यो। यी अपेक्षाहरू विशेष, उच्च-सुरक्षा वेबसाटइहरूको लागि तपाइँलाई सुरक्षा गर्न समावेश गरिएका छन्।</translation>
 <translation id="3226128629678568754">पृष्ठ लोड गर्न आवश्यक लगत पुन: पेश गर्नक लागि पुन: लोड बटन थिच्नुहोस्।</translation>
 <translation id="3226387218769101247">थम्बनेलहरू</translation>
@@ -716,6 +717,7 @@
 <translation id="3329013043687509092">संतृप्तीकरण</translation>
 <translation id="3333762389743153920">भर्चुअल कार्डका रूपमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="3338095232262050444">सुरक्षित छ</translation>
+<translation id="3345782426586609320">आँखा</translation>
 <translation id="3355823806454867987">प्रोक्सी सेटिङहरू परिवर्तन गर्नुहोस्...</translation>
 <translation id="3360103848165129075">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना</translation>
 <translation id="3361596688432910856">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सुरक्षित गर्नेछैन<ph name="END_EMPHASIS" />:
@@ -1070,6 +1072,7 @@
 <translation id="4390472908992056574">बिट</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4406896451731180161">खोजका परिणाम</translation>
+<translation id="4407755609041463909">आगो</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकीहरू</translation>
 <translation id="4414515549596849729">कुकीहरू र साइटका डाटा</translation>
 <translation id="4415426530740016218">पिकअप गर्ने ठेगाना</translation>
@@ -1377,6 +1380,7 @@
 <translation id="5344579389779391559">यो पृष्ठले तपाईंलाई पैसा तिराउने प्रयास गर्न सक्छ</translation>
 <translation id="5347645913823149105">"Chrome मा फन्टहरू कस्टमाइज गर्नुहोस्" नामक बटन, तपाईं Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्न चाहनुहुन्छ भने इन्टर थिच्नुहोस्</translation>
 <translation id="5355557959165512791">यो साइटको प्रमाणपत्र खारेज गरिएको हुनाले तपाईं अहिले नै <ph name="SITE" /> मा जान सक्नुहुन्न। नेटवर्कसम्बन्धी त्रुटि र आक्रमणहरू सामान्यतया अस्थायी हुन्छन्, त्यसैले यो पृष्ठले पछि सम्भवतः काम गर्नसक्नेछ।</translation>
+<translation id="5356837363448394805">लजाएको</translation>
 <translation id="536296301121032821">नीति सेटिङहरू भण्डारण गर्न असफल भयो</translation>
 <translation id="5363309033720083897">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको सिरियल पोर्ट</translation>
 <translation id="5371425731340848620">कार्ड अपडेट गर्नुहोस्</translation>
@@ -1608,6 +1612,7 @@
 <translation id="622039917539443112">समानान्तर फोल्ड</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउजिंग हालै <ph name="SITE" /> मा <ph name="BEGIN_LINK" /> मालवेयर पत्ता <ph name="END_LINK" /> लगायो। सामान्यतया सुरक्षित भनिएका वेबसाइटहरू कहिलेकाहीं मालवेयरद्वारा संक्रमित हुन्छन्। द्वेषपूर्ण सामग्री <ph name="SUBRESOURCE_HOST" /> , एक प्रख्यात मालवेयर वितरकबाट आउँछ।</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome का सेटिङमा गई एस्सेसिबिलिटी टुलहरू आफूले चाहेको जस्तो बनाउन चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="6233160458685643793">प्रसन्न भएको</translation>
 <translation id="6234122620015464377">हरेक कागजातपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="6240447795304464094">Google Pay को लोगो</translation>
 <translation id="6241121617266208201">सुझावहरू लुकाउनुहोस्</translation>
@@ -1659,6 +1664,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल बन्द गरियो</translation>
 <translation id="6393956493820063117">एड्मिनले <ph name="ORIGIN_NAME" /> बाट कपी गरी यो स्थानमा पेस्ट गर्न रोक लगाउनुभएको छ</translation>
+<translation id="6398277657359595425">चर्को स्वर निकालेर रोइरहेको</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="6401136357288658127">यो नीति चल्तीबाट हटाइएको छ। तपाईंले यसको साटो <ph name="NEW_POLICY" /> नीति प्रयोग गर्नु पर्छ।</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -1733,6 +1739,7 @@
 <translation id="6660413144148052430">स्थान</translation>
 <translation id="6662457027866368246">पहिलो रोल</translation>
 <translation id="666259744093848177">(x86_64 अनुवादित)</translation>
+<translation id="6663846344464066639">हात जोडेको</translation>
 <translation id="6665553082534466207">दायाँपट्टि तीन प्वाल</translation>
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
 <translation id="6685834062052613830">साइन आउट गरेर सेटअपलाई सम्पन्न गर्नुहोस्</translation>
@@ -1801,6 +1808,7 @@
 <translation id="6934672428414710184">यो नाम तपाईंको Google खाताबाट लिइएको हो</translation>
 <translation id="6944692733090228304">तपाईंले <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
+<translation id="6946722113367118030">सोचिरहेको</translation>
 <translation id="6948051842255602737">गेम सकियो, तपाईंले <ph name="SCORE" /> अङ्क ल्याउनुभएको छ।</translation>
 <translation id="6948701128805548767">पिकअपका विधि र मापदण्डहरू हेर्न, ठेगाना चयन गर्नुहोस्</translation>
 <translation id="6949872517221025916">पासवर्ड रिसेट गर्नुहोस्</translation>

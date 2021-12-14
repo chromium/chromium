@@ -2656,7 +2656,6 @@
 <translation id="3732078975418297900">Грешка у <ph name="ERROR_LINE" />. реду</translation>
 <translation id="3732530910372558017">PIN сме да садржи највише 63 знака</translation>
 <translation id="3732857534841813090">Информације повезане са Google помоћником</translation>
-<translation id="3733127536501031542">SSL сервер са могућношћу преласка на новију верзију</translation>
 <translation id="3733296813637058299">Инсталираћемо вам те апликације. Још апликација за <ph name="DEVICE_TYPE" /> можете да пронађете у Play продавници.</translation>
 <translation id="3735740477244556633">Сортирај према</translation>
 <translation id="3738632186060045350">Подаци са уређаја <ph name="DEVICE_TYPE" /> ће бити избрисани за 24 сата</translation>
@@ -3000,7 +2999,6 @@
 <translation id="4068776064906523561">Сачувани отисци прстију</translation>
 <translation id="407173827865827707">При клику</translation>
 <translation id="4072701974556190758">Лозинка ће бити сачувана на вашем Google налогу, <ph name="ACCOUNT" />. Нећете морати да је памтите.</translation>
-<translation id="4074900173531346617">Сертификат потписника е-поште</translation>
 <translation id="407520071244661467">Размера</translation>
 <translation id="407543464472585404">Профил <ph name="NAME" /> је повезан са имејлом <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Није успело пребацивање за <ph name="FILE_NAME" />.</translation>
@@ -4311,7 +4309,6 @@
 <translation id="5517304475148761050">Ова апликација захтева приступ Play продавници</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Питај када сајт жели да види текст и слике који су копирани у привремену меморију</translation>
-<translation id="5518584115117143805">Сертификат шифровања е-поште</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Је ли ово почетна страница коју сте очекивали?</translation>
 <translation id="5522156646677899028">Овај додатак садржи озбиљан безбедносни пропуст.</translation>
@@ -6153,7 +6150,6 @@
 <translation id="7506242536428928412">Подесите нови PIN да бисте користили нови безбедносни кључ</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> је регистрован за управљање предузећем.</translation>
 <translation id="7507207699631365376">Погледајте <ph name="BEGIN_LINK" />политику приватности<ph name="END_LINK" /> овог добављача</translation>
-<translation id="7507930499305566459">Сертификат за одзивник статуса</translation>
 <translation id="7509097596023256288">Управљање подешавањем</translation>
 <translation id="7509246181739783082">Верификујте идентитет</translation>
 <translation id="7509539379068593709">Деинсталирај апликацију</translation>
@@ -7403,7 +7399,6 @@
 <translation id="8778328560035799409">Тренутно додељени прекидачи ће бити обрисани</translation>
 <translation id="8780123805589053431">Преузимај описе слика са Google-а</translation>
 <translation id="8780443667474968681">Гласовна претрага је искључена.</translation>
-<translation id="878069093594050299">Овај сертификат је верификован за следеће употребе:</translation>
 <translation id="8781834595282316166">Нова картица у групи</translation>
 <translation id="8782565991310229362">Покретање киоск апликације је отказано.</translation>
 <translation id="8783834180813871000">Унесите кôд за упаривање за Bluetooth, па притисните Return или Enter.</translation>

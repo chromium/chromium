@@ -2674,7 +2674,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3732078975418297900">Erro na linha <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">O PIN precisa ter no máximo 63 caracteres</translation>
 <translation id="3732857534841813090">Informações relacionadas ao Google Assistente</translation>
-<translation id="3733127536501031542">Servidor SSL com Step-up</translation>
 <translation id="3733296813637058299">Instalaremos esses apps para você. Encontre mais apps para seu <ph name="DEVICE_TYPE" /> na Play Store.</translation>
 <translation id="3735740477244556633">Classificar por</translation>
 <translation id="3738632186060045350">Os dados do <ph name="DEVICE_TYPE" /> serão excluídos em 24 horas</translation>
@@ -3018,7 +3017,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4068776064906523561">Impressões digitais salvas</translation>
 <translation id="407173827865827707">Ao clicar</translation>
 <translation id="4072701974556190758">A senha será salva na sua Conta do Google (<ph name="ACCOUNT" />). Você não precisará memorizá-la.</translation>
-<translation id="4074900173531346617">Certificado do signatário do e-mail</translation>
 <translation id="407520071244661467">Escala</translation>
 <translation id="407543464472585404">O perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Não foi possível transmitir o arquivo <ph name="FILE_NAME" /></translation>
@@ -4331,7 +4329,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5517304475148761050">Este app precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Perguntar quando um site quiser ver os textos e imagens copiados para a área de transferência</translation>
-<translation id="5518584115117143805">Certificado de criptografia de e-mail</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Esta é a página inicial que você esperava?</translation>
 <translation id="5522156646677899028">Esta extensão contém uma grave vulnerabilidade de segurança.</translation>
@@ -6173,7 +6170,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7506242536428928412">Defina um novo PIN para usar sua nova chave de segurança</translation>
 <translation id="7506541170099744506">Seu <ph name="DEVICE_TYPE" /> foi inscrito para o gerenciamento empresarial.</translation>
 <translation id="7507207699631365376">Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste provedor</translation>
-<translation id="7507930499305566459">Certificado do respondente de status</translation>
 <translation id="7509097596023256288">Configurando o gerenciamento</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
 <translation id="7509539379068593709">Desinstalar app</translation>
@@ -7423,7 +7419,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8778328560035799409">O interruptor atribuído atualmente será limpo</translation>
 <translation id="8780123805589053431">Ver descrições de imagens do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
-<translation id="878069093594050299">Este certificado foi confirmado para os seguintes usos:</translation>
 <translation id="8781834595282316166">Nova guia no grupo</translation>
 <translation id="8782565991310229362">A inicialização do aplicativo de quiosque foi cancelada.</translation>
 <translation id="8783834180813871000">Digite o código de pareamento do Bluetooth e pressione "Voltar" ou "Enter".</translation>

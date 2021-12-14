@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
+<translation id="1518421282666914498">ఎమోషన్ GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="1538801903729528855">వెబ్‌లో మెరుగైన వాయిస్ అనుభవాన్ని పొందండి</translation>
 <translation id="1544826120773021464">మీ Google ఖాతాను నిర్వహించడానికి, "ఖాతాను నిర్వహించు" బటన్‌ను నొక్కండి</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="4538018662093857852">లైట్ మోడ్‌ని ఆన్ చేయండి</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="TAB_COUNT_INCOGNITO" /> అజ్ఞాత ట్యాబ్}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">ఇక్కడ మీ పాస్‌వర్డ్‌ను వీక్షించడానికి లేదా కాపీ చేయడానికి, ఈ డివైజ్‌లో స్క్రీన్ లాక్‌ను సెట్ చేయండి.</translation>
 <translation id="4554077758708533499">USB కేబుల్‌తో కనెక్ట్ చేయబడింది</translation>
 <translation id="4557685098773234337">ఇక్కడికి త్వరగా చేరుకోవడనికి, ఈ పేజీని మీ మొదటి స్క్రీన్‌కు జోడించండి</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">మీరు Chromeలో సందర్శించిన సైట్‌లు చూపబడవు. అన్ని సైట్ టైమర్‌లు తొలగించబడతాయి.</translation>
 <translation id="6534565668554028783">Google ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం తీసుకుంది</translation>
 <translation id="6539092367496845964">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="6541042852576515209">పరిమాణం మార్చండి, అలాగే తిప్పండి</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 గంట క్రితం తనిఖీ చేసింది}other{# గంటల క్రితం తనిఖీ చేసింది}}</translation>
 <translation id="6545017243486555795">మొత్తం డేటాను తీసివేయి</translation>
 <translation id="6546511553472444032">ఫైల్ హానికరమైనది కావచ్చు</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">మరిన్ని వర్గాలు</translation>
 <translation id="7453467225369441013">దాదాపు అన్ని సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
 <translation id="7454641608352164238">తగినంత స్థలం లేదు</translation>
+<translation id="7468819939926272717">ఎమోషన్‌ను ఎంచుకోండి</translation>
 <translation id="7474822150871987353">పేజీ నుండి నిష్క్రమించకుండానే వెబ్‌సైట్‌లలోని టాపిక్‌ల గురించి తెలుసుకోండి. వాటి కోసం సెర్చ్ చేయడానికి పేజీలో ఉన్న ఒకటి లేదా అంతకంటే ఎక్కువ పదాలను ఎంచుకోండి.</translation>
 <translation id="7475192538862203634">మీకు ఇది తరచుగా కనిపిస్తుంటే, ఈ <ph name="BEGIN_LINK" />సూచనల<ph name="END_LINK" />ను ప్రయత్నించండి.</translation>
 <translation id="7475688122056506577">SD కార్డ్ కనుగొనబడలేదు. మీ ఫైళ్లలో కొన్ని ఉండకపోవచ్చు.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> చదవని పేజీ ఉంది}other{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> చదవని పేజీలు ఉన్నాయి}}</translation>
 <translation id="7882131421121961860">చరిత్ర ఏదీ కనుగొనబడలేదు</translation>
 <translation id="7886917304091689118">Chromeలో అమలు అవుతోంది</translation>
+<translation id="7887334752153342268">నకిలీ</translation>
 <translation id="789763218334337857">Chromeను ఉపయోగించడం ఎలా</translation>
 <translation id="7903184275147100332">దీనికి ఒక నిమిషం పట్టవచ్చు</translation>
 <translation id="7919123827536834358">ఈ భాషలను ఆటోమేటిక్‌గా అనువదించు</translation>

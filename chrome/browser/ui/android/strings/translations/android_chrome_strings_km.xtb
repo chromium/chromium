@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="1513352483775369820">ចំណាំ និងប្រវត្តិគេហទំព័រ</translation>
 <translation id="1513858653616922153">លុបពាក្យសម្ងាត់</translation>
+<translation id="1518421282666914498">GIF អារម្មណ៍ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ដំណើរការ​ថ្ងៃនេះ</translation>
 <translation id="1538801903729528855">ទទួលបាន​បទពិសោធន៍ប្រើប្រាស់​សំឡេង​កាន់តែប្រសើរ​នៅលើបណ្ដាញ</translation>
 <translation id="1544826120773021464">ដើម្បី​គ្រប់គ្រង​គណនី Google របស់អ្នក សូមចុចប៊ូតុង "គ្រប់គ្រងគណនី"</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">ជ្រើសរើសថតឯកសារ</translation>
 <translation id="4538018662093857852">បើក​មុខងារស្រាល</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{ផ្ទាំង <ph name="TAB_COUNT_ONE" />}other{ផ្ទាំង <ph name="TAB_COUNT_MANY" />, ឯកជន <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">ដើម្បី​មើល ឬ​ចម្លង​ពាក្យសម្ងាត់​របស់អ្នក​នៅទី​នេះ សូម​កំណត់ការ​ចាក់សោ​អេក្រង់​នៅលើ​ឧបករណ៍​នេះ។</translation>
 <translation id="4554077758708533499">បានភ្ជាប់ជាមួយខ្សែ USB</translation>
 <translation id="4557685098773234337">ដើម្បីចូលមកទីនេះបានរហ័សជាងមុន សូមបញ្ចូលទំព័រនេះទៅក្នុងអេក្រង់ដើមរបស់អ្នក</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">គេហ​ទំព័រដែល​អ្នកចូលមើល​នៅក្នុង Chrome នឹងមិនបង្ហាញទេ។ កម្មវិធី​កំណត់ពេលរបស់​គេហទំព័រទាំង​អស់នឹងត្រូវ​បានលុប។</translation>
 <translation id="6534565668554028783">Google បាន​ចំណាយពេល​យូរពេក​ក្នុងការ​ឆ្លើយតប</translation>
 <translation id="6539092367496845964">មានអ្វីមួយខុសប្រក្រតី។ សូមព្យាយាមម្តង​ទៀតនៅ​ពេលក្រោយ។</translation>
+<translation id="6541042852576515209">ប្ដូរទំហំ និងបង្វិល</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{បានពិនិត្យមើល​កាលពី 1 ម៉ោងមុន}other{បានពិនិត្យមើល​កាលពី # ម៉ោងមុន}}</translation>
 <translation id="6545017243486555795">ជម្រះទិន្នន័យទាំងអស់</translation>
 <translation id="6546511553472444032">ឯកសារនេះអាចមានគ្រោះថ្នាក់</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">ប្រភេទ​​ច្រើន​​ទៀត</translation>
 <translation id="7453467225369441013">ធ្វើឱ្យអ្នកចេញពី​ទំព័រភាគច្រើន។ អ្នកនឹង​មិនត្រូវបាននាំចេញ​ពីគណនី Google របស់អ្នកទេ។</translation>
 <translation id="7454641608352164238">ទំហំផ្ទុក​មិនគ្រប់គ្រាន់​ទេ</translation>
+<translation id="7468819939926272717">ជ្រើសរើស​អារម្មណ៍</translation>
 <translation id="7474822150871987353">ស្វែងយល់អំពី​ប្រធានបទនៅលើ​គេហទំព័រដោយមិន​ចាំបាច់ចាកចេញ​ពីទំព័រ។ ជ្រើសរើសពាក្យមួយ ឬច្រើននៅលើទំព័រនេះ ដើម្បីស្វែងរកពាក្យនោះ។</translation>
 <translation id="7475192538862203634">ប្រសិនបើអ្នកឃើញវាជាប្រចាំ សូមសាកល្បង<ph name="BEGIN_LINK" />ការផ្តល់យោបល់<ph name="END_LINK" />ទាំងនេះ។</translation>
 <translation id="7475688122056506577">រកមិន​ឃើញកាត SD ទេ។ ឯកសារ​មួយចំនួន​របស់អ្នក​អាចកំពុង​បាត់បង់។</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{អ្នក​មានទំព័រ​មិនទាន់អាន​ចំនួន <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />}other{អ្នក​មានទំព័រ​មិនទាន់អាន​ចំនួន <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />}}</translation>
 <translation id="7882131421121961860">រក​មិន​ឃើញ​ប្រវត្តិ​ទេ</translation>
 <translation id="7886917304091689118">កំពុងដំណើរការ​នៅក្នុង Chrome</translation>
+<translation id="7887334752153342268">ចម្លង</translation>
 <translation id="789763218334337857">របៀបប្រើ Chrome</translation>
 <translation id="7903184275147100332">អាចចំណាយពេលមួយនាទី</translation>
 <translation id="7919123827536834358">បកប្រែភាសាទាំងនេះដោយស្វ័យប្រវត្តិ</translation>

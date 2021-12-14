@@ -2673,7 +2673,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3732078975418297900">Der er fejl på linjen <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Pinkoden må ikke fylde mere end 63 tegn</translation>
 <translation id="3732857534841813090">Oplysninger, der er relateret til Google Assistent</translation>
-<translation id="3733127536501031542">SSL-server med optrapning</translation>
 <translation id="3733296813637058299">Vi installerer disse apps for dig. Du kan finde flere apps til din <ph name="DEVICE_TYPE" /> i Play Butik.</translation>
 <translation id="3735740477244556633">Sortér efter</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-data slettes om 24 timer</translation>
@@ -3017,7 +3016,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
 <translation id="407173827865827707">Ved klik</translation>
 <translation id="4072701974556190758">Adgangskoden gemmes på din Google-konto <ph name="ACCOUNT" />. Du behøver ikke at huske den.</translation>
-<translation id="4074900173531346617">Certifikat til e-mailunderskriver</translation>
 <translation id="407520071244661467">Skaler</translation>
 <translation id="407543464472585404">Profilen tilhørende <ph name="NAME" /> er knyttet til <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> kunne ikke castes.</translation>
@@ -4330,7 +4328,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5517304475148761050">Denne app kræver adgang til Play Butik</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Spørg, når et website vil se tekst og billeder, der er kopieret til udklipsholderen</translation>
-<translation id="5518584115117143805">Certifikat til kryptering af mail</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Var det den startside, du forventede?</translation>
 <translation id="5522156646677899028">Denne udvidelse indeholder en alvorlig sikkerhedsbrist.</translation>
@@ -6171,7 +6168,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7506242536428928412">Angiv en ny pinkode for at bruge din nye sikkerhedsnøgle</translation>
 <translation id="7506541170099744506">Din <ph name="DEVICE_TYPE" /> er tilmeldt virksomhedsadministration.</translation>
 <translation id="7507207699631365376">Se denne udbyders <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" /></translation>
-<translation id="7507930499305566459">Certifikat for statussvar</translation>
 <translation id="7509097596023256288">Konfiguration af administration</translation>
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7509539379068593709">Afinstaller app</translation>
@@ -7421,7 +7417,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8778328560035799409">Dine kontakter, som i øjeblikket er tildelt en handling, ryddes</translation>
 <translation id="8780123805589053431">Hent billedbeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>
-<translation id="878069093594050299">Dette certifikat er blevet bekræftet til følgende brug:</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>
 <translation id="8782565991310229362">Start af kioskapplikationen blev annulleret.</translation>
 <translation id="8783834180813871000">Angiv Bluetooth-parringskoden, og tryk derefter på Enter.</translation>

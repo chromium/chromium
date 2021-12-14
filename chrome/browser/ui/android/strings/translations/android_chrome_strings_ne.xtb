@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मेट्नुहोस्</translation>
+<translation id="1518421282666914498">भावना जनाउने GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
 <translation id="1538801903729528855">वेबमा भ्वाइस सर्च गर्दा अझ राम्रा सुविधाहरू प्राप्त गर्नुहोस्</translation>
 <translation id="1544826120773021464">आफ्नो Google खाताको व्यवस्थापन गर्न "खाताको व्यवस्थापन गर्नुहोस्" नामक बटनमा क्लिक गर्नुहोस्</translation>
@@ -573,6 +574,7 @@
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
 <translation id="4538018662093857852">लाइट मोड सक्रिय गर्नुहोस्</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">यहाँ आफ्नो पासवर्ड हेर्न वा प्रतिलिपि गर्न यो डिभाइसमा स्क्रिन लक सेट गर्नुहोस्।</translation>
 <translation id="4554077758708533499">USB केबल प्रयोग गरी कनेक्ट गरिएको छ</translation>
 <translation id="4557685098773234337">यही पेजमा अझ छिटो जान आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
@@ -925,6 +927,7 @@
 <translation id="6532866250404780454">तपाईंले Chrome मार्फत हेर्नुभएका साइटहरू देखिने छैनन्। साइटका सबै टाइमरहरू मेटाइने छन्।</translation>
 <translation id="6534565668554028783">Google ले प्रतिक्रिया जनाउन निकै लामो समय लियो</translation>
 <translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6541042852576515209">आकार बदल्नुहोस् र रोटेट गर्नुहोस्</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6546511553472444032">यो फाइल हानिकारक हुन सक्छ</translation>
@@ -1077,6 +1080,7 @@
 <translation id="7444811645081526538">थप कोटिहरू</translation>
 <translation id="7453467225369441013">तपाईंलाई धेरैजसो साइटहरूबाट साइन आउट गर्छ। तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="7454641608352164238">पर्याप्त खाली ठाउँ छैन</translation>
+<translation id="7468819939926272717">कुनै भावना छनौट गर्नुहोस्</translation>
 <translation id="7474822150871987353">पेजबाट नबाहिरिकन वेबसाइटहरूमा भएका खास शब्द वा वाक्यांशका बारेमा थप जानकारी प्राप्त गर्नुहोस्। यो पेजमा भएको एउटा वा सोभन्दा बढी शब्दका बारेमा खोज्न ती शब्द चयन गर्नुहोस्।</translation>
 <translation id="7475192538862203634">तपाईँले यसलाई प्राय: देखिरहनु भएको छ भने, यी <ph name="BEGIN_LINK" />सुझावहरू<ph name="END_LINK" /> प्रयास गर्नुहोस्।</translation>
 <translation id="7475688122056506577">SD कार्ड फेला परेन। तपाईंका केही फाइलहरू हराइरहेका हुन सक्छन्।</translation>
@@ -1159,6 +1163,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज पढ्नुभएको छैन}other{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> वटा पेज पढ्नुभएको छैन}}</translation>
 <translation id="7882131421121961860">कुनै इतिहास भेट्टिएन</translation>
 <translation id="7886917304091689118">Chrome मा चलिरहेको छ</translation>
+<translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
 <translation id="789763218334337857">Chrome प्रयोग गर्ने तरिका</translation>
 <translation id="7903184275147100332">यो कार्य पूरा हुन एक मिनेट लाग्न सक्छ</translation>
 <translation id="7919123827536834358">यी भाषाहरू स्वतः अनुवाद गर्नुहोस्</translation>

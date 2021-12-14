@@ -2654,7 +2654,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3732078975418297900">Gabim në rreshtin <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Kodi PIN duhet të ketë maksimumi 63 karaktere</translation>
 <translation id="3732857534841813090">Informacioni i lidhur i "Asistentit të Google"</translation>
-<translation id="3733127536501031542">Server SSL me rritje</translation>
 <translation id="3733296813637058299">Do t'i instalojmë ato aplikacione për ty. Mund të gjesh më shumë aplikacione për pajisjen tënde <ph name="DEVICE_TYPE" /> në "Dyqanin e Play".</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3738632186060045350">Të dhënat e pajisjes <ph name="DEVICE_TYPE" /> do të fshihen brenda 24 orësh</translation>
@@ -2998,7 +2997,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4068776064906523561">Gjurmët e ruajtura të gishtave</translation>
 <translation id="407173827865827707">Me klikim</translation>
 <translation id="4072701974556190758">Fjalëkalimi do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />. Nuk do të duhet ta mbash mend atë.</translation>
-<translation id="4074900173531346617">Certifikata e nënshkruesit të mail-it</translation>
 <translation id="407520071244661467">Shkalla</translation>
 <translation id="407543464472585404">Profili i <ph name="NAME" /> është lidhur me <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Nuk mund të transmetojë <ph name="FILE_NAME" />.</translation>
@@ -4310,7 +4308,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5517304475148761050">Ky aplikacion kërkon qasje te "Dyqani i Play"</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Pyet kur një sajt dëshiron të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
-<translation id="5518584115117143805">Certifikata e enkriptimit të mail-it</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
 <translation id="5522156646677899028">Kjo shtesë përmban një dobësi serioze sigurie.</translation>
@@ -6151,7 +6148,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7506242536428928412">Për të përdorur çelësin tënd të ri të sigurisë, cakto një kod të ri PIN</translation>
 <translation id="7506541170099744506">Pajisja jote <ph name="DEVICE_TYPE" /> është regjistruar me sukses për menaxhimin e ndërmarrjes.</translation>
 <translation id="7507207699631365376">Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> së këtij ofruesi</translation>
-<translation id="7507930499305566459">Certifikata e reaguesit të statusit</translation>
 <translation id="7509097596023256288">Menaxhimi po konfigurohet</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7509539379068593709">Çinstalo aplikacionin</translation>
@@ -7397,7 +7393,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8778328560035799409">Çelësat e caktuar aktualisht do të pastrohen</translation>
 <translation id="8780123805589053431">Merr përshkrimet e imazhit nga Google</translation>
 <translation id="8780443667474968681">Kërkimi me zë është çaktivizuar.</translation>
-<translation id="878069093594050299">Kjo certifikatë është verifikuar për përdorimet e mëposhtme:</translation>
 <translation id="8781834595282316166">Skedë e re në grup</translation>
 <translation id="8782565991310229362">Hapja e aplikacionit "kioskë" u anulua.</translation>
 <translation id="8783834180813871000">Shkruaj kodin e çiftimit të Bluetooth-it, pastaj shtyp "Kthehu" ose "Hyr"</translation>

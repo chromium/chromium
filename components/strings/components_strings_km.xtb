@@ -687,6 +687,7 @@
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
 <translation id="3218181027817787318">ពាក់ព័ន្ធ</translation>
 <translation id="3223287115535306850">រូបកំពុងដំណើរការនៃការចាប់ផ្ដើមកម្មវិធី</translation>
+<translation id="3225347164936328585">ទះដៃ</translation>
 <translation id="3225919329040284222">ម៉ាស៊ីនមេនេះបានបង្ហាញទិន្នន័យដែលមិនត្រូវគ្នាជាមួយការរំពឺងដែលភ្ជាប់ជាមួយ។ ការរំពឹងទុកទាំងនេះរាប់បញ្ចូលទាំងគេហទំព័រសុវត្ថិភាពខ្ពស់ជាក់លាក់ដើម្បីការពារអ្នក។</translation>
 <translation id="3226128629678568754">ចុចប៊ូតុងដំណើរការឡើងវិញដើម្បីដាក់ស្នើទិន្នន័យដែលត្រូវការឡើងវិញដើម្បីដំណើរការទំព័រនេះ។</translation>
 <translation id="3226387218769101247">រូបភាព​តូចៗ</translation>
@@ -722,6 +723,7 @@
 <translation id="3329013043687509092">កម្រិតពណ៌</translation>
 <translation id="3333762389743153920">មិនមានសិទ្ធិសម្រាប់​កាតនិម្មិតទេ</translation>
 <translation id="3338095232262050444">សុវត្ថិភាព</translation>
+<translation id="3345782426586609320">ភ្នែក</translation>
 <translation id="3355823806454867987">ប្តូរការកំណត់ប្រូកស៊ី...</translation>
 <translation id="3360103848165129075">សន្លឹក​កម្មវិធីគ្រប់គ្រង​ការបង់ប្រាក់</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />នឹងមិនរក្សាទុក<ph name="END_EMPHASIS" />ព័ត៌មានខាងក្រោមទេ៖
@@ -1077,6 +1079,7 @@
 <translation id="4390472908992056574">គែមខាងលើ</translation>
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4406896451731180161">លទ្ធផលស្វែងរក</translation>
+<translation id="4407755609041463909">ភ្លើង</translation>
 <translation id="4408413947728134509">ខូគី <ph name="NUM_COOKIES" /></translation>
 <translation id="4414515549596849729">ទិន្នន័យ​គេហទំព័រ និងខូគី</translation>
 <translation id="4415426530740016218">អាសយដ្ឋាន​ទទួល</translation>
@@ -1385,6 +1388,7 @@
 <translation id="5344579389779391559">ទំព័រ​នេះ​អាច​នឹងព្យាយាម​គិតប្រាក់ពីអ្នក</translation>
 <translation id="5347645913823149105">ប៊ូតុង "ប្ដូរពុម្ពអក្សរ​តាមបំណងនៅក្នុង Chrome" ចុច Enter ដើម្បី​ប្ដូរទំហំពុម្ពអក្សរ និងពុម្ពអក្សរនៅក្នុង Chrome</translation>
 <translation id="5355557959165512791">អ្នក​មិន​អាច​ចូលទៅ​កាន់ <ph name="SITE" /> ឥឡូវនេះ​បានទេ ដោយសារតែវិញ្ញាបនបត្ររបស់វា​ត្រូវ​បានដក​ហូតហើយ។ ជាទូទៅបញ្ហា​បណ្តាញ ឬ​ការវាយប្រហារ​​កើត​ឡើង​ជាបណ្តោះអាសន្ន ដូច្នេះ​ទំព័រ​នេះ​នឹងដំណើរការល្អឡើងវិញនៅពេលក្រោយ។</translation>
+<translation id="5356837363448394805">មុខ​ក្រហម</translation>
 <translation id="536296301121032821">បានបរាជ័យក្នុងការស្តារការកំណត់គោលការណ៍នេះ</translation>
 <translation id="5363309033720083897">​រន្ធស៊េរីដែលបានអនុញ្ញាតដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5371425731340848620">ធ្វើបច្ចុប្បន្នភាពកាត</translation>
@@ -1616,6 +1620,7 @@
 <translation id="622039917539443112">បត់ឱ្យ​ស្របគ្នា</translation>
 <translation id="6221345481584921695">ការរុករកសុវត្ថិភាព Google <ph name="BEGIN_LINK" />បានរកឃើញមេរោគ<ph name="END_LINK" /> នៅលើ <ph name="SITE" />កន្លងទៅថ្មីៗនេះ។ គេហទំព័រដែលជាធម្មតាមានសុវត្ថិភាពអាចឆ្លងមេរោគនៅពេលខ្លះ។ មាតិកាព្យាបាទចេញមកពី <ph name="SUBRESOURCE_HOST" /> ជាអ្នកចែកចាយមេរោគដែលត្រូវបានស្គាល់។</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នកនៅក្នុង​ការកំណត់ Chrome</translation>
+<translation id="6233160458685643793">ញញឹម​ស្ញាញ</translation>
 <translation id="6234122620015464377">តម្រឹម​បន្ទាប់ពី​ឯកសារ​នីមួយៗ</translation>
 <translation id="6240447795304464094">និមិត្តសញ្ញា Google Pay</translation>
 <translation id="6241121617266208201">លាក់​ការ​ណែនាំ</translation>
@@ -1667,6 +1672,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">សន្លឹក​ព័ត៌មានផ្ទៀងផ្ទាត់​ការបង់ប្រាក់​មានសុវត្ថិភាព ដែលគ្មានព័ត៌មានផ្ទៀងផ្ទាត់​ត្រូវគ្នា​ត្រូវបានបិទ</translation>
 <translation id="6393956493820063117">ការដាក់ចូលពី <ph name="ORIGIN_NAME" /> ទៅក្នុងទីតាំងនេះត្រូវបានទប់ស្កាត់ដោយគោលការណ៍របស់អ្នកគ្រប់គ្រង</translation>
+<translation id="6398277657359595425">យំឮៗ</translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="6401136357288658127">គោលការណ៍នេះ​ត្រូវបានបញ្ឈប់។ អ្នក​គួរតែ​ប្រើ​គោលការណ៍ <ph name="NEW_POLICY" /> ជំនួសវិញ។</translation>
 <translation id="6404511346730675251">កែប្រែចំណាំ</translation>
@@ -1741,6 +1747,7 @@
 <translation id="6660413144148052430">ទីតាំង</translation>
 <translation id="6662457027866368246">ដុំទីមួយ</translation>
 <translation id="666259744093848177">(x86_64 ដែលបានបកប្រែ)</translation>
+<translation id="6663846344464066639">ក្ដោបដៃ</translation>
 <translation id="6665553082534466207">ចោះ​បីរន្ធ​ខាងស្ដាំ</translation>
 <translation id="6671697161687535275">យកការផ្តល់យោបល់ទម្រង់ចេញពី Chromium ឬ?</translation>
 <translation id="6685834062052613830">ចាកចេញ និងបញ្ចប់ការដំឡើង</translation>
@@ -1809,6 +1816,7 @@
 <translation id="6934672428414710184">ឈ្មោះ​នេះ​បាន​មកពី​គណនី Google របស់អ្នក</translation>
 <translation id="6944692733090228304">អ្នក​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័រ​ ដែល​មិនស្ថិត​ក្រោម​ការ​​គ្រប់គ្រង​របស់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />។ ដើម្បី​ការពារ​គណនី​របស់អ្នក សូមកុំ​ប្រើពាក្យ​សម្ងាត់​របស់អ្នក​ម្តងទៀត​នៅលើ​កម្មវិធី និង​គេហទំព័រដទៃទៀត។</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
+<translation id="6946722113367118030">កំពុងគិត</translation>
 <translation id="6948051842255602737">ហ្គេម​ចប់ហើយ ពិន្ទុ​របស់អ្នកគឺ <ph name="SCORE" />។</translation>
 <translation id="6948701128805548767">ដើម្បីមើលមធ្យោបាយ និងលក្ខខណ្ឌតម្រូវនៃការទៅយក សូមជ្រើសរើសអាសយដ្ឋាន</translation>
 <translation id="6949872517221025916">កំណត់ពាក្យសម្ងាត់ឡើងវិញ</translation>

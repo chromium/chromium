@@ -682,6 +682,7 @@
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
 <translation id="3218181027817787318">Относително</translation>
 <translation id="3223287115535306850">Индикатор за стартиращо се приложение</translation>
+<translation id="3225347164936328585">Аплодисменти</translation>
 <translation id="3225919329040284222">Сървърът предостави сертификат, който не съответства на вградените очаквания. Те са включени за определени уебсайтове с голяма степен на сигурност, за да ви предпазим.</translation>
 <translation id="3226128629678568754">Натиснете бутона за презареждане, за да изпратите отново данните, необходими за отварянето на страницата.</translation>
 <translation id="3226387218769101247">Миниизображения</translation>
@@ -717,6 +718,7 @@
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3333762389743153920">Не отговаря на условията за виртуална карта</translation>
 <translation id="3338095232262050444">Има защита</translation>
+<translation id="3345782426586609320">Очи</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="3360103848165129075">Лист на инструмента за обработване на плащания</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />няма да съхранява<ph name="END_EMPHASIS" /> следната информация:
@@ -1072,6 +1074,7 @@
 <translation id="4390472908992056574">Периферия</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
+<translation id="4407755609041463909">Пожар</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
@@ -1379,6 +1382,7 @@
 <translation id="5344579389779391559">Тази страница може да опита да ви таксува пари</translation>
 <translation id="5347645913823149105">Бутон „Персонализиране на шрифтовете в Chrome“. Натиснете Enter, за да персонализирате шрифтовете в Chrome и размера им</translation>
 <translation id="5355557959165512791">В момента не можете да посетите сайта <ph name="SITE" />, защото сертификатът му е анулиран. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
+<translation id="5356837363448394805">Изчервяване</translation>
 <translation id="536296301121032821">Съхраняването на настройките за правилото не бе успешно</translation>
 <translation id="5363309033720083897">Сериен порт, разрешен от администратора ви</translation>
 <translation id="5371425731340848620">Актуализиране на картата</translation>
@@ -1610,6 +1614,7 @@
 <translation id="622039917539443112">Паралелно сгъване</translation>
 <translation id="6221345481584921695">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри злонамерен софтуер<ph name="END_LINK" /> на <ph name="SITE" />. Уебсайтовете, които обикновено са надеждни, понякога се заразяват с опасен софтуер. Въпросното съдържание произлиза от <ph name="SUBRESOURCE_HOST" /> – известен разпространител на злонамерени програми.</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
+<translation id="6233160458685643793">Ухилено лице</translation>
 <translation id="6234122620015464377">Отрязване след всеки документ</translation>
 <translation id="6240447795304464094">Лого на Google Pay</translation>
 <translation id="6241121617266208201">Скриване на предложенията</translation>
@@ -1661,6 +1666,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Листът за несъответстващи идентификационни данни за сигурни плащания е затворен</translation>
 <translation id="6393956493820063117">Поставянето на информация от <ph name="ORIGIN_NAME" /> тук е блокирано от администраторски правила</translation>
+<translation id="6398277657359595425">Рев</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="6401136357288658127">Това правило е оттеглено. Вместо него използвайте <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Редактиране на отметката</translation>
@@ -1735,6 +1741,7 @@
 <translation id="6660413144148052430">местоположение</translation>
 <translation id="6662457027866368246">Първа ролка</translation>
 <translation id="666259744093848177">(преведено от x86_64)</translation>
+<translation id="6663846344464066639">Молещи се ръце</translation>
 <translation id="6665553082534466207">Тройно перфориране отдясно</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6685834062052613830">Излизане от профила и завършване на настройването</translation>
@@ -1803,6 +1810,7 @@
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
 <translation id="6944692733090228304">Въведохте паролата си на сайт, който не се управлява от <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="6945221475159498467">Избиране</translation>
+<translation id="6946722113367118030">Замислено лице</translation>
 <translation id="6948051842255602737">Край на играта. Резултатът ви е <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">За да видите начините на вземане и изискванията, изберете адрес</translation>
 <translation id="6949872517221025916">Задаване на нова парола</translation>

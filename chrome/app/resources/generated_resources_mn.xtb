@@ -2668,7 +2668,6 @@
 <translation id="3732078975418297900">Алдааны мөр <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">ПИН хамгийн ихдээ 63 тэмдэгттэй байх ёстой</translation>
 <translation id="3732857534841813090">Google Туслахтай холбоотой мэдээлэл</translation>
-<translation id="3733127536501031542">Хурдасгагчтай SSL Сервер</translation>
 <translation id="3733296813637058299">Бид эдгээр аппыг танд суулгаж өгнө. Та <ph name="DEVICE_TYPE" />-д суулгаж болох бусад аппыг Play Store-с олох боломжтой.</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-н өгөгдөл 24 цагийн дараа устана</translation>
@@ -3011,7 +3010,6 @@
 <translation id="4068776064906523561">Хадгалсан хурууны хээ</translation>
 <translation id="407173827865827707">Товшсон</translation>
 <translation id="4072701974556190758">Нууц үгийг таны <ph name="ACCOUNT" /> Google Бүртгэлд хадгална. Та үүнийг санах шаардлагагүй.</translation>
-<translation id="4074900173531346617">И-мэйл баталгаажуулалтын сертификат</translation>
 <translation id="407520071244661467">Хэмжээ</translation>
 <translation id="407543464472585404"><ph name="NAME" />-н профайл <ph name="EMAIL" />-д холбоотой байна</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" />-г дамжуулах боломжгүй байна.</translation>
@@ -4324,7 +4322,6 @@
 <translation id="5517304475148761050">Энэ аппад Play Store-д хандах хандалт шаардлагатай</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Сайт түр санах ойд хуулсан текст, зургийг харах хүсэлтэй үед асуух</translation>
-<translation id="5518584115117143805">И-мэйл шифрлэлтийн гэрчилгээ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Энэ таны хүссэн нүүр хуудас мөн үү?</translation>
 <translation id="5522156646677899028">Энэ өргөтгөл нь аюулгүй байдлын ноцтой байдлыг агуулж байна.</translation>
@@ -6165,7 +6162,6 @@
 <translation id="7506242536428928412">Та аюулгүй байдлын шинэ түлхүүрээ ашиглахын тулд шинэ ПИН тохируулна уу</translation>
 <translation id="7506541170099744506">Таны <ph name="DEVICE_TYPE" />-г байгууллагын удирдлагад амжилттай бүртгэлээ.</translation>
 <translation id="7507207699631365376">Энэ хангагчийн <ph name="BEGIN_LINK" />нууцлалын бодлогыг<ph name="END_LINK" /> харах</translation>
-<translation id="7507930499305566459">Статусд хариулагч сертификат</translation>
 <translation id="7509097596023256288">Менежмент тохируулах</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7509539379068593709">Аппыг устгах</translation>
@@ -7409,7 +7405,6 @@
 <translation id="8778328560035799409">Таны одоогоор оноосон сэлгүүрүүдийг арилгана</translation>
 <translation id="8780123805589053431">Google-с зургийн тайлбар авах</translation>
 <translation id="8780443667474968681">Дуут хайлтыг унтраасан байна.</translation>
-<translation id="878069093594050299">Энэ сертификатыг дараах зориулалтаар хэрэглэхэд зөвшөөрөгдсөн:</translation>
 <translation id="8781834595282316166">Бүлэг доторх шинэ таб</translation>
 <translation id="8782565991310229362">Kiosk программыг эхлүүлэх явц цуцлагдсан.</translation>
 <translation id="8783834180813871000">Bluetooth хослуулах кодыг оруулаад Return эсвэл Enter дарна уу.</translation>

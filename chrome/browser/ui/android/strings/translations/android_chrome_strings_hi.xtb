@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
+<translation id="1518421282666914498">भावना दिखाने वाला GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
 <translation id="1538801903729528855">वेब पर वॉइस सर्च का बेहतर अनुभव पाएं</translation>
 <translation id="1544826120773021464">अपना Google खाता प्रबंधित करने के लिए, "खाता प्रबंधित करें" बटन पर टैप करें</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">फ़ोल्डर चुनें</translation>
 <translation id="4538018662093857852">लाइट मोड चालू करें</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">यहां अपना पासवर्ड देखने या उसे कॉपी करने के लिए, इस डिवाइस पर स्क्रीन लॉक सेट करें.</translation>
 <translation id="4554077758708533499">यूएसबी केबल की मदद से कनेक्ट किया गया</translation>
 <translation id="4557685098773234337">इसे और जल्दी ऐक्सेस करने के लिए, इस पेज को अपनी होम स्क्रीन पर जोड़ें</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">आप Chrome में जिन साइटों पर जाते हैं, वे नहीं दिखाई देंगी. साइट के सभी टाइमर मिटा दिए जाएंगे.</translation>
 <translation id="6534565668554028783">Google को प्रतिक्रिया देने में बहुत ज़्यादा समय लगा</translation>
 <translation id="6539092367496845964">कोई गड़बड़ी हुई. बाद में कोशिश करें.</translation>
+<translation id="6541042852576515209">आकार बदलें और घुमाएं</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{जांच 1 घंटा पहले की गई}one{जांच # घंटा पहले की गई}other{जांच # घंटे पहले की गई}}</translation>
 <translation id="6545017243486555795">सभी डेटा साफ़ करें</translation>
 <translation id="6546511553472444032">यह फ़ाइल नुकसान पहुंचा सकती है</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">ज़्यादा श्रेणियां</translation>
 <translation id="7453467225369441013">आपको ज़्यादातर साइटों से साइन आउट कर देता है. आप अपने Google खाते से साइन आउट नहीं होंगे.</translation>
 <translation id="7454641608352164238">जगह काफ़ी नहीं है</translation>
+<translation id="7468819939926272717">किसी भावना को दिखाने वाला GIF चुनें</translation>
 <translation id="7474822150871987353">पेज को बंद किए बिना, वेबसाइटों पर दिए गए विषयों के बारे में जानें. खोजने के लिए, पेज पर एक या उससे ज़्यादा शब्द चुनें.</translation>
 <translation id="7475192538862203634">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="BEGIN_LINK" />सुझावों<ph name="END_LINK" /> को आज़माएं.</translation>
 <translation id="7475688122056506577">SD कार्ड नहीं मिला. हो सकता है कि आपकी कुछ फ़ाइलें उपलब्ध न हों.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
 <translation id="7882131421121961860">कोई इतिहास नहीं मिला</translation>
 <translation id="7886917304091689118">Chrome में चल रहा है</translation>
+<translation id="7887334752153342268">डुप्लीकेट</translation>
 <translation id="789763218334337857">Chrome को इस्तेमाल करने का तरीका</translation>
 <translation id="7903184275147100332">इसमें एक मिनट लग सकता है</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>

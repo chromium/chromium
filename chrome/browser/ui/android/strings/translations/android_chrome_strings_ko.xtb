@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
+<translation id="1518421282666914498">감정 GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="1538801903729528855">웹에서의 음성 사용 환경 개선하기</translation>
 <translation id="1544826120773021464">Google 계정을 관리하려면 '계정 관리' 버튼을 탭하세요.</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">폴더 선택</translation>
 <translation id="4538018662093857852">라이트 모드 켜기</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">여기에서 비밀번호를 보거나 복사하려면 이 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
 <translation id="4557685098773234337">신속하게 여기를 방문하려면 이 페이지를 홈 화면에 추가하세요.</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">Chrome에서 방문한 사이트가 표시되지 않습니다. 모든 사이트 타이머가 삭제됩니다.</translation>
 <translation id="6534565668554028783">Google에서 응답하는 데 시간이 너무 오래 걸립니다.</translation>
 <translation id="6539092367496845964">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
+<translation id="6541042852576515209">크기 조절 및 회전</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1시간 전에 확인됨}other{#시간 전에 확인됨}}</translation>
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6546511553472444032">유해한 파일일 수도 있음</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">카테고리 더보기</translation>
 <translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
+<translation id="7468819939926272717">감정 선택</translation>
 <translation id="7474822150871987353">페이지에서 나가지 않고도 웹사이트의 주제에 관해 알아봅니다. 페이지에서 하나 이상의 단어를 선택하여 검색합니다.</translation>
 <translation id="7475192538862203634">이 메시지가 자주 표시된다면 다음 <ph name="BEGIN_LINK" />권장사항<ph name="END_LINK" />을 시도해 보세요.</translation>
 <translation id="7475688122056506577">SD 카드가 없습니다. 일부 파일이 누락되었을 수 있습니다.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
 <translation id="7882131421121961860">방문 기록이 없습니다.</translation>
 <translation id="7886917304091689118">Chrome에서 실행 중</translation>
+<translation id="7887334752153342268">새 탭에서 보기</translation>
 <translation id="789763218334337857">Chrome 사용 방법</translation>
 <translation id="7903184275147100332">시간이 다소 걸릴 수 있습니다.</translation>
 <translation id="7919123827536834358">자동 번역할 언어</translation>

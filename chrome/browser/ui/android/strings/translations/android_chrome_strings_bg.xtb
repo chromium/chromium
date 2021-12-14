@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
+<translation id="1518421282666914498">Емоция чрез GIF: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="1538801903729528855">Подобряване на работата с глас в мрежата</translation>
 <translation id="1544826120773021464">За да управлявате профила си в Google, докоснете бутона „Управление на профила“</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">Избиране на папка</translation>
 <translation id="4538018662093857852">Включване на олекотения режим</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">За да видите или копирате паролата си тук, задайте опция за заключване на екрана на това устройство.</translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
 <translation id="4557685098773234337">За да отваряте тази страница по-бързо, добавете я към началния екран</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">Посетените от вас сайтове в Chrome няма да се показват. Всички таймери за сайтове ще бъдат изтрити.</translation>
 <translation id="6534565668554028783">Google не отговаря твърде дълго време</translation>
 <translation id="6539092367496845964">Нещо се обърка. Опитайте пак по-късно.</translation>
+<translation id="6541042852576515209">Преоразмеряване и завъртане</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено преди 1 час}other{Проверено преди # часа}}</translation>
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">Още категории</translation>
 <translation id="7453467225369441013">Ще излезете от повечето сайтове, но не и от профила си в Google.</translation>
 <translation id="7454641608352164238">Няма достатъчно място</translation>
+<translation id="7468819939926272717">Избиране на емоция</translation>
 <translation id="7474822150871987353">Научавайте за теми в уебсайтовете, без да излизате от страницата. Изберете една или повече думи от страницата, за да ги потърсите.</translation>
 <translation id="7475192538862203634">Ако виждате това често, изпробвайте тези <ph name="BEGIN_LINK" />предложения<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD картата не е намерена. Някои файлове може да липсват.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочетена страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочетени страници}}</translation>
 <translation id="7882131421121961860">Няма намерена история</translation>
 <translation id="7886917304091689118">Изпълнява се в Chrome</translation>
+<translation id="7887334752153342268">Дублиране</translation>
 <translation id="789763218334337857">Начин на използване на Chrome</translation>
 <translation id="7903184275147100332">Това може да отнеме известно време</translation>
 <translation id="7919123827536834358">Автоматично превеждане от следните езици</translation>

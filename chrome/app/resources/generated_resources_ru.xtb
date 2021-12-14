@@ -2658,7 +2658,6 @@
 <translation id="3732078975418297900">Ошибка в строке <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-код должен содержать не более 63 символов.</translation>
 <translation id="3732857534841813090">Подсказки от Google Ассистента</translation>
-<translation id="3733127536501031542">SSL-сервер с повышением</translation>
 <translation id="3733296813637058299">Эти приложения будут установлены на ваше устройство. Ещё больше приложений для <ph name="DEVICE_TYPE" /> вы найдете в Google Play.</translation>
 <translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3738632186060045350">Данные на <ph name="DEVICE_TYPE" /> будут удалены через 24 ч.</translation>
@@ -3002,7 +3001,6 @@
 <translation id="4068776064906523561">Сохраненные отпечатки пальцев</translation>
 <translation id="407173827865827707">При нажатии</translation>
 <translation id="4072701974556190758">Пароль будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />). Вам не нужно его запоминать.</translation>
-<translation id="4074900173531346617">Сертификат для подписи электронной почты</translation>
 <translation id="407520071244661467">Масштаб</translation>
 <translation id="407543464472585404">Профиль пользователя <ph name="NAME" /> связан с аккаунтом <ph name="EMAIL" />.</translation>
 <translation id="4075639477629295004">Невозможно транслировать файл "<ph name="FILE_NAME" />"</translation>
@@ -4314,7 +4312,6 @@
 <translation id="5517304475148761050">Этому приложению необходим доступ к Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена</translation>
-<translation id="5518584115117143805">Сертификат шифрования электронной почты</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Другая главная страница?</translation>
 <translation id="5522156646677899028">В этом расширении обнаружена серьезная уязвимость, угрожающая безопасности.</translation>
@@ -6155,7 +6152,6 @@
 <translation id="7506242536428928412">Чтобы использовать электронный ключ, установите новый PIN-код.</translation>
 <translation id="7506541170099744506">Ваше устройство <ph name="DEVICE_TYPE" /> зарегистрировано для использования в организации.</translation>
 <translation id="7507207699631365376">Посмотреть <ph name="BEGIN_LINK" />политику конфиденциальности<ph name="END_LINK" /> этого поставщика услуг</translation>
-<translation id="7507930499305566459">Сертификат ответчика о состоянии</translation>
 <translation id="7509097596023256288">Настройка управления</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>
 <translation id="7509539379068593709">Удалить приложение</translation>
@@ -7406,7 +7402,6 @@
 <translation id="8778328560035799409">Назначенные переключатели будут удалены.</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
-<translation id="878069093594050299">Этот сертификат был проверен на возможность использования в следующих целях:</translation>
 <translation id="8781834595282316166">Добавить новую вкладку в группу</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
 <translation id="8783834180813871000">Введите код Bluetooth-подключения и нажмите Ввод.</translation>

@@ -2665,7 +2665,6 @@
 <translation id="3732078975418297900"><ph name="ERROR_LINE" /> ನೇ ಸಾಲಿನಲ್ಲಿ ದೋಷವಿದೆ</translation>
 <translation id="3732530910372558017">ಪಿನ್ ಗರಿಷ್ಠ 63 ಅಕ್ಷರಗಳಾಗಿರಬೇಕು</translation>
 <translation id="3732857534841813090">Google Assistant ಸಂಬಂಧಿತ ಮಾಹಿತಿ</translation>
-<translation id="3733127536501031542">ಹೆಚ್ಚುವಿಕೆಯೊಂದಿಗೆ SSL ಸರ್ವರ್</translation>
 <translation id="3733296813637058299">ನಿಮಗಾಗಿ ಆ ನಾವು ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುತ್ತೇವೆ. ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗಾಗಿ ನೀವು ಹೆಚ್ಚಿನ ಆ್ಯಪ್‌ಗಳನ್ನು Play Store ನಲ್ಲಿ ಕಂಡುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="3735740477244556633">ಈ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ಡೇಟಾವನ್ನು 24 ಗಂಟೆಗಳಲ್ಲಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -3009,7 +3008,6 @@
 <translation id="4068776064906523561">ಉಳಿಸಿದ ಬೆರಳಚ್ಚುಗಳು</translation>
 <translation id="407173827865827707">ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
 <translation id="4072701974556190758">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಉಳಿಸಲಾಗುತ್ತದೆ. ನೀವು ಅದನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಬೇಕಾಗಿಲ್ಲ.</translation>
-<translation id="4074900173531346617">ಇಮೇಲ್ ಸಹಿ ಮಾಡುವವರ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="407520071244661467">ಮಾಪಕ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ಅವರ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="EMAIL" /> ಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
@@ -4322,7 +4320,6 @@
 <translation id="5517304475148761050">ಈ ಆ್ಯಪ್‌ಗೆ Play Store ಗೆ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">ನೀವು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಒಂದು ಸೈಟ್ ನೋಡಲು ಬಯಸುವಾಗ ಅನುಮತಿ ಕೇಳಿ</translation>
-<translation id="5518584115117143805">ಇಮೇಲ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">ಇದು ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿದ್ದ ಹೋಮ್ ಆಗಿದೆಯಾ?</translation>
 <translation id="5522156646677899028">ಈ ವಿಸ್ತರಣೆಯು ಗಂಭೀರ ಭದ್ರತಾ ಅಪಾಯ ಸಾಧ್ಯತೆಯನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
@@ -6165,7 +6162,6 @@
 <translation id="7506242536428928412">ನಿಮ್ಮ ಹೊಸ ಭದ್ರತಾ ಕೀ ಬಳಸಲು, ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
 <translation id="7506541170099744506">ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆಗಾಗಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ದಾಖಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="7507207699631365376">ಈ ಪೂರೈಕೆದಾರರ <ph name="BEGIN_LINK" />ಗೌಪ್ಯತೆ ನೀತಿಯನ್ನು<ph name="END_LINK" /> ನೋಡಿ</translation>
-<translation id="7507930499305566459">ಸ್ಥಿತಿ ಪ್ರತಿಕ್ರಿಯೆ ನೀಡುವವರ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="7509097596023256288">ನಿಯಂತ್ರಣವನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7509246181739783082">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7509539379068593709">ಆ್ಯಪ್ ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -7411,7 +7407,6 @@
 <translation id="8778328560035799409">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ನಿಯೋಜಿತ ಸ್ವಿಚ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="8780123805589053431">Google ನಿಂದ ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="8780443667474968681">ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
-<translation id="878069093594050299">ಈ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಮುಂದಿನ ಬಳಕೆಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗಿದೆ:</translation>
 <translation id="8781834595282316166">ಗುಂಪಿನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="8782565991310229362">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್ ಬಿಡುಗಡೆಯನ್ನು ರದ್ದು ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8783834180813871000">ಬ್ಲೂಟೂತ್ ಜೋಡಣೆ ಕೋಡ್‌ ಟೈಪ್‌ ಮಾಡಿ ನಂತರ Return ಅಥವಾ Enter ಒತ್ತಿ.</translation>

@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
+<translation id="1518421282666914498">भावना GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
 <translation id="1538801903729528855">वेबवर आवाजाचा चांगला अनुभव मिळवा</translation>
 <translation id="1544826120773021464">तुमचे Google खाते व्यवस्थापित करण्यासाठी, "खाते व्यवस्थापित करा" बटणावर टॅप करा</translation>
@@ -574,6 +575,7 @@
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
 <translation id="4538018662093857852">लाइट मोड सुरू करा</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त मोड}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">तुमचा पासवर्ड येथे पाहण्यासाठी किंवा कॉपी करण्यासाठी या डीव्हाइसवर स्क्रीन लॉक सेट करा.</translation>
 <translation id="4554077758708533499">USB केबल वापरून कनेक्ट केला</translation>
 <translation id="4557685098773234337">येथे झटपट येण्यासाठी, हे पेज तुमच्या होम स्क्रीनवर जोडा</translation>
@@ -926,6 +928,7 @@
 <translation id="6532866250404780454">तुम्ही Chrome मध्ये भेट दिलेल्या साइट दाखवणार नाही. सर्व साइट टायमर हटवले जातील.</translation>
 <translation id="6534565668554028783">Google ने प्रतिसाद देण्यास बराच वेळ घेतला</translation>
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
+<translation id="6541042852576515209">आकार बदला आणि फिरवा</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6546511553472444032">फाइल हानिकारक असू शकते</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7444811645081526538">अधिक वर्गवाऱ्या</translation>
 <translation id="7453467225369441013">तुम्हाला बहुतांश साइटमधून साइन आउट करते. तुम्हाला तुमच्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="7454641608352164238">पुरेशी जागा उरलेली नाही</translation>
+<translation id="7468819939926272717">भावना निवडा</translation>
 <translation id="7474822150871987353">पेजमधून बाहेर न पडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. ते शोधण्यासाठी पेजवरील एक किंवा त्याहून अधिक शब्द निवडा.</translation>
 <translation id="7475192538862203634">तुम्ही हे वारंवार पहात असल्यास, या <ph name="BEGIN_LINK" />सूचना<ph name="END_LINK" /> वापरून पहा.</translation>
 <translation id="7475688122056506577">SD कार्ड आढळले नाही. तुमच्या काही फाइल गहाळ झालेल्या असू शकतात.</translation>
@@ -1160,6 +1164,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> न वाचलेले पेज आहे}other{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> न वाचलेली पेज आहेत}}</translation>
 <translation id="7882131421121961860">कोणताही इतिहास सापडला नाही</translation>
 <translation id="7886917304091689118">Chrome मध्ये चालत आहे</translation>
+<translation id="7887334752153342268">डुप्लिकेट</translation>
 <translation id="789763218334337857">Chrome कसे वापरावे</translation>
 <translation id="7903184275147100332">यासाठी एक मिनिट लागू शकतो</translation>
 <translation id="7919123827536834358">या भाषांचे आपोआप भाषांतर करा</translation>

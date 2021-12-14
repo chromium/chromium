@@ -680,6 +680,7 @@
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
 <translation id="3218181027817787318">相対的</translation>
 <translation id="3223287115535306850">アプリ起動スロバー</translation>
+<translation id="3225347164936328585">拍手</translation>
 <translation id="3225919329040284222">サーバーの提示した証明書が、組み込まれている想定の証明書と一致しません。これらの想定の証明書は、ユーザー保護のため、特定の安全性の高いウェブサイトについて用意されています。</translation>
 <translation id="3226128629678568754">ページの読み込みに必要なデータを再送信するには、再読み込みボタンを押してください。</translation>
 <translation id="3226387218769101247">サムネイル</translation>
@@ -715,6 +716,7 @@
 <translation id="3329013043687509092">彩度</translation>
 <translation id="3333762389743153920">仮想カードは使用できません</translation>
 <translation id="3338095232262050444">保護された通信</translation>
+<translation id="3345782426586609320">目</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
 <translation id="3361596688432910856">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません。<ph name="END_EMPHASIS" />
@@ -1065,6 +1067,7 @@
 <translation id="4390472908992056574">ブリム</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406896451731180161">検索結果</translation>
+<translation id="4407755609041463909">激怒</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
 <translation id="4415426530740016218">受け取り場所の住所</translation>
@@ -1372,6 +1375,7 @@
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
 <translation id="5347645913823149105">[Chrome のフォントをカスタマイズ] ボタンです。Enter キーを押して、Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="5355557959165512791"><ph name="SITE" /> は証明書が失効しているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
+<translation id="5356837363448394805">びっくり</translation>
 <translation id="536296301121032821">ポリシー設定を保存できませんでした</translation>
 <translation id="5363309033720083897">管理者が許可したシリアルポート</translation>
 <translation id="5371425731340848620">カードを更新</translation>
@@ -1603,6 +1607,7 @@
 <translation id="622039917539443112">巻き折り</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> では最近、Google セーフ ブラウジングにより、<ph name="END_LINK" />不正なソフトウェアが検出されました<ph name="SITE" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。今回の悪意のあるコンテンツは、不正なソフトウェアの既知の配布元である「<ph name="SUBRESOURCE_HOST" />」からもたらされました。</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
+<translation id="6233160458685643793">ニヤニヤ</translation>
 <translation id="6234122620015464377">トリミング（ドキュメント単位）</translation>
 <translation id="6240447795304464094">Google Pay ロゴ</translation>
 <translation id="6241121617266208201">候補を非表示にする</translation>
@@ -1654,6 +1659,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">保護されたお支払い認証情報（認証情報の一致なし）シートは閉じています</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> からこの場所への貼り付けは管理者が設定したポリシーによってブロックされています</translation>
+<translation id="6398277657359595425">大泣き</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6401136357288658127">このポリシーはサポートが終了したため、代わりに <ph name="NEW_POLICY" /> ポリシーを使用してください。</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
@@ -1728,6 +1734,7 @@
 <translation id="6660413144148052430">現在地情報</translation>
 <translation id="6662457027866368246">ロール 1</translation>
 <translation id="666259744093848177">（x86_64 翻訳）</translation>
+<translation id="6663846344464066639">お願い</translation>
 <translation id="6665553082534466207">3 穴パンチ（右）</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
 <translation id="6685834062052613830">ログアウトして設定を完了してください</translation>
@@ -1796,6 +1803,7 @@
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6946722113367118030">考えている</translation>
 <translation id="6948051842255602737">ゲームオーバー、スコアは <ph name="SCORE" /> です。</translation>
 <translation id="6948701128805548767">受け取り方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6949872517221025916">パスワードを再設定</translation>

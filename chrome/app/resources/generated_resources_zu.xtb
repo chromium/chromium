@@ -2671,7 +2671,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3732078975418297900">Iphutha kumugqa ongu-<ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">I-PIN kufanele okungenani ibe izinhlamvu ezingu-63</translation>
 <translation id="3732857534841813090">Ulwazi oluhambisana nomsizi we-Google</translation>
-<translation id="3733127536501031542">Iseva ye-SSL enokunyukela phezulu</translation>
 <translation id="3733296813637058299">Sizokufakela lawo ma-app. Ungathola ama-app amaningi we-<ph name="DEVICE_TYPE" /> yakho ku-Google Play Isitolo.</translation>
 <translation id="3735740477244556633">Hlunga nge-</translation>
 <translation id="3738632186060045350">Idatha ye-<ph name="DEVICE_TYPE" /> izosuswa emahoreni angama-24</translation>
@@ -3014,7 +3013,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4068776064906523561">Izigxivizo zeminwe ezilondoloziwe</translation>
 <translation id="407173827865827707">Ekuchofozeni</translation>
 <translation id="4072701974556190758">Iphasiwedi izolondolozwa ku-akhawunti yakho ye-Google, <ph name="ACCOUNT" />. Ngeke kudingeke ukuba uyikhumbule.</translation>
-<translation id="4074900173531346617">Thumela umsayini isitifiketi</translation>
 <translation id="407520071244661467">Isikali</translation>
 <translation id="407543464472585404">Iphrofayela ka-<ph name="NAME" /> ixhunyaniswe ne-<ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Ayikwazi ukusakaza i-<ph name="FILE_NAME" />.</translation>
@@ -4329,7 +4327,6 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5517304475148761050">Lolu hlelo lokusebenza ludinga ukufinyelela ku-Google Play Isitolo</translation>
 <translation id="5517412723934627386">I-<ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Buza uma isayithi lifuna ukubona umbhalo nezithombe ezikopishelwe kubhodi lokunamathisela</translation>
-<translation id="5518584115117143805">Isitifiketi sokubethela se-imeyili</translation>
 <translation id="5519195206574732858">I-LTE</translation>
 <translation id="5521078259930077036">Ingabe leli yikhasi lasekhaya obukade ulilindele?</translation>
 <translation id="5522156646677899028">Lesi sandiso siqukethe ukuba sengozini esibucayi sokuvikela.</translation>
@@ -6171,7 +6168,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7506242536428928412">Ukuze useenzise ukhiye wakho omusha wokuqinisekisa ubunikazi, setha iphinikhodi entsha</translation>
 <translation id="7506541170099744506">I-<ph name="DEVICE_TYPE" /> yakho ibhaliselwe ngempumelelo ukuphathwa kwebhizinisi.</translation>
 <translation id="7507207699631365376">Buka <ph name="BEGIN_LINK" />inqubomgomo yobumfihlo<ph name="END_LINK" /> yalomhlinzeki</translation>
-<translation id="7507930499305566459">Isitifiketi sokuphendula kusimo</translation>
 <translation id="7509097596023256288">Isetha ukuphatha</translation>
 <translation id="7509246181739783082">Qinisekisa ubuwena</translation>
 <translation id="7509539379068593709">Khipha i-app</translation>
@@ -7420,7 +7416,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="8778328560035799409">Amaswishi akho owabelwe manje azosulwa</translation>
 <translation id="8780123805589053431">Thola izincazelo zesithombe kusuka ku-Google</translation>
 <translation id="8780443667474968681">Usesho lezwi luvaliwe.</translation>
-<translation id="878069093594050299">Lesi sitifiketi siqinisekisiwe ekusetshenzisweni okulandelayo:</translation>
 <translation id="8781834595282316166">Ithebhu entsha kuqembu</translation>
 <translation id="8782565991310229362">Ukuqaliswa kohlelo lokusebenza lwekhiyoski kukhanseliwe.</translation>
 <translation id="8783834180813871000">Thayipha ikhodi yokumatanisa ye-bluetooth bese ucindezela okuthi Buyela noma Enter</translation>

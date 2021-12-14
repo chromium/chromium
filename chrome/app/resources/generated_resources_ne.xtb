@@ -2655,7 +2655,6 @@
 <translation id="3732078975418297900">हरफ <ph name="ERROR_LINE" /> मा त्रुटि छ</translation>
 <translation id="3732530910372558017">PIN मा बढीमा ६३ वर्णहरू मात्र हुनु पर्छ</translation>
 <translation id="3732857534841813090">Google सहायकसम्बन्धी जानकारी</translation>
-<translation id="3733127536501031542">स्टेप-अपको साथमा SSL सर्भर</translation>
 <translation id="3733296813637058299">हामी तपाईंका लागि ती एपहरू इन्स्टल गरिदिने छौँ। तपाईं Play स्टोरमा गई आफ्नो <ph name="DEVICE_TYPE" /> मा चल्ने थप एपहरू फेला पार्न सक्नुहुन्छ।</translation>
 <translation id="3735740477244556633">यसअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> मा भएको डेटा २४ घन्टापछि मेटाइने छ</translation>
@@ -2998,7 +2997,6 @@
 <translation id="4068776064906523561">सुरक्षित गरिएका फिंगरप्रिन्टहरू</translation>
 <translation id="407173827865827707">क्लिक गर्दा</translation>
 <translation id="4072701974556190758">यो पासवर्ड तपाईंको Google खाता <ph name="ACCOUNT" /> मा सेभ गरिने छ। तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन।</translation>
-<translation id="4074900173531346617">इमेल साइनर प्रमाणपत्र</translation>
 <translation id="407520071244661467">मापन</translation>
 <translation id="407543464472585404"><ph name="NAME" /> को प्रोफाइल <ph name="EMAIL" /> सँग लिंक गरिएको छ</translation>
 <translation id="4075639477629295004"><ph name="FILE_NAME" /> लाई cast गर्न सकिएन।</translation>
@@ -4310,7 +4308,6 @@
 <translation id="5517304475148761050">यो एपलाई Play स्टोरमाथिको पहुँच चाहिन्छ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">कुनै साइटले क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र छवि हेर्न चाहेको बेला सोध्नुहोस्</translation>
-<translation id="5518584115117143805">इमेल गुप्तिकरण प्रमाणपत्र</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">के यो तपाईंले अपेक्षा गर्नुभएको गृह पृष्ठ हो?</translation>
 <translation id="5522156646677899028">यो एक्सटेन्सनले गम्भीर सुरक्षा अतिसंवेदनशीलता समावेश गर्छ।</translation>
@@ -6150,7 +6147,6 @@
 <translation id="7506242536428928412">आफ्नो नयाँ सुरक्षा साँचो प्रयोग गर्न नयाँ PIN सेट गर्नुहोस्</translation>
 <translation id="7506541170099744506">तपाईँको <ph name="DEVICE_TYPE" /> लाई सफलतापूर्वक इन्टरप्राइजको व्यवस्थापनमा दर्ता गरिएको छ।</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
-<translation id="7507930499305566459">स्थिति जवाफकर्ता प्रमाणपत्र</translation>
 <translation id="7509097596023256288">व्यवस्थापन सेटअप गरिँदै छ</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7509539379068593709">एप अनइन्स्टल गर्नुहोस्</translation>
@@ -7398,7 +7394,6 @@
 <translation id="8778328560035799409">तपाईंले हाल असाइन गर्नुभएका स्विचहरू हटाइने छन्</translation>
 <translation id="8780123805589053431">Google बाट छविका विवरणहरू प्राप्त गर्नुहोस्</translation>
 <translation id="8780443667474968681">आवाजमार्फत खोजी गर्ने सुविधा निष्क्रिय पारिएको छ।</translation>
-<translation id="878069093594050299">यो प्रमाणपत्रलाई निम्न प्रयोगहरूको लागि प्रमाणित गरिएको छ:</translation>
 <translation id="8781834595282316166">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
 <translation id="8783834180813871000">ब्लुटुथ प्रयोग गरी जोडा बनाउने कोड टाइप गर्नुहोस्, त्यसपछि Return वा Enter थिच्नुहोस्।</translation>

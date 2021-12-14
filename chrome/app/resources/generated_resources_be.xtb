@@ -2659,7 +2659,6 @@
 <translation id="3732078975418297900">Памылка ў радку <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-код павінен мець максімум 63 сімвалы</translation>
 <translation id="3732857534841813090">Інфармацыя, звязаная з Памочнікам Google</translation>
-<translation id="3733127536501031542">SSL-сервер з шыфраваннем Step-up</translation>
 <translation id="3733296813637058299">Мы ўсталюем для вас гэтыя праграмы. Больш праграм для сваёй прылады <ph name="DEVICE_TYPE" /> вы можаце знайсці ў Краме Play.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3738632186060045350">Даныя на прыладзе <ph name="DEVICE_TYPE" /> будуць выдалены праз 24 гадзіны</translation>
@@ -3003,7 +3002,6 @@
 <translation id="4068776064906523561">Захаваныя адбіткі пальцаў</translation>
 <translation id="407173827865827707">Па націсканні</translation>
 <translation id="4072701974556190758">Пароль будзе захаваны ва Уліковым запісе Google <ph name="ACCOUNT" />. Вам не трэба запамінаць яго.</translation>
-<translation id="4074900173531346617">Сертыфікат для падпісвання электроннай пошты</translation>
 <translation id="407520071244661467">Маштаб</translation>
 <translation id="407543464472585404">Профіль карыстальніка <ph name="NAME" /> звязаны з адрасам электроннай пошты <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Не ўдаецца трансліраваць файл "<ph name="FILE_NAME" />".</translation>
@@ -4313,7 +4311,6 @@
 <translation id="5517304475148761050">Гэтай праграме патрабуецца доступ да Крамы Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Пытацца, калі сайт запытвае доступ на прагляд тэксту і відарысаў, скапіраваных у буфер абмену</translation>
-<translation id="5518584115117143805">Сертыфікат шыфравання электроннай пошты</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Ці з'яўляецца галоўная старонка той, якую вы чакалі ўбачыць?</translation>
 <translation id="5522156646677899028">Гэта пашырэнне стварае сур'ёзную пагрозу для бяспекі.</translation>
@@ -6154,7 +6151,6 @@
 <translation id="7506242536428928412">Каб выкарыстоўваць новы ключ бяспекі, задайце новы PIN-код</translation>
 <translation id="7506541170099744506">Ваша прылада (<ph name="DEVICE_TYPE" />) паспяхова зарэгістравана для карпаратыўнага кіравання.</translation>
 <translation id="7507207699631365376">Азнаёміцца з <ph name="BEGIN_LINK" />палітыкай прыватнасці<ph name="END_LINK" /> гэтага пастаўшчыка</translation>
-<translation id="7507930499305566459">Сертыфікат паведамлення аб стане</translation>
 <translation id="7509097596023256288">Ідзе наладжванне кіравання</translation>
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
 <translation id="7509539379068593709">Выдаліць праграму</translation>
@@ -7404,7 +7400,6 @@
 <translation id="8778328560035799409">Прызначаныя цяпер пераключальнікі будуць выдалены</translation>
 <translation id="8780123805589053431">Атрымліваць апісанні відарысаў ад Google</translation>
 <translation id="8780443667474968681">Галасавы пошук выключаны.</translation>
-<translation id="878069093594050299">Гэты сертыфікат спраўджаны для наступных відаў выкарыстання:</translation>
 <translation id="8781834595282316166">Стварыць у групе новую ўкладку</translation>
 <translation id="8782565991310229362">Запуск праграмы-кіёска скасаваны.</translation>
 <translation id="8783834180813871000">Увядзіце код спалучэння Bluetooth, затым націсніце "Назад" або "Увод".</translation>

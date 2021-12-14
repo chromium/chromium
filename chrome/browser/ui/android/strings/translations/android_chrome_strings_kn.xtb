@@ -91,6 +91,7 @@
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1513352483775369820">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಇತಿಹಾಸ</translation>
 <translation id="1513858653616922153">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸಿ</translation>
+<translation id="1518421282666914498">ಭಾವುಕತೆ GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
 <translation id="1538801903729528855">ವೆಬ್‌ನಲ್ಲಿ ಉತ್ತಮವಾದ ಧ್ವನಿ ಅನುಭವವನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1544826120773021464">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲು, "ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ" ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -573,6 +574,7 @@
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4538018662093857852">ಲೈಟ್ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇಲ್ಲಿ ವೀಕ್ಷಿಸಲು ಅಥವಾ ನಕಲಿಸಲು, ಈ ಸಾಧನದಲ್ಲಿ ಪರದೆ ಲಾಕ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="4554077758708533499">USB ಕೇಬಲ್ ಬಳಸಿ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4557685098773234337">ಇಲ್ಲಿಗೆ ತ್ವರಿತವಾಗಿ ತಲುಪಲು, ಈ ಪುಟವನ್ನು ನಿಮ್ಮ ಮುಖಪುಟದ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
@@ -925,6 +927,7 @@
 <translation id="6532866250404780454">Chrome ನಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳನ್ನು ತೋರಿಸುವುದಿಲ್ಲ. ಎಲ್ಲಾ ಸೈಟ್‌ ಟೈಮರ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುವುದು.</translation>
 <translation id="6534565668554028783">ಪ್ರತಿಕ್ರಿಯಿಸಲು Google ತೀರಾ ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಂಡಿದೆ.</translation>
 <translation id="6539092367496845964">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6541042852576515209">ಮರುಗಾತ್ರಗೊಳಿಸಿ ಮತ್ತು ತಿರುಗಿಸಿ</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 ಗಂಟೆಯ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ಗಂಟೆಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ಗಂಟೆಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6545017243486555795">ಎಲ್ಲಾ ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="6546511553472444032">ಫೈಲ್ ಹಾನಿಕಾರಕವಾಗಿರಬಹುದು</translation>
@@ -1077,6 +1080,7 @@
 <translation id="7444811645081526538">ಇನ್ನಷ್ಟು ವರ್ಗಗಳು</translation>
 <translation id="7453467225369441013">ನಿಮ್ಮನ್ನು ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಆದರೆ ನಿಮ್ಮನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="7454641608352164238">ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ</translation>
+<translation id="7468819939926272717">ಒಂದು ಭಾವನೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="7474822150871987353">ಪುಟದಿಂದ ಹೊರಹೋಗದೆಯೇ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿನ ವಿಷಯಗಳ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳಿ. ಪದಗಳನ್ನು ಹುಡುಕಲು ಪುಟದಲ್ಲಿನ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7475192538862203634">ಇದನ್ನು ನೀವು ಪದೇ ಪದೇ ವೀಕ್ಷಿಸುತ್ತಿದ್ದರೆ, ಈ <ph name="BEGIN_LINK" />ಸಲಹೆಗಳನ್ನು<ph name="END_LINK" /> ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7475688122056506577">SD ಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ. ನಿಮ್ಮ ಕೆಲವು ಫೈಲ್‌ಗಳು ಕಾಣೆಯಾಗಿರಬಹುದು.</translation>
@@ -1159,6 +1163,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ನೀವು ಓದದಿರುವ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ಪುಟವನ್ನು ಹೊಂದಿದ್ದೀರಿ}one{ನೀವು ಓದದಿರುವ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ಪುಟಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}other{ನೀವು ಓದದಿರುವ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ಪುಟಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}}</translation>
 <translation id="7882131421121961860">ಯಾವುದೇ ಇತಿಹಾಸ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7886917304091689118">Chrome ನಲ್ಲಿ ಚಾಲನೆಯಾಗುತ್ತಿದೆ</translation>
+<translation id="7887334752153342268">ನಕಲು</translation>
 <translation id="789763218334337857">Chrome ಬಳಸುವುದು ಹೇಗೆ</translation>
 <translation id="7903184275147100332">ಇದಕ್ಕೆ ಒಂದು ನಿಮಿಷ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು</translation>
 <translation id="7919123827536834358">ಈ ಭಾಷೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ</translation>
