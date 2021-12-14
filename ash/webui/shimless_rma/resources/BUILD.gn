@@ -29,7 +29,7 @@ polymer_element_files = [
   "onboarding_update_page.js",
   "onboarding_wait_for_manual_wp_disable_page.js",
   "onboarding_wp_disable_complete_page.js",
-  "reimaging_calibration_page.js",
+  "reimaging_calibration_failed_page.js",
   "reimaging_calibration_run_page.js",
   "reimaging_calibration_setup_page.js",
   "reimaging_device_information_page.js",
@@ -88,7 +88,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
-    ":reimaging_calibration_page",
+    ":reimaging_calibration_failed_page",
     ":reimaging_calibration_run_page",
     ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
@@ -124,7 +124,7 @@ js_library("shimless_rma") {
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
-    ":reimaging_calibration_page",
+    ":reimaging_calibration_failed_page",
     ":reimaging_calibration_run_page",
     ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
@@ -293,7 +293,7 @@ js_library("onboarding_wp_disable_complete_page") {
   ]
 }
 
-js_library("reimaging_calibration_page") {
+js_library("reimaging_calibration_failed_page") {
   deps = [
     ":base_page",
     ":calibration_component_chip",

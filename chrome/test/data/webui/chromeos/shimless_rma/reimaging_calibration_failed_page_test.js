@@ -6,14 +6,14 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingCalibrationPage} from 'chrome://shimless-rma/reimaging_calibration_page.js';
+import {ReimagingCalibrationFailedPage} from 'chrome://shimless-rma/reimaging_calibration_failed_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationComponentStatus, CalibrationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
-export function reimagingCalibrationPageTest() {
+export function reimagingCalibrationFailedPageTest() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' event used
    * when handling calibration overall progress signals.
@@ -21,7 +21,7 @@ export function reimagingCalibrationPageTest() {
    */
   let shimless_rma_component = null;
 
-  /** @type {?ReimagingCalibrationPage} */
+  /** @type {?ReimagingCalibrationFailedPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -59,8 +59,8 @@ export function reimagingCalibrationPageTest() {
     // Initialize the fake data.
     service.setGetCalibrationComponentListResult(calibrationComponents);
 
-    component = /** @type {!ReimagingCalibrationPage} */ (
-        document.createElement('reimaging-calibration-page'));
+    component = /** @type {!ReimagingCalibrationFailedPage} */ (
+        document.createElement('reimaging-calibration-failed-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
 

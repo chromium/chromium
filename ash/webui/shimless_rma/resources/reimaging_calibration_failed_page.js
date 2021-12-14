@@ -20,8 +20,8 @@ import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRm
 
 /**
  * @fileoverview
- * 'reimaging-calibration-page' is to inform the user which components will be
- * calibrated and allow them to skip components if necessary.
+ * 'reimaging-calibration-failed-page' is to inform the user which components
+ * will be calibrated and allow them to skip components if necessary.
  * (Skipping components could allow the device to be in a usable, but not fully
  * functioning state.)
  */
@@ -44,13 +44,14 @@ let ComponentCheckbox;
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  */
-const ReimagingCalibrationPageBase =
+const ReimagingCalibrationFailedPageBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-export class ReimagingCalibrationPage extends ReimagingCalibrationPageBase {
+export class ReimagingCalibrationFailedPage extends
+    ReimagingCalibrationFailedPageBase {
   static get is() {
-    return 'reimaging-calibration-page';
+    return 'reimaging-calibration-failed-page';
   }
 
   static get template() {
@@ -167,4 +168,5 @@ export class ReimagingCalibrationPage extends ReimagingCalibrationPageBase {
   }
 }
 
-customElements.define(ReimagingCalibrationPage.is, ReimagingCalibrationPage);
+customElements.define(
+    ReimagingCalibrationFailedPage.is, ReimagingCalibrationFailedPage);

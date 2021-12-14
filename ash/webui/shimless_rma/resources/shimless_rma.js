@@ -12,7 +12,7 @@ import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_wp_disable_complete_page.js';
-import './reimaging_calibration_page.js';
+import './reimaging_calibration_failed_page.js';
 import './reimaging_calibration_run_page.js';
 import './reimaging_calibration_setup_page.js';
 import './reimaging_device_information_page.js';
@@ -147,7 +147,7 @@ const StateComponentMapping = {
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kCheckCalibration]: {
-    componentIs: 'reimaging-calibration-page',
+    componentIs: 'reimaging-calibration-failed-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonNextLabelKey: 'skipButtonLabel',
