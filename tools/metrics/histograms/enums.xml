@@ -82636,7 +82636,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              resource"/>
   <int value="6"
       label="Abandoned because no content was visible at the beginning of
-             startup"/>
+             startup. Hint: often caused by showing the profile picker
+             instead of immediately opening a browser window on startup"/>
+  <int value="7"
+      label="Abandoned because the content was already painted before
+             profiling started"/>
 </enum>
 
 <enum name="StartupTabPreloaderLoadDecisionCause">

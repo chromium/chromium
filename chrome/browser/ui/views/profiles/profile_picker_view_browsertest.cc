@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
+#include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
+#include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -65,6 +68,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
@@ -290,6 +294,67 @@ class TestTabDialogs : public TabDialogs {
 
 std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
   return feature_engagement::CreateTestTracker();
+}
+
+class PageNonEmptyPaintObserver : public content::WebContentsObserver {
+ public:
+  explicit PageNonEmptyPaintObserver(const GURL& url,
+                                     content::WebContents* web_contents)
+      : WebContentsObserver(web_contents),
+        barrier_closure_(base::BarrierClosure(2, run_loop_.QuitClosure())),
+        url_(url) {}
+
+  void Wait() {
+    // Check if the right page has already been painted or loaded.
+    if (web_contents()->GetLastCommittedURL() == url_) {
+      if (web_contents()->CompletedFirstVisuallyNonEmptyPaint())
+        DidFirstVisuallyNonEmptyPaint();
+      if (!web_contents()->IsLoading())
+        DidStopLoading();
+    }
+
+    run_loop_.Run();
+  }
+
+ private:
+  // WebContentsObserver:
+  void DidFirstVisuallyNonEmptyPaint() override {
+    // Making sure that the same event does not trigger the barrier twice.
+    if (did_paint_)
+      return;
+
+    did_paint_ = true;
+    barrier_closure_.Run();
+  }
+
+  void DidStopLoading() override {
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), url_);
+
+    // Making sure that the same event does not trigger the barrier twice.
+    if (did_load_)
+      return;
+
+    // It shouldn't technically be necessary to wait for load stop here, we do
+    // this to be consistent with the other tests relying on `WaitForLoadStop()`
+    did_load_ = true;
+    barrier_closure_.Run();
+  }
+
+  base::RunLoop run_loop_;
+  base::RepeatingClosure barrier_closure_;
+  GURL url_;
+
+  bool did_paint_ = false;
+  bool did_load_ = false;
+};
+
+// Waits for a first non empty paint for `target` and expects that it will load
+// the given `url`.
+void WaitForFirstNonEmptyPaint(const GURL& url, content::WebContents* target) {
+  ASSERT_NE(target, nullptr);
+
+  PageNonEmptyPaintObserver observer(url, target);
+  observer.Wait();
 }
 
 }  // namespace
@@ -1007,6 +1072,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
+  base::HistogramTester histogram_tester;
+
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
@@ -1019,12 +1086,52 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   OpenProfileFromPicker(other_path, /*open_settings=*/false);
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForLoadStop(GURL("chrome://newtab/"),
-                  new_browser->tab_strip_model()->GetActiveWebContents());
+  WaitForFirstNonEmptyPaint(
+      GURL("chrome://newtab/"),
+      new_browser->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
   WaitForPickerClosed();
   // IPH is shown.
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown(new_browser));
+
+  // FirstProfileTime.* histograms aren't recorded because the picker
+  // is opened from the menu.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "ProfilePicker.FirstProfileTime."),
+              testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       OpenProfileFromStartup) {
+  base::HistogramTester histogram_tester;
+  ASSERT_FALSE(ProfilePicker::IsOpen());
+
+  // Create a second profile.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+
+  // Open the new profile.
+  OpenProfileFromPicker(other_path, /*open_settings=*/false);
+
+  // Measurement of startup performance started.
+
+  // Browser for the profile is displayed.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstNonEmptyPaint(
+      GURL("chrome://newtab/"),
+      new_browser->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
+  WaitForPickerClosed();
+
+  histogram_tester.ExpectTotalCount(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason",
+      metrics::StartupProfilingFinishReason::kDone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
