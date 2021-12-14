@@ -8,57 +8,37 @@ import {assert} from './assert.js';
  * A one-shot timer that is more powerful than setTimeout().
  */
 export class OneShotTimer {
+  private timeoutId = 0;
   /**
    * The parameters are same as the parameters of setTimeout().
-   * @param {function(): void} handler
-   * @param {number} timeout
    */
-  constructor(handler, timeout) {
-    /**
-     * @type {function(): void}
-     * @const
-     * @private
-     */
-    this.handler_ = handler;
-
-    /**
-     * @type {number}
-     * @const
-     * @private
-     */
-    this.timeout_ = timeout;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this.timeoutId_ = 0;
-
+  constructor(
+      private readonly handler: () => void, private readonly timeout: number) {
     this.start();
   }
 
   /**
    * Starts the timer.
    */
-  start() {
-    assert(this.timeoutId_ === 0);
-    this.timeoutId_ = setTimeout(this.handler_, this.timeout_);
+  start(): void {
+    assert(this.timeoutId === 0);
+    this.timeoutId = setTimeout(this.handler, this.timeout);
   }
 
   /**
    * Stops the pending timeout.
    */
-  stop() {
-    assert(this.timeoutId_ !== 0);
-    clearTimeout(this.timeoutId_);
-    this.timeoutId_ = 0;
+  stop(): void {
+    assert(this.timeoutId !== 0);
+    clearTimeout(this.timeoutId);
+    this.timeoutId = 0;
   }
 
   /**
    * Resets the timer delay. It's a no-op if the timer is already stopped.
    */
-  resetTimeout() {
-    if (this.timeoutId_ === 0) {
+  resetTimeout(): void {
+    if (this.timeoutId === 0) {
       return;
     }
     this.stop();
@@ -68,10 +48,10 @@ export class OneShotTimer {
   /**
    * Stops the timer and runs the scheduled handler immediately.
    */
-  fireNow() {
-    if (this.timeoutId_ !== 0) {
+  fireNow(): void {
+    if (this.timeoutId !== 0) {
       this.stop();
     }
-    this.handler_();
+    this.handler();
   }
 }
