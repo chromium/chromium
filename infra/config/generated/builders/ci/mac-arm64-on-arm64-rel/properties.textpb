@@ -11,6 +11,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "builder_group": "chromium.mac",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }
