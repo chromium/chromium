@@ -5168,14 +5168,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "strict-extension-isolation",
-    "owners": [ "creis" ],
-    // This prevents extensions from sharing a process with each other. It is
-    // useful for improving security but launching it will depend on trials that
-    // will monitor the effect on process count, etc.
-    "expiry_milestone": 100
-  },
-  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean", "alexmos", "creis" ],
     // This can be used to opt in to origin isolation which isolates full

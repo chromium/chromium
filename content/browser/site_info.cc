@@ -616,8 +616,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   }
 
   // Allow the embedder to prevent process locking so that multiple sites
-  // can share a process. For example, this is how Chrome allows ordinary
-  // extensions to share a process.
+  // can share a process.
   if (!GetContentClient()->browser()->ShouldLockProcessToSite(browser_context,
                                                               site_url_)) {
     return false;

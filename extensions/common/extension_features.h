@@ -24,8 +24,6 @@ extern const base::Feature kMv3ExtensionsSupported;
 
 extern const base::Feature kReportKeepaliveUkm;
 
-extern const base::Feature kStrictExtensionIsolation;
-
 extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
 
 extern const base::Feature kU2FSecurityKeyAPI;

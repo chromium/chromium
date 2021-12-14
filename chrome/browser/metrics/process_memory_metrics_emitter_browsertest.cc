@@ -47,7 +47,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/background_page_watcher.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
@@ -762,72 +761,6 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
                         kNumExtensionProcesses);
   CheckAllUkmEntries();
   CheckPageInfoUkmMetrics(url, true);
-}
-
-// TODO(crbug.com/1201588): Fix flakiness on Windows.
-#if defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
-  DISABLED_FetchAndEmitMetricsWithExtensionsAndHostReuse
-#else
-#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
-  FetchAndEmitMetricsWithExtensionsAndHostReuse
-#endif
-IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse) {
-  // When strict extension isolation is enabled, there is no process reuse for
-  // extensions, and this becomes the same as FetchAndEmitMetricsWithExtensions.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
-    return;
-  }
-
-  // Limit the number of renderer processes to force reuse.
-  content::RenderProcessHost::SetMaxRendererProcessCount(1);
-  const Extension* extension1 = CreateExtension("Extension 1");
-  const Extension* extension2 = CreateExtension("Extension 2");
-  ProcessManager* pm = ProcessManager::Get(profile());
-
-  // Verify that the extensions has loaded.
-  BackgroundPageWatcher(pm, extension1).WaitForOpen();
-  BackgroundPageWatcher(pm, extension2).WaitForOpen();
-  EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension1->id()).size());
-  EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-
-  // Intentionally let emitter leave scope to check that it correctly keeps
-  // itself alive.
-  {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
-    emitter->FetchAndEmitProcessMemoryMetrics();
-  }
-
-  run_loop.Run();
-
-  constexpr int kNumRenderers = 1;
-  EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));
-  constexpr int kNumExtensionProcesses = 1;
-
-  CheckAllMemoryMetrics(histogram_tester, 1, kNumRenderers,
-                        kNumExtensionProcesses);
-  CheckAllUkmEntries();
-  // When hosts share a process, no unique URL is identified, therefore no page
-  // info.
-  const auto& entries =
-      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
-  for (const auto* entry : entries) {
-    EXPECT_EQ(nullptr,
-              test_ukm_recorder_->GetSourceForSourceId(entry->source_id));
-  }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

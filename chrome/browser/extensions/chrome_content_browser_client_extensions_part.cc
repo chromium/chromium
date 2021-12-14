@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
@@ -65,7 +64,6 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
@@ -351,46 +349,6 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
-    content::BrowserContext* browser_context,
-    const GURL& effective_site_url) {
-  // When strict extension isolation is enabled, all extension processes should
-  // be locked.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
-    return true;
-  }
-
-  if (!effective_site_url.SchemeIs(kExtensionScheme))
-    return true;
-
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(effective_site_url);
-  // Avoid locking renderer processes for disabled or non-existent extension
-  // URLs, to be consistent with the enabled non-hosted-app cases below.  It's
-  // ok for URLs from multiple disabled/non-existent extensions to share a
-  // process. Some context for this is in https://crbug.com/1197360.
-  if (!extension)
-    return false;
-
-  // Hosted apps should be locked to their web origin. See
-  // https://crbug.com/794315.
-  if (extension->is_hosted_app())
-    return true;
-
-  // Other extensions are allowed to share processes, even in
-  // --site-per-process currently. See https://crbug.com/600441#c1 for some
-  // background on the intersection of extension process reuse and site
-  // isolation.
-  //
-  // TODO(nick): Fix this, possibly by revamping the extensions process model
-  // so that sharing is determined by privilege level, as described in
-  // https://crbug.com/766267.
-  return false;
-}
-
-// static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host, const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -484,53 +442,12 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
          privilege_required;
 }
 
-// static
-bool
-ChromeContentBrowserClientExtensionsPart::ShouldTryToUseExistingProcessHost(
-    Profile* profile, const GURL& url) {
-  // When strict extension isolation is enabled, no extensions need to reuse an
-  // existing process.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
-    return false;
-  }
-
-  // This function is trying to limit the amount of processes used by extensions
-  // with background pages. It uses a globally set percentage of processes to
-  // run such extensions and if the limit is exceeded, it returns true, to
-  // indicate to the content module to group extensions together.
-  ExtensionRegistry* registry =
-      profile ? ExtensionRegistry::Get(profile) : NULL;
-  if (!registry)
-    return false;
-
-  // We have to have a valid extension with background page to proceed.
-  const Extension* extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(url);
-  if (!extension)
-    return false;
-  if (!BackgroundInfo::HasBackgroundPage(extension))
-    return false;
-
-  size_t max_process_count =
-      content::RenderProcessHost::GetMaxRendererProcessCount();
-  return (GetExtensionBackgroundProcessCount() >
-          (max_process_count * chrome::kMaxShareOfExtensionProcesses));
-}
-
 size_t
 ChromeContentBrowserClientExtensionsPart::GetProcessCountToIgnoreForLimit() {
-  // If strict extension isolation is enabled, ignore any extension processes
-  // that are beyond the extension-specific process limit when considering
-  // whether processes should be reused for other types of pages.
-
-  // If this is a unit test with no profile manager, or if strict extension
-  // isolation is disabled, there is no need to ignore any processes.
-  if (!g_browser_process->profile_manager() ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
+  // If this is a unit test with no profile manager, there is no need to ignore
+  // any processes.
+  if (!g_browser_process->profile_manager())
     return 0;
-  }
 
   size_t max_process_count =
       content::RenderProcessHost::GetMaxRendererProcessCount();

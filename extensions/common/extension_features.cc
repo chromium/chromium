@@ -56,11 +56,6 @@ const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
 const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether every extension will require a locked process, preventing
-// process sharing between extensions. See https://crbug.com/1209417.
-const base::Feature kStrictExtensionIsolation{"StrictExtensionIsolation",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
 // TODO(crbug.com/1184892): Flip this in M95.

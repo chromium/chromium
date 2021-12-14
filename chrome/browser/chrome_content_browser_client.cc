@@ -1689,18 +1689,6 @@ bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
   return false;
 }
 
-bool ChromeContentBrowserClient::ShouldLockProcessToSite(
-    content::BrowserContext* browser_context,
-    const GURL& effective_site_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
-          browser_context, effective_site_url)) {
-    return false;
-  }
-#endif
-  return true;
-}
-
 bool ChromeContentBrowserClient::DoesWebUISchemeRequireProcessLock(
     base::StringPiece scheme) {
   // Note: This method can be called from multiple threads. It is not safe to
@@ -1943,7 +1931,8 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  // It has to be a valid URL for us to check for an extension.
+  // Only proceed for valid URLs.
+  // TODO(creis): This may no longer be needed.
   if (!url.is_valid())
     return false;
 
@@ -1952,13 +1941,7 @@ bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
   if (IsTopChromeWebUIURL(url))
     return true;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return ChromeContentBrowserClientExtensionsPart::
-      ShouldTryToUseExistingProcessHost(profile, url);
-#else
   return false;
-#endif
 }
 
 bool ChromeContentBrowserClient::ShouldSubframesTryToReuseExistingProcess(

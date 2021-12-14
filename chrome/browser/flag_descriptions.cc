@@ -2319,11 +2319,6 @@ const char kSplitCacheByNetworkIsolationKeyDescription[] =
     "Partitions the HTTP Cache by (top-level site, current-frame site) to "
     "disallow cross-site tracking.";
 
-const char kStrictExtensionIsolationName[] = "Strict Extension Isolation";
-const char kStrictExtensionIsolationDescription[] =
-    "Experimental security mode that prevents extensions from sharing a "
-    "process with each other.";
-
 const char kStrictOriginIsolationName[] = "Strict-Origin-Isolation";
 const char kStrictOriginIsolationDescription[] =
     "Experimental security mode that strengthens the site isolation policy. "

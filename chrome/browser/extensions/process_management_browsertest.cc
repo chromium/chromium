@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/feature_list.h"
 #include "base/ignore_result.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +35,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -48,11 +46,6 @@ using content::WebContents;
 namespace extensions {
 
 namespace {
-
-bool IsExtensionProcessSharingAllowed() {
-  return !base::FeatureList::IsEnabled(
-      extensions_features::kStrictExtensionIsolation);
-}
 
 class ProcessManagementTest : public ExtensionBrowserTest {
  public:
@@ -284,13 +277,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   EXPECT_EQ(web1_host, web2_host);
   EXPECT_NE(web1_host, extension1_host);
 
-  if (IsExtensionProcessSharingAllowed()) {
-    // Extensions only share with each other ...
-    EXPECT_EQ(extension1_host, extension2_host);
-  } else {
-    // Unless extensions are not allowed to share, even with each other.
-    EXPECT_NE(extension1_host, extension2_host);
-  }
+  // Extensions are not allowed to share, even with each other.
+  EXPECT_NE(extension1_host, extension2_host);
 }
 
 // See
@@ -356,16 +344,10 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
 
   // We've loaded 5 extensions with background pages
   // (api_test/browser_action/*), 1 extension without background page
-  // (api_test/management), and one isolated app. With extension process
-  // sharing, we expect only 2 unique processes hosting the background
-  // pages/scripts of these extensions (which extension gets assigned to which
-  // process is randomized).  If extension process sharing is disabled, there is
-  // no process limit, and each of the 5 background pages/scripts will be hosted
-  // in a separate process.
-  if (IsExtensionProcessSharingAllowed())
-    EXPECT_EQ(2u, process_ids.size());
-  else
-    EXPECT_EQ(5u, process_ids.size());
+  // (api_test/management), and one isolated app. Extension process sharing is
+  // not allowed so there is no extension process limit, so each of the 5
+  // background pages/scripts will be hosted in a separate process.
+  EXPECT_EQ(5u, process_ids.size());
 
   if (first_renderer != second_renderer) {
     // Wait for the first renderer to be torn down before verifying the number
@@ -384,32 +366,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
   EXPECT_EQ(5u, process_map->size());
 }
 
-// Parameterized tests that run with and without StrictExtensionIsolation, to
-// ensure we have test coverage for both paths.
-class ProcessManagementExtensionIsolationTest
-    : public ProcessManagementTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  ProcessManagementExtensionIsolationTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          extensions_features::kStrictExtensionIsolation);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          extensions_features::kStrictExtensionIsolation);
-    }
-  }
-
-  // Provides meaningful param names instead of /0, /1, ...
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "StrictExtensionIsolation" : "ExtensionSharing";
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test that pushing both extensions and web processes past the limit creates
 // the expected number of processes.
 //
@@ -425,8 +381,7 @@ class ProcessManagementExtensionIsolationTest
 // extensions. The web pages should act as if there were only 1 process used by
 // the extensions, so there are 2 web processes for the same-site pages, and an
 // extra process for the cross-site page due to Site Isolation.
-IN_PROC_BROWSER_TEST_P(ProcessManagementExtensionIsolationTest,
-                       ExtensionAndWebProcessOverflow) {
+IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
   // Set max renderers to 3, to expect a single extension process when sharing
   // is allowed.
   content::RenderProcessHost::SetMaxRendererProcessCount(3);
@@ -448,19 +403,12 @@ IN_PROC_BROWSER_TEST_P(ProcessManagementExtensionIsolationTest,
   for (ExtensionHost* host : epm->background_hosts()) {
     SCOPED_TRACE(testing::Message()
                  << "When testing extension: " << host->extension_id());
-    // The process should be locked iff process sharing is not allowed.
-    EXPECT_NE(IsExtensionProcessSharingAllowed(),
-              host->render_process_host()->IsProcessLockedToSiteForTesting());
+    // The process should be locked.
+    EXPECT_TRUE(host->render_process_host()->IsProcessLockedToSiteForTesting());
     process_ids.insert(host->render_process_host()->GetID());
   }
-  if (IsExtensionProcessSharingAllowed()) {
-    // All extensions share a single process, since this is 1/3 the process
-    // limit.
-    EXPECT_EQ(1u, process_ids.size());
-  } else {
-    // Each extension is in a locked process, unavailable for sharing.
-    EXPECT_EQ(3u, process_ids.size());
-  }
+  // Each extension is in a locked process, unavailable for sharing.
+  EXPECT_EQ(3u, process_ids.size());
 
   // Load 3 same-site tabs after the extensions.
   GURL web_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -486,18 +434,14 @@ IN_PROC_BROWSER_TEST_P(ProcessManagementExtensionIsolationTest,
   process_ids.insert(web_contents1->GetMainFrame()->GetProcess()->GetID());
   process_ids.insert(web_contents2->GetMainFrame()->GetProcess()->GetID());
   process_ids.insert(web_contents3->GetMainFrame()->GetProcess()->GetID());
-  if (IsExtensionProcessSharingAllowed()) {
-    // The web pages share the 2 remaining processes to stay under the limit.
-    EXPECT_EQ(3u, process_ids.size());
-  } else {
-    // The web processes still share 2 processes as if there were a single
-    // extension process (making a total of 5 processes counting the existing 3
-    // extension processes). This avoids starving the web pages with a single
-    // process (if the extensions pushed us past the limit on their own), or
-    // increasing the process count further (if all extension processes were
-    // ignored).
-    EXPECT_EQ(5u, process_ids.size());
-  }
+
+  // The web processes still share 2 processes as if there were a single
+  // extension process (making a total of 5 processes counting the existing 3
+  // extension processes). This avoids starving the web pages with a single
+  // process (if the extensions pushed us past the limit on their own), or
+  // increasing the process count further (if all extension processes were
+  // ignored).
+  EXPECT_EQ(5u, process_ids.size());
 
   // Add a cross-site web process.
   // Ensure bar.com has its own process by explicitly isolating it.
@@ -514,17 +458,8 @@ IN_PROC_BROWSER_TEST_P(ProcessManagementExtensionIsolationTest,
   process_ids.insert(web_contents4->GetMainFrame()->GetProcess()->GetID());
   // The cross-site process adds 1 more process to the total, to avoid sharing
   // with the existing web renderer processes (due to Site Isolation).
-  if (IsExtensionProcessSharingAllowed())
-    EXPECT_EQ(4u, process_ids.size());
-  else
-    EXPECT_EQ(6u, process_ids.size());
+  EXPECT_EQ(6u, process_ids.size());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ProcessManagementExtensionIsolationTest,
-    testing::Bool(),
-    ProcessManagementExtensionIsolationTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
                        NavigateExtensionTabToWebViaPost) {
