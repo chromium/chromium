@@ -36,6 +36,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.HashMap;
@@ -122,6 +123,8 @@ public class NewTabPageVideoIPHManagerTest {
         // We have already watched the first tutorial, the second one should show up as IPH card.
         Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(1);
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(false, true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(false, false), new TriggerDetails(true, false));
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
         Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
 
@@ -138,6 +141,10 @@ public class NewTabPageVideoIPHManagerTest {
         // We have already seen all the tutorials. Now summary card should show up.
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString()))
                 .thenReturn(false, false, false, true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(false, false), new TriggerDetails(false, false),
+                        new TriggerDetails(false, false), new TriggerDetails(true, false));
+
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
 
         ArgumentCaptor<Tutorial> tutorialArgument = ArgumentCaptor.forClass(Tutorial.class);
@@ -155,6 +162,9 @@ public class NewTabPageVideoIPHManagerTest {
         // Show a tutorial IPH.
         Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(true, false));
+
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
         Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
 

@@ -60,6 +60,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -99,6 +100,8 @@ public class ReadLaterContextMenuTest {
                 .when(mTracker)
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(any()))
+                .thenReturn(new TriggerDetails(false, false));
         mActivityTestRule.startMainActivityOnBlankPage();
         mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
     }
@@ -111,10 +114,15 @@ public class ReadLaterContextMenuTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
     public void testShowIPHOnContextMenuLinkCopied() throws Throwable {
         when(mTracker.shouldTriggerHelpUI(
                      FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(
+                     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
+
         mActivityTestRule.loadUrlInNewTab(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
 
         ChromeActivity activity = mActivityTestRule.getActivity();

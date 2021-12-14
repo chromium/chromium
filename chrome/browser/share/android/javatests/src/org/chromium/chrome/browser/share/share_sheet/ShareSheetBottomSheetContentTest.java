@@ -46,6 +46,7 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
@@ -281,7 +282,8 @@ public final class ShareSheetBottomSheetContentTest {
                         mFeatureEngagementTracker);
         when(mShareSheetLinkToggleCoordinator.shouldShowToggle()).thenReturn(true);
         when(mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()).thenReturn(false);
-        when(mFeatureEngagementTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mFeatureEngagementTracker.shouldTriggerHelpUIWithSnooze(any()))
+                .thenReturn(new TriggerDetails(true, false));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -294,7 +296,8 @@ public final class ShareSheetBottomSheetContentTest {
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
         assertEquals(View.VISIBLE, toggleView.getVisibility());
         verify(mFeatureEngagementTracker)
-                .shouldTriggerHelpUI(FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
+                .shouldTriggerHelpUIWithSnooze(
+                        FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
     }
 
     @Test

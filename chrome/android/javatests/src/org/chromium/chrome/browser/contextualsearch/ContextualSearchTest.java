@@ -304,6 +304,7 @@ public class ContextualSearchTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
     public void testTextTapFollowedByNonTextTap() {
         Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 0);
 

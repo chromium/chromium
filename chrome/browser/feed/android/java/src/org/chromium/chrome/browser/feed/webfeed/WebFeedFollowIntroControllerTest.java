@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -125,6 +126,8 @@ public final class WebFeedFollowIntroControllerTest {
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
         doAnswer(invocation -> {
             Callback<Boolean> callback = invocation.getArgument(0);
             callback.onResult(true);
@@ -348,6 +351,8 @@ public final class WebFeedFollowIntroControllerTest {
         invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+                .thenReturn(new TriggerDetails(false, false));
         advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
 
         assertFalse("Intro should not be shown.",

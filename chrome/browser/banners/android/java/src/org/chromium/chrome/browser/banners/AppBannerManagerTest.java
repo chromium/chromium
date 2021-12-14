@@ -82,6 +82,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
@@ -989,6 +990,7 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     @CommandLineFlags.Add({"enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
             "disable-features=" + ChromeFeatureList.ADD_TO_HOMESCREEN_IPH})
+    @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
     public void
     testInProductHelp() throws Exception {
         // Visit a site that is a PWA. The ambient badge should show.
