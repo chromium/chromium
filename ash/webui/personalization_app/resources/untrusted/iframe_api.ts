@@ -70,8 +70,10 @@ export function validateReceivedData(
   const data: constants.Events = event.data;
   switch (data.type) {
     case constants.EventType.SEND_COLLECTIONS: {
-      assert(isNonEmptyArray(data.collections), 'Expected collections array');
-      return data.collections;
+      assert(
+          isNullOrArray(data.collections),
+          'Expected collections array or null');
+      return data.collections ?? [];
     }
     case constants.EventType.SEND_GOOGLE_PHOTOS_COUNT: {
       assert(isNullOrBigint(data.count), 'Expected photos count');

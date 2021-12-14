@@ -88,7 +88,6 @@ export class WallpaperCollections extends WithPersonalizationStore {
        */
       collections_: {
         type: Array,
-        observer: 'onCollectionsChanged_',
       },
 
       /** @private */
@@ -157,7 +156,15 @@ export class WallpaperCollections extends WithPersonalizationStore {
        */
       localImages_: {
         type: Array,
-        observer: 'onLocalImagesChanged_',
+      },
+
+      /**
+       * Whether the local image list is currently loading.
+       * @type {boolean}
+       * @private
+       */
+      localImagesLoading_: {
+        type: Boolean,
       },
 
       /**
@@ -183,16 +190,18 @@ export class WallpaperCollections extends WithPersonalizationStore {
         type: Boolean,
         // Call computed functions with their dependencies as arguments so that
         // polymer knows when to re-run the computation.
-        computed: 'computeHasError_(collections_, collectionsLoading_)',
+        computed: 'computeHasError_(collections_, collectionsLoading_, localImages_, localImagesLoading_)',
       },
     };
   }
 
   static get observers() {
     return [
+      'onCollectionsChanged_(collections_, collectionsLoading_)',
       'onCollectionImagesChanged_(images_, imagesLoading_)',
       'onGooglePhotosChanged_(googlePhotos_, googlePhotosLoading_)',
       'onGooglePhotosCountChanged_(googlePhotosCount_, googlePhotosCountLoading_)',
+      'onLocalImagesChanged_(localImages_, localImagesLoading_)',
       'onLocalImageDataChanged_(localImages_, localImageData_, localImageDataLoading_)',
     ];
   }
@@ -225,6 +234,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.watch('images_', state => state.backdrop.images);
     this.watch('imagesLoading_', state => state.loading.images);
     this.watch('localImages_', state => state.local.images);
+    this.watch('localImagesLoading_', state => state.loading.local.images);
     this.watch('localImageData_', state => state.local.data);
     this.watch('localImageDataLoading_', state => state.loading.local.data);
     this.updateFromStore();
@@ -247,12 +257,39 @@ export class WallpaperCollections extends WithPersonalizationStore {
   /**
    * @param {?Array<!WallpaperCollection>}
    *     collections
-   * @param {boolean} loading
+   * @param {boolean} collectionsLoading
+   * @param {Array<!mojoBase.mojom.FilePath>}
+   *     localImages
+   * @param {boolean} localImagesLoading
    * @return {boolean}
    * @private
    */
-  computeHasError_(collections, loading) {
-    return !loading && !isNonEmptyArray(collections);
+  computeHasError_(
+      collections, collectionsLoading, localImages, localImagesLoading) {
+    return this.localImagesError_(localImages, localImagesLoading) &&
+        this.collectionsError_(collections, collectionsLoading);
+  }
+
+  /**
+   * @param {?Array<!WallpaperCollection>}
+   *     collections
+   * @param {boolean} collectionsLoading
+   * @return {boolean}
+   * @private
+   */
+  collectionsError_(collections, collectionsLoading) {
+    return !collectionsLoading && !isNonEmptyArray(collections);
+  }
+
+  /**
+   * @param {Array<!mojoBase.mojom.FilePath>}
+   *     localImages
+   * @param {boolean} localImagesLoading
+   * @return {boolean}
+   * @private
+   */
+  localImagesError_(localImages, localImagesLoading) {
+    return !localImagesLoading && !isNonEmptyArray(localImages);
   }
 
   /**
@@ -261,8 +298,10 @@ export class WallpaperCollections extends WithPersonalizationStore {
    *     collections
    * @private
    */
-  async onCollectionsChanged_(collections) {
-    if (isNonEmptyArray(collections)) {
+  async onCollectionsChanged_(collections, collectionsLoading) {
+    // Check whether collections are loaded before sending to
+    // the iframe. Collections could be null/empty array.
+    if (!collectionsLoading) {
       const iframe = await this.iframePromise_;
       sendCollectionsFunction(iframe.contentWindow, collections);
     }
@@ -341,15 +380,16 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Send updated local images list to the iframe.
-   * @param {?Array<!mojoBase.mojom.FilePath>} value
+   * @param {?Array<!mojoBase.mojom.FilePath>} localImages
+   * @param {boolean} localImagesLoading
    * @private
    */
-  async onLocalImagesChanged_(value) {
+  async onLocalImagesChanged_(localImages, localImagesLoading) {
     this.didSendLocalImageData_ = false;
-    if (Array.isArray(value)) {
+    if (!localImagesLoading && Array.isArray(localImages)) {
       const iframe = await this.iframePromise_;
       sendLocalImagesFunction(
-          /** @type {!Window} */ (iframe.contentWindow), value);
+          /** @type {!Window} */ (iframe.contentWindow), localImages);
     }
   }
 

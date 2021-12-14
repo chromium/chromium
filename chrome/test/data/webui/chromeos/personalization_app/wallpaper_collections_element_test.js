@@ -6,7 +6,7 @@ import {kMaximumLocalImagePreviews} from 'chrome://personalization/common/consta
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.js';
 
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -182,6 +182,45 @@ export function WallpaperCollectionsTest() {
     assertDeepEquals(wallpaperProvider.localImages, data);
   });
 
+  test('sends collections and local images when no internet', async () => {
+    const {
+      sendCollections: sendCollectionsPromise,
+      sendLocalImages: sendLocalImagesPromise
+    } = promisifyIframeFunctionsForTesting();
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      collections: false,
+      local: {images: false}
+    };
+    personalizationStore.data.local.images = wallpaperProvider.localImages;
+    // Simulate online collections failed to load when no internet connection.
+    personalizationStore.data.backdrop.collections = null;
+    personalizationStore.notifyObservers();
+
+    // Wait for |sendCollections| to be called.
+    let [target, data] = await sendCollectionsPromise;
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const iframe =
+        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
+    assertFalse(iframe.hidden);
+
+    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertEquals(null, data);
+
+    // Wait for |sendLocalImages| to be called.
+    [target, data] = await sendLocalImagesPromise;
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertFalse(iframe.hidden);
+
+    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertDeepEquals(wallpaperProvider.localImages, data);
+  });
+
   test('shows error when fails to load', async () => {
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
@@ -193,8 +232,10 @@ export function WallpaperCollectionsTest() {
     personalizationStore.data.loading = {
       ...personalizationStore.data.loading,
       collections: false,
+      local: {images: false},
     };
     personalizationStore.data.backdrop.collections = null;
+    personalizationStore.data.local.images = null;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 

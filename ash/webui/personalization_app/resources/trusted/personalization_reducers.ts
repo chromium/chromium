@@ -7,10 +7,11 @@
  * pure function that returns a new state object if anything has changed.
  * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
  */
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+
+import {isNonEmptyArray} from '../common/utils.js';
 
 import {ActionName} from './personalization_actions.js';
 import {Actions} from './personalization_actions.js';
@@ -352,7 +353,8 @@ function dailyRefreshReducer(
 }
 
 function errorReducer(
-    state: string|null, action: Actions, _: PersonalizationState): string|null {
+    state: string|null, action: Actions,
+    globalState: PersonalizationState): string|null {
   switch (action.name) {
     case ActionName.END_SELECT_IMAGE:
       const {success} = action;
@@ -366,6 +368,25 @@ function errorReducer(
         return state;
       }
       return state || loadTimeData.getString('loadWallpaperError');
+    // Show network error toast if local images are available but online
+    // collections are failed to load. As local images and online collections
+    // are loaded asynchronously, we need to check the above condition for both
+    // SET_LOCAL_IMAGES and SET_COLLECTIONS actions.
+    case ActionName.SET_LOCAL_IMAGES:
+      const {images} = action;
+      if (isNonEmptyArray(images) && !globalState.loading.collections &&
+          !isNonEmptyArray(globalState.backdrop.collections)) {
+        return state || loadTimeData.getString('networkError');
+      }
+      return state;
+    case ActionName.SET_COLLECTIONS:
+      const {collections} = action;
+      if (!globalState.loading.local.images &&
+          isNonEmptyArray(globalState.local.images) &&
+          !isNonEmptyArray(collections)) {
+        return state || loadTimeData.getString('networkError');
+      }
+      return state;
     case ActionName.DISMISS_ERROR:
       if (!state) {
         console.warn(

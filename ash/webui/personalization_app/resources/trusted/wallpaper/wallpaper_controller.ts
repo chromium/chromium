@@ -19,7 +19,7 @@ import {isFilePath, isWallpaperImage} from '../utils.js';
  */
 
 /** Fetch wallpaper collections and save them to the store. */
-async function fetchCollections(
+export async function fetchCollections(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   let {collections} = await provider.fetchCollections();
@@ -126,7 +126,7 @@ async function fetchGooglePhotosPhotos(
 }
 
 /** Get list of local images from disk and save it to the store. */
-async function getLocalImages(
+export async function getLocalImages(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadLocalImagesAction());

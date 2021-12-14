@@ -7,7 +7,7 @@ import '../../mojo_webui_test_support.js';
 
 import * as action from 'chrome://personalization/trusted/personalization_actions.js';
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import {fetchGooglePhotosAlbum, fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
+import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -728,5 +728,78 @@ suite('observes pendingState during wallpaper selection', () => {
             ],
             personalizationStore.states.map(
                 filterAndFlattenState(['pendingSelected'])));
+      });
+});
+
+suite('local images available but no internet connection', () => {
+  let wallpaperProvider;
+  let personalizationStore;
+
+  setup(() => {
+    wallpaperProvider = new TestWallpaperProvider();
+    personalizationStore = new TestPersonalizationStore({});
+    personalizationStore.setReducersEnabled(true);
+  });
+
+  test(
+      'error displays when fetch collections failed but local images loaded',
+      async () => {
+        loadTimeData.overrideValues({['networkError']: 'someError'});
+
+        // Set collections to null to simulate collections failure.
+        wallpaperProvider.setCollections(null);
+
+        // Assume that collections are loaded before local images.
+        const collectionsPromise =
+            fetchCollections(wallpaperProvider, personalizationStore);
+        const localImagesPromise =
+            getLocalImages(wallpaperProvider, personalizationStore);
+
+        await collectionsPromise;
+
+        assertFalse(personalizationStore.data.loading.collections);
+        assertEquals(null, personalizationStore.data.backdrop.collections);
+
+        await localImagesPromise;
+
+        assertFalse(personalizationStore.data.loading.local.images);
+        assertDeepEquals(
+            wallpaperProvider.localImages,
+            personalizationStore.data.local.images);
+
+        assertDeepEquals(
+            [
+              {
+                name: 'begin_load_local_images',
+              },
+              {
+                name: 'set_collections',
+                collections: null,
+              },
+              {name: 'set_local_images', images: wallpaperProvider.localImages},
+            ],
+            personalizationStore.actions,
+        );
+
+
+        assertDeepEquals(
+            [
+              // Begin load local images
+              {
+                'error': null,
+              },
+              // Set collections.
+              // Collections are completed loading with null value
+              // but local images are not yet done, no error displays.
+              {
+                'error': null,
+              },
+              // Set local images.
+              // Error displays once local images are loaded.
+              {
+                'error': loadTimeData.getString('networkError'),
+              },
+            ],
+            personalizationStore.states.map(filterAndFlattenState(['error'])));
       });
 });
