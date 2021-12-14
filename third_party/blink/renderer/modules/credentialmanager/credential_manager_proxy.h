@@ -52,7 +52,7 @@ class MODULES_EXPORT CredentialManagerProxy
 
   payments::mojom::blink::PaymentCredential* PaymentCredential();
 
-  mojom::blink::FederatedAuthRequest* FedCMGetRequest();
+  mojom::blink::FederatedAuthRequest* FedCmGetRequest();
 
   void Trace(Visitor*) const override;
 

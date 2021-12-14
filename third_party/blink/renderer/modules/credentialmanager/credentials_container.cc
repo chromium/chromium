@@ -1153,7 +1153,7 @@ ScriptPromise CredentialsContainer::get(
         DCHECK(options->federated()->hasPreferAutoSignIn());
         bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
         auto* fedcm_get_request =
-            CredentialManagerProxy::From(script_state)->FedCMGetRequest();
+            CredentialManagerProxy::From(script_state)->FedCmGetRequest();
         fedcm_get_request->RequestIdToken(
             provider_url, client_id, nonce,
             ToRequestMode(options->federated()->mode()), prefer_auto_sign_in,

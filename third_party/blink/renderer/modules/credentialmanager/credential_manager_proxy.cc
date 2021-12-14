@@ -69,7 +69,7 @@ void CredentialManagerProxy::BindRemoteForFedCm(
       &CredentialManagerProxy::OnConnectionError, WrapWeakPersistent(this)));
 }
 
-mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCMGetRequest() {
+mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCmGetRequest() {
   BindRemoteForFedCm(fedcm_get_request_);
   return fedcm_get_request_.get();
 }
