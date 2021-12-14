@@ -19,6 +19,8 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
+#include "components/viz/test/test_surface_id_allocator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -28,17 +30,25 @@ namespace {
 constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 constexpr bool kIsRoot = true;
 
-TEST(SurfaceTest, PresentationCallback) {
+class SurfaceTest : public testing::Test {
+ public:
+  SurfaceTest()
+      : frame_sink_manager_(
+            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {}
+
+ protected:
+  ServerSharedBitmapManager shared_bitmap_manager_;
+  FrameSinkManagerImpl frame_sink_manager_;
+};
+
+TEST_F(SurfaceTest, PresentationCallback) {
   constexpr gfx::Size kSurfaceSize(300, 300);
   constexpr gfx::Rect kDamageRect(0, 0);
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
 
-  ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager{
-      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);
+      &client, &frame_sink_manager_, kArbitraryFrameSinkId, kIsRoot);
   uint32_t frame_token = 0;
   {
     CompositorFrame frame =
@@ -67,7 +77,7 @@ TEST(SurfaceTest, PresentationCallback) {
   }
 }
 
-TEST(SurfaceTest, SurfaceIds) {
+TEST_F(SurfaceTest, SurfaceIds) {
   for (size_t i = 0; i < 3; ++i) {
     ParentLocalSurfaceIdAllocator allocator;
     allocator.GenerateId();
@@ -87,13 +97,10 @@ void TestCopyResultCallback(bool* called,
 
 // Test that CopyOutputRequests can outlive the current frame and be
 // aggregated on the next frame.
-TEST(SurfaceTest, CopyRequestLifetime) {
-  ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager{
-      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
-  SurfaceManager* surface_manager = frame_sink_manager.surface_manager();
+TEST_F(SurfaceTest, CopyRequestLifetime) {
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
   auto support = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);
+      nullptr, &frame_sink_manager_, kArbitraryFrameSinkId, kIsRoot);
 
   LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
   SurfaceId surface_id(kArbitraryFrameSinkId, local_surface_id);
@@ -148,6 +155,104 @@ TEST(SurfaceTest, CopyRequestLifetime) {
   copy_requests.clear();  // Deleted requests will auto-send an empty result.
   copy_runloop.Run();
   EXPECT_TRUE(copy_called);
+}
+
+// Verify activate referenced surfaces is correct when there are two surface
+// references to overlapping surface ranges. In particular the two surface
+// ranges are (S1, S1) and (S1, S2). When both S1 and S2 activate active
+// referenced surfaces should include both S1 and S2. See
+// https://crbug.com/1275605 for more context.
+TEST_F(SurfaceTest, ActiveSurfaceReferencesWithOverlappingReferences) {
+  constexpr gfx::Rect output_rect(100, 100);
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+
+  auto root_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, kArbitraryFrameSinkId,
+      /*is_root=*/true);
+  TestSurfaceIdAllocator root_surface_id(kArbitraryFrameSinkId);
+
+  auto child_support1 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, FrameSinkId(2, 1), /*is_root=*/false);
+  TestSurfaceIdAllocator child_surface_id1(child_support1->frame_sink_id());
+
+  auto child_support2 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, FrameSinkId(3, 1), /*is_root=*/false);
+  TestSurfaceIdAllocator child_surface_id2(child_support2->frame_sink_id());
+
+  // Submit a root frame with two SurfaceDrawQuads. The first SurfaceDrawQuad
+  // embeds |child_support1|. The second SurfaceDrawQuad embeds |child_support2|
+  // but has |child_support1| as a fallback which mimics a navigating renderer.
+  // Note that |old_surface_range| and |navigation_surface_range| overlap.
+  SurfaceRange old_surface_range(child_surface_id1, child_surface_id1);
+  SurfaceRange navigation_surface_range(child_surface_id1, child_surface_id2);
+  auto root_render_pass =
+      RenderPassBuilder(CompositorRenderPassId{1}, output_rect)
+          .AddSurfaceQuad(output_rect, old_surface_range)
+          .AddSurfaceQuad(output_rect, navigation_surface_range)
+          .Build();
+
+  {
+    CompositorFrame frame = MakeCompositorFrame(root_render_pass->DeepCopy());
+    EXPECT_THAT(
+        frame.metadata.referenced_surfaces,
+        testing::ElementsAre(old_surface_range, navigation_surface_range));
+
+    root_support->SubmitCompositorFrame(root_surface_id.local_surface_id(),
+                                        std::move(frame));
+  }
+
+  Surface* root_surface = surface_manager->GetSurfaceForId(root_surface_id);
+  ASSERT_TRUE(root_surface);
+
+  // No active references yet because no child surfaces have been submitted yet.
+  EXPECT_THAT(root_surface->active_referenced_surfaces(), testing::IsEmpty());
+
+  // Submit something to the second child surface and verify it's now included
+  // in active referenced surfaces.
+  child_support2->SubmitCompositorFrame(child_surface_id2.local_surface_id(),
+                                        MakeDefaultCompositorFrame());
+  EXPECT_TRUE(surface_manager->GetSurfaceForId(child_surface_id2));
+  EXPECT_THAT(root_surface->active_referenced_surfaces(),
+              testing::ElementsAre(child_surface_id2));
+
+  // Submit something to the first child surface and verify both are in active
+  // surface references. Note this order of activation is "backwards" as
+  // normally the |child_surface_id1| would have activated first if the browser
+  // is navigating away from it but if the first renderer is slow to produce
+  // content the order can be reversed.
+  child_support1->SubmitCompositorFrame(child_surface_id1.local_surface_id(),
+                                        MakeDefaultCompositorFrame());
+  EXPECT_TRUE(surface_manager->GetSurfaceForId(child_surface_id1));
+  EXPECT_THAT(root_surface->active_referenced_surfaces(),
+              testing::ElementsAre(child_surface_id1, child_surface_id2));
+
+  // Resubmit root frame with the same SurfaceDrawQuads and verify active
+  // surface references are unchanged.
+  root_support->SubmitCompositorFrame(
+      root_surface_id.local_surface_id(),
+      MakeCompositorFrame(std::move(root_render_pass)));
+  EXPECT_THAT(root_surface->active_referenced_surfaces(),
+              testing::ElementsAre(child_surface_id1, child_surface_id2));
+
+  // Submit a new root frame without the reference to the first child surface
+  // and verify |child_surface_id1| is no longer part of active referenced
+  // surfaces.
+  {
+    SurfaceRange post_navigation_surface_range(child_surface_id2,
+                                               child_surface_id2);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, output_rect)
+                    .AddSurfaceQuad(output_rect, post_navigation_surface_range))
+            .Build();
+
+    root_support->SubmitCompositorFrame(root_surface_id.local_surface_id(),
+                                        std::move(frame));
+  }
+
+  EXPECT_THAT(root_surface->active_referenced_surfaces(),
+              testing::ElementsAre(child_surface_id2));
 }
 
 }  // namespace

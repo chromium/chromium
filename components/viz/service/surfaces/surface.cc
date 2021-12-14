@@ -151,60 +151,14 @@ void Surface::UpdateSurfaceReferences() {
 void Surface::OnChildActivatedForActiveFrame(const SurfaceId& activated_id) {
   DCHECK(HasActiveFrame());
 
-  for (size_t i = 0;
-       i < active_frame_data_->frame.metadata.referenced_surfaces.size(); i++) {
-    const SurfaceRange& surface_range =
-        active_frame_data_->frame.metadata.referenced_surfaces[i];
-    if (!surface_range.IsInRangeInclusive(activated_id))
-      continue;
-
-    const SurfaceId& last_id = last_surface_id_for_range_[i];
-    // If we already have a reference to a surface in the primary's allocation
-    // group, we should already be unregistered from the allocation group of the
-    // fallback so we shouldn't receive SurfaceIds from that group.
-    // TODO(crbug.com/1264657): This DCHECK is failing frequently on Chrome OS
-    // for valid use cases where there are multiple references in
-    // |referenced_surfaces| that contain |activated_id|. Temporary disable to
-    // avoid flake while investigating solutions.
-    // DCHECK(!surface_range.HasDifferentEmbedTokens() || !last_id.is_valid() ||
-    //       !last_id.HasSameEmbedTokenAs(surface_range.end()) ||
-    //       activated_id.HasSameEmbedTokenAs(last_id));
-
-    // Remove the old reference.
-    if (last_id.is_valid()) {
-      auto old_it = active_referenced_surfaces_.find(last_id);
-      if (old_it != active_referenced_surfaces_.end())
-        active_referenced_surfaces_.erase(old_it);
-      surface_manager_->RemoveSurfaceReferences(
-          {SurfaceReference(surface_info_.id(), last_id)});
+  for (auto& surface_range : GetActiveFrame().metadata.referenced_surfaces) {
+    if (surface_range.IsInRangeInclusive(activated_id)) {
+      // If |activated_id| is included in any of the surface reference then
+      // recompute the active surface references. This must handle the case
+      // where a SurfaceId is included in multiple surface ranges.
+      RecomputeActiveReferencedSurfaces();
+      return;
     }
-
-    // Add a new reference.
-    active_referenced_surfaces_.insert(activated_id);
-    surface_manager_->AddSurfaceReferences(
-        {SurfaceReference(surface_info_.id(), activated_id)});
-
-    // If we were referencing a surface in the allocation group of the
-    // fallback, but now there is a surface available in the allocation group
-    // of the primary, unregister this surface from the allocation group of
-    // the fallback.
-    if (activated_id.HasSameEmbedTokenAs(surface_range.end()) &&
-        surface_range.HasDifferentEmbedTokens() &&
-        (!last_id.is_valid() || !last_id.HasSameEmbedTokenAs(activated_id))) {
-      DCHECK(surface_range.start());
-      DCHECK(!last_id.is_valid() ||
-             last_id.HasSameEmbedTokenAs(*surface_range.start()));
-      SurfaceAllocationGroup* group =
-          surface_manager_->GetAllocationGroupForSurfaceId(
-              *surface_range.start());
-      if (group && referenced_allocation_groups_.count(group)) {
-        group->UnregisterActiveEmbedder(this);
-        referenced_allocation_groups_.erase(group);
-      }
-    }
-
-    // Update the referenced surface for this range.
-    last_surface_id_for_range_[i] = activated_id;
   }
 }
 
