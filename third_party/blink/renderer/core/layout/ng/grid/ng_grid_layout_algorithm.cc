@@ -3534,10 +3534,29 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         if (!MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
                                 fragment_relative_block_offset, appeal_before,
                                 /* builder */ nullptr)) {
-          // TODO(ikilpatrick): We may have break-before:avoid on this row, we
-          // should search upwards (ensuring that we are still in this
-          // fragmentainer), for the first row with the highest break appeal.
           breakpoint_row_set_index = item_row_set_index;
+
+          // We may have "break-before:avoid" or similar on this row. Instead
+          // of just breaking on this row, search upwards for a row with a
+          // better EBreakBetween.
+          if (IsAvoidBreakValue(ConstraintSpace(), break_between)) {
+            for (int index = item_row_set_index - 1; index >= 0; --index) {
+              // Only consider rows within this fragmentainer.
+              LayoutUnit offset =
+                  grid_geometry->row_geometry.sets[index].offset +
+                  (*row_offset_adjustments)[index] -
+                  previous_consumed_block_size;
+              if (offset <= LayoutUnit())
+                break;
+
+              // Forced row breaks should have been already handled, accept any
+              // row with an "auto" break-between.
+              if (row_break_between[index] == EBreakBetween::kAuto) {
+                breakpoint_row_set_index = index;
+                break;
+              }
+            }
+          }
           continue;
         }
       }
