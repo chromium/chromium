@@ -309,11 +309,11 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     DebuggerSendCommandFunction* function,
     const std::string& method,
     SendCommand::Params::CommandParams* command_params) {
-  base::DictionaryValue protocol_request;
+  base::Value protocol_request(base::Value::Type::DICTIONARY);
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
-  protocol_request.SetInteger("id", request_id);
-  protocol_request.SetString("method", method);
+  protocol_request.SetIntKey("id", request_id);
+  protocol_request.SetStringKey("method", method);
   if (command_params) {
     protocol_request.SetKey("params",
                             command_params->additional_properties.Clone());
@@ -376,27 +376,27 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
 
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
-  std::unique_ptr<base::Value> result = base::JSONReader::ReadDeprecated(
+  absl::optional<base::Value> result = base::JSONReader::Read(
       message_str, base::JSON_REPLACE_INVALID_CHARACTERS);
   if (!result || !result->is_dict()) {
     LOG(ERROR) << "Tried to send invalid message to extension: " << message_str;
     return;
   }
-  base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(result.get());
+  base::Value dictionary = std::move(result.value());
 
-  absl::optional<int> id = dictionary->FindIntKey("id");
+  absl::optional<int> id = dictionary.FindIntKey("id");
   if (!id) {
-    std::string method_name;
-    if (!dictionary->GetString("method", &method_name))
+    std::string* method_name = dictionary.FindStringKey("method");
+    if (!method_name)
       return;
 
     OnEvent::Params params;
-    base::DictionaryValue* params_value;
-    if (dictionary->GetDictionary("params", &params_value))
-      params.additional_properties.Swap(params_value);
+    if (base::Value* params_value = dictionary.FindDictKey("params")) {
+      params.additional_properties.Swap(
+          static_cast<base::DictionaryValue*>(params_value));
+    }
 
-    auto args(OnEvent::Create(debuggee_, method_name, params));
+    auto args(OnEvent::Create(debuggee_, *method_name, params));
     auto event =
         std::make_unique<Event>(events::DEBUGGER_ON_EVENT, OnEvent::kEventName,
                                 std::move(args), profile_);
@@ -407,7 +407,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     if (it == pending_requests_.end())
       return;
 
-    it->second->SendResponseBody(dictionary);
+    it->second->SendResponseBody(std::move(dictionary));
     pending_requests_.erase(it);
   }
 }
@@ -654,20 +654,19 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
   return RespondLater();
 }
 
-void DebuggerSendCommandFunction::SendResponseBody(
-    base::DictionaryValue* response) {
-  base::Value* error_body;
-  if (response->Get("error", &error_body)) {
+void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
+  if (base::Value* error_body = response.FindKey("error")) {
     std::string error;
     base::JSONWriter::Write(*error_body, &error);
     Respond(Error(std::move(error)));
     return;
   }
 
-  base::DictionaryValue* result_body;
   SendCommand::Results::Result result;
-  if (response->GetDictionary("result", &result_body))
-    result.additional_properties.Swap(result_body);
+  if (base::Value* result_body = response.FindDictKey("result")) {
+    result.additional_properties.Swap(
+        static_cast<base::DictionaryValue*>(result_body));
+  }
 
   Respond(ArgumentList(SendCommand::Results::Create(result)));
 }
@@ -693,35 +692,33 @@ const char kTargetTypeBackgroundPage[] = "background_page";
 const char kTargetTypeWorker[] = "worker";
 const char kTargetTypeOther[] = "other";
 
-std::unique_ptr<base::DictionaryValue> SerializeTarget(
-    scoped_refptr<DevToolsAgentHost> host) {
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
-  dictionary->SetString(kTargetIdField, host->GetId());
-  dictionary->SetString(kTargetTitleField, host->GetTitle());
-  dictionary->SetBoolean(kTargetAttachedField, host->IsAttached());
-  dictionary->SetString(kTargetUrlField, host->GetURL().spec());
+base::Value SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  dictionary.SetStringKey(kTargetIdField, host->GetId());
+  dictionary.SetStringKey(kTargetTitleField, host->GetTitle());
+  dictionary.SetBoolKey(kTargetAttachedField, host->IsAttached());
+  dictionary.SetStringKey(kTargetUrlField, host->GetURL().spec());
 
   std::string type = host->GetType();
   std::string target_type = kTargetTypeOther;
   if (type == DevToolsAgentHost::kTypePage) {
     int tab_id =
         extensions::ExtensionTabUtil::GetTabId(host->GetWebContents());
-    dictionary->SetInteger(kTargetTabIdField, tab_id);
+    dictionary.SetIntKey(kTargetTabIdField, tab_id);
     target_type = kTargetTypePage;
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
-    dictionary->SetString(kTargetExtensionIdField, host->GetURL().host());
+    dictionary.SetStringKey(kTargetExtensionIdField, host->GetURL().host());
     target_type = kTargetTypeBackgroundPage;
   } else if (type == DevToolsAgentHost::kTypeServiceWorker ||
              type == DevToolsAgentHost::kTypeSharedWorker) {
     target_type = kTargetTypeWorker;
   }
 
-  dictionary->SetString(kTargetTypeField, target_type);
+  dictionary.SetStringKey(kTargetTypeField, target_type);
 
   GURL favicon_url = host->GetFaviconURL();
   if (favicon_url.is_valid())
-    dictionary->SetString(kTargetFaviconUrlField, favicon_url.spec());
+    dictionary.SetStringKey(kTargetFaviconUrlField, favicon_url.spec());
 
   return dictionary;
 }
@@ -735,8 +732,8 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() = default;
 ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (size_t i = 0; i < list.size(); ++i)
-    result->Append(SerializeTarget(list[i]));
+  for (auto& i : list)
+    result->Append(SerializeTarget(i));
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));

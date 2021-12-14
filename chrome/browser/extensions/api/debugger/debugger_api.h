@@ -20,10 +20,6 @@ using extensions::api::debugger::Debuggee;
 
 // Base debugger function.
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 class ExtensionDevToolsClientHost;
 
@@ -77,7 +73,7 @@ class DebuggerSendCommandFunction : public DebuggerFunction {
   DECLARE_EXTENSION_FUNCTION("debugger.sendCommand", DEBUGGER_SENDCOMMAND)
 
   DebuggerSendCommandFunction();
-  void SendResponseBody(base::DictionaryValue* result);
+  void SendResponseBody(base::Value result);
   void SendDetachedError();
 
  protected:
