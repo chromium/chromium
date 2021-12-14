@@ -232,6 +232,12 @@ class ASH_EXPORT OverviewWindowDragController {
   // Set to true once the bounds of |item_| change.
   bool did_move_ = false;
 
+  // The last desk index that the screen location points to during drag. Please
+  // note that this would be set to `-1` when it does not intersect with desks
+  // bar. It is used to keep track of haptic feedback since we do not want
+  // duplicate event for the same desk during drag.
+  int last_desk_index_ = -1;
+
   // Records the presentation time of window drag operation in overview mode.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 

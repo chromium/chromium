@@ -136,9 +136,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Finalize any unfinished drag & drop. Initialize a new drag proxy.
   void InitDragDesk(DeskMiniView* mini_view,
                     const gfx::PointF& location_in_screen);
-  // Start to drag. Scale up the drag proxy.
+  // Start to drag. Scale up the drag proxy. `is_mouse_dragging` is true when
+  // triggered by mouse/trackpad, false when triggered by touch.
   void StartDragDesk(DeskMiniView* mini_view,
-                     const gfx::PointF& location_in_screen);
+                     const gfx::PointF& location_in_screen,
+                     bool is_mouse_dragging);
   // Reorder desks according to the drag proxy's location.
   void ContinueDragDesk(DeskMiniView* mini_view,
                         const gfx::PointF& location_in_screen);

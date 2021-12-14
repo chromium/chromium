@@ -32,6 +32,7 @@
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
@@ -56,6 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
@@ -558,6 +560,7 @@ void OverviewSession::InitiateDrag(OverviewItem* item,
           ->IsDividerAnimating()) {
     return;
   }
+
   highlight_controller_->SetFocusHighlightVisibility(false);
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
       this, item, is_touch_dragging);
@@ -566,6 +569,13 @@ void OverviewSession::InitiateDrag(OverviewItem* item,
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragStarted(item);
     grid->UpdateSaveDeskAsTemplateButton();
+  }
+
+  // Fire a haptic event if necessary.
+  if (!is_touch_dragging) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
   }
 }
 

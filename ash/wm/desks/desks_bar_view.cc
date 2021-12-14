@@ -31,6 +31,7 @@
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/zero_state_button.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -43,6 +44,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -537,7 +539,7 @@ void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
   // Initialize and start drag.
   gfx::PointF location = event.target()->GetScreenLocationF(event);
   InitDragDesk(mini_view, location);
-  StartDragDesk(mini_view, location);
+  StartDragDesk(mini_view, location, event.IsMouseEvent());
 }
 
 void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
@@ -553,7 +555,7 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
   // continue drag.
   switch (drag_proxy_->state()) {
     case DeskDragProxy::State::kInitialized:
-      StartDragDesk(mini_view, location);
+      StartDragDesk(mini_view, location, event.IsMouseEvent());
       break;
     case DeskDragProxy::State::kStarted:
       ContinueDragDesk(mini_view, location);
@@ -606,7 +608,8 @@ void DesksBarView::InitDragDesk(DeskMiniView* mini_view,
 }
 
 void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
-                                 const gfx::PointF& location_in_screen) {
+                                 const gfx::PointF& location_in_screen,
+                                 bool is_mouse_dragging) {
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
@@ -620,6 +623,13 @@ void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
   drag_proxy_->InitAndScaleAndMoveToX(location_in_screen.x());
 
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kGrabbing);
+
+  // Fire a haptic event if necessary.
+  if (is_mouse_dragging) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
 }
 
 void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,

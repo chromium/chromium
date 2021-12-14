@@ -1422,6 +1422,16 @@ bool OverviewGrid::IntersectsWithDesksBar(const gfx::Point& screen_location,
   return dragged_item_over_bar;
 }
 
+int OverviewGrid::GetDeskIndexFromScreenLocation(
+    const gfx::Point& screen_location) {
+  auto* desks_controller = DesksController::Get();
+  for (auto* mini_view : desks_bar_view_->mini_views()) {
+    if (mini_view->IsPointOnMiniView(screen_location))
+      return desks_controller->GetDeskIndex(mini_view->desk());
+  }
+  return -1;
+}
+
 bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     const gfx::Point& screen_location,
     OverviewItem* drag_item) {

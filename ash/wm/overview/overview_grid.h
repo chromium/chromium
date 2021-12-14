@@ -292,6 +292,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                               bool update_desks_bar_drag_details,
                               bool for_drop);
 
+  // Returns the desk index of the provided screen location if it belongs to
+  // any, otherwise `-1` will be returned.
+  int GetDeskIndexFromScreenLocation(const gfx::Point& screen_location);
+
   // Updates the drag details for DesksBarView to end the drag and move the
   // window of |drag_item| to another desk if it was dropped on a mini_view of
   // a desk that is different than that of the active desk or if dropped on the

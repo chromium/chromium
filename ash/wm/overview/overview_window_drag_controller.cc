@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -37,6 +38,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -552,10 +554,26 @@ void OverviewWindowDragController::ContinueNormalDrag(
       // Update the mini views borders by checking if |location_in_screen|
       // intersects. Only update the borders if the dragged item is not visible
       // on all desks.
-      overview_grid->IntersectsWithDesksBar(
+      bool intersects_with_desks_bar = overview_grid->IntersectsWithDesksBar(
           gfx::ToRoundedPoint(location_in_screen),
           /*update_desks_bar_drag_details=*/
           !DraggedItemIsVisibleOnAllDesks(item_), /*for_drop=*/false);
+
+      // Fire a haptic event if necessary.
+      if (intersects_with_desks_bar && !is_touch_dragging_) {
+        const int desk_index = overview_grid->GetDeskIndexFromScreenLocation(
+            gfx::ToRoundedPoint(location_in_screen));
+        if (last_desk_index_ != desk_index) {
+          last_desk_index_ = desk_index;
+          if (desk_index != -1) {
+            haptics_util::PlayHapticTouchpadEffect(
+                ui::HapticTouchpadEffect::kTick,
+                ui::HapticTouchpadEffectStrength::kMedium);
+          }
+        }
+      } else {
+        last_desk_index_ = -1;
+      }
 
       float value = 0.f;
       if (centerpoint.y() < desks_bar_data.desks_bar_bounds.y() ||
