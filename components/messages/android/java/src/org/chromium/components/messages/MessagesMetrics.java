@@ -25,7 +25,7 @@ public class MessagesMetrics {
             "Android.Messages.TimeToAction.Dismiss.";
 
     /** Records metrics when a message is enqueued. */
-    public static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
+    static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
@@ -33,7 +33,7 @@ public class MessagesMetrics {
     }
 
     /** Records metrics when a message is enqueued. */
-    public static void recordMessageEnqueuedHidden(@MessageIdentifier int enqueuedMessage,
+    static void recordMessageEnqueuedHidden(@MessageIdentifier int enqueuedMessage,
             @MessageIdentifier int currentDisplayedMessage) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
@@ -44,7 +44,7 @@ public class MessagesMetrics {
     }
 
     /** Records metrics when a message is dismissed. */
-    public static void recordDismissReason(
+    static void recordDismissReason(
             @MessageIdentifier int messageIdentifier, @DismissReason int dismissReason) {
         String histogramName =
                 DISMISSED_HISTOGRAM_PREFIX + messageIdentifierToHistogramSuffix(messageIdentifier);
@@ -56,7 +56,7 @@ public class MessagesMetrics {
      * Records metrics with duration of time a message was visible before it was dismissed by a user
      * action.
      */
-    public static void recordTimeToAction(@MessageIdentifier int messageIdentifier,
+    static void recordTimeToAction(@MessageIdentifier int messageIdentifier,
             boolean messageDismissedByGesture, long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
         RecordHistogram.recordMediumTimesHistogram(
@@ -71,7 +71,7 @@ public class MessagesMetrics {
      * Returns current timestamp in milliseconds to be used when recording message's visible
      * duration.
      */
-    public static long now() {
+    static long now() {
         return SystemClock.uptimeMillis();
     }
 
@@ -80,7 +80,8 @@ public class MessagesMetrics {
      * message.
      * Update this function when adding a new message identifier.
      */
-    static String messageIdentifierToHistogramSuffix(@MessageIdentifier int messageIdentifier) {
+    public static String messageIdentifierToHistogramSuffix(
+            @MessageIdentifier int messageIdentifier) {
         switch (messageIdentifier) {
             case MessageIdentifier.TEST_MESSAGE:
                 return "TestMessage";
@@ -132,16 +133,12 @@ public class MessagesMetrics {
     }
 
     @VisibleForTesting
-    public static int getEnqueuedMessageCountForTesting(@MessageIdentifier int messageIdentifier) {
-        return RecordHistogram.getHistogramValueCountForTesting(
-                ENQUEUED_HISTOGRAM_NAME, messageIdentifier);
+    static String getEnqueuedHistogramNameForTesting() {
+        return ENQUEUED_HISTOGRAM_NAME;
     }
 
     @VisibleForTesting
-    public static int getDismissReasonForTesting(
-            @MessageIdentifier int messageIdentifier, @DismissReason int dismissReason) {
-        String histogramName =
-                DISMISSED_HISTOGRAM_PREFIX + messageIdentifierToHistogramSuffix(messageIdentifier);
-        return RecordHistogram.getHistogramValueCountForTesting(histogramName, dismissReason);
+    static String getDismissHistogramNameForTesting(@MessageIdentifier int messageIdentifier) {
+        return DISMISSED_HISTOGRAM_PREFIX + messageIdentifierToHistogramSuffix(messageIdentifier);
     }
 }

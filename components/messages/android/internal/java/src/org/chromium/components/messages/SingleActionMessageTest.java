@@ -57,7 +57,7 @@ public class SingleActionMessageTest {
         }
 
         @Override
-        public long get(long extension) {
+        public long get(int id, long extension) {
             return mDuration;
         }
     }

@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
@@ -118,24 +119,20 @@ public class MessageQueueManagerTest {
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-        Assert.assertEquals(1,
-                MessagesMetrics.getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        Assert.assertEquals(1, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
         verify(m1).show();
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
         verify(m1).dismiss(DismissReason.TIMER);
-        Assert.assertEquals(1,
-                MessagesMetrics.getDismissReasonForTesting(
-                        MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
+        Assert.assertEquals(
+                1, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
 
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
-        Assert.assertEquals(2,
-                MessagesMetrics.getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        Assert.assertEquals(2, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
         verify(m2).show();
         queueManager.dismissMessage(m2, DismissReason.TIMER);
-        Assert.assertEquals(2,
-                MessagesMetrics.getDismissReasonForTesting(
-                        MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
+        Assert.assertEquals(
+                2, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
         verify(m2).hide(anyBoolean(), any());
         verify(m2).dismiss(DismissReason.TIMER);
     }
@@ -158,7 +155,7 @@ public class MessageQueueManagerTest {
 
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
         Assert.assertEquals(3,
-                MessagesMetrics.getDismissReasonForTesting(
+                getDismissReasonForTesting(
                         MessageIdentifier.TEST_MESSAGE, DismissReason.ACTIVITY_DESTROYED));
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
@@ -608,5 +605,16 @@ public class MessageQueueManagerTest {
         verify(m2).hide(anyBoolean(), any());
         verify(m2).dismiss(DismissReason.TIMER);
         verify(m1, times(2)).show();
+    }
+
+    static int getEnqueuedMessageCountForTesting(@MessageIdentifier int messageIdentifier) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                MessagesMetrics.getEnqueuedHistogramNameForTesting(), messageIdentifier);
+    }
+
+    static int getDismissReasonForTesting(
+            @MessageIdentifier int messageIdentifier, @DismissReason int dismissReason) {
+        String histogramName = MessagesMetrics.getDismissHistogramNameForTesting(messageIdentifier);
+        return RecordHistogram.getHistogramValueCountForTesting(histogramName, dismissReason);
     }
 }
