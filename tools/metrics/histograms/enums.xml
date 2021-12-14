@@ -57279,6 +57279,18 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Unsafe"/>
 </enum>
 
+<enum name="MediaFoundationRendererErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CdmProxyReceivedInInvalidState"/>
+  <int value="2" label="FailedToSetSourceOnMediaEngine"/>
+  <int value="3" label="kFailedToSetCurrentTime"/>
+  <int value="4" label="kFailedToPlay"/>
+  <int value="5" label="kOnPlaybackError"/>
+  <int value="6" label="kOnDCompSurfaceReceivedError"/>
+  <int value="7" label="kOnDCompSurfaceHandleSetError"/>
+  <int value="8" label="kOnConnectionError"/>
+</enum>
+
 <enum name="MediaGalleriesUsageType">
   <int value="0" label="Gallery added from permission dialog"/>
   <int value="1" label="Gallery permission added from permission dialog"/>

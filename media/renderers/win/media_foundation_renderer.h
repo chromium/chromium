@@ -40,6 +40,25 @@ class MEDIA_EXPORT MediaFoundationRenderer
     : public Renderer,
       public MediaFoundationRendererExtension {
  public:
+  // An enum for recording MediaFoundationRenderer playback error reason.
+  // Reported to UMA. Do not change existing values.
+  enum class ErrorReason {
+    kUnknown = 0,
+    kCdmProxyReceivedInInvalidState,
+    kFailedToSetSourceOnMediaEngine,
+    kFailedToSetCurrentTime,
+    kFailedToPlay,
+    kOnPlaybackError,
+    kOnDCompSurfaceReceivedError,
+    kOnDCompSurfaceHandleSetError,
+    kOnConnectionError,
+    // Add new values here and update `kMaxValue`. Never reuse existing values.
+    kMaxValue = kOnConnectionError,
+  };
+
+  // Report `reason` to UMA.
+  static void ReportErrorReason(ErrorReason reason);
+
   // Whether MediaFoundationRenderer() is supported on the current device.
   static bool IsSupported();
 

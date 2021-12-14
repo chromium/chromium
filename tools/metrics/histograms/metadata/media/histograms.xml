@@ -3184,12 +3184,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaFoundationRenderer.ErrorReason"
+    enum="MediaFoundationRendererErrorReason" expires_after="2022-08-30">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when the MediaFoundationRenderer or MediaFoundationRendererClient
+    hits an error.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
     expires_after="2022-08-30">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Recorded when the MediaFoundationRenderer his a playback error. Some errors
+    Recorded when the MediaFoundationRenderer hits a playback error. Some errors
     are part of the normal user flow (e.g. sleep/resume) and are not a bug.
   </summary>
 </histogram>

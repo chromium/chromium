@@ -70,6 +70,12 @@ bool InitializeVideoWindowClass() {
 }  // namespace
 
 // static
+void MediaFoundationRenderer::ReportErrorReason(ErrorReason reason) {
+  base::UmaHistogramEnumeration("Media.MediaFoundationRenderer.ErrorReason",
+                                reason);
+}
+
+// static
 bool MediaFoundationRenderer::IsSupported() {
   return base::win::GetVersion() >= base::win::Version::WIN10;
 }
@@ -344,6 +350,7 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
 
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
     DLOG(ERROR) << "Failed in checking internal state.";
+    ReportErrorReason(ErrorReason::kCdmProxyReceivedInInvalidState);
     renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_INVALID_STATE);
     return;
   }
@@ -356,6 +363,7 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   HRESULT hr = SetSourceOnMediaEngine();
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set source on media engine: " << PrintHr(hr);
+    ReportErrorReason(ErrorReason::kFailedToSetSourceOnMediaEngine);
     renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
@@ -390,6 +398,7 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   HRESULT hr = mf_media_engine_->SetCurrentTime(current_time);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to SetCurrentTime: " << PrintHr(hr);
+    ReportErrorReason(ErrorReason::kFailedToSetCurrentTime);
     renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
@@ -397,6 +406,7 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   hr = mf_media_engine_->Play();
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to start playback: " << PrintHr(hr);
+    ReportErrorReason(ErrorReason::kFailedToPlay);
     renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
@@ -603,6 +613,7 @@ void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
       << "MediaFoundationRenderer OnPlaybackError: " << status << ", "
       << PrintHr(hr);
 
+  ReportErrorReason(ErrorReason::kOnPlaybackError);
   renderer_client_->OnError(status);
   StopSendingStatistics();
 }

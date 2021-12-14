@@ -7,10 +7,9 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/renderers/win/media_foundation_renderer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media {
@@ -131,6 +130,8 @@ void MediaFoundationRendererClient::OnSelectedVideoTracksChanged(
 
 void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
+  // Do not call MediaFoundationRenderer::ReportErrorReason() since it should've
+  // already been reported in MediaFoundationRenderer.
   client_->OnError(status);
 }
 
@@ -300,6 +301,8 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
     MEDIA_LOG(ERROR, media_log_)
         << "Failed to initialize DCOMP mode or failed to get or "
            "register DCOMP surface handle on remote renderer";
+    MediaFoundationRenderer::ReportErrorReason(
+        MediaFoundationRenderer::ErrorReason::kOnDCompSurfaceReceivedError);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
@@ -317,6 +320,8 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
 
   if (!success) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
+    MediaFoundationRenderer::ReportErrorReason(
+        MediaFoundationRenderer::ErrorReason::kOnDCompSurfaceHandleSetError);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
   }
 }
@@ -348,7 +353,9 @@ void MediaFoundationRendererClient::OnConnectionError() {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
-  OnError(PIPELINE_ERROR_DECODE);
+  MediaFoundationRenderer::ReportErrorReason(
+      MediaFoundationRenderer::ErrorReason::kOnConnectionError);
+  OnError(PIPELINE_ERROR_DISCONNECTED);
 }
 
 }  // namespace media
