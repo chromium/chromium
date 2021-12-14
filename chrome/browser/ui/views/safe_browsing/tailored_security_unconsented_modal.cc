@@ -61,6 +61,9 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_CANCEL_BUTTON));
 
+  RecordModalOutcomeAndRunCallback(TailoredSecurityOutcome::kShown,
+                                   base::DoNothing());
+
   SetAcceptCallback(base::BindOnce(
       RecordModalOutcomeAndRunCallback, TailoredSecurityOutcome::kAccepted,
       base::BindOnce(&EnableEsbAndShowSettings, web_contents_)));

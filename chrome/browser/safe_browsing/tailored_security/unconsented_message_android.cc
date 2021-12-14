@@ -146,6 +146,7 @@ TailoredSecurityUnconsentedMessageAndroid::
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SAFETY_CHECK));
   }
 
+  LogMessageOutcome(TailoredSecurityOutcome::kShown, is_in_flow_);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
