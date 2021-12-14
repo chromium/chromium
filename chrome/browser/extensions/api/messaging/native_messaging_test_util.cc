@@ -33,22 +33,22 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
                                  const base::FilePath& host_path,
                                  bool user_level,
                                  bool supports_native_initiated_connections) {
-  std::unique_ptr<base::DictionaryValue> manifest(new base::DictionaryValue());
-  manifest->SetString("name", host_name);
-  manifest->SetString("description", "Native Messaging Echo Test");
-  manifest->SetString("type", "stdio");
-  manifest->SetString("path", host_path.AsUTF8Unsafe());
-  manifest->SetBoolean("supports_native_initiated_connections",
-                       supports_native_initiated_connections);
+  base::Value manifest(base::Value::Type::DICTIONARY);
+  manifest.SetStringKey("name", host_name);
+  manifest.SetStringKey("description", "Native Messaging Echo Test");
+  manifest.SetStringKey("type", "stdio");
+  manifest.SetStringKey("path", host_path.AsUTF8Unsafe());
+  manifest.SetBoolKey("supports_native_initiated_connections",
+                      supports_native_initiated_connections);
 
   base::Value origins(base::Value::Type::LIST);
   origins.Append(base::StringPrintf(
       "chrome-extension://%s/", ScopedTestNativeMessagingHost::kExtensionId));
-  manifest->SetKey("allowed_origins", std::move(origins));
+  manifest.SetKey("allowed_origins", std::move(origins));
 
   base::FilePath manifest_path = target_dir.AppendASCII(host_name + ".json");
   JSONFileValueSerializer serializer(manifest_path);
-  ASSERT_TRUE(serializer.Serialize(*manifest));
+  ASSERT_TRUE(serializer.Serialize(manifest));
 
 #if defined(OS_WIN)
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
