@@ -34,6 +34,8 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -504,7 +506,8 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                 HttpURLConnection urlConnection = null;
                 try {
                     URL url = new URL(httpProbeUrl);
-                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection = (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                            url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                     urlConnection.setInstanceFollowRedirects(false);
                     urlConnection.setRequestMethod(httpProbeMethod);
                     urlConnection.setConnectTimeout(httpProbeTimeoutMs);

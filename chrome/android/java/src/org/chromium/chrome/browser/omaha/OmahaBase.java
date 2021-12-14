@@ -18,6 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -445,7 +447,9 @@ public class OmahaBase {
     protected HttpURLConnection createConnection() throws RequestFailureException {
         try {
             URL url = new URL(getRequestGenerator().getServerUrl());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection =
+                    (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                            url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
             connection.setConnectTimeout(MS_CONNECTION_TIMEOUT);
             connection.setReadTimeout(MS_CONNECTION_TIMEOUT);
             return connection;

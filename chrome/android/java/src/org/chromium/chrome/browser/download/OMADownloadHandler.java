@@ -49,6 +49,8 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -942,7 +944,8 @@ public class OMADownloadHandler extends BroadcastReceiver {
             boolean success = false;
             try {
                 URL url = new URL(mOMAInfo.getValue(OMA_INSTALL_NOTIFY_URI));
-                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection = (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                        url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                 urlConnection.setDoOutput(true);
                 urlConnection.setUseCaches(false);
                 urlConnection.setRequestMethod("POST");
