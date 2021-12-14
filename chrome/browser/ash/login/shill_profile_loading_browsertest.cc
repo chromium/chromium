@@ -19,6 +19,7 @@
 #include "base/bind_internal.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
@@ -233,6 +234,9 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
 
   LoadShillProfileWaiter load_shill_profile_waiter(
       FakeSessionManagerClient::Get());
+
+  // Mark EULA accepted to skip the guest ToS screen.
+  StartupUtils::MarkEulaAccepted();
   ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
