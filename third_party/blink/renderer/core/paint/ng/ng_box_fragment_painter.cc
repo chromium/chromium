@@ -573,8 +573,9 @@ void NGBoxFragmentPainter::PaintObject(
     // AddURLRectIfNeeded() for LayoutInline.
     if (paint_info.ShouldAddUrlMetadata()) {
       const auto* layout_object = fragment.GetLayoutObject();
-      if (!layout_object->IsLayoutInline() ||
-          To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer()) {
+      if (layout_object &&
+          (!layout_object->IsLayoutInline() ||
+           To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer())) {
         NGFragmentPainter(fragment, GetDisplayItemClient())
             .AddURLRectIfNeeded(paint_info, paint_offset);
       }

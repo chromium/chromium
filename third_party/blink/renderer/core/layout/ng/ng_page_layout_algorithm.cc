@@ -40,6 +40,7 @@ scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
         CalculateInitialFragmentGeometry(child_space, Node());
     NGBlockLayoutAlgorithm child_algorithm(
         {Node(), fragment_geometry, child_space, break_token});
+    child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
     scoped_refptr<const NGLayoutResult> result = child_algorithm.Layout();
     const auto& page = result->PhysicalFragment();
 

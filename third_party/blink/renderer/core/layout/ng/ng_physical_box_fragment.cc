@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -549,10 +550,16 @@ const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
   const LayoutBox* owner_box =
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
   DCHECK(owner_box);
-  if (UNLIKELY(IsColumnBox())) {
+  if (UNLIKELY(IsFragmentainerBox())) {
+    if (owner_box->IsLayoutView()) {
+      DCHECK(IsPageBox());
+      DCHECK(To<LayoutView>(owner_box)->ShouldUsePrintingLayout());
+      return owner_box;
+    }
     // Adjust the owner for column boxes. Column box fragment's |layout_object_|
     // is its multicol container, but |LayoutFlowThread::layout_results_|
     // has the column box fragments.
+    DCHECK(IsColumnBox());
     owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
     DCHECK(owner_box && owner_box->IsLayoutFlowThread());
   }
@@ -620,11 +627,12 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     DCHECK(IsInlineBox());
     return this;
   }
-  if (UNLIKELY(IsColumnBox())) {
-    // For column boxes, the logic does not work because non-last column box
-    // fragments may have null |BreakToken|, and |SequenceNumber| does not match
-    // the index of |LayoutBox::PhysicalFragments|. For this reason,
-    // |CloneWithPostLayoutFragments| has special logic to handle column boxes.
+  if (UNLIKELY(IsFragmentainerBox())) {
+    // For fragmentainers, the logic does not work because non-last
+    // fragmentainers may have null |BreakToken|, and |SequenceNumber| does not
+    // match the index of |LayoutBox::PhysicalFragments|. For this reason,
+    // |CloneWithPostLayoutFragments| has special logic to handle
+    // fragmentainers.
 #if DCHECK_IS_ON()
     // We can at least check whether |this| is the latest or not.
     if (!AllowPostLayoutScope::IsAllowed())
@@ -1062,10 +1070,10 @@ void NGPhysicalBoxFragment::RecalcInkOverflow() {
 
   // Copy the computed values to the |OwnerBox| if |this| is the last fragment.
 
-  // Column boxes may or may not have |BreakToken|s, and that
+  // Fragmentainers may or may not have |BreakToken|s, and that
   // |CopyVisualOverflowFromFragments| cannot compute stitched coordinate for
   // them. See crbug.com/1197561.
-  if (UNLIKELY(IsColumnBox()))
+  if (UNLIKELY(IsFragmentainerBox()))
     return;
 
   if (BreakToken()) {

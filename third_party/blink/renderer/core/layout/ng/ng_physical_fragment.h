@@ -71,6 +71,8 @@ class CORE_EXPORT NGPhysicalFragment
     // A multi-column container creates column boxes as its children, which
     // content is flowed into. https://www.w3.org/TR/css-multicol-1/#column-box
     kColumnBox,
+    // A page box fragment. Used by printing.
+    kPageBox,
     kAtomicInline,
     kFloating,
     kOutOfFlowPositioned,
@@ -116,7 +118,8 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsColumnBox() const {
     return IsBox() && BoxType() == NGBoxType::kColumnBox;
   }
-  bool IsFragmentainerBox() const { return IsColumnBox(); }
+  bool IsPageBox() const { return IsBox() && BoxType() == NGBoxType::kPageBox; }
+  bool IsFragmentainerBox() const { return IsColumnBox() || IsPageBox(); }
   bool IsColumnSpanAll() const {
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsColumnSpanAll();
@@ -679,7 +682,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_hanging_ : 1;
 
   const unsigned type_ : 1;           // NGFragmentType
-  const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType
+  const unsigned sub_type_ : 4;       // NGBoxType, NGTextType, or NGLineBoxType
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
   unsigned is_opaque_ : 1;

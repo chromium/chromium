@@ -695,7 +695,8 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     const LayoutObject& object,
     const NGPhysicalBoxFragment& fragment,
     PrePaintTreeWalkContext& context) {
-  // The actual children are inside the flow thread child of |object|.
+  // If this is a multicol container, the actual children are inside the flow
+  // thread child of |object|.
   const auto* flow_thread =
       To<LayoutBlockFlow>(&object)->MultiColumnFlowThread();
   const LayoutObject& actual_parent = flow_thread ? *flow_thread : object;
@@ -773,36 +774,38 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     containing_block_context->paint_offset_for_oof_in_fragmentainer =
         paint_offset;
 
-    // Create corresponding |FragmentData|. Hit-testing needs
-    // |FragmentData.PaintOffset|.
-    if (fragmentainer_fragment_data) {
-      DCHECK(!box_fragment->IsFirstForNode());
+    if (flow_thread) {
+      // Create corresponding |FragmentData|. Hit-testing needs
+      // |FragmentData.PaintOffset|.
+      if (fragmentainer_fragment_data) {
+        DCHECK(!box_fragment->IsFirstForNode());
 #if DCHECK_IS_ON()
-      DCHECK_EQ(fragmentainer_owner_box, box_fragment->OwnerLayoutBox());
+        DCHECK_EQ(fragmentainer_owner_box, box_fragment->OwnerLayoutBox());
 #endif
-      fragmentainer_fragment_data =
-          &fragmentainer_fragment_data->EnsureNextFragment();
-    } else {
-      const LayoutBox* owner_box = box_fragment->OwnerLayoutBox();
-#if DCHECK_IS_ON()
-      DCHECK(!fragmentainer_owner_box);
-      fragmentainer_owner_box = owner_box;
-#endif
-      fragmentainer_fragment_data =
-          &owner_box->GetMutableForPainting().FirstFragment();
-      if (box_fragment->IsFirstForNode()) {
-        fragmentainer_fragment_data->ClearNextFragment();
-      } else {
-        // |box_fragment| is nested in another fragmentainer, and that it is
-        // the first one in this loop, but not the first one for the
-        // |LayoutObject|. Append a new |FragmentData| to the last one.
         fragmentainer_fragment_data =
-            &fragmentainer_fragment_data->LastFragment().EnsureNextFragment();
+            &fragmentainer_fragment_data->EnsureNextFragment();
+      } else {
+        const LayoutBox* owner_box = box_fragment->OwnerLayoutBox();
+#if DCHECK_IS_ON()
+        DCHECK(!fragmentainer_owner_box);
+        fragmentainer_owner_box = owner_box;
+#endif
+        fragmentainer_fragment_data =
+            &owner_box->GetMutableForPainting().FirstFragment();
+        if (box_fragment->IsFirstForNode()) {
+          fragmentainer_fragment_data->ClearNextFragment();
+        } else {
+          // |box_fragment| is nested in another fragmentainer, and that it is
+          // the first one in this loop, but not the first one for the
+          // |LayoutObject|. Append a new |FragmentData| to the last one.
+          fragmentainer_fragment_data =
+              &fragmentainer_fragment_data->LastFragment().EnsureNextFragment();
+        }
       }
+      fragmentainer_fragment_data->SetPaintOffset(paint_offset);
+      fragmentainer_fragment_data->SetFragmentID(
+          context.current_fragmentainer.fragmentainer_idx);
     }
-    fragmentainer_fragment_data->SetPaintOffset(paint_offset);
-    fragmentainer_fragment_data->SetFragmentID(
-        context.current_fragmentainer.fragmentainer_idx);
 
     WalkChildren(actual_parent, box_fragment, context);
 

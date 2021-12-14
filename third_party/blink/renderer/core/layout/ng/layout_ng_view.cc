@@ -13,6 +13,10 @@ namespace blink {
 LayoutNGView::LayoutNGView(ContainerNode* document)
     : LayoutNGBlockFlowMixin<LayoutView>(document) {
   DCHECK(document->IsDocumentNode());
+
+  // This flag is normally set when an object is inserted into the tree, but
+  // this doesn't happen for LayoutNGView, since it's the root.
+  SetMightTraversePhysicalFragments(true);
 }
 
 LayoutNGView::~LayoutNGView() = default;

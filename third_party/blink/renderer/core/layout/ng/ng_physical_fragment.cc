@@ -49,6 +49,9 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
     case NGPhysicalFragment::NGBoxType::kColumnBox:
       result.Append("column");
       break;
+    case NGPhysicalFragment::NGBoxType::kPageBox:
+      result.Append("page");
+      break;
     case NGPhysicalFragment::NGBoxType::kAtomicInline:
       result.Append("atomic-inline");
       break;
@@ -547,10 +550,11 @@ void NGPhysicalFragment::CheckType() const {
       } else {
         DCHECK(layout_object_->IsBox());
       }
-      if (IsColumnBox()) {
-        // Column fragments are associated with the same layout object as their
-        // multicol container. The fragments themselves are regular in-flow
-        // block container fragments for most purposes.
+      if (IsFragmentainerBox()) {
+        // Fragmentainers are associated with the same layout object as their
+        // multicol container (or the LayoutView, in case of printing). The
+        // fragments themselves are regular in-flow block container fragments
+        // for most purposes.
         DCHECK(layout_object_->IsLayoutBlockFlow());
         DCHECK(IsBox());
         DCHECK(!IsFloating());

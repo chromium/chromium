@@ -417,8 +417,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     }
   }
 
-  // No printing support in LayoutNG yet.
-  if (document.Printing() && element == document.documentElement()) {
+  if (document.Printing() && element == document.documentElement() &&
+      !RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
     UseCounter::Count(document, WebFeature::kLegacyLayoutByPrinting);
     return true;
   }
