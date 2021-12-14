@@ -274,7 +274,7 @@ class Target(object):
     stdout, _ = cat_proc.communicate()
     if cat_proc.returncode != 0:
       raise Exception('Could not read file %s on device.', source)
-    return stdout
+    return stdout.decode('utf-8')
 
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""
