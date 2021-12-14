@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4588090240171750605">Sağa Sürüşdürün</translation>
 <translation id="4724120544754982507">Bildiriş Mərkəzi <ph name="UNREAD_NOTIFICATION_COUNT" /> oxunmamış bildiriş</translation>
+<translation id="4746179598275229723">Artırma çıxarılıb</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ay qalıb}other{# ay qalıb}}</translation>
 <translation id="4888938634149558681">Zəng edin</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 saniyə}other{# saniyə}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 saniyə qalıb}other{# saniyə qalıb}}</translation>
 <translation id="5941711191222866238">Minimallaşdırın</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 saat}other{# saat}}</translation>
+<translation id="6007284015834422026">Artırma bərkidilib</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6117103120090651229">Mərkəz düyməsi</translation>
 <translation id="6129953537138746214">Boşluq</translation>

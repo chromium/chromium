@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">ပိုပြပါ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">ဘရောင်ဇာဗားရှင်းကို ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
 <translation id="1476595624592550506">သင်၏စကားဝှက်ကို ပြောင်းပါ</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
 <translation id="1484290072879560759">ပစ္စည်းပို့ရမည့်လိပ်စာ ရွေးရန်</translation>
@@ -1886,6 +1887,7 @@
 <translation id="7118618213916969306">ကလစ်ဘုတ် URL <ph name="SHORT_URL" /> အတွက် ရှာဖွေမှု</translation>
 <translation id="7119414471315195487">အခြားတဘ် သို့မဟုတ် ပရိုဂရမ်များကို ပိတ်ပါ</translation>
 <translation id="7129409597930077180">ဤလိပ်စာသို့ ပို့၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
+<translation id="7132939140423847331">ဤဒေတာကူးယူခြင်းကို သင့်စီမံခန့်ခွဲသူက တားမြစ်ထားသည်။</translation>
 <translation id="7135130955892390533">အခြေအနေ ပြရန်</translation>
 <translation id="7138472120740807366">ပို့ရန် နည်းလမ်း</translation>
 <translation id="7139724024395191329">ယေမီရိတ်</translation>
@@ -2292,6 +2294,7 @@
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> မှ <ph name="VM_NAME" /> သို့ မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="8398790343843005537">သင်၏ ဖုန်းကို ရှာရန်</translation>
 <translation id="8405579342203358118">Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန်</translation>
+<translation id="8405633352367164037">အသည်းပုံ</translation>
 <translation id="8409413588194360210">ငွေပေးချေမှု စီမံသူများ</translation>
 <translation id="8412145213513410671">ပျက်စီးမှုများ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">တူညီသည့် လျှို့ဝှက်စကားစု နှစ်ကြိမ်ထည့်ရပါမည်။</translation>
@@ -2446,6 +2449,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome တွင် သင့်ကြည့်ရှုခြင်းမှတ်တမ်းကို ကြည့်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="8987927404178983737">လ</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">စနစ်ဗားရှင်းကို ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
 <translation id="899688752321268742">ဤကိရိယာသုံးနေချိန်ကို <ph name="URL" /> က သိလိုသည်</translation>
 <translation id="8996941253935762404">ရှေ့မှာ ရှိနေသည့် ဆိုက်သည် အန္တရာယ်ရှိသော ပရိုဂရမ်များ ပါရှိသည်</translation>
 <translation id="8997023839087525404">အသိအမှတ်ပြုလက်မှတ် ပွင့်လင်းမြင်သာရှိမှုမူဝါဒကို အသုံးပြုပြီး အတိအလင်းဖော်ပြထားခြင်းမရှိသည့် အသိအမှတ်ပြုလက်မှတ်ကို ဆာဗာက ဖော်ပြထားပါသည်။ စိတ်ချယုံကြည်ရမှုနှင့် တိုက်ခိုက်သူများ၏ရန်မှ ကာကွယ်ထားမှုတို့ရှိမရှိ သေချာစေရန် အချို့အသိအမှတ်ပြုလက်မှတ်များအတွက် ၎င်းအားလိုအပ်ပါသည်။</translation>

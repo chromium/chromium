@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
 <translation id="4588090240171750605">Joan eskuinera</translation>
 <translation id="4724120544754982507">Jakinarazpen-zentroa: irakurri gabeko <ph name="UNREAD_NOTIFICATION_COUNT" /> jakinarazpen dituzu</translation>
+<translation id="4746179598275229723">Kendu da luzapenaren aingura</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 hilabete gelditzen da}other{# hilabete gelditzen dira}}</translation>
 <translation id="4888938634149558681">Deitu</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segundo}other{# segundo}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 segundo gelditzen da}other{# segundo gelditzen dira}}</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ordu}other{# ordu}}</translation>
+<translation id="6007284015834422026">Ainguratu da luzapena</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6117103120090651229">Erdiko botoia</translation>
 <translation id="6129953537138746214">Zuriunea</translation>

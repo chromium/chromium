@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4588090240171750605">Lëvize djathtas</translation>
 <translation id="4724120544754982507">Qendra e njoftimeve, <ph name="UNREAD_NOTIFICATION_COUNT" /> njoftime të palexuara</translation>
+<translation id="4746179598275229723">Shtesa u zhgozhdua</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 muaj i mbetur}other{# muaj të mbetur}}</translation>
 <translation id="4888938634149558681">Bëj një telefonatë</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekondë}other{# sekonda}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekondë e mbetur}other{# sekonda të mbetura}}</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 orë}other{# orë}}</translation>
+<translation id="6007284015834422026">Shtesa u gozhdua</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6117103120090651229">Butoni i qendrës</translation>
 <translation id="6129953537138746214">Hapësirë</translation>

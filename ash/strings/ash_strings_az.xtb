@@ -35,6 +35,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1175572348579024023">Sürüşdürün</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
+<translation id="118437560755358292">Əlavə təhlükəsizlik üçün parol və ya PIN daxil edin</translation>
 <translation id="118532027333893379">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
 <translation id="1190609913194133056">Bildiriş Mərkəzi</translation>
 <translation id="1190678134285018527">Cihaz əvvəlki versiyaya qaytarılmalıdır</translation>
@@ -339,6 +340,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3307642347673023554">Noutbuk rejiminə keçirilib</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sonradan yenə daxil ola biləcək.</translation>
 <translation id="3321628682574733415">Yanlış valideyn kodu</translation>
+<translation id="3339826665088060472">Ekran çəkilişi, skrinşot və ekran qeydləri çəkmək üçün alətlər</translation>
 <translation id="3341303451326249809">Skrinşot çəkildi</translation>
 <translation id="334252345105450327">Skrinşot çəkin</translation>
 <translation id="3351879221545518001">Hazırda ekranı paylaşırsınız.</translation>
@@ -395,6 +397,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3606978283550408104">Brayl displeyi qoşuludur.</translation>
 <translation id="3615926715408477684">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək</translation>
 <translation id="3616883743181209306">Menyu ekranın yuxarı sağ küncünə köçürülüb.</translation>
+<translation id="3619536907358025872">Ekran çəkilişi ayarları</translation>
 <translation id="3621202678540785336">Daxiletmə</translation>
 <translation id="3621712662352432595">Audio Ayarlar</translation>
 <translation id="3626281679859535460">İşıqlanma dərəcəsi</translation>
@@ -493,6 +496,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ox klaviatura qısayolu dəyişib. Son düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Sağa Ox düyməsini basın.</translation>
 <translation id="4279490309300973883">Əks etdirilir</translation>
+<translation id="4283888303416325161">Əlavə təhlükəsizlik üçün parol daxil edin</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="429402653707266969">Alətlər panelinin məkanını dəyişin</translation>
 <translation id="4294319844246081198">Sabahınız xeyir, <ph name="GIVEN_NAME" /></translation>
@@ -763,6 +767,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="607652042414456612">Kompeteriniz yaxınlıqdakı Bluetooth cihazlarına görünür və "<ph name="NAME" />" adına, <ph name="ADDRESS" /> ünvanına malikdir.</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dilində danışıq faylları endirilib</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" /> endirilməsini təsdiq edin</translation>
 <translation id="612734058257491180">Google Assistent qonaq sessiyasında əlçatan deyil.</translation>
 <translation id="6134259848159370930">Cihaz, tətbiqlər, ayarlar və vebdə axtarın.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> üçün silinmə dialoqunu açın</translation>

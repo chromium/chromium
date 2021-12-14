@@ -176,6 +176,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1472675084647422956">Shfaq më shumë</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Po kërkon për versionin e shfletuesit? Vizito</translation>
 <translation id="1476595624592550506">Ndrysho fjalëkalimin</translation>
 <translation id="1483493594462132177">Dërgo</translation>
 <translation id="1484290072879560759">Zgjidh adresën e dërgimit</translation>
@@ -1882,6 +1883,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7118618213916969306">Kërko për URL-në e kujtesës së fragmenteve, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Mbyll skedat ose programet e tjera</translation>
 <translation id="7129409597930077180">Nuk mund të dërgohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
+<translation id="7132939140423847331">Administratori yt e ka ndaluar kopjimin e këtyre të dhënave.</translation>
 <translation id="7135130955892390533">Shfaq statusin</translation>
 <translation id="7138472120740807366">Mënyra e dorëzimit</translation>
 <translation id="7139724024395191329">Emirati</translation>
@@ -2440,6 +2442,7 @@ Detaje shtesë:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të shikuar historikun tënd të shfletimit në Chrome</translation>
 <translation id="8987927404178983737">Muaji</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Po kërkon për versionin e sistemit? Vizito</translation>
 <translation id="899688752321268742"><ph name="URL" /> dëshiron të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="8996941253935762404">Sajti përpara përmban programe të dëmshme</translation>
 <translation id="8997023839087525404">Serveri paraqiti një certifikatë që nuk ishte zbuluar publikisht duke përdorur politikën e "Transparencës së certifikatës". Kjo është e detyrueshme për disa certifikata, për të siguruar besueshmërinë e tyre dhe për t'u mbrojtur kundër sulmuesve.</translation>

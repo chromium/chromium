@@ -1703,6 +1703,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2707024448553392710">Fazendo o download do componente</translation>
 <translation id="270921614578699633">Média</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
+<translation id="2710014902399506864">Adicionar um novo smartphone</translation>
 <translation id="2710101514844343743">Dados de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712173769900027643">Pedir permissão</translation>
@@ -2064,6 +2065,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3055590424724986000">Com o provedor da sua escolha</translation>
 <translation id="3058498974290601450">Ative a sincronização quando quiser nas configurações</translation>
 <translation id="3058517085907878899">Nomear dispositivo</translation>
+<translation id="3059195548603439580">Procurando componentes do sistema? Acesse</translation>
 <translation id="3060379269883947824">Ativar Selecionar para ouvir</translation>
 <translation id="3060952009917586498">Mudar o idioma do dispositivo. O idioma atual é <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Não foi possível estabelecer uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
@@ -2723,6 +2725,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicar-se com um dispositivo USB}one{Comunicar-se com # dispositivos USB}other{Comunicar-se com # dispositivos USB}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />}one{Enviando <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Não foi possível ler a política do modo de demonstração off-line.</translation>
+<translation id="3766115177661377251">Transmitir para uma nova tela</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Sorvete</translation>
 <translation id="3771290962915251154">Esta configuração está desativada porque o "controle dos pais" está ativado</translation>
@@ -3511,6 +3514,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4590324241397107707">Armazenamento de banco de dados</translation>
 <translation id="4592891116925567110">App de desenho com a stylus</translation>
 <translation id="4593021220803146968">&amp;Ir até <ph name="URL" /></translation>
+<translation id="4594577641390224176">Procurando a página de detalhes do sistema? Acesse</translation>
 <translation id="4595560905247879544">Apps e extensões só podem ser modificadas pelo gerente (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Você tem certificados no arquivo que identificam estes servidores</translation>
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
@@ -4898,6 +4902,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6085886413119427067">Determina como se conectar a sites por uma conexão segura</translation>
 <translation id="6086004606538989567">A conta que você verificou não está autorizada a acessar este dispositivo.</translation>
 <translation id="6086846494333236931">Instalada pelo administrador</translation>
+<translation id="6087746524533454243">Procurando a página de detalhes do navegador? Acesse</translation>
 <translation id="6087960857463881712">Rosto maravilhado</translation>
 <translation id="608912389580139775">Para adicionar essa página à sua Lista de leitura, clique no ícone "Adicionar aos favoritos"</translation>
 <translation id="6091761513005122595">Compartilhamento ativado.</translation>
@@ -4996,6 +5001,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6198102561359457428">Saia e faça login novamente...</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6200047250927636406">Descartar arquivo</translation>
+<translation id="6200151268994853226">Gerenciar extensão</translation>
 <translation id="6201608810045805374">Remover essa conta?</translation>
 <translation id="6202304368170870640">Use seu PIN para fazer login ou desbloquear seu dispositivo.</translation>
 <translation id="6206311232642889873">&amp;Copiar imagem</translation>
@@ -5282,6 +5288,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6497789971060331894">Rolagem reversa do mouse</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
 <translation id="6499143127267478107">Resolvendo host no script de proxy...</translation>
+<translation id="6499764981457476645">Não foram encontrados dispositivos por perto</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> quer abrir este arquivo:</translation>
 <translation id="6501957628055559556">Todos os contêineres</translation>
 <translation id="650266656685499220">Para criar álbuns, acesse o Google Fotos</translation>
@@ -5747,6 +5754,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6979737339423435258">Todo o período</translation>
 <translation id="6981553172137913845">Para navegar com privacidade, clique no menu de ícone de pontos para abrir uma janela anônima</translation>
+<translation id="6981761993313539853">Confira se o dispositivo Bluetooth está por perto e no modo de pareamento. Faça o pareamento apenas com dispositivos confiáveis. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6983507711977005608">Desconectar rede de tethering instantâneo</translation>
 <translation id="6983783921975806247">OID registrado</translation>
@@ -6655,6 +6663,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7898725031477653577">Sempre traduzir do</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Métricas de uso aprimoradas para o Chrome</translation>
+<translation id="7903290522161827520">Procurando componentes do navegador? Acesse</translation>
 <translation id="7903345046358933331">A página deixou de responder. Espere até ela voltar a responder ou feche-a.</translation>
 <translation id="7903742244674067440">Você tem certificados no arquivo que identificam estas autoridades de certificação</translation>
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
@@ -7032,6 +7041,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8271268254812352141">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado. Personalize os idiomas da tradução em <ph name="LINK_BEGIN" />Idiomas de sites<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Pai/mãe, as próximas etapas precisam ser feitas por você. Devolva o <ph name="DEVICE_TYPE" /> para a criança depois de terminar a configuração da conta.</translation>
 <translation id="8272443605911821513">Gerencie suas extensões clicando em "Extensões" no menu "Mais ferramentas".</translation>
+<translation id="8272677921396592934">Usar a câmera para ler um código QR</translation>
 <translation id="8274332263553132018">Transmitir arquivo</translation>
 <translation id="8274921654076766238">A lupa segue o foco do teclado</translation>
 <translation id="8274924778568117936">Não desligue ou feche seu <ph name="DEVICE_TYPE" /> até que a atualização termine. O <ph name="DEVICE_TYPE" /> será reiniciado depois que a instalação for concluída.</translation>
@@ -7712,6 +7722,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9004754973617721124">Limpar permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>
 <translation id="9004952710076978168">Notificação recebida de impressora desconhecida.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="9008201858626224558">Botão "Voltar" da página de detalhes do <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Enviando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Você quis modificar esta página?</translation>
 <translation id="9011163749350026987">Sempre mostrar ícone</translation>
@@ -7894,6 +7905,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="917510707618656279">Perguntar quando um site quiser acessar dispositivos Bluetooth</translation>
 <translation id="9176476835295860688">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Dispositivo Bluetooth conectado</translation>
+<translation id="9178061802301856367">Excluir dados de login</translation>
 <translation id="9179524979050048593">Nome de usuário na tela de login</translation>
 <translation id="9180281769944411366">O processo pode levar alguns minutos. Iniciando o contêiner Linux.</translation>
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>

@@ -176,6 +176,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1472675084647422956">Mostrar máis</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Buscas a versión do navegador? Visita</translation>
 <translation id="1476595624592550506">Cambia o teu contrasinal</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484290072879560759">Escoller enderezo de envío</translation>
@@ -1885,6 +1886,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7118618213916969306">Buscar URL do portapapeis (<ph name="SHORT_URL" />)</translation>
 <translation id="7119414471315195487">Pecha outras pestanas ou programas</translation>
 <translation id="7129409597930077180">Non se pode realizar o envío a este enderezo. Selecciona un diferente.</translation>
+<translation id="7132939140423847331">O teu administrador prohibiu que copiases estes datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
 <translation id="7138472120740807366">Método de entrega</translation>
 <translation id="7139724024395191329">Emirato</translation>
@@ -2443,6 +2445,7 @@ Detalles adicionais:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para consultar o teu historial de navegación en Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Buscas a versión do sistema? Visita</translation>
 <translation id="899688752321268742"><ph name="URL" /> quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="8996941253935762404">O sitio que se indica a continuación contén programas prexudiciais</translation>
 <translation id="8997023839087525404">O servidor presentou un certificado que non se revelou publicamente utilizando a política de Certificate Transparency. Este requisito é necesario para garantir que certos certificados son fiables e ofrecen protección contra os atacantes.</translation>

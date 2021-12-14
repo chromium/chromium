@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ପ୍ରଶ୍ନ ଚିହ୍ନ}other{#ଟି ପ୍ରଶ୍ନ ଚିହ୍ନ}}</translation>
 <translation id="3505359110822747654">ChromeVox ମେନୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{କ୍ୟାରେଟ୍‌}other{# କ୍ୟାରେଟ୍‌}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ଧଳା ବୁଲେଟ}other{#ଟି ଧଳା ବୁଲେଟ}}</translation>
 <translation id="352577523970648069">ଗୋଟିଏ ଏଡିଟ୍‌ଯୋଗ୍ୟ ଟେକ୍ସଟ୍ ଫିଲ୍ଡ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> କଟ୍ କରନ୍ତୁ।</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">ପରବର୍ତ୍ତୀ ଚେକ୍‌ବକ୍ସ</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ରେଡିଓ ବଟନ୍ ଅଚୟନିତ</translation>
 <translation id="5601172225407283979">ଡିଫଲ୍ଟ କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରେ</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ସ୍କୁଏର ବୁଲେଟ}other{#ଟି ସ୍କୁଏର ବୁଲେଟ}}</translation>
 <translation id="5608798115546226984">ସ୍ୱତଃସମ୍ପୂର୍ଣ୍ଣ ଇନ୍‌ଲାଇନ୍</translation>
 <translation id="5616029807486814372">ପରବର୍ତ୍ତୀ ଲେସନ୍</translation>
 <translation id="561939826962581046">ସମୟ</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">ଡ୍ରପ୍-ଡାଉନ୍ ତାଲିକାଗୁଡ଼ିକ</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />ର ଶେଷ</translation>
 <translation id="867187640362843212">ଶୀର୍ଷକ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ନେଷ୍ଟେଡ ଲେଭେଲ #}}</translation>
 <translation id="8693391540059827073">ମୋ ପସନ୍ଦର ଋତୁ</translation>
 <translation id="8696284982970258155">ହନିଡ୍ୟୁ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ପାଇପ୍}other{#ଟି ଭୂଲମ୍ୱ ପାଇପ୍}}</translation>

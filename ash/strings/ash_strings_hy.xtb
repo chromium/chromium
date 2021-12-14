@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="118437560755358292">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="118532027333893379">Լիաէկրան ռեժիմում լուսանկարելու համար հպեք էկրանի ցանկացած կետի</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
 <translation id="1190678134285018527">Անհրաժեշտ է վերականգնել սարքի նախորդ օպերացիոն համակարգը</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">Անցում կատարվեց նոթբուքի ռեժիմին</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> օգտատերը կարող է ավելի ուշ հաշիվ մտնել։</translation>
 <translation id="3321628682574733415">Ծնողի մուտքի կոդը սխալ է</translation>
+<translation id="3339826665088060472">Էկրանի տեսագրում, սքրինշոթների ստեղծման գործիքներ և Էկրանի տեսագրություններ</translation>
 <translation id="3341303451326249809">Սքրինշոթը ստեղծվեց</translation>
 <translation id="334252345105450327">Սքրինշոթ անել</translation>
 <translation id="3351879221545518001">Դուք հեռարձակում եք ձեր էկրանի պատկերը:</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">Բրայլյան էկրանը կապակցված է:</translation>
 <translation id="3615926715408477684">Բջջային ինտերնետը միացնելու դեպքում Bluetooth-ը ևս կակտիվանա</translation>
 <translation id="3616883743181209306">Ընտրացանկը տեղափոխվեց էկրանի վերևի աջ անկյուն։</translation>
+<translation id="3619536907358025872">Էկրանի տեսագրման կարգավորումներ</translation>
 <translation id="3621202678540785336">Ներածում</translation>
 <translation id="3621712662352432595">Ձայնի կարգավորումներ</translation>
 <translation id="3626281679859535460">Պայծառություն</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">Այս սարքի ադմինիստրատորը կարող է՝</translation>
 <translation id="4274537685965975248">«Ctrl + Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ End ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + աջ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
+<translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="429402653707266969">Փոխել գործիքագոտու տեղադրությունը</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
@@ -761,6 +765,7 @@
 <translation id="607652042414456612">Ձեր համակարգիչը տեսանելի է մոտակայքի Bluetooth սարքերի համար: Այն երևում է «<ph name="NAME" />» անունով, <ph name="ADDRESS" /> հասցեով</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Հաստատեք <ph name="FILENAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
 <translation id="6134259848159370930">Որոնեք սարքում, հավելվածներում, կարգավորումներում և համացանցում։</translation>
 <translation id="6137566720514957455">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի հեռացման երկխոսության պատուհանը</translation>

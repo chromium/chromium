@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4588090240171750605">Percorrer à direita</translation>
 <translation id="4724120544754982507">Central de Notificações: <ph name="UNREAD_NOTIFICATION_COUNT" /> notificações não lidas</translation>
+<translation id="4746179598275229723">A extensão foi liberada</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mês restante}one{# mês restante}other{# meses restantes}}</translation>
 <translation id="4888938634149558681">Ligar</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Um segundo}one{# segundos}other{# segundos}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Um segundo restante}one{# segundos restantes}other{# segundos restantes}}</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{Uma hora}one{# horas}other{# horas}}</translation>
+<translation id="6007284015834422026">A extensão foi fixada</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6117103120090651229">Botão central</translation>
 <translation id="6129953537138746214">Espaço</translation>

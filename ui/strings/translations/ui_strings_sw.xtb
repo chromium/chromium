@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">Ficha nenosiri</translation>
 <translation id="4588090240171750605">Sogeza Kulia</translation>
 <translation id="4724120544754982507">Kituo cha Arifa, arifa <ph name="UNREAD_NOTIFICATION_COUNT" /> ambazo hujasoma</translation>
+<translation id="4746179598275229723">Kiendelezi kimebanduliwa</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Umesalia mwezi 1}other{Imesalia miezi #}}</translation>
 <translation id="4888938634149558681">Piga simu</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Sekunde 1}other{Sekunde #}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{Imesalia sekunde 1}other{Zimesalia  sekunde #}}</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{Saa 1}other{Saa #}}</translation>
+<translation id="6007284015834422026">Kiendelezi kimebandikwa</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6117103120090651229">Kitufe cha katikati</translation>
 <translation id="6129953537138746214">Nafasi</translation>

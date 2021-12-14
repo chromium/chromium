@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
+<translation id="118437560755358292">برای ایمنی بیشتر، گذرواژه یا پین را وارد کنید</translation>
 <translation id="118532027333893379">برای ضبط تمام صفحه، روی هرجایی که می‌خواهید ضربه بزنید</translation>
 <translation id="1190609913194133056">مرکز اعلان</translation>
 <translation id="1190678134285018527">دستگاه باید به نسخه قبلی برگردد</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">به حالت رایانه کیفی رفته‌اید</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> همچنان می‌تواند بعداً به سیستم وارد شود.</translation>
 <translation id="3321628682574733415">کد والدین نادرست است</translation>
+<translation id="3339826665088060472">ضبط صفحه، ابزارهایی برای گرفتن نماگرفت و ضبط کردن صفحه</translation>
 <translation id="3341303451326249809">نماگرفت گرفته شد</translation>
 <translation id="334252345105450327">گرفتن نماگرفت</translation>
 <translation id="3351879221545518001">درحال ارسال محتوای صفحه هستید.</translation>
@@ -394,6 +396,7 @@
 <translation id="3606978283550408104">نمایشگر بریل متصل شد.</translation>
 <translation id="3615926715408477684">فعال کردن داده تلفن همراه، بلوتوث را فعال می‌کند</translation>
 <translation id="3616883743181209306">منو به گوشه چپ بالای صفحه منتقل شد.</translation>
+<translation id="3619536907358025872">تنظیمات ضبط صفحه</translation>
 <translation id="3621202678540785336">ورودی</translation>
 <translation id="3621712662352432595">تنظیمات صوتی</translation>
 <translation id="3626281679859535460">روشنایی</translation>
@@ -492,6 +495,7 @@
 <translation id="4269883910223712419">سرپرست این دستگاه می‌تواند:</translation>
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
+<translation id="4283888303416325161">برای ایمنی بیشتر، گذرواژه را وارد کنید</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="429402653707266969">تغییر مکان نوار ابزار</translation>
 <translation id="4294319844246081198">صبح‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
@@ -761,6 +765,7 @@
 <translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6134259848159370930">دستگاه، برنامه‌ها، تنظیمات، و وب را جستجو کنید.</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>

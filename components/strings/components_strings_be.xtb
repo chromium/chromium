@@ -176,6 +176,7 @@
 <translation id="1472675084647422956">Разгарнуць</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Шукаеце версію браўзера? Наведайце старонку</translation>
 <translation id="1476595624592550506">Змяніце пароль</translation>
 <translation id="1483493594462132177">Адправіць</translation>
 <translation id="1484290072879560759">Выбраць адрас дастаўкі</translation>
@@ -1885,6 +1886,7 @@
 <translation id="7118618213916969306">Пошук URL-адраса з буфера абмену: <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрыйце іншыя ўкладкі або праграмы</translation>
 <translation id="7129409597930077180">Адпраўка на гэты адрас немагчымая. Выберыце іншы адрас.</translation>
+<translation id="7132939140423847331">Ваш адміністратар забараніў капіраванне гэтых даных.</translation>
 <translation id="7135130955892390533">Паказаць стан</translation>
 <translation id="7138472120740807366">Спосаб дастаўкі</translation>
 <translation id="7139724024395191329">Эмірат</translation>
@@ -2444,6 +2446,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб азнаёміцца з гісторыяй прагляду сайтаў у Chrome, націсніце Tab, затым Enter</translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Шукаеце версію сістэмы? Наведайце старонку</translation>
 <translation id="899688752321268742">Сайт <ph name="URL" /> запытвае дазвол на атрыманне інфармацыі пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="8996941253935762404">Сайт, на які вы збіраецеся перайсці, змяшчае шкодныя праграмы</translation>
 <translation id="8997023839087525404">Сервер падаў сертыфікат, які не быў публічна раскрыты згодна са стандартам "Празрыстасць сертыфікатаў". Гэта патрабаванне выстаўляецца да пэўных сертыфікатаў, каб упэўніцца ў іх надзейнасці і ў мэтах абароны ад зламыснікаў.</translation>

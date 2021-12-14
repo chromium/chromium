@@ -105,6 +105,7 @@
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4588090240171750605">ເລື່ອນໄປທາງຂວາ</translation>
 <translation id="4724120544754982507">ສູນການແຈ້ງເຕືອນ, <ph name="UNREAD_NOTIFICATION_COUNT" /> ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="4746179598275229723">ຖອນໝຸດສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ຍັງເຫຼືອ 1 ເດືອນ}other{ຍັງເຫຼືອ # ເດືອນ}}</translation>
 <translation id="4888938634149558681">ໂທອອກ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ວິ​ນາ​ທີ}other{# ວິ​ນາ​ທີ}}</translation>
@@ -130,6 +131,7 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{ຍັງ​ເຫຼືອ 1 ວິ​ນາ​ທີ}other{ຍັງ​ເຫຼືອ # ວິ​ນາ​ທີ}}</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ຊົ່ວ​ໂມງ}other{# ຊົ່ວ​ໂມງ}}</translation>
+<translation id="6007284015834422026">ປັກໝຸດສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6117103120090651229">ປຸ່ມທາງກາງ</translation>
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
