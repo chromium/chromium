@@ -1103,6 +1103,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 
+extern const char kPageInfoHistoryDesktopName[];
+extern const char kPageInfoHistoryDesktopDescription[];
+
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 

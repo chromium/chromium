@@ -51386,6 +51386,7 @@ from previous Chrome versions.
       label="PrefetchNotificationSchedulingIntegration:enabled"/>
   <int value="-738957187" label="OmniboxUIExperimentSwapTitleAndUrl:disabled"/>
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
+  <int value="-735827773" label="PageInfoHistoryDesktop:enabled"/>
   <int value="-735084806" label="NewTabLoadingAnimation:enabled"/>
   <int value="-734301625"
       label="AutofillImportNonFocusableCreditCardForms:disabled"/>
@@ -54777,6 +54778,7 @@ from previous Chrome versions.
   <int value="1811266774" label="WebUITabStripNewTabButtonInTabStrip:disabled"/>
   <int value="1811744551" label="InterestFeedV2Hearts:enabled"/>
   <int value="1812368073" label="enable-new-app-list-mixer"/>
+  <int value="1813205714" label="PageInfoHistoryDesktop:disabled"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>
   <int value="1813741175" label="ZeroSuggestPrefetching:enabled"/>

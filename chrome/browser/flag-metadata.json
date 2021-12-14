@@ -4352,6 +4352,15 @@
     "expiry_milestone": 97
   },
   {
+    "name": "page-info-history-desktop",
+    "owners": [
+      "eokoyomon",
+      "dullweber",
+      "olesiamarukhno@google.com"
+    ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "page-info-store-info",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 102

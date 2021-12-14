@@ -1928,6 +1928,10 @@ const char kPageInfoAboutThisSiteName[] =
 const char kPageInfoAboutThisSiteDescription[] =
     "Enable the 'About this site' section in the page info.";
 
+const char kPageInfoHistoryDesktopName[] = "Page info history";
+const char kPageInfoHistoryDesktopDescription[] =
+    "Enable a history section in the page info.";
+
 const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
