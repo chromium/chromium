@@ -475,12 +475,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // downloaded will be returned in |coded_data_size|. |sync_surface_id| will
   // be used as a sync point, i.e. it will have to become idle before starting
   // the download. |sync_surface_id| should be the source surface passed
-  // to the encode job. |sync_surface_id| will be nullopt when it has already
-  // been synced in GetEncodedChunkSize(). In the case vaSyncSurface()
-  // is not executed. Returns false if it fails for any reason. For example, the
-  // linear size of the resulted encoded frame is larger than |target_size|.
+  // to the encode job. Returns false if it fails for any reason. For example,
+  // the linear size of the resulted encoded frame is larger than |target_size|.
   virtual bool DownloadFromVABuffer(VABufferID buffer_id,
-                                    absl::optional<VASurfaceID> sync_surface_id,
+                                    VASurfaceID sync_surface_id,
                                     uint8_t* target_ptr,
                                     size_t target_size,
                                     size_t* coded_data_size) WARN_UNUSED_RESULT;
