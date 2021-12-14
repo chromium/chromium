@@ -302,6 +302,11 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
         radius - inset, radius - inset);
     path.addRRect(rrect);
   } else {
+    // Avoid mallocs at every new path verb by preallocating an
+    // empirically-determined amount of space in the verb and point buffers.
+    const int kMaxPathPoints = 20;
+    path.incReserve(kMaxPathPoints);
+
     // We will go clockwise from the lower left. We start in the overlap region,
     // preventing a gap between toolbar and tabstrip.
     // TODO(dfried): verify that the we actually want to start the stroke for
