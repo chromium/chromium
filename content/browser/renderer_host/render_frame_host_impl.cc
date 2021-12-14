@@ -8692,6 +8692,16 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     return;
 
   ui::AXMode ax_mode = delegate_->GetAccessibilityMode();
+
+  // Disable BackForwardCache if ScreenReader is on.
+  // TODO(crbug.com/1271450): Screen readers do not recognize a navigation when
+  // the page is served from bfcache.
+  if (ax_mode.has_mode(ui::AXMode::kScreenReader)) {
+    BackForwardCache::DisableForRenderFrameHost(
+        this, BackForwardCacheDisable::DisabledReason(
+                  BackForwardCacheDisable::DisabledReasonId::kScreenReader));
+  }
+
   if (!ax_mode.has_mode(ui::AXMode::kWebContents)) {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.

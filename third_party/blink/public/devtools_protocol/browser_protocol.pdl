@@ -7959,6 +7959,7 @@ domain Page
       ContentWebUSB
       ContentMediaSession
       ContentMediaSessionService
+      ContentScreenReader
 
       # See components/back_forward_cache/back_forward_cache_disable.h for explanations.
       EmbedderPopupBlockerTabHelper

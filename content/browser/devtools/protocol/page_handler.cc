@@ -1576,6 +1576,9 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentMediaSessionService;
+        case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentScreenReader;
       }
     case BackForwardCache::DisabledSource::kEmbedder:
       switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {

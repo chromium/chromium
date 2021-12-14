@@ -7432,6 +7432,7 @@ others/histograms.xml -->
   <int value="131082" label="kContent-kMediaSession"/>
   <int value="131083" label="kContent-kMediaSessionService"/>
   <int value="131084" label="kContent-kMediaPlay"/>
+  <int value="131085" label="kContent-kScreenReader"/>
   <int value="196608" label="kEmbedder-kUnknown"/>
   <int value="196609" label="kEmbedder-kPopupBlockerTabHelper"/>
   <int value="196610" label="kEmbedder-kSafeBrowsingTriggeredPopupBlocker"/>
