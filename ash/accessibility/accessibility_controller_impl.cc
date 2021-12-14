@@ -2203,4 +2203,13 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
   NotifyAccessibilityStatusChanged();
 }
 
+void AccessibilityControllerImpl::UpdateDictationBubble(
+    bool visible,
+    const absl::optional<std::u16string>& text) {
+  DCHECK(dictation().enabled());
+  DCHECK(dictation_bubble_controller_);
+
+  dictation_bubble_controller_->UpdateBubble(visible, text);
+}
+
 }  // namespace ash

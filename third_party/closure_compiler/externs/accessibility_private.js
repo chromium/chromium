@@ -534,6 +534,14 @@ chrome.accessibilityPrivate.showConfirmationDialog = function(title, description
 chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode = function(keyCode, callback) {};
 
 /**
+ * Updates Dictation's bubble UI.
+ * @param {boolean} visible Whether or not the UI should be visible.
+ * @param {string=} text The text to be displayed in the bubble UI. If `text` is
+ *     undefined, the bubble will clear its current text.
+ */
+chrome.accessibilityPrivate.updateDictationBubble = function(visible, text) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */

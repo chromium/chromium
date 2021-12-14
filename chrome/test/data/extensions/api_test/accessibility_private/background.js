@@ -104,6 +104,21 @@ var availableTests = [
     chrome.test.notifyPass();
   },
 
+  function testUpdateDictationBubble() {
+    chrome.accessibilityPrivate.updateDictationBubble(
+        /*visible=*/ true, /*text=*/ 'Hello');
+    chrome.test.sendMessage('Show', (proceed) => {
+      chrome.accessibilityPrivate.updateDictationBubble(
+          /*visible=*/ true, /*text=*/ 'Hello world');
+      chrome.test.sendMessage('Update', (proceed) => {
+        chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ false);
+        chrome.test.sendMessage('Hide');
+        chrome.test.succeed();
+      });
+    });
+    chrome.test.notifyPass();
+  },
+
 ];
 
 chrome.test.getConfig(function(config) {

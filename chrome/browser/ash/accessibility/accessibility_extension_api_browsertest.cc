@@ -5,6 +5,9 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/dictation_bubble_controller.h"
+#include "ash/system/accessibility/dictation_bubble_view.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
@@ -34,9 +38,37 @@ class AccessibilityPrivateApiTest
   AccessibilityPrivateApiTest(const AccessibilityPrivateApiTest&) = delete;
 
  protected:
+  // ExtensionApiTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationCommands);
+  }
+
   bool RunSubtest(const char* subtest) WARN_UNUSED_RESULT {
     return RunExtensionTest("accessibility_private", {.custom_arg = subtest});
   }
+
+  bool IsDictationBubbleVisible() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    DCHECK(controller != nullptr);
+    return controller->widget_->IsVisible();
+  }
+
+  std::u16string GetDictationBubbleText() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    DCHECK(controller != nullptr);
+    return controller->dictation_bubble_view_->GetTextForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
@@ -95,7 +127,16 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
 template <bool enabled>
 class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
  public:
-  AccessibilityPrivateApiFeatureTest() {
+  AccessibilityPrivateApiFeatureTest() = default;
+  ~AccessibilityPrivateApiFeatureTest() override = default;
+  AccessibilityPrivateApiFeatureTest& operator=(
+      const AccessibilityPrivateApiFeatureTest&) = delete;
+  AccessibilityPrivateApiFeatureTest(
+      const AccessibilityPrivateApiFeatureTest&) = delete;
+
+  // AccessibilityPrivateApiTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AccessibilityPrivateApiTest::SetUpCommandLine(command_line);
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeature(
           ::features::kEnhancedNetworkVoices);
@@ -104,11 +145,6 @@ class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
           ::features::kEnhancedNetworkVoices);
     }
   }
-  ~AccessibilityPrivateApiFeatureTest() override = default;
-  AccessibilityPrivateApiFeatureTest& operator=(
-      const AccessibilityPrivateApiFeatureTest&) = delete;
-  AccessibilityPrivateApiFeatureTest(
-      const AccessibilityPrivateApiFeatureTest&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -182,6 +218,36 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, CloseConfirmationDialog) {
   extensions::ResultCatcher catcher;
   dialog_->Close();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
+  // Enable Dictation to allow the API to work.
+  Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
+
+  // This test requires some back and forth communication between C++ and JS.
+  // Use message listeners to force the synchronicity of this test.
+  ExtensionTestMessageListener show_listener("Show", /*will_reply=*/true);
+  ExtensionTestMessageListener update_listener("Update", /*will_reply=*/true);
+  ExtensionTestMessageListener hide_listener("Hide", /*will_reply=*/false);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(RunSubtest("testUpdateDictationBubble")) << message_;
+
+  ASSERT_TRUE(show_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(IsDictationBubbleVisible());
+  EXPECT_EQ(u"Hello", GetDictationBubbleText());
+  show_listener.Reply("Continue");
+
+  ASSERT_TRUE(update_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(IsDictationBubbleVisible());
+  EXPECT_EQ(u"Hello world", GetDictationBubbleText());
+  update_listener.Reply("Continue");
+
+  ASSERT_TRUE(hide_listener.WaitUntilSatisfied());
+  EXPECT_FALSE(IsDictationBubbleVisible());
+  // Text remains unchanged.
+  EXPECT_EQ(u"Hello world", GetDictationBubbleText());
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

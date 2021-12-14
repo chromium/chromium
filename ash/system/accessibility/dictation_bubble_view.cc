@@ -44,7 +44,6 @@ void DictationBubbleView::Init() {
   SetLayoutManager(std::move(layout));
 
   UseCompactMargins();
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetBackground(views::CreateSolidBackground(kBackgroundColor));
 
   AddChildView(CreateIcon());

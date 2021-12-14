@@ -745,3 +745,20 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
 
   return RespondNow(OneArgument(base::Value(std::string())));
 }
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
+  if (!::features::IsExperimentalAccessibilityDictationCommandsEnabled())
+    return RespondNow(Error("Dictation commands feature is disabled."));
+
+  std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
+      accessibility_private::UpdateDictationBubble::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  absl::optional<std::u16string> text;
+  if (params->text)
+    text = base::UTF8ToUTF16(*params->text);
+  ash::AccessibilityController::Get()->UpdateDictationBubble(params->visible,
+                                                             text);
+  return RespondNow(NoArguments());
+}

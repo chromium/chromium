@@ -46,6 +46,7 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver {
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
  private:
+  friend class AccessibilityPrivateApiTest;
   friend class DictationBubbleControllerTest;
 
   // Performs initialization if necessary.

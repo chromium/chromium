@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -182,6 +183,12 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) = 0;
+
+  // Updates the Dictation UI bubble. `text` is optional to allow clients to
+  // clear the bubble's text.
+  virtual void UpdateDictationBubble(
+      bool visible,
+      const absl::optional<std::u16string>& text) = 0;
 
  protected:
   AccessibilityController();

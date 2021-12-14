@@ -245,4 +245,13 @@ class AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction
       ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE)
 };
 
+// API function that updates the Dictation bubble UI.
+class AccessibilityPrivateUpdateDictationBubbleFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateUpdateDictationBubbleFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateDictationBubble",
+                             ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
+};
+
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

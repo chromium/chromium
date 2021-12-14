@@ -30508,6 +30508,7 @@ Called by update_extension_histograms.py.-->
   <int value="1604" label="WMDESKSPRIVATE_GETDESKTEMPLATEJSON"/>
   <int value="1605" label="OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE"/>
   <int value="1606" label="OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE"/>
+  <int value="1607" label="ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE"/>
 </enum>
 
 <enum name="ExtensionIconState">
