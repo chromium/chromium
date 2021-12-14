@@ -985,12 +985,12 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
 
 bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px,
                                             float scale_factor) {
-  auto result =
-      std::find_if(pending_configures_.begin(), pending_configures_.end(),
-                   [&size_px, &scale_factor](auto& configure) {
-                     return gfx::ScaleToRoundedSize(configure.bounds_dip.size(),
-                                                    scale_factor) == size_px;
-                   });
+  auto result = std::find_if(
+      pending_configures_.begin(), pending_configures_.end(),
+      [&size_px, &scale_factor](auto& configure) {
+        return gfx::ScaleToRoundedRect(configure.bounds_dip, scale_factor)
+                   .size() == size_px;
+      });
 
   if (result != pending_configures_.end()) {
     SetWindowGeometry(result->bounds_dip);
