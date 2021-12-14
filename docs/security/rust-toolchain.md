@@ -242,3 +242,13 @@ directory and add any new libraries which are not listed in
    browsing, autocompletion, type annotations etc. for all the Rust within
    the Chromium codebase.
 
+## Source code format
+
+- `git cl format` and `git cl presubmit` have been extended to automatically
+  cover `.rs` files on Linux.
+  (Currently whole files are re-formatted and/or checked; support for
+  only looking at the modified lines is not yet implemented.)
+- Rust defaults to 100-columns-wide formatting (similarly to Java).
+  This may necessitate tweaking settings in various tools - e.g. in Gerrit you
+  might want to increase the default "Diff width" under
+  https://chromium-review.googlesource.com/settings/
