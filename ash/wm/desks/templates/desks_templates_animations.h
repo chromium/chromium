@@ -13,10 +13,7 @@ namespace ash {
 
 // Animates the desks templates grid when it is shown, fading out current
 // overview items and widgets, and fading in the grid.
-void PerformFadeInLayer(ui::Layer* layer);
-
-// Animates linear fade out of overview items.
-void PerformFadeOutLayer(ui::Layer* layer);
+void PerformFadeInDesksTemplatesGridView(ui::Layer* layer);
 
 }  // namespace ash
 

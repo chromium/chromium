@@ -264,14 +264,6 @@ void OverviewSession::Init(const WindowList& windows,
 // may cause other, unrelated classes, to make indirect calls to
 // restoring_minimized_windows() on a partially destructed object.
 void OverviewSession::Shutdown() {
-  bool was_desks_templates_grid_showing = false;
-  for (auto& grid : grid_list_) {
-    if (grid->IsShowingDesksTemplatesGrid()) {
-      was_desks_templates_grid_showing = true;
-      break;
-    }
-  }
-
   // This should have been set already when the process of ending overview mode
   // began. See OverviewController::OnSelectionEnded().
   DCHECK(is_shutting_down_);
@@ -311,10 +303,8 @@ void OverviewSession::Shutdown() {
               : nullptr,
           OverviewTransition::kExit, /*target_bounds=*/{});
     }
-    for (const auto& overview_item : overview_grid->window_list()) {
-      overview_item->RestoreWindow(/*reset_transform=*/true,
-                                   was_desks_templates_grid_showing);
-    }
+    for (const auto& overview_item : overview_grid->window_list())
+      overview_item->RestoreWindow(/*reset_transform=*/true);
     remaining_items += overview_grid->size();
   }
 
@@ -331,12 +321,10 @@ void OverviewSession::Shutdown() {
     overview_grid->Shutdown(enter_exit_overview_type_);
 
   DCHECK(num_items_ >= remaining_items);
-  if (!was_desks_templates_grid_showing) {
-    UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
-                             num_items_ - remaining_items);
-    UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
-                               base::Time::Now() - overview_start_time_);
-  }
+  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
+                           num_items_ - remaining_items);
+  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
+                             base::Time::Now() - overview_start_time_);
 
   grid_list_.clear();
 

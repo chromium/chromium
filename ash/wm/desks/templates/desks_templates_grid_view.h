@@ -12,6 +12,7 @@
 
 namespace views {
 class TableLayout;
+class UniqueWidgetPtr;
 }  // namespace views
 
 namespace ash {
@@ -35,7 +36,7 @@ class DesksTemplatesGridView : public views::View {
   // overview mode. This does not show the widget.
   // TODO(sammiequon): We might want this view to be part of the DesksWidget
   // depending on the animations.
-  static std::unique_ptr<views::Widget> CreateDesksTemplatesGridWidget(
+  static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root);
 
   const std::vector<DesksTemplatesItemView*>& grid_items() const {

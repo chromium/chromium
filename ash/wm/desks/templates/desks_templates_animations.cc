@@ -8,18 +8,17 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
 
+// The time duration for widgets to fade in.
+constexpr int kFadeInDelay = 0;
+constexpr int kFadeInDuration = 100;
+
 namespace ash {
 
-namespace {
-
-// The time duration for widgets to fade in.
-constexpr int kFadeInDurationMs = 100;
-
-// The time duration for widgets to fade out.
-constexpr int kFadeOutDurationMs = 100;
-
 // Fade in animation using AnimationBuilder.
-void FadeInLayer(ui::Layer* layer, int duration_in_ms) {
+void FadeInView(ui::Layer* layer,
+                int delay_in_ms,
+                int duration_in_ms,
+                gfx::Tween::Type tween_type = gfx::Tween::LINEAR) {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -28,30 +27,12 @@ void FadeInLayer(ui::Layer* layer, int duration_in_ms) {
       .SetOpacity(layer, 0.0f)
       .Then()
       .SetDuration(base::Milliseconds(duration_in_ms))
-      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
+      .SetOpacity(layer, 1.0f, tween_type);
 }
 
-// Fade out animation using AnimationBuilder.
-void FadeOutLayer(ui::Layer* layer, int duration_in_ms) {
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(layer, 1.0f)
-      .Then()
-      .SetDuration(base::Milliseconds(duration_in_ms))
-      .SetOpacity(layer, 0.0f, gfx::Tween::LINEAR);
-}
-
-}  // namespace
-
-void PerformFadeInLayer(ui::Layer* layer) {
-  FadeInLayer(layer, kFadeInDurationMs);
-}
-
-void PerformFadeOutLayer(ui::Layer* layer) {
-  FadeOutLayer(layer, kFadeOutDurationMs);
+void PerformFadeInDesksTemplatesGridView(ui::Layer* layer) {
+  // TODO(sophiewen): Perform fade out of other overview items.
+  FadeInView(layer, kFadeInDelay, kFadeInDuration);
 }
 
 }  // namespace ash

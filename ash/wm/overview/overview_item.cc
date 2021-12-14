@@ -17,7 +17,6 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -225,11 +224,11 @@ void OverviewItem::HideForDesksTemplatesGrid() {
 void OverviewItem::RevertHideForDesksTemplatesGrid() {
   // `item_widget_` may be null during shutdown if the window is minimized.
   if (item_widget_)
-    PerformFadeInLayer(item_widget_->GetLayer());
+    item_widget_->GetLayer()->SetOpacity(1.0f);
 
   for (aura::Window* transient_child :
        GetTransientTreeIterator(transform_window_.window())) {
-    PerformFadeInLayer(transient_child->layer());
+    transient_child->layer()->SetOpacity(1.0f);
   }
 
   item_widget_event_blocker_.reset();
@@ -242,8 +241,7 @@ void OverviewItem::OnMovingWindowToAnotherDesk() {
   RestoreWindow(/*reset_transform=*/true);
 }
 
-void OverviewItem::RestoreWindow(bool reset_transform,
-                                 bool was_desks_templates_grid_showing) {
+void OverviewItem::RestoreWindow(bool reset_transform) {
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in |SplitViewController::OnOverviewModeEnding|.
   // Unify the mechanism to control it and remove ifs.
@@ -254,9 +252,7 @@ void OverviewItem::RestoreWindow(bool reset_transform,
   }
 
   overview_item_view_->OnOverviewItemWindowRestoring();
-  transform_window_.RestoreWindow(
-      reset_transform,
-      /*transform_back=*/!was_desks_templates_grid_showing);
+  transform_window_.RestoreWindow(reset_transform);
 
   if (transform_window_.IsMinimized()) {
     const auto enter_exit_type = overview_session_->enter_exit_overview_type();
