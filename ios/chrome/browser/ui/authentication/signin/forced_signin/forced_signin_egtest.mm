@@ -215,6 +215,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
   config.additional_args.push_back(
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   return config;
 }
@@ -940,6 +941,242 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Verify that the intent was loaded.
   WaitUntilPageLoadedWithURL(URLToOpen);
+}
+
+// Tests that signing out from sync settings will trigger showing the forced
+// sign-in screen in one of the foregrounded window (when multi windows).
+- (void)testSignOutFromSyncSettingsWithMultiWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+
+  // Sign in.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Sign out account from account settings.
+  OpenAccountSettingsAndSignOut(/*syncEnabled=*/NO);
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the sign-in prompt is shown on the other window when the window
+// presenting the forced sign-in screen is closed.
+- (void)testSigninScreenTransferToOtherWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+
+  // Open a new window on which the UIBlocker will be shown.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Close the window that is showing the forced sign-in screen which
+  // corresponds to the first window that was opened.
+  [ChromeEarlGrey closeWindowWithNumber:0];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the forced sign-in prompt, when there are multiple windows
+// opened, can be shown on dynamic policy update when on an incognito browser
+// tab.
+- (void)testSignInScreenOnIncognitoWithMultiWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open an incognito tab in the first window.
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Open an incognito tab in the second window. There should be incognito tabs
+  // in both windows at this point; both should have the same test surface.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Enable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Make sure that both windows will be considered when verifying for the
+  // forced sign-in screen. This is done by removing the root matcher.
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the forced sign-in prompt, when there are multiple windows
+// opened, can be shown on dynamic policy update when on the tab switcher.
+- (void)testSignInScreenOnTabSwitcherWithMultiWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Show the tab switcher of the first window.
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Show the tab switcher of the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Make sure that both windows will be considered when verifying for the
+  // forced sign-in screen. This is done by removing the root matcher.
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the forced sign-in prompt, when there are multiple windows
+// opened, can be shown on dynamic policy update after cancelling the regular
+// sign-in prompt. The policy is applied while the regular sign-in prompt is
+// shown.
+- (void)testSignInScreenOnRegularSigninPromptMultiWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Show the regular sign-in prompt on the second window which will raise a UI
+  // blocker on the second window.
+  [ChromeEarlGreyUI openSettingsMenuInWindowWithNumber:1];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+
+  // Enable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Dismiss the regular sign-in prompt that is shown in the second window.
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+      performAction:grey_tap()];
+
+  // Make sure that both windows will be considered when verifying for the
+  // forced sign-in screen. This is done by removing the root matcher.
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the forced sign-in prompt can be shown on dynamic policy update
+// when a browser modal is displayed on top of the browser view when there are
+// multiple windows.
+- (void)testSignInScreenOnModalMultiWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Restart the app to reset the policies.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Disable the forced sign-in policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
+
+  // Dismiss the forced sign-in screen if presented. This may happen sometimes
+  // if the browser has the forced sign-in policy enabled at start time.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Open the settings menu which represents a modal.
+  [ChromeEarlGreyUI openSettingsMenuInWindowWithNumber:0];
+  [ChromeEarlGreyUI openSettingsMenuInWindowWithNumber:1];
+
+  // Make sure that both windows will be considered when verifying for the
+  // forced sign-in screen. This is done by removing the root matcher.
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
+  // Enable the forced sign-in policy to show the forced sign-in prompt.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+
+  // Wait and verify that the forced sign-in screen is shown when the policy is
+  // enabled and the browser is signed out.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 }
 
 @end
