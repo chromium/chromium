@@ -51,6 +51,11 @@ void EnterTestMode(const GURL& url);
 // Copies the logs to a location where they can be retrieved by ResultDB.
 void CopyLog(const base::FilePath& src_dir);
 
+// Sleeps for the given number of seconds. This should be avoided, but in some
+// cases surrounding uninstall it is necessary since the processes can exit
+// prior to completing the actual uninstallation.
+void SleepFor(int seconds);
+
 // Waits for a given predicate to become true, testing it by polling. Returns
 // true if the predicate becomes true before a timeout, otherwise returns false.
 bool WaitFor(base::RepeatingCallback<bool()> predicate);
@@ -138,7 +143,7 @@ void ExpectAppVersion(UpdaterScope scope,
 
 void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
-void WaitForUpdaterExit(UpdaterScope scope);
+void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);

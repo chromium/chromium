@@ -60,7 +60,7 @@ class IntegrationTestCommands
   virtual void UpdateAll() const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
-  virtual void WaitForUpdaterExit() const = 0;
+  virtual void WaitForServerExit() const = 0;
 #if defined(OS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(

@@ -146,8 +146,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("register_app", {Param("app_id", app_id)});
   }
 
-  void WaitForUpdaterExit() const override {
-    updater::test::WaitForUpdaterExit(updater_scope_);
+  void WaitForServerExit() const override {
+    updater::test::WaitForServerExit(updater_scope_);
   }
 
 #if defined(OS_WIN)
