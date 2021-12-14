@@ -9,6 +9,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -59,6 +60,8 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
     BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device with id " << device_id
                          << " failed because nickname is invalid, nickname: "
                          << nickname;
+    device::RecordSetDeviceNickName(
+        device::SetNicknameResult::kInvalidNicknameFormat);
     return;
   }
 
@@ -66,12 +69,15 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
     BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device failed because "
                             "device_id was not found, device_id: "
                          << device_id;
+    device::RecordSetDeviceNickName(device::SetNicknameResult::kDeviceNotFound);
     return;
   }
 
   if (!local_state_) {
     BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device failed because "
                             "no local_state_ was set.";
+    device::RecordSetDeviceNickName(
+        device::SetNicknameResult::kPrefsUnavailable);
     return;
   }
 
@@ -82,6 +88,7 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
 
   NotifyDeviceNicknameChanged(device_id, nickname);
+  device::RecordSetDeviceNickName(device::SetNicknameResult::kSuccess);
 }
 
 void DeviceNameManagerImpl::SetPrefs(PrefService* local_state) {

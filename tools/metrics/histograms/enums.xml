@@ -78551,6 +78551,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SetNicknameResult">
+  <int value="0" label="Invalid nickname format"/>
+  <int value="1" label="Device not found"/>
+  <int value="2" label="Prefs unavailable"/>
+  <int value="3" label="Success"/>
+</enum>
+
 <enum name="SettingId">
   <int value="1" label="Wifi"/>
   <int value="2" label="Cellular"/>

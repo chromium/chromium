@@ -393,4 +393,9 @@ void RecordUserInitiatedReconnectionAttemptDuration(
       base::StrCat({base_histogram_name, ".", transport_name}), duration);
 }
 
+void RecordSetDeviceNickName(SetNicknameResult set_nickname_result) {
+  base::UmaHistogramEnumeration("Bluetooth.ChromeOS.SetNickname.Result",
+                                set_nickname_result);
+}
+
 }  // namespace device

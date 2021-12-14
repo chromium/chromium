@@ -88,6 +88,16 @@ enum class DisconnectResult {
   kMaxValue = kSuccess
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SetNicknameResult {
+  kInvalidNicknameFormat = 0,
+  kDeviceNotFound = 1,
+  kPrefsUnavailable = 2,
+  kSuccess = 3,
+  kMaxValue = kSuccess,
+};
+
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
@@ -144,6 +154,9 @@ DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
     absl::optional<ConnectionFailureReason> failure_reason,
     BluetoothTransport transport,
     base::TimeDelta duration);
+
+// Record each time a Bluetooth device nickname change is attempted.
+DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 
 }  // namespace device
 

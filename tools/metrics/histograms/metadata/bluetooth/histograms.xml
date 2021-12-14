@@ -378,6 +378,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.SetNickname.Result"
+    enum="SetNicknameResult" expires_after="2022-12-10">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Emitted each time a nickname change attempt completes.</summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.UiSurfaceDisplayed"
     enum="BluetoothUiSurface" expires_after="2022-07-01">
   <owner>khorimoto@chromium.org</owner>
