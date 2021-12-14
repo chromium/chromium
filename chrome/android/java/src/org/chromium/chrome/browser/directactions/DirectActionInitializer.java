@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.autofill_assistant.AssistantDependencyUtilsChrome;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -152,7 +153,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
                 .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
 
-        if (AutofillAssistantFacade.areDirectActionsAvailable(activityType)) {
+        if (AssistantDependencyUtilsChrome.areDirectActionsAvailable(activityType)) {
             DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(context,
                     bottomSheetController, browserControls, compositorViewHolder,
                     activityTabProvider);
@@ -207,7 +208,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
     void registerDirectActions() {
         registerCommonChromeActions(mContext, mActivityType, mMenuOrKeyboardActionController,
                 mGoBackAction, mTabModelSelector, mFindToolbarManager,
-                AutofillAssistantFacade.areDirectActionsAvailable(mActivityType)
+                AssistantDependencyUtilsChrome.areDirectActionsAvailable(mActivityType)
                         ? mBottomSheetController
                         : null,
                 mBrowserControls, mCompositorViewHolder, mActivityTabProvider);

@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
-import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -113,21 +111,11 @@ public class AutofillAssistantFacade {
     }
 
     /**
-     * Checks whether direct actions provided by Autofill Assistant should be available - assuming
-     * that direct actions are available at all.
-     */
-    public static boolean areDirectActionsAvailable(@ActivityType int activityType) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && (activityType == ActivityType.CUSTOM_TAB || activityType == ActivityType.TABBED)
-                && AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
-                && AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS.isEnabled();
-    }
-
-    /**
      * Returns a {@link DirectActionHandler} for making dynamic actions available under Android Q.
      *
-     * <p>This should only be called if {@link #areDirectActionsAvailable} returns true. This method
-     * can also return null if autofill assistant is not available for some other reasons.
+     * <p>This should only be called if {@link
+     * AssistantDependencyUtilsChrome#areDirectActionsAvailable} returns true. This method can also
+     * return null if autofill assistant is not available for some other reasons.
      */
     public static DirectActionHandler createDirectActionHandler(Context context,
             BottomSheetController bottomSheetController,
