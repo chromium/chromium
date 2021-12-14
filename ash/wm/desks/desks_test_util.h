@@ -16,6 +16,8 @@ class EventGenerator;
 
 namespace ash {
 
+class DeskActivationAnimation;
+
 constexpr int kNumFingersForHighlight = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
 
@@ -68,6 +70,9 @@ const Desk* GetNextDesk();
 // Scrolls to the adjacent desk and waits for the animation if applicable.
 void ScrollToSwitchDesks(bool scroll_left,
                          ui::test::EventGenerator* event_generator);
+
+// Wait until `animation`'s ending screenshot has been taken.
+void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation);
 
 }  // namespace ash
 

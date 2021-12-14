@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
+#include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
@@ -146,6 +147,15 @@ void ScrollToSwitchDesks(bool scroll_left,
     event_generator->Dispatch(&fling_start);
     animation_finished_waiter.Wait();
   }
+}
+
+void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation) {
+  base::RunLoop run_loop;
+  auto* desk_switch_animator =
+      animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
+      .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace ash

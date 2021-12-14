@@ -11,11 +11,13 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 
 namespace ash {
 
@@ -156,6 +158,10 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
 
   presentation_time_recorder_->RequestNext();
 
+  auto* first_animator = desk_switch_animators_.front().get();
+  DCHECK(first_animator);
+  const bool old_reached_edge = first_animator->reached_edge();
+
   // If any of the displays need a new screenshot while scrolling, take the
   // ending desk screenshot for all of them to keep them in sync.
   absl::optional<int> ending_desk_index;
@@ -167,15 +173,25 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
   }
 
   // See if the animator of the first display has visibly changed desks. If so,
-  // update |visible_desk_changes_| for metrics collection purposes.
-  auto* first_animator = desk_switch_animators_.front().get();
-  DCHECK(first_animator);
+  // update `visible_desk_changes_` for metrics collection purposes. Also fire a
+  // haptic event if we have reached the edge, or the visible desk has changed.
   if (first_animator->starting_desk_screenshot_taken() &&
       first_animator->ending_desk_screenshot_taken()) {
     const int old_visible_desk_index = visible_desk_index_;
     visible_desk_index_ = first_animator->GetIndexOfMostVisibleDeskScreenshot();
-    if (visible_desk_index_ != old_visible_desk_index)
+    if (visible_desk_index_ != old_visible_desk_index) {
       ++visible_desk_changes_;
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kTick,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
+
+    const bool reached_edge = first_animator->reached_edge();
+    if (reached_edge && !old_reached_edge) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kKnock,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
   }
 
   // No screenshot needed.

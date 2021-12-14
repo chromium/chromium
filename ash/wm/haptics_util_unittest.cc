@@ -8,8 +8,12 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -301,6 +305,77 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
                       /*event_generator=*/GetEventGenerator());
   EXPECT_EQ(1, desk_controller->GetActiveDeskIndex());
   EXPECT_EQ(1, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kKnock,
+                   HapticTouchpadEffectStrength::kMedium));
+}
+
+// Tests that haptics are sent when doing a continuous touchpad gesture to
+// switch desks. They are expected to be sent if we hit the edge, or when the
+// visible desk changes.
+TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
+  auto input_controller = std::make_unique<InputControllerForTesting>();
+  haptics_util::SetInputControllerForTesting(input_controller.get());
+
+  // Add three desks for a total of four.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  // Create a standalone animation object. This is the same object that gets
+  // created when swiping with 4 fingers, but mocking 4 fingers swipes is harder
+  // to control in a test with all the async operations and touchpad unit
+  // conversions.
+  DeskActivationAnimation animation(desks_controller, 0, 1,
+                                    DesksSwitchSource::kDeskSwitchTouchpad,
+                                    /*update_window_activation=*/false);
+  animation.set_skip_notify_controller_on_animation_finished_for_testing(true);
+  animation.Launch();
+
+  // Wait for the ending screenshot to be taken.
+  WaitUntilEndingScreenshotTaken(&animation);
+
+  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kKnock,
+                   HapticTouchpadEffectStrength::kMedium));
+  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kTick,
+                   HapticTouchpadEffectStrength::kMedium));
+
+  // Swipe enough so that our third and fourth desk screenshots are taken, and
+  // then swipe so that the fourth desk is fully shown. There should be 3
+  // visible desk changes in total, which means 3 tick haptic events sent.
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  WaitUntilEndingScreenshotTaken(&animation);
+
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  WaitUntilEndingScreenshotTaken(&animation);
+
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  EXPECT_EQ(3, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kTick,
+                   HapticTouchpadEffectStrength::kMedium));
+
+  // Try doing a full swipe to the right. Test that a knock haptic event is sent
+  // because we are at the edge.
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kKnock,
+                   HapticTouchpadEffectStrength::kMedium));
+
+  // Swipe 3 times to the left. We move from the fourth desk as the visible desk
+  // to the first desk, so there should be three more tick haptic events.
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  EXPECT_EQ(6, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kTick,
+                   HapticTouchpadEffectStrength::kMedium));
+
+  // Swipe to the left while at the first desk. Tests that another haptic event
+  // is sent because we are at the edge.
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  EXPECT_EQ(2, input_controller->GetSendHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
 }

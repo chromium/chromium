@@ -220,6 +220,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     return ending_desk_screenshot_taken_;
   }
   bool animation_finished() const { return animation_finished_; }
+  bool reached_edge() const { return reached_edge_; }
 
   // Begins phase (1) of the animation by taking a screenshot of the starting
   // desk content. Delegate::OnStartingDeskScreenshotTaken() will be called once
@@ -361,6 +362,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
 
   // True when phase (3) finishes.
   bool animation_finished_ = false;
+
+  // True if during a continuous swipe, the user went all the way left or right
+  // and swiping in that direction will no longer update the UI.
+  bool reached_edge_ = false;
 
   // True while setting a new transform for chaining. If a animation is active,
   // calling SetTransform will trigger OnImplicitAnimationsCompleted. In these

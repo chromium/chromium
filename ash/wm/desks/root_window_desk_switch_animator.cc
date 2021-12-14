@@ -271,6 +271,13 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   //  edge padding (i.e. translation of (-190, 0)).
   gfx::RectF transformed_animation_layer_bounds(animation_layer->bounds());
   transform.TransformRect(&transformed_animation_layer_bounds);
+
+  // `reached_edge_` becomes true if the user has scrolled `animation_layer` to
+  // its limits.
+  reached_edge_ =
+      transformed_animation_layer_bounds.x() == 0 ||
+      transformed_animation_layer_bounds.right() == root_window_size_.width();
+
   transformed_animation_layer_bounds.Inset(edge_padding_width_dp_, 0);
 
   const bool moving_left = scroll_delta_x < 0.f;
