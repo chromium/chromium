@@ -102,7 +102,7 @@ void Report30SecondDrain(int capacity_consumed, bool is_exclusive_measurement) {
 
 base::HistogramBase* GetAvgBatteryDrainHistogram(const char* suffix) {
   static constexpr char kAvgDrainHistogramPrefix[] =
-      "Power.ForegroundBatteryDrain.30SecondsAvg";
+      "Power.ForegroundBatteryDrain.30SecondsAvg2";
   return base::Histogram::FactoryGet(
       std::string(kAvgDrainHistogramPrefix) + suffix, 1, 100000, 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
@@ -237,15 +237,18 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
     skipped_timers_ = 0;
     observed_capacity_drops_ = 0;
 
-    metrics_timer_.Start(FROM_HERE, kMetricsInterval, this,
-                         &AndroidBatteryMetrics::CaptureAndReportMetrics);
+    metrics_timer_.Start(
+        FROM_HERE, kMetricsInterval,
+        base::BindRepeating(&AndroidBatteryMetrics::CaptureAndReportMetrics,
+                            base::Unretained(this),
+                            /*disabling=*/false));
     if (base::FeatureList::IsEnabled(kForegroundRadioStateCountWakeups)) {
       radio_state_timer_.Start(FROM_HERE, kRadioStateInterval, this,
                                &AndroidBatteryMetrics::MonitorRadioState);
     }
   } else if (!should_be_enabled && metrics_timer_.IsRunning()) {
     // Capture one last measurement before disabling the timer.
-    CaptureAndReportMetrics();
+    CaptureAndReportMetrics(/*disabling=*/true);
     metrics_timer_.Stop();
     if (base::FeatureList::IsEnabled(kForegroundRadioStateCountWakeups)) {
       radio_state_timer_.Stop();
@@ -288,7 +291,7 @@ void AndroidBatteryMetrics::UpdateAndReportRadio() {
   radio_wakeups_ = 0;
 }
 
-void AndroidBatteryMetrics::CaptureAndReportMetrics() {
+void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
   int remaining_capacity_uah =
       base::PowerMonitor::GetRemainingBatteryCapacity();
 
@@ -300,6 +303,17 @@ void AndroidBatteryMetrics::CaptureAndReportMetrics() {
     skipped_timers_++;
     Report30SecondDrain(0, IsMeasuringDrainExclusively());
     UpdateAndReportRadio();
+
+    if (disabling) {
+      // Disabling the timer, but without a change in capacity counter -- We
+      // should still emit values for the elapsed time intervals into the
+      // average histograms. We exclude exclusive metrics here, because these
+      // metrics exclude the measurements before the first capacity drop and
+      // after the last drop. Member fields will be reset when tracking
+      // is resumed after foregrounding again later.
+      ReportAveragedDrain(0, /*is_exclusive_measurement=*/false,
+                          skipped_timers_);
+    }
 
     return;
   }
