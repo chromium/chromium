@@ -366,7 +366,6 @@
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -689,11 +688,12 @@ const char kStabilitySessionEndCompleted[] =
 // Deprecated 12/2021.
 const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
     "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 12/2021.
 const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
+
+// Deprecated 12/2021.
+const char kArcAppReinstallState[] = "arc_app_reinstall_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -900,6 +900,8 @@ void RegisterProfilePrefsForMigration(
       kEduCoexistenceSecondaryAccountsInvalidationVersion, std::string());
 
   registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
+
+  registry->RegisterDictionaryPref(kArcAppReinstallState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1330,7 +1332,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableService::RegisterProfilePrefs(registry);
-  app_list::ArcAppReinstallSearchProvider::RegisterProfilePrefs(registry);
   apps::AppPlatformMetricsService::RegisterProfilePrefs(registry);
   apps::webapk_prefs::RegisterProfilePrefs(registry);
   arc::prefs::RegisterProfilePrefs(registry);
@@ -1769,6 +1770,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2021
   profile_prefs->ClearPref(kSyncFirstRunCompleted);
+
+  // Added 12/2021.
+  profile_prefs->ClearPref(kArcAppReinstallState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

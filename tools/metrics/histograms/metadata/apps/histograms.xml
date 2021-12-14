@@ -1719,6 +1719,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppListRecommendedImpResultCountAfterOpen" units="shows"
     expires_after="2021-11-28">
+  <obsolete>
+    Removed December 2021.
+  </obsolete>
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>

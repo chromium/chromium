@@ -237,6 +237,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AppListRecommendedImp.AllImpression" units="count"
     expires_after="2022-01-09">
+  <obsolete>
+    Removed December 2021.
+  </obsolete>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -249,6 +252,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AppListRecommendedImp.CountedImpression" units="count"
     expires_after="2022-01-09">
+  <obsolete>
+    Removed December 2021.
+  </obsolete>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>

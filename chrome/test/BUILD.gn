@@ -6583,7 +6583,6 @@ test("unit_tests") {
       "../browser/ui/app_list/md_icon_normalizer_unittest.cc",
       "../browser/ui/app_list/reorder/app_list_reorder_util_unittest.cc",
       "../browser/ui/app_list/search/app_search_provider_unittest.cc",
-      "../browser/ui/app_list/search/arc/arc_app_reinstall_search_provider_unittest.cc",
       "../browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider_unittest.cc",
       "../browser/ui/app_list/search/arc/arc_playstore_search_provider_unittest.cc",
       "../browser/ui/app_list/search/arc/recommend_apps_fetcher_impl_unittest.cc",

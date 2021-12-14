@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
-#include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
@@ -64,7 +63,6 @@ constexpr size_t kMaxDriveSearchResults = 6;
 // duplicates of these results for the suggestion chips.
 constexpr size_t kMaxZeroStateFileResults = 20;
 constexpr size_t kMaxZeroStateDriveResults = 10;
-constexpr size_t kMaxAppReinstallSearchResults = 1;
 
 // TODO(warx): Need UX spec.
 constexpr size_t kMaxAppShortcutResults = 4;
@@ -123,16 +121,6 @@ std::unique_ptr<SearchController> CreateSearchController(
     size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
     controller->AddProvider(drive_file_group_id,
                             std::make_unique<DriveSearchProvider>(profile));
-  }
-
-  // reinstallation candidates for Arc++ apps.
-  if (app_list_features::IsAppReinstallZeroStateEnabled() &&
-      arc::IsArcAllowedForProfile(profile)) {
-    size_t recommended_app_group_id =
-        controller->AddGroup(kMaxAppReinstallSearchResults);
-    controller->AddProvider(recommended_app_group_id,
-                            std::make_unique<ArcAppReinstallSearchProvider>(
-                                profile, kMaxAppReinstallSearchResults));
   }
 
   if (arc::IsArcAllowedForProfile(profile)) {

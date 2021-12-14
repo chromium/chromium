@@ -7,7 +7,6 @@
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
