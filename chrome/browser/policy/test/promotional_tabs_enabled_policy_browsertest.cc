@@ -176,13 +176,13 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     // already been seen. This is necessary because welcome/onboarding takes
     // precedence over What's New.
     std::string json;
-    base::DictionaryValue prefs;
-    prefs.SetBoolean(prefs::kHasSeenWelcomePage, true);
+    base::Value prefs(base::Value::Type::DICTIONARY);
+    prefs.SetBoolPath(prefs::kHasSeenWelcomePage, true);
     // Set the session startup pref to NewTab. This enables consistent test
     // expectations across platforms - we should always expect to see the NTP.
     // Without this line, on ChromeOS only, the default type is LAST, which
     // tries to restore the last session and suppresses the NTP.
-    prefs.SetInteger(prefs::kRestoreOnStartup,
+    prefs.SetIntPath(prefs::kRestoreOnStartup,
                      SessionStartupPref::kPrefValueNewTab);
     base::JSONWriter::Write(prefs, &json);
 
@@ -196,8 +196,8 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
         default_dir.Append(chrome::kPreferencesFilename), json));
 
     // Also set the version for What's New in the local state.
-    base::DictionaryValue local_state;
-    local_state.SetInteger(prefs::kLastWhatsNewVersion,
+    base::Value local_state(base::Value::Type::DICTIONARY);
+    local_state.SetIntPath(prefs::kLastWhatsNewVersion,
                            WhatsNewVersionForPref());
     std::string local_state_string;
     base::JSONWriter::Write(local_state, &local_state_string);
