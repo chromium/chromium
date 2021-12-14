@@ -683,7 +683,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
             return;
         }
         resetCustomIconsStatus();
-        StatusIconResource storeIconResource = new StatusIconResource(drawable);
+        // Use {@link PermissionIconResource} instead of {@link StatusIconResource} to encapsulate
+        // the icon with a circle background.
+        StatusIconResource storeIconResource = new PermissionIconResource(drawable, false);
         storeIconResource.setTransitionType(IconTransitionType.ROTATE);
         storeIconResource.setAnimationFinishedCallback(() -> {
             if (canShowIph) {

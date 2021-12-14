@@ -167,7 +167,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
         runOnUiThreadBlocking(() -> {
             Drawable storeIconDrawable = ResourcesCompat.getDrawable(getActivity().getResources(),
                     R.drawable.ic_storefront_blue, getActivity().getTheme());
-            StatusIconResource statusIcon = new StatusIconResource(storeIconDrawable);
+            StatusIconResource statusIcon = new PermissionIconResource(storeIconDrawable, false);
             statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
