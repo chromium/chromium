@@ -14,6 +14,7 @@
 class Profile;
 
 namespace exo {
+class Surface;
 class WMHelper;
 }
 
@@ -39,7 +40,12 @@ class ArcAppPerformanceTracingTestHelper {
   virtual ~ArcAppPerformanceTracingTestHelper();
 
   // Creates app window as ARC++ window.
-  static views::Widget* CreateArcWindow(const std::string& window_app_id);
+  // Caller retains ownership of |shell_root_surface|.
+  // If |shell_root_surface| is not given or is nullptr, one will be created,
+  // which should be cleaned up by the surface tree destruction.
+  static views::Widget* CreateArcWindow(
+      const std::string& window_app_id,
+      exo::Surface* shell_root_surface = nullptr);
 
   void SetUp(Profile* profile);
   void TearDown();
