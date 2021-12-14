@@ -5519,19 +5519,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharingSendViaSyncDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSharingSendViaSync)},
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_FUCHSIA)
-    {"sharing-hub-desktop-app-menu",
-     flag_descriptions::kSharingHubDesktopAppMenuName,
-     flag_descriptions::kSharingHubDesktopAppMenuDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(sharing_hub::kSharingHubDesktopAppMenu)},
-    {"sharing-hub-desktop-omnibox",
-     flag_descriptions::kSharingHubDesktopOmniboxName,
-     flag_descriptions::kSharingHubDesktopOmniboxDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(sharing_hub::kSharingHubDesktopOmnibox)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_FUCHSIA)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-enable-pip-rounded-corners",
      flag_descriptions::kAshEnablePipRoundedCornersName,

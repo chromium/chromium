@@ -3890,8 +3890,6 @@ static_library("ui") {
       "sharing_hub/sharing_hub_bubble_controller.cc",
       "sharing_hub/sharing_hub_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_view.h",
-      "sharing_hub/sharing_hub_sub_menu_model.cc",
-      "sharing_hub/sharing_hub_sub_menu_model.h",
 
       # This test header is included because it contains forward declarations
       # needed for "friend" statements for use in tests.

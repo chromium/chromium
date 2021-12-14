@@ -16,7 +16,8 @@ namespace sharing_hub {
 
 namespace {
 
-bool IsEnterprisePolicyEnabled(content::BrowserContext* context) {
+// Whether the sharing hub feature should be disabled by policy.
+bool SharingHubDisabledByPolicy(content::BrowserContext* context) {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
   return prefs->GetBoolean(prefs::kDesktopSharingHubEnabled);
@@ -35,15 +36,8 @@ bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
 
 }  // namespace
 
-bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kSharingHubDesktopAppMenu) &&
-         IsEnterprisePolicyEnabled(context);
-}
-
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
-  return (base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) ||
-          share::AreUpcomingSharingFeaturesEnabled()) &&
-         IsEnterprisePolicyEnabled(context);
+  return !SharingHubDisabledByPolicy(context);
 }
 
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
@@ -51,12 +45,6 @@ bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
           share::AreUpcomingSharingFeaturesEnabled()) &&
          !ScreenshotsDisabledByPolicy(context);
 }
-
-const base::Feature kSharingHubDesktopAppMenu{
-    "SharingHubDesktopAppMenu", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kSharingHubDesktopOmnibox{"SharingHubDesktopOmnibox",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDesktopScreenshots{"DesktopScreenshots",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

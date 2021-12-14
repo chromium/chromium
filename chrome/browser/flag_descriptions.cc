@@ -2229,14 +2229,6 @@ const char kSharingDesktopScreenshotsDescription[] =
     "Enables taking"
     " screenshots from the desktop sharing hub.";
 
-const char kSharingHubDesktopAppMenuName[] = "Desktop Sharing Hub in App Menu";
-const char kSharingHubDesktopAppMenuDescription[] =
-    "Enables the Chrome Sharing Hub in the 3-dot menu for desktop.";
-
-const char kSharingHubDesktopOmniboxName[] = "Desktop Sharing Hub in Omnibox";
-const char kSharingHubDesktopOmniboxDescription[] =
-    "Enables the Chrome Sharing Hub in the omnibox for desktop.";
-
 const char kSharingPreferVapidName[] =
     "Prefer sending Sharing message via VAPID";
 const char kSharingPreferVapidDescription[] =

@@ -30,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -41,7 +40,6 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/sharing_hub/sharing_hub_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -235,8 +233,7 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu) ||
-      browser->profile()->IsIncognitoProfile() ||
+  if (browser->profile()->IsIncognitoProfile() ||
       browser->profile()->IsGuestSession()) {
     AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
   }
@@ -830,23 +827,10 @@ void AppMenuModel::Build() {
   CreateZoomMenu();
   AddSeparator(ui::UPPER_SEPARATOR);
 
-  if (!(browser_->profile()->IsIncognitoProfile() ||
-        browser_->profile()->IsGuestSession()) &&
-      sharing_hub::SharingHubAppMenuEnabled(browser()->profile())) {
-    sub_menus_.push_back(
-        std::make_unique<sharing_hub::SharingHubSubMenuModel>(browser_));
-    AddSubMenuWithStringId(IDC_SHARING_HUB_MENU, IDS_SHARING_HUB_TITLE,
-                           sub_menus_.back().get());
-  }
-
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
-  if (!sharing_hub::SharingHubAppMenuEnabled(browser()->profile()) ||
-      browser_->profile()->IsIncognitoProfile() ||
-      browser_->profile()->IsGuestSession()) {
-    if (media_router::MediaRouterEnabled(browser()->profile()))
-      AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
-  }
+  if (media_router::MediaRouterEnabled(browser()->profile()))
+    AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
   AddItemWithStringId(IDC_FIND, IDS_FIND);
 

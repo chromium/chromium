@@ -1285,12 +1285,6 @@ extern const char kSharingDesktopScreenshotsDescription[];
 extern const char kSharingDesktopScreenshotsEditName[];
 extern const char kSharingDesktopScreenshotsEditDescription[];
 
-extern const char kSharingHubDesktopAppMenuName[];
-extern const char kSharingHubDesktopAppMenuDescription[];
-
-extern const char kSharingHubDesktopOmniboxName[];
-extern const char kSharingHubDesktopOmniboxDescription[];
-
 extern const char kSharingPreferVapidName[];
 extern const char kSharingPreferVapidDescription[];
 

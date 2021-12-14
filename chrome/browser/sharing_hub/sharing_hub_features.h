@@ -16,10 +16,6 @@ class BrowserContext;
 
 namespace sharing_hub {
 
-// Returns true if the app menu sharing hub is enabled for |context|. Only for
-// Windows/Mac/Linux.
-bool SharingHubAppMenuEnabled(content::BrowserContext* context);
-
 // Returns true if the omnibox sharing hub is enabled for |context|. Only for
 // Windows/Mac/Linux.
 bool SharingHubOmniboxEnabled(content::BrowserContext* context);
@@ -29,13 +25,6 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 // select and capture a region of a page, and optionally to edit it with an
 // image editor before sharing.
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context);
-
-// Feature flag to enable the 3-dot menu entry point for the desktop sharing
-// hub.
-extern const base::Feature kSharingHubDesktopAppMenu;
-
-// Feature flag to enable the omnibox entry point for the desktop sharing hub.
-extern const base::Feature kSharingHubDesktopOmnibox;
 
 // Feature flag to enable the screenshots feature, currently accessed only
 // through the sharing hub.

@@ -6399,7 +6399,6 @@ test("unit_tests") {
       "../browser/ui/media_router/media_router_ui_service_factory_unittest.cc",
       "../browser/ui/media_router/query_result_manager_unittest.cc",
       "../browser/ui/passwords/manage_passwords_ui_controller_unittest.cc",
-      "../browser/ui/sharing_hub/sharing_hub_sub_menu_model_unittest.cc",
       "../browser/ui/toolbar/chrome_location_bar_model_delegate_unittest.cc",
       "../browser/ui/toolbar/media_router_action_controller_unittest.cc",
       "../browser/ui/toolbar/media_router_contextual_menu_unittest.cc",
