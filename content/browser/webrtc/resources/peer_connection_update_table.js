@@ -5,6 +5,7 @@
 import {$} from 'chrome://resources/js/util.m.js';
 
 const MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED = 10;
+const MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS = 10;
 /**
  * The data of a peer connection update.
  * @param {number} pid The id of the renderer.
@@ -165,13 +166,21 @@ export class PeerConnectionUpdateTable {
         ' (type: "' + type + '", ' + sections.length + ' sections)';
       sections.forEach(section => {
         const lines = section.trim().split('\n');
+        // Extract the mid attribute.
+        const mid = lines
+            .filter(line => line.startsWith('a=mid:'))
+            .map(line => line.substr(6))[0];
         const sectionDetails = document.createElement('details');
-        sectionDetails.open = true;
+        // Fold by default for large SDP.
+        sectionDetails.open =
+          sections.length <= MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS;
         sectionDetails.textContent = lines.slice(1).join('\n');
 
         const sectionSummary = document.createElement('summary');
         sectionSummary.textContent =
-          lines[0].trim() + ' (' + (lines.length - 1) + ' more lines)';
+          lines[0].trim() +
+          ' (' + (lines.length - 1) + ' more lines)' +
+          (mid ? ' mid=' + mid : '');
         sectionDetails.appendChild(sectionSummary);
 
         valueContainer.appendChild(sectionDetails);
