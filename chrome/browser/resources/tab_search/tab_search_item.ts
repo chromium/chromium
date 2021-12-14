@@ -87,21 +87,9 @@ export class TabSearchItem extends TabSearchItemBase {
   }
 
   private isOpenTabAndHasMediaAlert_(tabData: TabData): boolean {
-    if (tabData.type != TabItemType.OPEN_TAB ||
-        !(tabData.tab as Tab).alertStates ||
-        (tabData.tab as Tab).alertStates.length == 0) {
-      return false;
-    }
-
-    /* Current UI mocks only have specs for the following media related alert
-     * states. */
-    function validAlertState(alert: TabAlertState): boolean {
-      return alert == TabAlertState.kMediaRecording ||
-          alert == TabAlertState.kAudioPlaying ||
-          alert == TabAlertState.kAudioMuting;
-    }
-
-    return (tabData.tab as Tab).alertStates.some(validAlertState);
+    return tabData.type == TabItemType.OPEN_TAB &&
+        (tabData.tab as Tab).alertStates &&
+        (tabData.tab as Tab).alertStates.length > 0;
   }
 
   /**

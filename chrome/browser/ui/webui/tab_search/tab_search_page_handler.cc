@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <iterator>
 #include <memory>
 #include <set>
 #include <string>
@@ -12,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -432,8 +435,18 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time_ticks);
 
-  if (base::FeatureList::IsEnabled(features::kTabSearchMediaTabs))
-    tab_data->alert_states = chrome::GetTabAlertStatesForContents(contents);
+  if (base::FeatureList::IsEnabled(features::kTabSearchMediaTabs)) {
+    std::vector<TabAlertState> alert_states =
+        chrome::GetTabAlertStatesForContents(contents);
+    // Currently, we only report media alert states.
+    base::ranges::copy_if(alert_states.begin(), alert_states.end(),
+                          std::back_inserter(tab_data->alert_states),
+                          [](TabAlertState alert) {
+                            return alert == TabAlertState::MEDIA_RECORDING ||
+                                   alert == TabAlertState::AUDIO_PLAYING ||
+                                   alert == TabAlertState::AUDIO_MUTING;
+                          });
+  }
 
   return tab_data;
 }
