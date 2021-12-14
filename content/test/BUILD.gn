@@ -2051,6 +2051,7 @@ test("content_unittests") {
     "../browser/loader/navigation_early_hints_manager_unittest.cc",
     "../browser/loader/navigation_url_loader_impl_unittest.cc",
     "../browser/loader/navigation_url_loader_unittest.cc",
+    "../browser/locks/lock_manager_unittest.cc",
     "../browser/manifest/manifest_icon_downloader_unittest.cc",
     "../browser/media/audible_metrics_unittest.cc",
     "../browser/media/audio_input_stream_broker_unittest.cc",

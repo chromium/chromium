@@ -23,6 +23,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
@@ -858,6 +861,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // RenderFrameHost, but all of its RenderFrameHosts are non-live. In this case
   // the RenderProcessHost is needed but the renderer process is not.
   bool HasOnlyNonLiveRenderFrameHosts();
+
+  // Helper method for CreateLockManager() which facilitates use of |bucket|
+  // instead of |origin| for binding |receiver|
+  void CreateLockManagerWithBucketInfo(
+      int render_frame_id,
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver,
+      storage::QuotaErrorOr<storage::BucketInfo> bucket);
 
   // Get an existing RenderProcessHost associated with the given browser
   // context, if possible.  The renderer process is chosen randomly from
