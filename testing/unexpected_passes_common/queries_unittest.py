@@ -17,6 +17,7 @@ else:
   import unittest.mock as mock
 
 from unexpected_passes_common import builders
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import queries
@@ -43,23 +44,27 @@ class HelperMethodUnittest(unittest.TestCase):
 class QueryGeneratorUnittest(unittest.TestCase):
   def testSplitQueryGeneratorInitialSplit(self):
     """Tests that initial query splitting works as expected."""
-    test_filter = queries.SplitQueryGenerator('ci', ['1', '2', '3'], 2)
+    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
+                                              ['1', '2', '3'], 2)
     self.assertEqual(test_filter._test_id_lists, [['1', '2'], ['3']])
     self.assertEqual(len(test_filter.GetClauses()), 2)
-    test_filter = queries.SplitQueryGenerator('ci', ['1', '2', '3'], 3)
+    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
+                                              ['1', '2', '3'], 3)
     self.assertEqual(test_filter._test_id_lists, [['1', '2', '3']])
     self.assertEqual(len(test_filter.GetClauses()), 1)
 
   def testSplitQueryGeneratorSplitQuery(self):
     """Tests that SplitQueryGenerator's query splitting works."""
-    test_filter = queries.SplitQueryGenerator('ci', ['1', '2'], 10)
+    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
+                                              ['1', '2'], 10)
     self.assertEqual(len(test_filter.GetClauses()), 1)
     test_filter.SplitQuery()
     self.assertEqual(len(test_filter.GetClauses()), 2)
 
   def testSplitQueryGeneratorSplitQueryCannotSplitFurther(self):
     """Tests that SplitQueryGenerator's failure mode."""
-    test_filter = queries.SplitQueryGenerator('ci', ['1'], 1)
+    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI, ['1'],
+                                              1)
     with self.assertRaises(queries.QuerySplitError):
       test_filter.SplitQuery()
 
@@ -85,7 +90,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     """Tests that a query failure is properly surfaced."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
     with self.assertRaises(RuntimeError):
-      self._querier.QueryBuilder('builder', 'ci')
+      self._querier.QueryBuilder('builder', constants.BuilderTypes.CI)
 
   def testInvalidNumSamples(self):
     """Tests that the number of samples is validated."""
@@ -95,7 +100,8 @@ class QueryBuilderUnittest(unittest.TestCase):
   def testNoResults(self):
     """Tests functionality if the query returns no results."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')
-    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = self._querier.QueryBuilder(
+        'builder', constants.BuilderTypes.CI)
     self.assertEqual(results, [])
     self.assertIsNone(expectation_files, None)
 
@@ -124,7 +130,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     ]
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_results))
-    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = self._querier.QueryBuilder(
+        'builder', constants.BuilderTypes.CI)
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -177,7 +184,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     with mock.patch.object(
         self._querier, '_GetRelevantExpectationFilesForQueryResult') as ef_mock:
       ef_mock.return_value = None
-      results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+      results, expectation_files = self._querier.QueryBuilder(
+          'builder', constants.BuilderTypes.CI)
       self.assertEqual(len(results), 2)
       self.assertIn(
           data_types.Result('test_name', ['win', 'intel'], 'Failure',
@@ -229,7 +237,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     ]
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_results))
-    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = self._querier.QueryBuilder(
+        'builder', constants.BuilderTypes.CI)
     self.assertEqual(len(results), 2)
     self.assertIn(
         data_types.Result('test_name', ['linux', 'release'], 'Failure',
@@ -247,10 +256,10 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier,
         '_GetQueryGeneratorForBuilder',
         return_value=unittest_utils.SimpleFixedQueryGenerator(
-            'ci', 'a real filter')), mock.patch.object(
+            constants.BuilderTypes.CI, 'a real filter')), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      self._querier.QueryBuilder('builder', 'ci')
+      self._querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       query_mock.assert_called_once()
       query = query_mock.call_args[0][0][0]
       self.assertIn('a real filter', query)
@@ -261,7 +270,8 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier, '_GetQueryGeneratorForBuilder',
         return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+      results, expectation_files = self._querier.QueryBuilder(
+          'builder', constants.BuilderTypes.CI)
       query_mock.assert_not_called()
       self.assertEqual(results, [])
       self.assertEqual(expectation_files, None)
@@ -281,11 +291,12 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier,
         '_GetQueryGeneratorForBuilder',
         return_value=unittest_utils.SimpleSplitQueryGenerator(
-            'ci', ['filter_a', 'filter_b'], 10)), mock.patch.object(
+            constants.BuilderTypes.CI,
+            ['filter_a', 'filter_b'], 10)), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
       query_mock.side_effect = SideEffect
-      self._querier.QueryBuilder('builder', 'ci')
+      self._querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       self.assertEqual(query_mock.call_count, 2)
 
       args, _ = unittest_utils.GetArgsForMockCall(query_mock.call_args_list, 0)
@@ -345,7 +356,8 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
         }),
     })
     unmatched_results = self._querier._FillExpectationMapForBuilders(
-        expectation_map, ['matched_builder', 'unmatched_builder'], 'ci')
+        expectation_map, ['matched_builder', 'unmatched_builder'],
+        constants.BuilderTypes.CI)
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
@@ -370,7 +382,8 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._query_mock.side_effect = IndexError('failure')
     with self.assertRaises(IndexError):
       self._querier._FillExpectationMapForBuilders(
-          data_types.TestExpectationMap(), ['matched_builder'], 'ci')
+          data_types.TestExpectationMap(), ['matched_builder'],
+          constants.BuilderTypes.CI)
 
 
 class FilterOutInactiveBuildersUnittest(unittest.TestCase):
@@ -397,7 +410,7 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
     ]
     expected_builders = copy.copy(initial_builders)
     filtered_builders = self._querier._FilterOutInactiveBuilders(
-        initial_builders, 'ci')
+        initial_builders, constants.BuilderTypes.CI)
     self.assertEqual(filtered_builders, expected_builders)
 
   def testInactiveBuilders(self):
@@ -413,7 +426,7 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
     ]
     expected_builders = ['foo_builder']
     filtered_builders = self._querier._FilterOutInactiveBuilders(
-        initial_builders, 'ci')
+        initial_builders, constants.BuilderTypes.CI)
     self.assertEqual(filtered_builders, expected_builders)
 
   def testByteConversion(self):
@@ -430,7 +443,7 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
     ]
     expected_builders = ['foo_builder']
     filtered_builders = self._querier._FilterOutInactiveBuilders(
-        initial_builders, 'ci')
+        initial_builders, constants.BuilderTypes.CI)
     self.assertEqual(filtered_builders, expected_builders)
 
 

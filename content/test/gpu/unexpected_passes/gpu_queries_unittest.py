@@ -18,6 +18,7 @@ else:
 from unexpected_passes import gpu_queries
 from unexpected_passes import gpu_unittest_utils as gpu_uu
 from unexpected_passes_common import builders
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils as uu
 
@@ -72,7 +73,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance1')
     self._popen_mock.return_value = uu.FakeProcess(
         stdout=json.dumps(query_results))
-    results, expectation_files = querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = querier.QueryBuilder('builder',
+                                                      constants.BuilderTypes.CI)
     self.assertEqual(len(results), 1)
     self.assertIsNone(expectation_files)
     self.assertEqual(
@@ -81,7 +83,8 @@ class QueryBuilderUnittest(unittest.TestCase):
                           'step_name', '1234'))
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance2')
-    results, expectation_files = querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = querier.QueryBuilder('builder',
+                                                      constants.BuilderTypes.CI)
     self.assertEqual(len(results), 1)
     self.assertIsNone(expectation_files)
     self.assertEqual(
@@ -101,27 +104,27 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = gpu_uu.CreateGenericGpuQuerier()
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
 
     # Special-cased suites.
     querier = gpu_uu.CreateGenericGpuQuerier(suite='info_collection')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       assertSuiteInQuery('info_collection_test', query_mock.call_args)
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='power')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       assertSuiteInQuery('power_measurement_integration_test',
                          query_mock.call_args)
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='trace_test')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
       assertSuiteInQuery('trace_integration_test', query_mock.call_args)
 
 
@@ -171,10 +174,131 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       self.assertIsInstance(test_filter, gpu_queries.GpuSplitQueryGenerator)
 
 
+class GeneratedQueryUnittest(unittest.TestCase):
+  maxDiff = None
+
+  def testCi(self):
+    """Tests that the generated CI query is as expected."""
+    expected_query = """\
+WITH
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.gpu_ci_test_results` tr
+    WHERE
+      exported.realm = "chromium:ci"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations
+    FROM
+      `chrome-luci-data.chromium.gpu_ci_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "RetryOnFailure" IN UNNEST(typ_expectations)
+"""
+    self.assertEqual(
+        gpu_queries.GPU_CI_BQ_QUERY_TEMPLATE.format(test_filter_clause='tfc'),
+        expected_query)
+
+  def testTry(self):
+    """Tests that the generated try query is as expected."""
+    expected_query = """\
+WITH
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.gpu_try_test_results` tr,
+      submitted_builds sb
+    WHERE
+      exported.realm = "chromium:try"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+      AND exported.id = sb.id
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations
+    FROM
+      `chrome-luci-data.chromium.gpu_try_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "RetryOnFailure" IN UNNEST(typ_expectations)
+"""
+    self.assertEqual(
+        gpu_queries.GPU_TRY_BQ_QUERY_TEMPLATE.format(test_filter_clause='tfc'),
+        expected_query)
+
+
 class QueryGeneratorImplUnittest(unittest.TestCase):
   def testCi(self):
     """Tests that CI builders use the correct query."""
-    q = gpu_queries.QueryGeneratorImpl(['tfc'], 'ci')
+    q = gpu_queries.QueryGeneratorImpl(['tfc'], constants.BuilderTypes.CI)
     self.assertEqual(len(q), 1)
     expected_query = gpu_queries.GPU_CI_BQ_QUERY_TEMPLATE.format(
         test_filter_clause='tfc')
@@ -182,7 +306,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
 
   def testTry(self):
     """Tests that try builders use the correct query."""
-    q = gpu_queries.QueryGeneratorImpl(['tfc'], 'try')
+    q = gpu_queries.QueryGeneratorImpl(['tfc'], constants.BuilderTypes.TRY)
     self.assertEqual(len(q), 1)
     expected_query = gpu_queries.GPU_TRY_BQ_QUERY_TEMPLATE.format(
         test_filter_clause='tfc')

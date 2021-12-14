@@ -8,13 +8,52 @@ import posixpath
 
 from blinkpy.web_tests.stale_expectation_removal import constants
 
+from unexpected_passes_common import constants as common_constants
 from unexpected_passes_common import queries as queries_module
 
-# The target number of results/rows per query when running in large query mode.
-# Higher values = longer individual query times and higher chances of running
-# out of memory in BigQuery. Lower values = more parallelization overhead and
-# more issues with rate limit errors.
-TARGET_RESULTS_PER_QUERY = 20000
+RESULTS_SUBQUERY = """\
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      {{test_filter_clause}}
+  )"""
+
+FINAL_SELECTOR_QUERY = """\
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)"""
 
 # This query gets us all results for tests from CI that have had results with a
 # Failure, Timeout, or Crash expectation in the past |@num_builds| builds on
@@ -33,65 +72,17 @@ WITH
     ORDER BY partition_time DESC
     LIMIT @num_builds
   ),
-  results AS (
-    SELECT
-      exported.id,
-      test_id,
-      status,
-      duration,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "web_tests_base_timeout") as timeout,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "raw_typ_expectation") as typ_expectations,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "web_tests_used_expectations_file") as expectation_files
-    FROM
-      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
-      builds b
-    WHERE
-      exported.id = build_inv_id
-      AND status != "SKIP"
-      {test_filter_clause}
-  )
-SELECT *
-FROM results
-WHERE
-  "Failure" IN UNNEST(typ_expectations)
-  OR "Crash" IN UNNEST(typ_expectations)
-  OR "Timeout" IN UNNEST(typ_expectations)
-"""
+{results_subquery}
+{final_selector_query}
+""".format(results_subquery=RESULTS_SUBQUERY.format(
+    builder_type=common_constants.BuilderTypes.CI),
+           final_selector_query=FINAL_SELECTOR_QUERY)
 
 # Same as CI_BQ_QUERY_TEMPLATE, but for tryjobs. Only data from builds that
 # were used for CL submission is considered.
 TRY_BQ_QUERY_TEMPLATE = """\
 WITH
-  submitted_builds AS (
-    SELECT
-      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
-    FROM
-      `commit-queue.chromium.attempts`,
-      UNNEST(builds) as unnested_builds,
-      UNNEST(gerrit_changes) as unnested_changes
-    WHERE
-      unnested_builds.host = "cr-buildbucket.appspot.com"
-      AND unnested_changes.submit_status = "SUCCESS"
-      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                     INTERVAL 30 DAY)
-  ),
+{submitted_builds_subquery}
   builds AS (
     SELECT
       DISTINCT exported.id build_inv_id,
@@ -106,47 +97,12 @@ WITH
     ORDER BY partition_time DESC
     LIMIT @num_builds
   ),
-  results AS (
-    SELECT
-      exported.id,
-      test_id,
-      status,
-      duration,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "web_tests_base_timeout") as timeout,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "raw_typ_expectation") as typ_expectations,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "web_tests_used_expectations_file") as expectation_files
-    FROM
-      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
-      builds b
-    WHERE
-      exported.id = build_inv_id
-      AND status != "SKIP"
-      {test_filter_clause}
-  )
-SELECT *
-FROM results
-WHERE
-  "Failure" IN UNNEST(typ_expectations)
-  OR "Crash" IN UNNEST(typ_expectations)
-  OR "Timeout" IN UNNEST(typ_expectations)
-"""
+{results_subquery}
+{final_selector_query}
+""".format(submitted_builds_subquery=queries_module.SUBMITTED_BUILDS_SUBQUERY,
+           results_subquery=RESULTS_SUBQUERY.format(
+               builder_type=common_constants.BuilderTypes.TRY),
+           final_selector_query=FINAL_SELECTOR_QUERY)
 
 # Very similar to above, but used to get the names of tests that are of
 # interest for use as a filter.
@@ -256,7 +212,8 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         # Only consider specific test cases that were found to have active
         # expectations in the above query. Also perform any initial query
         # splitting.
-        target_num_ids = TARGET_RESULTS_PER_QUERY / self._num_samples
+        target_num_ids = (queries_module.TARGET_RESULTS_PER_QUERY /
+                          self._num_samples)
         return WebTestSplitQueryGenerator(builder_type, test_ids,
                                           target_num_ids)
 
@@ -287,9 +244,9 @@ class WebTestSplitQueryGenerator(queries_module.SplitQueryGenerator):
 def QueryGeneratorImpl(test_filter_clauses, builder_type):
     queries = []
     query_template = None
-    if builder_type == 'ci':
+    if builder_type == common_constants.BuilderTypes.CI:
         query_template = CI_BQ_QUERY_TEMPLATE
-    elif builder_type == 'try':
+    elif builder_type == common_constants.BuilderTypes.TRY:
         query_template = TRY_BQ_QUERY_TEMPLATE
     else:
         raise RuntimeError('Unknown builder type %s' % builder_type)

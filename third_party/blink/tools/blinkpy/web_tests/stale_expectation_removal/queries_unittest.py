@@ -14,6 +14,7 @@ from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import data_types
 from blinkpy.web_tests.stale_expectation_removal import queries
 from blinkpy.web_tests.stale_expectation_removal import unittest_utils as wt_uu
+from unexpected_passes_common import constants as common_constants
 from unexpected_passes_common import data_types as common_data_types
 
 
@@ -123,10 +124,153 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
 
 
 @unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+class GeneratedQueryUnittest(unittest.TestCase):
+    maxDiff = None
+
+    def testCi(self):
+        """Tests that the generated CI query is as expected."""
+        expected_query = """\
+WITH
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+    WHERE
+      exported.realm = "chromium:ci"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.CI_BQ_QUERY_TEMPLATE.format(test_filter_clause='tfc'),
+            expected_query)
+
+    def testTry(self):
+        """Tests that the generated try query is as expected."""
+        expected_query = """\
+WITH
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
+      submitted_builds sb
+    WHERE
+      exported.realm = "chromium:try"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+      AND exported.id = sb.id
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.TRY_BQ_QUERY_TEMPLATE.format(test_filter_clause='tfc'),
+            expected_query)
+
+
+@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
 class QueryGeneratorImplUnittest(unittest.TestCase):
     def testCi(self):
         """Tests that CI builders use the correct query."""
-        q = queries.QueryGeneratorImpl(['tfc'], 'ci')
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_constants.BuilderTypes.CI)
         self.assertEqual(len(q), 1)
         expected_query = queries.CI_BQ_QUERY_TEMPLATE.format(
             test_filter_clause='tfc')
@@ -134,7 +278,8 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
 
     def testTry(self):
         """Tests  that try builders use the correct query."""
-        q = queries.QueryGeneratorImpl(['tfc'], 'try')
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_constants.BuilderTypes.TRY)
         self.assertEqual(len(q), 1)
         expected_query = queries.TRY_BQ_QUERY_TEMPLATE.format(
             test_filter_clause='tfc')

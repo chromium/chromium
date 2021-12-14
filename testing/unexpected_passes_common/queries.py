@@ -19,6 +19,7 @@ import six
 from typ import expectations_parser
 from typ import json_results
 from unexpected_passes_common import builders as builders_module
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
 
@@ -29,6 +30,29 @@ MAX_QUERY_TRIES = 3
 # a bunch of rate limit errors. Anything below 1.5 seemed to result in enough
 # rate limit errors to cause problems. Raising above that for safety.
 QUERY_DELAY = 2
+# The target number of results/rows per query when running in large query mode.
+# Higher values = longer individual query times and higher chances of running
+# out of memory in BigQuery. Lower values = more parallelization overhead and
+# more issues with rate limit errors.
+TARGET_RESULTS_PER_QUERY = 20000
+
+# Subquery for getting all try builds that were used for CL submission. 30 days
+# is chosen because the ResultDB tables we pull data from only keep data around
+# for 30 days.
+SUBMITTED_BUILDS_SUBQUERY = """\
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),"""
 
 
 class BigQueryQuerier(object):
@@ -61,7 +85,8 @@ class BigQueryQuerier(object):
     See _FillExpectationMapForBuilders() for more information.
     """
     logging.info('Filling test expectation map with CI results')
-    return self._FillExpectationMapForBuilders(expectation_map, builders, 'ci')
+    return self._FillExpectationMapForBuilders(expectation_map, builders,
+                                               constants.BuilderTypes.CI)
 
   def FillExpectationMapForTryBuilders(self, expectation_map, builders):
     """Fills |expectation_map| for try builders.
@@ -69,7 +94,8 @@ class BigQueryQuerier(object):
     See _FillExpectationMapForBuilders() for more information.
     """
     logging.info('Filling test expectation map with try results')
-    return self._FillExpectationMapForBuilders(expectation_map, builders, 'try')
+    return self._FillExpectationMapForBuilders(expectation_map, builders,
+                                               constants.BuilderTypes.CI)
 
   def _FillExpectationMapForBuilders(self, expectation_map, builders,
                                      builder_type):
@@ -228,7 +254,7 @@ class BigQueryQuerier(object):
     results = []
     if not query_results:
       # Don't bother logging if we know this is a fake CI builder.
-      if not (builder_type == 'ci'
+      if not (builder_type == constants.BuilderTypes.CI
               and builder in builders_module.GetInstance().GetFakeCiBuilders()):
         logging.warning(
             'Did not get results for "%s", but this may be because its '
