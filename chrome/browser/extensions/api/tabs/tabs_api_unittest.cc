@@ -39,7 +39,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager_ash.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"
 #endif
 
@@ -1208,8 +1208,8 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
   web_contents_tester->NavigateAndCommit(kGoogle);
 
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenshotApiRestricted(testing::_))
       .Times(1)

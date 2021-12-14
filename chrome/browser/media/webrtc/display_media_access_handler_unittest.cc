@@ -31,7 +31,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager_ash.h"
 #endif
 
 class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -258,8 +258,8 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
                                          content::DesktopMediaID::kFakeId);
 
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .WillOnce([](const content::DesktopMediaID& media_id,
@@ -513,8 +513,8 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceDlpRestricted) {
       content::DesktopMediaID::kNullId, GetWebContentsMediaCaptureId());
 
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .WillOnce([](const content::DesktopMediaID& media_id,

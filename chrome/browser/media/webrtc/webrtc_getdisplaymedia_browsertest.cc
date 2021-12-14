@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #endif
 
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        ScreenCaptureVideoWithDlp) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  policy::DlpContentManagerTestHelper helper;
+  policy::DlpContentManagerAshTestHelper helper;
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,

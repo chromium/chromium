@@ -37,7 +37,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
@@ -440,7 +440,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Check Data Leak Prevention restrictions on Chrome.
-  policy::DlpContentManager::Get()->CheckScreenShareRestriction(
+  policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
       media_id, GetApplicationTitle(web_contents),
       base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents, media_id));

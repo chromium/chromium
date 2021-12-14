@@ -7,7 +7,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -25,9 +25,9 @@ DlpContentObserver* DlpContentObserver::Get() {
   if (g_testing_dlp_content_observer)
     return g_testing_dlp_content_observer;
 
-    // Initializes DlpContentManager(Lacros) if needed.
+    // Initializes DlpContentManager(Ash/Lacros) if needed.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return DlpContentManager::Get();
+  return DlpContentManagerAsh::Get();
 #else
   return DlpContentManagerLacros::Get();
 #endif

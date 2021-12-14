@@ -47,7 +47,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #endif
 
 using content::BrowserThread;
@@ -240,7 +240,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::DlpContentManager::Get()->OnScreenCaptureStarted(
+    policy::DlpContentManagerAsh::Get()->OnScreenCaptureStarted(
         label, screen_capture_ids, application_title_, state_change_callback);
 #endif
 
@@ -256,7 +256,8 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::DlpContentManager::Get()->OnScreenCaptureStopped(label, media_id);
+    policy::DlpContentManagerAsh::Get()->OnScreenCaptureStopped(label,
+                                                                media_id);
 #endif
   }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <functional>
 
@@ -13,7 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -87,10 +87,10 @@ constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kSrcPattern[] = "example.com";
 }  // namespace
 
-class DlpContentManagerBrowserTest : public InProcessBrowserTest {
+class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  public:
-  DlpContentManagerBrowserTest() = default;
-  ~DlpContentManagerBrowserTest() override = default;
+  DlpContentManagerAshBrowserTest() = default;
+  ~DlpContentManagerAshBrowserTest() override = default;
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -100,10 +100,10 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Instantiate |DlpContentManagerTestHelper| after main thread has been set
-    // up cause |DlpReportingManager| needs a sequenced task runner handle to
-    // set up the report queue.
-    helper_ = std::make_unique<DlpContentManagerTestHelper>();
+    // Instantiate |DlpContentManagerAshTestHelper| after main thread has been
+    // set up cause |DlpReportingManager| needs a sequenced task runner handle
+    // to set up the report queue.
+    helper_ = std::make_unique<DlpContentManagerAshTestHelper>();
   }
 
   void TearDownOnMainThread() override { helper_.reset(); }
@@ -112,8 +112,9 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   void SetupDlpRulesManager() {
     DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
-        base::BindRepeating(&DlpContentManagerBrowserTest::SetDlpRulesManager,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &DlpContentManagerAshBrowserTest::SetDlpRulesManager,
+            base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
     EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
@@ -140,7 +141,7 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<DlpContentManagerTestHelper> helper_;
+  std::unique_ptr<DlpContentManagerAshTestHelper> helper_;
   base::HistogramTester histogram_tester_;
   MockDlpRulesManager* mock_rules_manager_;
 
@@ -148,9 +149,9 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   std::vector<DlpPolicyEvent> events_;
 };
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsRestricted) {
   SetupReporting();
-  DlpContentManager* manager = helper_->GetContentManager();
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -230,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
               DlpRulesManager::Level::kBlock, 7u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
-  DlpContentManager* manager = helper_->GetContentManager();
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -281,9 +282,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsReported) {
   SetupReporting();
-  DlpContentManager* manager = helper_->GetContentManager();
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -347,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
               DlpRulesManager::Level::kReport, 7u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureStoppedWhenConfidentialWindowResized) {
   SetupReporting();
   aura::Window* root_window =
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
               DlpRulesManager::Level::kBlock, 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, VideoCaptureReported) {
   SetupReporting();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
@@ -444,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
               DlpRulesManager::Level::kReport, 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureStoppedWhenNonConfidentialWindowResized) {
   SetupReporting();
   aura::Window* root_window =
@@ -493,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
               DlpRulesManager::Level::kBlock, 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureNotStoppedWhenConfidentialWindowHidden) {
   SetupReporting();
   aura::Window* root_window =
@@ -542,10 +543,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
               DlpRulesManager::Level::kBlock, 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenShareNotification) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  DlpContentManager* manager = helper_->GetContentManager();
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -603,11 +605,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
               DlpRulesManager::Level::kBlock, 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenShareDisabledNotification) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  DlpContentManager* manager = helper_->GetContentManager();
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -639,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
 // Starting screen sharing and navigating other tabs should create exactly one
 // reporting event.
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareReporting) {
   SetupReporting();
   const GURL origin(kExampleUrl);
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
@@ -718,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
       kScreenShareBlockedNotificationId));
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, PrintingNotRestricted) {
   // Set up mock report queue and mock rules manager.
   SetupReporting();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -752,10 +754,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
 }
 
 class DlpContentManagerReportingBrowserTest
-    : public DlpContentManagerBrowserTest {
+    : public DlpContentManagerAshBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    DlpContentManagerBrowserTest::SetUpOnMainThread();
+    DlpContentManagerAshBrowserTest::SetUpOnMainThread();
     content::WebContents* first_tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(first_tab);
@@ -774,7 +776,7 @@ class DlpContentManagerReportingBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    DlpContentManagerBrowserTest::TearDownOnMainThread();
+    DlpContentManagerAshBrowserTest::TearDownOnMainThread();
     cloned_tab_observer_.reset();
   }
 

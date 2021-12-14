@@ -56,7 +56,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -234,7 +234,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           primary_root_window_for_testing_
               ? primary_root_window_for_testing_
               : ash::Shell::Get()->GetPrimaryRootWindow());
-  if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(screen_id)) {
+  if (policy::DlpContentManagerAsh::Get()->IsScreenCaptureRestricted(
+          screen_id)) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
@@ -424,7 +425,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   {
-    if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
+    if (policy::DlpContentManagerAsh::Get()->IsScreenCaptureRestricted(
+            media_id)) {
       std::move(callback).Run(
           blink::MediaStreamDevices(),
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
@@ -613,7 +615,8 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
+  if (policy::DlpContentManagerAsh::Get()->IsScreenCaptureRestricted(
+          media_id)) {
     std::move(pending_request.callback)
         .Run(blink::MediaStreamDevices(),
              blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,

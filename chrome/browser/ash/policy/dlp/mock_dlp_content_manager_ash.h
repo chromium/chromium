@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_ASH_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace policy {
 
-class MockDlpContentManager : public DlpContentManager {
+class MockDlpContentManagerAsh : public DlpContentManagerAsh {
  public:
-  MockDlpContentManager();
-  ~MockDlpContentManager() override;
+  MockDlpContentManagerAsh();
+  ~MockDlpContentManagerAsh() override;
 
   MOCK_METHOD(void,
               OnConfidentialityChanged,
@@ -47,4 +47,4 @@ class MockDlpContentManager : public DlpContentManager {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_ASH_H_

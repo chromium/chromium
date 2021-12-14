@@ -21,6 +21,10 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 // This helper class is designed to live as long as the capture, and is used
 // when no other MediaStreamUI object is used. If the capture violates the
@@ -57,10 +61,6 @@ class SameOriginPolicyUI : public MediaStreamUI {
   base::OnceClosure stop_callback_;
 };
 }  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TabCaptureAccessHandler::TabCaptureAccessHandler() = default;
 
@@ -127,7 +127,8 @@ void TabCaptureAccessHandler::HandleRequest(
         content::DesktopMediaID::TYPE_WEB_CONTENTS, /*id=*/0,
         content::WebContentsMediaCaptureId(request.render_process_id,
                                            request.render_frame_id));
-    if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
+    if (policy::DlpContentManagerAsh::Get()->IsScreenCaptureRestricted(
+            media_id)) {
       std::move(callback).Run(
           devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
           std::move(ui));

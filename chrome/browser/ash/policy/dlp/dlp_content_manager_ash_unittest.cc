@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -90,10 +90,10 @@ auto on_dlp_restriction_checked_callback = [](absl::optional<bool>* out_result,
 
 }  // namespace
 
-class DlpContentManagerTest : public testing::Test {
+class DlpContentManagerAshTest : public testing::Test {
  public:
-  DlpContentManagerTest(const DlpContentManagerTest&) = delete;
-  DlpContentManagerTest& operator=(const DlpContentManagerTest&) = delete;
+  DlpContentManagerAshTest(const DlpContentManagerAshTest&) = delete;
+  DlpContentManagerAshTest& operator=(const DlpContentManagerAshTest&) = delete;
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -103,11 +103,11 @@ class DlpContentManagerTest : public testing::Test {
   }
 
  protected:
-  DlpContentManagerTest()
+  DlpContentManagerAshTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {}
-  ~DlpContentManagerTest() override = default;
+  ~DlpContentManagerAshTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
@@ -146,18 +146,18 @@ class DlpContentManagerTest : public testing::Test {
   void SetupDlpRulesManager() {
     DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile(),
-        base::BindRepeating(&DlpContentManagerTest::SetDlpRulesManager,
+        base::BindRepeating(&DlpContentManagerAshTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
-  DlpContentManager* GetManager() { return helper_.GetContentManager(); }
+  DlpContentManagerAsh* GetManager() { return helper_.GetContentManager(); }
 
   TestingProfile* profile() { return profile_; }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  DlpContentManagerTestHelper helper_;
+  DlpContentManagerAshTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
   MockDlpRulesManager* mock_rules_manager_ = nullptr;
@@ -185,7 +185,7 @@ class DlpContentManagerTest : public testing::Test {
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
-TEST_F(DlpContentManagerTest, NoConfidentialDataShown) {
+TEST_F(DlpContentManagerAshTest, NoConfidentialDataShown) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
@@ -193,7 +193,7 @@ TEST_F(DlpContentManagerTest, NoConfidentialDataShown) {
             kEmptyRestrictionSet);
 }
 
-TEST_F(DlpContentManagerTest, ConfidentialDataShown) {
+TEST_F(DlpContentManagerAshTest, ConfidentialDataShown) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
@@ -213,7 +213,7 @@ TEST_F(DlpContentManagerTest, ConfidentialDataShown) {
             kEmptyRestrictionSet);
 }
 
-TEST_F(DlpContentManagerTest, ConfidentialDataVisibilityChanged) {
+TEST_F(DlpContentManagerAshTest, ConfidentialDataVisibilityChanged) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
@@ -247,7 +247,7 @@ TEST_F(DlpContentManagerTest, ConfidentialDataVisibilityChanged) {
             kEmptyRestrictionSet);
 }
 
-TEST_F(DlpContentManagerTest,
+TEST_F(DlpContentManagerAshTest,
        TwoWebContentsVisibilityAndConfidentialityChanged) {
   std::unique_ptr<content::WebContents> web_contents1 = CreateWebContents();
   std::unique_ptr<content::WebContents> web_contents2 = CreateWebContents();
@@ -313,7 +313,7 @@ TEST_F(DlpContentManagerTest,
             kEmptyRestrictionSet);
 }
 
-TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
+TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
@@ -379,7 +379,7 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
   EXPECT_EQ(events_.size(), 2u);
 }
 
-TEST_F(DlpContentManagerTest, PrivacyScreenReported) {
+TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
@@ -421,7 +421,7 @@ TEST_F(DlpContentManagerTest, PrivacyScreenReported) {
   EXPECT_EQ(events_.size(), 2u);
 }
 
-TEST_F(DlpContentManagerTest,
+TEST_F(DlpContentManagerAshTest,
        PrivacyScreenNotEnforcedAndReportedOnUnsupportedDevice) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
@@ -450,18 +450,19 @@ TEST_F(DlpContentManagerTest,
   helper_.DestroyWebContents(web_contents.get());
 }
 
-class DlpContentManagerCheckRestrictionTest : public DlpContentManagerTest {
+class DlpContentManagerAshCheckRestrictionTest
+    : public DlpContentManagerAshTest {
  public:
-  DlpContentManagerCheckRestrictionTest(
-      const DlpContentManagerCheckRestrictionTest&) = delete;
-  DlpContentManagerCheckRestrictionTest& operator=(
-      const DlpContentManagerCheckRestrictionTest&) = delete;
+  DlpContentManagerAshCheckRestrictionTest(
+      const DlpContentManagerAshCheckRestrictionTest&) = delete;
+  DlpContentManagerAshCheckRestrictionTest& operator=(
+      const DlpContentManagerAshCheckRestrictionTest&) = delete;
 
  protected:
-  DlpContentManagerCheckRestrictionTest() = default;
+  DlpContentManagerAshCheckRestrictionTest() = default;
 
   void SetUp() override {
-    DlpContentManagerTest::SetUp();
+    DlpContentManagerAshTest::SetUp();
 
     SetReportQueueForReportingManager();
     SetupDlpRulesManager();
@@ -493,7 +494,7 @@ class DlpContentManagerCheckRestrictionTest : public DlpContentManagerTest {
   absl::optional<bool> is_action_allowed_;
 };
 
-TEST_F(DlpContentManagerCheckRestrictionTest, PrintingRestricted) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingRestricted) {
   // Needs to be set because CheckPrintingRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
@@ -548,7 +549,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingRestricted) {
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
@@ -617,7 +618,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
   EXPECT_EQ(events_.size(), 3u);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(false /*should_proceed*/);
@@ -680,7 +681,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
   EXPECT_EQ(events_.size(), 2u);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitRestricted) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, CaptureModeInitRestricted) {
   // Needs to be set because CheckCaptureModeInitRestriction() will show the
   // blocked notification.
   NotificationDisplayServiceTester display_service_tester(profile());
@@ -731,7 +732,8 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitRestricted) {
       GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, false, 2);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedContinued) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest,
+       CaptureModeInitWarnedContinued) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
@@ -774,7 +776,8 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedContinued) {
   VerifyAndResetActionAllowed(true /*expected*/);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedCancelled) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest,
+       CaptureModeInitWarnedCancelled) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(false /*should_proceed*/);
@@ -816,7 +819,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedCancelled) {
   VerifyAndResetActionAllowed(true /*expected*/);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotRestricted) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotRestricted) {
   // Needs to be set because CheckScreenshotRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
@@ -872,7 +875,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotRestricted) {
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 2);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedContinued) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
@@ -921,7 +924,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedContinued) {
   VerifyAndResetActionAllowed(true /*expected*/);
 }
 
-TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedCancelled) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(false /*should_proceed*/);

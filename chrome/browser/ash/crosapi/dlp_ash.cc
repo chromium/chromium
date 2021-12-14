@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
@@ -67,8 +67,8 @@ void DlpAsh::DlpRestrictionsUpdated(const std::string& window_id,
     LOG(WARNING) << "Didn't find Lacros window with id: " << window_id;
     return;
   }
-  policy::DlpContentManager* dlp_content_manager =
-      policy::DlpContentManager::Get();
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
   dlp_content_manager->OnWindowRestrictionChanged(
       window, ConvertMojoToDlpContentRestrictionSet(restrictions));

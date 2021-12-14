@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_H_
 
 #include <memory>
 #include <string>
@@ -46,15 +46,15 @@ class DlpWarnNotifier;
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
-class DlpContentManager : public DlpContentObserver,
-                          public DlpWindowObserver::Delegate {
+class DlpContentManagerAsh : public DlpContentObserver,
+                             public DlpWindowObserver::Delegate {
  public:
-  DlpContentManager(const DlpContentManager&) = delete;
-  DlpContentManager& operator=(const DlpContentManager&) = delete;
+  DlpContentManagerAsh(const DlpContentManagerAsh&) = delete;
+  DlpContentManagerAsh& operator=(const DlpContentManagerAsh&) = delete;
 
   // Creates the instance if not yet created.
   // There will always be a single instance created on the first access.
-  static DlpContentManager* Get();
+  static DlpContentManagerAsh* Get();
 
   // DlpWindowObserver::Delegate overrides:
   void OnWindowOcclusionChanged(aura::Window* window) override;
@@ -144,11 +144,11 @@ class DlpContentManager : public DlpContentObserver,
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
-  // Please use ScopedDlpContentManagerForTesting instead of these methods,
+  // Please use ScopedDlpContentManagerAshForTesting instead of these methods,
   // if possible.
-  static void SetDlpContentManagerForTesting(
-      DlpContentManager* dlp_content_manager);
-  static void ResetDlpContentManagerForTesting();
+  static void SetDlpContentManagerAshForTesting(
+      DlpContentManagerAsh* dlp_content_manager);
+  static void ResetDlpContentManagerAshForTesting();
 
  protected:
   void SetReportingManagerForTesting(DlpReportingManager* manager);
@@ -158,9 +158,9 @@ class DlpContentManager : public DlpContentObserver,
   void ResetWarnNotifierForTesting();
 
  private:
-  friend class DlpContentManagerTestHelper;
+  friend class DlpContentManagerAshTestHelper;
   friend class DlpContentTabHelper;
-  friend class MockDlpContentManager;
+  friend class MockDlpContentManagerAsh;
 
   // Used to keep track of running screen shares.
   class ScreenShareInfo {
@@ -239,8 +239,8 @@ class DlpContentManager : public DlpContentObserver,
     DlpConfidentialContents confidential_contents;
   };
 
-  DlpContentManager();
-  ~DlpContentManager() override;
+  DlpContentManagerAsh();
+  ~DlpContentManagerAsh() override;
 
   // Initializing to be called separately to make testing possible.
   virtual void Init();
@@ -378,17 +378,17 @@ class DlpContentManager : public DlpContentObserver,
   const bool is_screen_share_warning_mode_enabled_ = false;
 };
 
-// Helper class to call SetDlpContentManagerForTesting and
-// ResetDlpContentManagerForTesting automically.
+// Helper class to call SetDlpContentManagerAshForTesting and
+// ResetDlpContentManagerAshForTesting automically.
 // The caller (test) should manage `test_dlp_content_manager` lifetime.
 // This class does not own it.
-class ScopedDlpContentManagerForTesting {
+class ScopedDlpContentManagerAshForTesting {
  public:
-  explicit ScopedDlpContentManagerForTesting(
-      DlpContentManager* test_dlp_content_manager);
-  ~ScopedDlpContentManagerForTesting();
+  explicit ScopedDlpContentManagerAshForTesting(
+      DlpContentManagerAsh* test_dlp_content_manager);
+  ~ScopedDlpContentManagerAshForTesting();
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_H_

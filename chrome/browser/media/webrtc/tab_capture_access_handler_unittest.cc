@@ -24,7 +24,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager_ash.h"
 #endif
 
 class TabCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -110,8 +110,8 @@ TEST_F(TabCaptureAccessHandlerTest, DlpRestricted) {
           web_contents()->GetMainFrame()->GetRoutingID()));
 
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(source))
       .Times(1)

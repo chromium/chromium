@@ -32,7 +32,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager_ash.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -384,8 +384,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
       .Times(1)
@@ -416,8 +416,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
       .Times(1)
@@ -445,8 +445,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
       .Times(1)

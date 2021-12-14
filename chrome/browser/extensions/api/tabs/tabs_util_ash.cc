@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_util.h"
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,7 +36,7 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 }
 
 bool IsScreenshotRestricted(content::WebContents* web_contents) {
-  return policy::DlpContentManager::Get()->IsScreenshotApiRestricted(
+  return policy::DlpContentManagerAsh::Get()->IsScreenshotApiRestricted(
       ScreenshotArea::CreateForWindow(web_contents->GetNativeView()));
 }
 
