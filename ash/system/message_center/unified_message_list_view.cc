@@ -946,7 +946,10 @@ void UnifiedMessageListView::StartAnimation() {
           kExpandOrCollapseAnimationSmoothnessHistogramName);
       DCHECK(expand_or_collapsing_container_);
       animation_duration =
-          expand_or_collapsing_container_->GetBoundsAnimationDuration();
+          expand_or_collapsing_container_
+              ? expand_or_collapsing_container_->GetBoundsAnimationDuration()
+              : base::Milliseconds(
+                    kLargeImageExpandAndCollapseAnimationDuration);
       break;
   }
 
