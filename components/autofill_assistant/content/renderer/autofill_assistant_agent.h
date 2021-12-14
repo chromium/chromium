@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -46,9 +47,9 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
   // content::RenderFrameObserver:
   void OnDestruct() override;
 
-  const mojo::Remote<mojom::AutofillAssistantDriver>& GetDriver();
+  mojom::AutofillAssistantDriver& GetDriver();
 
-  mojo::Remote<mojom::AutofillAssistantDriver> driver_;
+  mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantAgent> receiver_{this};
   base::WeakPtrFactory<AutofillAssistantAgent> weak_ptr_factory_{this};

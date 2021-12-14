@@ -31,6 +31,10 @@ class ContentAutofillAssistantDriver
   ContentAutofillAssistantDriver& operator=(
       const ContentAutofillAssistantDriver&) = delete;
 
+  static void BindDriver(mojo::PendingAssociatedReceiver<
+                             mojom::AutofillAssistantDriver> pending_receiver,
+                         content::RenderFrameHost* render_frame_host);
+
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAssistantDriver>
           pending_receiver);

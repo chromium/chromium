@@ -5,7 +5,7 @@
 #include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 
 #include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -68,28 +68,14 @@ void AutofillAssistantAgent::GetSemanticNodes(
 
 void AutofillAssistantAgent::GetAnnotateDomModel(
     base::OnceCallback<void(base::File)> callback) {
-  GetDriver()->GetAnnotateDomModel(std::move(callback));
+  GetDriver().GetAnnotateDomModel(std::move(callback));
 }
 
-const mojo::Remote<mojom::AutofillAssistantDriver>&
-AutofillAssistantAgent::GetDriver() {
+mojom::AutofillAssistantDriver& AutofillAssistantAgent::GetDriver() {
   if (!driver_) {
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
-        driver_.BindNewPipeAndPassReceiver());
-    return driver_;
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&driver_);
   }
-
-  // The driver_ can become unbound or disconnected in testing so this catches
-  // that case and reconnects so `this` can connect to the driver in the
-  // browser.
-  if (driver_.is_bound() && driver_.is_connected()) {
-    return driver_;
-  }
-
-  driver_.reset();
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
-      driver_.BindNewPipeAndPassReceiver());
-  return driver_;
+  return *driver_;
 }
 
 }  // namespace autofill_assistant

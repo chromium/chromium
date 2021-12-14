@@ -18,6 +18,20 @@ ContentAutofillAssistantDriver::ContentAutofillAssistantDriver(
           render_frame_host) {}
 ContentAutofillAssistantDriver::~ContentAutofillAssistantDriver() = default;
 
+// static
+void ContentAutofillAssistantDriver::BindDriver(
+    mojo::PendingAssociatedReceiver<mojom::AutofillAssistantDriver>
+        pending_receiver,
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+
+  auto* driver = ContentAutofillAssistantDriver::GetOrCreateForCurrentDocument(
+      render_frame_host);
+  if (driver) {
+    driver->BindPendingReceiver(std::move(pending_receiver));
+  }
+}
+
 void ContentAutofillAssistantDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::AutofillAssistantDriver>
         pending_receiver) {

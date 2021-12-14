@@ -2020,6 +2020,8 @@ static_library("browser") {
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill_assistant/browser/public:public",
+    "//components/autofill_assistant/content/browser",
+    "//components/autofill_assistant/content/common:mojo_interfaces",
     "//components/back_forward_cache",
     "//components/background_fetch",
     "//components/background_sync",

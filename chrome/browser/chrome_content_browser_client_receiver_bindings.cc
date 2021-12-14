@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
@@ -393,6 +395,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     content::RenderFrameHost* render_frame_host,
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle* handle) {
+  if (interface_name ==
+      autofill_assistant::mojom::AutofillAssistantDriver::Name_) {
+    autofill_assistant::ContentAutofillAssistantDriver::BindDriver(
+        mojo::PendingAssociatedReceiver<
+            autofill_assistant::mojom::AutofillAssistantDriver>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
   if (interface_name == autofill::mojom::AutofillDriver::Name_) {
     autofill::ContentAutofillDriverFactory::BindAutofillDriver(
         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
