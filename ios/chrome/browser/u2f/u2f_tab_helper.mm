@@ -6,7 +6,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/u2f/u2f_controller.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 
@@ -47,7 +46,7 @@ GURL U2FTabHelper::GetXCallbackUrl(const GURL& request_url,
   // Create U2FController object lazily.
   if (!second_factor_controller_)
     second_factor_controller_ = [[U2FController alloc] init];
-  NSString* tab_id = TabIdTabHelper::FromWebState(web_state_)->tab_id();
+  NSString* tab_id = web_state_->GetStableIdentifier();
   return [second_factor_controller_
       XCallbackFromRequestURL:request_url
                     originURL:origin_url

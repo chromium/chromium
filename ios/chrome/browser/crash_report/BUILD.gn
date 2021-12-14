@@ -82,7 +82,6 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
     "//net",

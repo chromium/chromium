@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/bookmarks_test_util.h"
@@ -320,12 +319,12 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (NSString*)currentTabID {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return TabIdTabHelper::FromWebState(web_state)->tab_id();
+  return web_state->GetStableIdentifier();
 }
 
 + (NSString*)nextTabID {
   web::WebState* web_state = chrome_test_util::GetNextWebState();
-  return TabIdTabHelper::FromWebState(web_state)->tab_id();
+  return web_state->GetStableIdentifier();
 }
 
 + (NSUInteger)indexOfActiveNormalTab {

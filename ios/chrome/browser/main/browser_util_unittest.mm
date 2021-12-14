@@ -12,7 +12,6 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -60,9 +59,7 @@ class BrowserUtilTest : public PlatformTest {
   web::FakeWebState* AppendNewWebState(Browser* browser) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
-    TabIdTabHelper::CreateForWebState(inserted_web_state);
-    NSString* tab_id =
-        TabIdTabHelper::FromWebState(inserted_web_state)->tab_id();
+    NSString* tab_id = inserted_web_state->GetStableIdentifier();
     SnapshotTabHelper::CreateForWebState(inserted_web_state, tab_id);
     browser->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
@@ -73,7 +70,7 @@ class BrowserUtilTest : public PlatformTest {
   // Returns the tab ID for the web state at |index| in |browser|.
   NSString* GetTabIDForWebStateAt(int index, Browser* browser) {
     web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
-    return TabIdTabHelper::FromWebState(web_state)->tab_id();
+    return web_state->GetStableIdentifier();
   }
 
   web::WebTaskEnvironment task_environment_;

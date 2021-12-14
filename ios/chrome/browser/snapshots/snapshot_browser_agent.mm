@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -129,7 +128,7 @@ NSSet<NSString*>* SnapshotBrowserAgent::GetTabIDs() {
       [NSMutableSet setWithCapacity:web_state_list->count()];
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [tab_ids addObject:TabIdTabHelper::FromWebState(web_state)->tab_id()];
+    [tab_ids addObject:web_state->GetStableIdentifier()];
   }
   return tab_ids;
 }

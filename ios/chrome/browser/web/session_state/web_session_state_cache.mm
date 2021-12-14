@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -139,7 +138,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
 - (void)persistSessionStateData:(NSData*)data
                     forWebState:(const web::WebState*)webState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
   if (!data || !sessionID || !_taskRunner)
     return;
 
@@ -153,7 +152,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 - (NSData*)sessionStateDataForWebState:(const web::WebState*)webState {
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
   base::FilePath filePath =
       _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
   NSString* filePathString = base::SysUTF8ToNSString(filePath.AsUTF8Unsafe());
@@ -180,7 +179,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     return;
   }
 
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
 
   base::FilePath filePath =
       _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
@@ -211,8 +210,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs
-          addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [liveSessionIDs addObject:webState->GetStableIdentifier()];
     }
   }
 
@@ -220,8 +218,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs
-          addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [liveSessionIDs addObject:webState->GetStableIdentifier()];
     }
   }
   return liveSessionIDs;

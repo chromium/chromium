@@ -25,7 +25,6 @@
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -150,7 +149,6 @@ class AppLauncherTabHelperTest : public PlatformTest {
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
         chrome_browser_state_.get(),
         base::BindRepeating(&BuildReadingListModel));
-    TabIdTabHelper::CreateForWebState(&web_state_);
     is_reading_list_initialized_ = true;
   }
 
@@ -433,8 +431,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
 #define MAYBE_U2FUrls DISABLED_U2FUrls
 #endif
 TEST_F(AppLauncherTabHelperTest, MAYBE_U2FUrls) {
-  // Add required tab helpers for the U2F check.
-  TabIdTabHelper::CreateForWebState(&web_state_);
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
 
   // "u2f-x-callback" scheme should only be created by the browser. External

@@ -71,7 +71,6 @@ source_set("app_support") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/tabs:tabs",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",

@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
@@ -652,7 +651,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      NSString* currentTabID = TabIdTabHelper::FromWebState(webState)->tab_id();
+      NSString* currentTabID = webState->GetStableIdentifier();
       if ([currentTabID isEqualToString:tabID]) {
         U2FTabHelper::FromWebState(webState)->EvaluateU2FResult(URL);
         return;

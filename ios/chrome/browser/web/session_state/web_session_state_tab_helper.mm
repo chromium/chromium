@@ -23,7 +23,6 @@
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_manager.h"

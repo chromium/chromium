@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -351,9 +350,8 @@ TEST_F(SnapshotTabHelperTest, RemoveSnapshot) {
 TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   id partialMock = OCMPartialMock(snapshot_cache_);
   auto web_state = std::make_unique<web::FakeWebState>();
-  TabIdTabHelper::CreateForWebState(web_state.get());
 
-  NSString* tab_id = TabIdTabHelper::FromWebState(web_state.get())->tab_id();
+  NSString* tab_id = web_state.get()->GetStableIdentifier();
   SnapshotTabHelper::CreateForWebState(web_state.get(), tab_id);
   [[partialMock reject] removeImageWithSnapshotID:tab_id];
 

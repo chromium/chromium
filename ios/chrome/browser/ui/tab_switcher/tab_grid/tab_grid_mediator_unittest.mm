@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -247,13 +246,12 @@ class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
-    TabIdTabHelper::CreateForWebState(web_state);
     // Create NTPTabHelper to ensure VisibleURL is set to kChromeUINewTabURL.
     id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
     NewTabPageTabHelper::CreateForWebState(web_state);
     NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
-    NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
+    NSString* identifier = web_state->GetStableIdentifier();
     SnapshotTabHelper::CreateForWebState(web_state, identifier);
     WebSessionStateTabHelper::CreateForWebState(web_state);
   }
@@ -305,8 +303,7 @@ class TabGridMediatorTest : public PlatformTest {
     // Insert some web states.
     for (int i = 0; i < 3; i++) {
       auto web_state = CreateFakeWebStateWithURL(GURL("https://foo/bar"));
-      NSString* identifier =
-          TabIdTabHelper::FromWebState(web_state.get())->tab_id();
+      NSString* identifier = web_state.get()->GetStableIdentifier();
       // Tab IDs should be unique.
       ASSERT_FALSE([identifiers containsObject:identifier]);
       [identifiers addObject:identifier];
@@ -317,8 +314,7 @@ class TabGridMediatorTest : public PlatformTest {
     original_identifiers_ = [identifiers copy];
     web_state_list_->ActivateWebStateAt(1);
     original_selected_identifier_ =
-        TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(1))
-            ->tab_id();
+        web_state_list_->GetWebStateAt(1)->GetStableIdentifier();
     consumer_ = [[FakeConsumer alloc] init];
     mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
@@ -337,7 +333,6 @@ class TabGridMediatorTest : public PlatformTest {
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetCurrentURL(url);
-    TabIdTabHelper::CreateForWebState(web_state.get());
     SnapshotTabHelper::CreateForWebState(web_state.get(),
                                          [[NSUUID UUID] UUIDString]);
     return web_state;
@@ -404,9 +399,7 @@ TEST_F(TabGridMediatorTest, ConsumerPopulateItems) {
 TEST_F(TabGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.count);
   auto web_state = std::make_unique<web::FakeWebState>();
-  TabIdTabHelper::CreateForWebState(web_state.get());
-  NSString* item_identifier =
-      TabIdTabHelper::FromWebState(web_state.get())->tab_id();
+  NSString* item_identifier = web_state.get()->GetStableIdentifier();
   web_state_list_->InsertWebState(1, std::move(web_state),
                                   WebStateList::INSERT_FORCE_INDEX,
                                   WebStateOpener());
@@ -432,9 +425,8 @@ TEST_F(TabGridMediatorTest, ConsumerRemoveItem) {
 TEST_F(TabGridMediatorTest, ConsumerUpdateSelectedItem) {
   EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
   web_state_list_->ActivateWebStateAt(2);
-  EXPECT_NSEQ(
-      TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(2))->tab_id(),
-      consumer_.selectedItemID);
+  EXPECT_NSEQ(web_state_list_->GetWebStateAt(2)->GetStableIdentifier(),
+              consumer_.selectedItemID);
 }
 
 // Tests that the consumer is notified when a web state is replaced.
@@ -442,9 +434,7 @@ TEST_F(TabGridMediatorTest, ConsumerUpdateSelectedItem) {
 // id of the new item.
 TEST_F(TabGridMediatorTest, ConsumerReplaceItem) {
   auto new_web_state = std::make_unique<web::FakeWebState>();
-  TabIdTabHelper::CreateForWebState(new_web_state.get());
-  NSString* new_item_identifier =
-      TabIdTabHelper::FromWebState(new_web_state.get())->tab_id();
+  NSString* new_item_identifier = new_web_state->GetStableIdentifier();
   @autoreleasepool {
     web_state_list_->ReplaceWebStateAt(1, std::move(new_web_state));
   }
@@ -470,7 +460,7 @@ TEST_F(TabGridMediatorTest, ConsumerMoveItem) {
 TEST_F(TabGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
   NSString* identifier =
-      TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(2))->tab_id();
+      web_state_list_->GetWebStateAt(2)->GetStableIdentifier();
   [mediator_ selectItemWithID:identifier];
   EXPECT_EQ(2, web_state_list_->active_index());
   EXPECT_NSEQ(identifier, consumer_.selectedItemID);
@@ -482,7 +472,7 @@ TEST_F(TabGridMediatorTest, SelectItemCommand) {
 TEST_F(TabGridMediatorTest, CloseItemCommand) {
   // Previously there were 3 items.
   NSString* identifier =
-      TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(0))->tab_id();
+      web_state_list_->GetWebStateAt(0)->GetStableIdentifier();
   [mediator_ closeItemWithID:identifier];
   EXPECT_EQ(2, web_state_list_->count());
   EXPECT_EQ(2UL, consumer_.items.count);
@@ -601,7 +591,7 @@ TEST_F(TabGridMediatorTest, AddNewItemAtEndCommand) {
   // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
   // to return pending item's URL.
   EXPECT_EQ("", web_state->GetVisibleURL().spec());
-  NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
+  NSString* identifier = web_state->GetStableIdentifier();
   EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
   // Consumer checks.
   EXPECT_EQ(4UL, consumer_.items.count);
@@ -627,7 +617,7 @@ TEST_F(TabGridMediatorTest, InsertNewItemCommand) {
   // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
   // to return pending item's URL.
   EXPECT_EQ("", web_state->GetVisibleURL().spec());
-  NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
+  NSString* identifier = web_state->GetStableIdentifier();
   EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
   // Consumer checks.
   EXPECT_EQ(4UL, consumer_.items.count);
@@ -654,7 +644,7 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
   NSMutableArray<NSString*>* pre_move_ids = [[NSMutableArray alloc] init];
   for (int i = 0; i < 3; i++) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(i);
-    [pre_move_ids addObject:TabIdTabHelper::FromWebState(web_state)->tab_id()];
+    [pre_move_ids addObject:web_state->GetStableIdentifier()];
   }
   NSString* pre_move_selected_id =
       pre_move_ids[web_state_list_->active_index()];
@@ -670,7 +660,7 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
   for (int index = 0; index < 2; index++) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
     ASSERT_TRUE(web_state);
-    NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
+    NSString* identifier = web_state->GetStableIdentifier();
     EXPECT_NSEQ(identifier, pre_move_ids[(index + 1) % 3]);
     EXPECT_NSEQ(identifier, consumer_.items[index]);
   }
@@ -683,8 +673,7 @@ TEST_F(TabGridMediatorTest, TestSelectItemWithNoPriceDrop) {
   // No need to set a null price drop - it will be null by default. Simply
   // need to create the helper.
   ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
-  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
-                                  ->tab_id()];
+  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
@@ -694,16 +683,14 @@ TEST_F(TabGridMediatorTest, TestSelectItemWithPriceDrop) {
   web::WebState* web_state_to_select = web_state_list_->GetWebStateAt(2);
   ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
   SetFakePriceDrop(web_state_to_select);
-  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
-                                  ->tab_id()];
+  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }
 
 TEST_F(TabGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
   web::WebState* web_state_to_select = web_state_list_->GetWebStateAt(2);
-  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
-                                  ->tab_id()];
+  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }

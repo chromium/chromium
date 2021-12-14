@@ -151,7 +151,6 @@
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
@@ -3210,8 +3209,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
                         fromTabId:(NSString*)tabId {
   // Check if the call comes from currently visible tab.
-  NSString* visibleTabId =
-      TabIdTabHelper::FromWebState(self.currentWebState)->tab_id();
+  NSString* visibleTabId = self.currentWebState->GetStableIdentifier();
   if ([tabId isEqual:visibleTabId]) {
     [self addChildViewController:viewController];
     [self.view addSubview:viewController.view];
@@ -4071,8 +4069,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.browserContainerViewController.contentView = nil;
   }
 
-  [[UpgradeCenter sharedInstance]
-      tabWillClose:TabIdTabHelper::FromWebState(webState)->tab_id()];
+  [[UpgradeCenter sharedInstance] tabWillClose:webState->GetStableIdentifier()];
 }
 
 // Observer method, WebState replaced in |webStateList|.
@@ -4114,7 +4111,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // infobar(s) that are just added.
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(webState);
-  NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* tabID = webState->GetStableIdentifier();
   [[UpgradeCenter sharedInstance] addInfoBarToManager:infoBarManager
                                              forTabId:tabID];
   if (!ReSignInInfoBarDelegate::Create(self.browserState, webState,

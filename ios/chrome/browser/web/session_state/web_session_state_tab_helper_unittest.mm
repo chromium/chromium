@@ -20,7 +20,6 @@
 #include "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
@@ -45,7 +44,6 @@ class WebSessionStateTabHelperTest : public ChromeWebTest {
   void SetUp() override {
     ChromeWebTest::SetUp();
 
-    TabIdTabHelper::CreateForWebState(web_state());
     WebSessionStateTabHelper::CreateForWebState(web_state());
 
     session_cache_directory_ =
@@ -86,7 +84,7 @@ TEST_F(WebSessionStateTabHelperTest, DisableFeature) {
   FlushRunLoops();
 
   // File should not be saved.
-  NSString* sessionID = TabIdTabHelper::FromWebState(web_state())->tab_id();
+  NSString* sessionID = web_state()->GetStableIdentifier();
   base::FilePath filePath =
       session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
   ASSERT_FALSE(base::PathExists(filePath));
@@ -114,7 +112,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
   // File should not be saved yet.
-  NSString* sessionID = TabIdTabHelper::FromWebState(web_state())->tab_id();
+  NSString* sessionID = web_state()->GetStableIdentifier();
   base::FilePath filePath =
       session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
   ASSERT_FALSE(base::PathExists(filePath));
@@ -138,7 +136,6 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(createParams);
   WebSessionStateTabHelper::CreateForWebState(web_state.get());
-  TabIdTabHelper::CreateForWebState(web_state.get());
   web_state->GetView();
   web_state->SetKeepRenderProcessAlive(true);
   GURL urlBlank("about:blank");
@@ -146,8 +143,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   web_state->GetNavigationManager()->LoadURLWithParams(paramsBlank);
 
   // copy the tabid file over to the new tabid...
-  NSString* newSessionID =
-      TabIdTabHelper::FromWebState(web_state.get())->tab_id();
+  NSString* newSessionID = web_state.get()->GetStableIdentifier();
   base::FilePath newFilePath =
       session_cache_directory_.Append(base::SysNSStringToUTF8(newSessionID));
   EXPECT_TRUE(base::CopyFile(filePath, newFilePath));

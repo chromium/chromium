@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,8 +28,7 @@ PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
 web::WebState* GetWebState(WebStateList* web_state_list, NSString* tab_id) {
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-    if ([tab_id isEqualToString:tab_helper->tab_id()])
+    if ([tab_id isEqualToString:web_state->GetStableIdentifier()])
       return web_state;
   }
   return nullptr;

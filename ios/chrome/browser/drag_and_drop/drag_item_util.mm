@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 
 #include "base/check_op.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
@@ -43,7 +42,7 @@ UIDragItem* CreateTabDragItem(web::WebState* web_state) {
   NSItemProvider* item_provider = [[NSItemProvider alloc] initWithObject:url];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
-  NSString* tab_id = TabIdTabHelper::FromWebState(web_state)->tab_id();
+  NSString* tab_id = web_state->GetStableIdentifier();
   BOOL incognito = web_state->GetBrowserState()->IsOffTheRecord();
   // Visibility "all" is required to allow the OS to recognize this activity for
   // creating a new window.

@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/main/test/fake_connection_information.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -126,7 +125,7 @@ class UserActivityHandlerTest : public PlatformTest {
   }
 
   NSString* GetTabIdForWebState(web::WebState* web_state) {
-    return TabIdTabHelper::FromWebState(web_state)->tab_id();
+    return web_state->GetStableIdentifier();
   }
 
   conditionBlock getCompletionHandler() {
@@ -835,7 +834,6 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
       std::make_unique<WebStateList>(&_webStateListDelegate);
 
   auto web_state = std::make_unique<web::FakeWebState>();
-  TabIdTabHelper::CreateForWebState(web_state.get());
   FakeU2FTabHelper::CreateForWebState(web_state.get());
   web::WebState* web_state_ptr = web_state.get();
   web_state_list_->InsertWebState(

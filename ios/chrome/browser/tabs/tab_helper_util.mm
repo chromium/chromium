@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
@@ -89,9 +88,6 @@
 #import "ios/web/public/web_state.h"
 
 void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
-  // TabIdHelper sets up the tab ID.
-  TabIdTabHelper::CreateForWebState(web_state);
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
 
@@ -99,7 +95,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // so it needs to be created before them.
   IOSChromeSessionTabHelper::CreateForWebState(web_state);
 
-  NSString* tab_id = TabIdTabHelper::FromWebState(web_state)->tab_id();
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
   IOSChromeSyncedTabDelegate::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
@@ -200,7 +195,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // condition can be removed.
   if (!for_prerender) {
     SadTabTabHelper::CreateForWebState(web_state);
-    SnapshotTabHelper::CreateForWebState(web_state, tab_id);
+    SnapshotTabHelper::CreateForWebState(web_state,
+                                         web_state->GetStableIdentifier());
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);
     InfobarBadgeTabHelper::CreateForWebState(web_state);

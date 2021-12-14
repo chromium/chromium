@@ -72,7 +72,6 @@ source_set("web") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ ":tab_id_tab_helper" ]
 }
 
 source_set("delegate") {
@@ -121,19 +120,6 @@ source_set("page_placeholder") {
   ]
 }
 
-source_set("tab_id_tab_helper") {
-  sources = [
-    "tab_id_tab_helper.h",
-    "tab_id_tab_helper.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/web/public",
-    "//ios/web/public/session",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 source_set("tab_helper_delegates") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -155,7 +141,6 @@ source_set("unit_tests") {
     "page_placeholder_tab_helper_unittest.mm",
     "repost_form_tab_helper_unittest.mm",
     "sad_tab_tab_helper_unittest.mm",
-    "tab_id_tab_helper_unittest.mm",
     "web_navigation_browser_agent_unittest.mm",
     "web_navigation_util_unittest.mm",
     "web_state_delegate_browser_agent_unittest.mm",

@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
@@ -64,9 +63,8 @@
 namespace {
 // Constructs a TabSwitcherItem from a |web_state|.
 TabSwitcherItem* CreateItem(web::WebState* web_state) {
-  TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-  TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:tab_helper->tab_id()];
+  TabSwitcherItem* item = [[TabSwitcherItem alloc]
+      initWithIdentifier:web_state->GetStableIdentifier()];
   // chrome://newtab (NTP) tabs have no title.
   if (IsURLNtp(web_state->GetVisibleURL())) {
     item.hidesTitle = YES;
@@ -94,8 +92,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   web::WebState* web_state = web_state_list->GetActiveWebState();
   if (!web_state)
     return nil;
-  TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-  return tab_helper->tab_id();
+  return web_state->GetStableIdentifier();
 }
 
 void LogPriceDropMetrics(web::WebState* web_state) {
@@ -118,8 +115,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-    if ([identifier isEqualToString:tab_helper->tab_id()])
+    if ([identifier isEqualToString:web_state->GetStableIdentifier()])
       return i;
   }
   return WebStateList::kInvalidIndex;
@@ -131,8 +127,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                                  NSString* identifier) {
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-    if ([identifier isEqualToString:tab_helper->tab_id()])
+    if ([identifier isEqualToString:web_state->GetStableIdentifier()])
       return web_state;
   }
   return nullptr;
@@ -245,8 +240,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
-  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
-  [self.consumer moveItemWithID:tabHelper->tab_id() toIndex:toIndex];
+  [self.consumer moveItemWithID:webState->GetStableIdentifier()
+                        toIndex:toIndex];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -256,8 +251,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
-  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(oldWebState);
-  [self.consumer replaceItemID:tabHelper->tab_id()
+  [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
                       withItem:CreateItem(newWebState)];
   _scopedWebStateObservation->RemoveObservation(oldWebState);
   _scopedWebStateObservation->AddObservation(newWebState);
@@ -271,9 +265,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     return;
   if (!webStateList)
     return;
-  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
-  NSString* itemID = tabHelper->tab_id();
-  [self.consumer removeItemWithID:itemID
+  [self.consumer removeItemWithID:webState->GetStableIdentifier()
                    selectedItemID:GetActiveTabId(webStateList)];
   _scopedWebStateObservation->RemoveObservation(webState);
 }
@@ -293,8 +285,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     return;
   }
 
-  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(newWebState);
-  [self.consumer selectItemWithID:tabHelper->tab_id()];
+  [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -327,10 +318,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  // Assumption: the ID of the webState didn't change as a result of this load.
-  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
-  NSString* itemID = tabHelper->tab_id();
-  [self.consumer replaceItemID:itemID withItem:CreateItem(webState)];
+  [self.consumer replaceItemID:webState->GetStableIdentifier()
+                      withItem:CreateItem(webState)];
 }
 
 #pragma mark - SnapshotCacheObserver
@@ -698,7 +687,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                           self.webStateList->count() - 1);
   for (int i = startIndex; i <= endIndex; i++) {
     web::WebState* web_state = self.webStateList->GetWebStateAt(i);
-    NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
+    NSString* identifier = web_state->GetStableIdentifier();
     auto cacheImage = ^(UIImage* image) {
       self.appearanceCache[identifier] = image;
     };

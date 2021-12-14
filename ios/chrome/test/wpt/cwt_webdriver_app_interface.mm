@@ -16,7 +16,6 @@
 #include "base/values.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
@@ -25,6 +24,7 @@
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/web_state.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 
@@ -37,8 +37,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 NSString* GetIdForWebState(web::WebState* web_state) {
-  TabIdTabHelper::CreateForWebState(web_state);
-  return TabIdTabHelper::FromWebState(web_state)->tab_id();
+  return web_state->GetStableIdentifier();
 }
 
 WebStateList* GetCurrentWebStateList() {

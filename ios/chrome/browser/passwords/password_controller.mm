@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
-#include "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -323,9 +322,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                    iconURL:formSignedIn->icon_url
           URLLoaderFactory:_webState->GetBrowserState()
                                ->GetSharedURLLoaderFactory()];
-  TabIdTabHelper* tabIdHelper = TabIdTabHelper::FromWebState(_webState);
   if (![_delegate displaySignInNotification:self.notifyAutoSigninViewController
-                                  fromTabId:tabIdHelper->tab_id()]) {
+                                  fromTabId:_webState->GetStableIdentifier()]) {
     // The notification was not shown. Store the password form in
     // |_pendingAutoSigninPasswordForm| to show the notification later.
     _pendingAutoSigninPasswordForm = std::move(formSignedIn);
