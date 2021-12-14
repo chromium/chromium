@@ -84,7 +84,8 @@ Mediator::Mediator(
       fast_pair_bluetooth_config_delegate_(
           std::make_unique<FastPairBluetoothConfigDelegate>()) {
   metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
-      scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());
+      scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
+      retroactive_pairing_detector_.get());
   battery_update_message_handler_ =
       std::make_unique<BatteryUpdateMessageHandler>(
           message_stream_lookup_.get());

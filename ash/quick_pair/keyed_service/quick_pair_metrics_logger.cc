@@ -7,16 +7,21 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
+#include "base/containers/contains.h"
 
 namespace ash {
 namespace quick_pair {
 
-QuickPairMetricsLogger::QuickPairMetricsLogger(ScannerBroker* scanner_broker,
-                                               PairerBroker* pairer_broker,
-                                               UIBroker* ui_broker)
+QuickPairMetricsLogger::QuickPairMetricsLogger(
+    ScannerBroker* scanner_broker,
+    PairerBroker* pairer_broker,
+    UIBroker* ui_broker,
+    RetroactivePairingDetector* retroactive_pairing_detector)
     : feature_usage_metrics_logger_(
           std::make_unique<FastPairFeatureUsageMetricsLogger>()) {
   scanner_broker_observation_.Observe(scanner_broker);
+  retroactive_pairing_detector_observation_.Observe(
+      retroactive_pairing_detector);
   pairer_broker_observation_.Observe(pairer_broker);
   ui_broker_observation_.Observe(ui_broker);
 }
@@ -82,16 +87,79 @@ void QuickPairMetricsLogger::OnDeviceFound(scoped_refptr<Device> device) {
       *device, FastPairEngagementFlowEvent::kDiscoveryUiShown);
 }
 
+void QuickPairMetricsLogger::OnRetroactivePairFound(
+    scoped_refptr<Device> device) {
+  AttemptRecordingFastPairRetroactiveEngagementFlow(
+      *device,
+      FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown);
+}
+
+void QuickPairMetricsLogger::OnAssociateAccountAction(
+    scoped_refptr<Device> device,
+    AssociateAccountAction action) {
+  switch (action) {
+    case AssociateAccountAction::kAssoicateAccount:
+      if (base::Contains(learn_more_devices_, device)) {
+        AttemptRecordingFastPairRetroactiveEngagementFlow(
+            *device, FastPairRetroactiveEngagementFlowEvent::
+                         kAssociateAccountSavePressedAfterLearnMorePressed);
+        learn_more_devices_.erase(device);
+        break;
+      }
+
+      AttemptRecordingFastPairRetroactiveEngagementFlow(
+          *device,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed);
+      break;
+    case AssociateAccountAction::kLearnMore:
+      // We need to record whether or not the Associate Account UI for this
+      // device has had the Learn More button pressed because since the
+      // Learn More button is not a terminal state, we need to record
+      // if the subsequent terminal states were reached after the user
+      // has learned more about saving their accounts. So we will check
+      // this map when the user dismisses or saves their account in order
+      // to capture whether or not the user elected to learn more beforehand.
+      learn_more_devices_.insert(device);
+
+      AttemptRecordingFastPairRetroactiveEngagementFlow(
+          *device, FastPairRetroactiveEngagementFlowEvent::
+                       kAssociateAccountLearnMorePressed);
+      break;
+    case AssociateAccountAction::kDismissedByUser:
+      if (base::Contains(learn_more_devices_, device)) {
+        AttemptRecordingFastPairRetroactiveEngagementFlow(
+            *device, FastPairRetroactiveEngagementFlowEvent::
+                         kAssociateAccountDismissedByUserAfterLearnMorePressed);
+        learn_more_devices_.erase(device);
+        break;
+      }
+
+      AttemptRecordingFastPairRetroactiveEngagementFlow(
+          *device, FastPairRetroactiveEngagementFlowEvent::
+                       kAssociateAccountUiDismissedByUser);
+      break;
+    case AssociateAccountAction::kDismissed:
+      if (base::Contains(learn_more_devices_, device)) {
+        AttemptRecordingFastPairRetroactiveEngagementFlow(
+            *device, FastPairRetroactiveEngagementFlowEvent::
+                         kAssociateAccountDismissedAfterLearnMorePressed);
+        learn_more_devices_.erase(device);
+        break;
+      }
+
+      AttemptRecordingFastPairRetroactiveEngagementFlow(
+          *device,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed);
+      break;
+  }
+}
+
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
     absl::optional<AccountKeyFailure> error) {}
 
 void QuickPairMetricsLogger::OnCompanionAppAction(scoped_refptr<Device> device,
                                                   CompanionAppAction action) {}
-
-void QuickPairMetricsLogger::OnAssociateAccountAction(
-    scoped_refptr<Device> device,
-    AssociateAccountAction action) {}
 
 void QuickPairMetricsLogger::OnDeviceLost(scoped_refptr<Device> device) {}
 

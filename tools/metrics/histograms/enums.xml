@@ -31438,6 +31438,20 @@ Called by update_extension_permission.py.-->
   <int value="1212" label="Pairing Failed: Error UI Settings Button Pressed"/>
 </enum>
 
+<enum name="FastPairRetroactiveEngagementFlowEvent">
+  <int value="1" label="Associate Account UI Shown"/>
+  <int value="11" label="Associate Account Dismissed By User"/>
+  <int value="12" label="Associate Account Dismissed By OS"/>
+  <int value="13" label="Associate Account: Learn More Button Pressed"/>
+  <int value="14" label="Associate Account: Save Button Pressed"/>
+  <int value="131"
+      label="Associate Account: Save Button Pressed After Learn More Pressed"/>
+  <int value="132"
+      label="Associate Account Dismissed By User After Learn More Pressed"/>
+  <int value="133"
+      label="Associate Account Dismissed By OS After Learn More Pressed"/>
+</enum>
+
 <enum name="FaultTolerantHeap">
   <int value="0" label="FTH_OFF">FTH is completely off.</int>
   <int value="1" label="FTH_HKLM">FTH is enabled in HKLM.</int>

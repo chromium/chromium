@@ -6,9 +6,11 @@
 #define ASH_QUICK_PAIR_KEYED_SERVICE_QUICK_PAIR_METRICS_LOGGER_H_
 
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -22,11 +24,14 @@ class FastPairFeatureUsageMetricsLogger;
 // Observes pairing, scanning and UI events and logs corresponding metrics.
 class QuickPairMetricsLogger : public PairerBroker::Observer,
                                public ScannerBroker::Observer,
-                               public UIBroker::Observer {
+                               public UIBroker::Observer,
+                               public RetroactivePairingDetector::Observer {
  public:
-  QuickPairMetricsLogger(ScannerBroker* scanner_broker,
-                         PairerBroker* pairer_broker,
-                         UIBroker* ui_broker);
+  QuickPairMetricsLogger(
+      ScannerBroker* scanner_broker,
+      PairerBroker* pairer_broker,
+      UIBroker* ui_broker,
+      RetroactivePairingDetector* retroactive_pairing_detector);
   QuickPairMetricsLogger(const QuickPairMetricsLogger&) = delete;
   QuickPairMetricsLogger& operator=(const QuickPairMetricsLogger&) = delete;
   ~QuickPairMetricsLogger() override;
@@ -53,11 +58,21 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   void OnDeviceFound(scoped_refptr<Device> device) override;
   void OnDeviceLost(scoped_refptr<Device> device) override;
 
+  // RetroactivePairingDetector::Observer
+  void OnRetroactivePairFound(scoped_refptr<Device> device) override;
+
   // Map of devices to the time at which a pairing was initiated. This is used
   // to calculate the time between the user electing to pair the device and
   // the pairing entering a terminal state (success or failure).
   base::flat_map<scoped_refptr<Device>, base::TimeTicks>
       device_pairing_start_timestamps_;
+
+  // Set of devices of which on the Associate Account UI shown, the Learn More
+  // button was pressed. We need this map to know which
+  // |FastPairRetroactiveEngagementFlowEvent| event to log at the subsequent
+  // AssociateAccount action events that will follow, since the LearnMore
+  // event is not a terminal state.
+  base::flat_set<scoped_refptr<Device>> learn_more_devices_;
 
   std::unique_ptr<FastPairFeatureUsageMetricsLogger>
       feature_usage_metrics_logger_;
@@ -65,6 +80,9 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
       scanner_broker_observation_{this};
   base::ScopedObservation<PairerBroker, PairerBroker::Observer>
       pairer_broker_observation_{this};
+  base::ScopedObservation<RetroactivePairingDetector,
+                          RetroactivePairingDetector::Observer>
+      retroactive_pairing_detector_observation_{this};
   base::ScopedObservation<UIBroker, UIBroker::Observer> ui_broker_observation_{
       this};
 };

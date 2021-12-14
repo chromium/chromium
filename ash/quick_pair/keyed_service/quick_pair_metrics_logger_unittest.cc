@@ -11,8 +11,10 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/pairing/fake_retroactive_pairing_detector.h"
 #include "ash/quick_pair/pairing/mock_pairer_broker.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
@@ -34,6 +36,8 @@ constexpr char kFastPairEngagementFlowMetricInitial[] =
 constexpr char kFastPairEngagementFlowMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
+const char kFastPairRetroactiveEngagementFlowMetric[] =
+    "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 constexpr char kFastPairPairTimeMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
 constexpr char kFastPairPairTimeMetricSubsequent[] =
@@ -51,6 +55,12 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     mock_scanner_broker_ =
         static_cast<MockScannerBroker*>(scanner_broker_.get());
 
+    retroactive_pairing_detector_ =
+        std::make_unique<FakeRetroactivePairingDetector>();
+    fake_retroactive_pairing_detector_ =
+        static_cast<FakeRetroactivePairingDetector*>(
+            retroactive_pairing_detector_.get());
+
     pairer_broker_ = std::make_unique<MockPairerBroker>();
     mock_pairer_broker_ = static_cast<MockPairerBroker*>(pairer_broker_.get());
 
@@ -61,9 +71,12 @@ class QuickPairMetricsLoggerTest : public testing::Test {
         kTestMetadataId, kTestAddress, Protocol::kFastPairInitial);
     subsequent_device_ = base::MakeRefCounted<Device>(
         kTestMetadataId, kTestAddress, Protocol::kFastPairSubsequent);
+    retroactive_device_ = base::MakeRefCounted<Device>(
+        kTestMetadataId, kTestAddress, Protocol::kFastPairRetroactive);
 
     metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
-        scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());
+        scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
+        retroactive_pairing_detector_.get());
   }
 
   void SimulateDiscoveryUiShown(Protocol protocol) {
@@ -169,6 +182,31 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     }
   }
 
+  void SimulateAssociateAccountUiShown() {
+    fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+        retroactive_device_);
+  }
+
+  void SimulateAssociateAccountUiDismissed() {
+    mock_ui_broker_->NotifyAssociateAccountAction(
+        retroactive_device_, AssociateAccountAction::kDismissed);
+  }
+
+  void SimulateAssociateAccountUiDismissedByUser() {
+    mock_ui_broker_->NotifyAssociateAccountAction(
+        retroactive_device_, AssociateAccountAction::kDismissedByUser);
+  }
+
+  void SimulateAssociateAccountUiSavePressed() {
+    mock_ui_broker_->NotifyAssociateAccountAction(
+        retroactive_device_, AssociateAccountAction::kAssoicateAccount);
+  }
+
+  void SimulateAssociateAccountUiLearnMorePressed() {
+    mock_ui_broker_->NotifyAssociateAccountAction(
+        retroactive_device_, AssociateAccountAction::kLearnMore);
+  }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
@@ -176,12 +214,15 @@ class QuickPairMetricsLoggerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<Device> initial_device_;
   scoped_refptr<Device> subsequent_device_;
+  scoped_refptr<Device> retroactive_device_;
 
   MockScannerBroker* mock_scanner_broker_ = nullptr;
   MockPairerBroker* mock_pairer_broker_ = nullptr;
   MockUIBroker* mock_ui_broker_ = nullptr;
+  FakeRetroactivePairingDetector* fake_retroactive_pairing_detector_ = nullptr;
 
   std::unique_ptr<ScannerBroker> scanner_broker_;
+  std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
   std::unique_ptr<PairerBroker> pairer_broker_;
   std::unique_ptr<UIBroker> ui_broker_;
   std::unique_ptr<QuickPairMetricsLogger> metrics_logger_;
@@ -667,6 +708,375 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Subsequent) {
   SimulatePairingSucceeded(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricSubsequent, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountShown) {
+  SimulateAssociateAccountUiShown();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissed) {
+  SimulateAssociateAccountUiDismissed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissedByUser) {
+  SimulateAssociateAccountUiDismissedByUser();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
+  SimulateAssociateAccountUiSavePressed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountLearnMorePressed) {
+  SimulateAssociateAccountUiLearnMorePressed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest,
+       LogAssociateAccountLearnMorePressed_SavePressed) {
+  SimulateAssociateAccountUiLearnMorePressed();
+  base::RunLoop().RunUntilIdle();
+  SimulateAssociateAccountUiSavePressed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest,
+       LogAssociateAccountLearnMorePressed_Dismissed) {
+  SimulateAssociateAccountUiLearnMorePressed();
+  base::RunLoop().RunUntilIdle();
+  SimulateAssociateAccountUiDismissed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest,
+       LogAssociateAccountLearnMorePressed_DismissedByUser) {
+  SimulateAssociateAccountUiLearnMorePressed();
+  base::RunLoop().RunUntilIdle();
+  SimulateAssociateAccountUiDismissedByUser();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            0);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedAfterLearnMorePressed),
+            0);
 }
 
 }  // namespace quick_pair

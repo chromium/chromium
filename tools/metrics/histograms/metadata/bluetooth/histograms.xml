@@ -207,6 +207,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps"
+    enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair flow for the retroactive pairing
+    scenario. Emitted when the associate account UI is shown, the associate
+    account UI is dismissed, the save to account button is pressed on the
+    associate account UI, and when the learn more button is pressed on the
+    associate account UI.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.TotalUxPairTime.{FastPairPairingProtocol}"
     units="ms" expires_after="2022-09-20">
