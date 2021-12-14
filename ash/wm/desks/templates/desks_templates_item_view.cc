@@ -233,6 +233,11 @@ void DesksTemplatesItemView::OnThemeChanged() {
 }
 
 void DesksTemplatesItemView::OnViewFocused(views::View* observed_view) {
+  // `this` is a button which observes itself. Here we only care about focus on
+  // `name_view_`.
+  if (observed_view == this)
+    return;
+
   DCHECK_EQ(observed_view, name_view_);
   is_template_name_being_modified_ = true;
 
@@ -262,6 +267,11 @@ void DesksTemplatesItemView::OnViewFocused(views::View* observed_view) {
 }
 
 void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
+  // `this` is a button which observes itself. Here we only care about blur on
+  // `name_view_`.
+  if (observed_view == this)
+    return;
+
   DCHECK_EQ(observed_view, name_view_);
   is_template_name_being_modified_ = false;
   defer_select_all_ = false;
