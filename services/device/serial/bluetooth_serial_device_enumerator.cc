@@ -120,7 +120,11 @@ void BluetoothSerialDeviceEnumerator::SetClassicAdapter(
 void BluetoothSerialDeviceEnumerator::PortAdded(
     const std::string& device_address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(device_ports_, device_address));
+  // Ignore duplicate devices. Some ports send device notifications after
+  // requesting the classic adapter resulting in double detection of devices.
+  if (base::Contains(device_ports_, device_address))
+    return;
+
   auto port = mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
   port->path = base::FilePath::FromUTF8Unsafe(device_address);
