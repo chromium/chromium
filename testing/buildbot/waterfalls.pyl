@@ -4644,19 +4644,6 @@
           'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
-      'Win10 FYI x64 Release (NVIDIA GeForce GTX 1660)': {
-        # This bot currently only has one piece of hardware behind it,
-        # and is being qualified for potential scale-out.
-        'os_type': 'win',
-        'browser_config': 'release_x64',
-        'mixins': [
-          'limited_capacity_bot',
-          'win10_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
-      },
       'Win10 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',
         'browser_config': 'release_x64',

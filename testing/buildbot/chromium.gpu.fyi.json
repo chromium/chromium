@@ -29960,42 +29960,6 @@
       }
     ]
   },
-  "Win10 FYI x64 Release (NVIDIA GeForce GTX 1660)": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "noop_sleep",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "noop_sleep_tests",
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:2184-27.21.14.5638",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      }
-    ]
-  },
   "Win10 FYI x64 Release (NVIDIA)": {
     "gtest_tests": [
       {

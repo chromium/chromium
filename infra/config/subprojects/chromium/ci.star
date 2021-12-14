@@ -5364,16 +5364,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win10 FYI x64 Release (NVIDIA GeForce GTX 1660)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "gtx",
-    ),
-    execution_timeout = 18 * time.hour,
-    triggered_by = ["GPU FYI Win x64 Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win10 FYI x64 Release (NVIDIA)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|10|x64|Nvidia",
