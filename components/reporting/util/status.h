@@ -9,7 +9,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/util/status.pb.h"
 
@@ -44,7 +43,7 @@ enum Code : int32_t {
 };
 }  // namespace error
 
-class WARN_UNUSED_RESULT Status {
+class Status {
  public:
   // Creates a "successful" status.
   Status();

@@ -81,7 +81,7 @@ class StatusOrHelper {
 }  // namespace internal
 
 template <typename T>
-class WARN_UNUSED_RESULT StatusOr {
+class StatusOr {
   template <typename U>
   friend class StatusOr;
 
