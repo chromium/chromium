@@ -2519,6 +2519,13 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
+
+  // Check that the root event ID has been updated.
+  EXPECT_EQ(MakeTypicalRefreshModelState()->stream_data.root_event_id(),
+            surface.update->logging_parameters().root_event_id());
+  EXPECT_NE(MakeTypicalInitialModelState()->stream_data.root_event_id(),
+            surface.update->logging_parameters().root_event_id());
+
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
       stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),

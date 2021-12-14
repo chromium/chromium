@@ -61,6 +61,7 @@ struct StreamModelUpdateRequestGenerator {
   bool signed_in = true;
   bool logging_enabled = true;
   bool privacy_notice_fulfilled = false;
+  int event_id_number = 123;
 
   StreamModelUpdateRequestGenerator();
   ~StreamModelUpdateRequestGenerator();
