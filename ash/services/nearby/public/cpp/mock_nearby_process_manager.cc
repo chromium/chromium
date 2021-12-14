@@ -4,7 +4,7 @@
 
 #include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 MockNearbyProcessManager::MockNearbyProcessManager() = default;
@@ -18,4 +18,4 @@ MockNearbyProcessManager::MockNearbyProcessReference::
     ~MockNearbyProcessReference() = default;
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

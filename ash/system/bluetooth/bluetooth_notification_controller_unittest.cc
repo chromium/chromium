@@ -266,7 +266,7 @@ TEST_F(BluetoothNotificationControllerTest,
   VerifyPairedNotificationIsNotVisible(bluetooth_device_1_.get());
 
   base::flat_set<device::BluetoothUUID> uuid_set;
-  uuid_set.insert(chromeos::nearby::GetNearbyClientUuids()[0]);
+  uuid_set.insert(nearby::GetNearbyClientUuids()[0]);
   ON_CALL(*bluetooth_device_1_, GetUUIDs()).WillByDefault(Return(uuid_set));
 
   ShowPairedNotification(notification_controller_.get(),

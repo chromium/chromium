@@ -69,7 +69,7 @@ constexpr int
 namespace {
 
 using NearbyProcessShutdownReason =
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
     base::Minutes(12);
@@ -271,7 +271,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     NotificationDisplayService* notification_display_service,
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-    chromeos::nearby::NearbyProcessManager* process_manager,
+    ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client)
     : prefs_(prefs),
       profile_(profile),

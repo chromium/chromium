@@ -136,10 +136,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
 
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
-        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+        .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
                                 NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
-              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+              std::make_unique<ash::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();
 
           EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbyConnections)
@@ -403,9 +403,8 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
       net::test::MockNetworkChangeNotifier::Create();
   base::ScopedDisallowBlocking disallow_blocking_;
-  testing::NiceMock<chromeos::nearby::MockNearbyConnections>
-      nearby_connections_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
+  testing::NiceMock<ash::nearby::MockNearbyConnections> nearby_connections_;
+  testing::NiceMock<ash::nearby::MockNearbyProcessManager>
       nearby_process_manager_;
   NearbyConnectionsManagerImpl nearby_connections_manager_{
       &nearby_process_manager_};
@@ -496,8 +495,7 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
 
   EXPECT_CALL(nearby_connections_, StopAllEndpoints).Times(0);
   nearby_connections_manager_.OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
-          kNormal);
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason::kNormal);
 
   // Invoking OnEndpointFound will do nothing.
   EXPECT_CALL(discovery_listener, OnEndpointDiscovered(testing::_, testing::_))

@@ -373,7 +373,7 @@ void BluetoothNotificationController::NotifyPairedDevice(
   // TODO(crbug.com/1155669): Generalize this logic to prevent leaking Nearby
   // implementation details.
   for (const auto& uuid : device->GetUUIDs()) {
-    if (chromeos::nearby::IsNearbyClientUuid(uuid)) {
+    if (nearby::IsNearbyClientUuid(uuid)) {
       return;
     }
   }

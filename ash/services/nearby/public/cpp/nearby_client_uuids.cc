@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 namespace {
@@ -40,4 +40,4 @@ bool IsNearbyClientUuid(const device::BluetoothUUID& uuid) {
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

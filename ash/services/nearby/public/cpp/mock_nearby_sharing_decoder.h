@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 class MockNearbySharingDecoder : public sharing::mojom::NearbySharingDecoder {
@@ -45,6 +45,6 @@ class MockNearbySharingDecoder : public sharing::mojom::NearbySharingDecoder {
 };
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_SHARING_DECODER_H_

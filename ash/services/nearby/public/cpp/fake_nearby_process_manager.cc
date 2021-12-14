@@ -10,7 +10,7 @@
 #include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "base/bind.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 FakeNearbyProcessManager::FakeNearbyProcessReference::
@@ -99,4 +99,4 @@ void FakeNearbyProcessManager::OnReferenceDeleted(
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

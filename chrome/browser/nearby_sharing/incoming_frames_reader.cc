@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& out,
 }  // namespace
 
 IncomingFramesReader::IncomingFramesReader(
-    chromeos::nearby::NearbyProcessManager* process_manager,
+    ash::nearby::NearbyProcessManager* process_manager,
     NearbyConnection* connection)
     : process_manager_(process_manager), connection_(connection) {
   DCHECK(process_manager);
@@ -86,7 +86,7 @@ void IncomingFramesReader::ReadFrame(
 }
 
 void IncomingFramesReader::OnNearbyProcessStopped(
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   is_process_stopped_ = true;
   Done(absl::nullopt);
 }

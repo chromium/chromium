@@ -4,7 +4,7 @@
 
 #include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 MockNearbySharingDecoder::MockNearbySharingDecoder() {
@@ -22,4 +22,4 @@ void MockNearbySharingDecoder::BindInterface(
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

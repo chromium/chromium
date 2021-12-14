@@ -72,12 +72,10 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
     EXPECT_FALSE(mock_connections_);
     EXPECT_FALSE(mock_decoder_);
 
-    mock_connections_ =
-        std::make_unique<chromeos::nearby::MockNearbyConnections>();
+    mock_connections_ = std::make_unique<MockNearbyConnections>();
     mock_connections_->BindInterface(std::move(connections_receiver));
 
-    mock_decoder_ =
-        std::make_unique<chromeos::nearby::MockNearbySharingDecoder>();
+    mock_decoder_ = std::make_unique<MockNearbySharingDecoder>();
     mock_decoder_->BindInterface(std::move(decoder_receiver));
   }
 
@@ -87,8 +85,8 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
     std::move(callback).Run();
   }
 
-  std::unique_ptr<chromeos::nearby::MockNearbyConnections> mock_connections_;
-  std::unique_ptr<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
+  std::unique_ptr<MockNearbyConnections> mock_connections_;
+  std::unique_ptr<MockNearbySharingDecoder> mock_decoder_;
   mojo::Receiver<sharing::mojom::Sharing> receiver_{this};
 };
 

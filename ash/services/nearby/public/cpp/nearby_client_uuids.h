@@ -9,7 +9,7 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 // Returns a list of Bluetooth Service UUIDs corresponding to current clients
@@ -23,13 +23,6 @@ const std::vector<device::BluetoothUUID>& GetNearbyClientUuids();
 bool IsNearbyClientUuid(const device::BluetoothUUID& uuid);
 
 }  // namespace nearby
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace nearby {
-using ::chromeos::nearby::GetNearbyClientUuids;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_CLIENT_UUIDS_H_

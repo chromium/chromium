@@ -102,7 +102,7 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  chromeos::nearby::NearbyProcessManager* process_manager =
+  ash::nearby::NearbyProcessManager* process_manager =
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile);
 
   PrefService* pref_service = profile->GetPrefs();

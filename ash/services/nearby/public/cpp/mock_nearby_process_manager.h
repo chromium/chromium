@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 class MockNearbyProcessManager : public NearbyProcessManager {
@@ -48,6 +48,6 @@ class MockNearbyProcessManager : public NearbyProcessManager {
 };
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_

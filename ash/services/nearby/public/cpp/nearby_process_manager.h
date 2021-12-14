@@ -12,7 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 // Manages the life cycle of the Nearby utility process, which hosts
@@ -74,13 +74,6 @@ std::ostream& operator<<(
     const NearbyProcessManager::NearbyProcessShutdownReason& reason);
 
 }  // namespace nearby
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace nearby {
-using ::chromeos::nearby::NearbyProcessManager;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_

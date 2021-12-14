@@ -81,7 +81,7 @@ using NetConnectionType = net::NetworkChangeNotifier::ConnectionType;
 using SendSurfaceState = NearbySharingService::SendSurfaceState;
 
 using NearbyProcessShutdownReason =
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
 namespace {
 
@@ -511,11 +511,11 @@ class NearbySharingServiceImplTest : public testing::Test {
 
     EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
         .WillRepeatedly(
-            [&](chromeos::nearby::NearbyProcessManager::
-                    NearbyProcessStoppedCallback process_stopped_callback) {
+            [&](ash::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
+                    process_stopped_callback) {
               process_stopped_callback_ = std::move(process_stopped_callback);
               auto mock_reference_ptr =
-                  std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+                  std::make_unique<ash::nearby::MockNearbyProcessManager::
                                        MockNearbyProcessReference>();
 
               EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbySharingDecoder)
@@ -684,7 +684,7 @@ class NearbySharingServiceImplTest : public testing::Test {
         network_notifier_->GetConnectionType());
   }
 
-  NiceMock<chromeos::nearby::MockNearbyProcessManager>&
+  NiceMock<ash::nearby::MockNearbyProcessManager>&
   mock_nearby_process_manager() {
     return mock_nearby_process_manager_;
   }
@@ -738,7 +738,7 @@ class NearbySharingServiceImplTest : public testing::Test {
         .WillOnce(testing::Invoke(
             [is_incoming](
                 const std::vector<uint8_t>& data,
-                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
                   sharing::mojom::V1Frame::New();
@@ -761,7 +761,7 @@ class NearbySharingServiceImplTest : public testing::Test {
                 DecodeFrame(testing::Eq(result_bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
                   sharing::mojom::V1Frame::New();
@@ -785,7 +785,7 @@ class NearbySharingServiceImplTest : public testing::Test {
         .Times(expected_number_of_calls)
         .WillRepeatedly(
             testing::Invoke([=](const std::vector<uint8_t>& data,
-                                chromeos::nearby::MockNearbySharingDecoder::
+                                ash::nearby::MockNearbySharingDecoder::
                                     DecodeAdvertisementCallback callback) {
               if (return_empty_advertisement) {
                 std::move(callback).Run(nullptr);
@@ -811,7 +811,7 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               std::move(callback).Run(return_empty_introduction_frame
                                           ? GetEmptyIntroductionFrame()
@@ -827,7 +827,7 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               std::move(callback).Run(GetConnectionResponseFrame(status));
             }));
@@ -840,7 +840,7 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) { std::move(callback).Run(GetCancelFrame()); }));
     connection_.AppendReadableData(bytes);
   }
@@ -1190,8 +1190,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
   FakeNearbyShareCertificateManager::Factory certificate_manager_factory_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  NiceMock<chromeos::nearby::MockNearbyProcessManager>
-      mock_nearby_process_manager_;
+  NiceMock<ash::nearby::MockNearbyProcessManager> mock_nearby_process_manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<NearbySharingServiceImpl> service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
@@ -1205,12 +1204,12 @@ class NearbySharingServiceImplTest : public testing::Test {
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
   device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
-  NiceMock<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
+  NiceMock<ash::nearby::MockNearbySharingDecoder> mock_decoder_;
   FakeNearbyConnection connection_;
   size_t set_advertising_interval_call_count_ = 0u;
   int64_t last_advertising_interval_min_ = 0;
   int64_t last_advertising_interval_max_ = 0;
-  chromeos::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
+  ash::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
       process_stopped_callback_;
   base::HistogramTester histogram_tester_;
 
@@ -2534,7 +2533,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
       .WillOnce(testing::Invoke(
           [](const std::vector<uint8_t>& data,
-             chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+             ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                  callback) {
             std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
             mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
@@ -2607,7 +2606,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
       .WillOnce(testing::Invoke(
           [](const std::vector<uint8_t>& data,
-             chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+             ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                  callback) {
             std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
             mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
@@ -4082,7 +4081,7 @@ TEST_F(NearbySharingServiceImplTest, ProcessStoppedCallsObservers) {
   // visibility is stopped.
   fake_nearby_connections_manager_->CleanupForProcessStopped();
   std::move(process_stopped_callback_)
-      .Run(chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
+      .Run(ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
                kCrash);
   EXPECT_TRUE(observer.process_stopped_called_);
   EXPECT_FALSE(service_->IsInHighVisibility());

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 class MockNearbyConnections;
@@ -88,13 +88,6 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 };
 
 }  // namespace nearby
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace nearby {
-using ::chromeos::nearby::FakeNearbyProcessManager;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_

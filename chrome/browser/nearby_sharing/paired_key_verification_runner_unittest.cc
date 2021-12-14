@@ -44,9 +44,8 @@ const base::TimeDelta kTimeout = base::Seconds(1);
 
 class MockIncomingFramesReader : public IncomingFramesReader {
  public:
-  MockIncomingFramesReader(
-      chromeos::nearby::NearbyProcessManager* process_manager,
-      NearbyConnection* connection)
+  MockIncomingFramesReader(ash::nearby::NearbyProcessManager* process_manager,
+                           NearbyConnection* connection)
       : IncomingFramesReader(process_manager, connection) {}
 
   MOCK_METHOD(void,
@@ -215,8 +214,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   FakeNearbyConnection connection_;
   FakeNearbyShareCertificateManager certificate_manager_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
-      process_manager_;
+  testing::NiceMock<ash::nearby::MockNearbyProcessManager> process_manager_;
   testing::NiceMock<MockIncomingFramesReader> frames_reader_;
   ShareTarget share_target_;
 };

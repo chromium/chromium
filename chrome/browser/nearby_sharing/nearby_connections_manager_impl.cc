@@ -83,7 +83,7 @@ std::string MediumSelectionToString(
 }  // namespace
 
 NearbyConnectionsManagerImpl::NearbyConnectionsManagerImpl(
-    chromeos::nearby::NearbyProcessManager* process_manager)
+    ash::nearby::NearbyProcessManager* process_manager)
     : process_manager_(process_manager) {
   DCHECK(process_manager_);
 }
@@ -465,7 +465,7 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
 }
 
 void NearbyConnectionsManagerImpl::OnNearbyProcessStopped(
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   NS_LOG(VERBOSE) << __func__;
   Reset();
 }

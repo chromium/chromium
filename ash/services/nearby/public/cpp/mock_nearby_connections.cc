@@ -4,7 +4,7 @@
 
 #include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 MockNearbyConnections::MockNearbyConnections() {
@@ -21,4 +21,4 @@ void MockNearbyConnections::BindInterface(
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

@@ -85,7 +85,7 @@ class NearbySharingServiceImpl
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      chromeos::nearby::NearbyProcessManager* process_manager,
+      ash::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client);
   ~NearbySharingServiceImpl() override;
 
@@ -344,14 +344,14 @@ class NearbySharingServiceImpl
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void CleanupAfterNearbyProcessStopped();
   void RestartNearbyProcessIfAppropriate(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   bool ShouldRestartNearbyProcess(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void ClearRecentNearbyProcessUnexpectedShutdownCount();
   void BindToNearbyProcess();
@@ -412,9 +412,8 @@ class NearbySharingServiceImpl
   PrefService* prefs_ = nullptr;
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

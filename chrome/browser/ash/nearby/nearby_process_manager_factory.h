@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -14,6 +12,8 @@ class Profile;
 
 namespace ash {
 namespace nearby {
+
+class NearbyProcessManager;
 
 // Creates a NearbyProcessManager for the primary user. No instance is created
 // any other profile.
