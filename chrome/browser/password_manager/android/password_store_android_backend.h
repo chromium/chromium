@@ -91,7 +91,6 @@ class PasswordStoreAndroidBackend
 
     JobReturnHandler();
     JobReturnHandler(LoginsOrErrorReply callback, MetricInfix metric_name);
-    JobReturnHandler(LoginsReply callback, MetricInfix metric_name);
     JobReturnHandler(PasswordStoreChangeListReply callback,
                      MetricInfix metric_infix);
     JobReturnHandler(JobReturnHandler&&);
@@ -119,7 +118,7 @@ class PasswordStoreAndroidBackend
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
 
    private:
-    absl::variant<LoginsReply, LoginsOrErrorReply, PasswordStoreChangeListReply>
+    absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
         success_callback_;
     MetricInfix metric_infix_;
     base::Time start_ = base::Time::Now();

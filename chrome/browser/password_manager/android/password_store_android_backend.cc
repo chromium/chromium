@@ -138,12 +138,6 @@ PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
       metric_infix_(std::move(metric_infix)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    LoginsReply callback,
-    MetricInfix metric_infix)
-    : success_callback_(std::move(callback)),
-      metric_infix_(std::move(metric_infix)) {}
-
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordStoreChangeListReply callback,
     MetricInfix metric_infix)
     : success_callback_(std::move(callback)),
@@ -317,13 +311,26 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     return;
   }
 
+  LoginsOrErrorReply invoke_noerror_callback = base::BindOnce(
+      [](LoginsReply no_error_callback, LoginsResultOrError result) {
+        // `result` is the LoginsResult returned by `JoinRetrievedLogins`.
+        DCHECK(absl::holds_alternative<LoginsResult>(result));
+        std::move(no_error_callback)
+            .Run(std::move(absl::get<LoginsResult>(result)));
+      },
+      std::move(callback));
+
+  // TODO(https://crbug.com/1229655): Don't use the JobHandler just because it
+  // contains a metrics recorder. Generalize the metrics recording instead!
   LoginsReply record_metrics_and_reply = base::BindOnce(
       [](JobReturnHandler handler, LoginsResult logins) {
+        DCHECK(handler.Holds<LoginsOrErrorReply>());
         handler.RecordMetrics(/*error=*/absl::nullopt);
-        std::move(handler).Get<LoginsReply>().Run(std::move(logins));
+        std::move(handler).Get<LoginsOrErrorReply>().Run(std::move(logins));
       },
-      JobReturnHandler(std::move(callback), JobReturnHandler::MetricInfix(
-                                                "FillMatchingLoginsAsync")));
+      JobReturnHandler(
+          std::move(invoke_noerror_callback),
+          JobReturnHandler::MetricInfix("FillMatchingLoginsAsync")));
 
   auto barrier_callback = base::BarrierCallback<LoginsResult>(
       forms.size(), base::BindOnce(&JoinRetrievedLogins)
