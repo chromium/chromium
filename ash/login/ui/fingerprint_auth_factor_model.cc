@@ -93,9 +93,7 @@ int FingerprintAuthFactorModel::GetLabelId() const {
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_TOUCH_SENSOR;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
-      // TODO(crbug.com/1233614): Update this string: "Too many attempts" ->
-      // "Too many fingerprint attempts".
-      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
+      return IDS_FINGERPRINT_LABEL_NOT_AUTHENTICATED;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
       return can_use_pin_ ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
                           : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
