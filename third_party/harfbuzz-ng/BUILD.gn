@@ -141,6 +141,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-color-cpal-table.hh",
       "src/src/hb-ot-color-sbix-table.hh",
       "src/src/hb-ot-color-svg-table.hh",
+      "src/src/hb-ot-color.cc",
       "src/src/hb-ot-deprecated.h",
       "src/src/hb-ot-face-table-list.hh",
       "src/src/hb-ot-face.cc",

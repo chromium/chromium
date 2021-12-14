@@ -45,7 +45,6 @@ on HarfBuzz' built-in AAT shaping.
     hb-null.hh
     hb-ot-color-sbix-table.hh
     hb-ot-color-svg-table.hh
-    hb-ot-color.cc
     hb-uniscribe.cc
     hb-uniscribe.h
     test-unicode-ranges.cc
