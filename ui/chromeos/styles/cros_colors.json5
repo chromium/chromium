@@ -224,8 +224,14 @@
     menu_item_ripple_color: "$ripple_color",
 
     toggle_color: "$color_prominent",
-    toggle_bg_color_inactive: "$google_grey_400",
-    toggle_button_color_inactive: "$white",
+    toggle_bg_color_inactive: {
+      light: "rgba($google_grey_700_rgb, $second_tone_opacity)",
+      dark: "rgba($google_grey_200_rgb, $second_tone_opacity)"
+    },
+    toggle_button_color_inactive: {
+      light: "$white",
+      dark: "$google_grey_400"
+    },
     toggle_ripple_color: "rgba($toggle_color_rgb, .2)",
     toggle_ripple_color_inactive: "rgba($google_grey_600_rgb, .15)",
 
