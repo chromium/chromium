@@ -108,7 +108,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
 #if defined(OS_WIN)
-  if (params.info_collection_gpu_process) {
+  if (params_.info_collection_gpu_process) {
     viz_main_->CreateInfoCollectionGpuService(
         info_collection_gpu_service_remote_.BindNewPipeAndPassReceiver());
     return;
