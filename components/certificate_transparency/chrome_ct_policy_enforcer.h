@@ -87,6 +87,11 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
     return log_operator_history_;
   }
 
+  void SetOperatorHistoryForTesting(
+      std::map<std::string, OperatorHistoryEntry> log_operator_history) {
+    log_operator_history_ = std::move(log_operator_history);
+  }
+
  private:
   // Returns true if the log identified by |log_id| (the SHA-256 hash of the
   // log's DER-encoded SPKI) has been disqualified, and sets
@@ -107,7 +112,7 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
       const net::X509Certificate& cert,
       const net::ct::SCTList& verified_scts) const;
 
-  std::string GetOperatorForLog(std::string log_id, base::TimeDelta timestamp);
+  std::string GetOperatorForLog(std::string log_id, base::Time timestamp) const;
 
   // Map of SHA-256(SPKI) to log disqualification date.
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs_;

@@ -19,5 +19,12 @@ const base::Feature kCertificateTransparencyComponentUpdater{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kCertificateTransparency2022Policy{
+    "CertificateTransparency2022Policy", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCertificateTransparency2022PolicyAllCerts{
+    "CertificateTransparency2022PolicyAllCerts",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace certificate_transparency
