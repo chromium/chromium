@@ -161,6 +161,10 @@ if (!is_android && !is_mac) {
       data_deps += [ "//sandbox/linux:chrome_sandbox" ]
     }
 
+    if (also_build_lacros_chrome_for_architecture != "") {
+      data_deps += [ "//chrome:chrome(//build/toolchain/cros:lacros_clang)" ]
+    }
+
     if (is_win) {
       sources += [
         "app/chrome_exe.rc",

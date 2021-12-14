@@ -174,3 +174,60 @@ cros_toolchain("v8_snapshot") {
     sysroot = cros_v8_snapshot_sysroot
   }
 }
+
+# This toolchain is used when we want to build Lacros using alternate toolchain.
+# To use this, you need to set gn arg 'also_build_lacros_chrome_for_architecture'.
+# See build/config/chromeos/ui_mode.gni
+if (also_build_lacros_chrome_for_architecture != "") {
+  cros_toolchain("lacros_clang") {
+    # These are args for the template.
+    ar = cros_target_ar
+    cc = cros_target_cc
+    cxx = cros_target_cxx
+    ld = cros_target_ld
+
+    if (cros_target_nm != "") {
+      nm = cros_target_nm
+    }
+    if (cros_target_readelf != "") {
+      readelf = cros_target_readelf
+    }
+    extra_cflags = cros_target_extra_cflags
+    extra_cppflags = cros_target_extra_cppflags
+    extra_cxxflags = cros_target_extra_cxxflags
+    extra_ldflags = cros_target_extra_ldflags
+
+    toolchain_args = {
+      if (also_build_lacros_chrome_for_architecture == "amd64") {
+        forward_variables_from(
+            read_file("//build/args/chromeos/amd64-generic-crostoolchain.gni",
+                      "scope"),
+            "*")
+        cros_v8_snapshot_sysroot = "//build/linux/debian_sid_amd64-sysroot"
+      } else if (also_build_lacros_chrome_for_architecture == "arm") {
+        forward_variables_from(
+            read_file("//build/args/chromeos/arm-generic-crostoolchain.gni",
+                      "scope"),
+            "*")
+        cros_v8_snapshot_sysroot = "//build/linux/debian_sid_i386-sysroot"
+      } else {
+        assert(false,
+               "also_build_lacros_chrome_for_architecture is not " +
+                   "one of the supported architecture.")
+      }
+      current_os = "chromeos"
+      target_os = "chromeos"
+      current_cpu = current_cpu
+      also_build_lacros_chrome_for_architecture = ""
+      chromeos_is_browser_only = true
+      use_clang_coverage = false
+      cros_host_sysroot = "//build/linux/debian_sid_amd64-sysroot"
+      cc_wrapper = ""
+      needs_gomacc_path_arg = true
+      clang_use_chrome_plugins = false
+      is_clang = is_clang
+      use_debug_fission = use_debug_fission
+      use_gold = use_gold
+    }
+  }
+}
