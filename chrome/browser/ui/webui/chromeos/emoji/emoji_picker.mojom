@@ -4,6 +4,12 @@
 
 module emoji_picker.mojom;
 
+// Capture any relevant enabled features from the system.
+enum Feature {
+  // Extends the emoji picker to include symbols and emoticons alongside
+  // emojis as insertable options for the user.
+  EMOJI_PICKER_EXTENSION = 0,
+};
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -13,7 +19,6 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-
   // Request the UI to be shown.  Using this interface, dialog can be invisible
   // while rendering to avoid UI showing in incomplete state.
   ShowUI();
@@ -27,4 +32,8 @@ interface PageHandler {
   // Allows the emoji picker to identify if it was initialized in a incognito
   // text field (so it will disable storing preference etc.)
   IsIncognitoTextField() => (bool incognito);
+
+  // Returns a comma separated list of features activated within the emoji
+  // picker (ie. any feature flags or other related switches).
+  GetFeatureList() => (array<Feature> feature_list);
 };

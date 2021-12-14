@@ -4,7 +4,7 @@
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 
-import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
+import {Feature, PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
 
 /** @interface */
 export class EmojiPickerApiProxy {
@@ -21,7 +21,13 @@ export class EmojiPickerApiProxy {
    * @returns {Promise<{incognito:boolean}>}
    */
   isIncognitoTextField() {}
+
+  /**
+   * @returns {Promise<{featureList:!Array<!Feature>}>}
+   */
+  getFeatureList() {}
 }
+
 /** @implements {EmojiPickerApiProxy} */
 export class EmojiPickerApiProxyImpl {
   constructor() {
@@ -44,6 +50,11 @@ export class EmojiPickerApiProxyImpl {
   /** @override */
   isIncognitoTextField() {
     return this.handler.isIncognitoTextField();
+  }
+
+  /** @override */
+  getFeatureList() {
+    return this.handler.getFeatureList();
   }
 }
 

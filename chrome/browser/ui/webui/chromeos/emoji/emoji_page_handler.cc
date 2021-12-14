@@ -74,6 +74,16 @@ void EmojiPageHandler::IsIncognitoTextField(
   std::move(callback).Run(incognito_mode_);
 }
 
+void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
+  std::vector<emoji_picker::mojom::Feature> enabled_features;
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kImeSystemEmojiPickerExtension)) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_EXTENSION);
+  }
+  std::move(callback).Run(enabled_features);
+}
+
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
                                    bool is_variant,
                                    int16_t search_length) {

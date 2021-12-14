@@ -30,6 +30,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
                    bool is_variant,
                    int16_t search_length) override;
   void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
+  void GetFeatureList(GetFeatureListCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
