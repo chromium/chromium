@@ -109,6 +109,11 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   const SkColor border_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
+  const gfx::Rect content = GetContentsBounds();
+  const gfx::Point center(
+      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
+
   // If the view is focused or selected, paint a solid background.
   is_selected_ = calendar_utils::IsTheSameDay(
       date_, calendar_view_controller_->selected_date());
@@ -119,11 +124,6 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
     SetEnabledTextColors(text_color);
 
     cc::PaintFlags background;
-    const gfx::Rect content = GetContentsBounds();
-    const gfx::Point center(
-        (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
-        (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
-
     background.setColor(border_color);
     background.setStyle(cc::PaintFlags::kFill_Style);
     background.setAntiAlias(true);
@@ -139,11 +139,6 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
     return;
 
   cc::PaintFlags highlight_background;
-  const gfx::Rect content = GetContentsBounds();
-  gfx::Point center(
-      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
-      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
-
   highlight_background.setColor(bg_color);
   highlight_background.setStyle(cc::PaintFlags::kFill_Style);
   highlight_background.setAntiAlias(true);
