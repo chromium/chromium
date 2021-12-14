@@ -122,8 +122,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
 
-        baseline_artifacts = {'wpt_actual_status': ['OK'],
-                              'actual_text': [
+        baseline_artifacts = {'actual_text': [
                                   (os.path.join('layout-test-results',
                                                 'external', 'wpt', 'fail',
                                                 'test_variant1-actual.txt'))]}
@@ -156,8 +155,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                                      'external', 'wpt', 'fail', 'test.html')
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
-        baseline_artifacts = {'wpt_actual_status': ['OK'],
-                              'actual_text': [
+        baseline_artifacts = {'actual_text': [
                                   (os.path.join('layout-test-results',
                                                 'external', 'wpt', 'fail',
                                                 'test_variant1-actual.txt'))]}
@@ -190,8 +188,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self.wpt_adapter.do_post_test_run_tasks()
         test_abs_path = os.path.join(WEB_TESTS_DIR,
                                      'external', 'wpt', 'fail', 'test.html')
-        baseline_artifacts = {'wpt_actual_status': ['OK'],
-                              'actual_text': [
+        baseline_artifacts = {'actual_text': [
                                   os.path.join('layout-test-results',
                                                'external', 'wpt', 'fail',
                                                'test-actual.txt')]}

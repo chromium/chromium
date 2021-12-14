@@ -293,6 +293,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         unexpected = result_node['actual'] not in result_node['expected']
 
         for artifact_name, paths in result_node.get('artifacts', {}).items():
+            if artifact_name in ["wpt_actual_status", "wpt_subtest_failure"]:
+                continue
             for path in paths:
                 artifacts.AddArtifact(artifact_name, path)
 
@@ -313,7 +315,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         test_path = test_name[:index] if index != -1 else test_name
 
         self.sink.report_individual_test_result(
-            test_name, result, self.layout_test_results_subdir,
+            test_name, result, os.path.dirname(self.wpt_output),
             None, os.path.join(WEB_TESTS_DIR, test_path))
 
     def _maybe_write_expected_output(self, results_dir, test_name):
