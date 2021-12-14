@@ -246,7 +246,15 @@ void CastDisplayConfigurator::OnDisplayConfigured(
     bool config_success) {
   DCHECK(display);
   DCHECK(mode);
-  DCHECK_EQ(display, display_);
+
+  // Discard events for previous configurations. It is safe to discard since a
+  // new configuration round was initiated and we're waiting for another
+  // OnDisplayConfigured() event with the up-to-date display to arrive.
+  //
+  // This typically only happens when there's crashes and the state updates at
+  // the same time old notifications are received.
+  if (display != display_)
+    return;
 
   const gfx::Rect bounds(origin, mode->size());
   DVLOG(1) << __func__ << " success=" << config_success
