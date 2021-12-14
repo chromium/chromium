@@ -83,6 +83,26 @@ export class OnboardingEnterRsuWpDisableCodePage extends
         value: '',
         computed: 'computeRsuChallengeLinkText_(rsuHwid_, rsuChallenge_)',
       },
+
+      /** @protected */
+      rsuCodeValidationRegex_: {
+        type: String,
+        value: '.{1,8}',
+        readOnly: true,
+      },
+
+      /** @protected {boolean} */
+      rsuCodeInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /** @protected */
+      rsuCodeLengthLabel_: {
+        type: String,
+        computed: 'computeRsuCodeLengthLabel_(rsuCode_)',
+      },
     };
   }
 
@@ -201,6 +221,14 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   /** @private */
   closeDialog_() {
     this.shadowRoot.querySelector('#rsuChallengeDialog').close();
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRsuCodeLengthLabel_() {
+    return this.rsuCode_.length + '/8';
   }
 }
 

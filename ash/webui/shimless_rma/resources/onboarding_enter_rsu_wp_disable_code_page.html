@@ -2,6 +2,26 @@
   #dialogBody {
     overflow-wrap: anywhere;
   }
+
+  cr-input {
+    --cr-input-error-display: none;
+  }
+
+  #inputValidationLabel {
+    color: var(--google-grey-600);
+  }
+
+  :host([rsu-code-invalid_]) #inputValidationLabel {
+    color: red;
+  }
+
+  #rsuCodeLengthLabel {
+    float: right;
+  }
+
+  #inputContainer {
+    width: 275px;
+  }
 </style>
 
 <base-page orientation="column">
@@ -10,13 +30,20 @@
     <div>
       <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
-    <cr-input
-        on-change="onRsuCodeChanged_"
-        label="[[i18n('rsuCodeLabelText')]]"
-        placeholder="[[i18n('rsuCodePlaceHolderText')]]"
-        id="rsuCode"
-        value="{{rsuCode_}}">
-    </cr-input>
+    <div id="inputContainer">
+      <cr-input
+          on-change="onRsuCodeChanged_"
+          id="rsuCode"
+          value="{{rsuCode_}}"
+          pattern="[[rsuCodeValidationRegex_]]"
+          invalid="{{rsuCodeInvalid_}}"
+          auto-validate>
+      </cr-input>
+      <div id="inputValidationLabel">
+        [[i18n('rsuCodeLabelText')]]
+        <span id="rsuCodeLengthLabel">[[rsuCodeLengthLabel_]]</span>
+      </div>
+    </div>
   </div>
   <div slot="body">
     <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">

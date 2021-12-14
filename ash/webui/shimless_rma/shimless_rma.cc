@@ -140,7 +140,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rsuChallengeDialogTitleText",
        IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE},
       {"rsuCodeLabelText", IDS_SHIMLESS_RMA_RSU_CODE_LABEL},
-      {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
       {"rsuChallengeDialogDoneButtonLabel",
        IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_DONE_BUTTON},
       // Manual WP disable complete
