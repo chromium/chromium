@@ -918,6 +918,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testTouchingFormWithAdjustResize() throws Throwable {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             mRule.getActivity().getWindow().setSoftInputMode(
@@ -1146,6 +1147,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testNotifyVirtualValueChanged() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -1180,6 +1182,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testJavascriptNotTriggerNotifyVirtualValueChanged() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -1304,6 +1307,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testSwitchFromIFrame() throws Throwable {
         // we intentionally load main frame and iframe from the same URL and make both have the
         // similar form, so the new session is triggered by frame change
@@ -1518,6 +1522,7 @@ public class AwAutofillTest {
     @Feature({"AndroidWebView"})
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P,
             message = "This test is disabled on Android O because of https://crbug.com/997362")
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void
     testSelectControlChangeNotification() throws Throwable {
         int cnt = 0;
@@ -2053,6 +2058,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -2672,6 +2678,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1279813")
     public void testFirstFieldRemovedBeforeSuggestionSelected() throws Throwable {
         // This test verifies that form filling works even if an element of the form that was
         // supposed to be filled has been deleted between the time of decision to fill the form and
