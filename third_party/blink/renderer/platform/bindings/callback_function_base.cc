@@ -22,7 +22,7 @@ CallbackFunctionBase::CallbackFunctionBase(
   // incumbent context are the same origin-domain. Otherwise, leave it as
   // nullptr.
   v8::Local<v8::Context> creation_context =
-      callback_function->CreationContext();
+      callback_function->GetCreationContextChecked();
   if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
           incumbent_script_state_->GetContext(), creation_context,
           BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {

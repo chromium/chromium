@@ -145,7 +145,7 @@ v8::Local<v8::Object> GetOrCreateChrome(v8::Local<v8::Context> context) {
     // chrome object we construct, and check if it's present. Unfortunately, we
     // need to a) track down each place we create the chrome object (it's not
     // just in extensions) and also see how much that would break.
-    if (obj->CreationContext() == context)
+    if (obj->GetCreationContextChecked() == context)
       chrome_object = obj;
   }
 
@@ -637,7 +637,7 @@ void NativeExtensionBindingsSystem::BindingAccessor(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
   // Force binding creation in the owning context (even if another context is
   // calling in). This is also important to ensure that objects created through

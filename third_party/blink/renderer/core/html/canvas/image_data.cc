@@ -395,7 +395,8 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
     // This is a perf hack breaking the web interop.
 
     v8::Local<v8::Value> v8_data;
-    ScriptState* script_state = ScriptState::From(wrapper->CreationContext());
+    ScriptState* script_state =
+        ScriptState::From(wrapper->GetCreationContextChecked());
     if (!ToV8Traits<V8ImageDataArray>::ToV8(script_state, data_)
              .ToLocal(&v8_data)) {
       return wrapper;

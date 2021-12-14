@@ -63,7 +63,8 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   TOSTRING_VOID(V8StringResource<>, name, info[0]);
-  ScriptState* script_state = ScriptState::From(info.This()->CreationContext());
+  ScriptState* script_state =
+      ScriptState::From(info.This()->GetCreationContextChecked());
   v8::Local<v8::Value> v8_value;
   if (!ToV8Traits<IDLNullable<V8UnionElementOrHTMLCollection>>::ToV8(
            script_state, impl->NamedGetter(name))

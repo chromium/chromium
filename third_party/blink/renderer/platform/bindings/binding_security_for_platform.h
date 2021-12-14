@@ -34,44 +34,44 @@ class PLATFORM_EXPORT BindingSecurityForPlatform {
   // family.
   static bool ShouldAllowAccessToV8Context(
       v8::Local<v8::Context> accessing_context,
-      v8::Local<v8::Context> target_context,
+      v8::MaybeLocal<v8::Context> target_context,
       ExceptionState&);
   static bool ShouldAllowAccessToV8Context(
       v8::Local<v8::Context> accessing_context,
-      v8::Local<v8::Context> target_context,
+      v8::MaybeLocal<v8::Context> target_context,
       ErrorReportOption);
 
   // Checks if a wrapper creation of the given wrapper type associated with
   // |creation_context| is allowed in |accessing_context|.
   static bool ShouldAllowWrapperCreationOrThrowException(
       v8::Local<v8::Context> accessing_context,
-      v8::Local<v8::Context> creation_context,
+      v8::MaybeLocal<v8::Context> creation_context,
       const WrapperTypeInfo* wrapper_type_info);
 
   // Rethrows a cross context exception, that is possibly cross origin.
   // A SecurityError may be rethrown instead of the exception if necessary.
   static void RethrowWrapperCreationException(
       v8::Local<v8::Context> accessing_context,
-      v8::Local<v8::Context> creation_context,
+      v8::MaybeLocal<v8::Context> creation_context,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Value> cross_context_exception);
 
  private:
   using ShouldAllowAccessToV8ContextWithExceptionStateFunction =
       bool (*)(v8::Local<v8::Context> accessing_context,
-               v8::Local<v8::Context> target_context,
+               v8::MaybeLocal<v8::Context> target_context,
                ExceptionState&);
   using ShouldAllowAccessToV8ContextWithErrorReportOptionFunction =
       bool (*)(v8::Local<v8::Context> accessing_context,
-               v8::Local<v8::Context> target_context,
+               v8::MaybeLocal<v8::Context> target_context,
                ErrorReportOption);
   using ShouldAllowWrapperCreationOrThrowExceptionFunction =
       bool (*)(v8::Local<v8::Context> accessing_context,
-               v8::Local<v8::Context> creation_context,
+               v8::MaybeLocal<v8::Context> creation_context,
                const WrapperTypeInfo* wrapper_type_info);
   using RethrowWrapperCreationExceptionFunction =
       void (*)(v8::Local<v8::Context> accessing_context,
-               v8::Local<v8::Context> creation_context,
+               v8::MaybeLocal<v8::Context> creation_context,
                const WrapperTypeInfo* wrapper_type_info,
                v8::Local<v8::Value> cross_context_exception);
 

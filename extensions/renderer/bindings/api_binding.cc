@@ -524,8 +524,9 @@ void APIBinding::GetEventObject(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
-  if (!binding::IsContextValidOrThrowError(context))
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
+      !binding::IsContextValidOrThrowError(context))
     return;
 
   CHECK(info.Data()->IsExternal());
@@ -556,8 +557,9 @@ void APIBinding::GetCustomPropertyObject(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
-  if (!binding::IsContextValid(context))
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
+      !binding::IsContextValid(context))
     return;
 
   v8::Context::Scope context_scope(context);

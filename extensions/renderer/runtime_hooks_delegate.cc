@@ -42,7 +42,7 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -70,7 +70,7 @@ void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
   DCHECK(!info.Data().IsEmpty());
   if (info.Data()->IsNull())

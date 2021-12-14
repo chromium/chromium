@@ -50,7 +50,7 @@ v8::Local<v8::Value> GetExposedInterfaceObject(
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
       isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
   ScriptState* script_state =
-      ScriptState::From(creation_context->CreationContext());
+      ScriptState::From(creation_context->GetCreationContextChecked());
   if (!script_state->ContextIsValid())
     return v8::Undefined(isolate);
 
@@ -64,7 +64,7 @@ v8::Local<v8::Value> GetExposedNamespaceObject(
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
       isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
   ScriptState* script_state =
-      ScriptState::From(creation_context->CreationContext());
+      ScriptState::From(creation_context->GetCreationContextChecked());
   if (!script_state->ContextIsValid())
     return v8::Undefined(isolate);
 

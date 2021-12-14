@@ -895,7 +895,8 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
                   base::BindOnce([](v8::Local<v8::Value> value) {
                     ASSERT_TRUE(value->IsObject());
                     v8::Local<v8::Object> object = value.As<v8::Object>();
-                    v8::Local<v8::Context> context = object->CreationContext();
+                    v8::Local<v8::Context> context =
+                        object->GetCreationContextChecked();
                     gin::Dictionary dict(context->GetIsolate(), object);
                     std::string result;
                     ASSERT_TRUE(dict.Get("str", &result));
@@ -933,7 +934,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
     ExpectSuccess(*spec, "({})", base::BindOnce([](v8::Local<v8::Value> value) {
       ASSERT_TRUE(value->IsObject());
       v8::Local<v8::Object> object = value.As<v8::Object>();
-      v8::Local<v8::Context> context = object->CreationContext();
+      v8::Local<v8::Context> context = object->GetCreationContextChecked();
       // We expect a null prototype to ensure we avoid tricky getters/setters on
       // the Object prototype.
       EXPECT_TRUE(object->GetPrototype()->IsNull());
@@ -959,7 +960,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
         base::BindOnce([](v8::Local<v8::Value> value) {
           ASSERT_TRUE(value->IsObject());
           v8::Local<v8::Object> object = value.As<v8::Object>();
-          v8::Local<v8::Context> context = object->CreationContext();
+          v8::Local<v8::Context> context = object->GetCreationContextChecked();
           v8::Local<v8::Value> prop =
               object
                   ->Get(context, gin::StringToV8(context->GetIsolate(), "prop"))

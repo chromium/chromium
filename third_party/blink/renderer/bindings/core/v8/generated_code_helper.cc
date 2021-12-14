@@ -398,7 +398,8 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (UNLIKELY(exception_state.HadException())) {
     return;
   }
-  v8::Local<v8::Context> receiver_context = v8_receiver->CreationContext();
+  v8::Local<v8::Context> receiver_context =
+      v8_receiver->GetCreationContextChecked();
   ScriptState* receiver_script_state = ScriptState::From(receiver_context);
   // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
   // function to a more appropriate one.  It's better to pass |exception_state|

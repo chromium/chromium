@@ -56,7 +56,7 @@ v8::Local<v8::Context> Arguments::GetHolderCreationContext() const {
   v8::Local<v8::Object> holder = is_for_property_
                                      ? info_for_property_->Holder()
                                      : info_for_function_->Holder();
-  return holder->CreationContext();
+  return holder->GetCreationContextChecked();
 }
 
 std::string V8TypeAsString(v8::Isolate* isolate, v8::Local<v8::Value> value) {

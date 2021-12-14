@@ -151,21 +151,21 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
 
   static ScriptState* ForRelevantRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(const V8CrossOriginCallbackInfo& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<void>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* From(v8::Local<v8::Context> context) {

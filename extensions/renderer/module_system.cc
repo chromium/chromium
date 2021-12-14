@@ -400,7 +400,7 @@ void ModuleSystem::LazyFieldGetterInner(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Object> parameters = v8::Local<v8::Object>::Cast(info.Data());
   // This context should be the same as context()->v8_context().
-  v8::Local<v8::Context> context = parameters->CreationContext();
+  v8::Local<v8::Context> context = parameters->GetCreationContextChecked();
   v8::Local<v8::Object> global(context->Global());
   v8::Local<v8::Value> module_system_value;
   if (!GetPrivate(context, global, kModuleSystem, &module_system_value) ||

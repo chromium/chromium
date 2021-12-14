@@ -763,7 +763,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_a);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_a, fake_chrome->CreationContext());
+    EXPECT_EQ(context_a, fake_chrome->GetCreationContextChecked());
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -776,7 +776,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_b);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_b, fake_chrome->CreationContext());
+    EXPECT_EQ(context_b, fake_chrome->GetCreationContextChecked());
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -1136,7 +1136,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
           ->Get(context, gin::StringToV8(isolate(), "apiBridge"))
           .ToLocalChecked();
   ASSERT_TRUE(api_bridge->IsObject());
-  EXPECT_EQ(context, api_bridge.As<v8::Object>()->CreationContext());
+  EXPECT_EQ(context, api_bridge.As<v8::Object>()->GetCreationContextChecked());
 }
 
 class ResponseValidationNativeExtensionBindingsSystemUnittest

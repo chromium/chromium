@@ -110,16 +110,19 @@ ExecutionContext* ExecutionContext::ForCurrentRealm(
 // static
 ExecutionContext* ExecutionContext::ForRelevantRealm(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  return ToExecutionContext(info.Holder()->CreationContext());
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context))
+    return nullptr;
+  return ToExecutionContext(context);
 }
 
 // static
 ExecutionContext* ExecutionContext::ForRelevantRealm(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  auto ctx = info.Holder()->CreationContext();
-  if (ctx.IsEmpty())
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context))
     return nullptr;
-  return ToExecutionContext(ctx);
+  return ToExecutionContext(context);
 }
 
 // static

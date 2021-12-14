@@ -63,7 +63,7 @@ void LastErrorGetter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Object> holder = info.Holder();
-  v8::Local<v8::Context> context = holder->CreationContext();
+  v8::Local<v8::Context> context = holder->GetCreationContextChecked();
 
   v8::Local<v8::Value> last_error;
   v8::Local<v8::Private> last_error_key = v8::Private::ForApi(
@@ -103,7 +103,7 @@ void LastErrorSetter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Object> holder = info.Holder();
-  v8::Local<v8::Context> context = holder->CreationContext();
+  v8::Local<v8::Context> context = holder->GetCreationContextChecked();
 
   v8::Local<v8::Private> script_value_key = v8::Private::ForApi(
       isolate, gin::StringToSymbol(isolate, kScriptSuppliedValueKey));

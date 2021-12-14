@@ -70,8 +70,8 @@ class WorldSafeV8Reference final {
       WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
           *world_.get(), value);
     } else if (value->IsObject()) {
-      ScriptState* script_state =
-          ScriptState::From(value.template As<v8::Object>()->CreationContext());
+      ScriptState* script_state = ScriptState::From(
+          value.template As<v8::Object>()->GetCreationContextChecked());
       world_ = &script_state->World();
     }
   }

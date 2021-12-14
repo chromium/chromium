@@ -85,7 +85,10 @@ ScriptContext* ScriptContextSet::GetByV8Context(
 
 ScriptContext* ScriptContextSet::GetContextByObject(
     const v8::Local<v8::Object>& object) {
-  return GetContextByV8Context(object->CreationContext());
+  v8::Local<v8::Context> context;
+  if (!object->GetCreationContext().ToLocal(&context))
+    return nullptr;
+  return GetContextByV8Context(context);
 }
 
 ScriptContext* ScriptContextSet::GetContextByV8Context(

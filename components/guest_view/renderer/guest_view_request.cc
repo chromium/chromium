@@ -40,8 +40,8 @@ void GuestViewRequest::ExecuteCallbackIfAvailable(
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Function> callback =
       v8::Local<v8::Function>::New(isolate_, callback_);
-  v8::Local<v8::Context> context = callback->CreationContext();
-  if (context.IsEmpty())
+  v8::Local<v8::Context> context;
+  if (!callback->GetCreationContext().ToLocal(&context))
     return;
 
   v8::Context::Scope context_scope(context);

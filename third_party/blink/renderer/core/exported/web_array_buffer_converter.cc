@@ -42,7 +42,8 @@ v8::Local<v8::Value> WebArrayBufferConverter::ToV8Value(
     v8::Isolate* isolate) {
   // We no longer use |creationContext| because it's often misused and points
   // to a context faked by user script.
-  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  DCHECK(creation_context->GetCreationContextChecked() ==
+         isolate->GetCurrentContext());
   if (!buffer)
     return v8::Local<v8::Value>();
   return ToV8(*buffer, isolate->GetCurrentContext()->Global(), isolate);

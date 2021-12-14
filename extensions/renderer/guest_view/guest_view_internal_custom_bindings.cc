@@ -49,10 +49,11 @@ namespace extensions {
 namespace {
 
 content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
-  v8::Local<v8::Context> context =
-      v8::Local<v8::Object>::Cast(value)->CreationContext();
-  if (context.IsEmpty())
-    return nullptr;
+  v8::Local<v8::Context> context;
+  if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext().ToLocal(
+          &context))
+    if (context.IsEmpty())
+      return nullptr;
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForContext(context);
   if (!frame)
     return nullptr;
