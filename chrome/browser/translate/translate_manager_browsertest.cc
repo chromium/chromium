@@ -531,8 +531,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSuccess) {
 
 // Test that hrefTranslate doesn't auto-translate if the originator of the
 // navigation isn't a Google origin.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       HrefTranslateNotFromGoogle) {
+                       DISABLED_HrefTranslateNotFromGoogle) {
   base::HistogramTester histograms;
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   chrome_translate_client->GetTranslateManager()->SetIgnoreMissingKeyForTesting(
