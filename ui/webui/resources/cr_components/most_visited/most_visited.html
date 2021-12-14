@@ -216,8 +216,8 @@
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
       <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"
-          on-dragstart="onDragStart_" on-touchstart="onTouchStart_"
-          hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
+          aria-label="[[item.title]]" on-dragstart="onDragStart_"
+          on-touchstart="onTouchStart_" hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
           on-click="onTileClick_" on-keydown="onTileKeyDown_"
           query-tile$="[[item.isQueryTile]]">
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
