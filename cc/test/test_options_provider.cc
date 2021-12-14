@@ -22,11 +22,18 @@ class TestOptionsProvider::DiscardableManager
     return true;
   }
 
+  // SkStrikeServer::DiscardableHandleManager::isHandleDeleted implementation.
+  bool isHandleDeleted(SkDiscardableHandleId) override { return false; }
+
   // SkStrikeClient::DiscardableHandleManager implementation.
   bool deleteHandle(SkDiscardableHandleId handle_id) override {
     CHECK_LT(handle_id, next_handle_id_);
     return false;
   }
+
+  // SkStrikeClient::DiscardableHandleManager implementation.
+  void notifyCacheMiss(SkStrikeClient::CacheMissType type,
+                       int fontSize) override {}
 
  private:
   SkDiscardableHandleId next_handle_id_ = 1u;
