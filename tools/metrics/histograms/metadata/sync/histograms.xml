@@ -1199,11 +1199,7 @@ chromium-metrics-reviews@google.com.
     measure the same time in GetUpdatesResponse-s.
   </summary>
   <token key="SyncModelType" variants="SyncModelType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
+    <variant name=""/>
   </token>
 </histogram>
 
@@ -1220,11 +1216,7 @@ chromium-metrics-reviews@google.com.
     data type, but those are *not* counted in this metric.
   </summary>
   <token key="SyncModelType" variants="SyncModelType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
+    <variant name=""/>
   </token>
 </histogram>
 
