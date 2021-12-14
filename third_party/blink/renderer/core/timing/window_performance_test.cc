@@ -464,6 +464,46 @@ TEST_F(WindowPerformanceTest, FirstPointerUp) {
       1u, performance_->getEntriesByName("pointerdown", "first-input").size());
 }
 
+// When the pointerdown is optimized out, the mousedown works as a
+// 'first-input'.
+TEST_F(WindowPerformanceTest, PointerdownOptimizedOut) {
+  base::TimeTicks start_time = GetTimeStamp(0);
+  base::TimeTicks processing_start = GetTimeStamp(1);
+  base::TimeTicks processing_end = GetTimeStamp(2);
+  base::TimeTicks swap_time = GetTimeStamp(3);
+  RegisterPointerEvent("mousedown", start_time, processing_start,
+                       processing_end, 4);
+  SimulateSwapPromise(swap_time);
+  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  // The name of the entry should be "pointerdown".
+  EXPECT_EQ(1u,
+            performance_->getEntriesByName("mousedown", "first-input").size());
+}
+
+// Test that pointerdown followed by mousedown, pointerup works as a
+// 'first-input'.
+TEST_F(WindowPerformanceTest, PointerdownOnDesktop) {
+  base::TimeTicks start_time = GetTimeStamp(0);
+  base::TimeTicks processing_start = GetTimeStamp(1);
+  base::TimeTicks processing_end = GetTimeStamp(2);
+  base::TimeTicks swap_time = GetTimeStamp(3);
+  RegisterPointerEvent("pointerdown", start_time, processing_start,
+                       processing_end, 4);
+  SimulateSwapPromise(swap_time);
+  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  RegisterPointerEvent("mousedown", start_time, processing_start,
+                       processing_end, 4);
+  SimulateSwapPromise(swap_time);
+  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  RegisterPointerEvent("pointerup", start_time, processing_start,
+                       processing_end, 4);
+  SimulateSwapPromise(swap_time);
+  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  // The name of the entry should be "pointerdown".
+  EXPECT_EQ(
+      1u, performance_->getEntriesByName("pointerdown", "first-input").size());
+}
+
 TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
   base::TimeTicks keydown_timestamp = GetTimeStamp(0);
   // Keydown

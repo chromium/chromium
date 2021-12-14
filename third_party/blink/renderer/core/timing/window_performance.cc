@@ -496,13 +496,17 @@ void WindowPerformance::ReportEventTimings(
     }
 
     if (!first_input_timing_) {
-      if (entry->name() == "pointerdown") {
+      if (entry->name() == event_type_names::kPointerdown) {
         first_pointer_down_event_timing_ =
             PerformanceEventTiming::CreateFirstInputTiming(entry);
-      } else if (entry->name() == "pointerup") {
+      } else if (entry->name() == event_type_names::kPointerup) {
         DispatchFirstInputTiming(first_pointer_down_event_timing_);
-      } else if (entry->name() == "click" || entry->name() == "keydown" ||
-                 entry->name() == "mousedown") {
+      } else if (entry->name() == event_type_names::kPointercancel) {
+        first_pointer_down_event_timing_.Clear();
+      } else if ((entry->name() == event_type_names::kMousedown ||
+                  entry->name() == event_type_names::kClick ||
+                  entry->name() == event_type_names::kKeydown) &&
+                 !first_pointer_down_event_timing_) {
         DispatchFirstInputTiming(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
