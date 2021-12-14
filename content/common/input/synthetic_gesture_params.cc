@@ -11,8 +11,7 @@ SyntheticGestureParams::SyntheticGestureParams()
     : gesture_source_type(mojom::GestureSourceType::kDefaultInput) {}
 
 SyntheticGestureParams::SyntheticGestureParams(
-    const SyntheticGestureParams& other)
-    : gesture_source_type(other.gesture_source_type) {}
+    const SyntheticGestureParams& other) = default;
 
 SyntheticGestureParams::~SyntheticGestureParams() {}
 
