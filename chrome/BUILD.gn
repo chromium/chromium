@@ -93,8 +93,6 @@ if (is_win) {
 # on Chrome and the main DLLs it uses, it will transitively assert that those
 # targets also have no deps on disallowed things.
 group("assert_no_deps") {
-  # TODO(issuetracker.google.com/199337060): remove testonly
-  testonly = enable_weston_test
   deps = []
 
   if (is_android) {
@@ -114,8 +112,6 @@ group("assert_no_deps") {
 }
 if (!is_android && !is_mac) {
   group("chrome") {
-    # TODO(issuetracker.google.com/199337060): remove testonly
-    testonly = enable_weston_test
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
 
@@ -156,9 +152,8 @@ if (!is_android && !is_mac) {
     data_deps = []
 
     if (is_chromeos_ash) {
-      # TODO(issuetracker.google.com/199337060): remove testonly
-      testonly = enable_weston_test
       data_deps += [ "//sandbox/linux:chrome_sandbox" ]
+      deps += [ "//components/exo/wayland:weston_test_stub" ]
     }
 
     if (also_build_lacros_chrome_for_architecture != "") {
@@ -1383,7 +1378,6 @@ group("browser_dependencies") {
   }
 
   if (is_chromeos_ash) {
-    testonly = enable_weston_test
     public_deps += [
       "//ash/constants",
       "//chrome/browser/chromeos",

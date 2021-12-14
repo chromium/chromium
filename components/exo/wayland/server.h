@@ -38,7 +38,7 @@ struct WaylandTextInputManager;
 struct WaylandXdgShell;
 struct WaylandZxdgShell;
 struct WaylandRemoteShellData;
-struct WestonTestState;
+class WestonTest;
 class WaylandWatcher;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
@@ -135,9 +135,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
-#if BUILDFLAG(ENABLE_WESTON_TEST)
-  std::unique_ptr<WestonTestState> weston_test_data_;
-#endif
+  std::unique_ptr<WestonTest> weston_test_holder_;
 #endif
 };
 

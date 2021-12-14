@@ -5,6 +5,7 @@
 #include "components/exo/wayland/weston_test.h"
 
 #include <linux/input.h>
+#include <stdint.h>
 #include <wayland-server-core.h>
 #include <weston-test-server-protocol.h>
 
@@ -23,7 +24,29 @@
 
 namespace exo {
 namespace wayland {
+
+// Tracks button and mouse states for testing.
+struct WestonTest::WestonTestState {
+  WestonTestState() {}
+
+  WestonTestState(const WestonTestState&) = delete;
+  WestonTestState& operator=(const WestonTestState&) = delete;
+
+  bool left_button_pressed = false;
+  bool middle_button_pressed = false;
+  bool right_button_pressed = false;
+
+  bool control_pressed = false;
+  bool alt_pressed = false;
+  bool shift_pressed = false;
+  bool command_pressed = false;
+};
+
 namespace {
+
+using WestonTestState = WestonTest::WestonTestState;
+
+constexpr uint32_t kWestonTestVersion = 1;
 
 static void weston_test_move_surface(struct wl_client* client,
                                      struct wl_resource* resource,
@@ -240,8 +263,6 @@ const struct weston_test_interface weston_test_implementation = {
     weston_test_device_add,   weston_test_capture_screenshot,
     weston_test_send_touch};
 
-}  // namespace
-
 void bind_weston_test(wl_client* client,
                       void* data,
                       uint32_t version,
@@ -252,6 +273,16 @@ void bind_weston_test(wl_client* client,
   wl_resource_set_implementation(resource, &weston_test_implementation, data,
                                  nullptr);
 }
+
+}  // namespace
+
+WestonTest::WestonTest(wl_display* display)
+    : data_(std::make_unique<WestonTestState>()) {
+  wl_global_create(display, &weston_test_interface, kWestonTestVersion,
+                   data_.get(), bind_weston_test);
+}
+
+WestonTest::~WestonTest() = default;
 
 }  // namespace wayland
 }  // namespace exo

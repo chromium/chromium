@@ -8,7 +8,6 @@ import("//components/exo/buildflags.gni")
 assert(is_chromeos_ash)
 
 source_set("server") {
-  testonly = enable_weston_test
   sources = [
     "wayland_server_controller.cc",
     "wayland_server_controller.h",

@@ -3127,6 +3127,7 @@ static_library("test_support") {
     "//chromeos/system",
     "//chromeos/ui/frame",
     "//components/account_id",
+    "//components/exo/wayland:weston_test_stub",
     "//components/prefs:test_support",
     "//components/user_manager:user_manager",
     "//components/viz/test:test_support",

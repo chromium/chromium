@@ -158,6 +158,7 @@ source_set("wayland") {
       "wayland_keyboard_delegate.h",
       "wayland_positioner.cc",
       "wayland_positioner.h",
+      "weston_test.h",
       "wl_shell.cc",
       "wl_shell.h",
       "xdg_shell.cc",
@@ -220,19 +221,32 @@ source_set("wayland") {
       "//third_party/wayland-protocols:idle_inhibit_protocol",
       "//ui/base/cursor/mojom:cursor_type",
     ]
-
-    if (enable_weston_test) {
-      testonly = true
-      deps += [
-        "//third_party/wayland-protocols:weston_test",
-        "//ui/base:test_support",
-      ]
-      sources += [
-        "weston_test.cc",
-        "weston_test.h",
-      ]
-    }
   }
+}
+
+static_library("weston_test") {
+  testonly = true
+  defines = [ "WESTON_TEST_IMPLEMENTATION" ]
+  deps = [
+    ":wayland",
+    "//base",
+    "//components/exo",
+    "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:weston_test",
+    "//ui/base:test_support",
+    "//ui/wm",
+  ]
+  sources = [ "weston_test.cc" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash" ]
+  }
+}
+
+static_library("weston_test_stub") {
+  testonly = false
+  defines = [ "WESTON_TEST_IMPLEMENTATION" ]
+  sources = [ "weston_test_stub.cc" ]
+  deps = [ ":wayland" ]
 }
 
 source_set("unit_tests") {

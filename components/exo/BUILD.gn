@@ -13,10 +13,7 @@ import("//ui/base/ui_features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_COLOR_MANAGER=$enable_color_manager",
-    "ENABLE_WESTON_TEST=$enable_weston_test",
-  ]
+  flags = [ "ENABLE_COLOR_MANAGER=$enable_color_manager" ]
 }
 
 if (use_xkbcommon) {
@@ -261,6 +258,7 @@ source_set("test_support") {
       "//ash:test_support",
       "//ash/public/cpp",
       "//chromeos/ui/base",
+      "//components/exo/wayland:weston_test_stub",
     ]
   }
 }

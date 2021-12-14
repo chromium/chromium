@@ -79,6 +79,7 @@
 #include <idle-inhibit-unstable-v1-server-protocol.h>
 #include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
+#include "components/exo/wayland/weston_test.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wayland/zcr_cursor_shapes.h"
@@ -100,11 +101,6 @@
 #include "components/exo/wayland/zxdg_decoration_manager.h"
 #include "components/exo/wayland/zxdg_output_manager.h"
 #include "components/exo/wayland/zxdg_shell.h"
-
-#if BUILDFLAG(ENABLE_WESTON_TEST)
-#include <weston-test-server-protocol.h>
-#include "components/exo/wayland/weston_test.h"
-#endif
 
 #if BUILDFLAG(ENABLE_COLOR_MANAGER)
 #include <chrome-color-management-server-protocol.h>
@@ -389,12 +385,7 @@ void Server::Initialize() {
                      1, display_, bind_zwp_idle_inhibit_manager);
   }
 
-#if BUILDFLAG(ENABLE_WESTON_TEST)
-  weston_test_data_ = std::make_unique<WestonTestState>();
-  wl_global_create(wl_display_.get(), &weston_test_interface,
-                   kWestonTestVersion, weston_test_data_.get(),
-                   bind_weston_test);
-#endif
+  weston_test_holder_ = std::make_unique<WestonTest>(wl_display_.get());
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());

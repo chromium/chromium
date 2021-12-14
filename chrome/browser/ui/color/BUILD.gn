@@ -60,5 +60,8 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
         "//components/crash/core/app:crash_export_thunks",
       ]
     }
+    if (is_chromeos_ash) {
+      deps += [ "//components/exo/wayland:weston_test_stub" ]
+    }
   }
 }
