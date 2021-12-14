@@ -1112,7 +1112,7 @@ RuleBasedHostResolverProc::Rule::Rule(ResolverType resolver_type,
       replacement(replacement),
       dns_aliases(std::move(dns_aliases)),
       latency_ms(latency_ms) {
-  DCHECK(dns_aliases != std::vector<std::string>({""}));
+  DCHECK(this->dns_aliases != std::vector<std::string>({""}));
 }
 
 RuleBasedHostResolverProc::Rule::Rule(const Rule& other) = default;
