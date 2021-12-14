@@ -1035,13 +1035,11 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfAccountStore) {
   bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
-TEST_F(PasswordSyncBridgeTest, ShouldNotNotifyOnSyncDisableIfProfileStore) {
+TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfProfileStore) {
   ON_CALL(*mock_password_store_sync(), IsAccountStore())
       .WillByDefault(Return(false));
 
-  // The profile password store does *not* get cleared when sync is disabled, so
-  // this should *not* trigger the callback.
-  EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run()).Times(0);
+  EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run());
 
   bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
 }

@@ -795,6 +795,7 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
   }
   if (!password_store_sync_->IsAccountStore()) {
     password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+    sync_enabled_or_disabled_cb_.Run();
     return;
   }
   // For the account store, the data should be deleted too. So do the following:
