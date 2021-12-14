@@ -56,6 +56,8 @@ device::mojom::ScanResult ToMojom(biod::ScanResult type) {
       return device::mojom::ScanResult::TOO_FAST;
     case biod::SCAN_RESULT_IMMOBILE:
       return device::mojom::ScanResult::IMMOBILE;
+    case biod::SCAN_RESULT_NO_MATCH:
+      return device::mojom::ScanResult::NO_MATCH;
     case biod::SCAN_RESULT_MAX:
       return device::mojom::ScanResult::kMaxValue;
   }
@@ -244,12 +246,12 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
     entries.emplace_back(std::move(item.first), std::move(paths));
   }
 
-  auto casted_scan_result = static_cast<device::mojom::ScanResult>(scan_result);
-  CHECK(device::mojom::IsKnownEnumValue(casted_scan_result));
+  auto mojom_scan_result = ToMojom(scan_result);
+  CHECK(device::mojom::IsKnownEnumValue(mojom_scan_result));
 
   for (auto& observer : observers_) {
     observer->OnAuthScanDone(
-        casted_scan_result,
+        mojom_scan_result,
         base::flat_map<std::string, std::vector<std::string>>(entries));
   }
 }

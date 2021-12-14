@@ -41,6 +41,7 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override {
     auth_scan_dones_++;
+    last_scan_result_ = scan_result;
   }
 
   void OnSessionFailed() override { session_failures_++; }
@@ -51,12 +52,18 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int restarts() { return restarts_; }
   int session_failures() { return session_failures_; }
 
+  device::mojom::ScanResult last_scan_result() const {
+    return last_scan_result_;
+  }
+
  private:
   mojo::Receiver<mojom::FingerprintObserver> receiver_;
   int enroll_scan_dones_ = 0;  // Count of enroll scan done signal received.
   int auth_scan_dones_ = 0;    // Count of auth scan done signal received.
   int restarts_ = 0;           // Count of restart signal received.
   int session_failures_ = 0;   // Count of session failed signal received.
+
+  device::mojom::ScanResult last_scan_result_;  // Last received ScanResult.
 };
 
 class FingerprintChromeOSTest : public testing::Test {
@@ -89,10 +96,10 @@ class FingerprintChromeOSTest : public testing::Test {
         -1 /* percent_complete */);
   }
 
-  void GenerateAuthScanDoneSignal() {
+  void GenerateAuthScanDoneSignal(biod::ScanResult scan_result) {
     std::string fake_fingerprint_data;
-    chromeos::FakeBiodClient::Get()->SendAuthScanDone(
-        fake_fingerprint_data, biod::SCAN_RESULT_SUCCESS);
+    chromeos::FakeBiodClient::Get()->SendAuthScanDone(fake_fingerprint_data,
+                                                      scan_result);
   }
 
   void GenerateSessionFailedSignal() {
@@ -162,7 +169,7 @@ TEST_F(FingerprintChromeOSTest, FingerprintObserverTest) {
   chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
       &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
-  GenerateAuthScanDoneSignal();
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_SUCCESS);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.auth_scan_dones(), 1);
 
@@ -194,5 +201,60 @@ TEST_F(FingerprintChromeOSTest, SimultaneousGetRecordsRequests) {
   EXPECT_EQ(GetPendingRequests(), 0);
   EXPECT_TRUE(RequestDataIsReset());
 }
+
+TEST_F(FingerprintChromeOSTest, FingerprintScanResultConvertTest) {
+  mojo::PendingRemote<mojom::FingerprintObserver> pending_observer;
+  FakeFingerprintObserver observer(
+      pending_observer.InitWithNewPipeAndPassReceiver());
+  fingerprint()->AddFingerprintObserver(std::move(pending_observer));
+
+  chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
+      &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_SUCCESS);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::SUCCESS);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_PARTIAL);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::PARTIAL);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_INSUFFICIENT);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(),
+            device::mojom::ScanResult::INSUFFICIENT);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_SENSOR_DIRTY);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(),
+            device::mojom::ScanResult::SENSOR_DIRTY);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_TOO_SLOW);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::TOO_SLOW);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_TOO_FAST);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::TOO_FAST);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_IMMOBILE);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::IMMOBILE);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_NO_MATCH);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::NO_MATCH);
+
+  GenerateAuthScanDoneSignal(biod::SCAN_RESULT_MAX);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::kMaxValue);
+}
+
+// Make sure that compilation fails if a new value is added and this assert is
+// not updated. When updating this, please extend unit tests to check newly
+// added value.
+static_assert(device::mojom::ScanResult::kMaxValue ==
+              device::mojom::ScanResult::NO_MATCH);
 
 }  // namespace device
