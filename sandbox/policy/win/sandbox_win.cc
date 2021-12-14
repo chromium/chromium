@@ -463,7 +463,7 @@ typedef BOOL(WINAPI* DuplicateHandleFunctionPtr)(HANDLE source_process_handle,
 
 DuplicateHandleFunctionPtr g_iat_orig_duplicate_handle;
 
-NtQueryObjectFunction g_QueryObject = NULL;
+NtQueryObject g_QueryObject = NULL;
 
 static const char* kDuplicateHandleWarning =
     "You are attempting to duplicate a privileged handle into a sandboxed"

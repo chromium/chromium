@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/win/windows_version.h"
+#include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +26,7 @@ SBOX_TESTS_COMMAND int NamedPipe_Create(int argc, wchar_t** argv) {
   // pipe should be in the object namespace after creation.
   if (argc == 2) {
     std::wstring handle_name;
-    if (GetPathFromHandle(pipe, &handle_name)) {
+    if (GetHandleName(pipe, &handle_name)) {
       if (handle_name.compare(0, wcslen(argv[1]), argv[1]) != 0)
         return SBOX_TEST_FAILED;
     } else {

@@ -69,11 +69,8 @@ bool SameObject(HANDLE handle, const wchar_t* full_path);
 bool GetPathFromHandle(HANDLE handle, std::wstring* path);
 
 // Resolves a win32 path to an nt path using GetPathFromHandle. The path must
-// exist. Returns true if the translation was successful.
+// exist. Returs true if the translation was succesful.
 bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path);
-
-// Resolves a handle to its type name. Returns true if successful.
-bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name);
 
 // Translates a reserved key name to its handle.
 // For example "HKEY_LOCAL_MACHINE" returns HKEY_LOCAL_MACHINE.

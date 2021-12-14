@@ -147,31 +147,6 @@ void RemoveImpliedDevice(std::wstring* path) {
     *path = path->substr(kNTDotPrefixLen);
 }
 
-bool QueryObjectInformation(HANDLE handle,
-                            OBJECT_INFORMATION_CLASS info_class,
-                            DWORD initial_size,
-                            std::vector<char>* buffer) {
-  static NtQueryObjectFunction NtQueryObject = nullptr;
-  if (!NtQueryObject)
-    ResolveNTFunctionPtr("NtQueryObject", &NtQueryObject);
-
-  ULONG size = initial_size;
-  NTSTATUS status = STATUS_BUFFER_OVERFLOW;
-  __try {
-    do {
-      buffer->resize(size);
-      status = NtQueryObject(handle, info_class, buffer->data(), size, &size);
-    } while (status == STATUS_INFO_LENGTH_MISMATCH ||
-             status == STATUS_BUFFER_OVERFLOW);
-  } __except (GetExceptionCode() == STATUS_INVALID_HANDLE
-                  ? EXCEPTION_EXECUTE_HANDLER
-                  : EXCEPTION_CONTINUE_SEARCH) {
-    status = STATUS_INVALID_HANDLE;
-  }
-
-  return NT_SUCCESS(status);
-}
-
 }  // namespace
 
 namespace sandbox {
@@ -436,13 +411,30 @@ bool ConvertToLongPath(std::wstring* native_path,
 }
 
 bool GetPathFromHandle(HANDLE handle, std::wstring* path) {
-  std::vector<char> buffer;
-  if (!QueryObjectInformation(handle, ObjectNameInformation,
-                              sizeof(OBJECT_NAME_INFORMATION), &buffer)) {
-    return false;
+  NtQueryObjectFunction NtQueryObject = nullptr;
+  ResolveNTFunctionPtr("NtQueryObject", &NtQueryObject);
+
+  OBJECT_NAME_INFORMATION initial_buffer;
+  OBJECT_NAME_INFORMATION* name = &initial_buffer;
+  ULONG size = sizeof(initial_buffer);
+  // Query the name information a first time to get the size of the name.
+  // Windows XP requires that the size of the buffer passed in here be != 0.
+  NTSTATUS status =
+      NtQueryObject(handle, ObjectNameInformation, name, size, &size);
+
+  std::unique_ptr<BYTE[]> name_ptr;
+  if (size) {
+    name_ptr.reset(new BYTE[size]);
+    name = reinterpret_cast<OBJECT_NAME_INFORMATION*>(name_ptr.get());
+
+    // Query the name information a second time to get the name of the
+    // object referenced by the handle.
+    status = NtQueryObject(handle, ObjectNameInformation, name, size, &size);
   }
-  OBJECT_NAME_INFORMATION* name =
-      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer.data());
+
+  if (STATUS_SUCCESS != status)
+    return false;
+
   path->assign(name->ObjectName.Buffer,
                name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
   return true;
@@ -457,19 +449,6 @@ bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path) {
   bool rv = GetPathFromHandle(file, nt_path);
   ::CloseHandle(file);
   return rv;
-}
-
-bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name) {
-  std::vector<char> buffer;
-  if (!QueryObjectInformation(handle, ObjectTypeInformation,
-                              sizeof(OBJECT_TYPE_INFORMATION), &buffer)) {
-    return false;
-  }
-  OBJECT_TYPE_INFORMATION* name =
-      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer.data());
-  type_name->assign(name->Name.Buffer,
-                    name->Name.Length / sizeof(name->Name.Buffer[0]));
-  return true;
 }
 
 bool WriteProtectedChildMemory(HANDLE child_process,

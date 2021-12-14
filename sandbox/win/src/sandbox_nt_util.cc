@@ -230,6 +230,70 @@ NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
   return ret;
 }
 
+NTSTATUS AllocAndGetFullPath(
+    HANDLE root,
+    const wchar_t* path,
+    std::unique_ptr<wchar_t, NtAllocDeleter>* full_path) {
+  if (!InitHeap())
+    return STATUS_NO_MEMORY;
+
+  DCHECK_NT(full_path);
+  DCHECK_NT(path);
+  NTSTATUS ret = STATUS_UNSUCCESSFUL;
+  __try {
+    do {
+      static NtQueryObjectFunction NtQueryObject = nullptr;
+      if (!NtQueryObject)
+        ResolveNTFunctionPtr("NtQueryObject", &NtQueryObject);
+
+      ULONG size = 0;
+      // Query the name information a first time to get the size of the name.
+      ret = NtQueryObject(root, ObjectNameInformation, nullptr, 0, &size);
+
+      std::unique_ptr<OBJECT_NAME_INFORMATION, NtAllocDeleter> handle_name;
+      if (size) {
+        handle_name.reset(reinterpret_cast<OBJECT_NAME_INFORMATION*>(
+            new (NT_ALLOC) BYTE[size]));
+
+        // Query the name information a second time to get the name of the
+        // object referenced by the handle.
+        ret = NtQueryObject(root, ObjectNameInformation, handle_name.get(),
+                            size, &size);
+      }
+
+      if (STATUS_SUCCESS != ret)
+        break;
+
+      // Space for path + '\' + name + '\0'.
+      size_t name_length =
+          handle_name->ObjectName.Length + (wcslen(path) + 2) * sizeof(wchar_t);
+      full_path->reset(new (NT_ALLOC) wchar_t[name_length / sizeof(wchar_t)]);
+      if (!*full_path)
+        break;
+      wchar_t* off = full_path->get();
+      ret = CopyData(off, handle_name->ObjectName.Buffer,
+                     handle_name->ObjectName.Length);
+      if (!NT_SUCCESS(ret))
+        break;
+      off += handle_name->ObjectName.Length / sizeof(wchar_t);
+      *off = L'\\';
+      off += 1;
+      ret = CopyData(off, path, wcslen(path) * sizeof(wchar_t));
+      if (!NT_SUCCESS(ret))
+        break;
+      off += wcslen(path);
+      *off = L'\0';
+    } while (false);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+    ret = GetExceptionCode();
+  }
+
+  if (!NT_SUCCESS(ret) && *full_path)
+    full_path->reset(nullptr);
+
+  return ret;
+}
+
 // Hacky code... replace with AllocAndCopyObjectAttributes.
 NTSTATUS AllocAndCopyName(const OBJECT_ATTRIBUTES* in_object,
                           std::unique_ptr<wchar_t, NtAllocDeleter>* out_name,

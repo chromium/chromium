@@ -117,6 +117,12 @@ NTSTATUS AllocAndCopyName(const OBJECT_ATTRIBUTES* in_object,
                           uint32_t* attributes,
                           HANDLE* root);
 
+// Determine full path name from object root and path.
+NTSTATUS AllocAndGetFullPath(
+    HANDLE root,
+    const wchar_t* path,
+    std::unique_ptr<wchar_t, NtAllocDeleter>* full_path);
+
 // Initializes our ntdll level heap
 bool InitHeap();
 
