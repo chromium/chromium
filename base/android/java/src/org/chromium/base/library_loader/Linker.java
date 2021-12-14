@@ -399,6 +399,33 @@ abstract class Linker {
     void setApkFilePath(String path) {}
 
     /**
+     * Tells whether atomic replacement of RELRO after library load should be performed. It is only
+     * supported by the ModernLinker. The latter should give up with RELRO on the retry that uses
+     * the RelroSharingMode.NO_SHARING.  This method should be called after loading the library.
+     */
+    @GuardedBy("mLock")
+    private boolean shouldAtomicallyReplaceRelroAfterLoad() {
+        // This is a demonstration of the unfortunate tight coupling between the Linker, and the
+        // implementation details in loadLibraryImplLocked() for each of the two subclasses.
+        // Decoupling it would be nontrivial given the reuse of |mLock| in the subclasses.
+        // Improvements of this kind will soon become unnecessary because the LegacyLinker will go
+        // away with the deprecation of the LegacyLinker in Android M.
+        if (mLinkerWasWaitingSynchronously) {
+            // The LegacyLinker was blocked waiting for |mRemoteLibInfo| to arrive, used it and
+            // nullified immediately.
+            return false;
+        }
+        if (mRemoteLibInfo != null && mState == State.DONE) {
+            // Only the ModernLinker can end up in the State.DONE while mRemoteLibInfo is not
+            // nullified yet. With an invalid load address it is impossible to locate the RELRO
+            // region in the current process. This could happen when the library loaded successfully
+            // only after the fallback to no sharing.
+            return mRemoteLibInfo.mLoadAddress != 0;
+        }
+        return false;
+    }
+
+    /**
      * Loads the native library using a given mode.
      *
      * @param library The library name to load.
@@ -414,7 +441,7 @@ abstract class Linker {
                 Log.i(TAG, "Attempt to replace RELRO: waswaiting=%b, remotenonnull=%b, state=%d",
                         mLinkerWasWaitingSynchronously, mRemoteLibInfo != null, mState);
             }
-            if (!mLinkerWasWaitingSynchronously && mRemoteLibInfo != null && mState == State.DONE) {
+            if (shouldAtomicallyReplaceRelroAfterLoad()) {
                 atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
             }
         } finally {

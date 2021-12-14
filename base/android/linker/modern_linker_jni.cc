@@ -532,6 +532,12 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
+  if (other_lib_info.load_address_ == 0) {
+    LOG_ERROR("Load address reset. Second attempt to load the library?");
+    s_relro_sharing_status = RelroSharingStatus::EXTERNAL_LOAD_ADDRESS_RESET;
+    return false;
+  }
+
   if (!FindRelroAndLibraryRangesInElf()) {
     LOG_ERROR("Could not find RELRO from externally provided address: 0x%p",
               reinterpret_cast<void*>(other_lib_info.load_address_));

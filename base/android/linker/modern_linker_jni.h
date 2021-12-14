@@ -28,7 +28,8 @@ enum class RelroSharingStatus {
   NO_SHMEM_FUNCTIONS = 5,
   REMAP_FAILED = 6,
   CORRUPTED_IN_JAVA = 7,
-  COUNT = 8,
+  EXTERNAL_LOAD_ADDRESS_RESET = 8,
+  COUNT = 9,
 };
 
 struct SharedMemoryFunctions;
