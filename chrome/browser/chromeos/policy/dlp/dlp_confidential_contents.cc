@@ -14,8 +14,21 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 
 namespace policy {
+
+namespace {
+
+gfx::ImageSkia GetWindowIcon(aura::Window* window) {
+  gfx::ImageSkia* image = window->GetProperty(aura::client::kWindowIconKey);
+  if (!image)
+    image = window->GetProperty(aura::client::kAppIconKey);
+  return image ? *image : gfx::ImageSkia();
+}
+
+}  // namespace
 
 // The maximum number of entries that can be kept in the
 // DlpConfidentialContentsCache.
@@ -26,11 +39,22 @@ static constexpr size_t kDefaultCacheSizeLimit = 100;
 // DlpConfidentialContentsCache.
 static constexpr base::TimeDelta kDefaultCacheTimeout = base::Days(7);
 
+DlpConfidentialContent::DlpConfidentialContent() = default;
+
 DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
     : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
       title(web_contents->GetTitle()),
       url(web_contents->GetLastCommittedURL()) {}
+
+DlpConfidentialContent::DlpConfidentialContent(aura::Window* window,
+                                               const GURL& url)
+    : icon(GetWindowIcon(window)), title(window->GetTitle()), url(url) {}
+
+DlpConfidentialContent::DlpConfidentialContent(
+    const DlpConfidentialContent& other) = default;
+DlpConfidentialContent& DlpConfidentialContent::operator=(
+    const DlpConfidentialContent& other) = default;
 
 bool DlpConfidentialContent::operator==(
     const DlpConfidentialContent& other) const {
@@ -91,6 +115,10 @@ void DlpConfidentialContents::Add(content::WebContents* web_contents) {
   contents_.insert(DlpConfidentialContent(web_contents));
 }
 
+void DlpConfidentialContents::Add(aura::Window* window, const GURL& url) {
+  contents_.insert(DlpConfidentialContent(window, url));
+}
+
 void DlpConfidentialContents::Add(const DlpConfidentialContent& content) {
   contents_.insert(content);
 }
@@ -98,6 +126,12 @@ void DlpConfidentialContents::Add(const DlpConfidentialContent& content) {
 void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {
   contents_.clear();
   Add(web_contents);
+}
+
+void DlpConfidentialContents::ClearAndAdd(aura::Window* window,
+                                          const GURL& url) {
+  contents_.clear();
+  Add(window, url);
 }
 
 bool DlpConfidentialContents::IsEmpty() const {

@@ -23,6 +23,7 @@ void DlpWindowObserver::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
   window_->RemoveObserver(this);
   window_ = nullptr;
+  delegate_->OnWindowDestroying(window);
 }
 
 void DlpWindowObserver::OnWindowOcclusionChanged(aura::Window* window) {

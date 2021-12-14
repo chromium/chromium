@@ -17,9 +17,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace policy {
 
@@ -27,13 +31,15 @@ namespace policy {
 // Used to cache and later show information about observed confidential contents
 // to the user.
 struct DlpConfidentialContent {
-  DlpConfidentialContent() = default;
+  DlpConfidentialContent();
   // Constructs DlpConfidentialContent from the title and icon obtained from
   // |web_contents|, which cannot be null.
   explicit DlpConfidentialContent(content::WebContents* web_contents);
-  DlpConfidentialContent(const DlpConfidentialContent& other) = default;
-  DlpConfidentialContent& operator=(const DlpConfidentialContent& other) =
-      default;
+  // Constructs DlpConfidentialContent from the title and icon obtained from
+  // |window|, which cannot be null and |url|.
+  DlpConfidentialContent(aura::Window* window, const GURL& url);
+  DlpConfidentialContent(const DlpConfidentialContent& other);
+  DlpConfidentialContent& operator=(const DlpConfidentialContent& other);
   ~DlpConfidentialContent() = default;
 
   // Contents with the same url are considered equal, ignoring the ref (part
@@ -70,12 +76,16 @@ class DlpConfidentialContents {
   // Converts |web_contents| to a DlpConfidentialContent and adds it to the
   // underlying container.
   void Add(content::WebContents* web_contents);
+  // Same for |window| and |url| pair.
+  void Add(aura::Window* window, const GURL& url);
 
   void Add(const DlpConfidentialContent& content);
 
   // Removes all stored confidential content, if there was any, and adds
   // |web_contents| converted to a DlpConfidentialContent.
   void ClearAndAdd(content::WebContents* web_contents);
+  // Same for |window| and |url| pair.
+  void ClearAndAdd(aura::Window* web_contents, const GURL& url);
 
   // Returns whether there is any content stored or not.
   bool IsEmpty() const;
