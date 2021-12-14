@@ -2,6 +2,7 @@ eladalon@chromium.org
 guidou@chromium.org
 hbos@chromium.org
 tommi@chromium.org
+toprice@chromium.org
 
 per-file *audio*=olka@chromium.org
 per-file low_latency_video*=kron@chromium.org
