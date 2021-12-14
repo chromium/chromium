@@ -19,6 +19,10 @@ void MergeDuplicateVisitIntoCanonicalVisit(
 base::flat_set<history::VisitID> CalculateAllDuplicateVisitsForCluster(
     const history::Cluster& cluster);
 
+// Enforces the reverse-chronological invariant of clusters, as well the
+// by-score sorting of visits within clusters. Exposed for testing.
+void SortClusters(std::vector<history::Cluster>* clusters);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_ON_DEVICE_CLUSTERING_UTIL_H_

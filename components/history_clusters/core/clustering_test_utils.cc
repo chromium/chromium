@@ -34,9 +34,11 @@ bool VisitResult::operator==(const VisitResult& rhs) const {
 }
 
 history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
-                                                    const GURL& url) {
+                                                    const GURL& url,
+                                                    base::Time visit_time) {
   history::AnnotatedVisit visit;
   visit.visit_row.visit_id = visit_id;
+  visit.visit_row.visit_time = visit_time;
   visit.url_row.set_url(url);
   visit.visit_row.visit_duration = base::Seconds(10);
   return visit;
@@ -44,10 +46,11 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
 
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
-    absl::optional<GURL> normalized_url) {
+    absl::optional<GURL> normalized_url,
+    float score) {
   history::ClusterVisit cluster_visit;
   cluster_visit.annotated_visit = annotated_visit;
-  cluster_visit.score = 1.0;
+  cluster_visit.score = score;
   cluster_visit.normalized_url =
       normalized_url ? *normalized_url : annotated_visit.url_row.url();
   return cluster_visit;

@@ -121,45 +121,6 @@ void FilterClustersMatchingQuery(std::string query,
                   clusters->end());
 }
 
-// Enforces the reverse-chronological invariant of clusters, as well the
-// by-score sorting of visits within clusters.
-void SortClusters(std::vector<Cluster>* clusters) {
-  DCHECK(clusters);
-  // Within each cluster, sort visits from best to worst using score.
-  // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
-  //  this sort step, if they are stored in-order.
-  for (auto& cluster : *clusters) {
-    base::ranges::sort(cluster.visits, [](auto& v1, auto& v2) {
-      if (v1.score != v2.score) {
-        // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
-        return v1.score > v2.score;
-      }
-
-      // Use v1 > v2 to get more recent visits BEFORE older visits.
-      return v1.annotated_visit.visit_row.visit_time >
-             v2.annotated_visit.visit_row.visit_time;
-    });
-  }
-
-  // After that, sort clusters reverse-chronologically based on their highest
-  // scored visit.
-  base::ranges::sort(*clusters, [&](auto& c1, auto& c2) {
-    // TODO(tommycli): If we can establish an invariant that no backend will
-    //  ever return an empty cluster, we can simplify the below code.
-    base::Time c1_time;
-    if (!c1.visits.empty()) {
-      c1_time = c1.visits.front().annotated_visit.visit_row.visit_time;
-    }
-    base::Time c2_time;
-    if (!c1.visits.empty()) {
-      c2_time = c2.visits.front().annotated_visit.visit_row.visit_time;
-    }
-
-    // Use c1 > c2 to get more recent clusters BEFORE older clusters.
-    return c1_time > c2_time;
-  });
-}
-
 // Gets a loggable JSON representation of `visits`.
 std::string GetDebugJSONForVisits(
     const std::vector<history::AnnotatedVisit>& visits) {
@@ -553,9 +514,14 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
     }
 
     // Now move all our surviving visits, which should all be canonical visits,
-    // to the final cluster.
-    for (auto& visit_pair : visits_map) {
-      cluster.visits.push_back(std::move(visit_pair.second));
+    // to the final cluster. To preserve the original pre-sorted ordering, we
+    // iterate through the original cluster's visits.
+    for (const auto& raw_visit : raw_cluster.visits) {
+      auto unflattened_visit =
+          visits_map.find(raw_visit.annotated_visit.visit_row.visit_id);
+      if (unflattened_visit != visits_map.end()) {
+        cluster.visits.push_back(std::move(unflattened_visit->second));
+      }
     }
 
     result_clusters.push_back(std::move(cluster));
@@ -732,8 +698,6 @@ QueryClustersResult HistoryClustersService::PostProcessClusters(
 
   FilterClustersMatchingQuery(query, &raw_clusters);
   result.clusters = CollapseDuplicateVisits(raw_clusters);
-  SortClusters(&result.clusters);
-
   return result;
 }
 

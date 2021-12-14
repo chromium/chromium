@@ -247,74 +247,6 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
   }
 };
 
-TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
-  base::HistogramTester histogram_tester;
-  AddHardcodedTestDataToHistoryService();
-
-  history_clusters_service_->QueryClusters(
-      /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time(),
-      /* max_count=*/0,
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting([&](QueryClustersResult result) {
-        auto& clusters = result.clusters;
-        ASSERT_EQ(clusters.size(), 2u);
-
-        auto& visits = clusters[0].visits;
-        ASSERT_EQ(visits.size(), 1u);
-        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
-                  "https://github.com/");
-        EXPECT_FLOAT_EQ(visits[0].score, 0.1);
-
-        visits = clusters[1].visits;
-        ASSERT_EQ(visits.size(), 2u);
-        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
-                  "https://google.com/");
-        EXPECT_FLOAT_EQ(visits[0].score, 0.9);
-        EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
-                  "https://github.com/");
-        EXPECT_FLOAT_EQ(visits[1].score, 0.5);
-
-        run_loop_quit_.Run();
-      }),
-      &task_tracker_);
-
-  AwaitAndVerifyTestClusteringBackendRequest();
-
-  std::vector<history::Cluster> clusters;
-  // This first cluster is meant to validate that the higher scoring "visit 1"
-  // gets sorted to the top, even though "visit 1" is older in the hardcoded
-  // test data. It's to validate the within-cluster sorting.
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(2, 0.5),
-                           test_clustering_backend_->GetVisitById(1, 0.9),
-                       },
-                       {}));
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(2, 0.1),
-                       },
-                       {}));
-  test_clustering_backend_->FulfillCallback(clusters);
-
-  // Verify the callback is invoked.
-  run_loop_.Run();
-
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumClustersReturned",
-      static_cast<int>(clusters.size()), 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetClustersLatency", 1);
-}
-
 TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
   AddHardcodedTestDataToHistoryService();
 
@@ -618,8 +550,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     clusters.push_back(
         history::Cluster(0,
                          {
-                             test_clustering_backend_->GetVisitById(1),
                              test_clustering_backend_->GetVisitById(2),
+                             test_clustering_backend_->GetVisitById(1),
                          },
                          {u"apples", u"Red Oranges"},
                          /*should_show_on_prominent_ui_surfaces=*/false));

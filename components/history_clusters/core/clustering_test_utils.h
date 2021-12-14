@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history_clusters {
@@ -38,15 +39,18 @@ std::vector<std::vector<testing::VisitResult>> ToVisitResults(
     const std::vector<history::Cluster>& clusters);
 
 // Creates a default AnnotatedVisit that has the minimal set of fields required.
-history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
-                                                    const GURL& url);
+history::AnnotatedVisit CreateDefaultAnnotatedVisit(
+    int visit_id,
+    const GURL& url,
+    base::Time visit_time = base::Time());
 
 // Creates a ClusterVisit from |annotated_visit|. Will populate the returned
 // ClusterVisit's normalized_url with |normalized_url| if present but otherwise
 // will use the URL contained in the AnnotatedVisit.
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
-    absl::optional<GURL> normalized_url = absl::nullopt);
+    absl::optional<GURL> normalized_url = absl::nullopt,
+    float score = 1.0);
 
 }  // namespace testing
 }  // namespace history_clusters
