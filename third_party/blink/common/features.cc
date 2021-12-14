@@ -1042,9 +1042,6 @@ const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSyncLoadDataUrlFonts{"SyncLoadDataUrlFonts",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPersistentQuotaIsTemporaryQuota{
     "PersistentQuotaIsTemporaryQuota", base::FEATURE_DISABLED_BY_DEFAULT};
 

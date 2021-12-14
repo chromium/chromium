@@ -403,7 +403,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"WindowOpenNewPopupBehavior",
            blink::features::kWindowOpenNewPopupBehavior},
-          {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
           {"CSSCascadeLayers", blink::features::kCSSCascadeLayers},
           // TODO(crbug.com/1185950): Remove this flag when the feature is fully
           // launched and released to stable with no issues.

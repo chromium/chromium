@@ -1,5 +1,3 @@
-CONSOLE WARNING: Failed to decode downloaded font: data:font/ttf,unused-font
-CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1970173299
 Tests that unused font with a data: URL is not loaded. No console warning for font load error is expected.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -458,9 +458,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 // inspector issue anyway.
 BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
 
-// Synchronously load web fonts inlined as data urls. See crbug.com/1236283
-BLINK_COMMON_EXPORT extern const base::Feature kSyncLoadDataUrlFonts;
-
 // Makes Persistent quota the same as Temporary quota.
 BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
