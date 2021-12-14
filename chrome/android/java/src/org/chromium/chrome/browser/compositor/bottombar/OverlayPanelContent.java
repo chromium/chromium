@@ -24,12 +24,12 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -348,7 +348,7 @@ public class OverlayPanelContent {
         }
 
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
-        mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, cv, mWindowAndroid,
+        mWebContents.initialize(VersionInfo.getProductVersion(), delegate, cv, mWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
         ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
 

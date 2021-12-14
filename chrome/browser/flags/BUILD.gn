@@ -24,7 +24,7 @@ android_library("java") {
     "//base:base_java",
     "//build:chromeos_buildflags",
     "//chrome/browser/preferences:java",
-    "//chrome/browser/version:java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

@@ -25,7 +25,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -176,20 +176,20 @@ public class ScreenShooter extends TestWatcher {
                 orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait");
         setFilterValue(filters, ANDROID_VERSION_FILTER, Build.VERSION.RELEASE);
         setFilterValue(filters, CHROME_VERSION_FILTER,
-                Integer.toString(ChromeVersionInfo.getProductMajorVersion()));
+                Integer.toString(VersionInfo.getProductMajorVersion()));
         String channelName = "Unknown";
-        if (ChromeVersionInfo.isLocalBuild()) {
+        if (VersionInfo.isLocalBuild()) {
             channelName = "Local Build";
-        } else if (ChromeVersionInfo.isCanaryBuild()) {
+        } else if (VersionInfo.isCanaryBuild()) {
             channelName = "Canary";
-        } else if (ChromeVersionInfo.isBetaBuild()) {
+        } else if (VersionInfo.isBetaBuild()) {
             channelName = "Beta";
-        } else if (ChromeVersionInfo.isDevBuild()) {
+        } else if (VersionInfo.isDevBuild()) {
             channelName = "Dev";
-        } else if (ChromeVersionInfo.isStableBuild()) {
+        } else if (VersionInfo.isStableBuild()) {
             channelName = "Stable";
         }
-        if (ChromeVersionInfo.isOfficialBuild()) {
+        if (VersionInfo.isOfficialBuild()) {
             channelName = channelName + " Official";
         }
         setFilterValue(filters, CHROME_CHANNEL_FILTER, channelName);
@@ -199,7 +199,7 @@ public class ScreenShooter extends TestWatcher {
         DateFormat formatter =
                 DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
         metadata.put("Capture time (UTC)", formatter.format(new Date()));
-        metadata.put("Chrome full product version", ChromeVersionInfo.getProductVersion());
+        metadata.put("Chrome full product version", VersionInfo.getProductVersion());
         metadata.put("Android build fingerprint", Build.FINGERPRINT);
 
         try {

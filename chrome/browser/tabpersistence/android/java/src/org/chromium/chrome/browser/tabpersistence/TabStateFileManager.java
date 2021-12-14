@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -348,7 +348,7 @@ public class TabStateFileManager {
     /** @return Whether a Stable channel build of Chrome is being used. */
     private static boolean isStableChannelBuild() {
         if ("stable".equals(sChannelNameOverrideForTest)) return true;
-        return ChromeVersionInfo.isStableBuild();
+        return VersionInfo.isStableBuild();
     }
 
     /**

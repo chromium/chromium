@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
 /**
@@ -22,7 +22,7 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
             super.onCreate();
             // TODO(crbug.com/1126301): This matches logic in MonochromeApplication.java.
             // Deduplicate if chrome split launches.
-            if (!ChromeVersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
+            if (!VersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
                 WebViewApkApplication.postDeveloperUiLauncherIconTask();
             }
         }

@@ -23,8 +23,8 @@ import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.crash.CrashKeys;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -158,7 +158,7 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
         addPairedString(PRODUCT, "Chrome_Android");
         addPairedString(PROCESS_TYPE, processName);
         addPairedString(DEVICE, Build.DEVICE);
-        addPairedString(VERSION, ChromeVersionInfo.getProductVersion());
+        addPairedString(VERSION, VersionInfo.getProductVersion());
         addPairedString(CHANNEL, getChannel());
         addPairedString(ANDROID_BUILD_ID, Build.ID);
         addPairedString(MODEL, Build.MODEL);
@@ -200,13 +200,13 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
     }
 
     private static String getChannel() {
-        if (ChromeVersionInfo.isCanaryBuild()) {
+        if (VersionInfo.isCanaryBuild()) {
             return "canary";
         }
-        if (ChromeVersionInfo.isDevBuild()) {
+        if (VersionInfo.isDevBuild()) {
             return "dev";
         }
-        if (ChromeVersionInfo.isBetaBuild()) {
+        if (VersionInfo.isBetaBuild()) {
             return "beta";
         }
         // An empty string indicates the stable channel.

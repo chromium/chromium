@@ -46,8 +46,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
@@ -659,7 +659,7 @@ public class StartSurfaceLayout extends Layout {
                 elapsedMs, mMaxFrameInterval, dirtySpan);
 
         // TODO(crbug.com/964406): stop logging it after this feature stabilizes.
-        if (!ChromeVersionInfo.isStableBuild()) {
+        if (!VersionInfo.isStableBuild()) {
             Log.i(TAG, message);
         }
 

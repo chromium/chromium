@@ -27,8 +27,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -97,8 +97,7 @@ public class ToSAndUMAFirstRunFragment
                 ((compoundButton, isChecked) -> mAllowCrashUpload = isChecked));
         if (!canShowUmaCheckBox()) {
             if (!FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()) {
-                mAllowCrashUpload =
-                        sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild();
+                mAllowCrashUpload = sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild();
             }
             mSendReportCheckBox.setVisibility(View.GONE);
         }
@@ -307,7 +306,7 @@ public class ToSAndUMAFirstRunFragment
      */
     protected boolean canShowUmaCheckBox() {
         return !FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()
-                && (sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild());
+                && (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild());
     }
 
     @VisibleForTesting

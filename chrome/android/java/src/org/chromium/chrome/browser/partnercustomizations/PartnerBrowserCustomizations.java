@@ -24,9 +24,9 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
@@ -118,7 +118,7 @@ public class PartnerBrowserCustomizations {
             if (sIgnoreSystemPackageCheck != null && !sIgnoreSystemPackageCheck) {
                 return false;
             }
-            if (ChromeVersionInfo.isLocalBuild()) {
+            if (VersionInfo.isLocalBuild()) {
                 Log.w(TAG,
                         "This is a local build of Chrome Android, "
                                 + "so keep reading the browser content provider, "
@@ -331,7 +331,7 @@ public class PartnerBrowserCustomizations {
                 try {
                     boolean systemOrPreStable =
                             (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
-                            || !ChromeVersionInfo.isStableBuild();
+                            || !VersionInfo.isStableBuild();
                     if (!systemOrPreStable) {
                         // Only allow partner customization if this browser is a system package, or
                         // is in pre-stable channels.

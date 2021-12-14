@@ -28,7 +28,7 @@ import org.chromium.build.NativeLibraries;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,7 +106,7 @@ public class DexFixer {
         }
         // Skip the workaround on local builds to avoid affecting perf bots.
         // https://bugs.chromium.org/p/chromium/issues/detail?id=1160070
-        if (ChromeVersionInfo.isLocalBuild() && ChromeVersionInfo.isOfficialBuild()) {
+        if (VersionInfo.isLocalBuild() && VersionInfo.isOfficialBuild()) {
             return true;
         }
         return false;

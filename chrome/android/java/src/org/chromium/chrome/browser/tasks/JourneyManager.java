@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -73,8 +73,8 @@ public class JourneyManager implements DestroyObserver {
             @NonNull ActivityLifecycleDispatcher dispatcher,
             @NonNull OverviewModeBehavior overviewModeBehavior,
             EngagementTimeUtil engagementTimeUtil) {
-        if (!ChromeVersionInfo.isLocalBuild() && !ChromeVersionInfo.isCanaryBuild()
-                && !ChromeVersionInfo.isDevBuild()) {
+        if (!VersionInfo.isLocalBuild() && !VersionInfo.isCanaryBuild()
+                && !VersionInfo.isDevBuild()) {
             // We do not want this in beta/stable until it's no longer backed by SharedPreferences.
             mTabModelSelectorTabObserver = null;
             mTabModelSelectorTabModelObserver = null;

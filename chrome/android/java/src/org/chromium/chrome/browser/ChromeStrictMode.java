@@ -18,11 +18,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.strictmode.KnownViolations;
 import org.chromium.components.strictmode.StrictModePolicyViolation;
 import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.components.strictmode.Violation;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -160,8 +160,7 @@ public class ChromeStrictMode {
         if (!ChromeStrictModeSwitch.ALLOW_STRICT_MODE_CHECKING) return;
 
         CommandLine commandLine = CommandLine.getInstance();
-        boolean shouldApplyPenalties = BuildConfig.ENABLE_ASSERTS
-                || ChromeVersionInfo.isLocalBuild()
+        boolean shouldApplyPenalties = BuildConfig.ENABLE_ASSERTS || VersionInfo.isLocalBuild()
                 || commandLine.hasSwitch(ChromeSwitches.STRICT_MODE);
 
         // Enroll 1% of dev sessions into StrictMode watch. This is done client-side rather than
@@ -169,9 +168,8 @@ public class ChromeStrictMode {
         // process. We need to detect early start-up StrictMode violations before loading native and
         // before warming the SharedPreferences (that is a violation in an of itself). We will
         // closely monitor this on dev channel.
-        boolean enableStrictModeWatch =
-                (ChromeVersionInfo.isLocalBuild() && !BuildConfig.ENABLE_ASSERTS)
-                || (ChromeVersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
+        boolean enableStrictModeWatch = (VersionInfo.isLocalBuild() && !BuildConfig.ENABLE_ASSERTS)
+                || (VersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
         if (!shouldApplyPenalties && !enableStrictModeWatch) return;
 
         StrictMode.ThreadPolicy.Builder threadPolicy =

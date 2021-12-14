@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * An exposed Activity that allows launching an Incognito Tab.
@@ -60,7 +60,7 @@ public class IncognitoTabLauncher extends Activity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ChromeVersionInfo.isLocalBuild() && ACTION_DEBUG.equals(getIntent().getAction())) {
+        if (VersionInfo.isLocalBuild() && ACTION_DEBUG.equals(getIntent().getAction())) {
             setComponentEnabled(false);
             finish();
             return;

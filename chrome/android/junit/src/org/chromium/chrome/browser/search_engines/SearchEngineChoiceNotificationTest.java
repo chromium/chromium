@@ -39,11 +39,11 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * Unit tests for {@link SearchEngineChoiceNotification}.
@@ -169,7 +169,7 @@ public final class SearchEngineChoiceNotificationTest {
                 prefs.contains(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION));
 
         assertEquals("Presented version should be set to the current product version.",
-                ChromeVersionInfo.getProductVersion(),
+                VersionInfo.getProductVersion(),
                 prefs.readString(
                         ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, null));
     }

@@ -31,11 +31,11 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.url.GURL;
 
 import java.util.regex.Pattern;
@@ -308,7 +308,7 @@ class ContextualSearchPolicy {
      */
     boolean shouldShowErrorCodeInBar() {
         // Builds with lots of real users should not see raw error codes.
-        return !(ChromeVersionInfo.isStableBuild() || ChromeVersionInfo.isBetaBuild());
+        return !(VersionInfo.isStableBuild() || VersionInfo.isBetaBuild());
     }
 
     /**

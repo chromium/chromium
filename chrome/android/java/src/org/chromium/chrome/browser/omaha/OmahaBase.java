@@ -17,7 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -547,7 +547,7 @@ public class OmahaBase {
 
     /** Begin communicating with the Omaha Update Server. */
     public static void onForegroundSessionStart(Context context) {
-        if (!ChromeVersionInfo.isOfficialBuild() || isDisabled()) return;
+        if (!VersionInfo.isOfficialBuild() || isDisabled()) return;
         OmahaService.startServiceImmediately(context);
     }
 

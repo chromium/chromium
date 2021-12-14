@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -57,6 +56,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -81,7 +81,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     /** Used for logging. */
     private static final String TAG = "Tab";
 
-    private static final String PRODUCT_VERSION = ChromeVersionInfo.getProductVersion();
+    private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
 
     private static final String REQUEST_DESKTOP_ENABLED_PARAM = "enabled";
 

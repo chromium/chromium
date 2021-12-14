@@ -44,9 +44,9 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.lang.annotation.Retention;
@@ -402,7 +402,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private int verifiedUiType(int requestedUiType) {
         if (!isTrustedIntent()) {
-            if (ChromeVersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
+            if (VersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
         }
 

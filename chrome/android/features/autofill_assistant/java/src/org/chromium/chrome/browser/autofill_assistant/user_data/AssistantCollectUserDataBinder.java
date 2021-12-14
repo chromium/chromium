@@ -23,9 +23,9 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -691,7 +691,7 @@ class AssistantCollectUserDataBinder
 
         EditorDialog cardEditorDialog = new EditorDialog(view.mActivity,
                 /*deleteRunnable =*/null, profile);
-        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
+        if (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) {
             cardEditorDialog.disableScreenshots();
         }
         cardEditor.setEditorDialog(cardEditorDialog);
