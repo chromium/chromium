@@ -99,8 +99,11 @@ class TestSmbFsImpl : public smbfs::mojom::SmbFs {
 
 class SmbFsShareTest : public testing::Test {
  protected:
+  static void SetUpTestSuite() {
+    disks::DiskMountManager::InitializeForTesting(disk_mount_manager());
+  }
+
   void SetUp() override {
-    disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildVolumeManager));
 
@@ -120,13 +123,19 @@ class SmbFsShareTest : public testing::Test {
     file_manager::VolumeManager::Get(&profile_)->RemoveObserver(&observer_);
   }
 
+  static file_manager::FakeDiskMountManager* disk_mount_manager() {
+    static file_manager::FakeDiskMountManager* manager =
+        new file_manager::FakeDiskMountManager();
+    return manager;
+  }
+
   std::unique_ptr<smbfs::SmbFsHost> CreateSmbFsHost(
       SmbFsShare* share,
       mojo::Receiver<smbfs::mojom::SmbFs>* smbfs_receiver,
       mojo::Remote<smbfs::mojom::SmbFsDelegate>* delegate) {
     return std::make_unique<smbfs::SmbFsHost>(
         std::make_unique<disks::MountPoint>(base::FilePath(kMountPath),
-                                            disk_mount_manager_),
+                                            disk_mount_manager()),
         share,
         mojo::Remote<smbfs::mojom::SmbFs>(
             smbfs_receiver->BindNewPipeAndPassRemote()),
@@ -136,8 +145,6 @@ class SmbFsShareTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  file_manager::FakeDiskMountManager* disk_mount_manager_ =
-      new file_manager::FakeDiskMountManager;
   TestingProfile profile_;
   MockVolumeManagerObsever observer_;
 
