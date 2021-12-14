@@ -97,7 +97,7 @@ public class PasswordManagerHelper {
      */
     public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
         return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && syncService.isEngineInitialized() && !syncService.isUsingExplicitPassphrase();
+                && !syncService.isUsingExplicitPassphrase();
     }
 
     /**
@@ -109,7 +109,6 @@ public class PasswordManagerHelper {
     public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
         if (syncService == null || !syncService.hasSyncConsent()) return false;
         if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
-        if (!syncService.isEngineInitialized()) return false;
         if (syncService.isUsingExplicitPassphrase()) return false;
         return true;
     }

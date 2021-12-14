@@ -131,7 +131,6 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
         Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
         Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
@@ -139,23 +138,10 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testSyncEnabledButInitializing() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.getChosenDataTypes())
-                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
-        Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
-                mSyncServiceMock));
-        verify(mSyncServiceMock, never()).isUsingExplicitPassphrase();
-    }
-
-    @Test
     public void testActivelySyncingPasswordsWithNoCustomPassphrase() {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(false);
         Assert.assertTrue(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
@@ -166,7 +152,6 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
         Assert.assertFalse(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
