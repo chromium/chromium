@@ -226,7 +226,9 @@ export class QuickViewController {
     if (event.key === ' ') {
       event.preventDefault();
       event.stopImmediatePropagation();
-      this.display_(QuickViewUma.WayToOpen.SPACE_KEY);
+      if (this.entries_.length > 0) {
+        this.display_(QuickViewUma.WayToOpen.SPACE_KEY);
+      }
     }
   }
 
