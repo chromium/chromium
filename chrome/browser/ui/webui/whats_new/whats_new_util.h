@@ -35,11 +35,19 @@ void DisableRemoteContentForTests();
 // DisableRemoteContentForTests().
 bool IsRemoteContentDisabled();
 
-// Whether the What's New page should be shown, based on |local_state|.
+// Returns true if the user has not yet seen the What's New page for the
+// current major milestone. When returning true, sets the pref in |local_state|
+// to indicate that What's New should not try to display again for the current
+// major milestone.
+// Note that this does not guarantee that the page will always show (for
+// example, onboarding tabs override What's New, or remote content can fail to
+// load, which will result in the tab not opening). However, What's New should
+// only display automatically on the first relaunch after updating to a new
+// major milestone, and it is preferable to only attempt to show the page once
+// and possibly miss some users instead of repeatedly triggering a network
+// request at startup and/or showing the same What's New page many times for a
+// given user.
 bool ShouldShowForState(PrefService* local_state);
-
-// Sets the last What's New version in |local_state| to the current version.
-void SetLastVersion(PrefService* local_state);
 
 // Gets the server side URL for the What's New page for the current version of
 // Chrome. If |may_redirect| is true, return a server URL that will redirect to
