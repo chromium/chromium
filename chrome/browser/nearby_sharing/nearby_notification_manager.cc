@@ -24,6 +24,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/platform_util.h"
@@ -560,7 +561,8 @@ class NearbyDeviceTryingToShareNotificationDelegate
         manager_->OnNearbyDeviceTryingToShareClicked();
         break;
       case 1:
-        manager_->OnNearbyDeviceTryingToShareDismissed();
+        manager_->OnNearbyDeviceTryingToShareDismissed(
+            /*did_click_dismiss=*/true);
         break;
       default:
         NOTREACHED();
@@ -569,7 +571,7 @@ class NearbyDeviceTryingToShareNotificationDelegate
   }
 
   void OnClose(const std::string& notification_id) override {
-    manager_->OnNearbyDeviceTryingToShareDismissed();
+    manager_->OnNearbyDeviceTryingToShareDismissed(/*did_click_dismiss=*/false);
   }
 
  private:
@@ -860,6 +862,19 @@ void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
   notification_display_service_->Display(
       NotificationHandler::Type::NEARBY_SHARE, notification,
       /*metadata=*/nullptr);
+
+  last_device_nearby_sharing_notification_shown_timestamp_ =
+      base::TimeTicks::Now();
+
+  if (is_onboarding_complete) {
+    RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
+        NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent::
+            kNotificationShown);
+  } else {
+    RecordNearbyShareSetupNotificationFlowEvent(
+        NearbyShareBackgroundScanningSetupNotificationFlowEvent::
+            kNotificationShown);
+  }
 }
 
 void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
@@ -1049,11 +1064,49 @@ void NearbyNotificationManager::OnNearbyDeviceTryingToShareClicked() {
   // page with a stale timestamp.
   path += "&time=" + GetTimestampString();
   settings_opener_->ShowSettingsPage(profile_, path);
+
+  bool is_onboarding_complete = pref_service_->GetBoolean(
+      prefs::kNearbySharingOnboardingCompletePrefName);
+  if (is_onboarding_complete) {
+    RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
+        NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent::
+            kEnable);
+    RecordNearbyShareDeviceNearbySharingNotificationTimeToAction(
+        base::TimeTicks::Now() -
+        last_device_nearby_sharing_notification_shown_timestamp_);
+  } else {
+    RecordNearbyShareSetupNotificationFlowEvent(
+        NearbyShareBackgroundScanningSetupNotificationFlowEvent::kSetup);
+    RecordNearbyShareSetupNotificationTimeToAction(
+        base::TimeTicks::Now() -
+        last_device_nearby_sharing_notification_shown_timestamp_);
+  }
 }
 
-void NearbyNotificationManager::OnNearbyDeviceTryingToShareDismissed() {
+void NearbyNotificationManager::OnNearbyDeviceTryingToShareDismissed(
+    bool did_click_dismiss) {
   CloseNearbyDeviceTryingToShare();
   UpdateNearbyDeviceTryingToShareDismissedTime(pref_service_);
+
+  bool is_onboarding_complete = pref_service_->GetBoolean(
+      prefs::kNearbySharingOnboardingCompletePrefName);
+
+  if (is_onboarding_complete) {
+    RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
+        did_click_dismiss
+            ? NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent::
+                  kDismiss
+            : NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent::
+                  kExit);
+  } else {
+    RecordNearbyShareSetupNotificationFlowEvent(
+        did_click_dismiss
+            ? NearbyShareBackgroundScanningSetupNotificationFlowEvent::kDismiss
+            : NearbyShareBackgroundScanningSetupNotificationFlowEvent::kExit);
+    RecordNearbyShareSetupNotificationTimeToAction(
+        base::TimeTicks::Now() -
+        last_device_nearby_sharing_notification_shown_timestamp_);
+  }
 }
 
 void NearbyNotificationManager::CloseSuccessNotification() {

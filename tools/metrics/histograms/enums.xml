@@ -59912,6 +59912,25 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="Phone number"/>
 </enum>
 
+<enum
+    name="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent">
+  <int value="1" label="Background Notification Shown"/>
+  <int value="12" label="Enable"/>
+  <int value="13" label="Dismiss"/>
+  <int value="14" label="Clicked on 'x'"/>
+</enum>
+
+<enum name="NearbyShareBackgroundScanningDevicesDetectedEvent">
+  <int value="1" label="Nearby Devices Detected"/>
+</enum>
+
+<enum name="NearbyShareBackgroundScanningSetupNotificationFlowEvent">
+  <int value="1" label="Background Notification Shown"/>
+  <int value="12" label="Setup"/>
+  <int value="13" label="Dismiss"/>
+  <int value="14" label="Clicked on 'x'"/>
+</enum>
+
 <enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Match"/>

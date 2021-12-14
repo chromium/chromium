@@ -243,6 +243,97 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
+    enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"
+    expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records each step in the background scanning notification flow if Nearby
+    Share onboarding is complete. Emitted after the notification that a nearby
+    device is trying to share is shown, and again when the user acts on the
+    notification by clicking enable, dismiss or exit. Clicking enable puts the
+    user in high-visibility mode.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.TimeToAction"
+    units="ms" expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how long it takes for a user to act on a background scanning
+    notification if Nearby Share onboarding is complete. Emitted after the user
+    acts on the notification by clicking enable, dismiss or exit.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.BackgroundScanning.DevicesDetected"
+    enum="NearbyShareBackgroundScanningDevicesDetectedEvent"
+    expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Logs an event when there were previously no devices nearby trying to share
+    and now there are nearby devices trying to share. Emitted when the nearby
+    devices trying to share changes from zero to greater than zero. A
+    notification will not be shown on this event if the user dismissed the
+    notification in the last 15 minutes.This metric is not emitted if the
+    background scanning feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.BackgroundScanning.DevicesDetected.Duration"
+    units="ms" expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records for how long nearby devices were trying to share. Emitted after the
+    number of devices trying to share goes from greater than zero to zero. This
+    metric is not emitted if the background scanning feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.BackgroundScanning.SessionStarted"
+    enum="BooleanSuccess" expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether an attempt to start a background scanning session succeeded
+    or failed. Emitted after the bluetooth adapter notifies whether starting the
+    background scanning session was successfully started. This metric is not
+    emitted if the background scanning feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.BackgroundScanning.Setup.Notification.Flow"
+    enum="NearbyShareBackgroundScanningSetupNotificationFlowEvent"
+    expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records each step in the background scanning notification flow if Nearby
+    Share onboarding is not complete. Emitted after the notification that a
+    nearby device is trying to share is shown, and again when the user acts on
+    the notification by clicking setup, dismiss or exit. Clicking setup
+    initiates Nearby Share onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.BackgroundScanning.Setup.Notification.TimeToAction"
+    units="ms" expires_after="2022-04-24">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how long it takes for a user to act on a background scanning
+    notification if Nearby Share onboarding is not complete. Emitted after the
+    user acts on the notification by clicking setup, dismiss or exit.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation"
     enum="BooleanPresent" expires_after="2022-04-24">
   <owner>nohle@chromium.org</owner>

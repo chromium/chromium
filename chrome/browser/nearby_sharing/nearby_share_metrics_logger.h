@@ -14,6 +14,31 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The numbers here correspond to the
+// ordering of the flow. This enum should be kept in sync with the
+// NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class
+    NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent {
+      kNotificationShown = 1,
+      kEnable = 12,
+      kDismiss = 13,
+      kExit = 14,
+    };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The numbers here correspond to the
+// ordering of the flow. This enum should be kept in sync with the
+// NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class NearbyShareBackgroundScanningSetupNotificationFlowEvent {
+  kNotificationShown = 1,
+  kSetup = 12,
+  kDismiss = 13,
+  kExit = 14,
+};
+
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state);
 
 void RecordNearbyShareEstablishConnectionMetrics(
@@ -76,5 +101,24 @@ void RecordNearbyShareTransferFinalStatusMetric(
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status,
     bool is_known);
+
+void RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
+    NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent
+        event);
+
+void RecordNearbyShareDeviceNearbySharingNotificationTimeToAction(
+    base::TimeDelta time);
+
+void RecordNearbyShareBackgroundScanningDevicesDetected();
+
+void RecordNearbyShareBackgroundScanningDevicesDetectedDuration(
+    base::TimeDelta duration);
+
+void RecordNearbyShareBackgroundScanningSessionStarted(bool success);
+
+void RecordNearbyShareSetupNotificationFlowEvent(
+    NearbyShareBackgroundScanningSetupNotificationFlowEvent event);
+
+void RecordNearbyShareSetupNotificationTimeToAction(base::TimeDelta time);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_

@@ -80,6 +80,8 @@ class FastInitiationScanner
   // Set of remote devices that we detect are currently emitting fast initiation
   // advertisements.
   base::flat_set<std::string> detected_devices_;
+  // The last time that devices detected went from zero to greater than zero.
+  base::TimeTicks devices_detected_timestamp_;
 
   base::WeakPtrFactory<FastInitiationScanner> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -113,6 +114,7 @@ void FastInitiationScanner::OnSessionStarted(
   } else {
     NS_LOG(VERBOSE) << __func__ << ": Success";
   }
+  RecordNearbyShareBackgroundScanningSessionStarted(/*success=*/!error_code);
 }
 
 void FastInitiationScanner::OnDeviceFound(
@@ -123,8 +125,11 @@ void FastInitiationScanner::OnDeviceFound(
   detected_devices_.insert(device->GetAddress());
 
   // Invoke the callback when we go from zero devices to more than zero.
-  if (device_count_prev == 0)
+  if (device_count_prev == 0) {
     devices_detected_callback_.Run();
+    RecordNearbyShareBackgroundScanningDevicesDetected();
+    devices_detected_timestamp_ = base::TimeTicks::Now();
+  }
 }
 
 void FastInitiationScanner::OnDeviceLost(
@@ -138,8 +143,11 @@ void FastInitiationScanner::OnDeviceLost(
   }
 
   // Invoke the callback when we go from more than zero devices to zero.
-  if (device_count_prev > 0 && detected_devices_.empty())
+  if (device_count_prev > 0 && detected_devices_.empty()) {
     devices_not_detected_callback_.Run();
+    RecordNearbyShareBackgroundScanningDevicesDetectedDuration(
+        base::TimeTicks::Now() - devices_detected_timestamp_);
+  }
 }
 
 void FastInitiationScanner::OnSessionInvalidated(

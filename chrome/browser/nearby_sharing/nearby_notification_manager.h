@@ -141,7 +141,7 @@ class NearbyNotificationManager : public TransferUpdateCallback,
 
   // Called when the nearby device is trying notification got dismissed. We
   // won't show another one for a certain time period after this.
-  void OnNearbyDeviceTryingToShareDismissed();
+  void OnNearbyDeviceTryingToShareDismissed(bool did_click_dismiss);
 
   void CloseSuccessNotification();
 
@@ -171,6 +171,10 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Last transfer status reported to OnTransferUpdate(). Null when no transfer
   // is in progress.
   absl::optional<TransferMetadata::Status> last_transfer_status_;
+
+  // The last time that 'Nearby device is trying to share' notification was
+  // shown.
+  base::TimeTicks last_device_nearby_sharing_notification_shown_timestamp_;
 
   base::OnceCallback<void(SuccessNotificationAction)>
       success_action_test_callback_;
