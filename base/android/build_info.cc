@@ -79,7 +79,8 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       target_sdk_version_(GetIntParam(params, 21)),
       is_debug_android_(GetIntParam(params, 22)),
       is_tv_(GetIntParam(params, 23)),
-      version_incremental_(StrDupParam(params, 24)) {}
+      version_incremental_(StrDupParam(params, 24)),
+      hardware_(StrDupParam(params, 25)) {}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {

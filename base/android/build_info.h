@@ -138,6 +138,8 @@ class BASE_EXPORT BuildInfo {
 
   const char* version_incremental() const { return version_incremental_; }
 
+  const char* hardware() const { return hardware_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -173,6 +175,7 @@ class BASE_EXPORT BuildInfo {
   const bool is_debug_android_;
   const bool is_tv_;
   const char* const version_incremental_;
+  const char* const hardware_;
 };
 
 }  // namespace android

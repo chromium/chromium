@@ -213,6 +213,9 @@ const base::Feature kWebGPUService{"WebGPUService",
 
 #if defined(OS_ANDROID)
 
+const base::FeatureParam<std::string> kVulkanBlockListByHardware{
+    &kVulkan, "BlockListByHardware", "mt*"};
+
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
     &kVulkan, "BlockListByBrand", "HONOR"};
 
@@ -281,6 +284,8 @@ bool IsUsingVulkan() {
 
   // Check block list against build info.
   const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->hardware(), kVulkanBlockListByHardware.Get()))
+    return false;
   if (IsDeviceBlocked(build_info->brand(), kVulkanBlockListByBrand.Get()))
     return false;
   if (IsDeviceBlocked(build_info->device(), kVulkanBlockListByDevice.Get()))
