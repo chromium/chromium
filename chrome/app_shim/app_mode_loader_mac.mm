@@ -12,6 +12,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/allocator/early_zone_registration_mac.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -209,6 +210,12 @@ int LoadFrameworkAndStart(int argc, char** argv) {
 
 __attribute__((visibility("default")))
 int main(int argc, char** argv) {
+  // The static constructor in //base will have registered PartitionAlloc as the
+  // default zone. Allow the //base instance in the main library to register it
+  // as well. Otherwise we end up passing memory to free() which was allocated
+  // by an unknown zone. See crbug.com/1274236 for details.
+  partition_alloc::AllowDoublePartitionAllocZoneRegistration();
+
   base::CommandLine::Init(argc, argv);
 
   // Exit instead of returning to avoid the the removal of |main()| from stack

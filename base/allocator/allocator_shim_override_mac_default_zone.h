@@ -30,8 +30,6 @@ namespace allocator {
 
 namespace {
 
-constexpr const char kZoneName[] = "PartitionAlloc";
-
 // malloc_introspection_t's callback functions for our own zone
 
 kern_return_t MallocIntrospectionEnumerator(task_t task,
@@ -229,7 +227,9 @@ bool IsAlreadyRegistered() {
 
     // strcmp() and not a pointer comparison, as the zone was registered from
     // another library, the pointers don't match.
-    if (zone->zone_name && (strcmp(zone->zone_name, kZoneName) == 0)) {
+    if (zone->zone_name &&
+        (strcmp(zone->zone_name, partition_alloc::kPartitionAllocZoneName) ==
+         0)) {
       // This zone is provided by PartitionAlloc, so this function has been
       // called from another library (or the main executable), nothing to do.
       //
@@ -276,7 +276,7 @@ void InitializeZone() {
   //   version >= 11: introspect.print_task is supported
   //   version >= 12: introspect.task_statistics is supported
   g_mac_malloc_zone.version = partition_alloc::kZoneVersion;
-  g_mac_malloc_zone.zone_name = kZoneName;
+  g_mac_malloc_zone.zone_name = partition_alloc::kPartitionAllocZoneName;
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;
   g_mac_malloc_zone.malloc = MallocZoneMalloc;

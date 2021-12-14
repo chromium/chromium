@@ -12,6 +12,7 @@ namespace partition_alloc {
 
 static constexpr char kDelegatingZoneName[] =
     "DelegatingDefaultZoneForPartitionAlloc";
+static constexpr char kPartitionAllocZoneName[] = "PartitionAlloc";
 
 // Zone version. Determines which callbacks are set in the various malloc_zone_t
 // structs.
@@ -19,6 +20,17 @@ constexpr int kZoneVersion = 9;
 
 // Must be called *once*, *before* the process becomes multi-threaded.
 void EarlyMallocZoneRegistration();
+
+// Tricks the registration code to believe that PartitionAlloc was not already
+// registered. This allows a future library load to register PartitionAlloc's
+// zone as well, rather than bailing out.
+//
+// This is mutually exclusive with EarlyMallocZoneRegistation(), and should
+// ideally be removed. Indeed, by allowing two zones to be registered, we still
+// end up with a split heap, and more memory usage.
+//
+// This is a hack for crbug.com/1274236.
+void AllowDoublePartitionAllocZoneRegistration();
 
 }  // namespace partition_alloc
 

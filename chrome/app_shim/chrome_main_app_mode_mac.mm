@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/early_zone_registration_mac.h"
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -63,6 +64,12 @@ __attribute__((visibility("default"))) int APP_SHIM_ENTRY_POINT_NAME(
 }  // extern "C"
 
 int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
+  // The static constructor in //base will have registered PartitionAlloc as the
+  // default zone. Allow the //base instance in the main library to register it
+  // as well. Otherwise we end up passing memory to free() which was allocated
+  // by an unknown zone. See crbug.com/1274236 for details.
+  partition_alloc::AllowDoublePartitionAllocZoneRegistration();
+
   base::CommandLine::Init(info->argc, info->argv);
 
   @autoreleasepool {
