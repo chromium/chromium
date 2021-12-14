@@ -89,7 +89,7 @@ TEST_F(AnimationAnimationInputHelpersTest, ParseKeyframePropertyAttributes) {
   EXPECT_EQ(CSSPropertyID::kWidth, KeyframeAttributeToCSSProperty("width"));
   EXPECT_EQ(CSSPropertyID::kFloat, KeyframeAttributeToCSSProperty("float"));
   EXPECT_EQ(CSSPropertyID::kFloat, KeyframeAttributeToCSSProperty("cssFloat"));
-  EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("--"));
+  EXPECT_EQ(CSSPropertyID::kInvalid, KeyframeAttributeToCSSProperty("--"));
   EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("---"));
   EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("--x"));
   EXPECT_EQ(CSSPropertyID::kVariable,

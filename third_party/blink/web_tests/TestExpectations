@@ -1560,8 +1560,6 @@ crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-width-paint-0
 
 # css-variables
 
-crbug.com/1220145 external/wpt/css/css-variables/variable-declaration-29.html [ Failure ]
-crbug.com/1220145 external/wpt/css/css-variables/variable-supports-58.html [ Failure ]
 crbug.com/1220148 external/wpt/css/css-variables/variable-declaration-07.html [ Failure ]
 crbug.com/1220148 external/wpt/css/css-variables/variable-declaration-09.html [ Failure ]
 crbug.com/1220148 external/wpt/css/css-variables/variable-reference-06.html [ Failure ]
