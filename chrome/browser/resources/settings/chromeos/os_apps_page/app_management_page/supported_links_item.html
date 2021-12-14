@@ -9,6 +9,11 @@
   #supported-links-option {
     height: 48px;
   }
+
+  .info-icon {
+    height: var(--help-icon-size);
+    width: var(--help-icon-size);
+  }
 </style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
@@ -18,7 +23,7 @@
 </div>
 <template is="dom-if" if="[[disabled_]]">
   <span class="info-text-row">
-    <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
+    <iron-icon id="info-icon" icon="os-settings:info-outline"></iron-icon>
     <localized-link id="info-string"
       localized-string="[[getDisabledExplanation_(app)]]">
     </localized-link>
