@@ -80,9 +80,9 @@ class MessageSender : public ExtensionHostRegistry::Observer {
   static std::unique_ptr<base::ListValue> BuildEventArguments(
       const bool last_message,
       const std::string& data) {
-    std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue());
-    event->SetBoolean("lastMessage", last_message);
-    event->SetString("data", data);
+    base::Value event(base::Value::Type::DICTIONARY);
+    event.SetBoolKey("lastMessage", last_message);
+    event.SetStringKey("data", data);
     std::unique_ptr<base::ListValue> arguments(new base::ListValue());
     arguments->Append(std::move(event));
     return arguments;
