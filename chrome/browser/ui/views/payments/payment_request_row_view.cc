@@ -14,7 +14,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -168,6 +171,11 @@ void PaymentRequestRowView::OnFocus() {
     SchedulePaint();
   }
   View::OnFocus();
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  views::TableLayout* layout =
+      static_cast<views::TableLayout*>(GetLayoutManager());
+  if (focus_ring && layout)
+    layout->SetChildViewIgnoredByLayout(focus_ring, true);
 }
 
 void PaymentRequestRowView::OnBlur() {
