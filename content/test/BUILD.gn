@@ -473,6 +473,7 @@ static_library("test_support") {
     "//services/data_decoder/public/mojom",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//storage/browser/quota:mojo_bindings",
 
     # TODO(jam): remove this by adding a public header for the NetworkContext
     # public testing method.
@@ -1213,6 +1214,7 @@ test("content_browsertests") {
     "../browser/prerender/prerender_origin_trial_browsertest.cc",
     "../browser/process_internals/process_internals_browsertest.cc",
     "../browser/quota/quota_change_browsertest.cc",
+    "../browser/quota/quota_internals_browsertest.cc",
     "../browser/renderer_host/ancestor_throttle_browsertest.cc",
     "../browser/renderer_host/back_forward_cache_metrics_browsertest.cc",
     "../browser/renderer_host/blocked_scheme_navigation_browsertest.cc",

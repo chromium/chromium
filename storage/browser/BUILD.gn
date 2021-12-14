@@ -242,6 +242,7 @@ component("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql",
+    "//storage/browser/quota:mojo_bindings",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//third_party/sqlite",

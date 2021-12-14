@@ -38,6 +38,7 @@ const char kChromeUINetworkErrorHost[] = "network-error";
 const char kChromeUINetworkErrorsListingHost[] = "network-errors";
 const char kChromeUIPrerenderInternalsHost[] = "prerender-internals";
 const char kChromeUIProcessInternalsHost[] = "process-internals";
+const char kChromeUIQuotaInternals2Host[] = "quota-internals-2";
 const char kChromeUIResourcesHost[] = "resources";
 const char kChromeUIServiceWorkerInternalsHost[] = "serviceworker-internals";
 const char kChromeUITracingHost[] = "tracing";

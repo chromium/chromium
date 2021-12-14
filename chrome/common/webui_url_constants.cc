@@ -154,7 +154,9 @@ const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 const char kChromeUIPrintURL[] = "chrome://print/";
 const char kChromeUIQuitHost[] = "quit";
 const char kChromeUIQuitURL[] = "chrome://quit/";
+// TODO(crbug.com/1202165): Remove when new quota-internals page is done.
 const char kChromeUIQuotaInternalsHost[] = "quota-internals";
+const char kChromeUIQuotaInternals2Host[] = "quota-internals-2";
 const char kChromeUIResetPasswordHost[] = "reset-password";
 const char kChromeUIResetPasswordURL[] = "chrome://reset-password/";
 const char kChromeUIRestartHost[] = "restart";
@@ -622,7 +624,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUIPolicyHost,
     kChromeUIPredictorsHost,
     kChromeUIPrefsInternalsHost,
+    // TODO(crbug.com/1202165): Remove when new quota-internals page is done.
     kChromeUIQuotaInternalsHost,
+    kChromeUIQuotaInternals2Host,
     kChromeUISignInInternalsHost,
     kChromeUISiteEngagementHost,
     kChromeUINTPTilesInternalsHost,

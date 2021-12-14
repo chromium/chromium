@@ -1357,6 +1357,23 @@ void QuotaManagerImpl::DeleteHostData(const std::string& host,
   deleter->Start();
 }
 
+void QuotaManagerImpl::BindInternalsHandler(
+    mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  internals_handlers_receivers_.Add(this, std::move(receiver));
+}
+
+void QuotaManagerImpl::GetDiskAvailability(
+    GetDiskAvailabilityCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetStorageCapacity(base::BindOnce(
+      [](GetDiskAvailabilityCallback cb, int64_t total_space,
+         int64_t available_space) {
+        std::move(cb).Run(total_space, available_space);
+      },
+      std::move(callback)));
+}
+
 void QuotaManagerImpl::GetPersistentHostQuota(const std::string& host,
                                               QuotaCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

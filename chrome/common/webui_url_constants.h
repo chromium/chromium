@@ -155,7 +155,9 @@ extern const char kChromeUIPrefsInternalsHost[];
 extern const char kChromeUIPrintURL[];
 extern const char kChromeUIQuitHost[];
 extern const char kChromeUIQuitURL[];
+// TODO(crbug.com/1202165): Remove when new quota-internals page is done.
 extern const char kChromeUIQuotaInternalsHost[];
+extern const char kChromeUIQuotaInternals2Host[];
 extern const char kChromeUIResetPasswordHost[];
 extern const char kChromeUIResetPasswordURL[];
 extern const char kChromeUIRestartHost[];

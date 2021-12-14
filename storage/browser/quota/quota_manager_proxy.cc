@@ -87,6 +87,19 @@ void QuotaManagerProxy::RegisterClient(
   }
 }
 
+void QuotaManagerProxy::BindInternalsHandler(
+    mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver) {
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::BindInternalsHandler,
+                                  this, std::move(receiver)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+  if (quota_manager_impl_)
+    quota_manager_impl_->BindInternalsHandler(std::move(receiver));
+}
+
 void QuotaManagerProxy::GetOrCreateBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name,

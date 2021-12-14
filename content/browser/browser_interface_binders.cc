@@ -36,6 +36,7 @@
 #include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
+#include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
 #include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
@@ -87,6 +88,9 @@
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom.h"
+#include "storage/browser/quota/quota_internals.mojom.h"
+#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
@@ -280,6 +284,35 @@ void BindAttributionInternalsHandler(
   DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
 
   attribution_internals_ui->BindInterface(std::move(receiver));
+}
+
+void BindQuotaInternalsHandler(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<storage::mojom::QuotaInternalsHandler> receiver) {
+  WebUI* web_ui = host->GetWebUI();
+
+  // Performs a safe downcast to the concrete QuotaInternals2UI
+  // subclass.
+  QuotaInternals2UI* quota_internals_ui =
+      web_ui ? web_ui->GetController()->GetAs<QuotaInternals2UI>() : nullptr;
+
+  // This is expected to be called only for main frames and for the right WebUI
+  // pages matching the same WebUI associated to the RenderFrameHost.
+  if (host->GetParent() || !quota_internals_ui) {
+    ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
+    return;
+  }
+
+  DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
+            kChromeUIQuotaInternals2Host);
+  DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
+
+  static_cast<StoragePartitionImpl*>(host->GetStoragePartition())
+      ->GetQuotaManager()
+      ->proxy()
+      ->BindInternalsHandler(std::move(receiver));
 }
 
 void BindPrerenderInternalsHandler(
@@ -1044,6 +1077,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&BindPrerenderInternalsHandler));
   map->Add<::mojom::ProcessInternalsHandler>(
       base::BindRepeating(&BindProcessInternalsHandler));
+  map->Add<storage::mojom::QuotaInternalsHandler>(
+      base::BindRepeating(&BindQuotaInternalsHandler));
 #if defined(OS_ANDROID)
   map->Add<blink::mojom::DateTimeChooser>(
       base::BindRepeating(&BindDateTimeChooserForFrame));

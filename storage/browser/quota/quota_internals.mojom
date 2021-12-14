@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+// Interface for controlling Quota Internals.
+// Hosted on chrome://quota-internals-2" for WebUI content::QuotaInternals2UI.
+interface QuotaInternalsHandler {
+    // Returns the total and available disk space in bits for a user,
+    // which is then converted to bytes and displayed on the Quota Internals UI.
+    GetDiskAvailability() => (uint64 total_space, uint64 available_space);
+};

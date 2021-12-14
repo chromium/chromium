@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/storage/browser/quota",
+                            root_build_dir),
+                  ]
+  deps = [ ":quota_internals" ]
+}
+
+js_library("quota_internals") {
+  sources = [ "quota_internals.js" ]
+  deps = [
+    "//storage/browser/quota:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:tabs",
+    "//ui/webui/resources/js/cr/ui:tree",
+  ]
+}

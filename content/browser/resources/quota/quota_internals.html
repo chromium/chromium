@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Quota Internals 2</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/css/roboto.css">
+  <link rel="stylesheet" href="quota_internals.css">
+  <script type="module" src="quota_internals.js"></script>
+</head>
+<body>
+  <h1>Quota Internals 2</h1>
+
+  <h2>Disk Availability</h2>
+  <table>
+    <thead>
+      <th>Total Space</th>
+      <th>Available Space</th>
+    </thead>
+    <tbody id="listeners-tbody"></tbody>
+  </table>
+
+  <template id="listener-row">
+    <tr>
+      <td class="total-space"></td>
+      <td class="available-space"></td>
+    </tr>
+  </template>
+</body>
+</html>
+
+

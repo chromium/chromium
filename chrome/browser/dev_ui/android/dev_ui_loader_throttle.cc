@@ -52,7 +52,10 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUIPasswordManagerInternalsHost ||
          host == chrome::kChromeUIPolicyHost ||
          host == chrome::kChromeUIPredictorsHost ||
+         // TODO(crbug.com/1202165): Remove when new quota-internals page is
+         // done.
          host == chrome::kChromeUIQuotaInternalsHost ||
+         host == content::kChromeUIQuotaInternals2Host ||
          host == chrome::kChromeUISandboxHost ||
          host == chrome::kChromeUISignInInternalsHost ||
          host == chrome::kChromeUISiteEngagementHost ||
