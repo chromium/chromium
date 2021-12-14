@@ -119,7 +119,7 @@ const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingPageLoadToken{
-    "SafeBrowsingPageLoadToken", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingPageLoadToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
