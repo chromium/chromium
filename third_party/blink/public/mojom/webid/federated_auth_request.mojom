@@ -21,6 +21,7 @@ enum RequestIdTokenStatus {
   kErrorInvalidSigninResponse,
   kErrorInvalidAccountsResponse,
   kErrorInvalidTokenResponse,
+  kErrorCanceled,
   kError,
 };
 
@@ -67,6 +68,9 @@ interface FederatedAuthRequest {
                  RequestMode mode,
                  bool prefer_auto_sign_in) =>
       (RequestIdTokenStatus status, string? id_token);
+
+  // Cancels the pending token request, if any.
+  CancelTokenRequest();
 
   // Revokes a token for the specified |account_id| from |provider| for
   // the RP identified by |client_id|.

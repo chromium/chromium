@@ -481,6 +481,16 @@ void AbortOtpRequest(ScriptState* script_state) {
   webotp_service->Abort();
 }
 
+// Abort an ongoing FederatedCredential get() operation.
+void AbortFederatedCredentialRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return;
+
+  auto* fedcm_get_request =
+      CredentialManagerProxy::From(script_state)->FedCmGetRequest();
+  fedcm_get_request->CancelTokenRequest();
+}
+
 void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
   auto* resolver = scoped_resolver->Release();
   AssertSecurityRequirementsBeforeResponse(
@@ -886,6 +896,11 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
           "Provider's token response is invalid"));
       return;
     }
+    case RequestIdTokenStatus::kErrorCanceled: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Request has been aborted"));
+      return;
+    }
     case RequestIdTokenStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
@@ -1151,6 +1166,15 @@ ScriptPromise CredentialsContainer::get(
           return promise;
         }
         DCHECK(options->federated()->hasPreferAutoSignIn());
+        if (options->hasSignal()) {
+          if (options->signal()->aborted()) {
+            resolver->Reject(MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kAbortError, "Request has been aborted."));
+            return promise;
+          }
+          options->signal()->AddAlgorithm(WTF::Bind(
+              &AbortFederatedCredentialRequest, WrapPersistent(script_state)));
+        }
         bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
         auto* fedcm_get_request =
             CredentialManagerProxy::From(script_state)->FedCmGetRequest();

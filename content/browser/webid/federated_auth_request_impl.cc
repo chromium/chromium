@@ -110,6 +110,15 @@ void FederatedAuthRequestImpl::RequestIdToken(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void FederatedAuthRequestImpl::CancelTokenRequest() {
+  if (!auth_request_callback_)
+    return;
+
+  // Dialog will be hidden by the destructor for request_dialog_controller_,
+  // triggered by CompleteRequest.
+  CompleteRequest(RequestIdTokenStatus::kErrorCanceled, "");
+}
+
 void FederatedAuthRequestImpl::Revoke(
     const GURL& provider,
     const std::string& client_id,

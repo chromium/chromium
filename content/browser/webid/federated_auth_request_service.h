@@ -48,6 +48,7 @@ class CONTENT_EXPORT FederatedAuthRequestService
                       blink::mojom::RequestMode mode,
                       bool prefer_auto_sign_in,
                       RequestIdTokenCallback) override;
+  void CancelTokenRequest() override;
   void Revoke(const GURL& provider,
               const std::string& client_id,
               const std::string& account_id,

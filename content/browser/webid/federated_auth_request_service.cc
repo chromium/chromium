@@ -55,6 +55,10 @@ void FederatedAuthRequestService::RequestIdToken(
                         std::move(callback));
 }
 
+void FederatedAuthRequestService::CancelTokenRequest() {
+  impl_->CancelTokenRequest();
+}
+
 void FederatedAuthRequestService::Revoke(const GURL& provider,
                                          const std::string& client_id,
                                          const std::string& account_id,

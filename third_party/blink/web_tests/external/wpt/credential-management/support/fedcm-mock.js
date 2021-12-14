@@ -2,20 +2,6 @@ import { RequestMode, RequestIdTokenStatus, LogoutStatus, RevokeStatus, Federate
 
 function toMojoIdTokenStatus(status) {
   return RequestIdTokenStatus["k" + status];
-//  switch(status) {
-//    case "Success": return RequestIdTokenStatus.kSuccess;
-//    case "ApprovalDeclined": return RequestIdTokenStatus.kApprovalDeclined;
-//    case "ErrorTooManyRequests": return RequestIdTokenStatus.kErrorTooManyRequests;
-//    case "ErrorWebIdNotSupportedByProvider": return RequestIdTokenStatus.kErrorWebIdNotSupportedByProvider;
-//    case "ErrorFetchingWellKnown": return RequestIdTokenStatus.kErrorFetchingWellKnown;
-//    case "ErrorInvalidWellKnown": return RequestIdTokenStatus.kErrorInvalidWellKnown;
-//    case "ErrorFetchingSignin": return RequestIdTokenStatus.kErrorFetchingSignin;
-//    case "ErrorInvalidSigninResponse": return RequestIdTokenStatus.kErrorInvalidSigninResponse;
-//    case "ErrorInvalidAccountsResponse": return RequestIdTokenStatus.kErrorInvalidAccountsResponse;
-//    case "ErrorInvalidTokenResponse": return RequestIdTokenStatus.kErrorInvalidTokenResponse;
-//    case "Error": return RequestIdTokenStatus.kError;
-//    default: throw new Error(`Invalid status: ${status}`);
-//  }
 }
 
 // A mock service for responding to federated auth requests.
@@ -31,12 +17,15 @@ export class MockFederatedAuthRequest {
     this.status_ = RequestIdTokenStatus.kError;
     this.logoutStatus_ = LogoutStatus.kError;
     this.revokeStatus_ = RevokeStatus.kError;
+    this.returnPending_ = false;
+    this.pendingPromiseResolve_ = null;
   }
 
   // Causes the subsequent `navigator.credentials.get()` to resolve with the token.
   returnIdToken(token) {
     this.status_ = RequestIdTokenStatus.kSuccess;
     this.idToken_ = token;
+    this.returnPending_ = false;
   }
 
   // Causes the subsequent `navigator.credentials.get()` to reject with the error.
@@ -45,6 +34,13 @@ export class MockFederatedAuthRequest {
       throw new Error("Success is not a valid error");
     this.status_ = toMojoIdTokenStatus(error);
     this.idToken_ = null;
+    this.returnPending_ = false;
+  }
+
+  // Causes the subsequent `navigator.credentials.get()` to return a pending promise
+  // that can be cancelled using `cancelTokenRequest()`.
+  returnPendingPromise() {
+    this.returnPending_ = true;
   }
 
   // Causes the subsequent `FederatedCredential.revoke` to reject with this
@@ -59,10 +55,24 @@ export class MockFederatedAuthRequest {
   // Implements
   //   RequestIdToken(url.mojom.Url provider, string id_request, RequestMode mode) => (RequestIdTokenStatus status, string? id_token);
   async requestIdToken(provider, idRequest, mode) {
+    if (this.returnPending_) {
+      this.pendingPromise_ = new Promise((resolve, reject) => {
+        this.pendingPromiseResolve_ = resolve;
+      });
+      return this.pendingPromise_;
+    }
     return Promise.resolve({
       status: this.status_,
       idToken: this.idToken_
     });
+  }
+
+  async cancelTokenRequest() {
+    this.pendingPromiseResolve_({
+      status: toMojoIdTokenStatus("ErrorCanceled"),
+      idToken: null
+    });
+    this.pendingPromiseResolve_ = null;
   }
 
   async logout(logout_endpoints) {
