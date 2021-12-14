@@ -505,13 +505,13 @@ ChromeBrowserMainParts::ChromeBrowserMainParts(
     content::MainFunctionParams parameters,
     StartupData* startup_data)
     : parameters_(std::move(parameters)),
-      parsed_command_line_(*parameters.command_line),
+      parsed_command_line_(*parameters_.command_line),
       should_call_pre_main_loop_start_startup_on_variations_service_(
-          !parameters.ui_task),
+          !parameters_.ui_task),
       startup_data_(startup_data) {
   DCHECK(startup_data_);
   // If we're running tests (ui_task is non-null).
-  if (parameters.ui_task)
+  if (parameters_.ui_task)
     browser_defaults::enable_help_app = false;
 }
 
