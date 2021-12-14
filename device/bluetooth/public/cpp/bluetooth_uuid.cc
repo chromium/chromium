@@ -150,8 +150,8 @@ bool BluetoothUUID::operator!=(const BluetoothUUID& uuid) const {
   return canonical_value_ != uuid.canonical_value_;
 }
 
-void PrintTo(const BluetoothUUID& uuid, std::ostream* out) {
-  *out << uuid.canonical_value();
+std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid) {
+  return os << uuid.canonical_value();
 }
 
 }  // namespace device

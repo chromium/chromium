@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 #define DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -108,8 +109,8 @@ class BluetoothUUID {
   std::string canonical_value_;
 };
 
-// This is required by gtest to print a readable output on test failures.
-void PrintTo(const BluetoothUUID& uuid, std::ostream* out);
+// Output the 128-bit canonical string representation of `uuid` to `os`.
+std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid);
 
 struct BluetoothUUIDHash {
   size_t operator()(const device::BluetoothUUID& uuid) const {
