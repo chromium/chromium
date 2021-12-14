@@ -36,7 +36,12 @@ BrokerHost::BrokerHost(base::Process client_process,
   base::CurrentThread::Get()->AddDestructionObserver(this);
 
   channel_ = Channel::Create(this, std::move(connection_params),
-                             client_process.IsValid()
+#if defined(OS_WIN)
+                             client_process_
+#else
+                             client_process
+#endif
+                                     .IsValid()
                                  ? Channel::HandlePolicy::kAcceptHandles
                                  : Channel::HandlePolicy::kRejectHandles,
                              base::ThreadTaskRunnerHandle::Get());
