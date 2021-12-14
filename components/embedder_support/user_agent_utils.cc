@@ -38,7 +38,7 @@ namespace embedder_support {
 
 namespace {
 
-constexpr char kMajorVersion100[] = "100";
+constexpr char kVersion100[] = "100";
 
 #if defined(OS_WIN)
 
@@ -126,12 +126,34 @@ const std::string& GetUniversalApiContractVersion() {
 const std::string& GetM100VersionNumber() {
   static const base::NoDestructor<std::string> m100_version_number([] {
     base::Version version(version_info::GetVersionNumber());
-    std::string version_str(kMajorVersion100);
+    std::string version_str(kVersion100);
     const std::vector<uint32_t>& components = version.components();
     // Rest of the version string remains the same.
     for (size_t i = 1; i < components.size(); ++i) {
       version_str.append(".");
       version_str.append(base::NumberToString(components[i]));
+    }
+    return version_str;
+  }());
+  return *m100_version_number;
+}
+
+const std::string& GetM100InMinorVersionNumber() {
+  static const base::NoDestructor<std::string> m100_version_number([] {
+    base::Version version(version_info::GetVersionNumber());
+    std::string version_str;
+    const std::vector<uint32_t>& components = version.components();
+    // Rest of the version string remains the same.
+    for (size_t i = 0; i < components.size(); ++i) {
+      if (i > 0) {
+        version_str.append(".");
+      }
+      if (i == 1) {
+        // Populate "100" for the minor version.
+        version_str.append(kVersion100);
+      } else {
+        version_str.append(base::NumberToString(components[i]));
+      }
     }
     return version_str;
   }());
@@ -181,9 +203,9 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 
 blink::UserAgentBrandList GetForcedM100UserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
-  return GetUserAgentBrandList(
-      kMajorVersion100, enable_updated_grease_by_policy, GetM100VersionNumber(),
-      blink::UserAgentBrandVersionType::kMajorVersion);
+  return GetUserAgentBrandList(kVersion100, enable_updated_grease_by_policy,
+                               GetM100VersionNumber(),
+                               blink::UserAgentBrandVersionType::kMajorVersion);
 }
 
 blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
@@ -196,9 +218,9 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
 
 blink::UserAgentBrandList GetForcedM100UserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
-  return GetUserAgentBrandList(
-      kMajorVersion100, enable_updated_grease_by_policy, GetM100VersionNumber(),
-      blink::UserAgentBrandVersionType::kFullVersion);
+  return GetUserAgentBrandList(kVersion100, enable_updated_grease_by_policy,
+                               GetM100VersionNumber(),
+                               blink::UserAgentBrandVersionType::kFullVersion);
 }
 
 // Return UserAgentBrandList with the major version populated in the brand
@@ -230,6 +252,10 @@ std::string GetProduct(const bool allow_version_override) {
       base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
     return "Chrome/" + GetM100VersionNumber();
+  if (allow_version_override &&
+      base::FeatureList::IsEnabled(
+          blink::features::kForceMinorVersion100InUserAgent))
+    return "Chrome/" + GetM100InMinorVersionNumber();
 
   return version_info::GetProductNameAndVersionForUserAgent();
 }
@@ -261,7 +287,7 @@ std::string GetReducedUserAgent() {
           switches::kUseMobileUserAgent),
       base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent)
-          ? kMajorVersion100
+          ? kVersion100
           : version_info::GetMajorVersionNumber());
 }
 

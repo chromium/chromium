@@ -50949,6 +50949,7 @@ from previous Chrome versions.
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
+  <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
   <int value="-1052415111" label="malware-interstitial-v2"/>
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
@@ -52695,6 +52696,7 @@ from previous Chrome versions.
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
+  <int value="282165459" label="ForceMinorVersion100InUserAgent:enabled"/>
   <int value="282582564" label="DisableCameraFrameRotationAtSource:enabled"/>
   <int value="282636212" label="VideoPlayerNativeControls:disabled"/>
   <int value="282692100" label="SubframeShutdownDelay:disabled"/>

@@ -203,6 +203,8 @@ public final class ProductionSupportedFlagList {
                             + " PageTimeSpent."),
             Flag.baseFeature(BlinkFeatures.FORCE_MAJOR_VERSION100_IN_USER_AGENT,
                     "Force the Chrome major version number to 100 in the User-Agent string."),
+            Flag.baseFeature(BlinkFeatures.FORCE_MINOR_VERSION100_IN_USER_AGENT,
+                    "Force the Chrome minor version number to 100 in the User-Agent string."),
             Flag.baseFeature(NetworkServiceFeatures.URL_LOADER_SYNC_CLIENT,
                     "Optimizes communication between URLLoader and CorsURLLoader."),
             Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
