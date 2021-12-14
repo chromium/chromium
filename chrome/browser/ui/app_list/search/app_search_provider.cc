@@ -328,18 +328,8 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
 
       if (!std::strcmp(update.AppId().c_str(),
                        ash::kInternalAppIdContinueReading)) {
-        // Continue reading depends on the tab of session from other devices.
-        // This checking can be moved to built_in_app, however, it's more
-        // reasonable to leave it in search result code, because the status of
-        // continue reading is not changed. It depends on the session sync
-        // result to decide whether it should be shown in the recommended
-        // result, so leave the code in the search result part.
-        sync_sessions::SessionSyncService* service =
-            SessionSyncServiceFactory::GetInstance()->GetForProfile(profile());
-        if (!service || (!service->GetOpenTabsUIDelegate() &&
-                         !owner()->open_tabs_ui_delegate_for_testing())) {
-          return;
-        }
+        // Don't show continue reading results in the recommended apps.
+        return;
       }
 
       // TODO(crbug.com/826982): add the "can load in incognito" concept to
@@ -425,8 +415,7 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
                                      AppListControllerDelegate* list_controller,
                                      base::Clock* clock,
                                      AppListModelUpdater* model_updater)
-    : profile_(profile),
-      list_controller_(list_controller),
+    : list_controller_(list_controller),
       model_updater_(model_updater),
       clock_(clock) {
   data_sources_.emplace_back(
@@ -497,18 +486,6 @@ void AppSearchProvider::UpdateRecommendedResults(
       continue;
 
     std::u16string title = app->name();
-    if (app->id() == ash::kInternalAppIdContinueReading) {
-      std::u16string navigation_title;
-      if (!HasRecommendableForeignTab(profile_, &navigation_title,
-                                      /*url=*/nullptr,
-                                      open_tabs_ui_delegate_for_testing())) {
-        continue;
-      } else if (!navigation_title.empty()) {
-        title = navigation_title;
-        app->AddSearchableText(title);
-      }
-    }
-
     std::unique_ptr<AppResult> result =
         app->data_source()->CreateResult(app->id(), list_controller_, true);
     result->SetTitle(title);

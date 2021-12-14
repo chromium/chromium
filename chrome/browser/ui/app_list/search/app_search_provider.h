@@ -88,7 +88,6 @@ class AppSearchProvider : public SearchProvider {
   // zero state recommendation latency.
   void MaybeRecordQueryLatencyHistogram(bool is_queried_search);
 
-  Profile* profile_;
   AppListControllerDelegate* const list_controller_;
   std::u16string query_;
   base::TimeTicks query_start_time_;
