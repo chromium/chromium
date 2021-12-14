@@ -208,7 +208,9 @@ class Expectations(object):
         else:
           bug = current_expectation.bug
           if bug:
-            removed_urls.add(bug)
+            # It's possible to have multiple whitespace-separated bugs per
+            # expectation, so treat each one separately.
+            removed_urls |= set(bug.split())
       else:
         output_contents += line
 
@@ -316,7 +318,7 @@ class Expectations(object):
       modified_urls |= self.RemoveExpectationsFromFile(expectations_to_remove,
                                                        expectation_file)
     for e in expectations_to_modify:
-      modified_urls.add(e.bug)
+      modified_urls |= set(e.bug.split())
     return modified_urls
 
   def _GetExpectationLine(self, expectation, file_contents, expectation_file):

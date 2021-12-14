@@ -26,6 +26,7 @@ FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip Pass ]
 crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
 
 [ linux ] foo/test [ Failure ]
 
@@ -87,6 +88,9 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
         filename: {
             data_types.Expectation(
                 'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+            data_types.Expectation(
+                'foo/another/test', ['win'], ['RetryOnFailure'],
+                'crbug.com/5678 crbug.com/6789'): {},
             data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
             data_types.Expectation(
                 'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
@@ -112,6 +116,9 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
       expectation_files[0]: {
         data_types.Expectation(
             'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+        data_types.Expectation(
+             'foo/another/test', ['win'], ['RetryOnFailure'],
+             'crbug.com/5678 crbug.com/6789'): {},
         data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
         data_types.Expectation(
             'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
@@ -256,6 +263,43 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     removed_urls = self.instance.RemoveExpectationsFromFile(
         stale_expectations, self.filename)
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemovalWithMultipleBugs(self):
+    """Tests removal of expectations with multiple associated bugs."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/1234 crbug.com/3456 crbug.com/4567 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+[ linux ] bar/test [ RetryOnFailure ]
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234 crbug.com/3456 crbug.com/4567'),
+    ]
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+[ linux ] bar/test [ RetryOnFailure ]
+[ win ] bar/test [ RetryOnFailure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename)
+    self.assertEqual(
+        removed_urls,
+        set(['crbug.com/1234', 'crbug.com/3456', 'crbug.com/4567']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
@@ -426,6 +470,7 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     expected_file_contents = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip Pass ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
 
 [ linux ] foo/test [ Failure ]
 
@@ -465,6 +510,28 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
     modified_urls = self.instance.ModifySemiStaleExpectations(
         test_expectation_map)
     self.assertEqual(modified_urls, set(['crbug.com/1234', 'crbug.com/4567']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+    with open(self.secondary_filename) as f:
+      self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
+
+  def testModifyExpectationMultipleBugs(self):
+    """Tests that modifying an expectation with multiple bugs works properly."""
+    self._input_mock.return_value = 'm'
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/another/test', ['win'], 'RetryOnFailure',
+                'crbug.com/5678 crbug.com/6789'):
+            data_types.BuilderStepMap(),
+        }),
+    })
+    # yapf: enable
+    modified_urls = self.instance.ModifySemiStaleExpectations(
+        test_expectation_map)
+    self.assertEqual(modified_urls, set(['crbug.com/5678', 'crbug.com/6789']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
     with open(self.secondary_filename) as f:
