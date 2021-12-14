@@ -55,7 +55,6 @@ KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
   if (chromeos::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
-
   return new OptimizationGuideKeyedService(context);
 }
 

@@ -619,6 +619,23 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   run_loop->Run();
 }
 
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       GuestProfileUniqueKeyedService) {
+  Browser* guest_browser = CreateGuestBrowser();
+  OptimizationGuideKeyedService* guest_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          guest_browser->profile());
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EXPECT_TRUE(guest_ogks);
+  EXPECT_TRUE(ogks);
+  EXPECT_NE(guest_ogks, ogks);
+}
+#endif
+
 class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:

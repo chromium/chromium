@@ -814,4 +814,71 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   CreateBrowser(profile);
 }
 
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       GuestProfileReceivesModel) {
+  SetResponseType(
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
+
+  {
+    base::HistogramTester histogram_tester;
+    // Register in the primary profile and ensure the model returns.
+    RegisterModelFileObserverWithKeyedService(browser()->profile());
+
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    model_file_observer()->set_model_file_received_callback(base::BindOnce(
+        [](base::RunLoop* run_loop,
+           proto::OptimizationTarget optimization_target,
+           const ModelInfo& model_info) {
+          EXPECT_EQ(optimization_target,
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+          run_loop->Quit();
+        },
+        run_loop.get()));
+    run_loop->Run();
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+        PredictionModelDownloadStatus::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    // Now hook everything up in the guest profile and we should still get the
+    // model back but no additional fetches should be made.
+    Browser* guest_browser = CreateGuestBrowser();
+
+    // To prevent any race, ensure the store has be initialized.
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PredictionManager.StoreInitialized", 1);
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    ModelFileObserver model_file_observer;
+    model_file_observer.set_model_file_received_callback(base::BindOnce(
+        [](base::RunLoop* run_loop,
+           proto::OptimizationTarget optimization_target,
+           const ModelInfo& model_info) {
+          EXPECT_EQ(optimization_target,
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+          run_loop->Quit();
+        },
+        run_loop.get()));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(
+        guest_browser->profile())
+        ->AddObserverForOptimizationTargetModel(
+            proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+            /*model_metadata=*/absl::nullopt, &model_file_observer);
+    // Wait until the opt guide is up and the model is loaded as its shared
+    // between profiles.
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
+
+    run_loop->Run();
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+  }
+}
+#endif
+
 }  // namespace optimization_guide
