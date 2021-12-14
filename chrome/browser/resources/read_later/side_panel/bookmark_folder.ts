@@ -9,8 +9,6 @@ import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
-
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
 /** Event interface for dom-repeat. */

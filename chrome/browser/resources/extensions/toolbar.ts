@@ -14,7 +14,6 @@ import './pack_dialog.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export interface ToolbarDelegate {

@@ -10,8 +10,7 @@ import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {Debouncer, enqueueDebouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {CommanderOptionElement} from './option.js';
-import {Action, Entity, Option, ViewModel} from './types.js';
+import {Action, Option, ViewModel} from './types.js';
 
 /** Event interface for dom-repeat */
 interface OptionRepeaterEvent extends CustomEvent {

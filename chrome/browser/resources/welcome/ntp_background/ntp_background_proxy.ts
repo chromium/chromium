@@ -6,8 +6,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {NuxNtpBackgroundInteractions} from '../shared/module_metrics_proxy.js';
 
-import {NtpBackgroundMetricsProxyImpl} from './ntp_background_metrics_proxy.js';
-
 export type NtpBackgroundData = {
   id: number,
   imageUrl: string,

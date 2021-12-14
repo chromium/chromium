@@ -16,7 +16,7 @@ import {get as deepGet, html, PolymerElement} from 'chrome://resources/polymer/v
 
 import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
-import {Tab, TabGroup} from './tab_search.mojom-webui.js';
+import {Tab} from './tab_search.mojom-webui.js';
 import {highlightText} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 

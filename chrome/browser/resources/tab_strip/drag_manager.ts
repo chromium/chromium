@@ -120,7 +120,7 @@ class DragSession {
       delegate: DragManagerDelegateElement, event: DragEvent): DragSession
       |null {
     if (event.dataTransfer!.types.includes(getTabIdDataType())) {
-      const isPinned = event.dataTransfer!.types.includes('pinned');
+      const isPinned = event.dataTransfer!.types.includes(PINNED_DATA_TYPE);
       const placeholderTabElement = document.createElement('tabstrip-tab');
       placeholderTabElement.tab = Object.assign(
           getDefaultTabData(), {id: PLACEHOLDER_TAB_ID, pinned: isPinned});
@@ -314,7 +314,8 @@ class DragSession {
           getTabIdDataType(), tabElement.tab.id.toString());
 
       if (tabElement.tab.pinned) {
-        event.dataTransfer!.setData('pinned', tabElement.tab.pinned.toString());
+        event.dataTransfer!.setData(
+            PINNED_DATA_TYPE, tabElement.tab.pinned.toString());
       }
     } else if (isTabGroupElement(this.element_)) {
       event.dataTransfer!.setData(

@@ -14,7 +14,6 @@ import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {DropPosition, ROOT_NODE_ID} from './constants.js';
 import {Debouncer} from './debouncer.js';
 import {BookmarksFolderNodeElement} from './folder_node.js';
-import {BookmarksItemElement} from './item.js';
 import {Store} from './store.js';
 import {BookmarkElement, BookmarkNode, DragData, DropDestination, NodeMap, ObjectMap} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList, hasChildFolders, isShowingSearch, normalizeNode} from './util.js';

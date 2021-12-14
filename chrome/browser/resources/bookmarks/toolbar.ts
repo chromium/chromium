@@ -16,7 +16,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {deselectItems, setSearchTerm} from './actions.js';
+import {setSearchTerm} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
 import {StoreClientMixin} from './store_client_mixin.js';

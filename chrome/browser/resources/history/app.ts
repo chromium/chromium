@@ -33,7 +33,6 @@ import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
 import {HistoryListElement} from './history_list.js';
 import {HistoryToolbarElement} from './history_toolbar.js';
-import {HistoryQueryManagerElement} from './query_manager.js';
 import {Page, TABBED_PAGES} from './router.js';
 import {FooterInfo} from './side_bar.js';
 

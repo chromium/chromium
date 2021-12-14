@@ -17,8 +17,6 @@ import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
 import {TabSwiper} from './tab_swiper.js';
 import {CloseTabAction, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
-const DEFAULT_ANIMATION_DURATION: number = 125;
-
 function getAccessibleTitle(tab: Tab): string {
   const tabTitle = tab.title;
 

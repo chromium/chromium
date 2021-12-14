@@ -6,7 +6,6 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
