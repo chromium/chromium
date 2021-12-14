@@ -7,9 +7,11 @@ import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("./print_preview.gni")
 
 assert(enable_print_preview, "enable_print_preview check failed")
 
@@ -68,106 +70,21 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
+html_to_js("web_components") {
+  js_files = web_component_files
+}
+
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "cloud_print_interface.ts",
-    "cloud_print_interface_impl.ts",
-    "dark_mode_mixin.ts",
-    "metrics.ts",
-    "native_layer.ts",
-    "print_preview.ts",
-    "print_preview_utils.ts",
-    "data/cdd.ts",
-    "data/cloud_parsers.ts",
-    "data/coordinate2d.ts",
-    "data/destination.ts",
-    "data/destination_match.ts",
-    "data/destination_store.ts",
-    "data/document_info.ts",
-    "data/local_parsers.ts",
-    "data/margins.ts",
-    "data/measurement_system.ts",
-    "data/model.ts",
-    "data/printable_area.ts",
-    "data/scaling.ts",
-    "data/size.ts",
-    "data/state.ts",
-    "data/user_manager.ts",
-    "ui/highlight_utils.ts",
-    "ui/input_mixin.ts",
-    "ui/plugin_proxy.ts",
-    "ui/select_mixin.ts",
-    "ui/settings_mixin.ts",
-  ]
-
-  if (is_chromeos) {
-    in_files += [
-      "data/print_server_store.ts",
-      "data/printer_status_cros.ts",
-      "native_layer_cros.ts",
-    ]
-  }
+  in_files = non_web_component_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ "ui:web_components" ]
+  deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "ui/advanced_options_settings.ts",
-    "ui/advanced_settings_dialog.ts",
-    "ui/advanced_settings_item.ts",
-    "ui/app.ts",
-    "ui/button_strip.ts",
-    "ui/color_settings.ts",
-    "ui/copies_settings.ts",
-    "ui/destination_dialog_css.ts",
-    "ui/destination_list.ts",
-    "ui/destination_list_item.ts",
-    "ui/destination_select_css.ts",
-    "ui/destination_settings.ts",
-    "ui/dpi_settings.ts",
-    "ui/duplex_settings.ts",
-    "ui/header.ts",
-    "ui/icons.ts",
-    "ui/layout_settings.ts",
-    "ui/margin_control.ts",
-    "ui/margin_control_container.ts",
-    "ui/margins_settings.ts",
-    "ui/media_size_settings.ts",
-    "ui/more_settings.ts",
-    "ui/number_settings_section.ts",
-    "ui/other_options_settings.ts",
-    "ui/pages_per_sheet_settings.ts",
-    "ui/pages_settings.ts",
-    "ui/preview_area.ts",
-    "ui/print_preview_search_box.ts",
-    "ui/print_preview_shared_css.ts",
-    "ui/print_preview_vars_css.ts",
-    "ui/scaling_settings.ts",
-    "ui/settings_section.ts",
-    "ui/settings_select.ts",
-    "ui/sidebar.ts",
-    "ui/throbber_css.ts",
-  ]
-
-  if (is_chromeos) {
-    in_files += [
-      "ui/destination_dropdown_cros.ts",
-      "ui/destination_select_cros.ts",
-      "ui/pin_settings.ts",
-      "ui/provisional_destination_resolver.ts",
-      "ui/destination_dialog_cros.ts",
-    ]
-  } else {
-    in_files += [
-      "ui/destination_select.ts",
-      "ui/link_container.ts",
-      "ui/destination_dialog.ts",
-    ]
-  }
+  in_files = web_component_files
 }
 
 preprocess_if_expr("preprocess_pdf") {
@@ -239,90 +156,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "cloud_print_interface.ts",
-    "cloud_print_interface_impl.ts",
-    "dark_mode_mixin.ts",
-    "metrics.ts",
-    "native_layer.ts",
-    "print_preview.ts",
-    "print_preview_utils.ts",
-    "data/cdd.ts",
-    "data/cloud_parsers.ts",
-    "data/coordinate2d.ts",
-    "data/destination.ts",
-    "data/destination_match.ts",
-    "data/destination_store.ts",
-    "data/document_info.ts",
-    "data/local_parsers.ts",
-    "data/margins.ts",
-    "data/measurement_system.ts",
-    "data/model.ts",
-    "data/printable_area.ts",
-    "data/scaling.ts",
-    "data/size.ts",
-    "data/state.ts",
-    "data/user_manager.ts",
-    "ui/advanced_options_settings.ts",
-    "ui/advanced_settings_dialog.ts",
-    "ui/advanced_settings_item.ts",
-    "ui/app.ts",
-    "ui/button_strip.ts",
-    "ui/color_settings.ts",
-    "ui/copies_settings.ts",
-    "ui/destination_dialog_css.ts",
-    "ui/destination_list.ts",
-    "ui/destination_list_item.ts",
-    "ui/destination_select_css.ts",
-    "ui/destination_settings.ts",
-    "ui/dpi_settings.ts",
-    "ui/duplex_settings.ts",
-    "ui/header.ts",
-    "ui/highlight_utils.ts",
-    "ui/icons.ts",
-    "ui/input_mixin.ts",
-    "ui/layout_settings.ts",
-    "ui/margin_control.ts",
-    "ui/margin_control_container.ts",
-    "ui/margins_settings.ts",
-    "ui/media_size_settings.ts",
-    "ui/more_settings.ts",
-    "ui/number_settings_section.ts",
-    "ui/other_options_settings.ts",
-    "ui/pages_per_sheet_settings.ts",
-    "ui/pages_settings.ts",
-    "ui/plugin_proxy.ts",
-    "ui/preview_area.ts",
-    "ui/print_preview_search_box.ts",
-    "ui/print_preview_shared_css.ts",
-    "ui/print_preview_vars_css.ts",
-    "ui/scaling_settings.ts",
-    "ui/select_mixin.ts",
-    "ui/settings_mixin.ts",
-    "ui/settings_section.ts",
-    "ui/settings_select.ts",
-    "ui/sidebar.ts",
-    "ui/throbber_css.ts",
-  ]
-
-  if (is_chromeos) {
-    in_files += [
-      "data/print_server_store.ts",
-      "data/printer_status_cros.ts",
-      "native_layer_cros.ts",
-      "ui/destination_dialog_cros.ts",
-      "ui/destination_dropdown_cros.ts",
-      "ui/destination_select_cros.ts",
-      "ui/pin_settings.ts",
-      "ui/provisional_destination_resolver.ts",
-    ]
-  } else {
-    in_files += [
-      "ui/destination_dialog.ts",
-      "ui/destination_select.ts",
-      "ui/link_container.ts",
-    ]
-  }
+  in_files = web_component_files + non_web_component_files
 
   deps = [
     "//third_party/polymer/v3_0:library",

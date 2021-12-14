@@ -1,0 +1,103 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# -----------------web_component_files start ----------------------------------
+# web_component_files need to be passed to html_to_js().
+web_component_files = [
+  "ui/advanced_options_settings.ts",
+  "ui/advanced_settings_dialog.ts",
+  "ui/advanced_settings_item.ts",
+  "ui/app.ts",
+  "ui/button_strip.ts",
+  "ui/color_settings.ts",
+  "ui/copies_settings.ts",
+  "ui/destination_dialog_css.ts",
+  "ui/destination_list.ts",
+  "ui/destination_list_item.ts",
+  "ui/destination_select_css.ts",
+  "ui/destination_settings.ts",
+  "ui/dpi_settings.ts",
+  "ui/duplex_settings.ts",
+  "ui/header.ts",
+  "ui/icons.ts",
+  "ui/layout_settings.ts",
+  "ui/margin_control.ts",
+  "ui/margin_control_container.ts",
+  "ui/margins_settings.ts",
+  "ui/media_size_settings.ts",
+  "ui/more_settings.ts",
+  "ui/number_settings_section.ts",
+  "ui/other_options_settings.ts",
+  "ui/pages_per_sheet_settings.ts",
+  "ui/pages_settings.ts",
+  "ui/preview_area.ts",
+  "ui/print_preview_search_box.ts",
+  "ui/print_preview_shared_css.ts",
+  "ui/print_preview_vars_css.ts",
+  "ui/scaling_settings.ts",
+  "ui/settings_section.ts",
+  "ui/settings_select.ts",
+  "ui/sidebar.ts",
+  "ui/throbber_css.ts",
+]
+
+if (is_chromeos) {
+  web_component_files += [
+    "ui/destination_dropdown_cros.ts",
+    "ui/destination_select_cros.ts",
+    "ui/pin_settings.ts",
+    "ui/provisional_destination_resolver.ts",
+    "ui/destination_dialog_cros.ts",
+  ]
+} else {
+  web_component_files += [
+    "ui/destination_select.ts",
+    "ui/link_container.ts",
+    "ui/destination_dialog.ts",
+  ]
+}
+
+# -----------------web_component_files end -----------------------------------
+
+# -----------------non_web_component_files start -----------------------------
+# non_web_component_files do not need to be passed to html_to_js().
+non_web_component_files = [
+  "cloud_print_interface.ts",
+  "cloud_print_interface_impl.ts",
+  "dark_mode_mixin.ts",
+  "metrics.ts",
+  "native_layer.ts",
+  "print_preview.ts",
+  "print_preview_utils.ts",
+  "data/cdd.ts",
+  "data/cloud_parsers.ts",
+  "data/coordinate2d.ts",
+  "data/destination.ts",
+  "data/destination_match.ts",
+  "data/destination_store.ts",
+  "data/document_info.ts",
+  "data/local_parsers.ts",
+  "data/margins.ts",
+  "data/measurement_system.ts",
+  "data/model.ts",
+  "data/printable_area.ts",
+  "data/scaling.ts",
+  "data/size.ts",
+  "data/state.ts",
+  "data/user_manager.ts",
+  "ui/highlight_utils.ts",
+  "ui/input_mixin.ts",
+  "ui/plugin_proxy.ts",
+  "ui/select_mixin.ts",
+  "ui/settings_mixin.ts",
+]
+
+if (is_chromeos) {
+  non_web_component_files += [
+    "data/print_server_store.ts",
+    "data/printer_status_cros.ts",
+    "native_layer_cros.ts",
+  ]
+}
+#------------------non_web_component_files end --------------------------------
