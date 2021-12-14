@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CONSENTED_NOTIFICATION_DESKTOP_H_
-#define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CONSENTED_NOTIFICATION_DESKTOP_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_NOTIFICATION_HANDLER_DESKTOP_H_
+#define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_NOTIFICATION_HANDLER_DESKTOP_H_
 
 #include "chrome/browser/notifications/notification_handler.h"
 
@@ -13,17 +13,16 @@ namespace safe_browsing {
 
 // Handler for notifications shown for TailoredSecurity on Desktop platforms.
 // Will be created and owned by the NativeNotificationDisplayService.
-class TailoredSecurityConsentedNotificationHandler
-    : public NotificationHandler {
+class TailoredSecurityNotificationHandler : public NotificationHandler {
  public:
-  TailoredSecurityConsentedNotificationHandler();
+  TailoredSecurityNotificationHandler();
 
-  TailoredSecurityConsentedNotificationHandler(
-      const TailoredSecurityConsentedNotificationHandler&) = delete;
-  TailoredSecurityConsentedNotificationHandler& operator=(
-      const TailoredSecurityConsentedNotificationHandler&) = delete;
+  TailoredSecurityNotificationHandler(
+      const TailoredSecurityNotificationHandler&) = delete;
+  TailoredSecurityNotificationHandler& operator=(
+      const TailoredSecurityNotificationHandler&) = delete;
 
-  ~TailoredSecurityConsentedNotificationHandler() override;
+  ~TailoredSecurityNotificationHandler() override;
 
   // NotificationHandler implementation.
   void OnClose(Profile* profile,
@@ -42,6 +41,8 @@ class TailoredSecurityConsentedNotificationHandler
 void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
                                                   bool enable);
 
+void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile);
+
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CONSENTED_NOTIFICATION_DESKTOP_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_NOTIFICATION_HANDLER_DESKTOP_H_

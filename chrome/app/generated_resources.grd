@@ -12153,6 +12153,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Available WiFi networks
       </message>
     </if>
+
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+      Enhanced protection does more to block phishing and malware
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT" desc="Accept button on notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+        Continue
+      </message>
+    </if>
+    <if expr="not use_titlecase">
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT" desc="Accept button on notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+        Continue
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

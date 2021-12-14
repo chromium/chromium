@@ -17,7 +17,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/persistent_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/tailored_security/consented_notification_desktop.h"
+#include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -91,9 +91,8 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
     AddNotificationHandler(
-        NotificationHandler::Type::TAILORED_SECURITY_CONSENTED,
-        std::make_unique<
-            safe_browsing::TailoredSecurityConsentedNotificationHandler>());
+        NotificationHandler::Type::TAILORED_SECURITY,
+        std::make_unique<safe_browsing::TailoredSecurityNotificationHandler>());
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
