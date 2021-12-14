@@ -10740,7 +10740,7 @@ interface WindowControlsOverlay : EventTarget
     setter ongeometrychange
 interface WindowControlsOverlayGeometryChangeEvent : Event
     attribute @@toStringTag
-    getter boundingRect
+    getter titlebarAreaRect
     getter visible
     method constructor
 interface Worker : EventTarget
