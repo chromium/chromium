@@ -11,21 +11,22 @@
     width: 100%;
   }
 
-  .tab-strip {
+  #tabStrip {
     flex: 0 0 auto;
     margin-bottom: calc(var(--personalization-app-grid-item-spacing) / 2);
     width: 100%;
   }
 
-  .tab-strip cr-button {
+  #tabStrip cr-button {
     border: 0;
   }
 
-  .tab-strip cr-button[aria-pressed='false'] {
+  #tabStrip cr-button[aria-pressed='false'] {
     color: var(--cros-text-color-secondary);
   }
 
   #albumsContent,
+  #photosByAlbumIdContent,
   #photosContent,
   #zeroState {
     flex: 1 1 auto;
@@ -35,8 +36,8 @@
   }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
-  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
-    <div class="tab-strip">
+  <template is="dom-if" if="[[isTabStripVisible_(albumId, albums_)]]">
+    <div id="tabStrip">
       <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
         on-click="onTabSelected_">
         <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
@@ -56,6 +57,9 @@
     <google-photos-albums id="albumsContent"
       hidden$="[[!isAlbumsTabVisible_(hidden, tab_)]]">
     </google-photos-albums>
+    <google-photos-photos-by-album-id id="photosByAlbumIdContent" album-id="[[albumId]]"
+      hidden$="[[!isPhotosByAlbumIdTabVisible_(hidden, tab_)]]">
+    </google-photos-photos-by-album-id>
   </template>
   <template is="dom-if" if="[[isPhotosEmpty_(photos_)]]">
     <google-photos-zero-state id="zeroState"></google-photos-zero-state>

@@ -1,5 +1,11 @@
 <template>
   <style>
+    [hidden] {
+      /* The |hidden| attribute does not hide an element with an explicitly
+       * specified |display| property. Handle this by forcing display to |none|
+       * when the |hidden| attribute is present. */
+      display: none !important;
+    }
     :host {
       --personalization-app-grid-item-border-radius: 12px;
       --personalization-app-grid-item-height: 120px;

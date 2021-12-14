@@ -62,7 +62,7 @@ export function GooglePhotosCollectionTest() {
     assertEquals(querySelector('#zeroState'), null);
 
     // Tabs should be absent.
-    assertEquals(querySelector('.tabStrip'), null);
+    assertEquals(querySelector('#tabStrip'), null);
 
     // Photos content should be present and visible.
     const photosContent = querySelector('#photosContent');
@@ -71,6 +71,9 @@ export function GooglePhotosCollectionTest() {
 
     // Albums content should be absent.
     assertEquals(querySelector('#albumsContent'), null);
+
+    // Photos by album id content should be absent.
+    assertEquals(querySelector('#photosByAlbumId'), null);
   });
 
   test('displays tabs and content for photos and albums', async () => {
@@ -86,6 +89,11 @@ export function GooglePhotosCollectionTest() {
 
     // Zero state should be absent.
     assertEquals(querySelector('#zeroState'), null);
+
+    // Tab strip should be present and visible.
+    const tabStrip = querySelector('#tabStrip');
+    assertTrue(!!tabStrip);
+    assertFalse(tabStrip.hidden);
 
     // Photos tab should be present, visible, and pressed.
     const photosTab = querySelector('#photosTab');
@@ -109,11 +117,17 @@ export function GooglePhotosCollectionTest() {
     assertTrue(!!albumsContent);
     assertTrue(albumsContent.hidden);
 
+    // Photos by album id content should be present and hidden.
+    const photosByAlbumIdContent = querySelector('#photosByAlbumIdContent');
+    assertTrue(!!photosByAlbumIdContent);
+    assertTrue(photosByAlbumIdContent.hidden);
+
     // Clicking the albums tab should cause:
     // * albums tab to be visible and pressed.
     // * albums content to be visible.
     // * photos tab to be visible and *not* pressed.
     // * photos content to be hidden.
+    // * photos by album id content to be hidden.
     albumsTab.click();
     assertFalse(albumsTab.hidden);
     assertEquals(albumsTab.getAttribute('aria-pressed'), 'true');
@@ -121,12 +135,38 @@ export function GooglePhotosCollectionTest() {
     assertFalse(photosTab.hidden);
     assertEquals(photosTab.getAttribute('aria-pressed'), 'false');
     assertTrue(photosContent.hidden);
+    assertTrue(photosByAlbumIdContent.hidden);
+
+    // Selecting an album should cause:
+    // * tab strip to be hidden.
+    // * photos by album id content to be visible.
+    // * albums content to be hidden.
+    // * photos content to be hidden.
+    googlePhotosCollectionElement.setAttribute('album-id', '1');
+    await waitAfterNextRender(googlePhotosCollectionElement);
+    assertEquals(window.getComputedStyle(tabStrip).display, 'none');
+    assertFalse(photosByAlbumIdContent.hidden);
+    assertTrue(albumsContent.hidden);
+    assertTrue(photosContent.hidden);
+
+    // Un-selecting an album should cause:
+    // * tab strip to be visible.
+    // * photos by album id content to be hidden.
+    // * albums content to be visible.
+    // * photos content to be hidden.
+    googlePhotosCollectionElement.removeAttribute('album-id');
+    await waitAfterNextRender(googlePhotosCollectionElement);
+    assertEquals(window.getComputedStyle(tabStrip).display, 'block');
+    assertTrue(photosByAlbumIdContent.hidden);
+    assertFalse(albumsContent.hidden);
+    assertTrue(photosContent.hidden);
 
     // Clicking the photos tab should cause:
     // * photos tab to be visible and pressed.
     // * photos content to be visible.
     // * albums tab to be visible and *not* pressed.
-    // * albums content to be visible.
+    // * albums content to be hidden.
+    // * photos by album id content to be hidden.
     photosTab.click();
     assertFalse(photosTab.hidden);
     assertEquals(photosTab.getAttribute('aria-pressed'), 'true');
@@ -134,6 +174,7 @@ export function GooglePhotosCollectionTest() {
     assertFalse(albumsTab.hidden);
     assertEquals(albumsTab.getAttribute('aria-pressed'), 'false');
     assertTrue(albumsContent.hidden);
+    assertTrue(photosByAlbumIdContent.hidden);
   });
 
   test('displays zero state when there is no content', async () => {
@@ -157,6 +198,9 @@ export function GooglePhotosCollectionTest() {
 
     // Albums content should be absent.
     assertEquals(querySelector('#albumsContent'), null);
+
+    // Photos by album id content should be absent.
+    assertEquals(querySelector('#photosByAlbumIdContent'), null);
 
     // Zero state should be present and visible.
     const zeroState = querySelector('#zeroState');

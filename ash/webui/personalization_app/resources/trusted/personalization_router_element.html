@@ -81,6 +81,7 @@
         hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
       <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
         <google-photos-collection
+          album-id="[[queryParams_.googlePhotosAlbumId]]"
           hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
         </google-photos-collection>
       </template>

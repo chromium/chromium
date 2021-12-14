@@ -37,6 +37,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
         type: Boolean,
         value: true,
         reflectToAttribute: true,
+        observer: 'onHiddenChanged_',
       },
 
       /**
@@ -57,12 +58,6 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
         type: Boolean,
       },
     };
-  }
-
-  static get observers() {
-    return [
-      'onHiddenChanged_(hidden)',
-    ];
   }
 
   /** @override */
@@ -88,7 +83,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   }
 
   /**
-   * Invoked on changes to this element's hidden state.
+   * Invoked on changes to this element's |hidden| state.
    * @private
    */
   onHiddenChanged_() {

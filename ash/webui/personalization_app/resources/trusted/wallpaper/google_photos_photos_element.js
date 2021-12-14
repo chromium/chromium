@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element that displays the Google Photos photos.
+ * @fileoverview Polymer element that displays Google Photos photos.
  */
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -36,6 +36,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         type: Boolean,
         value: true,
         reflectToAttribute: true,
+        observer: 'onHiddenChanged_',
       },
 
       /**
@@ -91,12 +92,6 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     };
   }
 
-  static get observers() {
-    return [
-      'onHiddenChanged_(hidden)',
-    ];
-  }
-
   /** @override */
   connectedCallback() {
     super.connectedCallback();
@@ -110,7 +105,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /**
-   * Invoked on changes to this element's hidden state.
+   * Invoked on changes to this element's |hidden| state.
    * @private
    */
   onHiddenChanged_() {
@@ -190,7 +185,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /**
-   * Invoked to compute `photosByRow_`.
+   * Invoked to compute |photosByRow_|.
    * @return {?Array<Array<undefined>>}
    * @private
    */

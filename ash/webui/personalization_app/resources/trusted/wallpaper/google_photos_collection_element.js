@@ -27,6 +27,7 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 const Tab = {
   Albums: 'albums',
   Photos: 'photos',
+  PhotosByAlbumId: 'photosByAlbumId',
 };
 
 /** @polymer */
@@ -42,6 +43,15 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   static get properties() {
     return {
       /**
+       * The currently selected album id.
+       * @type {?string}
+       */
+      albumId: {
+        type: String,
+        observer: 'onAlbumIdChanged_',
+      },
+
+      /**
        * Whether or not this element is currently hidden.
        * @type {boolean}
        */
@@ -49,6 +59,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         type: Boolean,
         value: true,
         reflectToAttribute: true,
+        observer: 'onHiddenChanged_',
       },
 
       /**
@@ -81,12 +92,6 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     };
   }
 
-  static get observers() {
-    return [
-      'onHiddenChanged_(hidden)',
-    ];
-  }
-
   /** @override */
   constructor() {
     super();
@@ -106,7 +111,15 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /**
-   * Invoked on changes to this element's hidden state.
+   * Invoked on changes to the currently selected |albumId|.
+   * @private
+   */
+  onAlbumIdChanged_() {
+    this.tab_ = this.albumId ? Tab.PhotosByAlbumId : Tab.Albums;
+  }
+
+  /**
+   * Invoked on changes to this element's |hidden| state.
    * @private
    */
   onHiddenChanged_() {
@@ -165,6 +178,15 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /**
+   * Whether the photos by album id tab is currently visible.
+   * @return {boolean}
+   * @private
+   */
+  isPhotosByAlbumIdTabVisible_() {
+    return this.tab_ === Tab.PhotosByAlbumId && !this.hidden;
+  }
+
+  /**
    * Whether the list of photos is empty.
    * @return {boolean}
    * @private
@@ -189,6 +211,15 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
    */
   isPhotosTabVisible_() {
     return this.isPhotosTabSelected_() && !this.hidden;
+  }
+
+  /**
+   * Whether the tab strip is currently visible.
+   * @return {boolean}
+   * @private
+   */
+  isTabStripVisible_() {
+    return !this.albumId && !this.isAlbumsEmpty_();
   }
 }
 
