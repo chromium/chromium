@@ -277,6 +277,7 @@
       'mac-chrome': {
         'additional_compile_targets': [
           'chrome',
+          'chrome/installer/mac',
         ],
         'mixins': [
           'chrome-swarming-pool',

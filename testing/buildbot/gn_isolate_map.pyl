@@ -567,6 +567,10 @@
     "label": "//chrome/installer/linux:linux",
     "type": "additional_compile_target",
   },
+  "chrome/installer/mac": {
+    "label": "//chrome/installer/mac:mac",
+    "type": "additional_compile_target",
+  },
   "variations_smoke_tests": {
     "label": "//chrome/test:variations_smoke_tests",
     "type": "generated_script",
