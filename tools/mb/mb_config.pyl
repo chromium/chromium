@@ -629,6 +629,7 @@
       'mac-arm-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
 
       # This should be the same with 'Win x64 Builder'.
+      'win11-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
       'win-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
       'win-rel-swarming-staging': 'gpu_tests_release_bot_minimal_symbols',
     },

@@ -96,7 +96,13 @@ ci_builder(
 
 ci_builder(
     name = "win-rel-swarming",
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_10,
+    goma_enable_ats = True,
+)
+
+ci_builder(
+    name = "win11-rel-swarming",
+    os = os.WINDOWS_11,
     goma_enable_ats = True,
 )
 
