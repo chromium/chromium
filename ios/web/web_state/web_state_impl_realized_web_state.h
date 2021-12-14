@@ -139,6 +139,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void WasHidden();
   void SetKeepRenderProcessAlive(bool keep_alive);
   BrowserState* GetBrowserState() const;
+  NSString* GetStableIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
   CRWSessionStorage* BuildSessionStorage();
@@ -267,6 +268,10 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The User-Agent type.
   UserAgentType user_agent_type_ = UserAgentType::AUTOMATIC;
+
+  // The stable identifier. Set during `Init()` call. Never nil after this
+  // method has been called. Stable across application restarts.
+  __strong NSString* stable_identifier_ = nil;
 
   // The fake CRWWebViewNavigationProxy used for testing. Nil in production.
   __strong id<CRWWebViewNavigationProxy> web_view_for_testing_;

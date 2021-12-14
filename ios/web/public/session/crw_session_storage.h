@@ -28,6 +28,7 @@ class SerializableUserData;
     CRWSessionCertificatePolicyCacheStorage* certPolicyCacheStorage;
 @property(nonatomic, readonly) web::SerializableUserData* userData;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
+@property(nonatomic, copy) NSString* stableIdentifier;
 
 // Setter for |userData|.  The receiver takes ownership of |userData|.
 - (void)setSerializableUserData:

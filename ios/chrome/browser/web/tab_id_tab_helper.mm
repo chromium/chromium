@@ -12,24 +12,15 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The key under which the tab ID is stored in the WebState's serializable user
-// data.
-NSString* const kTabIdKey = @"TabId";
-}
-
-TabIdTabHelper::TabIdTabHelper(web::WebState* web_state) {
-  web::SerializableUserDataManager* user_data_manager =
-      web::SerializableUserDataManager::FromWebState(web_state);
-  NSString* unique_id = base::mac::ObjCCast<NSString>(
-      user_data_manager->GetValueForSerializationKey(kTabIdKey));
-  if (![unique_id length]) {
-    unique_id = [[NSUUID UUID] UUIDString];
-    user_data_manager->AddSerializableData(unique_id, kTabIdKey);
-  }
-  tab_id_ = [unique_id copy];
+TabIdTabHelper::TabIdTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
+  DCHECK(web_state_);
 }
 
 TabIdTabHelper::~TabIdTabHelper() = default;
+
+NSString* TabIdTabHelper::tab_id() const {
+  return web_state_->GetStableIdentifier();
+}
 
 WEB_STATE_USER_DATA_KEY_IMPL(TabIdTabHelper)

@@ -113,6 +113,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     NSMutableArray<CRWSessionStorage*>* sessions = [NSMutableArray array];
     for (int i = 0; i < sessions_count; i++) {
       CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+      session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
       session_storage.lastCommittedItemIndex = -1;
       [sessions addObject:session_storage];
     }

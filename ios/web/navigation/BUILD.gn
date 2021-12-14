@@ -73,6 +73,10 @@ source_set("navigation") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+
+  # TODO(crbug.com/1278306): Remove once SerializableUserData has been
+  # removed and the serialisation of user data simplied.
+  allow_circular_includes_from = [ "//ios/web/session" ]
 }
 
 source_set("core") {

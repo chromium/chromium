@@ -18,6 +18,7 @@ namespace {
 
 CRWSessionStorage* CreateSessionForTest(BOOL has_opener) {
   CRWSessionStorage* session = [[CRWSessionStorage alloc] init];
+  session.stableIdentifier = [[NSUUID UUID] UUIDString];
   session.hasOpener = has_opener;
   return session;
 }

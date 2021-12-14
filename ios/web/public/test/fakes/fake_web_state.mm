@@ -46,19 +46,9 @@ void FakeWebState::CloseWebState() {
   is_closed_ = true;
 }
 
-FakeWebState::FakeWebState()
-    : browser_state_(nullptr),
-      web_usage_enabled_(true),
-      is_loading_(false),
-      is_visible_(false),
-      is_crashed_(false),
-      is_evicted_(false),
-      has_opener_(false),
-      can_take_snapshot_(false),
-      is_closed_(false),
-      trust_level_(kAbsolute),
-      content_is_html_(true),
-      web_view_proxy_(nil) {}
+FakeWebState::FakeWebState(NSString* stable_identifier)
+    : stable_identifier_(stable_identifier ? stable_identifier
+                                           : [[NSUUID UUID] UUIDString]) {}
 
 FakeWebState::~FakeWebState() {
   for (auto& observer : observers_)
@@ -161,6 +151,7 @@ CRWSessionStorage* FakeWebState::BuildSessionStorage() {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   [session_storage setSerializableUserData:std::move(serializable_user_data)];
   session_storage.itemStorages = @[ [[CRWNavigationItemStorage alloc] init] ];
+  session_storage.stableIdentifier = stable_identifier_;
   return session_storage;
 }
 
@@ -217,6 +208,10 @@ void FakeWebState::ExecuteJavaScript(const std::u16string& javascript,
 }
 
 void FakeWebState::ExecuteUserJavaScript(NSString* javaScript) {}
+
+NSString* FakeWebState::GetStableIdentifier() const {
+  return stable_identifier_;
+}
 
 const std::string& FakeWebState::GetContentsMimeType() const {
   return mime_type_;

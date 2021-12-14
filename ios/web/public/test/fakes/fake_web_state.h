@@ -29,7 +29,7 @@ namespace web {
 // Minimal implementation of WebState, to be used in tests.
 class FakeWebState : public WebState {
  public:
-  FakeWebState();
+  explicit FakeWebState(NSString* stable_identifier = nil);
   ~FakeWebState() override;
 
   // WebState implementation.
@@ -64,6 +64,7 @@ class FakeWebState : public WebState {
   void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
+  NSString* GetStableIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
   const std::u16string& GetTitle() const override;
@@ -154,27 +155,28 @@ class FakeWebState : public WebState {
   void OnWebFrameWillBecomeUnavailable(WebFrame* frame);
 
  private:
-  BrowserState* browser_state_;
-  CRWJSInjectionReceiver* injection_receiver_;
-  bool web_usage_enabled_;
-  bool is_loading_;
-  bool is_visible_;
-  bool is_crashed_;
-  bool is_evicted_;
-  bool has_opener_;
-  bool can_take_snapshot_;
-  bool is_closed_;
+  BrowserState* browser_state_ = nullptr;
+  CRWJSInjectionReceiver* injection_receiver_ = nil;
+  NSString* stable_identifier_ = nil;
+  bool web_usage_enabled_ = true;
+  bool is_loading_ = false;
+  bool is_visible_ = false;
+  bool is_crashed_ = false;
+  bool is_evicted_ = false;
+  bool has_opener_ = false;
+  bool can_take_snapshot_ = false;
+  bool is_closed_ = false;
   GURL url_;
   std::u16string title_;
   std::u16string last_executed_javascript_;
-  URLVerificationTrustLevel trust_level_;
-  bool content_is_html_;
+  URLVerificationTrustLevel trust_level_ = kAbsolute;
+  bool content_is_html_ = true;
   std::string mime_type_;
   std::unique_ptr<NavigationManager> navigation_manager_;
   std::unique_ptr<WebFramesManager> web_frames_manager_;
-  UIView* view_;
+  UIView* view_ = nil;
   CRWWebViewProxyType web_view_proxy_;
-  NSData* last_loaded_data_;
+  NSData* last_loaded_data_ = nil;
   base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
   absl::optional<ScriptCommandCallback> last_added_callback_;
   std::string last_command_prefix_;

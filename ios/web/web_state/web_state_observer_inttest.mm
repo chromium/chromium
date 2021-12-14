@@ -82,6 +82,7 @@ const char kTestSessionStoragePageText[] = "pony";
 // Returns a session storage with a single committed entry of a test HTML page.
 CRWSessionStorage* GetTestSessionStorage(const GURL& testUrl) {
   CRWSessionStorage* result = [[CRWSessionStorage alloc] init];
+  result.stableIdentifier = [[NSUUID UUID] UUIDString];
   result.lastCommittedItemIndex = 0;
   CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
   [item setURL:testUrl];

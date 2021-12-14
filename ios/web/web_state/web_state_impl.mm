@@ -429,6 +429,11 @@ void WebStateImpl::ExecuteUserJavaScript(NSString* javascript) {
   RealizedState()->ExecuteUserJavaScript(javascript);
 }
 
+NSString* WebStateImpl::GetStableIdentifier() const {
+  return LIKELY(pimpl_) ? pimpl_->GetStableIdentifier()
+                        : saved_->GetStableIdentifier();
+}
+
 const std::string& WebStateImpl::GetContentsMimeType() const {
   static std::string kEmptyString;
   return LIKELY(pimpl_) ? pimpl_->GetContentsMimeType() : kEmptyString;

@@ -47,6 +47,7 @@ class WebStateImpl::SerializedData {
 
   // WebState:
   BrowserState* GetBrowserState() const;
+  NSString* GetStableIdentifier() const;
   const std::u16string& GetTitle() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;

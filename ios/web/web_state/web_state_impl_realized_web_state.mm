@@ -88,10 +88,17 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     DCHECK(certificate_policy_cache_);
     certificate_policy_cache_->UpdateCertificatePolicyCache(
         web::BrowserState::GetCertificatePolicyCache(params.browser_state));
+
+    // Load the stable identifier. Must not be empty or nil.
+    DCHECK(session_storage.stableIdentifier.length);
+    stable_identifier_ = [session_storage.stableIdentifier copy];
   } else {
     certificate_policy_cache_ =
         std::make_unique<SessionCertificatePolicyCacheImpl>(
             params.browser_state);
+
+    // Generate a random stable identifier. Ensure it is immutable.
+    stable_identifier_ = [[[NSUUID UUID] UUIDString] copy];
   }
 }
 
@@ -553,6 +560,10 @@ void WebStateImpl::RealizedWebState::SetKeepRenderProcessAlive(
 
 BrowserState* WebStateImpl::RealizedWebState::GetBrowserState() const {
   return navigation_manager_->GetBrowserState();
+}
+
+NSString* WebStateImpl::RealizedWebState::GetStableIdentifier() const {
+  return [stable_identifier_ copy];
 }
 
 void WebStateImpl::RealizedWebState::OpenURL(

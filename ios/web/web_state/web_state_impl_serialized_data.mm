@@ -15,6 +15,11 @@
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
+namespace {
+// The key under which the WebState's stable identifier was saved in the user
+// serializable data before the M98 release.
+NSString* const kTabIdKey = @"TabId";
+}
 
 WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
                                              const CreateParams& create_params,
@@ -26,9 +31,7 @@ WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
   DCHECK(session_storage_);
 
   // Restore the serializable user data as user code may depend on accessing
-  // on those values on a unrealized WebState (e.g. it can be used to store
-  // a unique identifier used to access the tab snapshot). Remove once the
-  // tab identifier is managed by WebState directly, see crbug.com/1276776.
+  // on those values even for an unrealized WebState.
   if (session_storage_.userData) {
     SerializableUserDataManager::FromWebState(owner_)->AddSerializableUserData(
         session_storage_.userData);
@@ -70,6 +73,11 @@ CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
 
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
   return create_params_.browser_state;
+}
+
+NSString* WebStateImpl::SerializedData::GetStableIdentifier() const {
+  DCHECK(session_storage_.stableIdentifier.length);
+  return [session_storage_.stableIdentifier copy];
 }
 
 const std::u16string& WebStateImpl::SerializedData::GetTitle() const {

@@ -5,6 +5,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 
 #include "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
@@ -61,65 +62,108 @@ BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
 }
 }  // namespace
 
-class CRWNSessionStorageTest : public PlatformTest {
+class CRWSessionStorageTest : public PlatformTest {
  protected:
-  CRWNSessionStorageTest()
-      : session_storage_([[CRWSessionStorage alloc] init]) {
+  CRWSessionStorageTest() : session_storage_([[CRWSessionStorage alloc] init]) {
     // Set up |session_storage_|.
-    [session_storage_ setHasOpener:YES];
-    [session_storage_ setLastCommittedItemIndex:4];
+    session_storage_.hasOpener = YES;
+    session_storage_.lastCommittedItemIndex = 4;
+    session_storage_.userAgentType = web::UserAgentType::DESKTOP;
+    session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
+
     // Create an item storage.
     CRWNavigationItemStorage* item_storage =
         [[CRWNavigationItemStorage alloc] init];
-    [item_storage setVirtualURL:GURL("http://init.test")];
-    [item_storage setReferrer:web::Referrer(GURL("http://referrer.url"),
-                                            web::ReferrerPolicyDefault)];
-    [item_storage setTimestamp:base::Time::Now()];
-    [item_storage setTitle:base::SysNSStringToUTF16(@"Title")];
-    [item_storage
-        setDisplayState:web::PageDisplayState(CGPointZero, UIEdgeInsetsZero,
-                                              0.0, 0.0, 0.0)];
-    [item_storage setHTTPRequestHeaders:@{ @"HeaderKey" : @"HeaderValue" }];
-    [session_storage_ setItemStorages:@[ item_storage ]];
+    item_storage.virtualURL = GURL("http://init.test");
+    item_storage.referrer =
+        web::Referrer(GURL("http://referrer.url"), web::ReferrerPolicyDefault);
+    item_storage.timestamp = base::Time::Now();
+    item_storage.title = base::SysNSStringToUTF16(@"Title");
+    item_storage.displayState =
+        web::PageDisplayState(CGPointZero, UIEdgeInsetsZero, 0.0, 0.0, 0.0);
+    item_storage.HTTPRequestHeaders = @{@"HeaderKey" : @"HeaderValue"};
+    session_storage_.itemStorages = @[ item_storage ];
+
     // Create serializable user data.
     std::unique_ptr<web::SerializableUserDataImpl> user_data(
         new web::SerializableUserDataImpl(
             @{ @"key" : @"value" }));
     [session_storage_ setSerializableUserData:std::move(user_data)];
-    [session_storage_ setUserAgentType:web::UserAgentType::DESKTOP];
   }
 
  protected:
   CRWSessionStorage* session_storage_;
 };
 
-// Tests that unarchiving CRWSessionStorage data results in an equivalent
-// storage.
-TEST_F(CRWNSessionStorageTest, EncodeDecode) {
+namespace {
+
+// Helper function to encode a CRWSessionStorage to NSData.
+NSData* EncodeSessionStorage(CRWSessionStorage* session_storage) {
   NSKeyedArchiver* archiver =
       [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
-  [archiver encodeObject:session_storage_ forKey:NSKeyedArchiveRootObjectKey];
+  [archiver encodeObject:session_storage forKey:NSKeyedArchiveRootObjectKey];
   [archiver finishEncoding];
-  NSData* data = [archiver encodedData];
+  return [archiver encodedData];
+}
+
+// Helper function to decode a CRWSessionStorage from NSData.
+CRWSessionStorage* DecodeSessionStorage(NSData* data) {
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
-  id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  return base::mac::ObjCCast<CRWSessionStorage>(
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey]);
+}
+
+}
+
+// Tests that unarchiving CRWSessionStorage data results in an equivalent
+// storage.
+TEST_F(CRWSessionStorageTest, EncodeDecode) {
+  CRWSessionStorage* decoded =
+      DecodeSessionStorage(EncodeSessionStorage(session_storage_));
+
   EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
 }
 
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage when the user agent is automatic.
-TEST_F(CRWNSessionStorageTest, EncodeDecodeAutomatic) {
+TEST_F(CRWSessionStorageTest, EncodeDecodeAutomatic) {
   session_storage_.userAgentType = web::UserAgentType::AUTOMATIC;
-  NSKeyedArchiver* archiver =
-      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
-  [archiver encodeObject:session_storage_ forKey:NSKeyedArchiveRootObjectKey];
-  [archiver finishEncoding];
-  NSData* data = [archiver encodedData];
-  NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
-  unarchiver.requiresSecureCoding = NO;
-  id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  CRWSessionStorage* decoded =
+      DecodeSessionStorage(EncodeSessionStorage(session_storage_));
+
   EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
+}
+
+// Tests that unarchiving CRWSessionStorage correctly creates a fresh
+// stable identifier if missing from the serialized data.
+TEST_F(CRWSessionStorageTest, DecodeStableIdentifierMissing) {
+  std::unique_ptr<web::SerializableUserDataImpl> user_data(
+      new web::SerializableUserDataImpl(@{}));
+  [session_storage_ setSerializableUserData:std::move(user_data)];
+  session_storage_.stableIdentifier = nil;
+
+  CRWSessionStorage* decoded =
+      DecodeSessionStorage(EncodeSessionStorage(session_storage_));
+  EXPECT_GT(decoded.stableIdentifier.length, 0u);
+}
+
+// Tests that unarchiving CRWSessionStorage correctly initialises the
+// stable identifier from the serializable user data key "TabId" if
+// present, and that the value is cleared from the decoded object user
+// data.
+TEST_F(CRWSessionStorageTest, DecodeStableIdentifierFromTabId) {
+  std::unique_ptr<web::SerializableUserDataImpl> user_data(
+      new web::SerializableUserDataImpl(@{@"TabId" : @"tabid-identifier"}));
+  [session_storage_ setSerializableUserData:std::move(user_data)];
+  session_storage_.stableIdentifier = nil;
+
+  CRWSessionStorage* decoded =
+      DecodeSessionStorage(EncodeSessionStorage(session_storage_));
+  EXPECT_NSEQ(decoded.stableIdentifier, @"tabid-identifier");
+
+  web::SerializableUserDataImpl* decoded_user_data =
+      static_cast<web::SerializableUserDataImpl*>(decoded.userData);
+  EXPECT_FALSE([decoded_user_data->data() objectForKey:@"TabId"]);
 }

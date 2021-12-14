@@ -297,6 +297,14 @@ class WebState : public base::SupportsUserData {
   // registering user interaction.
   virtual void ExecuteUserJavaScript(NSString* javaScript) = 0;
 
+  // Returns a unique identifier for this WebState that is stable across
+  // restart of the application (and across "undo" after a tab is closed).
+  // It is local to the device and not synchronized. This can be used as a key
+  // to identify locally this WebState (e.g. can be used as part of the name
+  // of the file that is used to store a snapshot of the WebState, or it can
+  // be used as a key in an NSDictionary).
+  virtual NSString* GetStableIdentifier() const = 0;
+
   // Gets the contents MIME type.
   virtual const std::string& GetContentsMimeType() const = 0;
 

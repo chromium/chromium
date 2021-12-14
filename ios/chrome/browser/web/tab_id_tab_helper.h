@@ -8,6 +8,9 @@
 #import "ios/web/public/web_state_user_data.h"
 
 // Handles creating a unique identifier, which is stable across cold starts.
+//
+// TODO(crbug.com/1276776): Remove this class once all code has been converted
+// to instead use WebState::GetStableIdentifier() instead.
 class TabIdTabHelper : public web::WebStateUserData<TabIdTabHelper> {
  public:
   TabIdTabHelper(const TabIdTabHelper&) = delete;
@@ -16,13 +19,13 @@ class TabIdTabHelper : public web::WebStateUserData<TabIdTabHelper> {
   ~TabIdTabHelper() override;
 
   // Returns a unique identifier for this tab.
-  NSString* tab_id() const { return tab_id_; }
+  NSString* tab_id() const;
 
  private:
   friend class web::WebStateUserData<TabIdTabHelper>;
 
   explicit TabIdTabHelper(web::WebState* web_state);
-  __strong NSString* tab_id_;
+  web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

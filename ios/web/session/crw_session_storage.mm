@@ -4,11 +4,13 @@
 
 #import "ios/web/public/session/crw_session_storage.h"
 
+#import "base/mac/foundation_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/nscoder_util.h"
+#import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,12 +26,18 @@ NSString* const kItemStoragesKey = @"entries";
 NSString* const kHasOpenerKey = @"openedByDOM";
 NSString* const kLastCommittedItemIndexKey = @"lastCommittedItemIndex";
 NSString* const kUserAgentKey = @"userAgentKey";
+NSString* const kStableIdentifierKey = @"stableIdentifier";
 
 // Deprecated, used for backward compatibility.
-// TODO(crbug.com/708795): Remove this key.
+// TODO(crbug.com/1278308): Remove this key.
 NSString* const kLastCommittedItemIndexDeprecatedKey =
     @"currentNavigationIndex";
 
+// Deprecated, used for backward compatibility for reading the stable
+// identifier from the serializable user data as it was stored by the
+// external tab helper.
+// TODO(crbug.com/1278308): Remove this key.
+NSString* const kTabIdKey = @"TabId";
 }
 
 @interface CRWSessionStorage () {
@@ -78,7 +86,7 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
     if (!_certPolicyCacheStorage) {
       // If the cert policy cache was not found, attempt to decode using the
       // deprecated serialization key.
-      // TODO(crbug.com/661633): Remove this deprecated key once we remove
+      // TODO(crbug.com/1278308): Remove this deprecated key once we remove
       // support for legacy class conversions.
       _certPolicyCacheStorage = [decoder
           decodeObjectForKey:kCertificatePolicyCacheStorageDeprecatedKey];
@@ -92,8 +100,54 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
           web::GetUserAgentTypeWithDescription(userAgentDescription);
     } else {
       // Prior to M85, the UserAgent wasn't stored.
+      // TODO(crbug.com/1278308): Remove this deprecated logic when we
+      // remove support for loading legacy sessions.
       _userAgentType = web::UserAgentType::AUTOMATIC;
     }
+
+    _stableIdentifier = [decoder decodeObjectForKey:kStableIdentifierKey];
+    if (!_stableIdentifier.length) {
+      // Before M99, the stable identifier was managed by a tab helper and
+      // saved as part of the serializable user data. To support migration
+      // of pre M99 session, read the data from there if not found.
+      //
+      // TODO(crbug.com/1278306): remove this cast when SerializableUserData
+      // has been removed and a simpler alternative has been put in place.
+      // For the moment the cast is safe, since SerializableUserData only has
+      // one sub-class SerializableUserDataImpl.
+      web::SerializableUserDataImpl* userDataImpl =
+          static_cast<web::SerializableUserDataImpl*>(_userData.get());
+      NSDictionary<NSString*, id<NSCoding>>* data = userDataImpl->data();
+
+      // If "TabId" is set, clear it and initialise the `stableIdentifier`
+      // from it (if it is a NSString and non empty, otherwise a new value
+      // will be created below).
+      id<NSCoding> tabIdValue = [data objectForKey:kTabIdKey];
+      if (tabIdValue) {
+        NSMutableDictionary<NSString*, id<NSCoding>>* mutableData =
+            [data mutableCopy];
+        [mutableData removeObjectForKey:kTabIdKey];
+
+        _userData = base::WrapUnique(
+            new web::SerializableUserDataImpl([mutableData copy]));
+
+        // If the value is not an NSString or is empty, a random identifier
+        // will be generated below.
+        _stableIdentifier = base::mac::ObjCCast<NSString>(tabIdValue);
+      }
+    }
+
+    // If no stable identifier was read, generate a new one (this simplify
+    // WebState session restoration code as it can assume that the property
+    // is never nil).
+    if (!_stableIdentifier.length) {
+      _stableIdentifier = [[NSUUID UUID] UUIDString];
+    }
+
+    // Force conversion to NSString if `_stableIdentifier` happens to be a
+    // NSMutableString (to prevent this value from being mutated).
+    _stableIdentifier = [_stableIdentifier copy];
+    DCHECK(_stableIdentifier.length);
   }
   return self;
 }
@@ -114,6 +168,7 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
   web::UserAgentType userAgentType = _userAgentType;
   web::nscoder_util::EncodeString(
       coder, kUserAgentKey, web::GetUserAgentTypeDescription(userAgentType));
+  [coder encodeObject:_stableIdentifier forKey:kStableIdentifierKey];
 }
 
 @end
