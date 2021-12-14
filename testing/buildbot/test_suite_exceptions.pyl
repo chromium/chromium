@@ -3205,11 +3205,21 @@
   },
   'webgl2_conformance_metal_passthrough_tests': {
     'remove_from': [
-      # crbug.com/1270755: failing entire shards on Intel ASAN bot.
-      'Mac FYI ASAN (Intel)',
       # Not enough capacity.
       'Mac FYI Retina Release (NVIDIA)',
     ],
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--extra-browser-args=--disable-metal-shader-cache',
+        ],
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--extra-browser-args=--disable-metal-shader-cache',
+        ],
+      },
+    },
   },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
@@ -3246,11 +3256,21 @@
   },
   'webgl_conformance_metal_passthrough_tests': {
     'remove_from': [
-      # crbug.com/1270755: failing entire shards on Intel ASAN bot.
-      'Mac FYI ASAN (Intel)',
-      # crbug.com/1158857: re-enable if Metal shader cache workaround is added.
+      # crbug.com/1158857: re-enable when switching to Metal by default.
       'Mac FYI Retina Release (NVIDIA)',
     ],
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--extra-browser-args=--disable-metal-shader-cache',
+        ],
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--extra-browser-args=--disable-metal-shader-cache',
+        ],
+      },
+    },
   },
   'webgl_conformance_tests': {
     'remove_from': [
