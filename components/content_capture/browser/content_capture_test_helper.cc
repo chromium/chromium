@@ -10,25 +10,34 @@ FakeContentCaptureSender::FakeContentCaptureSender() = default;
 
 FakeContentCaptureSender::~FakeContentCaptureSender() = default;
 
+void FakeContentCaptureSender::Bind(content::RenderFrameHost* frame) {
+  DCHECK(frame);
+  content_capture_receiver_.reset();
+  OnscreenContentProvider::BindContentCaptureReceiver(
+      content_capture_receiver_.BindNewEndpointAndPassDedicatedReceiver(),
+      frame);
+}
+
 void FakeContentCaptureSender::DidCaptureContent(
     const ContentCaptureData& captured_content,
     bool first_data) {
+  base::RunLoop run_loop;
   content_capture_receiver_->DidCaptureContent(captured_content, first_data);
+  run_loop.RunUntilIdle();
 }
 
 void FakeContentCaptureSender::DidUpdateContent(
     const ContentCaptureData& captured_content) {
+  base::RunLoop run_loop;
   content_capture_receiver_->DidUpdateContent(captured_content);
+  run_loop.RunUntilIdle();
 }
 
 void FakeContentCaptureSender::DidRemoveContent(
     const std::vector<int64_t>& data) {
+  base::RunLoop run_loop;
   content_capture_receiver_->DidRemoveContent(data);
-}
-
-mojo::PendingAssociatedReceiver<mojom::ContentCaptureReceiver>
-FakeContentCaptureSender::GetPendingAssociatedReceiver() {
-  return content_capture_receiver_.BindNewEndpointAndPassDedicatedReceiver();
+  run_loop.RunUntilIdle();
 }
 
 SessionRemovedTestHelper::SessionRemovedTestHelper() = default;
