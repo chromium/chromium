@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_KEY_EVENT_SOURCE_REWRITER_H_
 
 #include "base/scoped_observation.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/events/event_rewriter.h"
+#include "ui/events/event_source.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace arc {
 // KeyEventSourceRewriter forwards the key event from primary root window to the
@@ -21,7 +24,7 @@ class KeyEventSourceRewriter : public ui::EventRewriter {
   KeyEventSourceRewriter& operator=(const KeyEventSourceRewriter&) = delete;
   ~KeyEventSourceRewriter() override;
 
-  // Overridden from ui::EventRewriter
+  // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
       const Continuation continuation) override;

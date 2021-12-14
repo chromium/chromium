@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 
+#include <list>
+
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "ui/aura/window.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -82,8 +84,6 @@ void TouchInjector::SendTouchMoveEvent(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ui::EventRewriter
 ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {

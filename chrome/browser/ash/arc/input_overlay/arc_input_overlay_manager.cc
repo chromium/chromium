@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
-#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
@@ -192,8 +191,6 @@ void ArcInputOverlayManager::RemoveDisplayOverlayController() {
   display_overlay_controller_.reset();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Overridden from aura::EnvObserver:
 void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
   if (window_observations_.IsObservingSource(new_window))
     return;
@@ -201,8 +198,6 @@ void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
   window_observations_.AddObservation(new_window);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Overridden from aura::WindowObserver:
 void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
                                                      const void* key,
                                                      intptr_t old) {
@@ -253,14 +248,10 @@ void ArcInputOverlayManager::OnWindowBoundsChanged(
     display_overlay_controller_->OnWindowBoundsChanged();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// KeyedService:
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// aura::client::FocusChangeObserver:
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
                                              aura::Window* lost_focus) {
   aura::Window* lost_focus_top_level_window = nullptr;

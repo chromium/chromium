@@ -9,8 +9,8 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/dependent_position.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "components/arc/grit/input_overlay_resources.h"
+#include "ui/aura/window.h"
 
 namespace arc {
 namespace {
@@ -36,9 +36,8 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
   };
 
   auto it = resource_id_map.find(package_name);
-  if (it != resource_id_map.end())
-    return absl::optional<int>(it->second);
-  return absl::optional<int>();
+  return (it != resource_id_map.end()) ? absl::optional<int>(it->second)
+                                       : absl::optional<int>();
 }
 
 absl::optional<std::vector<std::unique_ptr<input_overlay::Action>>>
@@ -75,10 +74,9 @@ ParseJsonToActions(aura::Window* window, const base::Value& root) {
     }
   }
 
-  // TODO: parse more actions.
-  if (actions.empty())
-    return absl::nullopt;
-  return absl::make_optional(std::move(actions));
+  // TODO(cuicuiruan): parse more actions.
+  return !actions.empty() ? absl::make_optional(std::move(actions))
+                          : absl::nullopt;
 }
 
 absl::optional<std::vector<std::unique_ptr<input_overlay::Position>>>
@@ -110,9 +108,8 @@ ParseLocation(const base::Value& position) {
     }
   }
 
-  if (positions.empty())
-    return absl::nullopt;
-  return absl::make_optional(std::move(positions));
+  return !positions.empty() ? absl::make_optional(std::move(positions))
+                            : absl::nullopt;
 }
 
 }  // namespace arc

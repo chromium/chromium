@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
 
 #include "ash/shell.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 
 namespace arc {
 
@@ -16,8 +18,6 @@ KeyEventSourceRewriter::KeyEventSourceRewriter(aura::Window* top_level_window)
 
 KeyEventSourceRewriter::~KeyEventSourceRewriter() = default;
 
-////////////////////////////////////////////////////////////////////////////////
-// ui::EventRewriter
 ui::EventDispatchDetails KeyEventSourceRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {

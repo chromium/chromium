@@ -5,9 +5,17 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "ui/aura/window.h"
+#include "ui/events/event_rewriter.h"
+#include "ui/gfx/geometry/rect_f.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace arc {
 namespace input_overlay {
@@ -57,7 +65,7 @@ class TouchInjector : public ui::EventRewriter {
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
 
-  // Overridden from ui::EventRewriter
+  // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
       const Continuation continuation) override;

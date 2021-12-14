@@ -5,11 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_INPUT_OVERLAY_RESOURCES_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_INPUT_OVERLAY_RESOURCES_UTIL_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace arc {
 

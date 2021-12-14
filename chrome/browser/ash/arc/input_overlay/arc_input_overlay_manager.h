@@ -62,7 +62,7 @@ class ArcInputOverlayManager : public KeyedService,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
 
-  // KeyedService overrides:
+  // KeyedService:
   void Shutdown() override;
 
   // aura::client::FocusChangeObserver:

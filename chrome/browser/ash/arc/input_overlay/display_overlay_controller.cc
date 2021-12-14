@@ -32,8 +32,8 @@ class DisplayOverlayController::InputMappingView : public views::View {
 };
 
 DisplayOverlayController::DisplayOverlayController(
-    TouchInjector* touch_injector) {
-  touch_injector_ = touch_injector;
+    TouchInjector* touch_injector)
+    : touch_injector_(touch_injector) {
   AddOverlay();
   AddInputMappingView();
 }
@@ -49,9 +49,7 @@ void DisplayOverlayController::OnWindowBoundsChanged() {
 
 // For test:
 gfx::Rect DisplayOverlayController::GetInputMappingViewBoundsForTesting() {
-  if (!input_mapping_view_)
-    return gfx::Rect();
-  return input_mapping_view_->bounds();
+  return input_mapping_view_ ? input_mapping_view_->bounds() : gfx::Rect();
 }
 
 void DisplayOverlayController::AddOverlay() {
@@ -65,6 +63,7 @@ void DisplayOverlayController::AddOverlay() {
   params.translucent = true;
   params.overlaps_frame = false;
   shell_surface_base->AddOverlay(std::move(params));
+
   views::Widget* overlay_widget =
       static_cast<views::Widget*>(shell_surface_base->GetFocusTraversable());
   // TODO(cuicuiruan): split below to the view mode. For the edit mode, display
@@ -76,9 +75,8 @@ void DisplayOverlayController::AddOverlay() {
 void DisplayOverlayController::RemoveOverlayIfAny() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
-  if (shell_surface_base && shell_surface_base->HasOverlay()) {
+  if (shell_surface_base && shell_surface_base->HasOverlay())
     shell_surface_base->RemoveOverlay();
-  }
 }
 
 void DisplayOverlayController::AddInputMappingView() {
@@ -108,11 +106,10 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
   DCHECK(shell_surface_base);
-  if (!shell_surface_base)
-    return nullptr;
-  views::Widget* overlay_widget =
-      static_cast<views::Widget*>(shell_surface_base->GetFocusTraversable());
-  return overlay_widget;
+
+  return shell_surface_base ? static_cast<views::Widget*>(
+                                  shell_surface_base->GetFocusTraversable())
+                            : nullptr;
 }
 
 }  // namespace arc
