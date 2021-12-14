@@ -742,6 +742,7 @@ cast_source_set("unittests") {
     "cast_session_id_map_unittest.cc",
     "devtools/cast_devtools_manager_delegate_unittest.cc",
     "lru_renderer_cache_test.cc",
+    "migration/migration_utils_test.cc",
   ]
 
   deps = [
@@ -752,6 +753,7 @@ cast_source_set("unittests") {
     "//base/test:test_support",
     "//chromecast/base",
     "//chromecast/bindings/public/mojom",
+    "//chromecast/browser/migration",
     "//chromecast/net:socket_util",
     "//components/on_load_script_injector/browser",
     "//content/public/browser",

@@ -37,10 +37,10 @@ base::FilePath GetConfigPath(ProcessType process_type) {
   base::FilePath config_path;
   switch (process_type) {
     case ProcessType::kCastBrowser:
-      CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
+      CHECK(base::PathService::Get(FILE_CAST_BROWSER_CONFIG, &config_path));
       break;
     case ProcessType::kCastService:
-      CHECK(base::PathService::Get(FILE_CAST_SERVICE_CONFIG, &config_path));
+      CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
       // No default. All possible cases are handled above.
   }
   CHECK(!config_path.empty());

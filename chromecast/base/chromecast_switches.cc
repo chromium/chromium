@@ -223,6 +223,11 @@ const char kExtensionsDir[] = "cast-extensions-dir";
 // allowing the process to include its own non-default features.
 const char kDeferFeatureList[] = "defer-feature-list";
 
+// Rather than share a common pref config file with cast_service, use a
+// dedicated browser pref config file. This must be set when `cast_browser` is
+// running in a different process from `cast_service`.
+const char kUseCastBrowserPrefConfig[] = "use-cast-browser-pref-config";
+
 }  // namespace switches
 
 namespace chromecast {

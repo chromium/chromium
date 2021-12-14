@@ -28,7 +28,7 @@ class PrefServiceHelper {
   // Loads configs from config file. Returns true if successful.
   static std::unique_ptr<PrefService> CreatePrefService(
       PrefRegistrySimple* registry,
-      ProcessType process_type = ProcessType::kCastBrowser);
+      ProcessType process_type = ProcessType::kCastService);
 
   // Provides names of prefs that take a large amount of storage, and are
   // therefore stored in a different file.
