@@ -266,6 +266,23 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                                     this::recordSurveyPromptMetrics)
                             .build();
 
+            // Dismiss an enqueued message when the survey has expired so that it does not get shown
+            // subsequently.
+            message.set(MessageBannerProperties.ON_STARTED_SHOWING, () -> {
+                if (!SurveyController.getInstance().isSurveyExpired(siteId)) {
+                    return true;
+                }
+                Log.w(TAG,
+                        "The survey message prompt was dismissed because the survey "
+                                + "with ID %s has expired.",
+                        siteId);
+                new Handler(ThreadUtils.getUiThreadLooper())
+                        .post(()
+                                        -> mMessageDispatcher.dismissMessage(
+                                                message, DismissReason.DISMISSED_BY_FEATURE));
+                return false;
+            });
+
             // Dismiss the message when the original tab in which the message is shown is
             // hidden. This keeps in line with existing infobar behavior and prevents the prompt
             // from being shown if the tab is opened after being hidden for a duration in which

@@ -82,6 +82,8 @@ class MessageWrapper {
   void HandleSecondaryActionClick(JNIEnv* env);
   void HandleDismissCallback(JNIEnv* env, int dismiss_reason);
 
+  // TODO (crbug.com/1264117): Add ON_STARTED_SHOWING support.
+
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
 
   // Called by the bridge when the message is successfully enqueued.

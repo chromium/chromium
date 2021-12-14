@@ -6,7 +6,9 @@ package org.chromium.components.messages;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.ui.util.TokenHolder;
 
@@ -20,6 +22,7 @@ import java.util.Map;
  * message and which message to show next.
  */
 class MessageQueueManager implements ScopeChangeController.Delegate {
+    private static final String TAG = "MessageQueueManager";
     /**
      * mCurrentDisplayedMessage refers to the message which is currently visible on the screen
      * including situations in which the message is already dismissed and hide animation is running.
@@ -232,7 +235,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * requirements, which can show in the given scope, then the message queued earliest will be
      * returned.
      */
-    private MessageState getNextMessage() {
+    @VisibleForTesting
+    MessageState getNextMessage() {
         if (isQueueSuspended()) return null;
         MessageState nextMessage = null;
         for (List<MessageState> queue : mMessageQueues.values()) {
@@ -240,8 +244,13 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             Boolean isActive = mScopeStates.get(queue.get(0).scopeKey);
             if (isActive == null || !isActive) continue;
             for (MessageState candidate : queue) {
-                if (nextMessage == null || (candidate.highPriority && !nextMessage.highPriority)
-                        || candidate.id < nextMessage.id) {
+                boolean shouldShow = candidate.handler.shouldShow();
+                Log.w(TAG, "MessageStateHandler#shouldShow for message ID %s returned %s.",
+                        candidate.handler.getMessageIdentifier(), shouldShow);
+                if (shouldShow
+                        && (nextMessage == null
+                                || (candidate.highPriority && !nextMessage.highPriority)
+                                || candidate.id < nextMessage.id)) {
                     nextMessage = candidate;
                 }
             }

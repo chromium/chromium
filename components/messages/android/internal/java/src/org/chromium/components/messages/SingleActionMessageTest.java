@@ -11,6 +11,7 @@ import android.animation.Animator;
 import android.app.Activity;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -175,6 +176,29 @@ public class SingleActionMessageTest {
         final MessageBannerView view = new MessageBannerView(sActivity, null);
         SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
         executeAndVerifyRepeatedButtonClicks(false, model, message, view);
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldShowDefault() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertTrue("#shouldShow should be true by default.", message.shouldShow());
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldNotShow() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        model.set(MessageBannerProperties.ON_STARTED_SHOWING, () -> false);
+        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertFalse(
+                "#shouldShow should be false when the ON_STARTED_SHOWING supplier returns false.",
+                message.shouldShow());
     }
 
     private void executeAndVerifyRepeatedButtonClicks(boolean isPrimaryButtonClickedFirst,
