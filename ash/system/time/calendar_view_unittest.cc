@@ -768,7 +768,7 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
 }
 
 // The month views and header should animate when scrolling up or down.
-TEST_F(CalendarViewAnimationTest, DISABLED_MonthAndHeaderAnimation) {
+TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
