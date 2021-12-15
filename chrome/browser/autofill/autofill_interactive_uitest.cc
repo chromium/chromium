@@ -2151,8 +2151,16 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
 }
 
 // Test that Autofill does not fill in Company Name if disabled
+// TODO(crbug.com/1279102): Flaky on Win and Mac.
+#if defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_NoAutofillSugggestionForCompanyName \
+  DISABLED_NoAutofillSugggestionForCompanyName
+#else
+#define MAYBE_NoAutofillSugggestionForCompanyName \
+  NoAutofillSugggestionForCompanyName
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
-                       NoAutofillSugggestionForCompanyName) {
+                       MAYBE_NoAutofillSugggestionForCompanyName) {
   CreateTestProfile();
 
   std::string company_name("Initech");
