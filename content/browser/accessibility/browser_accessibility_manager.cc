@@ -1435,8 +1435,11 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
     if (wrapper == GetLastFocusedNode())
       SetLastFocusedNode(nullptr);
 
-    // We fire these here, immediately, to ensure we can send platform
-    // notifications prior to the actual destruction of the object.
+    // TODO(accessibility): Move this to the AXEventGenerator which fires
+    // MENU_POPUP_START when a node with the menu role is created. The issue to
+    // be solved is that after the AXEventGenerator adds MENU_POPUP_END, the
+    // node gets removed from the tree. Then PostprocessEvents removes the
+    // events from that now-removed node, thus MENU_POPUP_END never gets fired.
     if (node->GetRole() == ax::mojom::Role::kMenu)
       FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
   }

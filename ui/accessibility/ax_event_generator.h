@@ -300,6 +300,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void OnNodeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnNodeReparented(AXTree* tree, AXNode* node) override;
+  void OnNodeCreated(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
