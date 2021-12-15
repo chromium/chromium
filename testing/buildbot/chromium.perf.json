@@ -725,7 +725,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "R",
+              "device_os": "RP1A.201105.002",
               "device_os_flavor": "google",
               "device_type": "flame",
               "os": "Android",
@@ -774,7 +774,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "R",
+              "device_os": "RP1A.201105.002",
               "device_os_flavor": "google",
               "device_type": "flame",
               "os": "Android",
@@ -823,7 +823,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "R",
+              "device_os": "RP1A.201105.002",
               "device_os_flavor": "google",
               "device_type": "flame",
               "os": "Android",
