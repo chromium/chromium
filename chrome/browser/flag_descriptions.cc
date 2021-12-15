@@ -5129,6 +5129,11 @@ const char kTerminalSSHName[] = "Terminal SSH tabs";
 const char kTerminalSSHDescription[] =
     "Enables SSH tabs in the Terminal System App.";
 
+const char kTerminalTmuxIntegrationName[] = "Terminal tmux integration";
+const char kTerminalTmuxIntegrationDescription[] =
+    "Enables integration with tmux control mode (tmux -CC) in the Terminal "
+    "System App.";
+
 const char kTetherName[] = "Instant Tethering";
 const char kTetherDescription[] =
     "Enables Instant Tethering. Instant Tethering allows your nearby Google "
