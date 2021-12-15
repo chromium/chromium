@@ -166,7 +166,8 @@ config("fat_binary_config") {
       # Help the compiler find lipo for creating fat binaries.
       "-B",
       mac_bin_path,
-
+      "-fno-lto",
+      "-fno-whole-program-vtables",
       "-arch",
       "x86_64",
       "-arch",
