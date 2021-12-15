@@ -36,6 +36,11 @@
   <option>same</option>
 </selectmenu>
 
+<selectmenu id="selectMenu4">
+  <option>one</option>
+  <option id="selectMenu4-option2">two</option>
+</selectmenu>
+
 <script>
 
   function clickOn(element) {
@@ -137,7 +142,8 @@
     await clickOn(selectMenu);
     assert_true(selectMenu.open);
     await test_driver.send_keys(selectMenu, KEY_CODE_MAP.ArrowDown);
-    assert_equals(input_event_count, 0, "input event shouldn't fire until popup is closed");
+    assert_equals(selectMenu.value, "two", "value should change when user switches options with arrow key");
+    assert_equals(input_event_count, 1, "input event should fire when user switches options with arrow key");
     assert_equals(change_event_count, 0, "change event shouldn't fire until popup is closed");
 
     await test_driver.send_keys(selectMenu, KEY_CODE_MAP.Enter);
@@ -171,4 +177,31 @@
     assert_equals(input_event_count, 1, "input event should have fired");
     assert_equals(change_event_count, 1, "change event should have fired");
   }, "<selectmenu> should fire input and change events even when new selected option has the same value as the old");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu4");
+    const selectMenuOption2 = document.getElementById("selectMenu4-option2");
+    let input_event_count = 0;
+    let change_event_count = 0;
+
+    selectMenu.addEventListener("input", (e) => {
+      assert_true(e.composed, "input event should be composed");
+      assert_equals(input_event_count, 0, "input event should not fire twice");
+      assert_equals(change_event_count, 0, "input event should not fire before change");
+      input_event_count++;
+    });
+
+    selectMenu.addEventListener("change", (e) => {
+      assert_false(e.composed, "change event should not be composed");
+      assert_equals(input_event_count, 1, "change event should fire after input");
+      assert_equals(change_event_count, 0, "change event should not fire twice");
+      change_event_count++;
+    });
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open);
+    await clickOn(selectMenuOption2);
+    assert_equals(input_event_count, 1, "input event shouldn't fire when selected option didn't change");
+    assert_equals(change_event_count, 1, "change event shouldn't fire when selected option didn't change");
+  }, "<selectmenu> should fire input and change events when option in listbox is clicked");
 </script>

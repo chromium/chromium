@@ -86,7 +86,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void OptionPartInserted(HTMLOptionElement*);
   void OptionPartRemoved(HTMLOptionElement*);
   void ResetOptionParts();
-  void DispatchInputChangeEventsIfNeeded();
+  void DispatchInputAndChangeEventsIfNeeded();
+  void DispatchInputEvent();
+  void DispatchChangeEvent();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
   bool IsValidListboxPart(const Node* node, bool show_warning) const;

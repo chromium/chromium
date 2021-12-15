@@ -349,7 +349,8 @@ void HTMLSelectMenuElement::CloseListbox() {
     }
     listbox_part_->hide();
 
-    DispatchInputChangeEventsIfNeeded();
+    if (SelectedOption() != selected_option_when_listbox_opened_)
+      DispatchChangeEvent();
   }
 }
 
@@ -637,13 +638,23 @@ void HTMLSelectMenuElement::ResetOptionParts() {
   }
 }
 
-void HTMLSelectMenuElement::DispatchInputChangeEventsIfNeeded() {
-  if (SelectedOption() != selected_option_when_listbox_opened_) {
-    Event* input_event = Event::CreateBubble(event_type_names::kInput);
-    input_event->SetComposed(true);
-    DispatchScopedEvent(*input_event);
-    DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
+void HTMLSelectMenuElement::DispatchInputAndChangeEventsIfNeeded() {
+  DispatchInputEvent();
+  if (!open()) {
+    // Only fire change if the listbox is already closed, because if it's open
+    // we'll  fire change later when the listbox closes.
+    DispatchChangeEvent();
   }
+}
+
+void HTMLSelectMenuElement::DispatchInputEvent() {
+  Event* input_event = Event::CreateBubble(event_type_names::kInput);
+  input_event->SetComposed(true);
+  DispatchScopedEvent(*input_event);
+}
+
+void HTMLSelectMenuElement::DispatchChangeEvent() {
+  DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
 }
 
 void HTMLSelectMenuElement::OptionPartInserted(
@@ -773,6 +784,7 @@ void HTMLSelectMenuElement::SelectNextOption() {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       SetSelectedOption(element);
       element->focus();
+      DispatchInputAndChangeEventsIfNeeded();
       return;
     }
   }
@@ -785,6 +797,7 @@ void HTMLSelectMenuElement::SelectPreviousOption() {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       SetSelectedOption(element);
       element->focus();
+      DispatchInputAndChangeEventsIfNeeded();
       return;
     }
   }
@@ -840,7 +853,10 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
         DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
     DCHECK(target_element);
     DCHECK(select_menu_element_->option_parts_.Contains(target_element));
-    select_menu_element_->SetSelectedOption(target_element);
+    if (target_element != select_menu_element_->SelectedOption()) {
+      select_menu_element_->SetSelectedOption(target_element);
+      select_menu_element_->DispatchInputEvent();
+    }
     select_menu_element_->CloseListbox();
   } else if (event->type() == event_type_names::kKeydown) {
     bool handled = false;
@@ -853,7 +869,10 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
             DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
         DCHECK(target_element);
         DCHECK(select_menu_element_->option_parts_.Contains(target_element));
-        select_menu_element_->SetSelectedOption(target_element);
+        if (target_element != select_menu_element_->SelectedOption()) {
+          select_menu_element_->SetSelectedOption(target_element);
+          select_menu_element_->DispatchInputEvent();
+        }
         select_menu_element_->CloseListbox();
         handled = true;
         break;
