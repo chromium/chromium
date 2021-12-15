@@ -277,7 +277,6 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    ui::IMEBridge::Initialize();
     input_method_manager_ = new TestInputMethodManager();
     im::InputMethodManager::Initialize(input_method_manager_);
     profile_ = std::make_unique<TestingProfile>();

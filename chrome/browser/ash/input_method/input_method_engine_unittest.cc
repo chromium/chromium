@@ -141,7 +141,6 @@ class InputMethodEngineTest : public testing::Test {
     languages_.emplace_back("en-US");
     layouts_.emplace_back("us");
     InitInputMethod();
-    ui::IMEBridge::Initialize();
     mock_ime_input_context_handler_ =
         std::make_unique<ui::MockIMEInputContextHandler>();
     ui::IMEBridge::Get()->SetInputContextHandler(

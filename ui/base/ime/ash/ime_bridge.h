@@ -26,17 +26,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   IMEBridge& operator=(const IMEBridge&) = delete;
   ~IMEBridge();
 
-  // Allocates the global instance. Must be called before any calls to Get().
-  // TODO(crbug/1279743): This is a stateful global. Make it into true global
-  // singleton first, then use dependency injection instead in the next step.
-  static void Initialize();
-
   // Releases the global instance.
   // TODO(crbug/1279743): This is a stateful global. Make it into true global
   // singleton first, then use dependency injection instead in the next step.
   static void Shutdown();
 
-  // Returns IMEBridge global instance. Initialize() must be called first.
+  // Constructs the global instance (if not available yet) then returns it.
   // TODO(crbug/1279743): This is a stateful global. Make it into true global
   // singleton first, then use dependency injection instead in the next step.
   static IMEBridge* Get();

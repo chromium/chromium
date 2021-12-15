@@ -195,7 +195,6 @@ class InputConnectionImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    ui::IMEBridge::Initialize();
     ash::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();

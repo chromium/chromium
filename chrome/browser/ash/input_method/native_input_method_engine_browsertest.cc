@@ -139,7 +139,6 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
   void SetUp() override {
     mojo::core::Init();
     InProcessBrowserTest::SetUp();
-    ui::IMEBridge::Initialize();
   }
 
   void SetUpOnMainThread() override {
@@ -378,7 +377,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        DoesntSuggestWhenTheCursorIsWithinGrammarError) {
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
-  ui::IMEBridge::Initialize();
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
 
   base::HistogramTester histogram_tester;
@@ -412,7 +410,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        SuggestsWhenTheCursorIsOutsideGrammarError) {
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
-  ui::IMEBridge::Initialize();
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
 
   mock_ime_input_context_handler.AddGrammarFragments(
@@ -1130,11 +1127,6 @@ class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
   ~NativeInputMethodEngineAssistiveOff() override = default;
 
  protected:
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-    ui::IMEBridge::Initialize();
-  }
-
   void SetUpOnMainThread() override {
     engine_ = std::make_unique<NativeInputMethodEngine>();
     ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());

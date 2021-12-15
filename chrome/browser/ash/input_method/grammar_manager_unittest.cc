@@ -110,7 +110,6 @@ class GrammarManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetInputContextHandler(
         &mock_ime_input_context_handler_);
     chromeos::machine_learning::ServiceConnection::

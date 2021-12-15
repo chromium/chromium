@@ -219,8 +219,6 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
   ~InputMethodAshTest() override = default;
 
   void SetUp() override {
-    IMEBridge::Initialize();
-
     mock_ime_engine_handler_ = std::make_unique<ash::MockIMEEngineHandler>();
     IMEBridge::Get()->SetCurrentEngineHandler(mock_ime_engine_handler_.get());
 

@@ -31,9 +31,7 @@ const ui::LinuxInputMethodContextFactory*
 namespace ui {
 
 void InitializeInputMethod() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Initialize();
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OS_WIN)
   TSFBridge::Initialize();
 #endif
 }
@@ -47,9 +45,8 @@ void ShutdownInputMethod() {
 }
 
 void InitializeInputMethodForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Initialize();
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   if (!g_linux_input_method_context_factory_for_testing)
     g_linux_input_method_context_factory_for_testing =
         new FakeInputMethodContextFactory();

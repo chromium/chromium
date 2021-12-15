@@ -28,8 +28,6 @@ class InputMethodConfiguration {
   virtual ~InputMethodConfiguration() = default;
 
   void Initialize() {
-    ui::IMEBridge::Initialize();
-
     auto* impl = new InputMethodManagerImpl(
         std::make_unique<InputMethodDelegateImpl>(),
         std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(),

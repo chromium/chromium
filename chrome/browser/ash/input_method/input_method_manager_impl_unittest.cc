@@ -147,8 +147,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   ~InputMethodManagerImplTest() override = default;
 
   void SetUp() override {
-    ui::InitializeInputMethodForTesting();
-
     std::vector<ComponentExtensionIME> ime_list;
     InitImeList(ime_list);
 
@@ -181,7 +179,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     keyboard_ = new FakeImeKeyboard;
     manager_->SetImeKeyboardForTesting(keyboard_);
     mock_engine_handler_ = std::make_unique<MockInputMethodEngine>();
-    ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetCurrentEngineHandler(mock_engine_handler_.get());
 
     menu_manager_ = ui::ime::InputMethodMenuManager::GetInstance();

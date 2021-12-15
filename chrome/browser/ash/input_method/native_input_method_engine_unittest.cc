@@ -182,9 +182,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
   void SetUp() override {
     EnableDefaultFeatureList();
 
-    // Needed by NativeInputMethodEngine to interact with the input field.
-    ui::IMEBridge::Initialize();
-
     // Needed by NativeInputMethodEngine for the virtual keyboard.
     keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
@@ -709,9 +706,6 @@ class NativeInputMethodEngineWithRenderViewHostTest
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName},
         /*disabled_features=*/{});
-
-    // Needed by NativeInputMethodEngine to interact with the input field.
-    ui::IMEBridge::Initialize();
 
     // Needed by NativeInputMethodEngine for the virtual keyboard.
     keyboard_controller_client_test_helper_ =

@@ -106,7 +106,6 @@ class AssistiveSuggesterTest : public testing::Test {
     // Emoji is default to true now, so need to set emoji pref false to test
     // IsAssistiveFeatureEnabled correctly.
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
-    ui::IMEBridge::Initialize();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -413,8 +412,6 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
         /*disabled_features=*/{});
     profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                      true);
-
-    ui::IMEBridge::Initialize();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -656,8 +653,6 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                      true);
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
-
-    ui::IMEBridge::Initialize();
   }
 
   content::BrowserTaskEnvironment task_environment_;
