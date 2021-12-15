@@ -27,6 +27,7 @@
     <output filename="_locales/hr/messages.json.gz" type="chrome_messages_json_gzip" lang="hr"/>
     <output filename="_locales/hu/messages.json.gz" type="chrome_messages_json_gzip" lang="hu"/>
     <output filename="_locales/id/messages.json.gz" type="chrome_messages_json_gzip" lang="id"/>
+    <output filename="_locales/is/messages.json.gz" type="chrome_messages_json_gzip" lang="is"/>
     <output filename="_locales/it/messages.json.gz" type="chrome_messages_json_gzip" lang="it"/>
     <output filename="_locales/ja/messages.json.gz" type="chrome_messages_json_gzip" lang="ja"/>
     <output filename="_locales/kn/messages.json.gz" type="chrome_messages_json_gzip" lang="kn"/>
