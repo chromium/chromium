@@ -164,7 +164,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -179,14 +178,10 @@ import java.util.List;
 public class AutofillAssistantGenericUiTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
-    //  again.
     @Rule
     public final TestRule mRulesChain =
-            RuleChain.outerRule(mTestRule)
-                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
-                    .around(new AutofillAssistantCustomTabTestRule(
-                            mTestRule, "autofill_assistant_target_website.html"));
+            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "autofill_assistant_target_website.html"));
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
 

@@ -73,7 +73,6 @@ import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,13 +90,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     private final AutofillAssistantChromeTabTestRule mTabTestRule =
             new AutofillAssistantChromeTabTestRule(mTestRule, TEST_PAGE_A);
 
-    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
-    //  again.
     @Rule
-    public final TestRule mRulesChain =
-            RuleChain.outerRule(mTestRule)
-                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
-                    .around(mTabTestRule);
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mTabTestRule);
 
     private String getURL(String page) {
         return mTabTestRule.getURL(page);

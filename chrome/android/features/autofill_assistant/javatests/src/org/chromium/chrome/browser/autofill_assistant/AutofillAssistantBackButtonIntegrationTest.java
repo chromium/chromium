@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,13 +76,8 @@ public class AutofillAssistantBackButtonIntegrationTest {
     private final AutofillAssistantChromeTabTestRule mTabTestRule =
             new AutofillAssistantChromeTabTestRule(mTestRule, TEST_PAGE_A);
 
-    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
-    //  again.
     @Rule
-    public final TestRule mRulesChain =
-            RuleChain.outerRule(mTestRule)
-                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
-                    .around(mTabTestRule);
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mTabTestRule);
 
     private String getURL(String page) {
         return mTabTestRule.getURL(page);

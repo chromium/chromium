@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,14 +53,9 @@ import java.util.Collections;
 public class AutofillAssistantPasswordManagerIntegrationTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
-    //  again.
     @Rule
-    public final TestRule mRulesChain =
-            RuleChain.outerRule(mTestRule)
-                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
-                    .around(new AutofillAssistantCustomTabTestRule(
-                            mTestRule, "form_target_website.html"));
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
 
     private WebContents getWebContents() {
         return mTestRule.getWebContents();
