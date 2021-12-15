@@ -64,3 +64,9 @@ crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Pass T
 # These tests have large image differences, need investigation.
 crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
 crbug.com/993384 css3/filters/effect-reference-subregion.html [ Failure Pass ]
+
+# Producing minor differences between NVIDIA and Intel GPUs with no good way to
+# accept both outputs.
+crbug.com/1278181 [ Linux ] images/color-profile-animate.html [ Failure ]
+crbug.com/1278181 [ Linux ] images/color-profile-image-filter-all.html [ Failure ]
+crbug.com/1278181 [ Linux ] images/color-profile-svg-fill-text.html [ Failure ]
