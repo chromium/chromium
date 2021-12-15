@@ -531,6 +531,26 @@ TEST(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
   EXPECT_FALSE(before_suggestion_point);
 }
 
+TEST(MultiWordSuggesterTest, DismissesSuggestionAfterCursorMoveFromEndOfText) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = " for the example"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"this is some text for", 21, 21);
+  suggester.Suggest(u"this is some text for", 21, 21);
+  suggester.OnSurroundingTextChanged(u"this is some text for", 15, 15);
+
+  EXPECT_FALSE(suggester.Suggest(u"this is some text for", 15, 15));
+}
+
 TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);

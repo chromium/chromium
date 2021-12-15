@@ -311,9 +311,13 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
                                       ? new_confirmed_length
                                       : suggestion_->initial_confirmed_length;
 
-  if (state_ == State::kTrackingLastSuggestionShown &&
+  // Are we still tracking the last suggestion shown to the user?
+  bool no_longer_tracking =
+      state_ == State::kTrackingLastSuggestionShown &&
       (new_confirmed_length == 0 ||
-       new_confirmed_length < suggestion_->initial_confirmed_length)) {
+       new_confirmed_length < suggestion_->initial_confirmed_length);
+
+  if (no_longer_tracking || !surrounding_text_.cursor_at_end_of_text) {
     UpdateState(State::kSuggestionDismissed);
     ResetSuggestion();
     return;
