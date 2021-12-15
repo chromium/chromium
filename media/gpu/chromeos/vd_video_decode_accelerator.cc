@@ -23,9 +23,19 @@
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// gn check does not account for BUILDFLAG(), so including these headers will
+// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// for more information.
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
+#include "media/gpu/chromeos/secure_buffer.pb.h"                  // nogncheck
+#include "third_party/cros_system_api/constants/cdm_oemcrypto.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 namespace {
@@ -65,6 +75,98 @@ std::string VectorToString(const std::vector<T>& vec) {
   result << "]";
   return result.str();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
+    BitstreamBuffer bitstream_buffer) {
+  // Check to see if we have our secure buffer tag and then extract the
+  // decrypt parameters.
+  auto mem_region = base::UnsafeSharedMemoryRegion::Deserialize(
+      bitstream_buffer.DuplicateRegion());
+  if (!mem_region.IsValid()) {
+    DVLOG(2) << "Invalid shared memory region";
+    return nullptr;
+  }
+  const size_t available_size =
+      mem_region.GetSize() -
+      base::checked_cast<size_t>(bitstream_buffer.offset());
+  auto mapping = mem_region.Map();
+  if (!mapping.IsValid()) {
+    DVLOG(2) << "Failed mapping shared memory";
+    return nullptr;
+  }
+  // Checks if this buffer contains the details needed for HW protected video
+  // decoding.
+  // The header is 1KB in size (cdm_oemcrypto::kSecureBufferHeaderSize).
+  // It consists of 3 components.
+  // 1. Marker tag - cdm_oemcrypto::kSecureBufferTag
+  // 2. unsigned 32-bit size of #3
+  // 3. Serialized ArcSecureBufferForChrome proto
+  uint8_t* data = mapping.GetMemoryAs<uint8_t>();
+  if (!data) {
+    DVLOG(2) << "Failed accessing shared memory";
+    return nullptr;
+  }
+  // Apply the offset here so we don't need to worry about page alignment in the
+  // mapping.
+  data += bitstream_buffer.offset();
+  if (available_size <= cdm_oemcrypto::kSecureBufferHeaderSize ||
+      memcmp(data, cdm_oemcrypto::kSecureBufferTag,
+             cdm_oemcrypto::kSecureBufferTagLen)) {
+    return nullptr;
+  }
+  VLOG(2) << "Detected secure buffer format in VDVDA";
+  // Read the protobuf size.
+  uint32_t proto_size = 0;
+  memcpy(&proto_size, data + cdm_oemcrypto::kSecureBufferTagLen,
+         sizeof(uint32_t));
+  if (proto_size > cdm_oemcrypto::kSecureBufferHeaderSize -
+                       cdm_oemcrypto::kSecureBufferProtoOffset) {
+    DVLOG(2) << "Proto size goes beyond header size";
+    return nullptr;
+  }
+  // Read the serialized proto.
+  std::string serialized_proto(
+      data + cdm_oemcrypto::kSecureBufferProtoOffset,
+      data + cdm_oemcrypto::kSecureBufferProtoOffset + proto_size);
+  chromeos::cdm::ArcSecureBufferForChrome buffer_proto;
+  if (!buffer_proto.ParseFromString(serialized_proto)) {
+    DVLOG(2) << "Failed deserializing secure buffer proto";
+    return nullptr;
+  }
+
+  // Now extract the DecryptConfig info from the protobuf.
+  std::vector<media::SubsampleEntry> subsamples;
+  size_t buffer_size = 0;
+  for (const auto& subsample : buffer_proto.subsample()) {
+    buffer_size += subsample.clear_bytes() + subsample.cypher_bytes();
+    subsamples.emplace_back(subsample.clear_bytes(), subsample.cypher_bytes());
+  }
+  absl::optional<EncryptionPattern> pattern = absl::nullopt;
+  if (buffer_proto.has_pattern()) {
+    pattern.emplace(buffer_proto.pattern().cypher_bytes(),
+                    buffer_proto.pattern().clear_bytes());
+  }
+  // Now create the DecryptConfig and set it in the decoder buffer.
+  scoped_refptr<DecoderBuffer> buffer = bitstream_buffer.ToDecoderBuffer(
+      cdm_oemcrypto::kSecureBufferHeaderSize, buffer_size);
+  if (!buffer) {
+    DVLOG(2) << "Secure buffer data goes beyond shared memory size";
+    return nullptr;
+  }
+  if (buffer_proto.encryption_scheme() !=
+      chromeos::cdm::ArcSecureBufferForChrome::NONE) {
+    buffer->set_decrypt_config(std::make_unique<DecryptConfig>(
+        buffer_proto.encryption_scheme() ==
+                chromeos::cdm::ArcSecureBufferForChrome::CBCS
+            ? EncryptionScheme::kCbcs
+            : EncryptionScheme::kCenc,
+        buffer_proto.key_id(), buffer_proto.iv(), std::move(subsamples),
+        std::move(pattern)));
+  }
+  return buffer;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -118,12 +220,13 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
                                           Client* client) {
   VLOGF(2) << "config: " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  DCHECK(!client_);
 
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (config.is_encrypted()) {
     VLOGF(1) << "Encrypted streams are not supported";
     return false;
   }
+#endif  //  !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (config.output_mode != Config::OutputMode::IMPORT) {
     VLOGF(1) << "Only IMPORT OutputMode is supported.";
     return false;
@@ -133,30 +236,37 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  std::unique_ptr<VdaVideoFramePool> frame_pool =
-      std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
-  vd_ = create_vd_cb_.Run(client_task_runner_, std::move(frame_pool),
-                          std::make_unique<VideoFrameConverter>(),
-                          std::make_unique<NullMediaLog>());
-  if (!vd_)
-    return false;
+  // In case we are re-initializing for encrypted content.
+  if (!vd_) {
+    std::unique_ptr<VdaVideoFramePool> frame_pool =
+        std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
+    vd_ = create_vd_cb_.Run(client_task_runner_, std::move(frame_pool),
+                            std::make_unique<VideoFrameConverter>(),
+                            std::make_unique<NullMediaLog>());
+    if (!vd_)
+      return false;
 
-  client_ = client;
-
+    client_ = client;
+  }
+  media::CdmContext* cdm_context = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_encrypted_ = config.is_encrypted();
+  if (is_encrypted_)
+    cdm_context = chromeos::ChromeOsCdmFactory::GetArcCdmContext();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   VideoDecoderConfig vd_config(
       VideoCodecProfileToVideoCodec(config.profile), config.profile,
       VideoDecoderConfig::AlphaMode::kIsOpaque, config.container_color_space,
       VideoTransformation(), config.initial_expected_coded_size,
       gfx::Rect(config.initial_expected_coded_size),
       config.initial_expected_coded_size, std::vector<uint8_t>(),
-      EncryptionScheme::kUnencrypted);
+      config.encryption_scheme);
   auto init_cb =
       base::BindOnce(&VdVideoDecodeAccelerator::OnInitializeDone, weak_this_);
   auto output_cb =
       base::BindRepeating(&VdVideoDecodeAccelerator::OnFrameReady, weak_this_);
-  vd_->Initialize(std::move(vd_config), false /* low_delay */,
-                  nullptr /* cdm_context */, std::move(init_cb),
-                  std::move(output_cb), WaitingCB());
+  vd_->Initialize(std::move(vd_config), false /* low_delay */, cdm_context,
+                  std::move(init_cb), std::move(output_cb), WaitingCB());
   return true;
 }
 
@@ -169,7 +279,21 @@ void VdVideoDecodeAccelerator::OnInitializeDone(Status status) {
 }
 
 void VdVideoDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer) {
-  Decode(bitstream_buffer.ToDecoderBuffer(), bitstream_buffer.id());
+  const int32_t bitstream_id = bitstream_buffer.id();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_encrypted_) {
+    scoped_refptr<DecoderBuffer> buffer =
+        DecryptBitstreamBuffer(std::move(bitstream_buffer));
+    // This happens in the error case.
+    if (!buffer) {
+      OnError(FROM_HERE, PLATFORM_FAILURE);
+      return;
+    }
+    Decode(std::move(buffer), bitstream_id);
+    return;
+  }
+#endif  // BUILFLAG(IS_CHROMEOS_ASH)
+  Decode(bitstream_buffer.ToDecoderBuffer(), bitstream_id);
 }
 
 void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,

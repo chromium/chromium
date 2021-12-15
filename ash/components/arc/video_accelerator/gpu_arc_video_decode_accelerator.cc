@@ -26,6 +26,7 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 // Make sure arc::mojom::VideoDecodeAccelerator::Result and
@@ -78,6 +79,16 @@ arc::mojom::VideoDecodeAccelerator::Result ConvertErrorCode(
   }
 }
 
+media::VideoDecodeAccelerator::Config CreateVdaConfig(
+    media::VideoCodecProfile profile,
+    bool uses_vd) {
+  media::VideoDecodeAccelerator::Config vda_config(profile);
+  vda_config.output_mode =
+      media::VideoDecodeAccelerator::Config::OutputMode::IMPORT;
+  vda_config.is_deferred_initialization_allowed = uses_vd;
+  return vda_config;
+}
+
 }  // namespace
 
 namespace arc {
@@ -112,7 +123,7 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   weak_ptr_factory_for_querying_protected_input_buffers_.InvalidateWeakPtrs();
-  weak_ptr_factory_for_querying_protected_output_buffers_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (vda_) {
     // Destroy |vda_| now in case it needs to use *|this| during tear-down.
@@ -312,13 +323,15 @@ void GpuArcVideoDecodeAccelerator::ExecuteRequest(
           mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
     return;
   }
-  // When pending_reset_callback_ isn't null, GAVDA is awaiting a preceding
+  // When |pending_reset_callback_| isn't null, GAVDA is awaiting a preceding
   // Reset() to be finished. Any requests are pended.
-  // There is no need to take pending_flush_callbacks into account.
+  // When |pending_init_callback_| isn't null, GAVDA is awaiting a re-init to
+  // move the decoder into secure mode.
+  // There is no need to take |pending_flush_callbacks_| into account.
   // VDA::Reset() can be called while VDA::Flush() are being executed.
   // VDA::Flush()es can be called regardless of whether or not there is a
   // preceding VDA::Flush().
-  if (pending_reset_callback_) {
+  if (pending_reset_callback_ || pending_init_callback_) {
     pending_requests_.emplace(std::move(request));
     return;
   }
@@ -358,14 +371,21 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
         mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
   }
 
-  media::VideoDecodeAccelerator::Config vda_config(config->profile);
+  profile_ = config->profile;
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  vda_config.output_mode =
-      media::VideoDecodeAccelerator::Config::OutputMode::IMPORT;
-
-  if (base::FeatureList::IsEnabled(arc::kVideoDecoder)) {
+  const bool use_vd = base::FeatureList::IsEnabled(arc::kVideoDecoder);
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  if (!use_vd) {
+    LOG(ERROR) << "Unsupported path: builds with USE_ARC_PROTECTED_MEDIA must "
+                  "use the VideoDecoder";
+    return OnInitializeDone(
+        mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
+  }
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  media::VideoDecodeAccelerator::Config vda_config =
+      CreateVdaConfig(profile_, use_vd);
+  if (use_vd) {
     VLOGF(2) << "Using VideoDecoder-backed VdVideoDecodeAccelerator.";
-    vda_config.is_deferred_initialization_allowed = true;
     vda_ = media::VdVideoDecodeAccelerator::Create(
         base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
         vda_config, base::SequencedTaskRunnerHandle::Get());
@@ -376,7 +396,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
     vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
                                   gpu_preferences_);
   }
-#endif
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   if (!vda_) {
     VLOGF(1) << "Failed to create VDA.";
@@ -412,7 +432,7 @@ void GpuArcVideoDecodeAccelerator::NotifyInitializationComplete(
 
 void GpuArcVideoDecodeAccelerator::OnInitializeDone(
     mojom::VideoDecodeAccelerator::Result result) {
-  DVLOGF(4);
+  DVLOGF(4) << " result: " << result;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (result != mojom::VideoDecodeAccelerator::Result::SUCCESS)
@@ -422,6 +442,16 @@ void GpuArcVideoDecodeAccelerator::OnInitializeDone(
   UMA_HISTOGRAM_ENUMERATION(
       "Media.GpuArcVideoDecodeAccelerator.InitializeResult", result);
   std::move(pending_init_callback_).Run(result);
+  RunPendingRequests();
+}
+
+void GpuArcVideoDecodeAccelerator::OnReinitializeDone(
+    mojom::VideoDecodeAccelerator::Result result) {
+  DVLOGF(4) << " result: " << result;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (result != mojom::VideoDecodeAccelerator::Result::SUCCESS)
+    client_->NotifyError(result);
 }
 
 void GpuArcVideoDecodeAccelerator::Decode(
@@ -511,6 +541,24 @@ void GpuArcVideoDecodeAccelerator::ContinueDecode(
                          weak_ptr_factory_for_querying_protected_input_buffers_
                              .GetWeakPtr()));
     }
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+    if (*secure_mode_) {
+      VLOGF(2) << "Reinitializing decoder for secure mode";
+      media::VideoDecodeAccelerator::Config vda_config =
+          CreateVdaConfig(profile_, true);
+      // TODO(jkardatzke): Properly set the encryption scheme when we
+      // implement this for Intel. For AMD it doesn't matter since it uses
+      // transcryption.
+      vda_config.encryption_scheme = media::EncryptionScheme::kCenc;
+      // Set a |pending_init_callback_| to force queueing up any incoming decode
+      // requests.
+      DCHECK(!pending_init_callback_);
+      pending_init_callback_ =
+          base::BindOnce(&GpuArcVideoDecodeAccelerator::OnReinitializeDone,
+                         weak_ptr_factory_.GetWeakPtr());
+      vda_->Initialize(vda_config, this);
+    }
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   }
 
   if (!*secure_mode_) {
@@ -689,9 +737,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
         std::move(handle_fd),
         base::BindOnce(
             &GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture,
-            weak_ptr_factory_for_querying_protected_output_buffers_
-                .GetWeakPtr(),
-            picture_buffer_id, pixel_format));
+            weak_ptr_factory_.GetWeakPtr(), picture_buffer_id, pixel_format));
   } else {
     std::vector<base::ScopedFD> handle_fds =
         DuplicateFD(std::move(handle_fd), planes.size());

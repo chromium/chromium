@@ -952,6 +952,17 @@ bool VaapiVideoDecoder::NeedsTranscryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kWaitingForInput);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We do not need to invoke transcryption if this is coming from ARC since
+  // that will already be done.
+  if (cdm_context_ref_ &&
+      cdm_context_ref_->GetCdmContext()->GetChromeOsCdmContext() &&
+      cdm_context_ref_->GetCdmContext()
+          ->GetChromeOsCdmContext()
+          ->UsingArcCdm()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return transcryption_;
 }
 

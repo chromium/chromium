@@ -92,6 +92,8 @@ class GpuArcVideoDecodeAccelerator
                 "The type of PendingCallback must match ResetCallback");
   static_assert(std::is_same<FlushCallback, PendingCallback>::value,
                 "The type of PendingCallback must match FlushCallback");
+  static_assert(std::is_same<InitializeCallback, PendingCallback>::value,
+                "The type of PendingCallback must match InitializeCallback");
   using PendingRequest =
       base::OnceCallback<void(PendingCallback, media::VideoDecodeAccelerator*)>;
 
@@ -100,6 +102,8 @@ class GpuArcVideoDecodeAccelerator
   void InitializeTask(mojom::VideoDecodeAcceleratorConfigPtr config);
   // Called when initialization is done.
   void OnInitializeDone(mojom::VideoDecodeAccelerator::Result result);
+  // Proxy callback for re-initialize in encrypted mode in the case of error.
+  void OnReinitializeDone(mojom::VideoDecodeAccelerator::Result result);
 
   // Called after getting the input shared memory region from the
   // |protected_buffer_manager_|, if required. Otherwise, Decode() calls this
@@ -127,11 +131,12 @@ class GpuArcVideoDecodeAccelerator
   void RunPendingRequests();
 
   // When |pending_reset_callback_| isn't null, GAVDA is awaiting a preceding
-  // Reset() to be finished, and |request| is pended by queueing
-  // in |pending_requests_|. Otherwise, the requested VDA operation is executed.
-  // In the case of Flush request, the callback is queued to
-  // |pending_flush_callbacks_|. In the case of Reset request,
-  // the callback is set |pending_reset_callback_|.
+  // Reset() to be finished. When |pending_init_callback_| isn't null, GAVDA is
+  // awaiting a re-init to move the decoder into secure mode. In both cases
+  // |request| is pended by queueing in |pending_requests_|. Otherwise, the
+  // requested VDA operation is executed. In the case of Flush request, the
+  // callback is queued to |pending_flush_callbacks_|. In the case of Reset
+  // request, the callback is set |pending_reset_callback_|.
   void ExecuteRequest(std::pair<PendingRequest, PendingCallback> request);
 
   // Requested VDA methods are executed in these functions.
@@ -172,12 +177,15 @@ class GpuArcVideoDecodeAccelerator
   // The variables for managing callbacks.
   // VDA::Decode(), VDA::Flush() and VDA::Reset() should not be posted to VDA
   // while the previous Reset() hasn't been finished yet (i.e. before
-  // NotifyResetDone() is invoked).
-  // Those requests will be queued in |pending_requests_| in a FIFO manner,
-  // and will be executed once all the preceding Reset() have been finished.
+  // NotifyResetDone() is invoked). Same thing goes for when we are
+  // re-initializing to enter secure mode. Those requests will be queued in
+  // |pending_requests_| in a FIFO manner, and will be executed once all the
+  // preceding Reset() or Initialize() have been finished.
   // |pending_flush_callbacks_| stores all the callbacks corresponding to
   // currently executing Flush()es in VDA. |pending_reset_callback_| is a
   // callback of the currently executing Reset() in VDA.
+  // |pending_init_callback_| is a callback of the currently executing Create()
+  // or re-execution of Initialize() for the decoder.
   // If |pending_flush_callbacks_| is not empty in NotifyResetDone(),
   // as Flush()es may be cancelled by Reset() in VDA, they are called with
   // CANCELLED.
@@ -196,6 +204,7 @@ class GpuArcVideoDecodeAccelerator
 
   gfx::Size coded_size_;
   gfx::Size pending_coded_size_;
+  media::VideoCodecProfile profile_ = media::VIDEO_CODEC_PROFILE_UNKNOWN;
 
   scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager_;
 
@@ -222,10 +231,11 @@ class GpuArcVideoDecodeAccelerator
 
   THREAD_CHECKER(thread_checker_);
 
+  // The one for input buffers lives until ResetRequest().
   base::WeakPtrFactory<GpuArcVideoDecodeAccelerator>
       weak_ptr_factory_for_querying_protected_input_buffers_{this};
-  base::WeakPtrFactory<GpuArcVideoDecodeAccelerator>
-      weak_ptr_factory_for_querying_protected_output_buffers_{this};
+  // This one lives for the lifetime of the object.
+  base::WeakPtrFactory<GpuArcVideoDecodeAccelerator> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

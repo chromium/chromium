@@ -9,6 +9,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -39,10 +40,12 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
     return CroStatus::Codes::kProtectedContentUnsupported;
   }
+#endif  // !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
