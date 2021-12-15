@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -254,23 +253,8 @@ void SearchTabHelper::NavigationEntryCommitted(
   if (!load_details.is_main_frame)
     return;
 
-  if (search::IsInstantNTP(web_contents())) {
-    // We (re)create the logger here because
-    // 1. The logger tries to detect whether the NTP is being created at startup
-    //    or from the user opening a new tab, and if we wait until later, it
-    //    won't correctly detect this case.
-    // 2. There can be multiple navigations to NTPs in a single web contents.
-    //    The navigations can be user-triggered or automatic, e.g. we fall back
-    //    to the local NTP if a remote NTP fails to load. Since logging should
-    //    be scoped to the life time of a single NTP we reset the logger every
-    //    time we reach a new NTP.
-    logger_ = std::make_unique<NTPUserDataLogger>(
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-        // We use the NavigationController's URL since it might differ from the
-        // WebContents URL which is usually chrome://newtab/.
-        web_contents()->GetController().GetVisibleEntry()->GetURL());
+  if (search::IsInstantNTP(web_contents()))
     ipc_router_.SetInputInProgress(IsInputInProgress());
-  }
 
   if (InInstantProcess(instant_service_, web_contents()))
     ipc_router_.OnNavigationEntryCommitted();
