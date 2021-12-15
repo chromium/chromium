@@ -169,4 +169,12 @@ public class PowerBookmarkUtils {
     public static void setPriceTrackingEligibleForTesting(@Nullable Boolean enabled) {
         sPriceTrackingEligibleForTesting = enabled;
     }
+
+    /** @return Whether the price tracking flag is set in the bookmark's meta. */
+    public static boolean isBookmarkPriceTracked(BookmarkModel model, BookmarkId id) {
+        PowerBookmarkMeta meta = model.getPowerBookmarkMeta(id);
+        if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return false;
+
+        return meta.getShoppingSpecifics().getIsPriceTracked();
+    }
 }

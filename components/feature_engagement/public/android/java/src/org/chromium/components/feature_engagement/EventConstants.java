@@ -287,6 +287,10 @@ public final class EventConstants {
     public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
             "shopping_list_track_price_from_menu";
 
+    /** A tap on the folder icon in the enhanced bookmark save flow. */
+    public static final String SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP =
+            "shopping_list_save_flow_folder_tap";
+
     /**
      * Do not instantiate.
      */
