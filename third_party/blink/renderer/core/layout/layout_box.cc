@@ -3360,8 +3360,15 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
   NOT_DESTROYED();
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
   if (index != WTF::kNotFound && layout_results_.size() > index) {
-    if (layout_results_.size() > index + 1)
+    if (layout_results_.size() > index + 1) {
+      // Before forgetting any old fragments and their items, we need to clear
+      // associations.
+      if (To<NGPhysicalBoxFragment>(result->PhysicalFragment())
+              .IsInlineFormattingContext())
+        NGFragmentItems::ClearAssociatedFragments(this);
+
       ShrinkLayoutResults(index + 1);
+    }
     ReplaceLayoutResult(std::move(result), index);
     return;
   }
@@ -3453,6 +3460,11 @@ void LayoutBox::ClearLayoutResults() {
     InvalidateItems(*measure_result_);
   measure_result_ = nullptr;
 
+  if (!layout_results_.IsEmpty() &&
+      To<NGPhysicalBoxFragment>(layout_results_[0]->PhysicalFragment())
+          .IsInlineFormattingContext())
+    NGFragmentItems::ClearAssociatedFragments(this);
+
   ShrinkLayoutResults(0);
 }
 
@@ -3462,12 +3474,6 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   // Invalidate if inline |DisplayItemClient|s will be destroyed.
   for (wtf_size_t i = results_to_keep; i < layout_results_.size(); i++)
     InvalidateItems(*layout_results_[i]);
-  if (results_to_keep == 0 && !layout_results_.IsEmpty()) {
-    if (To<NGPhysicalBoxFragment>(layout_results_[0]->PhysicalFragment())
-            .HasItems()) {
-      NGFragmentItems::ClearAssociatedFragments(this);
-    }
-  }
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.Shrink(results_to_keep);
