@@ -18,42 +18,22 @@ from python_utils import git_metadata_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 
-_SIX_SRC_PATH = (_CHROMIUM_SRC_PATH / 'third_party' / 'six' /
-                 'src').resolve(strict=True)
-# six is a dependency of javalang
-sys.path.insert(0, str(_SIX_SRC_PATH))
-
-_JAVALANG_SRC_PATH = (_CHROMIUM_SRC_PATH / 'third_party' / 'javalang' /
-                      'src').resolve(strict=True)
-if str(_JAVALANG_SRC_PATH) not in sys.path:
-    sys.path.append(str(_JAVALANG_SRC_PATH))
-import javalang
-
 _TEST_FILES_PATH = (pathlib.Path(__file__).parents[0] / 'testdata' /
                     'javatests' / 'org' / 'chromium' / 'chrome' / 'browser' /
                     'test_health').resolve(strict=True)
 
-_HEALTHY_TEST_SRC = (_TEST_FILES_PATH / 'healthy_tests' /
-                     'SampleTest.java').resolve(strict=True).read_text()
-_HEALTHY_TEST_AST = javalang.parse.parse(_HEALTHY_TEST_SRC)
-_HEALTHY_NO_PKG_TEST_SRC = (_TEST_FILES_PATH / 'healthy_tests' /
-                            'SampleNoPackageTest.java').resolve(
-                                strict=True).read_text()
-_HEALTHY_NO_PKG_TEST_AST = javalang.parse.parse(_HEALTHY_NO_PKG_TEST_SRC)
-_UNHEALTHY_TEST_SRC = (_TEST_FILES_PATH / 'unhealthy_tests' /
-                       'SampleTest.java').resolve(strict=True).read_text()
-_UNHEALTHY_TEST_AST = javalang.parse.parse(_UNHEALTHY_TEST_SRC)
-_DISABLED_TEST_SRC = (_TEST_FILES_PATH / 'disabled_tests' /
-                      'SampleDisabledTest.java').resolve(
-                          strict=True).read_text()
-_DISABLED_TEST_AST = javalang.parse.parse(_DISABLED_TEST_SRC)
-_DISABLE_IF_TEST_SRC = (_TEST_FILES_PATH / 'disabled_tests' /
-                        'SampleDisableIfTest.java').resolve(
-                            strict=True).read_text()
-_DISABLE_IF_TEST_AST = javalang.parse.parse(_DISABLE_IF_TEST_SRC)
-_FLAKY_TEST_SRC = (_TEST_FILES_PATH / 'flaky_tests' /
-                   'SampleFlakyTest.java').resolve(strict=True).read_text()
-_FLAKY_TEST_AST = javalang.parse.parse(_FLAKY_TEST_SRC)
+_HEALTHY_TEST_PATH = _TEST_FILES_PATH / 'healthy_tests' / 'SampleTest.java'
+_HEALTHY_NO_PKG_TEST_PATH = (_TEST_FILES_PATH / 'healthy_tests' /
+                             'SampleNoPackageTest.java')
+_UNHEALTHY_TEST_PATH = (_TEST_FILES_PATH / 'unhealthy_tests' /
+                        'SampleTest.java')
+_INVALID_SYNTAX_TEST_PATH = (_TEST_FILES_PATH / 'unhealthy_tests' /
+                             'InvalidSyntaxTest.java')
+_DISABLED_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
+                       'SampleDisabledTest.java')
+_DISABLE_IF_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
+                         'SampleDisableIfTest.java')
+_FLAKY_TEST_PATH = _TEST_FILES_PATH / 'flaky_tests' / 'SampleFlakyTest.java'
 
 _BASE_JAVA_PACKAGE = 'org.chromium.chrome.browser.test_health'
 _JAVA_PACKAGE_HEALTHY_TESTS = _BASE_JAVA_PACKAGE + '.healthy_tests'
@@ -62,34 +42,29 @@ _JAVA_PACKAGE_DISABLED_TESTS = _BASE_JAVA_PACKAGE + '.disabled_tests'
 _JAVA_PACKAGE_FLAKY_TESTS = _BASE_JAVA_PACKAGE + '.flaky_tests'
 
 
-class TestJavaPackageName(unittest.TestCase):
-    """Tests for the get_java_package_name function."""
-
-    def test_get_java_package_name(self):
-        java_package = java_test_utils.get_java_package_name(_HEALTHY_TEST_AST)
-
-        self.assertEqual(_JAVA_PACKAGE_HEALTHY_TESTS, java_package)
-
-    def test_get_java_package_name_no_package(self):
-        java_package = java_test_utils.get_java_package_name(
-            _HEALTHY_NO_PKG_TEST_AST)
-
-        self.assertIsNone(java_package)
-
-
 class TestJavaTestHealthStats(unittest.TestCase):
     """Tests for the get_java_test_health_stats function."""
 
     def test_get_java_test_health_stats_healthy_tests(self):
-        test_health = java_test_utils.get_java_test_health(_HEALTHY_TEST_AST)
+        test_health = java_test_utils.get_java_test_health(_HEALTHY_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_HEALTHY_TESTS, test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
         self.assertEqual(0, test_health.flaky_tests_count)
 
+    def test_get_java_test_health_stats_healthy_tests_no_java_package(self):
+        test_health = java_test_utils.get_java_test_health(
+            _HEALTHY_NO_PKG_TEST_PATH)
+
+        self.assertIsNone(test_health.java_package)
+        self.assertEqual(0, test_health.disabled_tests_count)
+        self.assertEqual(0, test_health.disable_if_tests_count)
+        self.assertEqual(0, test_health.flaky_tests_count)
+
     def test_get_java_test_health_stats_unhealthy_tests(self):
-        test_health = java_test_utils.get_java_test_health(_UNHEALTHY_TEST_AST)
+        test_health = java_test_utils.get_java_test_health(
+            _UNHEALTHY_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_UNHEALTHY_TESTS,
                          test_health.java_package)
@@ -98,7 +73,7 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertEqual(1, test_health.flaky_tests_count)
 
     def test_get_java_test_health_stats_disabled_tests(self):
-        test_health = java_test_utils.get_java_test_health(_DISABLED_TEST_AST)
+        test_health = java_test_utils.get_java_test_health(_DISABLED_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_DISABLED_TESTS,
                          test_health.java_package)
@@ -106,9 +81,9 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertEqual(0, test_health.disable_if_tests_count)
         self.assertEqual(0, test_health.flaky_tests_count)
 
-    def test_get_java_test_health_stats_disableif_tests(self):
+    def test_get_java_test_health_stats_disable_if_tests(self):
         test_health = java_test_utils.get_java_test_health(
-            _DISABLE_IF_TEST_AST)
+            _DISABLE_IF_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_DISABLED_TESTS,
                          test_health.java_package)
@@ -117,12 +92,27 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertEqual(0, test_health.flaky_tests_count)
 
     def test_get_java_test_health_stats_flaky_tests(self):
-        test_health = java_test_utils.get_java_test_health(_FLAKY_TEST_AST)
+        test_health = java_test_utils.get_java_test_health(_FLAKY_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_FLAKY_TESTS, test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
         self.assertEqual(2, test_health.flaky_tests_count)
+
+    def test_get_java_test_health_invalid_test_syntax(self):
+        expected_filename = str(
+            _INVALID_SYNTAX_TEST_PATH.relative_to(_CHROMIUM_SRC_PATH))
+        expected_text = ('        values = Arrays.stream(STRING_ARRAY_2D)'
+                         '.map(String[] ::clone).toArray(String[][] ::new);')
+
+        with self.assertRaises(java_test_utils.JavaSyntaxError) as error_cm:
+            java_test_utils.get_java_test_health(_INVALID_SYNTAX_TEST_PATH)
+
+        self.assertEqual("Expected '.'", error_cm.exception.msg)
+        self.assertEqual(expected_filename, error_cm.exception.filename)
+        self.assertEqual(30, error_cm.exception.lineno)
+        self.assertEqual(64, error_cm.exception.offset)
+        self.assertEqual(expected_text, error_cm.exception.text)
 
 
 if __name__ == '__main__':
