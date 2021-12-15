@@ -8,10 +8,14 @@ import "media/capture/mojom/image_capture.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/video_frame_handler.mojom";
 
-enum CreatePushSubscriptionResultCode {
+enum CreatePushSubscriptionSuccessCode {
   kCreatedWithRequestedSettings,
   kCreatedWithDifferentSettings,
-  kFailed,
+};
+
+union CreatePushSubscriptionResultCode{
+  CreatePushSubscriptionSuccessCode success_code;
+  media.mojom.VideoCaptureError error_code;
 };
 
 // In a PushVideoStreamSubscription, the provider pushes frames to the

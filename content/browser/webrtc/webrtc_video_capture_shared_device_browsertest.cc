@@ -192,10 +192,9 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
   }
 
   void OnCreatePushSubscriptionCallback(
-      video_capture::mojom::CreatePushSubscriptionResultCode result_code,
+      video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
       const media::VideoCaptureParams& params) {
-    ASSERT_NE(video_capture::mojom::CreatePushSubscriptionResultCode::kFailed,
-              result_code);
+    ASSERT_TRUE(result_code->is_success_code());
     subscription_->Activate();
   }
 

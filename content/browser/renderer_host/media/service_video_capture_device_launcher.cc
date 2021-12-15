@@ -191,7 +191,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
     mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
         subscription,
     base::OnceClosure connection_lost_cb,
-    video_capture::mojom::CreatePushSubscriptionResultCode result_code,
+    video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
     const media::VideoCaptureParams& params) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(callbacks_);
@@ -201,11 +201,9 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
   state_ = State::READY_TO_LAUNCH;
   Callbacks* callbacks = callbacks_;
   callbacks_ = nullptr;
-  switch (result_code) {
-    case video_capture::mojom::CreatePushSubscriptionResultCode::
-        kCreatedWithRequestedSettings:  // Fall through.
-    case video_capture::mojom::CreatePushSubscriptionResultCode::
-        kCreatedWithDifferentSettings:
+  switch (result_code->which()) {
+    case video_capture::mojom::CreatePushSubscriptionResultCode::Tag::
+        SUCCESS_CODE:
       if (abort_requested) {
         subscription.reset();
         source.reset();
@@ -218,12 +216,13 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
           std::move(source), std::move(subscription),
           std::move(connection_lost_cb), callbacks, std::move(done_cb_));
       return;
-    case video_capture::mojom::CreatePushSubscriptionResultCode::kFailed:
-      ConcludeLaunchDeviceWithFailure(
-          abort_requested,
-          media::VideoCaptureError::
-              kServiceDeviceLauncherServiceRespondedWithDeviceNotFound,
-          std::move(service_connection_), callbacks, std::move(done_cb_));
+    case video_capture::mojom::CreatePushSubscriptionResultCode::Tag::
+        ERROR_CODE:
+      media::VideoCaptureError error = result_code->get_error_code();
+      DCHECK_NE(error, media::VideoCaptureError::kNone);
+      ConcludeLaunchDeviceWithFailure(abort_requested, error,
+                                      std::move(service_connection_), callbacks,
+                                      std::move(done_cb_));
       return;
   }
 }
