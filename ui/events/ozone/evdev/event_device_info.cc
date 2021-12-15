@@ -96,7 +96,6 @@ constexpr struct {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
 
-#if defined(USE_LIBINPUT)
 // Certain devices need to be forced to use libinput in place of
 // evdev/libgestures
 constexpr struct {
@@ -117,7 +116,6 @@ bool IsForceLibinput(const EventDeviceInfo& devinfo) {
 
   return false;
 }
-#endif
 
 // Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
 // incorrectly over Bluetooth.
@@ -568,7 +566,6 @@ bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
 
 bool EventDeviceInfo::UseLibinput() const {
   bool useLibinput = false;
-#if defined(USE_LIBINPUT)
   if (HasTouchpad()) {
     auto overridden_state =
         base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
@@ -579,7 +576,6 @@ bool EventDeviceInfo::UseLibinput() const {
                     IsSemiMultitouch() || IsForceLibinput(*this);
     }
   }
-#endif
 
   return useLibinput;
 }
