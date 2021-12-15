@@ -298,11 +298,15 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
   bool tracing_enabled_ = false;
 };
 
+// TODO(crbug.com/1006541): Switch this to use TracingUnitTest.
 class TracingConsumerTest : public testing::Test,
                             public mojo::DataPipeDrainer::Client {
  public:
   void SetUp() override {
     task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+    tracing_environment_ = std::make_unique<base::test::TracingEnvironment>(
+        *task_environment_, base::ThreadTaskRunnerHandle::Get(),
+        PerfettoTracedProcess::Get()->perfetto_platform_for_testing());
     test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
     threaded_service_ = std::make_unique<ThreadedPerfettoService>();
@@ -312,6 +316,7 @@ class TracingConsumerTest : public testing::Test,
   }
 
   void TearDown() override {
+    tracing_environment_.reset();
     threaded_service_.reset();
     task_environment_->RunUntilIdle();
     test_handle_.reset();
@@ -440,6 +445,7 @@ class TracingConsumerTest : public testing::Test,
  private:
   std::unique_ptr<ThreadedPerfettoService> threaded_service_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
   std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
   base::OnceClosure on_data_complete_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
