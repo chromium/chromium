@@ -84,6 +84,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
@@ -6365,6 +6366,12 @@ void ChromeContentBrowserClient::FlushBackgroundAttributions(
   background_attribution_flusher_->FlushPreNativeAttributions(
       std::move(callback));
 #endif
+}
+
+bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
+    content::BrowserContext* browser_context) {
+  return prefetch::IsSomePreloadingEnabled(
+      *Profile::FromBrowserContext(browser_context)->GetPrefs());
 }
 
 ChromeContentBrowserClient::UserAgentReductionEnterprisePolicyState

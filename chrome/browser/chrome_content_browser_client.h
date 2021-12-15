@@ -770,6 +770,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
 
   void FlushBackgroundAttributions(base::OnceClosure callback) override;
+  bool ShouldPreconnectNavigation(
+      content::BrowserContext* browser_context) override;
 
   enum UserAgentReductionEnterprisePolicyState {
     kDefault = 0,

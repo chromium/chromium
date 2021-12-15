@@ -1296,4 +1296,9 @@ void ContentBrowserClient::FlushBackgroundAttributions(
   std::move(callback).Run();
 }
 
+bool ContentBrowserClient::ShouldPreconnectNavigation(
+    BrowserContext* browser_context) {
+  return false;
+}
+
 }  // namespace content

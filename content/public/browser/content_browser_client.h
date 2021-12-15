@@ -2173,6 +2173,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // been flushed, or immediately if background attributions are not supported
   // by the embedder.
   virtual void FlushBackgroundAttributions(base::OnceClosure callback);
+
+  // Whether a navigation in |browser_context| should preconnect early.
+  virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
 };
 
 }  // namespace content

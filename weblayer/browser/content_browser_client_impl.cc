@@ -1227,4 +1227,9 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
   return true;
 }
 
+bool ContentBrowserClientImpl::ShouldPreconnectNavigation(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
 }  // namespace weblayer
