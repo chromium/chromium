@@ -224,13 +224,18 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
   if (std::isinf(number_value))
     return 0;
 
+  // Confine number to (-kNumberOfValues, kNumberOfValues).
   number_value =
       number_value < 0 ? -floor(fabs(number_value)) : floor(fabs(number_value));
   number_value = fmod(number_value, LimitsTrait::kNumberOfValues);
 
-  return static_cast<T>(number_value > LimitsTrait::kMaxValue
-                            ? number_value - LimitsTrait::kNumberOfValues
-                            : number_value);
+  // Adjust range to [-kMinValue, kMaxValue].
+  if (number_value < LimitsTrait::kMinValue)
+    number_value += LimitsTrait::kNumberOfValues;
+  else if (LimitsTrait::kMaxValue < number_value)
+    number_value -= LimitsTrait::kNumberOfValues;
+
+  return static_cast<T>(number_value);
 }
 
 template <typename T>
