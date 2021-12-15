@@ -1162,16 +1162,18 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
 
 base::TimeDelta Display::GetEstimatedDisplayDrawTime(base::TimeDelta interval,
                                                      double percentile) const {
-  if (draw_time_without_scheduling_waits_.sample_count() >= 60) {
+  base::TimeDelta default_estimate =
+      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+  if (draw_time_without_scheduling_waits_.sample_count() >= 60 &&
+      default_estimate > kMinEstimatedDisplayDrawTime) {
     // We do not want the deadline adjustmens to exceed a default of 1/3 VSync,
     // as we would not give other processes enough time to produce content. So
     // this would make high latency situations worse.
     return base::clamp(
         draw_time_without_scheduling_waits_.Percentile(percentile),
-        kMinEstimatedDisplayDrawTime,
-        BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval));
+        kMinEstimatedDisplayDrawTime, default_estimate);
   }
-  return BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+  return default_estimate;
 }
 
 void Display::OnObservingBeginFrameSourceChanged(bool observing) {
