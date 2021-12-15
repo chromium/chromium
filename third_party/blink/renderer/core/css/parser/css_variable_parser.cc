@@ -83,8 +83,6 @@ bool IsValidVariableReference(CSSParserTokenRange range) {
 
   if (range.Consume().GetType() != kCommaToken)
     return false;
-  if (range.AtEnd())
-    return false;
 
   bool has_references = false;
   return ClassifyBlock(range, has_references);
