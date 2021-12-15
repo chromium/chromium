@@ -6,12 +6,16 @@
 
 #include <stddef.h>
 
+#include "base/test/gtest_util.h"
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace {
 
 enum class TestEnum {
+  TEST_BELOW_MIN_NEGATIVE = -1,
+  TEST_BELOW_MIN = 0,
   TEST_1 = 1,
   TEST_MIN = TEST_1,
   TEST_2,
@@ -19,7 +23,8 @@ enum class TestEnum {
   TEST_4,
   TEST_5,
   TEST_MAX = TEST_5,
-  TEST_6_OUT_OF_BOUNDS
+  TEST_6_OUT_OF_BOUNDS,
+  TEST_7_OUT_OF_BOUNDS
 };
 using TestEnumSet = EnumSet<TestEnum, TestEnum::TEST_MIN, TestEnum::TEST_MAX>;
 
@@ -35,9 +40,9 @@ using TestEnumExtremeSet = EnumSet<TestEnumExtreme,
                                    TestEnumExtreme::TEST_MAX>;
 
 class EnumSetTest : public ::testing::Test {};
+class EnumSetDeathTest : public ::testing::Test {};
 
 TEST_F(EnumSetTest, ClassConstants) {
-  TestEnumSet enums;
   EXPECT_EQ(TestEnum::TEST_MIN, TestEnumSet::kMinValue);
   EXPECT_EQ(TestEnum::TEST_MAX, TestEnumSet::kMaxValue);
   EXPECT_EQ(static_cast<size_t>(5), TestEnumSet::kValueCount);
@@ -47,16 +52,21 @@ TEST_F(EnumSetTest, ClassConstants) {
 // evaluatable are really that way.
 TEST_F(EnumSetTest, ConstexprsAreValid) {
   static_assert(TestEnumSet::All().Has(TestEnum::TEST_2),
-                "expected All() to be integral constant expression");
+                "Expected All() to be integral constant expression");
   static_assert(TestEnumSet::FromRange(TestEnum::TEST_2, TestEnum::TEST_4)
                     .Has(TestEnum::TEST_2),
-                "expected FromRange() to be integral constant expression");
+                "Expected FromRange() to be integral constant expression");
   static_assert(TestEnumSet(TestEnum::TEST_2).Has(TestEnum::TEST_2),
-                "expected TestEnumSet() to be integral constant expression");
+                "Expected TestEnumSet() to be integral constant expression");
   static_assert(
       TestEnumSet::FromEnumBitmask(1 << static_cast<uint64_t>(TestEnum::TEST_2))
           .Has(TestEnum::TEST_2),
       "Expected TestEnumSet() to be integral constant expression");
+  static_assert(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_1) == 1,
+      "Expected single_val_bitstring() to be integral constant expression");
+  static_assert(TestEnumSet::bitstring(TestEnum::TEST_1, TestEnum::TEST_2) == 3,
+                "Expected bitstring() to be integral constant expression");
 }
 
 TEST_F(EnumSetTest, DefaultConstructor) {
@@ -232,8 +242,7 @@ TEST_F(EnumSetTest, Iterators) {
 }
 
 TEST_F(EnumSetTest, RangeBasedForLoop) {
-  const TestEnumSet enums1(TestEnum::TEST_2, TestEnum::TEST_5,
-                           TestEnum::TEST_6_OUT_OF_BOUNDS);
+  const TestEnumSet enums1(TestEnum::TEST_2, TestEnum::TEST_5);
   TestEnumSet enums2;
   for (TestEnum e : enums1) {
     enums2.Put(e);
@@ -242,8 +251,7 @@ TEST_F(EnumSetTest, RangeBasedForLoop) {
 }
 
 TEST_F(EnumSetTest, IteratorComparisonOperators) {
-  const TestEnumSet enums(TestEnum::TEST_2, TestEnum::TEST_4,
-                          TestEnum::TEST_6_OUT_OF_BOUNDS);
+  const TestEnumSet enums(TestEnum::TEST_2, TestEnum::TEST_4);
   const auto first_it = enums.begin();
   const auto second_it = ++enums.begin();
 
@@ -264,8 +272,7 @@ TEST_F(EnumSetTest, IteratorComparisonOperators) {
 }
 
 TEST_F(EnumSetTest, IteratorIncrementOperators) {
-  const TestEnumSet enums(TestEnum::TEST_2, TestEnum::TEST_4,
-                          TestEnum::TEST_6_OUT_OF_BOUNDS);
+  const TestEnumSet enums(TestEnum::TEST_2, TestEnum::TEST_4);
   const auto begin = enums.begin();
 
   auto post_inc_it = begin;
@@ -346,6 +353,182 @@ TEST_F(EnumSetTest, ToFromEnumBitmaskExtreme) {
   const uint64_t val1 = 1ULL << static_cast<uint64_t>(TestEnumExtreme::TEST_63);
   EXPECT_EQ(enums1.ToEnumBitmask(), val1);
   EXPECT_EQ(TestEnumExtremeSet::FromEnumBitmask(val1), enums1);
+}
+
+TEST_F(EnumSetTest, FromEnumBitmaskIgnoresExtraBits) {
+  const TestEnumSet kSets[] = {
+      TestEnumSet(),
+      TestEnumSet(TestEnum::TEST_MIN),
+      TestEnumSet(TestEnum::TEST_MAX),
+      TestEnumSet(TestEnum::TEST_MIN, TestEnum::TEST_MAX),
+      TestEnumSet(TestEnum::TEST_MIN, TestEnum::TEST_MAX),
+      TestEnumSet(TestEnum::TEST_2, TestEnum::TEST_4),
+  };
+  size_t i = 0;
+  for (const TestEnumSet& set : kSets) {
+    SCOPED_TRACE(i++);
+    const uint64_t val = set.ToEnumBitmask();
+
+    // Produce a bitstring for a single enum value. When `e` is in range
+    // relative to TestEnumSet, this function behaves identically to
+    // `single_val_bitstring`. When `e` is not in range, this function attempts
+    // to compute a value, while `single_val_bitstring` intentionally crashes.
+    auto single_val_bitstring = [](TestEnum e) -> uint64_t {
+      uint64_t shift_amount = static_cast<uint64_t>(e);
+      // Shifting left more than the number of bits in the lhs would be UB.
+      CHECK_LT(shift_amount, sizeof(uint64_t) * 8);
+      return 1ULL << shift_amount;
+    };
+
+    const uint64_t kJunkVals[] = {
+        // Add junk bits above TEST_MAX.
+        val | single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS),
+        val | single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS),
+        val | single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS) |
+            single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS),
+        // Add junk bits below TEST_MIN.
+        val | single_val_bitstring(TestEnum::TEST_BELOW_MIN),
+    };
+    for (uint64_t junk_val : kJunkVals) {
+      SCOPED_TRACE(junk_val);
+      ASSERT_NE(val, junk_val);
+
+      const TestEnumSet set_from_junk = TestEnumSet::FromEnumBitmask(junk_val);
+      EXPECT_EQ(set_from_junk, set);
+      EXPECT_EQ(set_from_junk.ToEnumBitmask(), set.ToEnumBitmask());
+
+      // Iterating both sets should produce the same sequence.
+      auto it1 = set.begin();
+      auto it2 = set_from_junk.begin();
+      while (it1 != set.end() && it2 != set_from_junk.end()) {
+        EXPECT_EQ(*it1, *it2);
+        ++it1;
+        ++it2;
+      }
+      EXPECT_TRUE(it1 == set.end());
+      EXPECT_TRUE(it2 == set_from_junk.end());
+    }
+  }
+}
+
+TEST_F(EnumSetDeathTest, SingleValBitstringCrashesOnOutOfRange) {
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS));
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS));
+}
+
+TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithNegatives) {
+  enum class TestEnumNeg {
+    TEST_BELOW_MIN = -3,
+    TEST_A = -2,
+    TEST_MIN = TEST_A,
+    TEST_B = -1,
+    TEST_C = 0,
+    TEST_D = 1,
+    TEST_E = 2,
+    TEST_MAX = TEST_E,
+    TEST_F = 3,
+  };
+  // This EnumSet starts negative and ends positive.
+  using TestEnumWithNegSet =
+      EnumSet<TestEnumNeg, TestEnumNeg::TEST_MIN, TestEnumNeg::TEST_MAX>;
+
+  // Should crash because TEST_BELOW_MIN is not in range.
+  EXPECT_CHECK_DEATH(
+      TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_BELOW_MIN));
+  // TEST_D is in range, but note that TEST_MIN is negative. This should work.
+  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_D),
+            1u << 3);
+  // Even though TEST_A is negative, it is in range, so this should work.
+  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_A),
+            1u << 0);
+}
+
+TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithOnlyNegatives) {
+  enum class TestEnumNeg {
+    TEST_BELOW_MIN = -10,
+    TEST_A = -9,
+    TEST_MIN = TEST_A,
+    TEST_B = -8,
+    TEST_C = -7,
+    TEST_D = -6,
+    TEST_MAX = TEST_D,
+    TEST_F = -5,
+  };
+  // This EnumSet starts negative and ends negative.
+  using TestEnumWithNegSet =
+      EnumSet<TestEnumNeg, TestEnumNeg::TEST_MIN, TestEnumNeg::TEST_MAX>;
+
+  // Should crash because TEST_BELOW_MIN is not in range.
+  EXPECT_CHECK_DEATH(
+      TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_BELOW_MIN));
+  // TEST_D is in range, but note that TEST_MIN is negative. This should work.
+  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_D),
+            1u << 3);
+  // Even though TEST_A is negative, it is in range, so this should work.
+  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_A),
+            1u << 0);
+}
+
+TEST_F(EnumSetDeathTest, VariadicConstructorCrashesOnOutOfRange) {
+  // Constructor should crash given out-of-range values.
+  EXPECT_CHECK_DEATH(TestEnumSet(TestEnum::TEST_BELOW_MIN).Empty());
+  EXPECT_CHECK_DEATH(TestEnumSet(TestEnum::TEST_BELOW_MIN_NEGATIVE).Empty());
+  EXPECT_CHECK_DEATH(TestEnumSet(TestEnum::TEST_6_OUT_OF_BOUNDS).Empty());
+}
+
+TEST_F(EnumSetDeathTest, FromRangeCrashesOnBadInputs) {
+  // FromRange crashes when the bounds are in range, but out of order.
+  EXPECT_CHECK_DEATH(
+      TestEnumSet().FromRange(TestEnum::TEST_3, TestEnum::TEST_1));
+
+  // FromRange crashes when the start value is out of range.
+  EXPECT_CHECK_DEATH(
+      TestEnumSet().FromRange(TestEnum::TEST_BELOW_MIN, TestEnum::TEST_1));
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(TestEnum::TEST_BELOW_MIN_NEGATIVE,
+                                             TestEnum::TEST_1));
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(TestEnum::TEST_6_OUT_OF_BOUNDS,
+                                             TestEnum::TEST_1));
+
+  // FromRange crashes when the end value is out of range.
+  EXPECT_CHECK_DEATH(
+      TestEnumSet().FromRange(TestEnum::TEST_3, TestEnum::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(
+      TestEnum::TEST_3, TestEnum::TEST_BELOW_MIN_NEGATIVE));
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(TestEnum::TEST_3,
+                                             TestEnum::TEST_6_OUT_OF_BOUNDS));
+
+  // Crashes when start and end are both out of range.
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(TestEnum::TEST_7_OUT_OF_BOUNDS,
+                                             TestEnum::TEST_6_OUT_OF_BOUNDS));
+  EXPECT_CHECK_DEATH(TestEnumSet().FromRange(TestEnum::TEST_6_OUT_OF_BOUNDS,
+                                             TestEnum::TEST_7_OUT_OF_BOUNDS));
+}
+
+TEST_F(EnumSetDeathTest, PutCrashesOnOutOfRange) {
+  EXPECT_CHECK_DEATH(TestEnumSet().Put(TestEnum::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(TestEnumSet().Put(TestEnum::TEST_BELOW_MIN_NEGATIVE));
+  EXPECT_CHECK_DEATH(TestEnumSet().Put(TestEnum::TEST_6_OUT_OF_BOUNDS));
+  EXPECT_CHECK_DEATH(TestEnumSet().Put(TestEnum::TEST_7_OUT_OF_BOUNDS));
+}
+
+TEST_F(EnumSetDeathTest, PutRangeCrashesOnBadInputs) {
+  // Crashes when one input is out of range.
+  EXPECT_CHECK_DEATH(TestEnumSet().PutRange(TestEnum::TEST_BELOW_MIN_NEGATIVE,
+                                            TestEnum::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(
+      TestEnumSet().PutRange(TestEnum::TEST_3, TestEnum::TEST_7_OUT_OF_BOUNDS));
+
+  // Crashes when both inputs are out of range.
+  EXPECT_CHECK_DEATH(TestEnumSet().PutRange(TestEnum::TEST_6_OUT_OF_BOUNDS,
+                                            TestEnum::TEST_7_OUT_OF_BOUNDS));
+
+  // Crashes when inputs are out of order.
+  EXPECT_CHECK_DEATH(
+      TestEnumSet().PutRange(TestEnum::TEST_2, TestEnum::TEST_1));
 }
 
 }  // namespace

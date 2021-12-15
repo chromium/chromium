@@ -48,6 +48,10 @@ class EnumSet {
       "First template parameter of EnumSet must be an enumeration type");
   using enum_underlying_type = std::underlying_type_t<E>;
 
+  static constexpr bool InRange(E value) {
+    return (value >= MinEnumValue) && (value <= MaxEnumValue);
+  }
+
   static constexpr enum_underlying_type GetUnderlyingValue(E value) {
     return static_cast<enum_underlying_type>(value);
   }
@@ -95,7 +99,7 @@ class EnumSet {
   class Iterator {
    public:
     Iterator() : enums_(nullptr), i_(kValueCount) {}
-    ~Iterator() {}
+    ~Iterator() = default;
 
     bool operator==(const Iterator& other) const { return i_ == other.i_; }
 
@@ -147,12 +151,15 @@ class EnumSet {
     size_t i_;
   };
 
-  EnumSet() {}
+  EnumSet() = default;
 
   ~EnumSet() = default;
 
   static constexpr uint64_t single_val_bitstring(E val) {
-    return 1ULL << (ToIndex(val));
+    const uint64_t bitstring = 1;
+    const size_t shift_amount = ToIndex(val);
+    CHECK_LT(shift_amount, sizeof(bitstring) * 8);
+    return bitstring << shift_amount;
   }
 
   template <class... T>
@@ -175,6 +182,7 @@ class EnumSet {
 
   // Returns an EnumSet with all the values from start to end, inclusive.
   static constexpr EnumSet FromRange(E start, E end) {
+    CHECK_LE(start, end);
     return EnumSet(EnumBitSet(
         ((single_val_bitstring(end)) - (single_val_bitstring(start))) |
         (single_val_bitstring(end))));
@@ -218,8 +226,8 @@ class EnumSet {
 
   // Adds all values in the given range to our set, inclusive.
   void PutRange(E start, E end) {
+    CHECK_LE(start, end);
     size_t endIndexInclusive = ToIndex(end);
-    DCHECK_LE(ToIndex(start), endIndexInclusive);
     for (size_t current = ToIndex(start); current <= endIndexInclusive;
          ++current) {
       enums_.set(current);
@@ -291,14 +299,11 @@ class EnumSet {
                   "Max number of enum values is 64 for constexpr ");
   }
 
-  static constexpr bool InRange(E value) {
-    return (value >= MinEnumValue) && (value <= MaxEnumValue);
-  }
-
   // Converts a value to/from an index into |enums_|.
-
   static constexpr size_t ToIndex(E value) {
-    return GetUnderlyingValue(value) - GetUnderlyingValue(MinEnumValue);
+    CHECK(InRange(value));
+    return static_cast<size_t>(GetUnderlyingValue(value)) -
+           static_cast<size_t>(GetUnderlyingValue(MinEnumValue));
   }
 
   static E FromIndex(size_t i) {
