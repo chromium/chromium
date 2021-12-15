@@ -90,6 +90,9 @@ class AccountAppsAvailability
   bool IsInitialized() const;
 
  private:
+  // `KeyedService`:
+  void Shutdown() override;
+
   // `IdentityManager::Observer`:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;

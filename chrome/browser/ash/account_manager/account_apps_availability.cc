@@ -286,6 +286,11 @@ void AccountAppsAvailability::GetAccountsAvailableInArc(
                      GetGaiaIdsAvailableInArc(prefs_), std::move(callback)));
 }
 
+void AccountAppsAvailability::Shutdown() {
+  identity_manager_observation_.Reset();
+  account_manager_facade_observation_.Reset();
+}
+
 void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
