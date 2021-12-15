@@ -69,8 +69,8 @@ proto::PredictionModel CreatePredictionModel(
   model_info->add_supported_host_model_features("host_feat1");
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
   if (output_model_as_download_url) {
     prediction_model.mutable_model()->set_download_url(
         "https://example.com/model");
@@ -255,8 +255,9 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
   bool ValidateModelsInfoForFetch(
       const std::vector<proto::ModelInfo>& models_request_info) {
     for (const auto& model_info : models_request_info) {
-      if (model_info.supported_model_types_size() == 0 ||
-          !proto::ModelType_IsValid(model_info.supported_model_types(0))) {
+      if (model_info.supported_model_engine_versions_size() == 0 ||
+          !proto::ModelEngineVersion_IsValid(
+              model_info.supported_model_engine_versions(0))) {
         return false;
       }
       if (!model_info.has_optimization_target() ||

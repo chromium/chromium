@@ -113,8 +113,9 @@ CreatePredictionModel() {
   model_info->add_supported_host_model_features("agg1");
   model_info->set_optimization_target(
       optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info->add_supported_model_types(
-      optimization_guide::proto::ModelType::MODEL_TYPE_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      optimization_guide::proto::ModelEngineVersion::
+          MODEL_ENGINE_VERSION_DECISION_TREE);
   return prediction_model;
 }
 

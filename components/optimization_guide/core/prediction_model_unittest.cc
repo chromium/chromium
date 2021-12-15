@@ -50,8 +50,8 @@ TEST(PredictionModelTest, ValidPredictionModel) {
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -82,7 +82,7 @@ TEST(PredictionModelTest, NoModelVersion) {
   EXPECT_FALSE(model);
 }
 
-TEST(PredictionModelTest, NoModelType) {
+TEST(PredictionModelTest, NoModelEngineVersion) {
   proto::PredictionModel prediction_model;
 
   proto::DecisionTree* decision_tree_model =
@@ -97,7 +97,7 @@ TEST(PredictionModelTest, NoModelType) {
   EXPECT_FALSE(model);
 }
 
-TEST(PredictionModelTest, UnknownModelType) {
+TEST(PredictionModelTest, UnknownModelEngineVersion) {
   proto::PredictionModel prediction_model;
 
   proto::DecisionTree* decision_tree_model =
@@ -106,14 +106,15 @@ TEST(PredictionModelTest, UnknownModelType) {
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
-  model_info->add_supported_model_types(proto::ModelType::MODEL_TYPE_UNKNOWN);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_UNKNOWN);
 
   std::unique_ptr<PredictionModel> model =
       PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
-TEST(PredictionModelTest, MultipleModelTypes) {
+TEST(PredictionModelTest, MultipleModelEngineVersions) {
   proto::PredictionModel prediction_model;
 
   proto::DecisionTree* decision_tree_model =
@@ -122,9 +123,10 @@ TEST(PredictionModelTest, MultipleModelTypes) {
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_types(proto::ModelType::MODEL_TYPE_UNKNOWN);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_UNKNOWN);
 
   std::unique_ptr<PredictionModel> model =
       PredictionModel::Create(prediction_model);

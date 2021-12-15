@@ -120,8 +120,8 @@ TEST(StoreUpdateDataTest, BuildPredictionModelUpdateData) {
   model_info->set_version(1);
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
 
   base::Time expected_expiry_time =
       base::Time::Now() + features::StoredModelsInactiveDuration();

@@ -208,8 +208,9 @@ message ModelInfo {
   optional OptimizationTarget optimization_target = 1;
   // The version of the model, which is specific to the optimization target.
   optional int64 version = 2;
-  // The set of model types the requesting client can use to make predictions.
-  repeated ModelType supported_model_types = 4;
+  // The set of model engine versions the requesting client can use to do model
+  // inference.
+  repeated ModelEngineVersion supported_model_engine_versions = 4;
   // The set of host model features that are referenced by the model.
   //
   // Note that this should only be populated if part of the response.
@@ -271,29 +272,29 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
 }
 
-// The types of models that can be evaluated.
+// The model engine versions that can be used to do model inference.
 //
 // Please only update these enums when a new major version of TFLite rolls.
 //
 // For example: v1.2.3
 //                 ^
 //                 Change when this number increments.
-enum ModelType {
-  MODEL_TYPE_UNKNOWN = 0;
+enum ModelEngineVersion {
+  MODEL_ENGINE_VERSION_UNKNOWN = 0;
   // A decision tree.
-  MODEL_TYPE_DECISION_TREE = 1;
+  MODEL_ENGINE_VERSION_DECISION_TREE = 1;
   // A model using only operations that are supported by TensorflowLite 2.3.0.
-  MODEL_TYPE_TFLITE_2_3_0 = 2;
+  MODEL_ENGINE_VERSION_TFLITE_2_3_0 = 2;
   // A model using only operations that are supported by TensorflowLite 2.3.0
   // with updated FULLY_CONNECTED and BATCH_MUL versions for quantized models.
-  MODEL_TYPE_TFLITE_2_3_0_1 = 3;
+  MODEL_ENGINE_VERSION_TFLITE_2_3_0_1 = 3;
   // TensorflowLite version 2.4.2, and a bit more up to internal rev number
   // 381280669.
-  MODEL_TYPE_TFLITE_2_4 = 4;
+  MODEL_ENGINE_VERSION_TFLITE_2_4 = 4;
   // TensorflowLite version 2.7.*. This is where regular ~HEAD rolls started.
-  MODEL_TYPE_TFLITE_2_7 = 5;
+  MODEL_ENGINE_VERSION_TFLITE_2_7 = 5;
   // A model using only operations that are supported by TensorflowLite 2.8.0.
-  MODEL_TYPE_TFLITE_2_8 = 6;
+  MODEL_ENGINE_VERSION_TFLITE_2_8 = 6;
 }
 
 // A set of model features and the host that it applies to.

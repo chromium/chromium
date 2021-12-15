@@ -26,24 +26,27 @@ std::unique_ptr<PredictionModel> PredictionModel::Create(
   if (!prediction_model.model_info().has_version())
     return nullptr;
 
-  // Enforce that only one ModelType is specified for the PredictionModel.
-  if (prediction_model.model_info().supported_model_types_size() != 1) {
+  // Enforce that only one ModelEngineVersion is specified for the
+  // PredictionModel.
+  if (prediction_model.model_info().supported_model_engine_versions_size() !=
+      1) {
     return nullptr;
   }
 
   // Check that the client supports this type of model and is not an unknown
   // type.
-  if (!proto::ModelType_IsValid(
-          prediction_model.model_info().supported_model_types(0)) ||
-      prediction_model.model_info().supported_model_types(0) ==
-          proto::ModelType::MODEL_TYPE_UNKNOWN) {
+  if (!proto::ModelEngineVersion_IsValid(
+          prediction_model.model_info().supported_model_engine_versions(0)) ||
+      prediction_model.model_info().supported_model_engine_versions(0) ==
+          proto::ModelEngineVersion::MODEL_ENGINE_VERSION_UNKNOWN) {
     return nullptr;
   }
 
   std::unique_ptr<PredictionModel> model;
-  // The Decision Tree model type is currently the only supported model type.
-  if (prediction_model.model_info().supported_model_types(0) !=
-      proto::ModelType::MODEL_TYPE_DECISION_TREE) {
+  // The Decision Tree model engine version is currently the only supported
+  // model engine version.
+  if (prediction_model.model_info().supported_model_engine_versions(0) !=
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE) {
     return nullptr;
   }
   model = std::make_unique<DecisionTreePredictionModel>(prediction_model);
