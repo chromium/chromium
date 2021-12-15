@@ -10,6 +10,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -115,6 +116,8 @@ class NET_EXPORT HostCache {
       SOURCE_DNS,
       // Address list was obtained by searching a HOSTS file.
       SOURCE_HOSTS,
+      // Address list was a preset from the DnsConfig.
+      SOURCE_CONFIG,
     };
 
     // |ttl=absl::nullopt| for unknown TTL.
@@ -278,6 +281,9 @@ class NET_EXPORT HostCache {
     // network change.  When an Entry is replaced by one whose pinning flag
     // is not set, HostCache will copy this flag to the replacement.
     // If this flag is null, HostCache will set it to false for simplicity.
+    // Note: This flag is not yet used, and should be removed if the proposals
+    // for followup queries after insecure/expired bootstrap are abandoned (see
+    // TODO(crbug.com/1200908) in HostResolverManager).
     absl::optional<bool> pinning_;
     // TTL obtained from the nameserver. Negative if unknown.
     base::TimeDelta ttl_ = base::Seconds(-1);
@@ -458,5 +464,9 @@ class NET_EXPORT HostCache {
 };
 
 }  // namespace net
+
+// Debug logging support
+std::ostream& operator<<(std::ostream& out,
+                         const net::HostCache::EntryStaleness& s);
 
 #endif  // NET_DNS_HOST_CACHE_H_

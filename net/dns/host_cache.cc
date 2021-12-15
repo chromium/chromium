@@ -5,6 +5,7 @@
 #include "net/dns/host_cache.h"
 
 #include <algorithm>
+#include <ostream>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -999,3 +1000,10 @@ bool HostCache::HasActivePin(const Entry& entry) {
 }
 
 }  // namespace net
+
+// Debug logging support
+std::ostream& operator<<(std::ostream& out,
+                         const net::HostCache::EntryStaleness& s) {
+  return out << "EntryStaleness{" << s.expired_by << ", " << s.network_changes
+             << ", " << s.stale_hits << "}";
+}

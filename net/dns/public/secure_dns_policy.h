@@ -14,6 +14,8 @@ enum class SecureDnsPolicy {
   kAllow,
   // This request must not use Secure DNS, even when it is otherwise enabled.
   kDisable,
+  // This request is part of the Secure DNS bootstrap process.
+  kBootstrap,
 };
 
 }  // namespace net

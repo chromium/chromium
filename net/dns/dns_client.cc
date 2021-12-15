@@ -4,13 +4,17 @@
 
 #include "net/dns/dns_client.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "net/base/address_list.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_socket_allocator.h"
@@ -21,6 +25,9 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/third_party/uri_template/uri_template.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -178,6 +185,26 @@ class DnsClientImpl : public DnsClient {
       return nullptr;
 
     return &config->hosts;
+  }
+
+  absl::optional<AddressList> GetPresetAddrs(
+      const url::SchemeHostPort& endpoint) const override {
+    DCHECK(endpoint.IsValid());
+    if (!session_)
+      return absl::nullopt;
+    const auto& servers = session_->config().dns_over_https_servers;
+    auto it = base::ranges::find_if(servers, [&](const auto& server) {
+      std::string uri;
+      bool valid = uri_template::Expand(server.server_template(), {}, &uri);
+      // Server templates are validated before being allowed into the config.
+      DCHECK(valid);
+      GURL gurl(uri);
+      return url::SchemeHostPort(gurl) == endpoint;
+    });
+    if (it == servers.end())
+      return absl::nullopt;
+    // TODO(crbug.com/1200908): Read preset IPs from the server config.
+    return absl::nullopt;
   }
 
   DnsTransactionFactory* GetTransactionFactory() override {

@@ -87,6 +87,13 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_CACHE_HIT)
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_HOSTS_HIT)
 
+// This event is logged when a bootstrap request matches a config preset entry.
+// It contains the following parameter:
+//   {
+//     "results": <HostCache::Entry of results>,
+//   }
+EVENT_TYPE(HOST_RESOLVER_MANAGER_CONFIG_PRESET_MATCH)
+
 // This event is created when a new HostResolverManager::Job is about to be
 // created for a request.
 EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)

@@ -335,11 +335,15 @@ bool EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode>::FromMojom(
 // static
 network::mojom::SecureDnsPolicy
 EnumTraits<network::mojom::SecureDnsPolicy, net::SecureDnsPolicy>::ToMojom(
-    net::SecureDnsPolicy secure_dns_mode) {
-  switch (secure_dns_mode) {
+    net::SecureDnsPolicy secure_dns_policy) {
+  switch (secure_dns_policy) {
     case net::SecureDnsPolicy::kAllow:
       return network::mojom::SecureDnsPolicy::ALLOW;
     case net::SecureDnsPolicy::kDisable:
+      return network::mojom::SecureDnsPolicy::DISABLE;
+    case net::SecureDnsPolicy::kBootstrap:
+      NOTREACHED();  // The bootstrap policy is only for use within the net
+                     // component.
       return network::mojom::SecureDnsPolicy::DISABLE;
   }
 }

@@ -124,6 +124,9 @@ std::string ClientSocketPool::GroupId::ToString() const {
     case SecureDnsPolicy::kDisable:
       result = "dsd/" + result;
       break;
+    case SecureDnsPolicy::kBootstrap:
+      result = "dns_bootstrap/" + result;
+      break;
   }
 
   return result;

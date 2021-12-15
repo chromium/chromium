@@ -434,8 +434,9 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     }
 
     request_->SetExtraRequestHeaders(extra_request_headers);
-    // Disable secure DNS for any DoH server hostname lookups to avoid deadlock.
-    request_->SetSecureDnsPolicy(SecureDnsPolicy::kDisable);
+    // Apply special policy to DNS lookups for for a DoH server hostname to
+    // avoid deadlock and enable the use of preconfigured IP addresses.
+    request_->SetSecureDnsPolicy(SecureDnsPolicy::kBootstrap);
     request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                            LOAD_BYPASS_PROXY);
     request_->set_allow_credentials(false);

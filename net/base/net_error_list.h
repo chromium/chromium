@@ -1012,3 +1012,6 @@ NET_ERROR(DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED, -808)
 // Error should be handled as if an HTTP redirect was received to redirect to
 // https or wss.
 NET_ERROR(DNS_NAME_HTTPS_ONLY, -809)
+
+// All DNS requests associated with this job have been cancelled.
+NET_ERROR(DNS_REQUEST_CANCELLED, -810)

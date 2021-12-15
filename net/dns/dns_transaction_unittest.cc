@@ -838,7 +838,7 @@ class DnsTransactionTestBase : public testing::Test {
     }
 
     EXPECT_FALSE(request->allow_credentials());
-    EXPECT_EQ(SecureDnsPolicy::kDisable, request->secure_dns_policy());
+    EXPECT_EQ(SecureDnsPolicy::kBootstrap, request->secure_dns_policy());
 
     std::string accept;
     EXPECT_TRUE(request->extra_request_headers().GetHeader("Accept", &accept));

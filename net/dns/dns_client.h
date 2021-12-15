@@ -7,12 +7,19 @@
 
 #include <memory>
 
+#include "net/base/address_list.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace url {
+
+class SchemeHostPort;
+
+}  // namespace url
 
 namespace net {
 
@@ -79,6 +86,11 @@ class NET_EXPORT DnsClient {
   // invalid or a configuration has not yet been read from the system.
   virtual const DnsConfig* GetEffectiveConfig() const = 0;
   virtual const DnsHosts* GetHosts() const = 0;
+
+  // Returns all preset addresses for the specified endpoint, if any are
+  // present in the current effective DnsConfig.
+  virtual absl::optional<AddressList> GetPresetAddrs(
+      const url::SchemeHostPort& endpoint) const = 0;
 
   // Returns null if the current config is not valid.
   virtual DnsTransactionFactory* GetTransactionFactory() = 0;

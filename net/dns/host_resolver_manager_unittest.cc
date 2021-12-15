@@ -13847,4 +13847,346 @@ TEST_F(HostResolverManagerDnsTest, AvoidMulticastIgnoredWithDnsTask) {
   EXPECT_THAT(response.result_error(), IsOk());
 }
 
+class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
+ protected:
+  using MockResult = MockDnsClientRule::ResultType;
+
+  void SetUp() override {
+    HostResolverManagerDnsTest::SetUp();
+
+    // MockHostResolverProc only returns failure if there is at least one
+    // non-matching rule.
+    proc_->AddRuleForAllFamilies("other_name", {});
+    proc_->SignalMultiple(1u);  // Allow up to one proc query.
+
+    // The request host scheme and port are only preserved if the SVCB feature
+    // is enabled.
+    features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
+  }
+
+  const NetworkIsolationKey kIsolationKey;
+  const url::SchemeHostPort kEndpoint =
+      url::SchemeHostPort(url::kHttpsScheme, "bootstrap", 443);
+  const AddressList kCacheAddrs = AddressList::CreateFromIPAddressList(
+      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+       {192, 0, 2, 1}},
+      {});
+  const AddressList kBootstrapAddrs = AddressList::CreateFromIPAddressList(
+      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+       {192, 0, 2, 2}},
+      {});
+  // The mock DNS client always returns localhost.
+  const AddressList kRemoteAddrs = AddressList::CreateFromIPAddressList(
+      {IPAddress::IPv6Localhost(), IPAddress::IPv4Localhost()},
+      {});
+
+  static HostResolver::ResolveHostParameters bootstrap_params() {
+    HostResolver::ResolveHostParameters params;
+    params.secure_dns_policy = SecureDnsPolicy::kBootstrap;
+    return params;
+  }
+
+  void ConfigureMockDns(MockResult insecure_result, MockResult secure_result) {
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, kEndpoint.host(), dns_protocol::kTypeA, insecure_result,
+               /*delay=*/false);
+    AddDnsRule(&rules, kEndpoint.host(), dns_protocol::kTypeAAAA,
+               insecure_result, /*delay=*/false);
+    AddSecureDnsRule(&rules, kEndpoint.host(), dns_protocol::kTypeA,
+                     secure_result, /*delay=*/false);
+    AddSecureDnsRule(&rules, kEndpoint.host(), dns_protocol::kTypeAAAA,
+                     secure_result, /*delay=*/false);
+    UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+    dns_client_->set_preset_endpoint(kEndpoint);
+  }
+
+  HostCache::Key MakeCacheKey(bool secure) {
+    HostCache::Key cache_key(kEndpoint, DnsQueryType::UNSPECIFIED, 0,
+                             HostResolverSource::ANY, kIsolationKey);
+    cache_key.secure = secure;
+    return cache_key;
+  }
+
+  void PopulateCache(bool secure) {
+    constexpr base::TimeDelta kTtl = base::Seconds(3600);
+    HostCache::Entry entry(OK, kCacheAddrs, HostCache::Entry::SOURCE_DNS, kTtl);
+    resolve_context_->host_cache()->Set(MakeCacheKey(secure), std::move(entry),
+                                        GetMockTickClock()->NowTicks(), kTtl);
+  }
+
+  base::test::ScopedFeatureList features;
+};
+
+std::vector<IPAddress> IPAddresses(const AddressList& addresses) {
+  std::vector<IPAddress> ip_addresses;
+  base::ranges::transform(addresses, std::back_inserter(ip_addresses),
+                          &IPEndPoint::address);
+  return ip_addresses;
+}
+
+MATCHER_P(AddressesMatch, expected, "Matches addresses between AddressLists") {
+  return testing::Matches(testing::UnorderedElementsAreArray(
+      IPAddresses(expected)))(IPAddresses(arg));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, BlankSlate) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kOk,
+                   /*secure_result=*/MockResult::kUnexpected);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_FALSE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kRemoteAddrs)));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, InsecureCacheEntry) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kUnexpected);
+  PopulateCache(/*secure=*/false);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kCacheAddrs)));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, SecureCacheEntry) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kUnexpected);
+  PopulateCache(/*secure=*/true);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kCacheAddrs)));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrap) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kOk);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  // Run the followup query.
+  RunUntilIdle();
+
+  // Confirm that the remote addresses are now in the secure cache.
+  const auto* secure_result = resolve_context_->host_cache()->Lookup(
+      MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
+  ASSERT_THAT(secure_result, testing::NotNull());
+  EXPECT_THAT(secure_result->second.addresses(),
+              Optional(AddressesMatch(kRemoteAddrs)));
+}
+
+// The insecure cache is ignored, so the results are identical to
+// OnlyBootstrap.
+TEST_F(HostResolverManagerBootstrapTest, BootstrapAndInsecureCache) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kOk);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+  PopulateCache(/*secure=*/false);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  // Run the followup query.
+  RunUntilIdle();
+
+  // Confirm that the remote addresses are now in the secure cache.
+  const auto* secure_result = resolve_context_->host_cache()->Lookup(
+      MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
+  ASSERT_THAT(secure_result, testing::NotNull());
+  EXPECT_THAT(secure_result->second.addresses(),
+              Optional(AddressesMatch(kRemoteAddrs)));
+}
+
+// The bootstrap addrs are ignored, so the results are identical to
+// SecureCacheEntry.
+TEST_F(HostResolverManagerBootstrapTest, BootstrapAndSecureCacheEntry) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kUnexpected);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+  PopulateCache(/*secure=*/true);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kCacheAddrs)));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, BlankSlateFailure) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kFail,
+                   /*secure_result=*/MockResult::kUnexpected);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_FALSE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(),
+              IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(bootstrap_response.request()
+                   ->GetResolveErrorInfo()
+                   .is_secure_network_error);
+}
+
+TEST_F(HostResolverManagerBootstrapTest, BootstrapFollowupFailure) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kFail);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response.complete());
+  EXPECT_THAT(bootstrap_response.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  // Run the followup query.
+  RunUntilIdle();
+
+  // Confirm that the secure cache remains empty.
+  const auto* secure_result = resolve_context_->host_cache()->Lookup(
+      MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
+  EXPECT_THAT(secure_result, testing::IsNull());
+}
+
+TEST_F(HostResolverManagerBootstrapTest, ContextClose) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kOk);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  // Trigger a followup request.
+  ResolveHostResponseHelper bootstrap_response(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  // Deregistering the resolve context should clean up the pending followup job.
+  EXPECT_EQ(1u, resolver_->num_jobs_for_testing());
+  resolver_->DeregisterResolveContext(resolve_context_.get());
+  EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
+
+  resolver_ = nullptr;  // Avoid duplicate Deregister in TearDown.
+}
+
+// Equivalent to OnlyBootstrap + BootstrapAndSecureCacheEntry
+TEST_F(HostResolverManagerBootstrapTest, BootstrapAfterFollowup) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kOk);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  // Run bootstrap and its followup query.
+  ResolveHostResponseHelper bootstrap_response1(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+  RunUntilIdle();
+
+  // The remote addresses are now in the secure cache.
+  // Rerun bootstrap, which reads the secure cache results.
+  ResolveHostResponseHelper bootstrap_response2(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response2.complete());
+  EXPECT_THAT(bootstrap_response2.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response2.request()->GetAddressResults(),
+              Optional(AddressesMatch(kRemoteAddrs)));
+}
+
+TEST_F(HostResolverManagerBootstrapTest, BootstrapFollowupFailureTwice) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kFail);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  // Run the bootstrap query and the followup, which will fail.
+  ResolveHostResponseHelper bootstrap_response1(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+  RunUntilIdle();
+
+  // Reissue the bootstrap query.
+  ResolveHostResponseHelper bootstrap_response2(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response2.complete());
+  EXPECT_THAT(bootstrap_response2.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response2.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  // Run the followup query again.
+  RunUntilIdle();
+
+  // Confirm that the secure cache remains empty.
+  const auto* secure_result = resolve_context_->host_cache()->Lookup(
+      MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
+  EXPECT_THAT(secure_result, testing::IsNull());
+}
+
+TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrapTwice) {
+  ConfigureMockDns(/*insecure_result=*/MockResult::kUnexpected,
+                   /*secure_result=*/MockResult::kOk);
+  dns_client_->set_preset_addrs(kBootstrapAddrs);
+
+  ResolveHostResponseHelper bootstrap_response1(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response1.complete());
+  EXPECT_THAT(bootstrap_response1.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response1.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  ResolveHostResponseHelper bootstrap_response2(resolver_->CreateRequest(
+      kEndpoint, kIsolationKey, NetLogWithSource(), bootstrap_params(),
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_TRUE(bootstrap_response2.complete());
+  EXPECT_THAT(bootstrap_response2.result_error(), IsOk());
+  EXPECT_THAT(bootstrap_response2.request()->GetAddressResults(),
+              Optional(AddressesMatch(kBootstrapAddrs)));
+
+  // Run the followup query.
+  RunUntilIdle();
+
+  // Confirm that the remote addresses are now in the secure cache.
+  const auto* secure_result = resolve_context_->host_cache()->Lookup(
+      MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
+  ASSERT_THAT(secure_result, testing::NotNull());
+  EXPECT_THAT(secure_result->second.addresses(),
+              Optional(AddressesMatch(kRemoteAddrs)));
+}
+
 }  // namespace net

@@ -39,6 +39,8 @@ enum SecureDnsMode {
 enum SecureDnsPolicy {
   ALLOW,
   DISABLE,
+  // The "bootstrap" policy is only used within the network process, so it is
+  // not exposed via Mojo.
 };
 
 // Overridable DNS configuration values for host resolution. All fields default

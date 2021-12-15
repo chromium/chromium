@@ -615,6 +615,19 @@ DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
       DnsQueryTypeToQtype(query_type));
 }
 
+AddressList FilterAddresses(AddressList addresses, DnsQueryType query_type) {
+  if (query_type == DnsQueryType::UNSPECIFIED)
+    return addresses;
+
+  AddressFamily family = HostResolver::DnsQueryTypeToAddressFamily(query_type);
+  addresses.endpoints().erase(
+      base::ranges::remove_if(
+          addresses,
+          [&](const auto& endpoint) { return endpoint.GetFamily() != family; }),
+      addresses.end());
+  return addresses;
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -2126,7 +2139,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       // If we were called from a Request's callback within CompleteRequests,
       // that Request could not have been cancelled, so num_active_requests()
       // could not be 0. Therefore, we are not in CompleteRequests().
-      CompleteRequestsWithError(ERR_FAILED /* cancelled */);
+      CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED);
     }
   }
 
@@ -2293,6 +2306,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         break;
       case TaskType::SECURE_CACHE_LOOKUP:
       case TaskType::CACHE_LOOKUP:
+      case TaskType::CONFIG_PRESET:
         // These task types should have been handled synchronously in
         // ResolveLocally() prior to Job creation.
         NOTREACHED();
@@ -2748,7 +2762,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     Finish();
 
-    if (num_active_requests() == 0) {
+    if (results.error() == ERR_DNS_REQUEST_CANCELLED) {
       net_log_.AddEvent(NetLogEventType::CANCELLED);
       net_log_.EndEventWithNetErrorCode(
           NetLogEventType::HOST_RESOLVER_MANAGER_JOB, OK);
@@ -2757,8 +2771,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     net_log_.EndEventWithNetErrorCode(
         NetLogEventType::HOST_RESOLVER_MANAGER_JOB, results.error());
-
-    DCHECK(!requests_.empty());
 
     // Handle all caching before completing requests as completing requests may
     // start new requests that rely on cached results.
@@ -2792,6 +2804,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       if (!resolver_.get())
         return;
     }
+
+    // TODO(crbug.com/1200908): Call StartBootstrapFollowup() if any of the
+    // requests have the Bootstrap policy.  Note: A naive implementation could
+    // cause an infinite loop if the bootstrap result has TTL=0.
   }
 
   void CompleteRequestsWithoutCache(
@@ -3151,6 +3167,19 @@ void HostResolverManager::SetTaskRunnerForTesting(
   proc_task_runner_ = std::move(task_runner);
 }
 
+// static
+bool HostResolverManager::IsLocalTask(TaskType task) {
+  switch (task) {
+    case TaskType::SECURE_CACHE_LOOKUP:
+    case TaskType::INSECURE_CACHE_LOOKUP:
+    case TaskType::CACHE_LOOKUP:
+    case TaskType::CONFIG_PRESET:
+      return true;
+    default:
+      return false;
+  }
+}
+
 int HostResolverManager::Resolve(RequestImpl* request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Request should not yet have a scheduled Job.
@@ -3184,8 +3213,8 @@ int HostResolverManager::Resolve(RequestImpl* request) {
   std::deque<TaskType> tasks;
   absl::optional<HostCache::EntryStaleness> stale_info;
   HostCache::Entry results = ResolveLocally(
-      job_key, ip_address, parameters.cache_usage, request->source_net_log(),
-      request->host_cache(), &tasks, &stale_info);
+      job_key, ip_address, parameters.cache_usage, parameters.secure_dns_policy,
+      request->source_net_log(), request->host_cache(), &tasks, &stale_info);
   if (results.error() != ERR_DNS_CACHE_MISS ||
       request->parameters().source == HostResolverSource::LOCAL_ONLY ||
       tasks.empty()) {
@@ -3211,6 +3240,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     const JobKey& job_key,
     const IPAddress& ip_address,
     ResolveHostParameters::CacheUsage cache_usage,
+    SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& source_net_log,
     HostCache* cache,
     std::deque<TaskType>* out_tasks,
@@ -3218,7 +3248,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   DCHECK(out_stale_info);
   *out_stale_info = absl::nullopt;
 
-  CreateTaskSequence(job_key, cache_usage, out_tasks);
+  CreateTaskSequence(job_key, cache_usage, secure_dns_policy, out_tasks);
 
   if (!ip_address.IsValid()) {
     // Check that the caller supplied a valid hostname to resolve. For
@@ -3259,31 +3289,45 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   if (resolved)
     return resolved.value();
 
-  // Do initial cache lookup.
-  if (!out_tasks->empty() &&
-      (out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP ||
-       out_tasks->front() == TaskType::INSECURE_CACHE_LOOKUP ||
-       out_tasks->front() == TaskType::CACHE_LOOKUP)) {
-    bool secure = out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP;
-    HostCache::Key key = job_key.ToCacheKey(secure);
-
-    bool ignore_secure = false;
-    if (out_tasks->front() == TaskType::CACHE_LOOKUP)
-      ignore_secure = true;
-
+  // Do initial cache lookups.
+  while (!out_tasks->empty() && IsLocalTask(out_tasks->front())) {
+    TaskType task = out_tasks->front();
     out_tasks->pop_front();
+    if (task == TaskType::SECURE_CACHE_LOOKUP ||
+        task == TaskType::INSECURE_CACHE_LOOKUP ||
+        task == TaskType::CACHE_LOOKUP) {
+      bool secure = task == TaskType::SECURE_CACHE_LOOKUP;
+      HostCache::Key key = job_key.ToCacheKey(secure);
 
-    resolved = MaybeServeFromCache(cache, key, cache_usage, ignore_secure,
-                                   source_net_log, out_stale_info);
-    if (resolved) {
-      // |MaybeServeFromCache()| will update |*out_stale_info| as needed.
-      DCHECK(out_stale_info->has_value());
-      source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_CACHE_HIT,
-                              [&] { return NetLogResults(resolved.value()); });
+      bool ignore_secure = task == TaskType::CACHE_LOOKUP;
+      resolved = MaybeServeFromCache(cache, key, cache_usage, ignore_secure,
+                                     source_net_log, out_stale_info);
+      if (resolved) {
+        // |MaybeServeFromCache()| will update |*out_stale_info| as needed.
+        DCHECK(out_stale_info->has_value());
+        source_net_log.AddEvent(
+            NetLogEventType::HOST_RESOLVER_MANAGER_CACHE_HIT,
+            [&] { return NetLogResults(resolved.value()); });
 
-      return resolved.value();
+        // TODO(crbug.com/1200908): Call StartBootstrapFollowup() if the Secure
+        // DNS Policy is kBootstrap and the result is not secure.  Note: A naive
+        // implementation could cause an infinite loop if |resolved| always
+        // expires or is evicted before the followup runs.
+        return resolved.value();
+      }
+      DCHECK(!out_stale_info->has_value());
+    } else if (task == TaskType::CONFIG_PRESET) {
+      resolved = MaybeReadFromConfig(job_key);
+      if (resolved) {
+        source_net_log.AddEvent(
+            NetLogEventType::HOST_RESOLVER_MANAGER_CONFIG_PRESET_MATCH,
+            [&] { return NetLogResults(resolved.value()); });
+        StartBootstrapFollowup(job_key, cache, source_net_log);
+        return resolved.value();
+      }
+    } else {
+      NOTREACHED();
     }
-    DCHECK(!out_stale_info->has_value());
   }
 
   // TODO(szym): Do not do this if nsswitch.conf instructs not to.
@@ -3307,20 +3351,35 @@ void HostResolverManager::CreateAndStartJob(JobKey key,
   auto jobit = jobs_.find(key);
   Job* job;
   if (jobit == jobs_.end()) {
-    auto new_job = std::make_unique<Job>(
-        weak_ptr_factory_.GetWeakPtr(), key, request->parameters().cache_usage,
-        request->host_cache(), std::move(tasks), request->priority(),
-        proc_task_runner_, request->source_net_log(), tick_clock_);
-    job = new_job.get();
-    auto insert_result = jobs_.emplace(std::move(key), std::move(new_job));
-    DCHECK(insert_result.second);
-    job->OnAddedToJobMap(insert_result.first);
+    job = AddJobWithoutRequest(key, request->parameters().cache_usage,
+                               request->host_cache(), std::move(tasks),
+                               request->priority(), request->source_net_log());
     job->AddRequest(request);
     job->RunNextTask();
   } else {
     job = jobit->second.get();
     job->AddRequest(request);
   }
+}
+
+HostResolverManager::Job* HostResolverManager::AddJobWithoutRequest(
+    JobKey key,
+    ResolveHostParameters::CacheUsage cache_usage,
+    HostCache* host_cache,
+    std::deque<TaskType> tasks,
+    RequestPriority priority,
+    const NetLogWithSource& source_net_log) {
+  auto new_job =
+      std::make_unique<Job>(weak_ptr_factory_.GetWeakPtr(), key, cache_usage,
+                            host_cache, std::move(tasks), priority,
+                            proc_task_runner_, source_net_log, tick_clock_);
+  auto insert_result = jobs_.emplace(std::move(key), std::move(new_job));
+  auto& iterator = insert_result.first;
+  bool is_new = insert_result.second;
+  DCHECK(is_new);
+  auto& job = iterator->second;
+  job->OnAddedToJobMap(iterator);
+  return job.get();
 }
 
 HostCache::Entry HostResolverManager::ResolveAsIP(DnsQueryType query_type,
@@ -3387,6 +3446,42 @@ absl::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
   return absl::nullopt;
 }
 
+absl::optional<HostCache::Entry> HostResolverManager::MaybeReadFromConfig(
+    const JobKey& key) {
+  DCHECK(IsAddressType(key.query_type));
+  if (!absl::holds_alternative<url::SchemeHostPort>(key.host))
+    return absl::nullopt;
+  absl::optional<AddressList> preset_addrs =
+      dns_client_->GetPresetAddrs(absl::get<url::SchemeHostPort>(key.host));
+  if (!preset_addrs)
+    return absl::nullopt;
+
+  AddressList filtered_addresses =
+      FilterAddresses(std::move(*preset_addrs), key.query_type);
+  if (filtered_addresses.empty())
+    return absl::nullopt;
+
+  return HostCache::Entry(OK, std::move(filtered_addresses),
+                          HostCache::Entry::SOURCE_CONFIG);
+}
+
+void HostResolverManager::StartBootstrapFollowup(
+    JobKey key,
+    HostCache* host_cache,
+    const NetLogWithSource& source_net_log) {
+  DCHECK_EQ(SecureDnsMode::kOff, key.secure_dns_mode);
+  DCHECK(host_cache);
+
+  key.secure_dns_mode = SecureDnsMode::kSecure;
+  if (jobs_.count(key) != 0)
+    return;
+
+  Job* job = AddJobWithoutRequest(
+      key, ResolveHostParameters::CacheUsage::ALLOWED, host_cache,
+      {TaskType::SECURE_DNS}, RequestPriority::LOW, source_net_log);
+  job->RunNextTask();
+}
+
 absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
     base::StringPiece hostname,
     DnsQueryType query_type,
@@ -3449,23 +3544,13 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
     return absl::nullopt;
   }
 
-  AddressList filtered_addresses;
-  for (const auto& address : resolved_addresses) {
-    // Include the address if:
-    // - caller didn't specify an address family, or
-    // - caller specifically asked for the address family of this address, or
-    // - this is an IPv6 address and caller specifically asked for IPv4 due
-    //   to lack of detected IPv6 support. (See SystemHostResolverCall for
-    //   rationale).
-    if (query_type == DnsQueryType::UNSPECIFIED ||
-        HostResolver::DnsQueryTypeToAddressFamily(query_type) ==
-            address.GetFamily() ||
-        (address.GetFamily() == ADDRESS_FAMILY_IPV6 &&
-         query_type == DnsQueryType::A && default_family_due_to_no_ipv6)) {
-      filtered_addresses.push_back(address);
-    }
+  if (query_type == DnsQueryType::A && default_family_due_to_no_ipv6) {
+    // The caller specifically asked for IPv4 due to lack of detected IPv6
+    // support. (See SystemHostResolverCall for rationale).
+    query_type = DnsQueryType::UNSPECIFIED;
   }
-
+  AddressList filtered_addresses =
+      FilterAddresses(std::move(resolved_addresses), query_type);
   return HostCache::Entry(OK, std::move(filtered_addresses),
                           HostCache::Entry::SOURCE_UNKNOWN);
 }
@@ -3498,6 +3583,7 @@ SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
   // Use switch() instead of if() to ensure that all policies are handled.
   switch (secure_dns_policy) {
     case SecureDnsPolicy::kDisable:
+    case SecureDnsPolicy::kBootstrap:
       return SecureDnsMode::kOff;
     case SecureDnsPolicy::kAllow:
       break;
@@ -3572,7 +3658,7 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
       }
       break;
     case SecureDnsMode::kOff:
-      DCHECK(!allow_cache || out_tasks->front() == TaskType::CACHE_LOOKUP);
+      DCHECK(!allow_cache || IsLocalTask(out_tasks->front()));
       if (dns_tasks_allowed && insecure_tasks_allowed)
         out_tasks->push_back(TaskType::DNS);
       break;
@@ -3597,6 +3683,7 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
 void HostResolverManager::CreateTaskSequence(
     const JobKey& job_key,
     ResolveHostParameters::CacheUsage cache_usage,
+    SecureDnsPolicy secure_dns_policy,
     std::deque<TaskType>* out_tasks) {
   DCHECK(out_tasks->empty());
 
@@ -3604,7 +3691,14 @@ void HostResolverManager::CreateTaskSequence(
   // DnsTask, this task may be replaced.
   bool allow_cache =
       cache_usage != ResolveHostParameters::CacheUsage::DISALLOWED;
-  if (allow_cache) {
+  if (secure_dns_policy == SecureDnsPolicy::kBootstrap) {
+    DCHECK_EQ(SecureDnsMode::kOff, job_key.secure_dns_mode);
+    if (allow_cache)
+      out_tasks->push_front(TaskType::INSECURE_CACHE_LOOKUP);
+    out_tasks->push_front(TaskType::CONFIG_PRESET);
+    if (allow_cache)
+      out_tasks->push_front(TaskType::SECURE_CACHE_LOOKUP);
+  } else if (allow_cache) {
     if (job_key.secure_dns_mode == SecureDnsMode::kSecure) {
       out_tasks->push_front(TaskType::SECURE_CACHE_LOOKUP);
     } else {
