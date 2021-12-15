@@ -18,56 +18,9 @@
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_window_obj_wrapper.h"
 
-#if defined(OS_CHROMEOS)
-namespace {
-
-constexpr char kAXLacrosAppId[] = "AXLacrosApp";
-
-// A simple wrapper object that can reference another tree via app id.
-class AXHostAuraObj : public views::AXAuraObjWrapper {
- public:
-  AXHostAuraObj(views::AXAuraObjCache* cache,
-                const std::string& child_app_id,
-                views::AXAuraObjWrapper* parent)
-      : views::AXAuraObjWrapper(cache),
-        child_app_id_(child_app_id),
-        parent_(parent) {}
-
-  ~AXHostAuraObj() override = default;
-
-  // views::AXAuraObjWrapper:
-  views::AXAuraObjWrapper* GetParent() override { return parent_; }
-
-  void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override {}
-
-  void Serialize(ui::AXNodeData* out_node_data) override {
-    out_node_data->id = GetUniqueId();
-    out_node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kChildTreeNodeAppId, child_app_id_);
-    out_node_data->role = ax::mojom::Role::kClient;
-  }
-
-  ui::AXNodeID GetUniqueId() const override { return unique_id_.Get(); }
-  std::string ToString() const override { return std::string(); }
-
- private:
-  const std::string child_app_id_;
-  views::AXAuraObjWrapper* parent_;
-  const ui::AXUniqueId unique_id_;
-};
-
-}  // namespace
-#endif  // defined(OS_CHROMEOS)
-
 AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
                                    views::AXAuraObjCache* cache)
-    : views::AXAuraObjWrapper(cache), delegate_(delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto lacros = std::make_unique<AXHostAuraObj>(cache, kAXLacrosAppId, this);
-  lacros_host_ = lacros.get();
-  cache->CreateOrReplace(std::move(lacros));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
+    : views::AXAuraObjWrapper(cache), delegate_(delegate) {}
 
 AXRootObjWrapper::~AXRootObjWrapper() = default;
 
@@ -84,22 +37,15 @@ views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
 void AXRootObjWrapper::GetChildren(
     std::vector<views::AXAuraObjWrapper*>* out_children) {
   aura_obj_cache_->GetTopLevelWindows(out_children);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Add a host for LaCrOS.
-  out_children->push_back(lacros_host_);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->id = unique_id_.Get();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   out_node_data->role = ax::mojom::Role::kClient;
-  out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kAppId,
-                                    kAXLacrosAppId);
 #else
   out_node_data->role = ax::mojom::Role::kDesktop;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen)

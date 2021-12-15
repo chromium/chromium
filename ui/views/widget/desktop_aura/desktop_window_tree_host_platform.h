@@ -142,6 +142,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // ui::WorkspaceExtensionDelegate:
   void OnWorkspaceChanged() override;
 
+  DesktopWindowTreeHostPlatform* window_parent() const {
+    return window_parent_;
+  }
+
  protected:
   // These are not general purpose methods and must be used with care. Please
   // make sure you understand the rounding direction before using.
