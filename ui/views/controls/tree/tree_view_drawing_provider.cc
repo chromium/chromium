@@ -33,6 +33,13 @@ SkColor TreeViewDrawingProvider::GetTextColorForNode(TreeView* tree_view,
   return tree_view->GetColorProvider()->GetColor(color_id);
 }
 
+SkColor TreeViewDrawingProvider::GetAuxiliaryTextColorForNode(
+    TreeView* tree_view,
+    ui::TreeModelNode* node) {
+  // Default to using the same color as the primary text.
+  return GetTextColorForNode(tree_view, node);
+}
+
 std::u16string TreeViewDrawingProvider::GetAuxiliaryTextForNode(
     TreeView* tree_view,
     ui::TreeModelNode* node) {

@@ -179,6 +179,8 @@ class CookiesTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
 
   SkColor GetTextColorForNode(views::TreeView* tree_view,
                               ui::TreeModelNode* node) override;
+  SkColor GetAuxiliaryTextColorForNode(views::TreeView* tree_view,
+                                       ui::TreeModelNode* node) override;
   std::u16string GetAuxiliaryTextForNode(views::TreeView* tree_view,
                                          ui::TreeModelNode* node) override;
   bool ShouldDrawIconForNode(views::TreeView* tree_view,
@@ -202,11 +204,26 @@ SkColor CookiesTreeViewDrawingProvider::GetTextColorForNode(
   return color;
 }
 
+SkColor CookiesTreeViewDrawingProvider::GetAuxiliaryTextColorForNode(
+    views::TreeView* tree_view,
+    ui::TreeModelNode* node) {
+  SkColor color = TreeViewDrawingProvider::GetTextColorForNode(tree_view, node);
+  return SkColorSetA(color, 0x80);
+}
+
 std::u16string CookiesTreeViewDrawingProvider::GetAuxiliaryTextForNode(
     views::TreeView* tree_view,
     ui::TreeModelNode* node) {
   if (annotations_.find(node) != annotations_.end())
     return annotations_[node];
+
+  CookieTreeNode* cookie_node = static_cast<CookieTreeNode*>(node);
+  if (cookie_node->GetDetailedInfo().node_type ==
+          CookieTreeNode::DetailedInfo::TYPE_COOKIE &&
+      cookie_node->GetDetailedInfo().cookie->IsPartitioned()) {
+    return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_PARTITIONED_COOKIE);
+  }
+
   return TreeViewDrawingProvider::GetAuxiliaryTextForNode(tree_view, node);
 }
 

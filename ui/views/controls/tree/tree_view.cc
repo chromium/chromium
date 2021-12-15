@@ -61,6 +61,8 @@ static constexpr int kArrowRegionSize = 12;
 // Padding around the text (on each side).
 static constexpr int kTextVerticalPadding = 3;
 static constexpr int kTextHorizontalPadding = 2;
+// Padding between the auxiliary text and the end of the line, handles RTL.
+static constexpr int kAuxiliaryTextLineEndPadding = 5;
 // How much children are indented from their parent.
 static constexpr int kIndent = 20;
 
@@ -1127,7 +1129,8 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
                                       : gfx::Canvas::TEXT_ALIGN_RIGHT;
       canvas->DrawStringRectWithFlags(
           aux_text, font_list_,
-          drawing_provider()->GetTextColorForNode(this, node->model_node()),
+          drawing_provider()->GetAuxiliaryTextColorForNode(this,
+                                                           node->model_node()),
           aux_text_bounds, align);
     }
   }
@@ -1257,14 +1260,16 @@ gfx::Rect TreeView::GetTextBoundsForNode(InternalNode* node) {
 // leading aligned.
 gfx::Rect TreeView::GetAuxiliaryTextBoundsForNode(InternalNode* node) {
   gfx::Rect text_bounds = GetTextBoundsForNode(node);
-  int width = base::i18n::IsRTL() ? text_bounds.x() - kTextHorizontalPadding * 2
-                                  : bounds().width() - text_bounds.right() -
-                                        2 * kTextHorizontalPadding;
+  int width = base::i18n::IsRTL()
+                  ? text_bounds.x() - kTextHorizontalPadding -
+                        kAuxiliaryTextLineEndPadding
+                  : bounds().width() - text_bounds.right() -
+                        kTextHorizontalPadding - kAuxiliaryTextLineEndPadding;
   if (width < 0)
     return gfx::Rect();
   int x = base::i18n::IsRTL()
-              ? kTextHorizontalPadding
-              : bounds().right() - width - kTextHorizontalPadding;
+              ? kAuxiliaryTextLineEndPadding
+              : bounds().right() - width - kAuxiliaryTextLineEndPadding;
   return gfx::Rect(x, text_bounds.y(), width, text_bounds.height());
 }
 

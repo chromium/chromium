@@ -8330,6 +8330,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COLLECTED_COOKIES_INFOBAR_BUTTON" desc="The string used in the infobar button allowing the user to reload the page directly from the infobar.">
         Reload
       </message>
+      <message name="IDS_COLLECTED_COOKIES_PARTITIONED_COOKIE" desc="The string used to identify cookies which have been partitioned based on the current site, and so are not available for use on different sites.">
+        Partitioned
+      </message>
 
       <!-- Accessiblility strings for Infobars in Views -->
       <if expr="toolkit_views">
