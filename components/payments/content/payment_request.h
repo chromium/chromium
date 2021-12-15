@@ -128,10 +128,6 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // object and close any related connections.
   void OnUserCancelled();
 
-  // Called when the main frame attached to this PaymentRequest is navigating
-  // to another document, but before the PaymentRequest is destroyed.
-  void DidStartMainFrameNavigationToDifferentDocument(bool is_user_initiated);
-
   // Called when the PaymentRequest is about to be destroyed. This reports
   // the reason for destruction.
   void WillBeDestroyed(content::DocumentServiceDestructionReason reason) final;
