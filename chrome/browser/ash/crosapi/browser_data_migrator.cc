@@ -51,6 +51,7 @@ constexpr const char* const kNoCopyPaths[] = {
     kTmpDir,
     "Cache",
     "Code Cache",
+    "crash",
     "blob_storage",
     "GCache",
     "data_reduction_proxy_leveldb",
