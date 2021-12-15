@@ -1789,4 +1789,29 @@ TEST_F(DesksTemplatesTest, TemplateNameTestSpaces) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 }
 
+// Tests that there is no crash after we use the keyboard to change the name of
+// a template. Regression test for https://crbug.com/1279649.
+TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
+  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Tab until we focus the name view of the first template item.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(name_view, GetHighlightedView());
+
+  // Rename template "a" to template "d".
+  SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+
+  // Verify that there is no crash after we tab again.
+  SendKey(ui::VKEY_TAB);
+}
+
 }  // namespace ash

@@ -416,10 +416,14 @@ views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
 
 void DesksTemplatesItemView::OnDeleteTemplate() {
   // Notify the highlight controller that we're going away.
-  OverviewSession* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
-  DCHECK(overview_session);
-  overview_session->highlight_controller()->OnViewDestroyingOrDisabling(this);
+  OverviewHighlightController* highlight_controller =
+      Shell::Get()
+          ->overview_controller()
+          ->overview_session()
+          ->highlight_controller();
+  DCHECK(highlight_controller);
+  highlight_controller->OnViewDestroyingOrDisabling(this);
+  highlight_controller->OnViewDestroyingOrDisabling(name_view_);
 
   DesksTemplatesPresenter::Get()->DeleteEntry(
       desk_template_->uuid().AsLowercaseString());

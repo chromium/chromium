@@ -8,9 +8,14 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -101,6 +106,34 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
 void DesksTemplatesGridView::UpdateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
+  // Check if any of the template items or their name views have overview focus
+  // and notify the highlight controller. This should only be needed when a
+  // template item is deleted, but currently we call `UpdateGridUI` every time
+  // the model changes.
+  // TODO(richui): Remove this when `UpdateGridUI` is not rebuilt every time.
+  if (!grid_items_.empty()) {
+    auto* highlight_controller = Shell::Get()
+                                     ->overview_controller()
+                                     ->overview_session()
+                                     ->highlight_controller();
+    if (highlight_controller->IsFocusHighlightVisible()) {
+      // Notify the highlight controller if any of the about to be destroyed
+      // views have overview focus to prevent use-after-free.
+      for (DesksTemplatesItemView* template_view : grid_items_) {
+        if (template_view->IsViewHighlighted()) {
+          highlight_controller->OnViewDestroyingOrDisabling(template_view);
+          return;
+        }
+
+        if (template_view->name_view()->IsViewHighlighted()) {
+          highlight_controller->OnViewDestroyingOrDisabling(
+              template_view->name_view());
+          return;
+        }
+      }
+    }
+  }
+
   // Clear the layout manager before removing the child views to avoid
   // use-after-free bugs due to `Layout()`s being triggered.
   SetLayoutManager(nullptr);
