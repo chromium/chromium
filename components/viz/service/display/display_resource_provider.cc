@@ -201,13 +201,9 @@ void DisplayResourceProvider::ReceiveFromChild(
     const std::vector<TransferableResource>& resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // TODO(crbug.com/855785): Fishing for misuse of DisplayResourceProvider
-  // causing crashes.
-  CHECK(child_id);
   auto child_it = children_.find(child_id);
-  // TODO(crbug.com/855785): Fishing for misuse of DisplayResourceProvider
-  // causing crashes.
-  CHECK(child_it != children_.end());
+  DCHECK(child_it != children_.end());
+
   Child& child_info = child_it->second;
   DCHECK(!child_info.marked_for_deletion);
   for (const TransferableResource& transferable_resource : resources) {
@@ -244,13 +240,9 @@ void DisplayResourceProvider::DeclareUsedResourcesFromChild(
     const ResourceIdSet& resources_from_child) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // TODO(crbug.com/855785): Fishing for misuse of DisplayResourceProvider
-  // causing crashes.
-  CHECK(child);
   auto child_it = children_.find(child);
-  // TODO(crbug.com/855785): Fishing for misuse of DisplayResourceProvider
-  // causing crashes.
-  CHECK(child_it != children_.end());
+  DCHECK(child_it != children_.end());
+
   Child& child_info = child_it->second;
   DCHECK(!child_info.marked_for_deletion);
 
