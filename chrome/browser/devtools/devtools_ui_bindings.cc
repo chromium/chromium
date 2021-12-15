@@ -372,11 +372,12 @@ GURL SanitizeFrontendURL(const GURL& url,
   std::string fragment;
   if (allow_query_and_fragment) {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-      std::string value = SanitizeFrontendQueryParam(it.GetKey(),
-          it.GetValue());
+      const std::string key = std::string(it.GetKey());
+      std::string value =
+          SanitizeFrontendQueryParam(key, std::string(it.GetValue()));
       if (!value.empty()) {
         query_parts.push_back(
-            base::StringPrintf("%s=%s", it.GetKey().c_str(), value.c_str()));
+            base::StringPrintf("%s=%s", key.c_str(), value.c_str()));
       }
     }
     if (url.has_ref() && url.ref_piece().find('\'') == base::StringPiece::npos)

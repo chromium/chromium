@@ -110,7 +110,7 @@ bool GetModifiedQuery(const GURL& url,
 
   bool query_changed = false;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    std::string key = it.GetKey();
+    const base::StringPiece key = it.GetKey();
     // Remove query param.
     if (std::binary_search(remove_query_params.begin(),
                            remove_query_params.end(), key)) {

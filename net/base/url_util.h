@@ -56,6 +56,10 @@ NET_EXPORT GURL AppendOrReplaceQueryParameter(const GURL& url,
                                               const std::string& value);
 
 // Iterates over the key-value pairs in the query portion of |url|.
+// NOTE: QueryIterator stores reference to |url| and creates base::StringPiece
+// instances which refer to the data inside |url| query. Therefore |url| must
+// outlive QueryIterator and all base::StringPiece objects returned from GetKey
+// and GetValue methods.
 class NET_EXPORT QueryIterator {
  public:
   explicit QueryIterator(const GURL& url);
@@ -63,8 +67,8 @@ class NET_EXPORT QueryIterator {
   QueryIterator& operator=(const QueryIterator&) = delete;
   ~QueryIterator();
 
-  std::string GetKey() const;
-  std::string GetValue() const;
+  base::StringPiece GetKey() const;
+  base::StringPiece GetValue() const;
   const std::string& GetUnescapedValue();
 
   bool IsAtEnd() const;

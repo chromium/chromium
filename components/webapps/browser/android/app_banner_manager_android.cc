@@ -364,7 +364,7 @@ std::string AppBannerManagerAndroid::ExtractQueryValueForName(
     const std::string& name) {
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() == name)
-      return it.GetValue();
+      return std::string(it.GetValue());
   }
   return std::string();
 }

@@ -125,18 +125,18 @@ QueryIterator::QueryIterator(const GURL& url)
 
 QueryIterator::~QueryIterator() = default;
 
-std::string QueryIterator::GetKey() const {
+base::StringPiece QueryIterator::GetKey() const {
   DCHECK(!at_end_);
   if (key_.is_nonempty())
-    return url_.spec().substr(key_.begin, key_.len);
-  return std::string();
+    return base::StringPiece(&url_.spec()[key_.begin], key_.len);
+  return base::StringPiece();
 }
 
-std::string QueryIterator::GetValue() const {
+base::StringPiece QueryIterator::GetValue() const {
   DCHECK(!at_end_);
   if (value_.is_nonempty())
-    return url_.spec().substr(value_.begin, value_.len);
-  return std::string();
+    return base::StringPiece(&url_.spec()[value_.begin], value_.len);
+  return base::StringPiece();
 }
 
 const std::string& QueryIterator::GetUnescapedValue() {

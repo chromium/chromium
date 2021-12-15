@@ -152,7 +152,7 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
   base::flat_map<std::string, std::string> result;
   for (net::QueryIterator query_it(url); !query_it.IsAtEnd();
        query_it.Advance()) {
-    result[query_it.GetKey()] = query_it.GetUnescapedValue();
+    result[std::string(query_it.GetKey())] = query_it.GetUnescapedValue();
   }
   return result;
 }

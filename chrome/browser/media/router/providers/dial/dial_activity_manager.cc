@@ -88,11 +88,11 @@ std::unique_ptr<DialActivity> DialActivity::From(
   // temporary object.
   for (net::QueryIterator query_it(url); !query_it.IsAtEnd();
        query_it.Advance()) {
-    std::string key = query_it.GetKey();
+    const base::StringPiece key = query_it.GetKey();
     if (key == "clientId") {
-      client_id = query_it.GetValue();
+      client_id = std::string(query_it.GetValue());
     } else if (key == "dialPostData") {
-      post_data = query_it.GetValue();
+      post_data = std::string(query_it.GetValue());
     }
   }
   if (client_id.empty())

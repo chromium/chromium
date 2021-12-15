@@ -37,7 +37,8 @@ const char kPathParameter[] = "path";
 // URL parameter specifying scale factor.
 const char kScaleFactorParameter[] = "scale";
 
-IconLoader::IconSize SizeStringToIconSize(const std::string& size_string) {
+IconLoader::IconSize SizeStringToIconSize(
+    const base::StringPiece& size_string) {
   if (size_string == "small") return IconLoader::SMALL;
   if (size_string == "large") return IconLoader::LARGE;
   // We default to NORMAL if we don't recognize the size_string. Including
@@ -51,7 +52,7 @@ void ParseQueryParams(const std::string& path,
                       IconLoader::IconSize* icon_size) {
   GURL request = GURL(chrome::kChromeUIFileiconURL).Resolve(path);
   for (net::QueryIterator it(request); !it.IsAtEnd(); it.Advance()) {
-    std::string key = it.GetKey();
+    const base::StringPiece key = it.GetKey();
     if (key == kPathParameter) {
       *file_path = base::FilePath::FromUTF8Unsafe(it.GetUnescapedValue())
                        .NormalizePathSeparators();

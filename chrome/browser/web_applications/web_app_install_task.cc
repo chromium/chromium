@@ -61,7 +61,7 @@ constexpr bool kAddAppsToQuickLaunchBarByDefault = false;
 std::string ExtractQueryValueForName(const GURL& url, const std::string& name) {
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() == name)
-      return it.GetValue();
+      return std::string(it.GetValue());
   }
   return std::string();
 }

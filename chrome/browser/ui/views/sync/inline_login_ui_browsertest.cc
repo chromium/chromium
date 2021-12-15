@@ -844,7 +844,7 @@ class HtmlRequestTracker {
     net::QueryIterator it(request_url);
     for (; !it.IsAtEnd(); it.Advance()) {
       query_params.push_back(
-          std::make_pair(it.GetKey(), it.GetUnescapedValue()));
+          std::make_pair(std::string(it.GetKey()), it.GetUnescapedValue()));
     }
     requested_urls_[GURL(request.GetURL().GetWithEmptyPath().Resolve(
                         request.GetURL().path()))]
