@@ -59,6 +59,9 @@ class PinDialogManager final {
   // future PIN dialogs related to it.
   void RemoveSignRequest(const std::string& extension_id, int sign_request_id);
 
+  // Returns the number of pending sign requests stored in sign_requests_
+  int StoredSignRequestsForTesting() const;
+
   // Creates and displays a new PIN dialog, or reuses the old dialog with just
   // updating the parameters if active one exists.
   // |extension_id| - the ID of the extension requesting the dialog.

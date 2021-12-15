@@ -402,6 +402,9 @@ class CertificateProviderApiMockedExtensionTest
 
     // Wait for the extension to receive the sign request.
     ASSERT_TRUE(sign_digest_listener.WaitUntilSatisfied());
+    EXPECT_GT(cert_provider_service_->pin_dialog_manager()
+                  ->StoredSignRequestsForTesting(),
+              0);
 
     // Check that the certificate is available.
     scoped_refptr<net::X509Certificate> certificate = GetCertificate();
@@ -444,6 +447,11 @@ class CertificateProviderApiMockedExtensionTest
 
     // Wait for the https navigation to finish.
     navigation_observer.Wait();
+
+    // Make sure that sign request is removed from pin dialog manager.
+    EXPECT_EQ(cert_provider_service_->pin_dialog_manager()
+                  ->StoredSignRequestsForTesting(),
+              0);
 
     // Check whether the server acknowledged that a client certificate was
     // presented.

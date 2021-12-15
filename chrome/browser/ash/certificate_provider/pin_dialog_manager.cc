@@ -40,6 +40,10 @@ void PinDialogManager::RemoveSignRequest(const std::string& extension_id,
   sign_requests_.erase(key);
 }
 
+int PinDialogManager::StoredSignRequestsForTesting() const {
+  return sign_requests_.size();
+}
+
 PinDialogManager::RequestPinResult PinDialogManager::RequestPin(
     const std::string& extension_id,
     const std::string& extension_name,
