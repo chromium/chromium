@@ -41,7 +41,7 @@ final class BindService {
                     context, intent, flags, instanceName, executor, connection);
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
             return bindServiceByCall(context, intent, connection, flags);
         }
 
