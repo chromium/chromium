@@ -143,10 +143,6 @@ crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Flakily timing out on Win x64 Debug bot. Unfortunately we can't identify this
-# separately from the 32-bit bots.
-crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
@@ -156,19 +152,8 @@ crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLC
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
 crbug.com/1275180 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-# Flaky on Fuchsia.
-crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
-
-crbug.com/1254745 [ mac amd debug no-passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
-
-# Flaky tab crash on Win10 x64 Debug (NVIDIA)
-crbug.com/1238162 [ win10 nvidia-0x1cb3 debug ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
-
-# Flaky timeout awaiting crash Win10 FYI x64 Exp Release (Intel HD 630)
-crbug.com/1238162 [ win10 intel-0x5912 release ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
