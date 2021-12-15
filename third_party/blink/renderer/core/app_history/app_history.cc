@@ -373,7 +373,7 @@ void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
 AppHistoryResult* AppHistory::navigate(ScriptState* script_state,
                                        const String& url,
                                        AppHistoryNavigateOptions* options) {
-  KURL completed_url(GetSupplementable()->Url(), url);
+  KURL completed_url = GetSupplementable()->CompleteURL(url);
   if (!completed_url.IsValid()) {
     return EarlyErrorResult(script_state, DOMExceptionCode::kSyntaxError,
                             "Invalid URL '" + completed_url.GetString() + "'.");
