@@ -56,7 +56,7 @@ compile_js_files = [
   "nav.js",
   "new_feature_toast.js",
   "perf.js",
-  "snackbar.js",
+  "snackbar.ts",
   "sound.js",
   "state.js",
   "test_bridge.ts",
