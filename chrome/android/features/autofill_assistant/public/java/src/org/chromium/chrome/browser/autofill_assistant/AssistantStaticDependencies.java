@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -12,4 +15,11 @@ import org.chromium.ui.util.AccessibilityUtil;
  */
 public interface AssistantStaticDependencies {
     AccessibilityUtil getAccessibilityUtil();
+
+    /**
+     * Returns a utility for obscuring all tabs. NOTE: Each call returns a new instance that can
+     * only unobscure what it obscured!
+     */
+    @Nullable
+    AssistantTabObscuringUtil getTabObscuringUtilOrNull(WindowAndroid windowAndroid);
 }

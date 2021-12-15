@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -128,22 +127,24 @@ public class AutofillAssistantUiController {
 
         // TODO(crbug.com/1048983): Have the params be passed in to the constructor directly rather
         //         than obtaining them from ChromeActivity getters.
-        return new AutofillAssistantUiController(activity, sheetController,
-                activity.getTabObscuringHandler(), allowTabSwitching, nativeUiController,
-                dependencies, overlayCoordinator);
+        return new AutofillAssistantUiController(activity, sheetController, allowTabSwitching,
+                nativeUiController, dependencies, overlayCoordinator);
     }
 
     private AutofillAssistantUiController(ChromeActivity activity, BottomSheetController controller,
-            TabObscuringHandler tabObscuringHandler, boolean allowTabSwitching,
-            long nativeUiController, AssistantDependencies dependencies,
+            boolean allowTabSwitching, long nativeUiController, AssistantDependencies dependencies,
             @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         mNativeUiController = nativeUiController;
         mActivity = activity;
         mDependencies = dependencies;
         Supplier<View> rootView = activity.getCompositorViewHolderSupplier();
         mSnackbarFactory = dependencies.getSnackbarFactory();
+        // NOTE: Only create one instance of this unless you know what you are doing.
+        @Nullable
+        AssistantTabObscuringUtil tabObscuringUtil =
+                dependencies.getTabObscuringUtilOrNull(activity.getWindowAndroid());
 
-        mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
+        mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringUtil,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
                 activity.getActivityTabProvider(), activity.getBrowserControlsManager(),

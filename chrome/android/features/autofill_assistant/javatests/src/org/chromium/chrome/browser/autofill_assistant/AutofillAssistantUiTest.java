@@ -106,7 +106,8 @@ public class AutofillAssistantUiTest {
     private AssistantCoordinator createAndShowAssistantCoordinator() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
-                    initializeBottomSheet(), getActivity().getTabObscuringHandler(),
+                    initializeBottomSheet(),
+                    new AssistantTabObscuringUtilChrome(getActivity().getTabObscuringHandler()),
                     /* overlayCoordinator= */ null,
                     /* keyboardCoordinatorDelegate= */ null,
                     getActivity().getWindowAndroid().getKeyboardDelegate(),

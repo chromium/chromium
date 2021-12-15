@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -41,7 +40,7 @@ public class AssistantCoordinator {
     private final Supplier<Tab> mCurrentTabSupplier;
 
     AssistantCoordinator(Activity activity, BottomSheetController controller,
-            TabObscuringHandler tabObscuringHandler,
+            @Nullable AssistantTabObscuringUtil tabObscuringUtil,
             @Nullable AssistantOverlayCoordinator overlayCoordinator,
             AssistantKeyboardCoordinator.Delegate keyboardCoordinatorDelegate,
             @NonNull ActivityKeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
@@ -63,8 +62,8 @@ public class AssistantCoordinator {
         }
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
-                mOverlayCoordinator, controller, applicationBottomInsetProvider,
-                tabObscuringHandler, browserControlsManager, accessibilityUtil);
+                mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
+                browserControlsManager, accessibilityUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }
