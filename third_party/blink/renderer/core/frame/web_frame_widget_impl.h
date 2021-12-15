@@ -623,6 +623,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // overridden by tests to disable this.
   virtual bool ShouldAutoDetermineCompositingToLCDTextSetting();
 
+  WidgetBase* widget_base_for_testing() const { return widget_base_.get(); }
+
   // WebFrameWidget overrides.
   cc::LayerTreeHost* LayerTreeHost() override;
 
