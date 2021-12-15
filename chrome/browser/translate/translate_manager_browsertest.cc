@@ -502,7 +502,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test that hrefTranslate is propagating properly.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSuccess) {
+// The test is flaky. See https://crbug.com/1280123
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       DISABLE_HrefTranslateSuccess) {
   base::HistogramTester histograms;
   GetChromeTranslateClient()
       ->GetTranslateManager()
