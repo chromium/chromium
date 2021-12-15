@@ -87,7 +87,8 @@ ClientDownloadRequest::DownloadType GetDownloadType(
            file.MatchesExtension(FILE_PATH_LITERAL(".ppsx")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".ppsm")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".sldx")) ||
-           file.MatchesExtension(FILE_PATH_LITERAL(".rtf")))
+           file.MatchesExtension(FILE_PATH_LITERAL(".rtf")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".wll")))
     return ClientDownloadRequest::DOCUMENT;
 
   return ClientDownloadRequest::WIN_EXECUTABLE;
