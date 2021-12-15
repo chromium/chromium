@@ -2190,8 +2190,8 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   }
 }
 
-// Show a browser picker for this input element (crbug.com/939561).
-// https://github.com/whatwg/html/issues/6909
+// Show a browser picker for this input element.
+// https://html.spec.whatwg.org/multipage/input.html#dom-input-showpicker
 void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   LocalFrame* frame = GetDocument().GetFrame();
   // In cross-origin iframes it should throw a "SecurityError" DOMException

@@ -3403,6 +3403,7 @@ enum WebFeature {
   kAllowPaymentRequestAttributeHasEffect = 4094,
   kV8PaymentResponse_Retry_Method = 4095,
   kWebAppManifestUserPreferences = 4096,
+  kV8HTMLInputElement_ShowPicker_Method = 4097,
 
 
   // Add new features immediately above this line. Don't change assigned

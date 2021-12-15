@@ -1211,7 +1211,7 @@
     },
     {
       name: "HTMLInputElementShowPicker",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HTMLPopupElement",
