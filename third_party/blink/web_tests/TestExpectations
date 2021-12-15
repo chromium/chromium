@@ -2817,6 +2817,7 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-002.html [ Fail
 crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-009.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
+crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-color/oklab-001.html [ Failure ]
