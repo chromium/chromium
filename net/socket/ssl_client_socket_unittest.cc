@@ -979,23 +979,6 @@ class ClientSocketFactoryWithoutReadIfReady : public ClientSocketFactory {
                                            host_and_port, ssl_config);
   }
 
-  std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      NextProto negotiated_protocol,
-      ProxyDelegate* proxy_delegate,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override {
-    return factory_->CreateProxyClientSocket(
-        std::move(stream_socket), user_agent, endpoint, proxy_server,
-        http_auth_controller, tunnel, using_spdy, negotiated_protocol,
-        proxy_delegate, traffic_annotation);
-  }
-
  private:
   const raw_ptr<ClientSocketFactory> factory_;
 };

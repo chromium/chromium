@@ -29,7 +29,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_auth_controller.h"
-#include "net/http/proxy_client_socket.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
@@ -451,17 +450,6 @@ class StaticSocketDataProvider : public SocketDataProvider {
   bool paused_ = false;
 };
 
-// ProxyClientSocketDataProvider only need to keep track of the return code from
-// calls to Connect().
-struct ProxyClientSocketDataProvider {
-  ProxyClientSocketDataProvider(IoMode mode, int result);
-  ProxyClientSocketDataProvider(const ProxyClientSocketDataProvider& other);
-  ~ProxyClientSocketDataProvider();
-
-  // Result for Connect().
-  MockConnect connect;
-};
-
 // SSLSocketDataProviders only need to keep track of the return code from calls
 // to Connect().
 struct SSLSocketDataProvider {
@@ -653,12 +641,12 @@ class SocketDataProviderArray {
 class MockUDPClientSocket;
 class MockTCPClientSocket;
 class MockSSLClientSocket;
-class MockProxyClientSocket;
 
 // ClientSocketFactory which contains arrays of sockets of each type.
-// You should first fill the arrays using Add{SSL,ProxyClient,}SocketDataProvider(). When the
-// factory is asked to create a socket, it takes next entry from appropriate array. You can use
-// ResetNextMockIndexes to reset that next entry index for all mock socket types.
+// You should first fill the arrays using Add{SSL,}SocketDataProvider(). When
+// the factory is asked to create a socket, it takes next entry from appropriate
+// array. You can use ResetNextMockIndexes to reset that next entry index for
+// all mock socket types.
 class MockClientSocketFactory : public ClientSocketFactory {
  public:
   MockClientSocketFactory();
@@ -680,7 +668,6 @@ class MockClientSocketFactory : public ClientSocketFactory {
   void AddTcpSocketDataProvider(SocketDataProvider* socket);
 
   void AddSSLSocketDataProvider(SSLSocketDataProvider* socket);
-  void AddProxyClientSocketDataProvider(ProxyClientSocketDataProvider* socket);
   void ResetNextMockIndexes();
 
   SocketDataProviderArray<SocketDataProvider>& mock_data() {
@@ -690,9 +677,6 @@ class MockClientSocketFactory : public ClientSocketFactory {
   void set_enable_read_if_ready(bool enable_read_if_ready) {
     enable_read_if_ready_ = enable_read_if_ready;
   }
-
-  // Uses mock ProxyClientSocket instead of the default ProxyClientSocket.
-  void UseMockProxyClientSockets() { use_mock_proxy_client_sockets_ = true; }
 
   // ClientSocketFactory
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -710,17 +694,6 @@ class MockClientSocketFactory : public ClientSocketFactory {
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
       const SSLConfig& ssl_config) override;
-  std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      NextProto negotiated_protocol,
-      ProxyDelegate* proxy_delegate,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
   const std::vector<uint16_t>& udp_client_socket_ports() const {
     return udp_client_socket_ports_;
   }
@@ -729,13 +702,11 @@ class MockClientSocketFactory : public ClientSocketFactory {
   SocketDataProviderArray<SocketDataProvider> mock_data_;
   SocketDataProviderArray<SocketDataProvider> mock_tcp_data_;
   SocketDataProviderArray<SSLSocketDataProvider> mock_ssl_data_;
-  SocketDataProviderArray<ProxyClientSocketDataProvider> mock_proxy_data_;
   std::vector<uint16_t> udp_client_socket_ports_;
 
   // If true, ReadIfReady() is enabled; otherwise ReadIfReady() returns
   // ERR_READ_IF_READY_NOT_IMPLEMENTED.
   bool enable_read_if_ready_;
-  bool use_mock_proxy_client_sockets_ = false;
 };
 
 class MockClientSocket : public TransportClientSocket {
@@ -893,73 +864,6 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   BeforeConnectCallback before_connect_callback_;
 
   ConnectionAttempts connection_attempts_;
-};
-
-class MockProxyClientSocket : public AsyncSocket, public ProxyClientSocket {
- public:
-  MockProxyClientSocket(std::unique_ptr<StreamSocket> socket,
-                        HttpAuthController* auth_controller,
-                        ProxyClientSocketDataProvider* data);
-
-  MockProxyClientSocket(const MockProxyClientSocket&) = delete;
-  MockProxyClientSocket& operator=(const MockProxyClientSocket&) = delete;
-
-  ~MockProxyClientSocket() override;
-  // ProxyClientSocket implementation.
-  const HttpResponseInfo* GetConnectResponseInfo() const override;
-  const scoped_refptr<HttpAuthController>& GetAuthController() const override;
-  int RestartWithAuth(CompletionOnceCallback callback) override;
-  bool IsUsingSpdy() const override;
-  NextProto GetProxyNegotiatedProtocol() const override;
-
-  // Socket implementation.
-  int Read(IOBuffer* buf,
-           int buf_len,
-           CompletionOnceCallback callback) override;
-  int ReadIfReady(IOBuffer* buf,
-                  int buf_len,
-                  CompletionOnceCallback callback) override;
-  int Write(IOBuffer* buf,
-            int buf_len,
-            CompletionOnceCallback callback,
-            const NetworkTrafficAnnotationTag& traffic_annotation) override;
-
-  // StreamSocket implementation.
-  int Connect(CompletionOnceCallback callback) override;
-  void Disconnect() override;
-  bool IsConnected() const override;
-  bool IsConnectedAndIdle() const override;
-  bool WasEverUsed() const override;
-  int GetPeerAddress(IPEndPoint* address) const override;
-  int GetLocalAddress(IPEndPoint* address) const override;
-  bool WasAlpnNegotiated() const override;
-  NextProto GetNegotiatedProtocol() const override;
-  bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void ApplySocketTag(const SocketTag& tag) override;
-  const NetLogWithSource& NetLog() const override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
-  int64_t GetTotalReceivedBytes() const override;
-  int SetReceiveBufferSize(int32_t size) override;
-  int SetSendBufferSize(int32_t size) override;
-
-  // This MockSocket does not implement the manual async IO feature.
-  void OnReadComplete(const MockRead& data) override;
-  void OnWriteComplete(int rv) override;
-  void OnConnectComplete(const MockConnect& data) override;
-  void OnDataProviderDestroyed() override {}
-
- private:
-  void RunCallback(CompletionOnceCallback callback, int result);
-  void RunCallbackAsync(CompletionOnceCallback callback, int result);
-
-  NetLogWithSource net_log_;
-  std::unique_ptr<StreamSocket> socket_;
-  raw_ptr<ProxyClientSocketDataProvider> data_;
-  scoped_refptr<HttpAuthController> auth_controller_;
-
-  base::WeakPtrFactory<MockProxyClientSocket> weak_factory_{this};
 };
 
 class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {

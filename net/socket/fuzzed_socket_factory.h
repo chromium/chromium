@@ -55,18 +55,6 @@ class FuzzedSocketFactory : public ClientSocketFactory {
       const HostPortPair& host_and_port,
       const SSLConfig& ssl_config) override;
 
-  std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      NextProto negotiated_protocol,
-      ProxyDelegate* proxy_delegate,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
-
   // Sets whether Connect()ions on returned sockets can be asynchronously
   // delayed or outright fail. Defaults to true.
   void set_fuzz_connect_result(bool v) { fuzz_connect_result_ = v; }

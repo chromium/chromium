@@ -79,18 +79,19 @@ namespace {
 const char kServerHostname[] = "www.example.com";
 
 // List of errors for which fallback is expected on an HTTPS proxy.
+//
+// We omit `ERR_CONNECTION_CLOSED` because it is largely unreachable. The
+// HTTP/1.1 parser maps it to `ERR_EMPTY_RESPONSE` or
+// `ERR_RESPONSE_HEADERS_TRUNCATED` in most cases.
+//
+// TODO(davidben): Is omitting `ERR_EMPTY_RESPONSE` a bug in proxy error
+// handling?
 const int proxy_test_mock_errors[] = {
-    ERR_PROXY_CONNECTION_FAILED,
-    ERR_NAME_NOT_RESOLVED,
-    ERR_ADDRESS_UNREACHABLE,
-    ERR_CONNECTION_CLOSED,
-    ERR_CONNECTION_TIMED_OUT,
-    ERR_CONNECTION_RESET,
-    ERR_CONNECTION_REFUSED,
-    ERR_CONNECTION_ABORTED,
-    ERR_TIMED_OUT,
-    ERR_SOCKS_CONNECTION_FAILED,
-    ERR_PROXY_CERTIFICATE_INVALID,
+    ERR_PROXY_CONNECTION_FAILED, ERR_NAME_NOT_RESOLVED,
+    ERR_ADDRESS_UNREACHABLE,     ERR_CONNECTION_TIMED_OUT,
+    ERR_CONNECTION_RESET,        ERR_CONNECTION_REFUSED,
+    ERR_CONNECTION_ABORTED,      ERR_TIMED_OUT,
+    ERR_SOCKS_CONNECTION_FAILED, ERR_PROXY_CERTIFICATE_INVALID,
     ERR_SSL_PROTOCOL_ERROR,
 };
 
@@ -510,11 +511,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 //               fallback is NOT supposed to occur, and also vary across all of
 //               the proxy types.
 TEST_P(JobControllerReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
-  // Use mock proxy client sockets to test the fallback behavior of error codes
-  // returned by HttpProxyClientSocketWrapper. Errors returned by transport
-  // sockets usually get re-written by the wrapper class. crbug.com/826570.
-  session_deps_.socket_factory->UseMockProxyClientSockets();
-
   const int mock_error = GetParam();
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
@@ -526,42 +522,54 @@ TEST_P(JobControllerReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty())
       << mock_error;
 
+  // Configure the HTTP CONNECT to fail with `mock_error`.
+  //
+  // TODO(crbug.com/1279685): Test this more accurately. Errors like
+  // `ERR_PROXY_CONNECTION_FAILED` or `ERR_PROXY_CERTIFICATE_INVALID` are
+  // surfaced in response to other errors in TCP or TLS connection setup.
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ProxyClientSocketDataProvider proxy_data(ASYNC, mock_error);
+  static constexpr char kHttpConnect[] =
+      "CONNECT www.example.com:443 HTTP/1.1\r\n"
+      "Host: www.example.com:443\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n";
+  const MockWrite kWrites[] = {{ASYNC, kHttpConnect}};
+  const MockRead kReads[] = {{ASYNC, mock_error}};
 
-  StaticSocketDataProvider socket_data_proxy_main_job;
+  StaticSocketDataProvider socket_data_proxy_main_job(kReads, kWrites);
   socket_data_proxy_main_job.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(
       &socket_data_proxy_main_job);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
-  session_deps_.socket_factory->AddProxyClientSocketDataProvider(&proxy_data);
 
   // When retrying the job using the second proxy (badfallback:98),
   // alternative job must not be created. So, socket data for only the
   // main job is needed.
-  StaticSocketDataProvider socket_data_proxy_main_job_2;
+  StaticSocketDataProvider socket_data_proxy_main_job_2(kReads, kWrites);
   socket_data_proxy_main_job_2.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(
       &socket_data_proxy_main_job_2);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
-  session_deps_.socket_factory->AddProxyClientSocketDataProvider(&proxy_data);
 
-  // First request would use DIRECT, and succeed.
+  // First request would use DIRECT, and succeed. For this and the second
+  // request, `ssl_data` is a connection to the HTTPS origin. For the first two,
+  // it is a connection to the HTTPS proxy.
   StaticSocketDataProvider socket_data_direct_first_request;
   socket_data_direct_first_request.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(
       &socket_data_direct_first_request);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
   // Second request would use DIRECT, and succeed.
   StaticSocketDataProvider socket_data_direct_second_request;
   socket_data_direct_second_request.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(
       &socket_data_direct_second_request);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
   // Now request a stream. It should succeed using the DIRECT.
   HttpRequestInfo request_info;
   request_info.method = "GET";
-  request_info.url = GURL("http://www.example.com");
+  request_info.url = GURL("https://www.example.com");
 
   proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
   Initialize(std::move(proxy_resolution_service));
@@ -597,7 +605,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
 
 // Tests that ERR_MSG_TOO_BIG is retryable for QUIC proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
-  session_deps_.socket_factory->UseMockProxyClientSockets();
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
           "QUIC badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -645,7 +652,6 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
 // non-QUIC proxy on ERR_MSG_TOO_BIG.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest,
        DoNotReconsiderErrMsgTooBig) {
-  session_deps_.socket_factory->UseMockProxyClientSockets();
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
           "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -654,18 +660,22 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
   // Mock data for the HTTPS proxy socket.
+  static constexpr char kHttpConnect[] =
+      "CONNECT www.example.com:443 HTTP/1.1\r\n"
+      "Host: www.example.com:443\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n";
+  const MockWrite kWrites[] = {{ASYNC, kHttpConnect}};
+  const MockRead kReads[] = {{ASYNC, ERR_MSG_TOO_BIG}};
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ProxyClientSocketDataProvider proxy_data(ASYNC, ERR_MSG_TOO_BIG);
-  StaticSocketDataProvider https_proxy_socket;
+  StaticSocketDataProvider https_proxy_socket(kReads, kWrites);
   https_proxy_socket.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(&https_proxy_socket);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
-  session_deps_.socket_factory->AddProxyClientSocketDataProvider(&proxy_data);
 
   // Now request a stream. It should not fallback to DIRECT on ERR_MSG_TOO_BIG.
   HttpRequestInfo request_info;
   request_info.method = "GET";
-  request_info.url = GURL("http://www.example.com");
+  request_info.url = GURL("https://www.example.com");
 
   Initialize(std::move(proxy_resolution_service));
 

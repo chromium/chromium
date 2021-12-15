@@ -25,10 +25,6 @@ struct NetLogSource;
 class SSLClientContext;
 class SSLClientSocket;
 struct SSLConfig;
-class ProxyClientSocket;
-class ProxyDelegate;
-class ProxyServer;
-class HttpAuthController;
 class NetworkQualityEstimator;
 
 // An interface used to instantiate StreamSocket objects.  Used to facilitate
@@ -61,18 +57,6 @@ class NET_EXPORT ClientSocketFactory {
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
       const SSLConfig& ssl_config) = 0;
-
-  virtual std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      NextProto negotiated_protocol,
-      ProxyDelegate* proxy_delegate,
-      const NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 
   // Returns the default ClientSocketFactory.
   static ClientSocketFactory* GetDefaultFactory();
