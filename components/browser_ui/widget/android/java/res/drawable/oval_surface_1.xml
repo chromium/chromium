@@ -3,8 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+<shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:shape="rectangle"
-    app:surfaceElevation="@dimen/default_elevation_1"/>
+    android:shape="oval">
+    <solid android:color="@color/default_bg_color_elev_1_baseline" />
+</shape>
