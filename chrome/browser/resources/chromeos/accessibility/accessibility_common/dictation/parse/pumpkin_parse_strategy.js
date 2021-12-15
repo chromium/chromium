@@ -90,15 +90,15 @@ export class PumpkinParseStrategy extends ParseStrategy {
     const pumpkinTagger =
         new speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger();
     try {
-      const path = `dictation/pumpkin/${locale}/`;
+      const path = `${PumpkinParseStrategy.PUMPKIN_DIR}${locale}/`;
       let success = await pumpkinTagger.initializeFromPumpkinConfig(
-          `${path}pumpkin_config.binarypb`);
+          `${path}${PumpkinParseStrategy.PUMPKIN_CONFIG_PROTO_SRC}`);
       if (!success) {
         console.warn('Failed to load PumpkinTagger from PumpkinConfig.');
         return false;
       }
-      success =
-          await pumpkinTagger.loadActionFrame(`${path}action_config.binarypb`);
+      success = await pumpkinTagger.loadActionFrame(
+          `${path}${PumpkinParseStrategy.PUMPKIN_ACTION_CONFIG_PROTO_SRC}`);
       if (!success) {
         console.warn('Failed to load Pumpkin ActionConfig.');
         return false;
@@ -119,7 +119,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
   async loadPumpkinScripts_() {
     const pumpkinTaggerScript =
         /** @type {!HTMLScriptElement} */ (document.createElement('script'));
-    pumpkinTaggerScript.src = 'dictation/pumpkin/js_pumpkin_tagger_bin.js';
+    pumpkinTaggerScript.src = PumpkinParseStrategy.PUMPKIN_TAGGER_SRC;
     const taggerLoadPromise = new Promise((resolve, reject) => {
       pumpkinTaggerScript.addEventListener('load', () => {
         resolve();
@@ -130,7 +130,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
     const wasmModuleScript =
         /** @type {!HTMLScriptElement} */ (document.createElement('script'));
-    wasmModuleScript.src = 'dictation/pumpkin/tagger_wasm_main.js';
+    wasmModuleScript.src = PumpkinParseStrategy.PUMPKIN_WASM_SRC;
     const moduleLoadPromise = new Promise((resolve, reject) => {
       goog['global']['Module'] = {
         onRuntimeInitialized() {
@@ -257,3 +257,40 @@ PumpkinParseStrategy.HypothesisArgumentName = {
   NUM_ARG: 'NUM_ARG',
   OPEN_ENDED_TEXT: 'OPEN_ENDED_TEXT',
 };
+
+/**
+ * The pumpkin/ directory, relative to the accessibility common base directory.
+ * @type {string}
+ * @const
+ */
+PumpkinParseStrategy.PUMPKIN_DIR = 'dictation/parse/pumpkin/';
+
+/**
+ * The path to the pumpkin tagger source file.
+ * @type {string}
+ * @const
+ */
+PumpkinParseStrategy.PUMPKIN_TAGGER_SRC =
+    PumpkinParseStrategy.PUMPKIN_DIR + 'js_pumpkin_tagger_bin.js';
+
+/**
+ * The path to the pumpkin web assembly module source file.
+ * @type {string}
+ * @const
+ */
+PumpkinParseStrategy.PUMPKIN_WASM_SRC =
+    PumpkinParseStrategy.PUMPKIN_DIR + 'tagger_wasm_main.js';
+
+/**
+ * The name of the pumpkin config binary proto file.
+ * @type {string}
+ * @const
+ */
+PumpkinParseStrategy.PUMPKIN_CONFIG_PROTO_SRC = 'pumpkin_config.binarypb';
+
+/**
+ * The name of the pumpkin action config binary proto file.
+ * @type {string}
+ * @const
+ */
+PumpkinParseStrategy.PUMPKIN_ACTION_CONFIG_PROTO_SRC = 'action_config.binarypb';
