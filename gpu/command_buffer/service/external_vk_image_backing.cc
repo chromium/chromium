@@ -776,8 +776,7 @@ void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
     if (latest_content_ & kInSharedMemory) {
       if (!shared_memory_wrapper_.IsValid())
         return;
-      if (!WritePixelsWithData(shared_memory_wrapper_.GetMemoryAsSpan(),
-                               shared_memory_wrapper_.GetStride()))
+      if (!WritePixels())
         return;
       latest_content_ |=
           use_separate_gl_texture() ? kInVkImage : kInVkImage | kInGLTexture;
@@ -804,7 +803,10 @@ void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
 
 bool ExternalVkImageBacking::WritePixelsWithCallback(
     size_t data_size,
+    size_t stride,
     WriteBufferCallback callback) {
+  DCHECK(stride == 0 || size().height() * stride <= data_size);
+
   VkBufferCreateInfo buffer_create_info = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .size = data_size,
@@ -856,8 +858,10 @@ bool ExternalVkImageBacking::WritePixelsWithCallback(
           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
       backend_texture_.setVkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     }
-    command_buffer->CopyBufferToImage(stage_buffer, image_info.fImage,  //
-                                      0, 0, /* the buffer is packed */
+    uint32_t buffer_width =
+        stride ? stride * 8 / BitsPerPixel(format()) : size().width();
+    command_buffer->CopyBufferToImage(stage_buffer, image_info.fImage,
+                                      buffer_width, size().height(),
                                       size().width(), size().height());
   }
 
@@ -979,33 +983,59 @@ bool ExternalVkImageBacking::ReadPixelsWithCallback(
 bool ExternalVkImageBacking::WritePixelsWithData(
     base::span<const uint8_t> pixel_data,
     size_t stride) {
-  size_t row_copy_size = (BitsPerPixel(format()) * size().width()) / 8;
-  if (stride == 0) {
-    stride = row_copy_size;
+  std::vector<ExternalSemaphore> external_semaphores;
+  if (!BeginAccessInternal(false /* readonly */, &external_semaphores)) {
+    DLOG(ERROR) << "BeginAccess() failed.";
+    return false;
+  }
+  auto* gr_context = context_state_->gr_context();
+  WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
+
+  auto info = SkImageInfo::Make(size().width(), size().height(),
+                                ResourceFormatToClosestSkColorType(
+                                    /*gpu_compositing=*/true, format()),
+                                kOpaque_SkAlphaType);
+  SkPixmap pixmap(info, pixel_data.data(), stride);
+  if (!gr_context->updateBackendTexture(backend_texture_, &pixmap,
+                                        /*levels=*/1, nullptr, nullptr)) {
+    DLOG(ERROR) << "updateBackendTexture() failed.";
   }
 
-  DCHECK(stride >= row_copy_size);
-  DCHECK(stride <= pixel_data.size() / size().height());
+  if (!need_synchronization()) {
+    DCHECK(external_semaphores.empty());
+    EndAccessInternal(false /* readonly */, ExternalSemaphore());
+    return true;
+  }
 
-  return WritePixelsWithCallback(
-      pixel_data.size(),
-      base::BindOnce(
-          [](const ExternalVkImageBacking* backing,
-             base::span<const uint8_t> data, size_t stride,
-             size_t row_copy_size, void* buffer) {
-            uint8_t* dest = static_cast<uint8_t*>(buffer);
-            gfx::Size size = backing->size();
-            if (row_copy_size == stride) {
-              memcpy(dest, data.data(), row_copy_size * size.height());
-              return;
-            }
+  gr_context->flush({});
+  gr_context->setBackendTextureState(
+      backend_texture_,
+      GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                   VK_QUEUE_FAMILY_EXTERNAL));
 
-            for (int y = 0; y < size.height(); y++) {
-              memcpy(dest + y * row_copy_size, data.data() + y * stride,
-                     row_copy_size);
-            }
-          },
-          this, pixel_data, stride, row_copy_size));
+  auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
+  VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
+  GrBackendSemaphore end_access_backend_semaphore;
+  end_access_backend_semaphore.initVulkan(vk_end_access_semaphore);
+  GrFlushInfo flush_info = {
+      .fNumSemaphores = 1,
+      .fSignalSemaphores = &end_access_backend_semaphore,
+  };
+  gr_context->flush(flush_info);
+
+  // Submit so the |end_access_semaphore| is ready for waiting.
+  gr_context->submit();
+
+  EndAccessInternal(false /* readonly */, std::move(end_access_semaphore));
+  // |external_semaphores| have been waited on and can be reused when submitted
+  // GPU work is done.
+  ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
+  return true;
+}
+
+bool ExternalVkImageBacking::WritePixels() {
+  return WritePixelsWithData(shared_memory_wrapper_.GetMemoryAsSpan(),
+                             shared_memory_wrapper_.GetStride());
 }
 
 void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
@@ -1056,7 +1086,7 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   gl::ScopedPixelStore pack_alignment(GL_PACK_ALIGNMENT, 1);
 
   WritePixelsWithCallback(
-      checked_size.ValueOrDie(),
+      checked_size.ValueOrDie(), 0,
       base::BindOnce(
           [](gl::GLApi* api, const gfx::Size& size, GLenum format, GLenum type,
              void* buffer) {
