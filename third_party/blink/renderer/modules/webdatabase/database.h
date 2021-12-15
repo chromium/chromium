@@ -29,6 +29,7 @@
 #include <atomic>
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_error.h"
@@ -135,8 +136,9 @@ class Database final : public ScriptWrappable {
   bool PerformOpenAndVerify(bool set_version_in_new_database,
                             DatabaseError&,
                             String& error_message);
-  void RunCreationCallback(V8DatabaseCallback* creation_callback,
-                           std::unique_ptr<probe::AsyncTaskId> task_id);
+  void RunCreationCallback(
+      V8DatabaseCallback* creation_callback,
+      std::unique_ptr<probe::AsyncTaskContext> async_task_context);
 
   void ScheduleTransaction();
 
