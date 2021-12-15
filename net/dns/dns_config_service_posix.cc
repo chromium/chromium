@@ -25,6 +25,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/notify_watcher_mac.h"
+#include "net/dns/public/resolv_reader.h"
 #include "net/dns/serial_worker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -92,25 +93,13 @@ absl::optional<DnsConfig> ReadDnsConfig() {
                                                 base::BlockingType::MAY_BLOCK);
 
   absl::optional<DnsConfig> dns_config;
-// TODO(fuchsia): Use res_ninit() when it's implemented on Fuchsia.
-#if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
-  // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
-  // res_init behaves the same way.
-  memset(&_res, 0, sizeof(_res));
-  if (res_init() == 0)
-    dns_config = ConvertResStateToDnsConfig(_res);
-#else  // all other OS_POSIX
-  struct __res_state res;
-  memset(&res, 0, sizeof(res));
-  if (res_ninit(&res) == 0)
-    dns_config = ConvertResStateToDnsConfig(res);
-    // Prefer res_ndestroy where available.
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
-  res_ndestroy(&res);
-#else
-  res_nclose(&res);
-#endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
-#endif  // defined(OS_OPENBSD)
+  {
+    std::unique_ptr<ScopedResState> scoped_res_state =
+        ResolvReader().GetResState();
+    if (scoped_res_state) {
+      dns_config = ConvertResStateToDnsConfig(scoped_res_state->state());
+    }
+  }
 
   if (!dns_config.has_value())
     return dns_config;
@@ -265,58 +254,11 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
   if (!(res.options & RES_INIT))
     return absl::nullopt;
 
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
-  union res_sockaddr_union addresses[MAXNS];
-  int nscount = res_getservers(const_cast<res_state>(&res), addresses, MAXNS);
-  DCHECK_GE(nscount, 0);
-  DCHECK_LE(nscount, MAXNS);
-  for (int i = 0; i < nscount; ++i) {
-    IPEndPoint ipe;
-    if (!ipe.FromSockAddr(
-            reinterpret_cast<const struct sockaddr*>(&addresses[i]),
-            sizeof addresses[i])) {
-      return absl::nullopt;
-    }
-    dns_config.nameservers.push_back(ipe);
-  }
-#elif defined(OS_CHROMEOS)
-  static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
-                    std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
-                "incompatible libresolv res_state");
-  DCHECK_LE(res.nscount, MAXNS);
-  // Initially, glibc stores IPv6 in |_ext.nsaddrs| and IPv4 in |nsaddr_list|.
-  // In res_send.c:res_nsend, it merges |nsaddr_list| into |nsaddrs|,
-  // but we have to combine the two arrays ourselves.
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    const struct sockaddr* addr = nullptr;
-    size_t addr_len = 0;
-    if (res.nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]);
-      addr_len = sizeof res.nsaddr_list[i];
-    } else if (res._u._ext.nsaddrs[i]) {
-      addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
-      addr_len = sizeof *res._u._ext.nsaddrs[i];
-    } else {
-      return absl::nullopt;
-    }
-    if (!ipe.FromSockAddr(addr, addr_len))
-      return absl::nullopt;
-    dns_config.nameservers.push_back(ipe);
-  }
-#else   // !(defined(OS_CHROMEOS) || defined(OS_APPLE) || defined(OS_FREEBSD))
-  DCHECK_LE(res.nscount, MAXNS);
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    if (!ipe.FromSockAddr(
-            reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]),
-            sizeof res.nsaddr_list[i])) {
-      return absl::nullopt;
-    }
-    dns_config.nameservers.push_back(ipe);
-  }
-#endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
+  absl::optional<std::vector<IPEndPoint>> nameservers = GetNameservers(res);
+  if (!nameservers)
+    return absl::nullopt;
 
+  dns_config.nameservers = std::move(*nameservers);
   dns_config.search.clear();
   for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
     dns_config.search.emplace_back(res.dnsrch[i]);

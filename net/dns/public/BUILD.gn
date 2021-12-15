@@ -37,10 +37,12 @@ source_set("public") {
     "util.h",
   ]
 
-  if (is_linux) {
+  if (is_posix && !is_android) {
     sources += [
       "resolv_reader.cc",
       "resolv_reader.h",
+      "scoped_res_state.cc",
+      "scoped_res_state.h",
     ]
   }
 
@@ -70,7 +72,7 @@ source_set("tests") {
     "util_unittest.cc",
   ]
 
-  if (is_linux) {
+  if (is_posix && !is_android) {
     sources += [ "resolv_reader_unittest.cc" ]
   }
 

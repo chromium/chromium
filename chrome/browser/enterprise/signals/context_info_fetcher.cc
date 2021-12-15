@@ -27,8 +27,9 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_POSIX)
 #include "net/dns/public/resolv_reader.h"
+#include "net/dns/public/scoped_res_state.h"
 #endif
 
 #if defined(OS_MAC)
@@ -298,22 +299,19 @@ ScopedUfwConfigPathForTesting::~ScopedUfwConfigPathForTesting() {
 
 std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
   std::vector<std::string> dns_addresses;
-#if defined(OS_LINUX)
-  std::vector<net::IPEndPoint> nameservers;
-  std::unique_ptr<net::ResolvReader> resolv_reader =
-      std::make_unique<net::ResolvReader>();
-
-  std::unique_ptr<struct __res_state> res = resolv_reader->GetResState();
+#if defined(OS_POSIX)
+  std::unique_ptr<net::ScopedResState> res = net::ResolvReader().GetResState();
   if (res) {
-    if (net::GetNameservers(*res.get()).has_value())
-      nameservers = net::GetNameservers(*res.get()).value();
-    resolv_reader->CloseResState(res.get());
-    // If any name server is 0.0.0.0, assume the configuration is invalid.
-    for (const net::IPEndPoint& nameserver : nameservers) {
-      if (nameserver.address().IsZero())
-        return std::vector<std::string>();
-      else
-        dns_addresses.push_back(nameserver.ToString());
+    absl::optional<std::vector<net::IPEndPoint>> nameservers =
+        net::GetNameservers(res->state());
+    if (nameservers) {
+      // If any name server is 0.0.0.0, assume the configuration is invalid.
+      for (const net::IPEndPoint& nameserver : nameservers.value()) {
+        if (nameserver.address().IsZero())
+          return std::vector<std::string>();
+        else
+          dns_addresses.push_back(nameserver.ToString());
+      }
     }
   }
 #elif defined(OS_WIN)

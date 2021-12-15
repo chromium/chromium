@@ -52,7 +52,7 @@ const char* const kNameserversIPv4[] = {
 
 const char* const kNameserversIPv6[] = {
     nullptr,
-    "2001:DB8:0::42",
+    "2001:db8::42",
     nullptr,
     "::FFFF:129.144.52.38",
 };
@@ -226,25 +226,44 @@ class BlockingHelper {
       base::ThreadTaskRunnerHandle::Get();
 };
 
+class TestScopedResState : public ScopedResState {
+ public:
+  explicit TestScopedResState(std::unique_ptr<struct __res_state> res)
+      : res_(std::move(res)) {}
+
+  ~TestScopedResState() override {
+    if (res_) {
+      // Assume `res->_u._ext.nsaddrs` memory allocated via malloc, e.g. by
+      // `InitializeResState()`.
+      for (int i = 0; i < res_->nscount; ++i) {
+        if (res_->_u._ext.nsaddrs[i] != nullptr)
+          free(res_->_u._ext.nsaddrs[i]);
+      }
+    }
+  }
+
+  const struct __res_state& state() const override {
+    EXPECT_TRUE(res_);
+    return *res_;
+  }
+
+ private:
+  std::unique_ptr<struct __res_state> res_;
+};
+
 class TestResolvReader : public ResolvReader {
  public:
-  ~TestResolvReader() override {
-    if (value_)
-      CloseResState(value_.get());
-  }
+  ~TestResolvReader() override = default;
 
   void set_value(std::unique_ptr<struct __res_state> value) {
     CHECK(!value_);
-    CHECK(closed_);
-
-    value_ = std::move(value);
-    closed_ = false;
+    value_ = std::make_unique<TestScopedResState>(std::move(value));
   }
 
-  bool closed() { return closed_; }
+  bool closed() { return !value_; }
 
   // ResolvReader:
-  std::unique_ptr<struct __res_state> GetResState() override {
+  std::unique_ptr<ScopedResState> GetResState() override {
     if (blocking_helper_)
       blocking_helper_->WaitUntilUnblocked();
 
@@ -252,24 +271,12 @@ class TestResolvReader : public ResolvReader {
     return std::move(value_);
   }
 
-  void CloseResState(struct __res_state* res) override {
-    closed_ = true;
-
-    // Assume `res->_u._ext.nsaddrs` memory allocated via malloc, e.g. by
-    // `InitializeResState()`.
-    for (int i = 0; i < res->nscount; ++i) {
-      if (res->_u._ext.nsaddrs[i] != nullptr)
-        free(res->_u._ext.nsaddrs[i]);
-    }
-  }
-
   void set_blocking_helper(BlockingHelper* blocking_helper) {
     blocking_helper_ = blocking_helper;
   }
 
  private:
-  std::unique_ptr<struct __res_state> value_;
-  bool closed_ = true;  // Start "closed" until a value is set.
+  std::unique_ptr<TestScopedResState> value_;
   BlockingHelper* blocking_helper_ = nullptr;
 };
 
