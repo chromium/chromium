@@ -492,6 +492,11 @@ void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
 void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   DCHECK(IsOwnedByFrame(element, render_frame()));
 
+  if (element.GetDocument().IsNull() || !is_popup_possibly_visible_ ||
+      !element.Focused()) {
+    return;
+  }
+
   if (datalist_option_change_batch_timer_.IsRunning())
     datalist_option_change_batch_timer_.AbandonAndStop();
 
@@ -503,10 +508,8 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
 
 void AutofillAgent::BatchDataListOptionChange(
     const blink::WebFormControlElement& element) {
-  if (element.GetDocument().IsNull() || !is_popup_possibly_visible_ ||
-      !element.Focused()) {
+  if (element.GetDocument().IsNull())
     return;
-  }
 
   OnProvisionallySaveForm(WebFormElement(), element,
                           ElementChangeSource::TEXTFIELD_CHANGED);
