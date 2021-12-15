@@ -12,6 +12,7 @@ source_set("browser") {
     "//components/client_hints/common",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/embedder_support:browser_util",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",
