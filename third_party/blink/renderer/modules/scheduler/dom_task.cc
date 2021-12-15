@@ -67,8 +67,8 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");
   DCHECK(script_state && script_state->ContextIsValid());
-  probe::AsyncTaskScheduled(ExecutionContext::From(script_state), "postTask",
-                            &async_task_id_);
+  async_task_context_.Schedule(ExecutionContext::From(script_state),
+                               "postTask");
 }
 
 void DOMTask::Trace(Visitor* visitor) const {
@@ -121,7 +121,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context);
-  probe::AsyncTask async_task(context, &async_task_id_);
+  probe::AsyncTask async_task(context, &async_task_context_);
   probe::UserCallback probe(context, "postTask", AtomicString(), true);
 
   v8::Local<v8::Context> v8_context = script_state->GetContext();
@@ -148,8 +148,7 @@ void DOMTask::OnAbort() {
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Abort");
   DCHECK(script_state && script_state->ContextIsValid());
-  probe::AsyncTaskCanceled(ExecutionContext::From(script_state),
-                           &async_task_id_);
+  async_task_context_.Cancel();
 }
 
 void DOMTask::RecordTaskStartMetrics() {

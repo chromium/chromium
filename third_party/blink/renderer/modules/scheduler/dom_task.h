@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
@@ -42,7 +42,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   // Do not remove. For dynamic priority task queues, |signal_| ensures that the
   // associated WebSchedulingTaskQueue stays alive until after this task runs,
   // which is necessary to ensure throttling works correctly.
