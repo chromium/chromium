@@ -157,6 +157,20 @@ public abstract class AsyncTask<Result> {
     }
 
     /**
+     * Returns the current status of this task, with adjustments made to make UMA more useful.
+     * Namely, we are going to return "PENDING" until the asynctask actually starts running. Right
+     * now, as soon as you try to schedule the AsyncTask, it gets set to "RUNNING" which doesn't
+     * make sense. However, we aren't fixing this globally as this is the well-defined API
+     * AsyncTasks have, so we are just fixing this for our UMA reporting.
+     *
+     * @return The current status.
+     */
+    public final @Status int getUmaStatus() {
+        if (mStatus == Status.RUNNING && !mTaskInvoked.get()) return Status.PENDING;
+        return mStatus;
+    }
+
+    /**
      * Override this method to perform a computation on a background thread.
      *
      * @return A result, defined by the subclass of this task.
@@ -294,7 +308,7 @@ public abstract class AsyncTask<Result> {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public final Result get() throws InterruptedException, ExecutionException {
         Result r;
-        int status = getStatus();
+        int status = getUmaStatus();
         if (status != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
             RecordHistogram.recordEnumeratedHistogram(
                     GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);
@@ -332,7 +346,7 @@ public abstract class AsyncTask<Result> {
     public final Result get(long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
         Result r;
-        int status = getStatus();
+        int status = getUmaStatus();
         if (status != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
             RecordHistogram.recordEnumeratedHistogram(
                     GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);
