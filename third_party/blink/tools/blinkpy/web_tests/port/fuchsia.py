@@ -64,6 +64,8 @@ def _import_fuchsia_runner():
     # pylint: disable=redefined-outer-name
     global aemu_target
     import aemu_target
+    global ConnectPortForwardingTask
+    from common import ConnectPortForwardingTask
     global _GetPathToBuiltinTarget, _LoadTargetClass
     from common_args import _GetPathToBuiltinTarget, _LoadTargetClass
     global device_target
@@ -182,6 +184,9 @@ class _TargetHost(object):
             if self._target:
                 self._target.Stop()
 
+    def setup_forwarded_port(self, port):
+        return ConnectPortForwardingTask(self._target, port)
+
 
 class FuchsiaPort(base.Port):
     port_name = 'fuchsia'
@@ -210,7 +215,6 @@ class FuchsiaPort(base.Port):
 
         self._target_host = self.get_option('fuchsia_target')
         self._zircon_logger = None
-        self._host_ip = self.get_option('fuchsia_host_ip')
         _import_fuchsia_runner()
 
     def _driver_class(self):
@@ -257,7 +261,8 @@ class FuchsiaPort(base.Port):
                 hardware_gpu=False,
                 with_network=False,
                 logs_dir=self.results_directory(),
-                custom_image=None)
+                custom_image=None,
+                system_image_dir=None)
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)
@@ -339,8 +344,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
             server_name,
             cmd_line,
             environment,
-            more_logging=self._port.get_option('driver_logging'),
-            host_ip=self._port._host_ip)
+            more_logging=self._port.get_option('driver_logging'))
 
     def _base_cmd_line(self):
         cmd = [
@@ -379,12 +383,10 @@ class FuchsiaServerProcess(server_process.ServerProcess):
                  cmd,
                  env=None,
                  treat_no_data_as_crash=False,
-                 more_logging=False,
-                 host_ip=None):
+                 more_logging=False):
         super(FuchsiaServerProcess, self).__init__(
             port_obj, name, cmd, env, treat_no_data_as_crash, more_logging)
         self._symbolizer_proc = None
-        self._host_ip = host_ip or qemu_target.HOST_IP_ADDRESS
 
     def _start(self):
         if self._proc:
@@ -393,18 +395,20 @@ class FuchsiaServerProcess(server_process.ServerProcess):
 
         # Fuchsia doesn't support stdin stream for packaged applications, so the
         # stdin stream for content_shell is routed through a separate TCP
-        # socket. Open a local socket and then pass the address with the port as
-        # --stdin-redirect parameter. content_shell will connect to this address
-        # and will use that connection as its stdin stream.
+        # socket. The socket is reverse-forwarded from the device to the script
+        # over SSH.
         listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
-        stdin_port = listen_socket.getsockname()[1]
+        stdin_port = int(listen_socket.getsockname()[1])
+        forwarded_stdin_port = \
+            self._port.get_target_host().setup_forwarded_port(stdin_port)
 
         command = ['%s=%s' % (k, v) for k, v in self._env.items()] + \
             self._cmd + \
-            ['--no-sandbox', '--stdin-redirect=%s:%s' %
-             (self._host_ip, stdin_port)]
+            ['--no-sandbox', '--stdin-redirect=127.0.0.1:%d' %
+             (forwarded_stdin_port)]
+
         proc = self._port.get_target_host().run_command(command)
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()
