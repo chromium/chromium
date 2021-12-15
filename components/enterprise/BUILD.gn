@@ -91,33 +91,37 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = []
-  deps = []
+  sources = [ "browser/reporting/report_uploader_unittest.cc" ]
+
+  deps = [
+    ":enterprise",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/policy/core/common:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
   if (!is_chromeos_ash) {
     sources += [
       "browser/controller/browser_dm_token_storage_unittest.cc",
       "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
-      "browser/reporting/report_uploader_unittest.cc",
     ]
 
     deps += [
-      ":enterprise",
       ":test_support",
       "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/policy/core/browser:test_support",
-      "//components/policy/core/common:test_support",
       "//components/prefs:test_support",
-      "//components/reporting/client:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
+  if (!is_android) {
     sources += [ "browser/reporting/real_time_uploader_unittest.cc" ]
+    deps += [
+      "//base",
+      "//components/enterprise/common/proto:extensions_workflow_events_proto",
+      "//components/reporting/client:test_support",
+    ]
   }
 }
