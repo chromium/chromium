@@ -228,4 +228,18 @@ TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
             SkColorSetA(gfx::kGoogleGrey900, 0x14));
 }
 
+TEST_F(SuggestionChipViewTest, FontWeight) {
+  auto widget = CreateFramelessTestWidget();
+  auto* suggestion_chip_view =
+      widget->SetContentsView(std::make_unique<SuggestionChipView>(
+          /*delegate=*/nullptr,
+          CreateSuggestionWithIconUrl(
+              "googleassistant://resource?type=icon&name=assistant")));
+
+  views::Label* label = static_cast<views::Label*>(
+      suggestion_chip_view->GetViewByID(kSuggestionChipViewLabel));
+
+  EXPECT_EQ(label->font_list().GetFontWeight(), gfx::Font::Weight::MEDIUM);
+}
+
 }  // namespace ash
