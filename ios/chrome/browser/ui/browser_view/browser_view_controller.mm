@@ -2886,32 +2886,38 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _fullscreenDisabler =
         std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
   }
-  // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
-  // view is taken, the snapshot will be a blank view. However, if the view's
-  // parent is hidden but the view itself is not, the snapshot will not be a
-  // blank view.
-  [self.tabStripSnapshot removeFromSuperview];
-  // During initial setup, the tab strip view may be nil, but the missing
-  // snapshot will never be visible because all three animation methods are
-  // called in succession.
-  if (self.tabStripView && !base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
-    self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
-    self.tabStripSnapshot.transform =
-        currentViewRevealState == ViewRevealState::Hidden
-            ? [self.tabStripView
-                  adjustTransformForRTL:CGAffineTransformIdentity]
-            : [self.tabStripView
-                  adjustTransformForRTL:CGAffineTransformMakeTranslation(
-                                            0, self.tabStripView.frame.size
-                                                   .height)];
-    self.tabStripSnapshot.alpha =
-        currentViewRevealState == ViewRevealState::Revealed ||
-                currentViewRevealState == ViewRevealState::Fullscreen
-            ? 0
-            : 1;
-    [self.contentArea addSubview:self.tabStripSnapshot];
-    AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
+
+  // Hide the tab strip and take a snapshot of it for better animation. However,
+  // this is not necessary to do if the thumb strip will never actually be
+  // revealed.
+  if (currentViewRevealState != ViewRevealState::Hidden ||
+      nextViewRevealState != ViewRevealState::Hidden) {
+    // If a snapshot of a hidden view is taken, the snapshot will be a blank
+    // view. However, if the view's parent is hidden but the view itself is not,
+    // the snapshot will not be a blank view.
+    [self.tabStripSnapshot removeFromSuperview];
+    // During initial setup, the tab strip view may be nil, but the missing
+    // snapshot will never be visible because all three animation methods are
+    // called in succession.
+    if (self.tabStripView && !base::FeatureList::IsEnabled(kModernTabStrip)) {
+      self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
+      self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
+      self.tabStripSnapshot.transform =
+          currentViewRevealState == ViewRevealState::Hidden
+              ? [self.tabStripView
+                    adjustTransformForRTL:CGAffineTransformIdentity]
+              : [self.tabStripView
+                    adjustTransformForRTL:CGAffineTransformMakeTranslation(
+                                              0, self.tabStripView.frame.size
+                                                     .height)];
+      self.tabStripSnapshot.alpha =
+          currentViewRevealState == ViewRevealState::Revealed ||
+                  currentViewRevealState == ViewRevealState::Fullscreen
+              ? 0
+              : 1;
+      [self.contentArea addSubview:self.tabStripSnapshot];
+      AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
+    }
   }
 
   // Remove the fake status bar to allow the thumb strip animations to appear.
