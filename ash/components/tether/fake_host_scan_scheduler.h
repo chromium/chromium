@@ -7,7 +7,7 @@
 
 #include "ash/components/tether/host_scan_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -32,6 +32,6 @@ class FakeHostScanScheduler : public HostScanScheduler {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_HOST_SCAN_SCHEDULER_H_

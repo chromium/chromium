@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/device_id_tether_network_guid_map.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -26,4 +26,4 @@ std::string DeviceIdTetherNetworkGuidMap::GetTetherNetworkGuidForDeviceId(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

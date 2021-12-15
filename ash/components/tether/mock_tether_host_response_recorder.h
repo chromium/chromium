@@ -11,7 +11,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -37,6 +37,6 @@ class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_MOCK_TETHER_HOST_RESPONSE_RECORDER_H_

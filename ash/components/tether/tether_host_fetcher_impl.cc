@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/remote_device.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -113,4 +113,4 @@ TetherHostFetcherImpl::GenerateHostDeviceList() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

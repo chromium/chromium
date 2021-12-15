@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 #define ASH_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -45,6 +45,6 @@ class TetherSessionCompletionLogger {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_

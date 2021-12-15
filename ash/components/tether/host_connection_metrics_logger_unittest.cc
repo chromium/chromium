@@ -13,7 +13,7 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -408,4 +408,4 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

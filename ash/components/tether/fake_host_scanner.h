@@ -7,7 +7,7 @@
 
 #include "ash/components/tether/host_scanner.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -37,6 +37,6 @@ class FakeHostScanner : public HostScanner {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_HOST_SCANNER_H_

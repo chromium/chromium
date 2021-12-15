@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -51,6 +51,6 @@ class DisconnectTetheringRequestSender {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_DISCONNECT_TETHERING_REQUEST_SENDER_H_

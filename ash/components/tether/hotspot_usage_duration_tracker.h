@@ -12,7 +12,7 @@ namespace base {
 class Clock;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -46,6 +46,6 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_

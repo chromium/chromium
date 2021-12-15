@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 namespace tether {
 
 TestTimerFactory::TestTimerFactory() = default;
@@ -20,4 +20,4 @@ std::unique_ptr<base::OneShotTimer> TestTimerFactory::CreateOneShotTimer() {
 }
 
 }  // namespace tether
-}  // namespace chromeos
+}  // namespace ash

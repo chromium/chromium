@@ -8,7 +8,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -38,4 +38,4 @@ void FakeWifiHotspotConnector::ConnectToWifiHotspot(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

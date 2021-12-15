@@ -24,7 +24,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -245,4 +245,4 @@ void TetherComponentImpl::OnShutdownComplete() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

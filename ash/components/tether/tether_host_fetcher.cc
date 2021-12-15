@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -53,4 +53,4 @@ void TetherHostFetcher::NotifyTetherHostsUpdated() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

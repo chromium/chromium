@@ -9,7 +9,7 @@
 
 #include "ash/components/tether/network_configuration_remover.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -39,6 +39,6 @@ class FakeNetworkConfigurationRemover : public NetworkConfigurationRemover {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_NETWORK_CONFIGURATION_REMOVER_H_

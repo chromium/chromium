@@ -20,11 +20,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when multidevice_setup moved to ash
+namespace multidevice_setup = ::chromeos::multidevice_setup;
 
 const size_t kNumTestDevices = 5;
 
@@ -308,4 +311,4 @@ TEST_F(TetherHostFetcherImplTest,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

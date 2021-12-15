@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/gms_core_notifications_state_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -27,4 +27,4 @@ void GmsCoreNotificationsStateTracker::NotifyGmsCoreNotificationStateChanged() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

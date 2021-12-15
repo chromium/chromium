@@ -20,7 +20,7 @@
 #include "chromeos/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -311,4 +311,4 @@ bool HostScannerImpl::CanAvailableHostNotificationBeShown() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

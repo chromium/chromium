@@ -98,4 +98,11 @@ class ClientChannel {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::ClientChannel;
+}  // namespace secure_channel
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_H_

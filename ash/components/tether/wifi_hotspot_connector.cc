@@ -21,7 +21,7 @@
 #include "chromeos/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -301,4 +301,4 @@ void WifiHotspotConnector::SetTestDoubles(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

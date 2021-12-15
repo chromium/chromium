@@ -18,14 +18,14 @@
 #include "components/onc/onc_constants.h"
 #include "url/gurl.h"
 
-namespace base {
-class Value;
-}
-
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 class MobileActivatorTest;
-}
+}  // namespace ash
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace chromeos {
 

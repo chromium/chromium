@@ -14,7 +14,7 @@
 using testing::_;
 using testing::NiceMock;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -61,4 +61,4 @@ TEST_F(NetworkConfigurationRemoverTest, TestRemoveNetworkConfiguration) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

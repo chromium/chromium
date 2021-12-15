@@ -96,4 +96,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+using ::chromeos::MockManagedNetworkConfigurationHandler;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_MOCK_MANAGED_NETWORK_CONFIGURATION_HANDLER_H_

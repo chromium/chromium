@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_tether_component.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -31,4 +31,4 @@ void FakeTetherComponent::RequestShutdown(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

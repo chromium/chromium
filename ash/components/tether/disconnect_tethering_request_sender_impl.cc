@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -140,4 +140,4 @@ void DisconnectTetheringRequestSenderImpl::OnOperationFinished(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

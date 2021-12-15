@@ -11,7 +11,7 @@
 #include "ash/components/tether/host_scan_cache_entry.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -66,6 +66,6 @@ class HostScanCache {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCAN_CACHE_H_

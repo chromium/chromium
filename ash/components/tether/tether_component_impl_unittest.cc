@@ -20,7 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -310,4 +310,4 @@ TEST_F(TetherComponentImplTest, TestShutdown_BeforeCrashRecoveryComplete) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

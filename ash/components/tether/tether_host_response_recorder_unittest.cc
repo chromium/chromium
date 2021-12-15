@@ -12,7 +12,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -176,4 +176,4 @@ TEST_F(TetherHostResponseRecorderTest, TestBothResponseTypes) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

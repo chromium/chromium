@@ -13,7 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -65,6 +65,6 @@ class TetherDisconnectorImpl : public TetherDisconnector {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_DISCONNECTOR_IMPL_H_

@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -106,4 +106,4 @@ TEST_F(TetherSessionCompletionLoggerTest, TestBetterTogetherSuiteDisabled) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

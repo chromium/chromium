@@ -13,11 +13,14 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when secure_channel moved to ash
+namespace secure_channel = ::chromeos::secure_channel;
 
 const char kTetherFeature[] = "magic_tether";
 
@@ -227,4 +230,4 @@ void ConnectionPreserverImpl::SetTimerForTesting(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

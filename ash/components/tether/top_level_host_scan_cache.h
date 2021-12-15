@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -86,6 +86,6 @@ class TopLevelHostScanCache : public HostScanCache {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TOP_LEVEL_HOST_SCAN_CACHE_H_

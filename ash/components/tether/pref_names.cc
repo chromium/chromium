@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -33,4 +33,4 @@ const char kHostScanCache[] = "tether.host_scan_cache";
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

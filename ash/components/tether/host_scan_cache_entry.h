@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -75,6 +75,6 @@ class HostScanCacheEntry {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCAN_CACHE_ENTRY_H_

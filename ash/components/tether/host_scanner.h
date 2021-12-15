@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -52,6 +52,6 @@ class HostScanner {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCANNER_H_

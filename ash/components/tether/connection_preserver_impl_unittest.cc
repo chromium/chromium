@@ -31,7 +31,7 @@ using testing::_;
 using testing::NiceMock;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -306,4 +306,4 @@ TEST_F(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

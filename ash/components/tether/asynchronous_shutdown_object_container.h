@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -45,6 +45,6 @@ class AsynchronousShutdownObjectContainer {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_

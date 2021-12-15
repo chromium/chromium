@@ -15,7 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -133,4 +133,4 @@ void WifiHotspotDisconnectorImpl::CleanUpAfterWifiDisconnection(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

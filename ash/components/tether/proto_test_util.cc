@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/proto_test_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -41,4 +41,4 @@ DeviceStatus CreateDeviceStatusWithFakeFields() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

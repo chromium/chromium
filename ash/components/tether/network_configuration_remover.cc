@@ -26,7 +26,7 @@ void RemoveConfigurationFailureCallback(
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -47,4 +47,4 @@ void NetworkConfigurationRemover::RemoveNetworkConfigurationByPath(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

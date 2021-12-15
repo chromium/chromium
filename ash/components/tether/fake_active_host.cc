@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -109,4 +109,4 @@ void FakeActiveHost::SetActiveHost(ActiveHostStatus active_host_status,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

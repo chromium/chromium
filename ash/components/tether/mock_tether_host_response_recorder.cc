@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/mock_tether_host_response_recorder.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -15,4 +15,4 @@ MockTetherHostResponseRecorder::~MockTetherHostResponseRecorder() = default;
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

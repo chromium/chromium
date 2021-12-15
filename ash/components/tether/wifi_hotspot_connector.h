@@ -12,17 +12,19 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_connect.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace base {
 class TaskRunner;
 }  // namespace base
 
-namespace chromeos {
-
-class NetworkConnect;
-class NetworkState;
-class NetworkStateHandler;
+namespace ash {
 
 namespace tether {
 
@@ -97,6 +99,6 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_WIFI_HOTSPOT_CONNECTOR_H_

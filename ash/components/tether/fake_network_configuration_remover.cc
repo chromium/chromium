@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_network_configuration_remover.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -21,4 +21,4 @@ void FakeNetworkConfigurationRemover::RemoveNetworkConfigurationByPath(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

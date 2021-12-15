@@ -17,7 +17,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -92,6 +92,6 @@ class TetherHostResponseRecorder {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_HOST_RESPONSE_RECORDER_H_

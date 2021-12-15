@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_gms_core_notifications_state_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -26,4 +26,4 @@ std::vector<std::string> FakeGmsCoreNotificationsStateTracker::
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

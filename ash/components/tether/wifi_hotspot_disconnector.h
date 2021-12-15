@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "chromeos/network/network_connection_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -36,6 +36,6 @@ class WifiHotspotDisconnector {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_H_

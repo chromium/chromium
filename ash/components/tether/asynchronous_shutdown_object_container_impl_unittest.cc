@@ -25,7 +25,7 @@ using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -167,4 +167,4 @@ TEST_F(AsynchronousShutdownObjectContainerImplTest,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/tether_component.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -35,4 +35,4 @@ void TetherComponent::TransitionToStatus(Status new_status) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

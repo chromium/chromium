@@ -27,11 +27,6 @@ class NetworkStateHandler;
 namespace secure_channel {
 class SecureChannelClient;
 }  // namespace secure_channel
-namespace tether {
-class GmsCoreNotificationsStateTracker;
-class GmsCoreNotificationsStateTrackerImpl;
-class NotificationPresenter;
-}  // namespace tether
 }  // namespace chromeos
 
 namespace session_manager {
@@ -45,6 +40,10 @@ class PrefRegistrySyncable;
 namespace ash {
 namespace tether {
 
+class GmsCoreNotificationsStateTracker;
+class GmsCoreNotificationsStateTrackerImpl;
+class NotificationPresenter;
+
 // Service providing access to the Instant Tethering component. Provides an
 // interface to start up the component as well as to retrieve metadata about
 // ongoing Tether connections.
@@ -54,10 +53,10 @@ namespace tether {
 class TetherService
     : public KeyedService,
       public chromeos::PowerManagerClient::Observer,
-      public chromeos::tether::TetherHostFetcher::Observer,
+      public TetherHostFetcher::Observer,
       public device::BluetoothAdapter::Observer,
       public chromeos::NetworkStateHandlerObserver,
-      public chromeos::tether::TetherComponent::Observer,
+      public TetherComponent::Observer,
       public chromeos::device_sync::DeviceSyncClient::Observer,
       public chromeos::multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
@@ -86,7 +85,7 @@ class TetherService
   // Should only be called once a user is logged in.
   virtual void StartTetherIfPossible();
 
-  virtual chromeos::tether::GmsCoreNotificationsStateTracker*
+  virtual GmsCoreNotificationsStateTracker*
   GetGmsCoreNotificationsStateTracker();
 
  protected:
@@ -97,7 +96,7 @@ class TetherService
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
-  // chromeos::tether::TetherHostFetcher::Observer
+  // TetherHostFetcher::Observer
   void OnTetherHostsUpdated() override;
 
   // device::BluetoothAdapter::Observer:
@@ -111,7 +110,7 @@ class TetherService
   // Helper method called from NetworkStateHandlerObserver methods.
   void UpdateEnabledState();
 
-  // chromeos::tether::TetherComponent::Observer:
+  // TetherComponent::Observer:
   void OnShutdownComplete() override;
 
   // chromeos::device_sync::DeviceSyncClient::Observer:
@@ -236,9 +235,9 @@ class TetherService
 
   void LogUserPreferenceChanged(bool is_now_enabled);
 
-  void SetTestDoubles(std::unique_ptr<chromeos::tether::NotificationPresenter>
-                          notification_presenter,
-                      std::unique_ptr<base::OneShotTimer> timer);
+  void SetTestDoubles(
+      std::unique_ptr<NotificationPresenter> notification_presenter,
+      std::unique_ptr<base::OneShotTimer> timer);
 
   // Whether the service has been shut down.
   bool shut_down_ = false;
@@ -275,12 +274,11 @@ class TetherService
       multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;
   session_manager::SessionManager* session_manager_;
-  std::unique_ptr<chromeos::tether::NotificationPresenter>
-      notification_presenter_;
-  std::unique_ptr<chromeos::tether::GmsCoreNotificationsStateTrackerImpl>
+  std::unique_ptr<NotificationPresenter> notification_presenter_;
+  std::unique_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;
-  std::unique_ptr<chromeos::tether::TetherHostFetcher> tether_host_fetcher_;
-  std::unique_ptr<chromeos::tether::TetherComponent> tether_component_;
+  std::unique_ptr<TetherHostFetcher> tether_host_fetcher_;
+  std::unique_ptr<TetherComponent> tether_component_;
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<base::OneShotTimer> timer_;

@@ -11,7 +11,7 @@
 #include "ash/components/tether/notification_presenter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -60,6 +60,6 @@ class FakeNotificationPresenter : public NotificationPresenter {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_NOTIFICATION_PRESENTER_H_

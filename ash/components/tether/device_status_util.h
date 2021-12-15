@@ -7,7 +7,7 @@
 
 #include "ash/components/tether/proto/tether.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -34,6 +34,6 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_DEVICE_STATUS_UTIL_H_

@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -37,6 +37,6 @@ class DeviceIdTetherNetworkGuidMap {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_DEVICE_ID_TETHER_NETWORK_GUID_MAP_H_

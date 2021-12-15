@@ -9,7 +9,7 @@
 
 #include "ash/components/tether/tether_session_completion_logger.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -41,6 +41,6 @@ class FakeTetherSessionCompletionLogger : public TetherSessionCompletionLogger {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_TETHER_SESSION_COMPLETION_LOGGER_H_

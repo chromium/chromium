@@ -10,6 +10,18 @@
 #include "ash/components/tether/tether_component.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/managed_network_configuration_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_connect.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -23,20 +35,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
-
-class ManagedNetworkConfigurationHandler;
-class NetworkConnect;
-class NetworkConnectionHandler;
-class NetworkStateHandler;
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
+namespace ash {
 
 namespace tether {
 
@@ -136,6 +135,6 @@ class TetherComponentImpl : public TetherComponent {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_COMPONENT_IMPL_H_

@@ -12,7 +12,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -69,6 +69,6 @@ class TetherHostFetcher {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_HOST_FETCHER_H_

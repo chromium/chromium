@@ -29,7 +29,7 @@
 using testing::_;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -360,4 +360,4 @@ TEST_F(HostScannerOperationTest, SetupRequired) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

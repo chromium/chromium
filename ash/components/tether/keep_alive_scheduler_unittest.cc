@@ -18,7 +18,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -310,4 +310,4 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_MultipleActiveHosts) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

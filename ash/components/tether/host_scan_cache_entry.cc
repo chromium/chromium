@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -87,4 +87,4 @@ bool HostScanCacheEntry::operator==(const HostScanCacheEntry& other) const {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

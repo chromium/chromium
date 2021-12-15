@@ -12,10 +12,10 @@
 #include "ash/components/tether/host_scan_cache.h"
 #include "ash/components/tether/tether_host_response_recorder.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 namespace tether {
 
@@ -62,6 +62,6 @@ class NetworkHostScanCache : public HostScanCache,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_NETWORK_HOST_SCAN_CACHE_H_

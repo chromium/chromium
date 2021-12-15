@@ -10,7 +10,7 @@
 
 #include "ash/components/tether/host_scan_cache_entry.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -55,6 +55,6 @@ std::unordered_map<std::string, HostScanCacheEntry> CreateTestEntries();
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCAN_TEST_UTIL_H_

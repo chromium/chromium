@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -23,4 +23,4 @@ void TetherSessionCompletionLogger::RecordTetherSessionCompletion(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

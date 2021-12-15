@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_HOST_SCAN_SCHEDULER_H_
 #define ASH_COMPONENTS_TETHER_HOST_SCAN_SCHEDULER_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -27,6 +27,6 @@ class HostScanScheduler {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCAN_SCHEDULER_H_

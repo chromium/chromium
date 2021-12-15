@@ -15,10 +15,6 @@ class Profile;
 
 namespace chromeos {
 
-namespace tether {
-class GmsCoreNotificationsStateTracker;
-}  // namespace tether
-
 namespace settings {
 
 // Chrome OS Internet settings page UI handler.

@@ -6,7 +6,7 @@
 
 #include "base/cxx17_backports.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -50,4 +50,4 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

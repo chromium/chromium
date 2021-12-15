@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_connection_preserver.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -19,4 +19,4 @@ void FakeConnectionPreserver::HandleSuccessfulTetherAvailabilityResponse(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

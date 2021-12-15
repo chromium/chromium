@@ -13,19 +13,21 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 
+namespace ash {
+namespace tether {
+class NetworkListSorterTest;
+}  // namespace tether
+}  // namespace ash
+
 namespace base {
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 
 class DeviceState;
 class NetworkState;
 class NetworkTypePattern;
-
-namespace tether {
-class NetworkListSorterTest;
-}
 
 // Base class for states managed by NetworkStateManger which are associated
 // with a Shill path (e.g. service path or device path).
@@ -125,9 +127,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
   void set_type(const std::string& type) { type_ = type; }
 
  private:
+  friend class ::ash::tether::NetworkListSorterTest;
   friend class NetworkStateHandler;
   friend class NetworkStateTestHelper;
-  friend class chromeos::tether::NetworkListSorterTest;
 
   ManagedType managed_type_;
 
@@ -146,5 +148,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+using ::chromeos::ManagedState;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_MANAGED_STATE_H_

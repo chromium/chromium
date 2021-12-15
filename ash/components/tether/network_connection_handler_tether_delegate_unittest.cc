@@ -16,7 +16,7 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -231,4 +231,4 @@ TEST_F(NetworkConnectionHandlerTetherDelegateTest,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

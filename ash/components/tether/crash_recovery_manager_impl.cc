@@ -15,7 +15,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -178,4 +178,4 @@ void CrashRecoveryManagerImpl::OnActiveHostFetched(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 
 #include "ash/components/tether/connection_preserver.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -36,6 +36,6 @@ class FakeConnectionPreserver : public ConnectionPreserver {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_CONNECTION_PRESERVER_H_

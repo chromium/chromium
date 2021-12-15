@@ -11,6 +11,8 @@
 #include "ash/components/tether/connection_preserver.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -18,9 +20,7 @@
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 namespace tether {
 
@@ -59,7 +59,8 @@ class ConnectionPreserverImpl
  protected:
   // secure_channel::ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
-      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+      override;
   void OnConnection(
       std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
@@ -104,6 +105,6 @@ class ConnectionPreserverImpl
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_CONNECTION_PRESERVER_IMPL_H_

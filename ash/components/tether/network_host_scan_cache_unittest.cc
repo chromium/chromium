@@ -22,7 +22,7 @@
 using testing::NiceMock;
 using testing::Invoke;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -200,4 +200,4 @@ TEST_F(NetworkHostScanCacheTest, TestHasConnectedToHost) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

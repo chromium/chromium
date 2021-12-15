@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_crash_recovery_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -19,4 +19,4 @@ void FakeCrashRecoveryManager::RestorePreCrashStateIfNecessary(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

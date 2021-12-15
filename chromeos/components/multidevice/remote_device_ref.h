@@ -15,7 +15,11 @@
 
 namespace ash {
 class EasyUnlockServiceRegular;
-}
+namespace tether {
+class TetherHostFetcherImpl;
+class TetherHostFetcherImplTest;
+}  // namespace tether
+}  // namespace ash
 
 namespace chromeos {
 namespace multidevice_setup {
@@ -26,11 +30,6 @@ namespace secure_channel {
 class PresenceMonitorClientImpl;
 class SecureChannelClientImpl;
 }  // namespace secure_channel
-
-namespace tether {
-class TetherHostFetcherImpl;
-class TetherHostFetcherImplTest;
-}  // namespace tether
 
 namespace multidevice {
 
@@ -106,9 +105,9 @@ class RemoteDeviceRef {
 
   // TODO(crbug.com/752273): Remove these once clients have migrated to Device
   // Sync service.
-  friend class ash::EasyUnlockServiceRegular;
-  friend class tether::TetherHostFetcherImpl;
-  friend class tether::TetherHostFetcherImplTest;
+  friend class ::ash::EasyUnlockServiceRegular;
+  friend class ::ash::tether::TetherHostFetcherImplTest;
+  friend class ::ash::tether::TetherHostFetcherImpl;
   friend class ProximityAuthWebUIHandler;
 
   explicit RemoteDeviceRef(std::shared_ptr<RemoteDevice> remote_device);

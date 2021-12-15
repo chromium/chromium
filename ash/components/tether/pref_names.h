@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_PREF_NAMES_H_
 #define ASH_COMPONENTS_TETHER_PREF_NAMES_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -59,6 +59,6 @@ extern const char kHostScanCache[];
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_PREF_NAMES_H_

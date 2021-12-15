@@ -11,7 +11,7 @@
 #include "ash/components/tether/host_scan_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -92,4 +92,4 @@ TEST_F(HostScanCacheTest, TestSetAndRemove) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

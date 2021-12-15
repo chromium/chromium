@@ -11,7 +11,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -126,4 +126,4 @@ std::vector<std::string> TetherHostResponseRecorder::GetDeviceIdsForPref(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

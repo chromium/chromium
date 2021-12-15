@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/connection_preserver.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -14,4 +14,4 @@ ConnectionPreserver::~ConnectionPreserver() = default;
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

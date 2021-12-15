@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -200,4 +200,4 @@ void HostConnectionMetricsLogger::SetClockForTesting(base::Clock* test_clock) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

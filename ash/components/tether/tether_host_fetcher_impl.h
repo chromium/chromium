@@ -13,7 +13,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -91,6 +91,6 @@ class TetherHostFetcherImpl
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_HOST_FETCHER_IMPL_H_

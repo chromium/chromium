@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -41,4 +41,4 @@ void FakeTetherHostFetcher::FetchTetherHost(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

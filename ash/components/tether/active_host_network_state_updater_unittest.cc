@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -129,4 +129,4 @@ TEST_F(ActiveHostNetworkStateUpdaterTest, TestActiveHostUpdates) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

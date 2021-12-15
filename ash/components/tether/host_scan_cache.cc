@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/host_scan_cache.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -34,4 +34,4 @@ bool HostScanCache::RemoveHostScanResult(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

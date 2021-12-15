@@ -13,7 +13,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 namespace tether {
 
 class TestTimerFactory : public TimerFactory {
@@ -43,6 +43,6 @@ class TestTimerFactory : public TimerFactory {
 };
 
 }  // namespace tether
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TEST_TIMER_FACTORY_H_

@@ -10,7 +10,7 @@
 
 #include "ash/components/tether/proto/tether.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -60,6 +60,6 @@ class MessageWrapper {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_MESSAGE_WRAPPER_H_

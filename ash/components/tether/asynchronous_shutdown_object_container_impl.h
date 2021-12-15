@@ -11,22 +11,20 @@
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/managed_network_configuration_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 class PrefService;
 
-namespace chromeos {
-
-class ManagedNetworkConfigurationHandler;
-class NetworkConnectionHandler;
-class NetworkStateHandler;
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
+namespace ash {
 
 namespace tether {
 
@@ -118,6 +116,6 @@ class AsynchronousShutdownObjectContainerImpl
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_IMPL_H_

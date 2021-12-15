@@ -26,7 +26,7 @@ using testing::_;
 using testing::Invoke;
 using testing::NotNull;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -188,4 +188,4 @@ TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -20,7 +20,7 @@
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -114,7 +114,8 @@ class MessageTransferOperation {
 
     // secure_channel::ConnectionAttempt::Delegate:
     void OnConnectionAttemptFailure(
-        secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
+        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+        override;
     void OnConnection(
         std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
@@ -157,7 +158,7 @@ class MessageTransferOperation {
 
   void OnConnectionAttemptFailure(
       multidevice::RemoteDeviceRef remote_device,
-      secure_channel::mojom::ConnectionAttemptFailureReason reason);
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason);
   void OnConnection(multidevice::RemoteDeviceRef remote_device,
                     std::unique_ptr<secure_channel::ClientChannel> channel);
   void OnDisconnected(multidevice::RemoteDeviceRef remote_device);
@@ -208,6 +209,6 @@ class MessageTransferOperation {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_MESSAGE_TRANSFER_OPERATION_H_

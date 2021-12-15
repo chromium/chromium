@@ -10,7 +10,7 @@
 #include "ash/components/tether/host_connection_metrics_logger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -34,6 +34,6 @@ class MockHostConnectionMetricsLogger : public HostConnectionMetricsLogger {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_MOCK_HOST_CONNECTION_METRICS_LOGGER_H_

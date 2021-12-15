@@ -19,11 +19,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when secure_channel moved to ash
+namespace secure_channel = ::chromeos::secure_channel;
 
 // Arbitrarily chosen value. The MessageType used in this test does not matter
 // except that it must be consistent throughout the test.
@@ -405,4 +408,4 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

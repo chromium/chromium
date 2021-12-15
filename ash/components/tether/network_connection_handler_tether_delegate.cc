@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -136,4 +136,4 @@ void NetworkConnectionHandlerTetherDelegate::OnRequestError(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

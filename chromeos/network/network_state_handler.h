@@ -31,7 +31,6 @@ class Value;
 namespace chromeos {
 
 class DeviceState;
-class NetworkState;
 class NetworkStateHandlerObserver;
 class NetworkStateHandlerTest;
 

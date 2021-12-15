@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/host_scanner.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -27,4 +27,4 @@ void HostScanner::NotifyScanFinished() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

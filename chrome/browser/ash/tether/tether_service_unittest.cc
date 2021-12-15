@@ -121,8 +121,7 @@ class TestTetherService : public TetherService {
   int updated_technology_state_count_ = 0;
 };
 
-class FakeTetherComponentWithDestructorCallback
-    : public chromeos::tether::FakeTetherComponent {
+class FakeTetherComponentWithDestructorCallback : public FakeTetherComponent {
  public:
   FakeTetherComponentWithDestructorCallback(
       base::OnceClosure destructor_callback)
@@ -137,8 +136,7 @@ class FakeTetherComponentWithDestructorCallback
   base::OnceClosure destructor_callback_;
 };
 
-class TestTetherComponentFactory final
-    : public chromeos::tether::TetherComponentImpl::Factory {
+class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
  public:
   TestTetherComponentFactory() {}
 
@@ -148,13 +146,13 @@ class TestTetherComponentFactory final
     return active_tether_component_;
   }
 
-  // chromeos::tether::TetherComponentImpl::Factory:
-  std::unique_ptr<chromeos::tether::TetherComponent> CreateInstance(
+  // TetherComponentImpl::Factory:
+  std::unique_ptr<TetherComponent> CreateInstance(
       chromeos::device_sync::DeviceSyncClient* device_sync_client,
       chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-      chromeos::tether::TetherHostFetcher* tether_host_fetcher,
-      chromeos::tether::NotificationPresenter* notification_presenter,
-      chromeos::tether::GmsCoreNotificationsStateTrackerImpl*
+      TetherHostFetcher* tether_host_fetcher,
+      NotificationPresenter* notification_presenter,
+      GmsCoreNotificationsStateTrackerImpl*
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
       chromeos::NetworkStateHandler* network_state_handler,
@@ -174,8 +172,7 @@ class TestTetherComponentFactory final
 
   bool was_tether_component_active() { return was_tether_component_active_; }
 
-  const chromeos::tether::TetherComponent::ShutdownReason&
-  last_shutdown_reason() {
+  const TetherComponent::ShutdownReason& last_shutdown_reason() {
     return last_shutdown_reason_;
   }
 
@@ -187,7 +184,7 @@ class TestTetherComponentFactory final
 
   FakeTetherComponentWithDestructorCallback* active_tether_component_ = nullptr;
   bool was_tether_component_active_ = false;
-  chromeos::tether::TetherComponent::ShutdownReason last_shutdown_reason_;
+  TetherComponent::ShutdownReason last_shutdown_reason_;
 };
 
 class FakeRemoteDeviceProviderFactory
@@ -206,33 +203,29 @@ class FakeRemoteDeviceProviderFactory
   }
 };
 
-class FakeTetherHostFetcherFactory
-    : public chromeos::tether::TetherHostFetcherImpl::Factory {
+class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
  public:
   FakeTetherHostFetcherFactory(
       const chromeos::multidevice::RemoteDeviceRefList& initial_devices)
       : initial_devices_(initial_devices) {}
   virtual ~FakeTetherHostFetcherFactory() = default;
 
-  chromeos::tether::FakeTetherHostFetcher* last_created() {
-    return last_created_;
-  }
+  FakeTetherHostFetcher* last_created() { return last_created_; }
 
   void SetNoInitialDevices() { initial_devices_.clear(); }
 
-  // chromeos::tether::TetherHostFetcherImpl::Factory :
-  std::unique_ptr<chromeos::tether::TetherHostFetcher> CreateInstance(
+  // TetherHostFetcherImpl::Factory :
+  std::unique_ptr<TetherHostFetcher> CreateInstance(
       chromeos::device_sync::DeviceSyncClient* device_sync_client,
       chromeos::multidevice_setup::MultiDeviceSetupClient*
           multidevice_setup_client) override {
-    last_created_ =
-        new chromeos::tether::FakeTetherHostFetcher(initial_devices_);
+    last_created_ = new FakeTetherHostFetcher(initial_devices_);
     return base::WrapUnique(last_created_);
   }
 
  private:
   chromeos::multidevice::RemoteDeviceRefList initial_devices_;
-  chromeos::tether::FakeTetherHostFetcher* last_created_ = nullptr;
+  FakeTetherHostFetcher* last_created_ = nullptr;
 };
 
 class FakeDeviceSyncClientImplFactory
@@ -364,7 +357,7 @@ class TetherServiceTest : public testing::Test {
 
     test_tether_component_factory_ =
         base::WrapUnique(new TestTetherComponentFactory());
-    chromeos::tether::TetherComponentImpl::Factory::SetFactoryForTesting(
+    TetherComponentImpl::Factory::SetFactoryForTesting(
         test_tether_component_factory_.get());
     shutdown_reason_verified_ = false;
 
@@ -375,7 +368,7 @@ class TetherServiceTest : public testing::Test {
 
     fake_tether_host_fetcher_factory_ =
         base::WrapUnique(new FakeTetherHostFetcherFactory(test_devices_));
-    chromeos::tether::TetherHostFetcherImpl::Factory::SetFactoryForTesting(
+    TetherHostFetcherImpl::Factory::SetFactoryForTesting(
         fake_tether_host_fetcher_factory_.get());
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_pref_service_);
@@ -431,8 +424,7 @@ class TetherServiceTest : public testing::Test {
         fake_multidevice_setup_client_.get(), network_state_handler(),
         nullptr /* session_manager */));
 
-    fake_notification_presenter_ =
-        new chromeos::tether::FakeNotificationPresenter();
+    fake_notification_presenter_ = new FakeNotificationPresenter();
     mock_timer_ = new base::MockOneShotTimer();
     tether_service_->SetTestDoubles(
         base::WrapUnique(fake_notification_presenter_),
@@ -517,8 +509,7 @@ class TetherServiceTest : public testing::Test {
   }
 
   void VerifyLastShutdownReason(
-      const chromeos::tether::TetherComponent::ShutdownReason&
-          expected_shutdown_reason) {
+      const TetherComponent::ShutdownReason& expected_shutdown_reason) {
     EXPECT_EQ(expected_shutdown_reason,
               test_tether_component_factory_->last_shutdown_reason());
     shutdown_reason_verified_ = true;
@@ -546,7 +537,7 @@ class TetherServiceTest : public testing::Test {
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeTetherHostFetcherFactory>
       fake_tether_host_fetcher_factory_;
-  chromeos::tether::FakeNotificationPresenter* fake_notification_presenter_;
+  FakeNotificationPresenter* fake_notification_presenter_;
   base::MockOneShotTimer* mock_timer_;
   std::unique_ptr<chromeos::device_sync::FakeDeviceSyncClient>
       fake_device_sync_client_;
@@ -591,8 +582,7 @@ TEST_F(TetherServiceTest, TestShutdown) {
             network_state_handler()->GetTechnologyState(
                 chromeos::NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -616,7 +606,7 @@ TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
   // Tether should be active, but shutting down.
   VerifyTetherActiveStatus(true /* expected_active */);
   EXPECT_EQ(
-      chromeos::tether::TetherComponent::Status::SHUTTING_DOWN,
+      TetherComponent::Status::SHUTTING_DOWN,
       test_tether_component_factory_->active_tether_component()->status());
 
   // Tether should be AVAILABLE.
@@ -630,8 +620,7 @@ TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
   test_tether_component_factory_->active_tether_component()
       ->FinishAsynchronousShutdown();
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestSuspend) {
@@ -659,8 +648,7 @@ TEST_F(TetherServiceTest, TestSuspend) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::SUSPENDED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_CLOSED_LID);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_CLOSED_LID);
 }
 
 TEST_F(TetherServiceTest, TestDeviceSyncClientNotReady) {
@@ -678,8 +666,7 @@ TEST_F(TetherServiceTest, TestDeviceSyncClientNotReady) {
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest,
@@ -708,8 +695,7 @@ TEST_F(TetherServiceTest,
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
@@ -737,8 +723,8 @@ TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::NO_AVAILABLE_HOSTS,
       1 /* expected_count */);
-  VerifyLastShutdownReason(chromeos::tether::TetherComponent::ShutdownReason::
-                               MULTIDEVICE_HOST_UNVERIFIED);
+  VerifyLastShutdownReason(
+      TetherComponent::ShutdownReason::MULTIDEVICE_HOST_UNVERIFIED);
 }
 
 TEST_F(TetherServiceTest, TestBetterTogetherSuiteInitiallyDisabled) {
@@ -763,8 +749,7 @@ TEST_F(TetherServiceTest, TestBetterTogetherSuiteInitiallyDisabled) {
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestBetterTogetherSuiteBecomesDisabled) {
@@ -790,8 +775,8 @@ TEST_F(TetherServiceTest, TestBetterTogetherSuiteBecomesDisabled) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::BETTER_TOGETHER_SUITE_DISABLED,
       1 /* expected_count */);
-  VerifyLastShutdownReason(chromeos::tether::TetherComponent::ShutdownReason::
-                               BETTER_TOGETHER_SUITE_DISABLED);
+  VerifyLastShutdownReason(
+      TetherComponent::ShutdownReason::BETTER_TOGETHER_SUITE_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestGet_NotPrimaryUser_FeatureFlagDisabled) {
@@ -825,8 +810,7 @@ TEST_F(TetherServiceTest, DISABLED_TestGet_PrimaryUser_FeatureFlagEnabled) {
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -846,8 +830,7 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -872,8 +855,7 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestNoTetherHosts) {
@@ -968,8 +950,7 @@ TEST_F(TetherServiceTest, TestMetricsFalsePositives) {
   ASSERT_FALSE(mock_timer_->IsRunning());
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestWifiNotPresent) {
@@ -1016,8 +997,7 @@ TEST_F(TetherServiceTest, TestIsBluetoothPowered) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::BLUETOOTH_DISABLED,
       2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::BLUETOOTH_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::BLUETOOTH_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -1036,8 +1016,7 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
       network_state_handler()->GetTechnologyState(
           chromeos::NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 
   SetTetherTechnologyStateEnabled(true);
   EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
@@ -1105,8 +1084,7 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::CELLULAR_DISABLED,
       2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::CELLULAR_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::CELLULAR_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -1163,8 +1141,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
@@ -1225,8 +1202,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
       "InstantTethering.UserPreference.OnToggle", true,
       2u /* expected_count */);
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
@@ -1276,8 +1252,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -1309,8 +1284,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
   EXPECT_EQ(updated_technology_state_count,
             tether_service_->updated_technology_state_count());
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 }  // namespace tether

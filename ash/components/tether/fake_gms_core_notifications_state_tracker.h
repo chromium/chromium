@@ -10,7 +10,7 @@
 
 #include "ash/components/tether/gms_core_notifications_state_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -43,6 +43,13 @@ class FakeGmsCoreNotificationsStateTracker
 
 }  // namespace tether
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace tether {
+using ::ash::tether::FakeGmsCoreNotificationsStateTracker;
+}  // namespace tether
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_GMS_CORE_NOTIFICATIONS_STATE_TRACKER_H_

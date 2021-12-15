@@ -11,7 +11,7 @@
 
 #include "ash/components/tether/host_scan_cache.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -50,6 +50,6 @@ class FakeHostScanCache : virtual public HostScanCache {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_HOST_SCAN_CACHE_H_

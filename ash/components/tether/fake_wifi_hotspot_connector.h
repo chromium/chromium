@@ -9,7 +9,7 @@
 
 #include "ash/components/tether/wifi_hotspot_connector.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -50,6 +50,6 @@ class FakeWifiHotspotConnector : public WifiHotspotConnector {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_WIFI_HOTSPOT_CONNECTOR_H_

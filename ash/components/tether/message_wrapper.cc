@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -176,4 +176,4 @@ std::string MessageWrapper::ToRawMessage() const {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

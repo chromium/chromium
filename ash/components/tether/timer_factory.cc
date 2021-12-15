@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -18,4 +18,4 @@ std::unique_ptr<base::OneShotTimer> TimerFactory::CreateOneShotTimer() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

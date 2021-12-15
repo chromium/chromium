@@ -36,7 +36,7 @@
 
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -836,4 +836,4 @@ TEST_F(TetherConnectorImplTest,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -26,6 +26,6 @@ class TimerFactory {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TIMER_FACTORY_H_

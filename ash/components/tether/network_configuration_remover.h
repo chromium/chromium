@@ -7,9 +7,10 @@
 
 #include <string>
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/managed_network_configuration_handler.h"
 
-class ManagedNetworkConfigurationHandler;
+namespace ash {
 
 namespace tether {
 
@@ -38,6 +39,6 @@ class NetworkConfigurationRemover {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_NETWORK_CONFIGURATION_REMOVER_H_

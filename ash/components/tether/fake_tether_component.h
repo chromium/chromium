@@ -8,7 +8,7 @@
 #include "ash/components/tether/tether_component.h"
 #include "ash/components/tether/tether_disconnector.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -41,6 +41,6 @@ class FakeTetherComponent : public TetherComponent {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_TETHER_COMPONENT_H_

@@ -16,7 +16,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -163,6 +163,6 @@ class ActiveHost {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_ACTIVE_HOST_H_

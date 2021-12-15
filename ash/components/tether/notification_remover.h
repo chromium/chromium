@@ -7,11 +7,11 @@
 
 #include "ash/components/tether/active_host.h"
 #include "ash/components/tether/host_scan_cache.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 namespace tether {
 
@@ -55,6 +55,6 @@ class NotificationRemover : public HostScanCache::Observer,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_NOTIFICATION_REMOVER_H_

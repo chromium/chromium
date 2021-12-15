@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/network_connection_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -44,6 +44,6 @@ class TetherDisconnector {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_DISCONNECTOR_H_

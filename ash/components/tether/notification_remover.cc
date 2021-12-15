@@ -7,7 +7,7 @@
 #include "ash/components/tether/notification_presenter.h"
 #include "chromeos/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -64,4 +64,4 @@ void NotificationRemover::OnActiveHostChanged(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

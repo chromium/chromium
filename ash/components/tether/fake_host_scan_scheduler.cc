@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_host_scan_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -18,4 +18,4 @@ void FakeHostScanScheduler::AttemptScanIfOffline() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_asynchronous_shutdown_object_container.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -44,4 +44,4 @@ FakeAsynchronousShutdownObjectContainer::wifi_hotspot_disconnector() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

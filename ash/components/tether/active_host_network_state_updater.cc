@@ -10,7 +10,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -80,4 +80,4 @@ void ActiveHostNetworkStateUpdater::OnActiveHostChanged(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

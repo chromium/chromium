@@ -7,7 +7,7 @@
 
 #include "ash/components/tether/host_scan_cache.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -30,6 +30,6 @@ class PersistentHostScanCache : virtual public HostScanCache {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_PERSISTENT_HOST_SCAN_CACHE_H_

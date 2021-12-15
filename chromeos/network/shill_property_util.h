@@ -100,4 +100,12 @@ bool IsLoggableShillProperty(const std::string& key);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+namespace shill_property_util {
+using ::chromeos::shill_property_util::GetSSIDFromProperties;
+using ::chromeos::shill_property_util::SetSSID;
+}  // namespace shill_property_util
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_SHILL_PROPERTY_UTIL_H_

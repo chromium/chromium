@@ -33,7 +33,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/default_clock.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -224,4 +224,4 @@ SynchronousShutdownObjectContainerImpl::tether_disconnector() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

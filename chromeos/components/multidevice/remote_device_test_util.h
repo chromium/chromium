@@ -67,8 +67,11 @@ bool IsSameDevice(const RemoteDevice& remote_device,
 // source migration is finished.
 namespace ash {
 namespace multidevice {
+using ::chromeos::multidevice::CreateRemoteDeviceListForTest;
+using ::chromeos::multidevice::CreateRemoteDeviceRefForTest;
+using ::chromeos::multidevice::CreateRemoteDeviceRefListForTest;
 using ::chromeos::multidevice::RemoteDeviceRefBuilder;
-}
+}  // namespace multidevice
 }  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_TEST_UTIL_H_

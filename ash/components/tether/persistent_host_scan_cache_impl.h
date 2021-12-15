@@ -14,7 +14,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -56,6 +56,6 @@ class PersistentHostScanCacheImpl : public PersistentHostScanCache {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_PERSISTENT_HOST_SCAN_CACHE_IMPL_H_

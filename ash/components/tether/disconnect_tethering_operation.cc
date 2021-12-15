@@ -13,7 +13,7 @@
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -114,4 +114,4 @@ void DisconnectTetheringOperation::SetClockForTest(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,17 +9,13 @@
 
 #include "ash/components/tether/disconnect_tethering_operation.h"
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
+namespace ash {
 
 namespace tether {
 
@@ -88,6 +84,6 @@ class DisconnectTetheringRequestSenderImpl
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_DISCONNECT_TETHERING_REQUEST_SENDER_IMPL_H_

@@ -9,7 +9,7 @@
 #include "base/callback_forward.h"
 #include "chromeos/network/network_connection_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -55,6 +55,6 @@ class FakeTetherConnector : public TetherConnector {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_TETHER_CONNECTOR_H_

@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_synchronous_shutdown_object_container.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -37,4 +37,4 @@ FakeSynchronousShutdownObjectContainer::tether_disconnector() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

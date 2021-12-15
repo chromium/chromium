@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_tether_connector.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -32,4 +32,4 @@ bool FakeTetherConnector::CancelConnectionAttempt(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

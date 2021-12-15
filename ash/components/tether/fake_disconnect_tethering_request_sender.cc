@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_disconnect_tethering_request_sender.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -30,4 +30,4 @@ void FakeDisconnectTetheringRequestSender::
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

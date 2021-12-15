@@ -19,7 +19,7 @@
 #include "chromeos/network/network_type_pattern.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -211,4 +211,4 @@ void HostScanSchedulerImpl::LogHostScanBatchMetric() {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

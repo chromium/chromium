@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 #define ASH_COMPONENTS_TETHER_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -37,6 +37,6 @@ class SynchronousShutdownObjectContainer {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_

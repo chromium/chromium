@@ -8,7 +8,7 @@
 #include "ash/components/tether/crash_recovery_manager.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -36,6 +36,6 @@ class FakeCrashRecoveryManager : public CrashRecoveryManager {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_CRASH_RECOVERY_MANAGER_H_

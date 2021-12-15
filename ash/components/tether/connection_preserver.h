@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -32,6 +32,6 @@ class ConnectionPreserver {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_CONNECTION_PRESERVER_H_

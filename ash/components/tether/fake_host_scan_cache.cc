@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/fake_host_scan_cache.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -57,4 +57,4 @@ bool FakeHostScanCache::DoesHostRequireSetup(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

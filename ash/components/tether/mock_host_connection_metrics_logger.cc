@@ -6,7 +6,7 @@
 
 #include "ash/components/tether/active_host.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -18,4 +18,4 @@ MockHostConnectionMetricsLogger::~MockHostConnectionMetricsLogger() = default;
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

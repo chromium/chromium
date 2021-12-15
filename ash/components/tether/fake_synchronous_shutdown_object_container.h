@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -60,6 +60,6 @@ class FakeSynchronousShutdownObjectContainer
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_FAKE_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_

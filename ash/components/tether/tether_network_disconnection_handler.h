@@ -7,15 +7,15 @@
 
 #include "ash/components/tether/active_host.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace base {
 class TaskRunner;
 }  // namespace base
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 namespace tether {
 
@@ -70,6 +70,6 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_

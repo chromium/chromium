@@ -10,7 +10,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -72,4 +72,4 @@ void NetworkListSorter::SortTetherNetworkList(
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

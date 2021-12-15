@@ -4,7 +4,7 @@
 
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -28,4 +28,4 @@ void DisconnectTetheringRequestSender::
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash

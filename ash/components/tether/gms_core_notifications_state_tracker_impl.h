@@ -13,7 +13,7 @@
 #include "ash/components/tether/host_scanner_operation.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace tether {
 
@@ -54,6 +54,6 @@ class GmsCoreNotificationsStateTrackerImpl
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_GMS_CORE_NOTIFICATIONS_STATE_TRACKER_IMPL_H_

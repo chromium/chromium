@@ -18,21 +18,17 @@
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace session_manager {
 class SessionManager;
 }  // namespace session_manager
 
-namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
+namespace ash {
 
 namespace tether {
 
@@ -146,6 +142,6 @@ class HostScannerImpl : public HostScanner,
 
 }  // namespace tether
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TETHER_HOST_SCANNER_IMPL_H_
