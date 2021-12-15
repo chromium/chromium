@@ -26,21 +26,21 @@
       "include": "webrtc_tests.json",
       "device type": "iPhone 11",
       "os": "14.4",
-      "host os": "Mac-10.15|Mac-11",
+      "host os": "Mac-11",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPhone X",
       "os": "14.4",
-      "host os": "Mac-10.15|Mac-11",
+      "host os": "Mac-11",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPad Air (3rd generation)",
       "os": "14.4",
-      "host os": "Mac-10.15|Mac-11",
+      "host os": "Mac-11",
       "pool": "chromium.tests"
     }
   ]
