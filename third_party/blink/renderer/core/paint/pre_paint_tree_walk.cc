@@ -959,7 +959,9 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       if (child->HasInlineFragments())
         continue;
 
-      if (!child->IsLayoutInline()) {
+      const auto* layout_inline_child = DynamicTo<LayoutInline>(child);
+
+      if (!layout_inline_child) {
         // We end up here for collapsed text nodes. Just clear the paint flags.
         for (const LayoutObject* fragmentless = child; fragmentless;
              fragmentless = fragmentless->NextInPreOrder(child)) {
@@ -970,13 +972,23 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         continue;
       }
 
-      // We have to enter culled inlines for every block fragment where any of
-      // their children has a representation.
-      if (!parent_fragment->HasItems())
-        continue;
-      if (!parent_fragment->Items()->IsContainerForCulledInline(
-              To<LayoutInline>(*child), &is_first_for_node, &is_last_for_node))
-        continue;
+      if (layout_inline_child->FirstChild()) {
+        // We have to enter culled inlines for every block fragment where any of
+        // their children has a representation.
+        if (!parent_fragment->HasItems())
+          continue;
+
+        if (!parent_fragment->Items()->IsContainerForCulledInline(
+                *layout_inline_child, &is_first_for_node, &is_last_for_node))
+          continue;
+      } else {
+        // Childless and culled. This can happen for AREA elements, if nothing
+        // else. Enter it when at the last container fragment.
+        if (parent_fragment->BreakToken())
+          continue;
+        is_first_for_node = true;
+        is_last_for_node = true;
+      }
 
       // Inlines will pass their containing block fragment (and its incoming
       // break token).
