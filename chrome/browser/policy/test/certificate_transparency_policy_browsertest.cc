@@ -6,7 +6,7 @@
 #include "base/values.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -48,7 +48,7 @@ void SetRequireCTForTesting(bool required) {
                      required));
 }
 
-class CertificateTransparencyPolicyTest : public PolicyTest {
+class CertificateTransparencyPolicyTest : public SafeBrowsingPolicyTest {
  public:
   CertificateTransparencyPolicyTest() {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(

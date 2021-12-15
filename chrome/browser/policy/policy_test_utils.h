@@ -56,12 +56,6 @@ class PolicyTest : public PlatformBrowserTest {
   static bool FetchSubresource(content::WebContents* web_contents,
                                const GURL& url);
 
-  bool IsShowingInterstitial(content::WebContents* tab);
-
-  void WaitForInterstitial(content::WebContents* tab);
-
-  int IsEnhancedProtectionMessageVisibleOnInterstitial();
-
   void FlushBlocklistPolicy();
 
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;

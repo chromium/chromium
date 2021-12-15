@@ -18,8 +18,6 @@
 #include "chrome/common/net/safe_search_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
-#include "components/security_interstitials/content/security_interstitial_page.h"
-#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/variations/variations_params_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -99,22 +97,6 @@ bool PolicyTest::FetchSubresource(content::WebContents* web_contents,
   bool execute_result =
       content::ExecuteScriptAndExtractBool(web_contents, script, &xhr_result);
   return xhr_result && execute_result;
-}
-
-bool PolicyTest::IsShowingInterstitial(content::WebContents* tab) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          tab);
-  if (!helper) {
-    return false;
-  }
-  return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-         nullptr;
-}
-
-void PolicyTest::WaitForInterstitial(content::WebContents* tab) {
-  ASSERT_TRUE(IsShowingInterstitial(tab));
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
 }
 
 void PolicyTest::FlushBlocklistPolicy() {

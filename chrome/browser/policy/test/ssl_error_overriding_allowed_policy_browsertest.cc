@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -38,7 +38,8 @@ void SendInterstitialCommand(
 
 // Test that when SSL error overriding policies are unset, the proceed link
 // appears on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDefaults) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingAllowedDefaults) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -69,7 +70,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDefaults) {
 
 // Test that when SSL error overriding is allowed, the origin list is ignored
 // and the proceed link appears on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedEnabled) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingAllowedEnabled) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedEnabled) {
 
 // Test that when SSL error overriding is disabled, the proceed link does not
 // appear appear on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDisabled) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingAllowedDisabled) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -156,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDisabled) {
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured, the proceed link does not appear on SSL blocking pages if
 // the page is not on the origin list.
-IN_PROC_BROWSER_TEST_F(PolicyTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        SSLErrorOverridingAllowedForOriginsWrongOrigin) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -213,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured incorrectly, the proceed link does not appear on SSL
 // blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsBadInput) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingForOriginsBadInput) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -266,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsBadInput) {
 
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is empty, the proceed link does not appear on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsEmptyList) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingForOriginsEmptyList) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -318,7 +323,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsEmptyList) {
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured, the proceed link appears on SSL blocking pages if the
 // page is on the origin list.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedForOrigins) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SSLErrorOverridingAllowedForOrigins) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);

@@ -55,6 +55,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -393,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class NetworkTimePolicyTest : public PolicyTest {
+class NetworkTimePolicyTest : public SafeBrowsingPolicyTest {
  public:
   NetworkTimePolicyTest() = default;
   NetworkTimePolicyTest(const NetworkTimePolicyTest&) = delete;

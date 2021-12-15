@@ -64,6 +64,8 @@ source_set("test_support") {
       "extension_policy_test_base.h",
       "policy_test_utils.cc",
       "policy_test_utils.h",
+      "safe_browsing_policy_test.cc",
+      "safe_browsing_policy_test.h",
       "safe_search_policy_test.cc",
       "safe_search_policy_test.h",
       "url_blocking_policy_test_utils.cc",
