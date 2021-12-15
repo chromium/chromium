@@ -371,8 +371,6 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.time_func = session_deps->time_func;
   params.enable_http2_alternative_service =
       session_deps->enable_http2_alternative_service;
-  params.enable_websocket_over_http2 =
-      session_deps->enable_websocket_over_http2;
   params.enable_http2_settings_grease =
       session_deps->enable_http2_settings_grease;
   params.greased_http2_frame = session_deps->greased_http2_frame;

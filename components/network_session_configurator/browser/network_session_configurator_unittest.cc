@@ -71,7 +71,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(params_.enable_http2_settings_grease);
   EXPECT_FALSE(params_.greased_http2_frame);
   EXPECT_FALSE(params_.http2_end_stream_with_data_frame);
-  EXPECT_TRUE(params_.enable_websocket_over_http2);
 
   EXPECT_TRUE(params_.enable_quic);
   EXPECT_TRUE(quic_params_.retry_without_alt_svc_on_quic_errors);

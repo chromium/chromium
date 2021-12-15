@@ -231,7 +231,6 @@ WebSocketTestURLRequestContextHost::WebSocketTestURLRequestContextHost()
   auto params = std::make_unique<HttpNetworkSessionParams>();
   params->enable_spdy_ping_based_connection_checking = false;
   params->enable_quic = false;
-  params->enable_websocket_over_http2 = true;
   params->disable_idle_sockets_close_on_memory_pressure = false;
   url_request_context_.set_http_network_session_params(std::move(params));
 }

@@ -130,8 +130,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       is_websocket_(is_websocket),
       try_websocket_over_http2_(is_websocket_ &&
                                 origin_url_.SchemeIs(url::kWssScheme) &&
-                                proxy_info_.is_direct() &&
-                                session_->params().enable_websocket_over_http2),
+                                proxy_info_.is_direct()),
       // Don't use IP connection pooling for HTTP over HTTPS proxies. It doesn't
       // get us much, and testing it is more effort than its worth.
       enable_ip_based_pooling_(
