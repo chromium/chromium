@@ -470,7 +470,7 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
                              /*priority=*/0,
                              /*external_report_id=*/
                              delegate_->NewReportID(),
-                             /*conversion_id=*/absl::nullopt);
+                             /*report_id=*/absl::nullopt);
 
     if (!StoreReport(report, source_id))
       return {};
@@ -666,7 +666,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                            /*conversion_time=*/current_time,
                            /*report_time=*/report_time, trigger.priority(),
                            /*external_report_id=*/delegate_->NewReportID(),
-                           /*conversion_id=*/absl::nullopt);
+                           /*report_id=*/absl::nullopt);
 
   switch (
       rate_limit_table_.AttributionAllowed(db_.get(), report, current_time)) {
