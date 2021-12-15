@@ -76,6 +76,9 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // Called just after the native widget is destroyed.
   virtual void OnNativeWidgetDestroyed() = 0;
 
+  // Called after the native widget's parent has changed.
+  virtual void OnNativeWidgetParentChanged(gfx::NativeView parent) = 0;
+
   // Returns the smallest size the window can be resized to by the user.
   virtual gfx::Size GetMinimumSize() const = 0;
 

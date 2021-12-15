@@ -928,8 +928,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     focus_on_creation_ = focus_on_creation;
   }
 
-  // Returns the parent of this widget. Note that a top-level widget is not
-  // necessarily a root widget and can have a parent.
+  // Returns the parent of this widget. Note that
+  // * A top-level widget is not necessarily the root and may have a parent.
+  // * A child widget shares the same visual style, e.g. the dark/light theme,
+  //   with its parent.
+  // * The native widget may change a widget's parent.
+  // * The native view's parent might or might not be the parent's native view.
   Widget* parent() { return parent_; }
   const Widget* parent() const { return parent_; }
 
@@ -1006,6 +1010,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void OnNativeWidgetCreated() override;
   void OnNativeWidgetDestroying() override;
   void OnNativeWidgetDestroyed() override;
+  void OnNativeWidgetParentChanged(gfx::NativeView parent) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnNativeWidgetMove() override;
@@ -1132,6 +1137,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Sizes and positions the frameless window just after it is created.
   void SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds);
 
+  // Set the parent of this widget.
+  void SetParent(Widget* parent);
+
   // Returns the bounds and "show" state from the delegate. Returns true if
   // the delegate wants to use a specified bounds.
   bool GetSavedWindowPlacement(gfx::Rect* bounds,
@@ -1157,8 +1165,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // to Init() a default WidgetDelegate is created.
   raw_ptr<WidgetDelegate> widget_delegate_ = nullptr;
 
-  // The parent of this widget. This is the widget that associates with the
-  // |params.parent| supplied to Init(). If no parent is given or the native
+  // The parent of this widget. This is the widget that associates with
+  // the |params.parent| supplied to Init(). If no parent is given or the native
   // view parent has no associating Widget, this value will be nullptr.
   raw_ptr<Widget> parent_ = nullptr;
 
