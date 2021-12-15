@@ -15396,12 +15396,11 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy" singular="True">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
-    Metrics related to the privacy-preserving prefetch proxy. Recorded only for
-    Lite mode (AKA Data Saver) users.
+    Metrics related to the privacy-preserving prefetch proxy.
   </summary>
   <metric name="count_css_js_loaded_cache_before_fcp">
     <summary>
@@ -15474,9 +15473,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy.AfterSRPClick" singular="True">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Metrics related to the privacy-preserving prefetch proxy on the page load
     after the SRP. Recorded only for eligible users on the first mainframe
@@ -15513,9 +15512,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy.PrefetchedResource">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Each event corresponds to a single resource, either mainframe or
     subresource, that was prefetched during an Isolated Prerender. Logged one or
