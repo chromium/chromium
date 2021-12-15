@@ -82,30 +82,42 @@ TEST_P(ParameterizedLayoutInlineTest, PhysicalLinesBoundingBox) {
 
 TEST_F(LayoutInlineTest, SimpleContinuation) {
   SetBodyInnerHTML(
-      "<span id='splitInline'><i id='before'></i><h1 id='blockChild'></h1><i "
-      "id='after'></i></span>");
+      "<span id='splitInline'>"
+      "<i id='before'></i>"
+      "<h1 id='blockChild'></h1>"
+      "<i id='after'></i>"
+      "</span>");
 
   auto* split_inline_part1 =
       To<LayoutInline>(GetLayoutObjectByElementId("splitInline"));
   ASSERT_TRUE(split_inline_part1);
   ASSERT_TRUE(split_inline_part1->FirstChild());
-  EXPECT_EQ(split_inline_part1->FirstChild(),
-            GetLayoutObjectByElementId("before"));
-  EXPECT_FALSE(split_inline_part1->FirstChild()->NextSibling());
+  auto* before = GetLayoutObjectByElementId("before");
+  EXPECT_EQ(split_inline_part1->FirstChild(), before);
+  auto* block_child = GetLayoutObjectByElementId("blockChild");
+  auto* after = GetLayoutObjectByElementId("after");
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(split_inline_part1->FirstChild(), before);
+    LayoutObject* anonymous = block_child->Parent();
+    EXPECT_TRUE(anonymous->IsBlockInInline());
+    EXPECT_EQ(before->NextSibling(), anonymous);
+    EXPECT_EQ(anonymous->NextSibling(), after);
+    EXPECT_FALSE(after->NextSibling());
+  } else {
+    EXPECT_FALSE(split_inline_part1->FirstChild()->NextSibling());
+    auto* block = To<LayoutBlockFlow>(split_inline_part1->Continuation());
+    ASSERT_TRUE(block);
+    ASSERT_TRUE(block->FirstChild());
+    EXPECT_EQ(block->FirstChild(), block_child);
+    EXPECT_FALSE(block->FirstChild()->NextSibling());
 
-  auto* block = To<LayoutBlockFlow>(split_inline_part1->Continuation());
-  ASSERT_TRUE(block);
-  ASSERT_TRUE(block->FirstChild());
-  EXPECT_EQ(block->FirstChild(), GetLayoutObjectByElementId("blockChild"));
-  EXPECT_FALSE(block->FirstChild()->NextSibling());
-
-  auto* split_inline_part2 = To<LayoutInline>(block->Continuation());
-  ASSERT_TRUE(split_inline_part2);
-  ASSERT_TRUE(split_inline_part2->FirstChild());
-  EXPECT_EQ(split_inline_part2->FirstChild(),
-            GetLayoutObjectByElementId("after"));
-  EXPECT_FALSE(split_inline_part2->FirstChild()->NextSibling());
-  EXPECT_FALSE(split_inline_part2->Continuation());
+    auto* split_inline_part2 = To<LayoutInline>(block->Continuation());
+    ASSERT_TRUE(split_inline_part2);
+    ASSERT_TRUE(split_inline_part2->FirstChild());
+    EXPECT_EQ(split_inline_part2->FirstChild(), after);
+    EXPECT_FALSE(split_inline_part2->FirstChild()->NextSibling());
+    EXPECT_FALSE(split_inline_part2->Continuation());
+  }
 }
 
 TEST_F(LayoutInlineTest, BlockInInlineRemove) {
