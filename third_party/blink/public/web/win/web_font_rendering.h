@@ -21,6 +21,7 @@ class WebFontRendering {
   // Set an instance of |WebFontPrewarmer|. The instance must be kept alive
   // until the process exits.
   BLINK_EXPORT static void SetFontPrewarmer(WebFontPrewarmer*);
+  BLINK_EXPORT static WebFontPrewarmer* GetFontPrewarmer();
   BLINK_EXPORT static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   BLINK_EXPORT static void SetMenuFontMetrics(const WebString& family_name,
                                               int32_t font_height);

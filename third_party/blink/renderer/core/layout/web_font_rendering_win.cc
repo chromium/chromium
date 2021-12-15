@@ -19,6 +19,11 @@ void WebFontRendering::SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
 }
 
 // static
+WebFontPrewarmer* WebFontRendering::GetFontPrewarmer() {
+  return FontCache::GetFontPrewarmer();
+}
+
+// static
 void WebFontRendering::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
   FontCache::AddSideloadedFontForTesting(std::move(typeface));
 }
