@@ -62,7 +62,6 @@ export const State = {
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
   SHOW_SCAN_MODE: 'show-scan-mode',
-  SHOW_GIF_RECORDING_OPTION: 'show-gif-recording-option',
   SHUTTER_PROGRESSING: 'shutter-progressing',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',

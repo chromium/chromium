@@ -61,7 +61,6 @@ const struct {
     {"expert_print_performance_logs", IDS_EXPERT_PRINT_PERFORMANCE_LOGS},
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},
     {"expert_scan_barcode", IDS_EXPERT_SCAN_BARCODE},
-    {"expert_show_gif_recording_option", IDS_EXPERT_SHOW_GIF_RECORDING_OPTION},
     {"export_button", IDS_EXPORT_BUTTON},
     {"feedback_button", IDS_FEEDBACK_BUTTON},
     {"feedback_description_placeholder", IDS_FEEDBACK_DESCRIPTION_PLACEHOLDER},

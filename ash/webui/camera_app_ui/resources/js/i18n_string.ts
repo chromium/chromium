@@ -51,7 +51,6 @@ export enum I18nString {
   EXPERT_PRINT_PERFORMANCE_LOGS = 'expert_print_performance_logs',
   EXPERT_SAVE_METADATA = 'expert_save_metadata',
   EXPERT_SCAN_BARCODE = 'expert_scan_barcode',
-  EXPERT_SHOW_GIF_RECORDING_OPTION = 'expert_show_gif_recording_option',
   EXPORT_BUTTON = 'export_button',
   FEEDBACK_BUTTON = 'feedback_button',
   FEEDBACK_DESCRIPTION_PLACEHOLDER = 'feedback_description_placeholder',
