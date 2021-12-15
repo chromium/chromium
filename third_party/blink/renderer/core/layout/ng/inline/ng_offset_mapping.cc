@@ -94,7 +94,10 @@ NGOffsetMappingUnit::NGOffsetMappingUnit(NGOffsetMappingUnitType type,
                                          unsigned text_content_start,
                                          unsigned text_content_end)
     : type_(type),
-      layout_object_(&layout_object),
+      // Use atomic construction to allow for concurrently marking
+      // NGOffsetMappingUnit.
+      layout_object_(&layout_object,
+                     Member<const LayoutObject>::AtomicInitializerTag{}),
       dom_start_(dom_start),
       dom_end_(dom_end),
       text_content_start_(text_content_start),
