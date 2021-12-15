@@ -1932,11 +1932,6 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  // Only proceed for valid URLs.
-  // TODO(creis): This may no longer be needed.
-  if (!url.is_valid())
-    return false;
-
   // Top Chrome WebUI should try to share a RenderProcessHost with other
   // existing Top Chrome WebUI.
   if (IsTopChromeWebUIURL(url))
