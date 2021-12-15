@@ -397,8 +397,14 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Unit tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForPasswordOnFocusPing);
-  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
-                           VerifyUserPopulationForSyncPasswordEntryPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+      VerifyUserPopulationForSyncPasswordEntryPing);
+#if defined(OS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
+      VerifyUserPopulationForSyncPasswordEntryPing);
+#endif
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForSavedPasswordEntryPing);
   FRIEND_TEST_ALL_PREFIXES(
@@ -425,6 +431,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       VerifyUnhandledSyncPasswordReuseUponClearHistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyCanShowInterstitial);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+      VerifyCanShowInterstitial);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifySendsPingForAboutBlank);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
@@ -441,8 +450,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyPersistPhishedSavedPasswordCredential);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetPingNotSentReason);
-  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
-                           VerifyPageLoadToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithSBPageLoadTokenEnabledTest,
+      VerifyPageLoadToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest,
+      VerifyPageLoadToken);
   // Browser tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceBrowserTest,
                            VerifyCheckGaiaPasswordChange);
