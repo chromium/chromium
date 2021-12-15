@@ -47,8 +47,8 @@ export class AppWindow {
    * launched.
    */
   private readonly readyOnCCASide = new WaitableEvent<string>();
-  private readonly readyOnTastSide = new WaitableEvent<void>();
-  private readonly onClosed = new WaitableEvent<void>();
+  private readonly readyOnTastSide = new WaitableEvent();
+  private readonly onClosed = new WaitableEvent();
   private inClosingItself = false;
   private readonly errors: ErrorInfo[] = [];
   private readonly perfs: PerfEntry[] = [];

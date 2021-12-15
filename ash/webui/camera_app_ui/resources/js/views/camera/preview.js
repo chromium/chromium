@@ -433,6 +433,7 @@ export class Preview {
     // from the preview and checked video muted state before taking photo.
     const track = this.getVideoTrack_();
     const waitFrame = async () => {
+      /** @type {WaitableEvent<boolean>} */
       const onReady = new WaitableEvent();
       const callbackId = this.video_.requestVideoFrameCallback((now) => {
         onReady.signal(true);

@@ -561,6 +561,9 @@ export class DeviceOperator {
     const reprocessEvents = new Map;
     const callbacks = [];
     for (const effect of effects) {
+      // TODO(pihsun): This should be WaitableEvent<Blob|Error>, since we
+      // sometimes call event.signal with Error.
+      /** @type {WaitableEvent<Blob>} */
       const event = new WaitableEvent();
       reprocessEvents.set(effect, event);
       callbacks.push(event.wait());

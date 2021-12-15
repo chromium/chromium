@@ -82,6 +82,7 @@ async function initInternalTempDir() {
  * @return {!Promise<?DirectoryAccessEntry>} Promise for the directory result.
  */
 async function initCameraDirectory() {
+  /** @type {WaitableEvent<FileSystemDirectoryHandle>} */
   const handle = new WaitableEvent();
 
   // We use the sessionStorage to decide if we should use the handle in the

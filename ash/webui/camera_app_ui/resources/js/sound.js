@@ -35,6 +35,7 @@ export async function play(el) {
   await el.play();
   elementsStatus.set(el, Status.PLAYING);
 
+  /** @type {WaitableEvent<boolean>} */
   const audioStopped = new WaitableEvent();
   const events = ['ended', 'pause'];
   const onAudioStopped = () => {

@@ -47,6 +47,7 @@ async function elementToJpegBlob(element, width, height) {
 async function loadVideoBlob(blob) {
   const el = document.createElement('video');
   try {
+    /** @type {WaitableEvent<boolean>} */
     const hasLoaded = new WaitableEvent();
     el.addEventListener('error', () => {
       hasLoaded.signal(false);

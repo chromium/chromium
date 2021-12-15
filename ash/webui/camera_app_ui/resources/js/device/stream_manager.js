@@ -310,20 +310,25 @@ export class StreamManager {
    */
   async setMultipleStreamsEnabled(deviceId, enabled) {
     assert(await DeviceOperator.isSupported());
-    const waitEvent = new WaitableEvent();
-    if (enabled) {
-      this.waitVirtual_ = waitEvent;
-    } else {
-      this.waitVirtualRemoved_ = waitEvent;
-    }
     const deviceOperator = await DeviceOperator.getInstance();
-    await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
-    await this.deviceUpdate();
 
     if (enabled) {
+      /** @type {WaitableEvent<string>} */
+      const waitEvent = new WaitableEvent();
+      this.waitVirtual_ = waitEvent;
+
+      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await this.deviceUpdate();
+
       const virtualId = await waitEvent.timedWait(3000);
       this.virtualMap_ = {realId: deviceId, virtualId};
     } else {
+      const waitEvent = new WaitableEvent();
+      this.waitVirtualRemoved_ = waitEvent;
+
+      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await this.deviceUpdate();
+
       await waitEvent.timedWait(3000);
       this.virtualMap_ = null;
     }

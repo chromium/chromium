@@ -96,7 +96,7 @@ compile_js_files = [
   "views/settings.js",
   "views/view.js",
   "views/warning.js",
-  "waitable_event.js",
+  "waitable_event.ts",
   "window_controller.js",
 ]
 
