@@ -24,6 +24,8 @@ const CGFloat kTrailingMargin = 4;
 const CGFloat kLeadingMargin = 15;
 // Margin between the favicon and the text.
 const CGFloat kFaviconToTextMargin = 14;
+// Number of lines for the subtitle.
+const CGFloat kNumberOfSubtitleLines = 3;
 
 }  // namespace
 
@@ -45,6 +47,7 @@ const CGFloat kFaviconToTextMargin = 14;
     _title = [[UILabel alloc] init];
     _title.translatesAutoresizingMaskIntoConstraints = NO;
     _title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _title.adjustsFontForContentSizeCategory = YES;
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.text = title;
     [self addSubview:_title];
@@ -52,6 +55,8 @@ const CGFloat kFaviconToTextMargin = 14;
     _subtitle = [[UILabel alloc] init];
     _subtitle.translatesAutoresizingMaskIntoConstraints = NO;
     _subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _subtitle.adjustsFontForContentSizeCategory = YES;
+    _subtitle.numberOfLines = kNumberOfSubtitleLines;
     _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitle.text = subtitle;
     [self addSubview:_subtitle];
