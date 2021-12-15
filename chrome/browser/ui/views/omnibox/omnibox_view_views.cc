@@ -257,7 +257,13 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
-  // These have a reference to the WebContents, avoid a dangling pointer.
+  // The context menu holds references to share_submenu_model_ and
+  // send_tab_to_self_sub_menu_model_; invalidate it here so we can destroy
+  // those below.
+  InvalidateContextMenu();
+
+  // These have a reference to the WebContents, which might be being destroyed
+  // here:
   share_submenu_model_.reset();
   send_tab_to_self_sub_menu_model_.reset();
 
