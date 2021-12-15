@@ -765,7 +765,7 @@
         'cpu': 'x86-64',
         'gpu': '1002:6821',
         'hidpi': '1',
-        'os': 'Mac-11.4',
+        'os': 'Mac-12.0',
         'pool': 'chromium.tests.gpu',
         'display_attached': '1',
       },
