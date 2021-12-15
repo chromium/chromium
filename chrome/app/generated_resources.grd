@@ -6700,8 +6700,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAILORED_SECURITY_DISPLAY_SOURCE" desc="The name of the source showing the notification">
         Safe Browsing
       </message>
-      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification asking if the user wants to enable Enhanced Safe Browsing">
-        With Enhanced Safe Browsing, you&#x2019;ll get Chrome&#x2019;s strongest security
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_TITLE" desc="The title of the notification asking if the user wants to enable Enhanced Safe Browsing">
+        Turn on enhanced security?
       </message>
       <if expr="use_titlecase">
         <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_ACCEPT" desc="The text on the 'accept' button asking if the user wants to enable Enhanced Safe Browsing">
@@ -6714,19 +6714,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TITLE" desc="The title of the notification telling the user that Enhanced Safe Browsing was disabled">
-        Enhanced Safe Browsing is off
+        Turn off enhanced security?
       </message>
       <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification telling the user that Enhanced Safe Browsing was disabled">
-        You&#x2019;re getting standard protection
+        You turned off Enhanced Safe Browsing in your account.
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_ON" desc="The text on the 'turn on' button asking if the user wants to re-enable Enhanced Safe Browsing">
-          Turn Back On
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF" desc="The text on the 'turn off' button asking if the user wants to enable Enhanced Safe Browsing">
+          Turn Off
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_ON" desc="The text on the 'turn on' button asking if the user wants to re-enable Enhanced Safe Browsing">
-          Turn back on
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF" desc="The text on the 'turn off' button asking if the user wants to enable Enhanced Safe Browsing">
+          Turn off
         </message>
       </if>
 

@@ -55,6 +55,7 @@ static_library("safe_browsing") {
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",
+    "//components/vector_icons:vector_icons",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//services/preferences/public/cpp",

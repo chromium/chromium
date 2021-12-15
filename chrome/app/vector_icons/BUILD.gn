@@ -106,7 +106,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "security.icon",
     "send_tab_to_self.icon",
     "sharing_hub_screenshot.icon",
-    "shield_bad.icon",
     "side_panel.icon",
     "side_panel_touch.icon",
     "sign_out.icon",
