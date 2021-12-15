@@ -33,7 +33,7 @@ CopyBytesFromImageBitmapForWebGPU(scoped_refptr<StaticBitmapImage> image,
                                   base::span<uint8_t> dst,
                                   const gfx::Rect& rect,
                                   const WGPUTextureFormat destination_format,
-                                  bool premultipliedAlpha,
+                                  bool dst_premultiplied_alpha,
                                   bool flipY);
 
 uint64_t PLATFORM_EXPORT

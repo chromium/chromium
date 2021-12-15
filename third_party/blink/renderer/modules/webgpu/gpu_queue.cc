@@ -657,7 +657,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUImageCopyTexture& destination,
                                   const WGPUTextureFormat dest_texture_format,
-                                  bool premultiplied_alpha,
+                                  bool dst_premultiplied_alpha,
                                   bool flipY) {
   // Prepare for uploading CPU data.
   gfx::Rect image_data_rect(origin.x, origin.y, copy_size.width,
@@ -690,7 +690,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 
     if (!CopyBytesFromImageBitmapForWebGPU(
             image, base::span<uint8_t>(static_cast<uint8_t*>(data), size),
-            image_data_rect, dest_texture_format, premultiplied_alpha, flipY)) {
+            image_data_rect, dest_texture_format, dst_premultiplied_alpha,
+            flipY)) {
       // Release the buffer.
       GetProcs().bufferRelease(buffer);
       return false;
@@ -732,7 +733,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUImageCopyTexture& destination,
                                   const WGPUTextureFormat dest_texture_format,
-                                  bool premultiplied_alpha,
+                                  bool dst_premultiplied_alpha,
                                   bool flipY) {
   // Check src/dst texture formats are supported by CopyTextureForBrowser
   SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
@@ -769,10 +770,12 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
     options.flipY = true;
   }
 
-  options.alphaOp = image->IsPremultiplied() == premultiplied_alpha
-                        ? WGPUAlphaOp_DontChange
-                        : premultiplied_alpha ? WGPUAlphaOp_Premultiply
-                                              : WGPUAlphaOp_Unpremultiply;
+  options.srcAlphaMode = image->IsPremultiplied()
+                             ? WGPUAlphaMode_Premultiplied
+                             : WGPUAlphaMode_Unpremultiplied;
+  options.dstAlphaMode = dst_premultiplied_alpha
+                             ? WGPUAlphaMode_Premultiplied
+                             : WGPUAlphaMode_Unpremultiplied;
 
   GetProcs().queueCopyTextureForBrowser(GetHandle(), &src, &destination,
                                         &copy_size, &options);

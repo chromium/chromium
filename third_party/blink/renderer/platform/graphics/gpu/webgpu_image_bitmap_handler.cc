@@ -106,7 +106,7 @@ bool CopyBytesFromImageBitmapForWebGPU(
     base::span<uint8_t> dst,
     const gfx::Rect& rect,
     const WGPUTextureFormat destination_format,
-    bool premultipliedAlpha,
+    bool dst_premultiplied_alpha,
     bool flipY) {
   DCHECK(image);
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
@@ -133,7 +133,7 @@ bool CopyBytesFromImageBitmapForWebGPU(
   // TODO(crbug.com/1217153): Convert to user-provided color space.
   SkImageInfo info = SkImageInfo::Make(
       rect.width(), rect.height(), sk_color_type,
-      premultipliedAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+      dst_premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       paint_image.GetSkImageInfo().refColorSpace());
 
   if (!flipY && read_all_channels) {
