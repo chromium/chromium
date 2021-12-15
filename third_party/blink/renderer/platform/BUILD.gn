@@ -678,6 +678,8 @@ component("platform") {
     "fonts/shaping/glyph_bounds_accumulator.h",
     "fonts/shaping/harfbuzz_face.cc",
     "fonts/shaping/harfbuzz_face.h",
+    "fonts/shaping/harfbuzz_face_from_typeface.cc",
+    "fonts/shaping/harfbuzz_face_from_typeface.h",
     "fonts/shaping/harfbuzz_font_cache.cc",
     "fonts/shaping/harfbuzz_font_cache.h",
     "fonts/shaping/harfbuzz_font_data.h",
