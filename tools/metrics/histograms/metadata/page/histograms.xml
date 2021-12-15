@@ -55,17 +55,6 @@ chromium-metrics-reviews@google.com.
   <variant name="xslt"/>
 </variants>
 
-<variants name="TriggerType">
-  <variant name="">
-    <obsolete>
-      Base histogram. Use suffixes of this histogram instead. Non-suffix name
-      was removed in Nov 2021.
-    </obsolete>
-  </variant>
-  <variant name=".Embedder_DirectURLInput"/>
-  <variant name=".SpeculationRule"/>
-</variants>
-
 <variants name="Window">
   <variant name="SessionWindow"/>
   <variant name="SessionWindowByInputs">
@@ -720,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{TriggerType}"
+    name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -730,11 +719,15 @@ chromium-metrics-reviews@google.com.
     prerendered and were later activated. Note that prerendered page loads are
     excluded from PageLoad.InteractiveTiming.FirstInputDelay4.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore.MainFrame{TriggerType}"
+    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore.MainFrame{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -745,11 +738,15 @@ chromium-metrics-reviews@google.com.
     page loads are excluded from
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{TriggerType}"
+    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -759,11 +756,15 @@ chromium-metrics-reviews@google.com.
     were prerendered and were later activated. Note that prerendered page loads
     are excluded from PageLoad.LayoutInstability.CumulativeShiftScore.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.NavigationToActivation{TriggerType}"
+    name="PageLoad.Clients.Prerender.NavigationToActivation{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -774,11 +775,15 @@ chromium-metrics-reviews@google.com.
     attribute of PerformanceNavigationTiming. Recorded when a prerendered page
     is activated.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{TriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -790,11 +795,15 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint{TriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -805,11 +814,15 @@ chromium-metrics-reviews@google.com.
     activation navigation start. Note that prerendered page loads are excluded
     from PageLoad.PaintTiming.NavigationToFirstPaint.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{TriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{PrerenderTriggerType}"
     units="ms" expires_after="2022-01-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -821,7 +834,11 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
   </summary>
-  <token key="TriggerType" variants="TriggerType"/>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat"

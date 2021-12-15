@@ -26,6 +26,40 @@ enum class PrerenderCancelledInterface {
   kMaxValue = kNotificationService
 };
 
+// Used by PrerenderNavigationThrottle, to track the cross-origin cancellation
+// reason, and break it down into more cases.
+// Do not modify this enum.
+enum class PrerenderCrossOriginRedirectionMismatch {
+  kShouldNotBeReported = 0,
+  kPortMismatch = 1,
+  kHostMismatch = 2,
+  kHostPortMismatch = 3,
+  kSchemeMismatch = 4,
+  kSchemePortMismatch = 5,
+  kSchemeHostMismatch = 6,
+  kSchemeHostPortMismatch = 7,
+  kMaxValue = kSchemeHostPortMismatch
+};
+
+// Used by PrerenderNavigationThrottle. This is a breakdown enum for
+// PrerenderCrossOriginRedirectionMismatch.kSchemePortMismatch.
+// Do not modify this enum.
+enum class PrerenderCrossOriginRedirectionProtocolChange {
+  kHttpProtocolUpgrade = 0,
+  kHttpProtocolDowngrade = 1,
+  kMaxValue = kHttpProtocolDowngrade
+};
+
+// Used by PrerenderNavigationThrottle. This is a breakdown enum for
+// PrerenderCrossOriginRedirectionMismatch.kHostMismatch.
+// Do not modify this enum.
+enum class PrerenderCrossOriginRedirectionDomain {
+  kRedirectToSubDomain = 0,
+  kRedirectFromSubDomain = 1,
+  kCrossDomain = 2,
+  kMaxValue = kCrossDomain
+};
+
 void RecordPrerenderCancelledInterface(const std::string& interface_name);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
@@ -37,6 +71,24 @@ void RecordPrerenderActivationTime(
 
 void RecordPrerenderHostFinalStatus(
     PrerenderHost::FinalStatus status,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
+void RecordPrerenderRedirectionMismatchType(
+    PrerenderCrossOriginRedirectionMismatch case_type,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
+// Records whether the redirection was caused by HTTP protocol upgrade.
+void RecordPrerenderRedirectionProtocolChange(
+    PrerenderCrossOriginRedirectionProtocolChange change_type,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
+// Records whether the prerendering navigation was redirected to a subdomain
+// page.
+void RecordPrerenderRedirectionDomain(
+    PrerenderCrossOriginRedirectionDomain domain_type,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 

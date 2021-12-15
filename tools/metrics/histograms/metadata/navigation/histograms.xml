@@ -34,6 +34,21 @@ chromium-metrics-reviews@google.com.
   <variant name="WillStartRequest"/>
 </variants>
 
+<variants name="PrerenderTriggerType">
+<!--
+Also used in tools/metrics/histograms/metadata/page/histograms.xml.
+-->
+
+  <variant name="">
+    <obsolete>
+      Base histogram. Use suffixes of this histogram instead. Non-suffix name
+      was removed in Nov 2021.
+    </obsolete>
+  </variant>
+  <variant name=".Embedder_DirectURLInput"/>
+  <variant name=".SpeculationRule"/>
+</variants>
+
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2022-10-01">
@@ -1610,6 +1625,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Prerender.Experimental.CrossOriginRedirectionDomain{PrerenderTriggerType}"
+    enum="PrerenderCrossOriginRedirectionDomain" expires_after="2022-01-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>src/content/browser/prerender/OWNERS</owner>
+  <summary>
+    A breakdown metric for analyzing cross-origin redirection cases during
+    embedder-triggered prerendering. Recorded when a prerendering page was
+    redirected to a subdomain.
+
+    Note that for now it is not used for prerendering that are triggered by
+    speculation rules.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
+    name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
+    enum="PrerenderCrossOriginRedirectionProtocolChange"
+    expires_after="2022-01-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>src/content/browser/prerender/OWNERS</owner>
+  <summary>
+    A breakdown metric for analyzing cross-origin redirection cases during
+    embedder-triggered prerendering, Recorded when redirections were caused due
+    to HTTP protocol upgrades.
+
+    Note that for now it is not used for prerendering that are triggered by
+    speculation rules.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
 <histogram name="Prerender.Experimental.PrerenderCancelledInterface"
     enum="PrerenderCancelledInterface" expires_after="2022-06-05">
   <owner>nhiroki@chromium.org</owner>
@@ -1649,6 +1699,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PrerenderTriggerType}"
+    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2022-01-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>src/content/browser/prerender/OWNERS</owner>
+  <summary>
+    A breakdown metric for analyzing cross-origin redirection cases during
+    embedder-triggered prerendering. Recorded when the embedder-triggered
+    prerendering was redirected to another origin that differs from the initial
+    one.
+
+    The cases are encoded into 3 bits(scheme mismatch, host mismatch, port
+    mismatch).
+
+    Note that for now it is not used for prerendering that are triggered by
+    speculation rules.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation"
     enum="PrerenderHostFinalStatus" expires_after="2021-08-06">
   <obsolete>
@@ -1682,7 +1753,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.Experimental.PrerenderHostFinalStatus{TriggerType}"
+<histogram
+    name="Prerender.Experimental.PrerenderHostFinalStatus{PrerenderTriggerType}"
     enum="PrerenderHostFinalStatus" expires_after="2022-06-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
@@ -1692,16 +1764,7 @@ chromium-metrics-reviews@google.com.
     Final status for a prerendering attempt. Recorded by PrerenderHost or
     PrerenderHostRegistry in the browser process when the attempt finishes.
   </summary>
-  <token key="TriggerType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead. Non-suffix name
-        was removed in Dec 2021.
-      </obsolete>
-    </variant>
-    <variant name=".Embedder_DirectURLInput"/>
-    <variant name=".SpeculationRule"/>
-  </token>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"

@@ -6,11 +6,15 @@
 
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -22,6 +26,54 @@ namespace {
 // of https://github.com/jeremyroman/alternate-loading-modes/issues/30.
 bool IsDisallowedHttpResponseCode(int response_code) {
   return response_code < 100 || response_code > 399;
+}
+
+// For the given two origins, analyze what kind of redirection happened.
+void AnalyzeCrossOriginRedirection(
+    const url::Origin& current_origin,
+    const url::Origin& initial_origin,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  DCHECK_NE(initial_origin, current_origin);
+  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  DCHECK(current_origin.GetURL().SchemeIsHTTPOrHTTPS());
+  DCHECK(initial_origin.GetURL().SchemeIsHTTPOrHTTPS());
+
+  std::bitset<3> bits;
+  bits[2] = current_origin.scheme() != initial_origin.scheme();
+  bits[1] = current_origin.host() != initial_origin.host();
+  bits[0] = current_origin.port() != initial_origin.port();
+  DCHECK(bits.any());
+  auto mismatch_type =
+      static_cast<PrerenderCrossOriginRedirectionMismatch>(bits.to_ulong());
+
+  RecordPrerenderRedirectionMismatchType(mismatch_type, trigger_type,
+                                         embedder_histogram_suffix);
+
+  if (mismatch_type ==
+      PrerenderCrossOriginRedirectionMismatch::kSchemePortMismatch) {
+    RecordPrerenderRedirectionProtocolChange(
+        current_origin.scheme() == url::kHttpsScheme
+            ? PrerenderCrossOriginRedirectionProtocolChange::
+                  kHttpProtocolUpgrade
+            : PrerenderCrossOriginRedirectionProtocolChange::
+                  kHttpProtocolDowngrade,
+        trigger_type, embedder_histogram_suffix);
+    return;
+  }
+  if (mismatch_type == PrerenderCrossOriginRedirectionMismatch::kHostMismatch) {
+    if (current_origin.DomainIs(initial_origin.host())) {
+      RecordPrerenderRedirectionDomain(
+          PrerenderCrossOriginRedirectionDomain::kRedirectToSubDomain,
+          trigger_type, embedder_histogram_suffix);
+      return;
+    }
+    RecordPrerenderRedirectionDomain(
+        initial_origin.DomainIs(current_origin.host())
+            ? PrerenderCrossOriginRedirectionDomain::kRedirectFromSubDomain
+            : PrerenderCrossOriginRedirectionDomain::kCrossDomain,
+        trigger_type, embedder_histogram_suffix);
+  }
 }
 
 }  // namespace
@@ -130,13 +182,20 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     if (is_redirection) {
       url::Origin initial_origin =
           url::Origin::Create(prerender_host->GetInitialUrl());
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree_node_id(),
-          initial_origin == prerendering_origin
-              ? PrerenderHost::FinalStatus::
-                    kEmbedderTriggeredAndSameOriginRedirected
-              : PrerenderHost::FinalStatus::
-                    kEmbedderTriggeredAndCrossOriginRedirected);
+      if (initial_origin == prerendering_origin) {
+        prerender_host_registry->CancelHost(
+            frame_tree_node->frame_tree_node_id(),
+            PrerenderHost::FinalStatus::
+                kEmbedderTriggeredAndSameOriginRedirected);
+      } else {
+        AnalyzeCrossOriginRedirection(
+            prerendering_origin, initial_origin, prerender_host->trigger_type(),
+            prerender_host->embedder_histogram_suffix());
+        prerender_host_registry->CancelHost(
+            frame_tree_node->frame_tree_node_id(),
+            PrerenderHost::FinalStatus::
+                kEmbedderTriggeredAndCrossOriginRedirected);
+      }
       return CANCEL;
     }
 

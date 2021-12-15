@@ -70259,6 +70259,28 @@ Called by update_net_trust_anchors.py.-->
       label="[main frame send, main frame change, other send, other change]"/>
 </enum>
 
+<enum name="PrerenderCrossOriginRedirectionDomain">
+  <int value="0" label="kRedirectToSubDomain"/>
+  <int value="1" label="kRedirectFromSubDomain"/>
+  <int value="2" label="kCrossDomain"/>
+</enum>
+
+<enum name="PrerenderCrossOriginRedirectionMismatch">
+  <int value="0" label="kShouldNotBeReported"/>
+  <int value="1" label="kPortMismatch"/>
+  <int value="2" label="kHostMismatch"/>
+  <int value="3" label="kHostPortMismatch"/>
+  <int value="4" label="kSchemeMismatch"/>
+  <int value="5" label="kSchemePortMismatch"/>
+  <int value="6" label="kSchemeHostMismatch"/>
+  <int value="7" label="kSchemeHostPortMismatch"/>
+</enum>
+
+<enum name="PrerenderCrossOriginRedirectionProtocolChange">
+  <int value="0" label="kHttpProtocolUpgrade"/>
+  <int value="1" label="kHttpProtocolDowngrade"/>
+</enum>
+
 <enum name="PrerenderEvent">
   <obsolete>
     Deprecated Dec 12 2014.

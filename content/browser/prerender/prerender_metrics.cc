@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -85,6 +86,42 @@ void RecordPrerenderHostFinalStatus(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
                             trigger_type, embedder_histogram_suffix),
       status);
+}
+
+void RecordPrerenderRedirectionMismatchType(
+    PrerenderCrossOriginRedirectionMismatch mismatch_type,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch",
+          trigger_type, embedder_histogram_suffix),
+      mismatch_type);
+}
+
+void RecordPrerenderRedirectionProtocolChange(
+    PrerenderCrossOriginRedirectionProtocolChange change_type,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.CrossOriginRedirectionProtocolChange",
+          trigger_type, embedder_histogram_suffix),
+      change_type);
+}
+
+void RecordPrerenderRedirectionDomain(
+    PrerenderCrossOriginRedirectionDomain domain_type,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.CrossOriginRedirectionDomain", trigger_type,
+          embedder_histogram_suffix),
+      domain_type);
 }
 
 }  // namespace content
