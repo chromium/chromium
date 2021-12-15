@@ -76,6 +76,13 @@
 //       Apple keyboards with USB 0x070049 [Insert] labelled "Help" have not
 //       been made since 2007.
 
+// ChromeOS notes:
+//
+//  Any keys that are added or updated specifically for use in the ChromeOS
+//  top-row should also be updated in sections of Input Diagnostics:
+//    ash/webui/diagnostics_ui/mojom/input_data_provider.mojom: enum TopRowKey
+//    ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.cc: kScancodeMapping
+
 DOM_CODE_DECLARATION {
 
   //            USB     evdev    XKB     Win     Mac   Code

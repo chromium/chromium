@@ -7,12 +7,15 @@
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 namespace ash {
 namespace diagnostics {
+
+class InputDeviceInformation;
 
 // Helper to provide InputDataProvider diagnostic interface with
 // keyboard-specific logic.
@@ -29,14 +32,17 @@ class InputDataProviderKeyboard {
       mojom::InputDataProvider::GetKeyboardVisualLayoutCallback callback);
 
   mojom::KeyboardInfoPtr ConstructKeyboard(
-      int id,
-      const ui::EventDeviceInfo* device_info,
-      mojom::ConnectionType connection_type);
+      const InputDeviceInformation* device_info);
 
  private:
   void ProcessXkbLayout(
       mojom::InputDataProvider::GetKeyboardVisualLayoutCallback callback);
   mojom::KeyGlyphSetPtr LookupGlyphSet(uint32_t evdev_code);
+
+  void ProcessKeyboardTopRowLayout(
+      const InputDeviceInformation* device_info,
+      ui::EventRewriterChromeOS::KeyboardTopRowLayout* out_top_row_layout,
+      std::vector<mojom::TopRowKey>* out_top_row_keys);
 
   ui::XkbEvdevCodes xkb_evdev_codes_;
   ui::XkbKeyboardLayoutEngine xkb_layout_engine_;

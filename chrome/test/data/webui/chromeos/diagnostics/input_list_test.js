@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/input_list.js';
 
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
@@ -87,6 +87,12 @@ export function inputListTestSuite() {
       mechanicalLayout: MechanicalLayout.kUnknown,
       hasAssistantKey: false,
       numberPadPresent: NumberPadPresence.kUnknown,
+      topRowKeys: [
+        TopRowKey.kBack, TopRowKey.kForward, TopRowKey.kRefresh,
+        TopRowKey.kFullscreen, TopRowKey.kOverview,
+        TopRowKey.kScreenBrightnessDown, TopRowKey.kScreenBrightnessUp,
+        TopRowKey.kVolumeMute, TopRowKey.kVolumeDown, TopRowKey.kVolumeUp
+      ],
     };
     let keyboardCard;
     return initializeInputList()

@@ -5,13 +5,15 @@
 module ash.diagnostics.mojom;
 
 enum ConnectionType {
-  kInternal,  // Includes internal USB devices.
+  // Includes devices connected over USB that are on fully internal busses, as
+  // well as the keyboards/touchpads for detachables.
+  kInternal,
   kUsb,
   kBluetooth,
+  // An unknown device is most likely to be internal.
   kUnknown,
 };
 
-// The physical style of a keyboard.
 enum PhysicalLayout {
   kUnknown,
   // A typical Chrome OS keyboard with action keys on the top row, reduced
@@ -31,9 +33,38 @@ enum MechanicalLayout {
 };
 
 enum NumberPadPresence {
+  // Unknown indicates there is no reliable evidence whether a numberpad is
+  // present. This is common for external keyboards.
   kUnknown,
   kPresent,
   kNotPresent,
+};
+
+// Note that this enumeration will need to be extended if new keys are added.
+enum TopRowKey {
+  // Either no key at all, or no special action key at this position.
+  kNone,
+  // Marker for keys which cannot be decoded, but have some action.
+  kUnknown,
+  kBack,
+  kForward,
+  kRefresh,
+  kFullscreen,
+  kOverview,
+  kScreenshot,
+  kScreenBrightnessDown,
+  kScreenBrightnessUp,
+  kPrivacyScreenToggle,
+  kVolumeMute,
+  kVolumeDown,
+  kVolumeUp,
+  kKeyboardBacklightDown,
+  kKeyboardBacklightUp,
+  kNextTrack,
+  kPreviousTrack,
+  kPlayPause,
+  kScreenMirror,
+  kDelete,
 };
 
 // Describes a connected keyboard.
@@ -44,8 +75,11 @@ struct KeyboardInfo {
   string name;
   PhysicalLayout physical_layout;
   MechanicalLayout mechanical_layout;
-  bool has_assistant_key;
   NumberPadPresence number_pad_present;
+  // Excludes left-most Escape key, and right-most key (usually Power/Lock).
+  array<TopRowKey> top_row_keys;
+  // Only applicable to CrOS keyboards.
+  bool has_assistant_key;
 };
 
 // Describes the glyphs that appear on a single key.

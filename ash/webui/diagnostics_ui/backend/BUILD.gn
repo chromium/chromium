@@ -47,6 +47,7 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//ash/webui/diagnostics_ui/mojom",
@@ -65,6 +66,8 @@ static_library("backend") {
     "//services/device/public/mojom",
     "//ui/base",
     "//ui/base/ime/ash",
+    "//ui/chromeos/events",
+    "//ui/events/devices",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info",
     "//ui/events/ozone/layout",
@@ -118,9 +121,11 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//dbus",
+    "//device/udev_linux:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
+    "//ui/chromeos/events",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info_test_utils",
     "//ui/gfx",
