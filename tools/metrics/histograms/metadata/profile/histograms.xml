@@ -949,7 +949,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
     expires_after="2022-05-01">
-  <owner>msalama@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between Chrome startup and the call to
@@ -960,7 +961,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint" units="ms"
     expires_after="2022-05-01">
-  <owner>msalama@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between web view creation and the first paint. Only
@@ -971,6 +973,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"
     units="ms" expires_after="2022-06-05">
   <owner>alexilin@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time from the application start to the first non-empty paint of
@@ -983,8 +986,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.MainViewInitialized" units="ms"
-    expires_after="2021-12-26">
-  <owner>msalama@chromium.org</owner>
+    expires_after="2022-05-01">
+  <owner>alexilin@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between web view creation and main view being initialized
@@ -993,8 +997,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.WebViewCreated" units="ms"
-    expires_after="2021-12-26">
-  <owner>msalama@chromium.org</owner>
+    expires_after="2022-05-01">
+  <owner>alexilin@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between ProfilePickerView::Display() is called and the web
