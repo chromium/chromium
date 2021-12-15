@@ -8,9 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
@@ -22,6 +24,7 @@ class WaylandConnection;
 class ZWPTextInputWrapper;
 
 class WaylandInputMethodContext : public LinuxInputMethodContext,
+                                  public VirtualKeyboardController,
                                   public WaylandWindowObserver,
                                   public ZWPTextInputWrapperClient {
  public:
@@ -52,6 +55,13 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Blur() override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
+  // VirtualKeyboardController overrides:
+  bool DisplayVirtualKeyboard() override;
+  void DismissVirtualKeyboard() override;
+  void AddObserver(VirtualKeyboardControllerObserver* observer) override;
+  void RemoveObserver(VirtualKeyboardControllerObserver* observer) override;
+  bool IsKeyboardVisible() override;
+
   // WaylandWindowObserver overrides:
   void OnKeyboardFocusedWindowChanged() override;
 
@@ -65,6 +75,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnSetPreeditRegion(int32_t index,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;
+  void OnInputPanelState(uint32_t state) override;
 
  private:
   void UpdatePreeditText(const std::u16string& preedit_text);
@@ -99,6 +110,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   std::string surrounding_text_;
   // The selection range in UTF-8 offsets in the |surrounding_text_|.
   gfx::Range selection_range_utf8_ = gfx::Range::InvalidRange();
+
+  // Caches VirtualKeyboard visibility.
+  bool virtual_keyboard_visible_ = false;
 };
 
 }  // namespace ui

@@ -129,7 +129,8 @@ void ZWPTextInputWrapperV1::OnInputPanelState(
     void* data,
     struct zwp_text_input_v1* text_input,
     uint32_t state) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnInputPanelState(state);
 }
 
 // static

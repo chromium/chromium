@@ -494,6 +494,36 @@ TEST_P(WaylandInputMethodContextTest,
       input_method_context_delegate_->was_on_set_preedit_region_called());
 }
 
+TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
+  EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
+  connection_->ScheduleFlush();
+  Sync();
+}
+
+TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  input_method_context_->DismissVirtualKeyboard();
+  connection_->ScheduleFlush();
+  Sync();
+}
+
+TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
+  EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
+
+  zwp_text_input_v1_send_input_panel_state(zwp_text_input_->resource(), 1);
+  connection_->ScheduleFlush();
+  Sync();
+
+  EXPECT_TRUE(input_method_context_->IsKeyboardVisible());
+
+  zwp_text_input_v1_send_input_panel_state(zwp_text_input_->resource(), 0);
+  connection_->ScheduleFlush();
+  Sync();
+
+  EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
+}
+
 class WaylandInputMethodContextNoKeyboardTest
     : public WaylandInputMethodContextTest {
  public:

@@ -398,8 +398,38 @@ void WaylandInputMethodContext::SetContentType(TextInputType input_type,
 
 VirtualKeyboardController*
 WaylandInputMethodContext::GetVirtualKeyboardController() {
-  // TODO(crbug.com/1141531): return VirtualKeyboardController for wayland.
-  return nullptr;
+  if (!text_input_)
+    return nullptr;
+  return this;
+}
+
+bool WaylandInputMethodContext::DisplayVirtualKeyboard() {
+  if (!text_input_)
+    return false;
+
+  text_input_->ShowInputPanel();
+  return true;
+}
+
+void WaylandInputMethodContext::DismissVirtualKeyboard() {
+  if (!text_input_)
+    return;
+
+  text_input_->HideInputPanel();
+}
+
+void WaylandInputMethodContext::AddObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandInputMethodContext::RemoveObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool WaylandInputMethodContext::IsKeyboardVisible() {
+  return virtual_keyboard_visible_;
 }
 
 void WaylandInputMethodContext::OnPreeditString(
@@ -573,6 +603,14 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
   ime_delegate_->OnSetPreeditRegion(gfx::Range(offsets[0], offsets[1]),
                                     ime_text_spans);
+}
+
+void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
+  virtual_keyboard_visible_ = (state & 1) != 0;
+  // Note: Currently there's no support of VirtualKeyboardControllerObserver.
+  // In the future, we may need to support it. Specifically,
+  // RenderWidgetHostViewAura would like to know the VirtualKeyboard's
+  // region somehow.
 }
 
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {

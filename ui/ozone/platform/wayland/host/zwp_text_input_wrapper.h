@@ -65,6 +65,14 @@ class ZWPTextInputWrapperClient {
   virtual void OnSetPreeditRegion(int32_t index,
                                   uint32_t length,
                                   const std::vector<SpanStyle>& spans) = 0;
+
+  // Called when the visibility state of the input panel changed.
+  // There's no detailed spec of |state|, and no actual implementor except
+  // components/exo is found in the world at this moment.
+  // Thus, in ozone/wayland use the lowest bit as boolean
+  // (visible=1/invisible=0), and ignore other bits for future compatibility.
+  // This behavior must be consistent with components/exo.
+  virtual void OnInputPanelState(uint32_t state) = 0;
 };
 
 // A wrapper around different versions of wayland text input protocols.
