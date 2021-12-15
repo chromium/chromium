@@ -85,6 +85,9 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
  */
@@ -360,6 +363,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public void setHandleStrategy(HandleStrategy strategy) {
         mHandleStrategy = strategy;
         mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
+        mLocationBar.showBranding();
     }
 
     private void updateButtonsTint() {
@@ -630,6 +634,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                                   LocationBarDataProvider.Observer,
                                                   View.OnLongClickListener {
         private static final int TITLE_ANIM_DELAY_MS = 800;
+        private static final int BRANDING_DELAY_MS = 1800;
 
         private static final int STATE_DOMAIN_ONLY = 0;
         private static final int STATE_TITLE_ONLY = 1;
@@ -654,6 +659,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         };
 
+        private boolean mCurrentlyShowingBranding;
+        private List<Runnable> mAfterBrandingRunnables;
+
         public View getLayout() {
             return mLocationBarFrameLayout;
         }
@@ -664,6 +672,31 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public boolean isShowingTitleOnly() {
             return mState == STATE_TITLE_ONLY;
+        }
+
+        public void showBranding() {
+            mCurrentlyShowingBranding = true;
+            mAfterBrandingRunnables = new ArrayList<>();
+
+            // Store the title and domain setting.
+            final boolean showTitle = mState != STATE_DOMAIN_ONLY;
+            final boolean showUrlBar = mState != STATE_TITLE_ONLY;
+
+            // We use title bar to show the branding text and hide the url bar so the text will
+            // align with the security icon.
+            setShowTitle(true);
+            setUrlBarHidden(true);
+            showBrandingIconAndText();
+
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                mCurrentlyShowingBranding = false;
+                setUrlBarHidden(!showUrlBar);
+                setShowTitle(showTitle);
+                for (Runnable runnable : mAfterBrandingRunnables) {
+                    runnable.run();
+                }
+                mAfterBrandingRunnables.clear();
+            }, BRANDING_DELAY_MS);
         }
 
         public void onFinishInflate(View container) {
@@ -740,6 +773,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (webContents == null) return;
                 Activity activity = currentTab.getWindowAndroid().getActivity().get();
                 if (activity == null) return;
+                if (mCurrentlyShowingBranding) return;
                 // For now we don't show "store info" row for custom tab.
                 new ChromePageInfo(mModalDialogManagerSupplier, getContentPublisher(),
                         OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
@@ -822,8 +856,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
 
+        private void showBrandingIconAndText() {
+            ColorStateList colorStateList = AppCompatResources.getColorStateList(
+                    getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
+            ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
+            mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
+
+            mTitleBar.setText(R.string.twa_running_in_chrome);
+            mTitleAnimationStarter.run();
+        }
+
         private void updateSecurityIcon() {
             if (mState == STATE_TITLE_ONLY) return;
+            if (mCurrentlyShowingBranding) {
+                mAfterBrandingRunnables.add(this::updateSecurityIcon);
+                return;
+            }
 
             int securityIconResource = mLocationBarDataProvider.getSecurityIconResource(
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
@@ -841,6 +889,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateTitleBar() {
+            if (mCurrentlyShowingBranding) {
+                mAfterBrandingRunnables.add(this::updateTitleBar);
+                return;
+            }
             String title = mLocationBarDataProvider.getTitle();
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)) {
                 mTitleBar.setText("");
@@ -854,14 +906,21 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     && !title.equals(mLocationBarDataProvider.getCurrentUrl())
                     && !title.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
                 // Delay the title animation until security icon animation finishes.
-                PostTask.postDelayedTask(
-                        UiThreadTaskTraits.DEFAULT, mTitleAnimationStarter, TITLE_ANIM_DELAY_MS);
+                // If this is updated after branding, we don't need to wait.
+                PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, mTitleAnimationStarter,
+                        mAfterBrandingRunnables != null && mAfterBrandingRunnables.size() > 0
+                                ? 0
+                                : TITLE_ANIM_DELAY_MS);
             }
 
             mTitleBar.setText(title);
         }
 
         private void updateUrlBar() {
+            if (mCurrentlyShowingBranding) {
+                mAfterBrandingRunnables.add(this::updateUrlBar);
+                return;
+            }
             Tab tab = getCurrentTab();
             if (tab == null) {
                 mUrlCoordinator.setUrlBarData(
@@ -936,6 +995,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mAnimDelegate.prepareTitleAnim(mUrlBar, mTitleBar);
             } else {
                 mState = STATE_DOMAIN_ONLY;
+                mTitleBar.setVisibility(View.GONE);
             }
             mLocationBarModel.notifyTitleChanged();
         }
