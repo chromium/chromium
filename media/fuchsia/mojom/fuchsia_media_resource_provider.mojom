@@ -17,6 +17,12 @@ struct AudioCapturerRequest {
 // Interface used by the render to create media resources. Instances are
 // document-scoped.
 interface FuchsiaMediaResourceProvider {
+  // Returns true if the frame should use AudioConsumer to render audio
+  // streams. The call needs to be synchronous because `media::Renderer` needs
+  // to be constructed synchronously.
+  [Sync]
+  ShouldUseAudioConsumer() => (bool result);
+
   // Creates a fuchsia.media.AudioConsumer for the current frame.
   CreateAudioConsumer(AudioConsumerRequest request);
 

@@ -62,10 +62,6 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
       // Return nullptr for WebRTC streams. This will cause the caller to
       // fallback to AudioOutputDevice, which outputs through
       // AudioOutputStreamFuchsia.
-      //
-      // TODO(crbug.com/1066203): Make sure FuchsiaAudioOutputDevice doesn't
-      // increase latency (or degrade quality otherwise) and then switch to
-      // using FuchsiaAudioOutputDevice for WebRTC.
       return nullptr;
 
     // kNone is used in AudioDeviceFactory::GetOutputDeviceInfo() to get
@@ -89,6 +85,13 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
       media_resource_provider;
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
+
+  // If AudioConsumer is not enabled then fallback to AudioOutputDevice.
+  bool use_audio_consumer = false;
+  if (!media_resource_provider->ShouldUseAudioConsumer(&use_audio_consumer) ||
+      !use_audio_consumer) {
+    return nullptr;
+  }
 
   // AudioConsumer can be used only to output to the default device.
   if (!params.device_id.empty())

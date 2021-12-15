@@ -11,24 +11,21 @@
 #include "base/bind.h"
 #include "fuchsia/engine/renderer/web_engine_audio_renderer.h"
 #include "media/base/decoder_factory.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 WebEngineMediaRendererFactory::WebEngineMediaRendererFactory(
     media::MediaLog* media_log,
     media::DecoderFactory* decoder_factory,
     GetGpuFactoriesCB get_gpu_factories_cb,
-    blink::BrowserInterfaceBrokerProxy* interface_broker)
+    mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
+        media_resource_provider)
     : media_log_(media_log),
       decoder_factory_(decoder_factory),
       get_gpu_factories_cb_(std::move(get_gpu_factories_cb)),
-      interface_broker_(interface_broker) {
+      media_resource_provider_(std::move(media_resource_provider)) {
   DCHECK(decoder_factory_);
 }
 
@@ -54,16 +51,8 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
     media::VideoRendererSink* video_renderer_sink,
     media::RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
-  mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider;
-  interface_broker_->GetInterface(
-      media_resource_provider.InitWithNewPipeAndPassReceiver());
-
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      remote_media_resource_provider;
-  remote_media_resource_provider.Bind(std::move(media_resource_provider));
   fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer_handle;
-  remote_media_resource_provider->CreateAudioConsumer(
+  media_resource_provider_->CreateAudioConsumer(
       audio_consumer_handle.NewRequest());
   auto audio_renderer = std::make_unique<WebEngineAudioRenderer>(
       media_log_, std::move(audio_consumer_handle));
