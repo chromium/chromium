@@ -16,4 +16,11 @@ PasswordStoreChangeList JoinPasswordStoreChanges(
   return joined_changes;
 }
 
+LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    return {};
+  }
+  return std::move(absl::get<LoginsResult>(result));
+}
+
 }  // namespace password_manager

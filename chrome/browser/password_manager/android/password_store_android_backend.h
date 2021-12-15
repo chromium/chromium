@@ -79,20 +79,49 @@ class PasswordStoreAndroidBackend
         this};
   };
 
-  // Wraps the handler for one or multiple asynchronous jobs (if successful).
-  // Also provides means to record metrics about the jobs (if successful or
-  // not). An object of this type shall be created and stored in
-  // |request_for_job_| once an asynchronous begins, and destroyed once jobs are
-  // finished.
+  using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
+
+  // Records metrics for an asynchronous job or a series of jobs. The job is expected to have
+  // started when the MetricsRecorder instance is created. Latency is reported in RecordMetrics()
+  // under that assumption.
+  class MetricsRecorder {
+   public:
+    MetricsRecorder();
+    explicit MetricsRecorder(MetricInfix metric_name);
+    MetricsRecorder(MetricsRecorder&&);
+    MetricsRecorder& operator=(MetricsRecorder&&);
+    ~MetricsRecorder();
+
+    // Records the following metrics:
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Latency"
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Success"
+    // When |error| is specified, the following metrcis are recorded in
+    // addition:
+    // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
+    // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.APIError"
+    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.ErrorCode"
+    void RecordMetrics(bool success,
+                       absl::optional<AndroidBackendError> error) const;
+
+   private:
+    MetricInfix metric_infix_;
+    base::Time start_ = base::Time::Now();
+  };
+
+  // Wraps the handler for an asynchronous job (if successful) and invokes the
+  // supplied metrics recorded upon completion. An object of this type shall be
+  // created and stored in |request_for_job_| once an asynchronous begins, and
+  // destroyed once the job is finished.
   class JobReturnHandler {
    public:
     using ErrorReply = base::OnceClosure;
-    using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
 
     JobReturnHandler();
-    JobReturnHandler(LoginsOrErrorReply callback, MetricInfix metric_name);
+    JobReturnHandler(LoginsOrErrorReply callback,
+                     MetricsRecorder metrics_recorder);
     JobReturnHandler(PasswordStoreChangeListReply callback,
-                     MetricInfix metric_infix);
+                     MetricsRecorder metrics_recorder);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&);
     ~JobReturnHandler();
@@ -107,21 +136,12 @@ class PasswordStoreAndroidBackend
       return std::move(absl::get<T>(success_callback_));
     }
 
-    // Records metrics for this job:
-    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Latency"
-    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.Success"
-    // In case of failure. the following are recorded in addition:
-    // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
-    // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
-    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.APIError"
-    // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.ErrorCode"
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
 
    private:
     absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
         success_callback_;
-    MetricInfix metric_infix_;
-    base::Time start_ = base::Time::Now();
+    MetricsRecorder metrics_recorder_;
   };
 
   using JobId = PasswordStoreAndroidBackendBridge::JobId;
@@ -197,6 +217,13 @@ class PasswordStoreAndroidBackend
       base::Time delete_end,
       PasswordStoreChangeListReply reply,
       LoginsResultOrError result);
+
+  // Creates a metrics recorder that records latency and success metrics for
+  // logins retrieval operation with |metric_infix| name prior to calling
+  // |callback|.
+  LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
+      const MetricInfix& metric_infix,
+      LoginsReply callback);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;

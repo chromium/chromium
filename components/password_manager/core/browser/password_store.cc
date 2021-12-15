@@ -65,13 +65,6 @@ void InvokeCallbackOnChanges(
     std::move(completion_callback).Run(!is_change_empty);
 }
 
-LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
-    return {};
-  }
-  return std::move(absl::get<LoginsResult>(result));
-}
-
 }  // namespace
 
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend) {

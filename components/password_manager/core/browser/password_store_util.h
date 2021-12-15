@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 
 namespace password_manager {
@@ -15,6 +16,10 @@ namespace password_manager {
 // PasswordStoreChangeList. Does not check for duplicate values.
 PasswordStoreChangeList JoinPasswordStoreChanges(
     std::vector<PasswordStoreChangeList> changes);
+
+// Returns logins if |result| holds them, or an empty list if |result|
+// holds an error.
+LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
 
 }  // namespace password_manager
 
