@@ -1756,11 +1756,6 @@ external/wpt/html/webappapis/user-prompts/print-manual.html [ Skip ]
 # Windows doesn't have native overlay scrollbar
 [ Win ] virtual/overlay-scrollbar/* [ Skip ]
 
-# Blink implements additional privacy measures that cause the regular test in
-# WPT to time out.
-# There is a version in wpt_internal that performs the same checks but works
-# as expected.
-external/wpt/ambient-light/AmbientLightSensor.https.html [ Skip ]
 crbug.com/626703 [ Linux ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 crbug.com/626703 [ Win ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]

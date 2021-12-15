@@ -10,20 +10,6 @@ using device::mojom::blink::SensorType;
 
 namespace blink {
 
-namespace {
-
-// Even though the underlying value has changed, for ALS we provide readouts to
-// JS to the nearest 50 Lux.
-constexpr int kAlsRoundingThreshold = 50;
-
-// Decrease precision of ALS readouts.
-// Round off to the nearest kAlsRoundingThreshold.
-double RoundIlluminance(double value) {
-  return kAlsRoundingThreshold * std::round(value / kAlsRoundingThreshold);
-}
-
-}  // namespace
-
 // static
 AmbientLightSensor* AmbientLightSensor::Create(
     ExecutionContext* execution_context,
@@ -51,7 +37,7 @@ AmbientLightSensor::AmbientLightSensor(ExecutionContext* execution_context,
 
 absl::optional<double> AmbientLightSensor::illuminance() const {
   if (hasReading())
-    return RoundIlluminance(GetReading().als.value);
+    return GetReading().als.value;
   return absl::nullopt;
 }
 

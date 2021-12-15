@@ -127,12 +127,12 @@ TEST_F(PlatformSensorProviderTest, SharedBufferCleared) {
       base::BindOnce([](scoped_refptr<PlatformSensor> sensor) {
         auto client =
             std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
-        auto config = PlatformSensorConfiguration(10);
+        auto config = PlatformSensorConfiguration(50);
 
         EXPECT_TRUE(sensor->StartListening(client.get(), config));
         SensorReading reading;
         EXPECT_TRUE(sensor->GetLatestReading(&reading));
-        EXPECT_THAT(reading.als.value, 10);
+        EXPECT_THAT(reading.als.value, 50);
 
         EXPECT_TRUE(sensor->StopListening(client.get(), config));
         EXPECT_TRUE(sensor->GetLatestReading(&reading));
@@ -160,26 +160,29 @@ TEST_F(PlatformSensorProviderTest, PlatformSensorSignificanceChecks) {
 
   // This checks that illuminance significance check causes the following
   // to happen:
-  // 1. Initial value is set to 24. And test checks it can be read back.
+  // 1. Initial value is set to 24. And test checks it is correctly rounded
+  //    to 0.
   // 2. New reading is attempted to set to 35.
   // 3. Value is read from sensor and compared new reading. But as new
   //    reading was not significantly different compared to initial, for
   //    privacy reasons, service returns the initial value.
-  // 4. New value is set to 49. And test checks it can be read back. New
-  //    value is allowed as it is significantly different compared to old
+  // 4. New value is set to 49. And test checks it is correctly rounded to 50.
+  //    New value is allowed as it is significantly different compared to old
   //    value (24).
   // 5. New reading is attempted to set to 35.
   // 6. Value is read from sensor and compared new reading. But as new
   //    reading was not significantly different compared to initial, for
   //    privacy reasons, service returns the initial value.
-  // 7. New value is set to 24. And test checks it can be read back. New
-  //    value is allowed as it is significantly different compared to old
+  // 7. New value is set to 24. And test checks it is correctly rounded to 0.
+  //    New value is allowed as it is significantly different compared to old
   //    value (49).
   const struct {
     const double attempted_als_value;
     const double expected_als_value;
+    const bool expect_reading_changed_event;
   } kTestCases[] = {
-      {24, 24}, {35, 24}, {49, 49}, {35, 49}, {24, 24},
+      {24, 0, true},   {35, 0, false}, {49, 50, true},
+      {35, 50, false}, {24, 0, true},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -187,7 +190,7 @@ TEST_F(PlatformSensorProviderTest, PlatformSensorSignificanceChecks) {
     reading.raw.timestamp = 1.0;
     reading.als.value = test_case.attempted_als_value;
 
-    if (reading.als.value == test_case.expected_als_value)
+    if (test_case.expect_reading_changed_event)
       AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
     else
       AddNewReadingAndExpectNoReadingChangedEvent(client.get(), reading);

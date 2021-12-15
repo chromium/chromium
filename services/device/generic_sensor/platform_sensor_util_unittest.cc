@@ -123,13 +123,13 @@ TEST(PlatformSensorUtil, IsSignificantlyDifferentAmbientLight) {
     const bool expectation;
     const double new_reading;
   } kTestCases[] = {
-      {true, kTestValue - kAlsSignificanceThreshold / 2 - 1},
-      {true, kTestValue - kAlsSignificanceThreshold / 2},
-      {false, kTestValue - kAlsSignificanceThreshold / 2 + 1},
+      {true, kTestValue - kAlsSignificanceThreshold - 1},
+      {true, kTestValue - kAlsSignificanceThreshold},
+      {false, kTestValue - kAlsSignificanceThreshold + 1},
       {false, kTestValue},
-      {false, kTestValue + kAlsSignificanceThreshold / 2 - 1},
-      {true, kTestValue + kAlsSignificanceThreshold / 2},
-      {true, kTestValue + kAlsSignificanceThreshold / 2 + 1},
+      {false, kTestValue + kAlsSignificanceThreshold - 1},
+      {true, kTestValue + kAlsSignificanceThreshold},
+      {true, kTestValue + kAlsSignificanceThreshold + 1},
   };
 
   SensorReading initial_reading;

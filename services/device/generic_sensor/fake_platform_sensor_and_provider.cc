@@ -21,12 +21,20 @@ FakePlatformSensor::FakePlatformSensor(
       .WillByDefault(
           Invoke([this](const PlatformSensorConfiguration& configuration) {
             SensorReading reading;
-            // Only mocking the shared memory update for AMBIENT_LIGHT type is
-            // enough.
-            if (GetType() == mojom::SensorType::AMBIENT_LIGHT) {
-              // Set the shared buffer value as frequency for testing purpose.
-              reading.als.value = configuration.frequency();
-              AddNewReading(reading);
+            // Only mocking the shared memory update for AMBIENT_LIGHT and
+            // PRESSURE type is enough.
+            // Set the shared buffer value as frequency for testing purpose.
+            switch (GetType()) {
+              case mojom::SensorType::AMBIENT_LIGHT:
+                reading.als.value = configuration.frequency();
+                AddNewReading(reading);
+                break;
+              case mojom::SensorType::PRESSURE:
+                reading.pressure.value = configuration.frequency();
+                AddNewReading(reading);
+                break;
+              default:
+                break;
             }
             return true;
           }));

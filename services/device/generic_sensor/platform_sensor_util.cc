@@ -55,6 +55,10 @@ void RoundGyroscopeReading(SensorReadingXYZ* reading) {
   reading->z = RoundToMultiple(reading->z, kGyroscopeRoundingMultiple);
 }
 
+void RoundIlluminanceReading(SensorReadingSingle* reading) {
+  reading->value = RoundToMultiple(reading->value, kAlsRoundingMultiple);
+}
+
 void RoundOrientationQuaternionReading(SensorReadingQuat* reading) {
   double original_angle_div_2 = std::acos(reading->w);
   double rounded_angle_div_2 =
@@ -123,6 +127,9 @@ void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
       break;
 
     case mojom::SensorType::AMBIENT_LIGHT:
+      RoundIlluminanceReading(&reading->als);
+      break;
+
     case mojom::SensorType::MAGNETOMETER:
     case mojom::SensorType::PRESSURE:
     case mojom::SensorType::PROXIMITY:
@@ -136,7 +143,7 @@ bool IsSignificantlyDifferent(const SensorReading& lhs,
   switch (sensor_type) {
     case mojom::SensorType::AMBIENT_LIGHT:
       return std::fabs(lhs.als.value - rhs.als.value) >=
-             kAlsSignificanceThreshold / 2;
+             kAlsSignificanceThreshold;
 
     case mojom::SensorType::ACCELEROMETER:
     case mojom::SensorType::GRAVITY:
