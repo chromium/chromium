@@ -7,12 +7,14 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
@@ -158,7 +160,14 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
 
   MOCK_METHOD(void, ReportFindInPageSelection, (int, int), (override));
 
+  MOCK_METHOD(void,
+              ReportFindInPageTickmarks,
+              (const std::vector<gfx::Rect>&),
+              (override));
+
   float DeviceScaleFactor() override { return device_scale_; }
+
+  MOCK_METHOD(gfx::PointF, GetScrollPosition, (), (override));
 
   MOCK_METHOD(void,
               SetReferrerForRequest,
@@ -298,6 +307,24 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   // Allow derived test classes to create their own custom TestPDFiumEngine.
   virtual std::unique_ptr<TestPDFiumEngine> CreateEngine() {
     return std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
+  }
+
+  void SetDocumentDimensions(const gfx::Size& dimensions) {
+    EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
+        .WillRepeatedly(Return(dimensions));
+    plugin_->OnMessage(base::test::ParseJson(R"({
+      "type": "viewport",
+      "userInitiated": false,
+      "zoom": 1,
+      "layoutOptions": {
+        "direction": 2,
+        "defaultPageOrientation": 0,
+        "twoUpViewEnabled": false,
+      },
+      "xOffset": 0,
+      "yOffset": 0,
+      "pinchPhase": 0,
+    })"));
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
@@ -455,6 +482,30 @@ TEST_F(PdfViewWebPluginTest,
                                      params.expected_device_scale,
                                      params.expected_plugin_rect);
   }
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollsUseZoomForDSFEnabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*wrapper_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(4.0f, 6.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(4));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(6));
+  UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollsUseZoomForDSFDisabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(false));
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*wrapper_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(2.0f, 3.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(4));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(6));
+  UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
 }
 
 class PdfViewWebPluginTestUseZoomForDSF
@@ -916,6 +967,17 @@ TEST_F(PdfViewWebPluginTest, CaretChangeUseZoomForDSFDisabled) {
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
   plugin_->CaretChanged(gfx::Rect(10, 20, 30, 40));
   EXPECT_EQ(gfx::Rect(23, 10, 15, 20), plugin_->GetPluginCaretBounds());
+}
+
+TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
+  plugin_->StartFind("x", /*case_sensitive=*/false, /*identifier=*/123);
+
+  const std::vector<gfx::Rect> tickmarks = {gfx::Rect(1, 2), gfx::Rect(3, 4)};
+  plugin_->UpdateTickMarks(tickmarks);
+
+  EXPECT_CALL(*wrapper_ptr_, ReportFindInPageTickmarks(tickmarks));
+  EXPECT_CALL(*wrapper_ptr_, ReportFindInPageMatchCount(123, 5, true));
+  plugin_->NotifyNumberOfFindResultsChanged(/*total=*/5, /*final_result=*/true);
 }
 
 }  // namespace chrome_pdf

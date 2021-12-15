@@ -43,7 +43,9 @@ struct WebAssociatedURLLoaderOptions;
 }  // namespace blink
 
 namespace gfx {
+class PointF;
 class Range;
+class Rect;
 }  // namespace gfx
 
 namespace printing {
@@ -85,8 +87,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Notify the web plugin container about the selected find result in plugin.
     virtual void ReportFindInPageSelection(int identifier, int index) = 0;
 
+    // Notify the web plugin container about find result tickmarks.
+    virtual void ReportFindInPageTickmarks(
+        const std::vector<gfx::Rect>& tickmarks) = 0;
+
     // Returns the device scale factor.
     virtual float DeviceScaleFactor() = 0;
+
+    // Gets the scroll position.
+    virtual gfx::PointF GetScrollPosition() = 0;
 
     // Calls underlying WebLocalFrame::SetReferrerForRequest().
     virtual void SetReferrerForRequest(blink::WebURLRequest& request,

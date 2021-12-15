@@ -1636,7 +1636,7 @@ class ScrollContent {
   }
 
   /**
-   * Sets the contents, scrolling locally.
+   * Sets the contents, switching to scrolling locally.
    * @param {?Node} content The new contents, or null to clear.
    */
   setContent(content) {
@@ -1659,7 +1659,7 @@ class ScrollContent {
   }
 
   /**
-   * Sets the contents, scrolling remotely.
+   * Sets the contents, switching to scrolling remotely.
    * @param {!UnseasonedPdfPluginElement} content The new contents.
    */
   setRemoteContent(content) {
@@ -1785,8 +1785,9 @@ class ScrollContent {
    */
   scrollTo(x, y) {
     if (this.unseasonedPlugin_) {
-      // To match real scrollTo(), update scroll position immediately, but fire
-      // the scroll event later (in `ackScrollToRemote()`).
+      // To match the DOM's scrollTo() behavior, update the scroll position
+      // immediately, but fire the scroll event later (when the remote side
+      // triggers `ackScrollToRemote()`).
       // TODO(crbug.com/1277228): Can get NaN if zoom calculations divide by 0.
       this.scrollLeft_ = Number.isNaN(x) ? 0 : x;
       this.scrollTop_ = Number.isNaN(y) ? 0 : y;
