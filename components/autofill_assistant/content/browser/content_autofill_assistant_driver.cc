@@ -60,6 +60,7 @@ void ContentAutofillAssistantDriver::GetAnnotateDomModel(
   DCHECK(annotate_dom_model_service_);
   if (!annotate_dom_model_service_) {
     std::move(callback).Run(base::File());
+    return;
   }
 
   absl::optional<base::File> file = annotate_dom_model_service_->GetModelFile();
