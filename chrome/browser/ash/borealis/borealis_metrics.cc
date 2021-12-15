@@ -189,14 +189,16 @@ std::ostream& operator<<(std::ostream& stream,
     case borealis::BorealisStartupResult::kCancelled:
       return stream << "Cancelled";
     case borealis::BorealisStartupResult::kMountFailed:
-      return stream << "Mount Failed";
+      return stream << "Mount failed";
     case borealis::BorealisStartupResult::kDiskImageFailed:
-      return stream << "Disk Image Failed";
+      return stream << "Disk Image failed";
     case borealis::BorealisStartupResult::kStartVmFailed:
-      return stream << "Start VM Failed";
+      return stream << "Start VM failed";
     case borealis::BorealisStartupResult::kAwaitBorealisStartupFailed:
-      return stream << "Await Borealis Startup Failed";
+      return stream << "Await Borealis Startup failed";
     case borealis::BorealisStartupResult::kSyncDiskFailed:
       return stream << "Syncing Disk failed";
+    case borealis::BorealisStartupResult::kRequestWaylandFailed:
+      return stream << "Request Wayland failed";
   }
 }

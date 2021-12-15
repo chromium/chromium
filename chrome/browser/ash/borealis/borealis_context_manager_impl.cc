@@ -204,6 +204,7 @@ BorealisContextManagerImpl::GetTasks() {
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
+  task_queue.push(std::make_unique<RequestWaylandServer>());
   task_queue.push(std::make_unique<StartBorealisVm>());
   task_queue.push(
       std::make_unique<AwaitBorealisStartup>(profile_, kBorealisVmName));

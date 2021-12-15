@@ -19,6 +19,7 @@ class BorealisFeatures;
 class BorealisInstaller;
 class BorealisLaunchOptions;
 class BorealisShutdownMonitor;
+class BorealisWaylandInterface;
 class BorealisWindowManager;
 
 // A common location for all the interdependant components of borealis.
@@ -37,6 +38,7 @@ class BorealisService : public KeyedService {
   virtual BorealisInstaller& Installer() = 0;
   virtual BorealisLaunchOptions& LaunchOptions() = 0;
   virtual BorealisShutdownMonitor& ShutdownMonitor() = 0;
+  virtual BorealisWaylandInterface& WaylandInterface() = 0;
   virtual BorealisWindowManager& WindowManager() = 0;
 };
 

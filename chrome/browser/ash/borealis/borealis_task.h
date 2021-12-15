@@ -15,6 +15,7 @@
 
 namespace borealis {
 
+class BorealisCapabilities;
 class BorealisContext;
 
 // BorealisTasks are collections of operations that are run by the
@@ -70,6 +71,22 @@ class CreateDiskImage : public BorealisTask {
       BorealisContext* context,
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> response);
   base::WeakPtrFactory<CreateDiskImage> weak_factory_{this};
+};
+
+// Requests a wayland server from Exo for use by the borealis VM.
+class RequestWaylandServer : public BorealisTask {
+ public:
+  RequestWaylandServer();
+  ~RequestWaylandServer() override;
+
+  // BorealisTask overrides:
+  void RunInternal(BorealisContext* context) override;
+
+ private:
+  void OnServerRequested(BorealisContext* context,
+                         BorealisCapabilities* capabilities,
+                         const base::FilePath& server_path);
+  base::WeakPtrFactory<RequestWaylandServer> weak_factory_{this};
 };
 
 // Instructs Concierge to start the Borealis VM.

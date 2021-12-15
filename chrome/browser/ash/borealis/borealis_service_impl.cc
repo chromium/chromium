@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_service_impl.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 
 namespace borealis {
 
@@ -16,6 +17,7 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
       installer_(profile_),
       launch_options_(profile_),
       shutdown_monitor_(profile_),
+      wayland_interface_(profile_),
       window_manager_(profile_) {}
 
 BorealisServiceImpl::~BorealisServiceImpl() = default;
@@ -50,6 +52,10 @@ BorealisLaunchOptions& BorealisServiceImpl::LaunchOptions() {
 
 BorealisShutdownMonitor& BorealisServiceImpl::ShutdownMonitor() {
   return shutdown_monitor_;
+}
+
+BorealisWaylandInterface& BorealisServiceImpl::WaylandInterface() {
+  return wayland_interface_;
 }
 
 BorealisWindowManager& BorealisServiceImpl::WindowManager() {

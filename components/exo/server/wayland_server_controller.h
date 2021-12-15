@@ -58,8 +58,16 @@ class WaylandServerController {
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
 
+  // Creates a wayland server with the given set of |capabilities|. Invokes
+  // |callback| with the success flag indicating whether the request
+  // succeeded/failed. If successful, the server and its |capabilities| will
+  // persist until DeleteServer() is called.
   void CreateServer(std::unique_ptr<Capabilities> capabilities,
                     wayland::Server::StartCallback callback);
+
+  // Removes the wayland server with a socket at |path|. This server, along with
+  // its capabilities, will be deleted, and wayland clients will no longer be
+  // able to connect to it.
   void DeleteServer(const base::FilePath& path);
 
  private:

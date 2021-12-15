@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_CAPABILITIES_H_
 
 #include <memory>
+#include <string>
 
 namespace exo {
 

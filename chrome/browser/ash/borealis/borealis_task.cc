@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/borealis_wayland_interface.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
@@ -116,6 +117,30 @@ void CreateDiskImage::OnCreateDiskImage(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
+RequestWaylandServer::RequestWaylandServer()
+    : BorealisTask("RequestWaylandServer") {}
+RequestWaylandServer::~RequestWaylandServer() = default;
+
+void RequestWaylandServer::RunInternal(BorealisContext* context) {
+  borealis::BorealisService::GetForProfile(context->profile())
+      ->WaylandInterface()
+      .GetWaylandServer(base::BindOnce(&RequestWaylandServer::OnServerRequested,
+                                       weak_factory_.GetWeakPtr(), context));
+}
+
+void RequestWaylandServer::OnServerRequested(
+    BorealisContext* context,
+    BorealisCapabilities* capabilities,
+    const base::FilePath& server_path) {
+  if (!capabilities) {
+    Complete(BorealisStartupResult::kRequestWaylandFailed,
+             "Failed to create a wayland server");
+    return;
+  }
+  context->set_wayland_path(server_path);
+  Complete(BorealisStartupResult::kSuccess, "");
+}
+
 namespace {
 
 bool GetDeveloperMode() {
@@ -165,6 +190,8 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
     absl::optional<base::File> external_disk) {
   vm_tools::concierge::StartVmRequest request;
   request.mutable_vm()->set_dlc_id(kBorealisDlcName);
+  request.mutable_vm()->set_wayland_server(
+      context->wayland_path().AsUTF8Unsafe());
   request.set_start_termina(false);
   request.set_owner_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
