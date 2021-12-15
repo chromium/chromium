@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Робочий стіл 7</translation>
 <translation id="2224075387478458881">Запис екрана заборонено, якщо видно захищений контент</translation>
 <translation id="225680501294068881">Пошук пристроїв...</translation>
+<translation id="2257486738914982088">Під час завантаження файлу "<ph name="FILENAME" />" сталася помилка</translation>
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268813581635650749">Вийти з усіх</translation>
 <translation id="2269016722240250274">Додаток використовує ваш мікрофон</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
+<translation id="4860284199500934869">Щоб завантажити файл "<ph name="FILENAME" />", перевірте з’єднання з мережею</translation>
 <translation id="486056901304535126">Спроба завантаження повториться пізніше. Доки завантаження не завершиться, мовлення надсилатиметься на сервери Google для обробки.</translation>
 <translation id="4868492592575313542">активовано</translation>
 <translation id="4872237917498892622">Alt+клавіша пошуку або Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">Відхилити</translation>
 <translation id="6453179446719226835">Мову змінено</translation>
 <translation id="6459472438155181876">Розширення екрана на <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Не вдалося завантажити файл</translation>
 <translation id="6482559668224714696">Лупа для всього екрана</translation>
 <translation id="6490471652906364588">Пристрій із портом USB типу C (праворуч)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну</translation>
@@ -817,6 +820,8 @@
 <translation id="6537924328260219877">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Нове встановлення</translation>
 <translation id="6559976592393364813">Зверніться до адміністратора</translation>
 <translation id="6565007273808762236">З’єднання з eSIM-картою недоступне</translation>
 <translation id="6570831796530454248">{0,plural, =1{Оновіть пристрій протягом години}one{Оновіть пристрій протягом # години}few{Оновіть пристрій протягом # годин}many{Оновіть пристрій протягом # годин}other{Оновіть пристрій протягом # години}}</translation>
@@ -848,6 +853,7 @@
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6727969043791803658">Під'єднано, акумулятор заряджено на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ПЕРЕЙТИ ДО НАЛАШТУВАНЬ</translation>
 <translation id="6751052314767925245">Застосовується адміністратором</translation>
 <translation id="6751826523481687655">Відстеження ефективності ввімкнено</translation>
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">Торкніться, щоб налаштувати</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додати мобільну мережу</translation>
+<translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}many{# сповіщень}other{# сповіщення}}</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7745560842763881396">Показати додатки на полиці</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Використовується: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>
+<translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
 <translation id="9024331582947483881">усього екрана</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">Які події заплановано?</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="951991426597076286">Відхилити</translation>
+<translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Альбомна</translation>
 <translation id="990277280839877440">Вікно <ph name="WINDOW_TITILE" /> закрито.</translation>

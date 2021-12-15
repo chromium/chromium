@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">Kopiuj nazwę użytkownika</translation>
 <translation id="1592864538817356322">Standardowa ochrona:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
+<translation id="1633659023549081553">Odkrywaj nowe treści na stronie głównej Chrome</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -220,6 +221,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2328985652426384049">Nie można się zalogować</translation>
+<translation id="2342601525305963189">Wskazówki dotyczące Chrome:</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2345671828921229300">Aby wyszukać, naciśnij i przytrzymaj słowo</translation>
 <translation id="2349710944427398404">Łączna ilość danych używanych przez Chrome, w tym konta, zakładki i zapisane ustawienia</translation>
@@ -263,6 +265,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2534582914273493287">Odwiedzane adresy URL są wysyłane do Google.</translation>
 <translation id="2536728043171574184">Oglądasz kopię offline tej strony</translation>
 <translation id="2546283357679194313">Pliki cookie i dane stron</translation>
+<translation id="2558692642259318568">Aby przeglądać bez zapisywania swojej aktywności na urządzeniu, używaj karty incognito</translation>
 <translation id="2561519700418191927">Podglądy filmów</translation>
 <translation id="2567385386134582609">OBRAZ</translation>
 <translation id="2567545343356994513">Szybsza proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
@@ -274,6 +277,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2631006050119455616">Zaoszczędzono</translation>
+<translation id="2634905176438867146">Jak ustawić Chrome jako przeglądarkę domyślną</translation>
 <translation id="2645657967708199252">Połączenie <ph name="CONNECTION_TYPE" /> może spowalniać pobieranie</translation>
 <translation id="2647434099613338025">Dodaj język</translation>
 <translation id="2649068648233607930">Twoją przeglądarką zarządza <ph name="DOMAIN" /></translation>
@@ -358,6 +362,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037517125981011456">Pokazuje prośby o zalogowanie się w Chrome</translation>
 <translation id="3046945242843292318">Następnym razem otwórz tę stronę szybciej</translation>
+<translation id="3055259925215945098">Zakładka została przeniesiona</translation>
 <translation id="305593374596241526">Lokalizacja jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zakładka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}many{<ph name="BOOKMARKS_COUNT_MANY" /> zakładek}other{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}}</translation>
 <translation id="3062802207422175757">Artykuły dopasowane do Twoich zainteresowań w Chrome</translation>
@@ -386,6 +391,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3234978181857588512">Zapisz na urządzeniu</translation>
 <translation id="3236059992281584593">Pozostała minuta</translation>
 <translation id="3237087289225714896">Wczytywanie standardowe:</translation>
+<translation id="3237433641417325993">Przewiń w dół, aby zobaczyć sugerowane artykuły</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Jeśli udostępnisz także raporty o użytkowaniu Chrome, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
 <translation id="3250563604907490871">Opisy do obrazów zostaną wznowione, gdy połączysz się z Wi-Fi</translation>
@@ -651,6 +657,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4835385943915508971">Chrome nie ma dostępu do żądanego zasobu.</translation>
 <translation id="4837753911714442426">Otwórz opcje drukowania strony</translation>
 <translation id="4842092870884894799">Pokazuję wyskakujące okienko generowania hasła</translation>
+<translation id="4842515939542199281">Aby wyszukać głosowo, kliknij mikrofon</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4864369630010738180">Loguję...</translation>
@@ -697,6 +704,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5091249083535528968">Rozszerzone dane o korzystaniu</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
 <translation id="510275257476243843">Pozostała godzina</translation>
+<translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zainteresowania</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5126510351761255129">Zweryfikuj kartę</translation>
@@ -801,6 +809,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5749068826913805084">Chrome musi mieć dostęp do pamięci, by pobierać pliki.</translation>
 <translation id="5749237766298580851">Wyłączono <ph name="SEPARATOR" /> Niezalecane</translation>
 <translation id="5752232708629533680">Udostępnij tylko GIF-a</translation>
+<translation id="5753139477036638699">W Chrome możesz wyszukiwać głosowo</translation>
 <translation id="5754350196967618083">Nie można odświeżyć karty Discover</translation>
 <translation id="5763382633136178763">Karty incognito</translation>
 <translation id="5763514718066511291">Kliknij, by skopiować URL tej aplikacji</translation>
@@ -1012,6 +1021,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6813446258015311409">Logowanie się w Chrome, otwarte.</translation>
 <translation id="6814033694018386318">Co udostępniasz Google</translation>
 <translation id="6817747507826986771">Szybko udostępnij tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
+<translation id="6819199143469632133">Aby mieć dostęp do swoich treści w Google na różnych urządzeniach, zaloguj się</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
 <translation id="6828070228333235514">Przestań monitorować cenę</translation>
@@ -1050,6 +1060,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Umieść kod QR lub kod kreskowy w tej ramce.</translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7037830628447527439">Zaloguj się w Chrome, korzystając ze swojego konta Google</translation>
 <translation id="7038956721828960940">chrome_obraz_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
@@ -1404,6 +1415,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8945143127965743188"><ph name="LANG" /> – nie udało się pobrać tego języka. Spróbuj później.</translation>
 <translation id="8951232171465285730">Chrome pozwolił Ci zaoszczędzić <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Powrót do góry</translation>
+<translation id="8964479563882643397">Aby otworzyć nową kartę incognito, otwórz menu</translation>
 <translation id="8965591936373831584">Oczekiwanie</translation>
 <translation id="8967427617812342790">Dodaj do listy Do przeczytania</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_ONE" /> inna}few{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> inne}many{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> innych}other{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> innej}}</translation>

@@ -2524,6 +2524,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
 <translation id="3559262020195162408">Failed to install policy on the device.</translation>
 <translation id="3559533181353831840">About <ph name="TIME_LEFT" /> left</translation>
+<translation id="3559697822483154494">Receive vibration confirmation for actions like split-screen and switching desks.</translation>
 <translation id="3560034655160545939">&amp;Spell check</translation>
 <translation id="3562423906127931518">This process may take a few minutes. Setting up the Linux container.</translation>
 <translation id="3562655211539199254">View recent Chrome tabs from your phone</translation>
@@ -4925,6 +4926,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6112931163620622315">Check your phone</translation>
 <translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
+<translation id="611684075852771314">These logs have been saved in My Files as</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
 <translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pin this page to Start screen...</translation>
@@ -5701,6 +5703,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6930036377490597025">External security key or built-in sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{An extension has been rejected}other{# extensions have been rejected}}</translation>
 <translation id="6930321203306643451">Upgrade complete</translation>
+<translation id="6931690462168617033">Click strength</translation>
 <translation id="6935286146439255109">A paper tray is missing</translation>
 <translation id="693807610556624488">Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">You have 1 saved printer.</translation>
@@ -6834,6 +6837,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8064279191081105977">Group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Connection dialogue</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Haptic feedback</translation>
 <translation id="8071432093239591881">Print as image</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Backup data will not count toward your child's Drive storage quota.<ph name="END_PARAGRAPH2" />

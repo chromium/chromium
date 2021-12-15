@@ -107,6 +107,7 @@
 <translation id="4271805377592243930">Ajuda com o Chromium</translation>
 <translation id="4285930937574705105">Ocorreu uma falha na instalação devido a um erro não especificado. Se o Chromium estiver sendo executado, feche-o e tente novamente.</translation>
 <translation id="4407044323746248786">Sair do Chromium mesmo assim?</translation>
+<translation id="4414390922528416758">Personalize as opções de privacidade mais importantes para o Chromium. Este guia não inclui todas as configurações e opções.</translation>
 <translation id="4415566066719264597">Permitir a execução do Chromium em segundo plano</translation>
 <translation id="4423735387467980091">Personalizar e controlar o Chromium</translation>
 <translation id="4427306783828095590">A Proteção reforçada é mais eficiente no combate a golpes de phishing e malware</translation>
@@ -290,5 +291,6 @@
 <translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">É possível que o Chromium não funcione corretamente, porque ele não é mais compatível com o Windows XP ou Windows Vista</translation>
 <translation id="965162752251293939">Quem está usando o Chromium?</translation>
+<translation id="967427899662692980">Use o nível mais alto de segurança do Chromium</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
 </translationbundle>

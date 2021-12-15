@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">डेस्‍क ७</translation>
 <translation id="2224075387478458881">सुरक्षित आशय दृश्यमान असेल तेव्हा स्क्रीन रेकॉर्डिंगला अनुमती नाही</translation>
 <translation id="225680501294068881">डिव्हाइसेससाठी स्कॅन करत आहे...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> डाउनलोड करताना काहीतरी चूक झाली</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम</translation>
 <translation id="2268813581635650749">सर्व साइन आउट करा</translation>
 <translation id="2269016722240250274">अ‍ॅप्लिकेशन तुमचा मायक्रोफोन वापरत आहे</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">तुम्हाला ऑटोमेटिक क्लिक नक्की बंद करायचे आहे का?</translation>
 <translation id="4849058404725798627">कीबोर्ड फोकससह ऑब्जेक्ट हायलाइट करा</translation>
 <translation id="485592688953820832">कृती नाही (थांबवा)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> डाउनलोड करण्यासाठी तुमचे नेटवर्क कनेक्शन तपासा</translation>
 <translation id="486056901304535126">नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. डाउनलोड पूर्ण होईपर्यंत प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली जाईल.</translation>
 <translation id="4868492592575313542">अ‍ॅक्टिव्हेट केले आहे</translation>
 <translation id="4872237917498892622">Alt+Search किंवा Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">नाकारा</translation>
 <translation id="6453179446719226835">भाषा बदलण्यात आली आहे</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> मध्ये स्क्रीन विस्तृत करत आहे</translation>
+<translation id="6477681113376365978">फाइल डाउनलोड करू शकत नाही</translation>
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ला तुम्ही तुमचे <ph name="DEVICE_TYPE" /> डिव्हाइस डेडलाइनच्या आधी अपडेट करणे आवश्यक आहे</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">इमोजी</translation>
 <translation id="6537924328260219877">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+नवीन इंस्टॉल केले आहे</translation>
 <translation id="6559976592393364813">अ‍ॅडमिनिस्ट्रेटरला विचारा</translation>
 <translation id="6565007273808762236">eSIM कनेक्शन उपलब्ध नाही</translation>
 <translation id="6570831796530454248">{0,plural, =1{डिव्हाइस एका तासाच्या आत अपडेट करा}other{डिव्हाइस # तासांच्या आत अपडेट करा}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6727969043791803658">कनेक्ट केले, <ph name="BATTERY_PERCENTAGE" />% बॅटरी</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">सेटिंग्जवर जा</translation>
 <translation id="6751052314767925245">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अंमलबजावणी केलेले</translation>
 <translation id="6751826523481687655">परफॉर्मंस ट्रेसिंग सुरू आहे</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> डेस्क काढून टाकले आणि डेस्क <ph name="RECEIVE_DESK" /> साेबत मर्ज केले</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">नवीन मोबाइल नेटवर्क जोडा</translation>
+<translation id="7720410380936703141">पुन्हा प्रयत्न करा</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{एक सूचना}other{# सूचना}}</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7745560842763881396">शेल्फमधील अ‍ॅप्स दाखवा</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
+<translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>
 <translation id="9024331582947483881">फुल स्क्रीन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> साठी सेटिंग्ज उघडा</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="951991426597076286">नकार द्या</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> साठी पुरेशी जागा नाही. जागा मोकळी करा.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> साठी <ph name="RESULT_COUNT" /> परिणाम दाखवत आहे</translation>
 <translation id="98515147261107953">लँडस्केप</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> विंडो बंद केली आहे.</translation>

@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Дэлгэц 7</translation>
 <translation id="2224075387478458881">Хамгаалалттай контент харагдаж байх үед дэлгэцийн үйлдэл бичихийг зөвшөөрөхгүй</translation>
 <translation id="225680501294068881">Төхөөрөмжийг хайж байна...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" />-г татаж авах явцад алдаа гарлаа</translation>
 <translation id="2268130516524549846">Bluetooth-г идэвхгүй болгосон байна</translation>
 <translation id="2268813581635650749">Бүгдээс гарах</translation>
 <translation id="2269016722240250274">Аппликэйшн таны микрофоныг ашиглаж байна</translation>
@@ -588,6 +589,7 @@
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
 <translation id="4849058404725798627">Объектыг гарын фокусаар тодруулах</translation>
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> татаж авахын тулд сүлжээний холболтоо шалгана уу</translation>
 <translation id="486056901304535126">Таталтыг дараа оролдоно. Таталт дуусах хүртэл яриаг Google-д боловсруулахаар илгээнэ.</translation>
 <translation id="4868492592575313542">идэвхжүүлсэн байна</translation>
 <translation id="4872237917498892622">Alt+Search эсвэл Shift</translation>
@@ -806,6 +808,7 @@
 <translation id="6452181791372256707">Татгалзах</translation>
 <translation id="6453179446719226835">Хэлийг өөрчилсөн</translation>
 <translation id="6459472438155181876">Дэлгэцийг <ph name="DISPLAY_NAME" /> руу сунгаж байна</translation>
+<translation id="6477681113376365978">Файлыг татах боломжгүй</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
 <translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> таныг өөрийн <ph name="DEVICE_TYPE" />-г эцсийн хугацаанаас өмнө шинэчлэхийг шаардаж байна</translation>
@@ -819,6 +822,8 @@
 <translation id="6537924328260219877">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Татах <ph name="FILENAME" />-г скан хийж байна</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />-д дамжуулж байна</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Шинээр суулгасан</translation>
 <translation id="6559976592393364813">Админаас асуух</translation>
 <translation id="6565007273808762236">eSIM холболт боломжгүй</translation>
 <translation id="6570831796530454248">{0,plural, =1{Төхөөрөмжийг нэг цагийн дотор шинэчилнэ үү}other{Төхөөрөмжийг # цагийн дотор шинэчилнэ үү}}</translation>
@@ -850,6 +855,7 @@
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ТОХИРГОО РУУ ОЧИХ</translation>
 <translation id="6751052314767925245">Таны администратор хэрэгжүүлдэг</translation>
 <translation id="6751826523481687655">Гүйцэтгэлийн хяналтыг асаасан</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> дэлгэцийг хасаж, <ph name="RECEIVE_DESK" /> дэлгэцтэй нэгтгэсэн</translation>
@@ -985,6 +991,7 @@
 <translation id="7662283695561029522">Тохируулахын тулд товших</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Үүрэн холбооны шинэ сүлжээ нэмэх</translation>
+<translation id="7720410380936703141">ДАХИН ОРОЛДОХ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 мэдэгдэл}other{# мэдэгдэл}}</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7745560842763881396">Аппуудыг тавиур дээр харуулах</translation>
@@ -1172,6 +1179,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />-г ашиглаж байна</translation>
 <translation id="899350903320462459">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг <ph name="LOGIN_ID" />-р тайлна уу</translation>
+<translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
@@ -1217,6 +1225,7 @@
 <translation id="938963181863597773">Миний календарьд юу байна вэ?</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="951991426597076286">Татгалзах</translation>
+<translation id="954052413789300507"><ph name="FILENAME" />-д хангалттай зай байхгүй байна. Зай гаргана уу.</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-н <ph name="RESULT_COUNT" /> илэрцийг үзүүлж байна</translation>
 <translation id="98515147261107953">Газрын гадаргуун зураг</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> цонх хаалттай байна.</translation>

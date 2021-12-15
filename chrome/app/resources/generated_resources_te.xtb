@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">ప్రస్తుతం Linux పునరుద్ధరణ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="1244303850296295656">ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: ఇమేజ్ URL <ph name="HTTP_ERROR" /> ఎర్రర్ కోడ్‌ను అందించింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న టాబ్లెట్</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">దీని వలన సైట్‌లు, ఇన్‌స్టాల్ చేయబడిన యాప్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది.</translation>
 <translation id="1251578593170406502">మొబైల్ డేటా నెట్‌వర్క్‌ల కోసం స్కాన్ చేస్తోంది...</translation>
@@ -438,6 +439,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ఎంచుకోబడింది/ఎంచుకోబడ్డాయి</translation>
 <translation id="1442851588227551435">యాక్టివ్ Kerberos టిక్కెట్‌ను సెట్ చేయండి</translation>
 <translation id="1444628761356461360">ఈ సెట్టింగ్‌ను పరికరం యజమాని అయిన <ph name="OWNER_EMAIL" /> నిర్వహిస్తున్నారు.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న ఫోన్</translation>
 <translation id="144518587530125858">థీమ్ కోసం '<ph name="IMAGE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1449191289887455076">కేటాయింపును నిర్ధారించి, <ph name="RESPONSE" /> కోసం "<ph name="CURRENTKEY" />"ని మళ్లీ నొక్కండి</translation>
 <translation id="1451375123200651445">వెబ్ పేజీ, ఒకే ఫైల్</translation>
@@ -869,6 +871,7 @@
 <translation id="1855079636134697549">కెమెరా ఆన్ చేయబడింది</translation>
 <translation id="1856715684130786728">స్థానాన్ని జోడించు...</translation>
 <translation id="1858585891038687145">సాఫ్ట్‌వేర్ రూపకర్తలను గుర్తించడం కోసం ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న తెలియని పరికరం</translation>
 <translation id="1861262398884155592">ఈ ఫోల్డర్ ఖాళీగా ఉంది</translation>
 <translation id="1862311223300693744">మీరు ఏదైనా ప్రత్యేక VPN, ప్రాక్సీ, ఫైర్‌వాల్ లేదా NAS సాఫ్ట్‌వేర్‌ను
     ఇన్‌స్టాల్ చేశారా?</translation>
@@ -1244,6 +1247,7 @@
 <translation id="2242687258748107519">ఫైల్ సమాచారం</translation>
 <translation id="2246549592927364792">Google నుండి చిత్ర వివరణలను పొందాలా?</translation>
 <translation id="2247738527273549923">మీ పరికరం మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది.</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న గేమ్ కంట్రోలర్</translation>
 <translation id="2249111429176737533">ట్యాబ్ చేసిన విండో లాగా తెరువు</translation>
 <translation id="2249605167705922988">ఉదా. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
@@ -2005,6 +2009,7 @@
 <translation id="3007771295016901659">ట్యాబ్ యొక్క నకిలీని రూపొందించు</translation>
 <translation id="3008232374986381779">మీ <ph name="DEVICE_TYPE" />లో Linux టూల్‌లు, ఎడిటర్‌లు, IDEలను రన్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">అనుమతులను రీసెట్ చేయి</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న ఆడియో పరికరం</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం అప్‌డేట్‌ను డౌన్‌లోడ్ చేయడానికి మీరు ఈరోజే Wi-Fiకి కనెక్ట్ కావలసి ఉంటుంది. లేదా డేటా నియంత్రణ ఉన్న కనెక్షన్ నుండి డౌన్‌లోడ్ చేయండి (ఛార్జీలు వర్తించవచ్చు).}other{<ph name="MANAGER" /> కోసం అప్‌డేట్‌ను డౌన్‌లోడ్ చేయడానికి మీరు గడువు తేదీలోపు Wi-Fiకి కనెక్ట్ కావలసి ఉంటుంది. లేదా డేటా నియంత్రణ ఉన్న కనెక్షన్ నుండి డౌన్‌లోడ్ చేయండి (ఛార్జీలు వర్తించవచ్చు).}}</translation>
 <translation id="3009300415590184725">మొబైల్ డేటా సేవ సెటప్ ప్రాసెస్‌ను మీరు ఖచ్చితంగా రద్దు చేయాలనుకుంటున్నారా?</translation>
 <translation id="3009779501245596802">సూచికలోని డేటాబేస్‌లు</translation>
@@ -2310,6 +2315,7 @@
 <translation id="3348038390189153836">తొలగించగల పరికరం కనుగొనబడింది</translation>
 <translation id="3348131053948466246">సూచించిన ఎమోజి. నావిగేట్ చేయడానికి పైకి లేదా కిందకి నొక్కండి, జొప్పించడానికి 'Enter' నొక్కండి.</translation>
 <translation id="3349933790966648062">మెమరీ ఫుట్‌ప్రింట్</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> పరికరానికి పెయిర్ చేయడం సాధ్యపడలేదు; మళ్ళీ ట్రై చేయడానికి పరికరాన్ని ఎంచుకోండి</translation>
 <translation id="3355936511340229503">కనెక్షన్ ఎర్రర్</translation>
 <translation id="3356580349448036450">పూర్తయింది</translation>
 <translation id="3359256513598016054">సర్టిఫికెట్ విధాన పరిమితులు</translation>
@@ -3140,6 +3146,7 @@
 <translation id="4200689466366162458">అనుకూల పదాలు</translation>
 <translation id="4200983522494130825">కొత్త &amp;టాబ్</translation>
 <translation id="4201546031411513170">మీరు ఎప్పుడైనా సెట్టింగ్‌ల ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
+<translation id="4202417625268941299">మెరుగైన సురక్షిత బ్రౌజింగ్, మీకు Chromeలో అత్యంత సురక్షితమైన సెక్యూరిటీని అందిస్తుంది</translation>
 <translation id="420283545744377356">స్క్రీన్ సేవర్‌ను ఆఫ్ చేయి</translation>
 <translation id="4206144641569145248">గ్రహాంతరవాసి</translation>
 <translation id="4206323443866416204">అభిప్రాయ రిపోర్ట్‌</translation>
@@ -3646,6 +3653,7 @@
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4761104368405085019">మీ మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4762718786438001384">పరికరంలో డిస్క్ స్థలం చాలా తక్కువగా ఉంది</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న కంప్యూటర్</translation>
 <translation id="4763408175235639573">మీరు ఈ పేజీని వీక్షించినప్పుడు కింది కుక్కీలు సెట్ చేయబడ్డాయి</translation>
 <translation id="4765582662863429759">మీ ఫోన్‌లో ఉన్న వచనాన్ని మీ Chromebookలో చూపడానికి Android సందేశాలుని అనుమతిస్తుంది</translation>
 <translation id="4768332406694066911">మిమ్మల్ని గుర్తించే ఈ సంస్థల నుండి మీకు ప్రమాణపత్రాలు ఉన్నాయి</translation>
@@ -3827,6 +3835,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ఈ సీరియల్ పోర్ట్‌లలో ఒకదానితో కనెక్ట్ (అనుసంధానం) కావాలని కోరుకుంటుంది</translation>
 <translation id="4944310289250773232">ఈ ప్రమాణీకరణ సేవ <ph name="SAML_DOMAIN" /> ద్వారా హోస్ట్ చేయబడుతోంది</translation>
 <translation id="4945439665401275950">వేలిముద్రను సెటప్ చేయడానికి, మీ చిన్నారి చేత పవర్ బటన్‌పై తాకించండి. మీ చిన్నారి వేలిముద్ర సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ ఈ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
+<translation id="4946459324029651239">మీరు స్టాండర్డ్ రక్షణను పొందుతున్నారు</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
@@ -4410,6 +4419,7 @@
 <translation id="5575528586625653441">డెమో నమోదు రిక్వెస్ట్‌కు సంబంధించి ఒక సమస్య ఏర్పడింది.</translation>
 <translation id="557722062034137776">మీ పరికరాన్ని రీసెట్ చేయడం వలన మీ Google ఖాతాలపై లేదా ఈ ఖాతాలకు సింక్ చేయ‌బ‌డిన‌ ఏదైనా డేటాపై ఎటువంటి ప్రభావం ఉండదు. అయితే, మీ పరికరంలో స్థానికంగా సేవ్ చేయబడిన అన్ని ఫైళ్లు తొలగించబడతాయి.</translation>
 <translation id="5578059481725149024">ఆటోమేటిక్ సైన్-ఇన్</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> భాషకు అనువాదం పూర్తయింది</translation>
 <translation id="558170650521898289">Microsoft Windows హార్డ్‌వేర్ డ్రైవర్ ధృవీకరణ</translation>
 <translation id="5581972110672966454">పరికరాన్ని డొమైన్‌కు చేర్చడం సాధ్యపడదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">ప్రధాన మెనూ</translation>
@@ -5823,6 +5833,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{భద్రతా తనిఖీ జరిగి 1 నిమిషం అయింది}other{భద్రతా తనిఖీ జరిగి {NUM_MINS} నిమిషాలు అయింది}}</translation>
 <translation id="7057767408836081338">యాప్ డేటాను పొందడంలో సమస్య ఉంది, యాప్‌ను రన్ చేయడానికి ప్రయత్నిస్తోంది...</translation>
 <translation id="7058024590501568315">దాచబడిన నెట్‌వర్క్</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న మౌస్</translation>
 <translation id="7059858479264779982">స్వీయ-ప్రారంభానికి సెట్ చేయి</translation>
 <translation id="7062222374113411376">డేటాను పంపడం మరియు స్వీకరించడం పూర్తి చేయడానికి ఇటీవల మూసివేసిన సైట్‌లను అనుమతించు (సిఫార్సు చేయబడింది)</translation>
 <translation id="7063129466199351735">షార్ట్‌కట్‌లను ప్రాసెస్ చేస్తోంది...</translation>
@@ -5986,6 +5997,7 @@
 <translation id="7257173066616499747">Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="725758059478686223">ముద్రణ సేవ</translation>
 <translation id="7257666756905341374">మీరు కాపీ చేసి అతికించే డేటాను చదవడం</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న వీడియో కెమెరా</translation>
 <translation id="7258192266780953209">పరివర్తనాలు</translation>
 <translation id="7258225044283673131">అప్లికేషన్ స్పందించడం లేదు. యాప్‌ను మూసివేయడానికి "బలవంతంగా మూసివేయి" ఎంచుకోండి.</translation>
 <translation id="7262004276116528033">ఈ సైన్-ఇన్ సేవను <ph name="SAML_DOMAIN" /> హోస్ట్ చేస్తోంది</translation>
@@ -6778,6 +6790,7 @@
 <translation id="8037117027592400564">సంశ్లేషణ ప్రసంగాన్ని ఉపయోగించి మాట్లాడిన మొత్తం వచనాన్ని చదవడం</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న కీబోర్డ్</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8042142357103597104">వచన అపారదర్శకత</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> స్పందించడం లేదు.</translation>
@@ -6801,6 +6814,7 @@
 <translation id="8054563304616131773">దయచేసి చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="8054883179223321715">నిర్దిష్ట వీడియో సైట్‌ల కోసం అందుబాటులో ఉంది</translation>
 <translation id="8054921503121346576">USB కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
+<translation id="8057414620575339583">సైడ్ సెర్చ్ టూల్</translation>
 <translation id="8058655154417507695">గడువు ముగింపు సంవత్సరం</translation>
 <translation id="8058986560951482265">మధ్యమధ్యలో అంతరాయాలు</translation>
 <translation id="8059417245945632445">&amp;పరికరాలను పర్యవేక్షించు</translation>
@@ -6916,6 +6930,7 @@
 <translation id="8168071266284693455">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు హిస్టరీ, మరెన్నో మీ అన్ని పరికరాల్లో సింక్ చేయబడ్డాయి</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌ను జోడించండి}other{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌లను జోడించండి}}</translation>
+<translation id="8169849063724750395">మళ్లీ ఆన్ చేయండి</translation>
 <translation id="8171334254070436367">అన్ని కార్డ్‌లను దాచు</translation>
 <translation id="8174047975335711832">పరికర సమాచారం</translation>
 <translation id="8174876712881364124">Google డిస్క్‌కు బ్యాకప్ చేయండి. ఏ సమయంలో అయినా సులభంగా డేటాని పునరుద్ధరించండి లేదా పరికరాన్ని మార్చండి. ఈ బ్యాకప్‌లో యాప్ డేటా ఉంటుంది. బ్యాకప్‌లు Googleకి అప్‌లోడ్ చేయబడతాయి మరియు మీ చిన్నారి Google ఖాతా పాస్‌వర్డ్‌ని ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి. <ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
@@ -6989,6 +7004,7 @@
 <translation id="8249615410597138718">మీ పరికరాలకు పంపండి</translation>
 <translation id="8249672078237421304">మీరు చదివే భాషలో లేని పేజీలను అనువదించే సౌలభ్యం</translation>
 <translation id="8251441930213048644">ఇప్పుడు రిఫ్రెష్ చేయి</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" />కు పెయిర్ అవుతోంది</translation>
 <translation id="8251578425305135684">థంబ్‌నెయిల్‌ తొలగించబడింది.</translation>
 <translation id="825238165904109940">ఎల్లప్పుడూ పూర్తి URLలను చూపించు</translation>
 <translation id="8252569384384439529">అప్‌లోడ్ చేస్తోంది...</translation>
@@ -7226,9 +7242,11 @@
 <translation id="8528074251912154910">భాషలను జోడించు</translation>
 <translation id="8528962588711550376">సైన్ ఇన్ అవుతోంది.</translation>
 <translation id="8529925957403338845">తక్షణ టెథెరింగ్ కనెక్షన్ విఫలమైంది</translation>
+<translation id="8531701051932785007">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది</translation>
 <translation id="8534656636775144800">అయ్యో!  డొమైన్‌‌ను చేర్చడానికి ప్రయత్నిస్తున్నప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="8535005006684281994">Netscape సర్టిఫికెట్ పునరుద్ధరణ URL</translation>
 <translation id="8536956381488731905">కీని నొక్కినప్పుడు ధ్వని</translation>
+<translation id="8538718737588735385">మళ్లీ ఆన్ చేయండి</translation>
 <translation id="8539727552378197395">లేదు (Httpమాత్రమే)</translation>
 <translation id="8539766201049804895">అప్‌గ్రేడ్ చేయి</translation>
 <translation id="8540136935098276800">సరిగ్గా ఫార్మాట్ చేసిన URLను ఎంటర్ చేయండి</translation>

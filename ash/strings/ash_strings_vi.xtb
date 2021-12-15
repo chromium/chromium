@@ -35,6 +35,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
+<translation id="118437560755358292">Hãy nhập mật khẩu hoặc mã PIN để tăng cường bảo mật</translation>
 <translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
 <translation id="1190678134285018527">Thiết bị cần quay lại phiên bản trước</translation>
@@ -338,6 +339,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3307642347673023554">Đã chuyển sang chế độ máy tính xách tay</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
+<translation id="3339826665088060472">Chụp ảnh màn hình, các công cụ để chụp ảnh màn hình và ghi màn hình</translation>
 <translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
 <translation id="334252345105450327">Chụp ảnh màn hình</translation>
 <translation id="3351879221545518001">Bạn hiện đang truyền màn hình.</translation>
@@ -394,6 +396,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3606978283550408104">Đã kết nối màn hình Braille.</translation>
 <translation id="3615926715408477684">Bật chế độ dữ liệu di động tức là cũng bật Bluetooth</translation>
 <translation id="3616883743181209306">Đã di chuyển trình đơn vào góc trên cùng bên phải màn hình.</translation>
+<translation id="3619536907358025872">Cài đặt tính năng Chụp ảnh màn hình</translation>
 <translation id="3621202678540785336">Thiết bị vào</translation>
 <translation id="3621712662352432595">Cài đặt âm thanh</translation>
 <translation id="3626281679859535460">Độ sáng</translation>
@@ -492,6 +495,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
+<translation id="4283888303416325161">Hãy nhập mật khẩu để tăng cường bảo mật</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="429402653707266969">Bật/tắt vị trí thanh công cụ</translation>
 <translation id="4294319844246081198">Xin chào <ph name="GIVEN_NAME" />!</translation>
@@ -761,6 +765,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="607652042414456612">Máy tính của bạn có thể phát hiện thiết bị Bluetooth gần đó và hiện thị dưới tên "<ph name="NAME" />" với địa chỉ là <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Xác nhận tải <ph name="FILENAME" /> xuống</translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6134259848159370930">Tìm kiếm trong thiết bị, ứng dụng, tùy chọn cài đặt và trên web.</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>

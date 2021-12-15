@@ -2505,6 +2505,7 @@ Pretende pará-lo?</translation>
 <translation id="3557101512409028104">Defina restrições de Websites e limites de tempo de utilização com o Family Link</translation>
 <translation id="3559262020195162408">Falha ao instalar a política no dispositivo.</translation>
 <translation id="3559533181353831840">Resta(m) cerca de <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Receba a confirmação com vibração para ações como ativar o ecrã dividido e alternar entre espaços de trabalho.</translation>
 <translation id="3560034655160545939">&amp;Verificação ortográfica</translation>
 <translation id="3562423906127931518">Este processo pode demorar alguns minutos. A configurar o contentor do Linux…</translation>
 <translation id="3562655211539199254">Veja os separadores recentes do Chrome do telemóvel.</translation>
@@ -4902,6 +4903,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6112931163620622315">Verificar o seu telemóvel</translation>
 <translation id="6113434369102685411">Selecione o motor de pesquisa predefinido para o navegador Chrome e o Launcher <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Para utilizar o Smart Lock, mude para o perfil de utilizador principal no seu telemóvel</translation>
+<translation id="611684075852771314">Estes registos foram guardados em Os meus ficheiros como</translation>
 <translation id="6116921718742659598">Alterar idioma e definições de introdução</translation>
 <translation id="6119927814891883061">Atribuir o nome <ph name="DEVICE_NAME" /> ao dispositivo</translation>
 <translation id="6120205520491252677">Fixar esta página ao ecrã Inicial...</translation>
@@ -5678,6 +5680,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6930036377490597025">Chave de segurança externa ou sensor incorporado</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}one{# extensão(ões) foi(ram) rejeitada(s)}other{# extensões foram rejeitadas}}</translation>
 <translation id="6930321203306643451">Atualização concluída</translation>
+<translation id="6931690462168617033">Força do clique</translation>
 <translation id="6935286146439255109">Não existe um tabuleiro de papel</translation>
 <translation id="693807610556624488">A operação de escrita excede o comprimento máximo do atributo para: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Tem 1 impressora guardada.</translation>
@@ -6808,6 +6811,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Caixa de diálogo de ligação</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Resposta tátil</translation>
 <translation id="8071432093239591881">Imprimir como imagem</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que uma aplicação tenha guardado (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os dados da cópia de segurança não são contabilizados para a quota do armazenamento do Drive da criança.<ph name="END_PARAGRAPH2" />

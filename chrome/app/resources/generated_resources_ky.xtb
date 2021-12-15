@@ -2524,6 +2524,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3557101512409028104">Family Link аркылуу вебсайттарга жана түзмөктү колдонуу убакытына чектөөлөрдү коюу</translation>
 <translation id="3559262020195162408">Түзмөккө саясат орнотулбай койду.</translation>
 <translation id="3559533181353831840">Болжол менен <ph name="TIME_LEFT" /> калды</translation>
+<translation id="3559697822483154494">Экранды бөлүү жана иш такталарды которуу сыяктуу аракеттер ырасталганда, дирилдейт.</translation>
 <translation id="3560034655160545939">&amp;Орфографиялык текшерүү</translation>
 <translation id="3562423906127931518">Бир нече мүнөткө созулушу мүмкүн. Linux контейнери жөндөлүүдө.</translation>
 <translation id="3562655211539199254">Chrome'догу акыркы өтмөктөрдү телефонуңуздан көрө аласыз</translation>
@@ -4925,6 +4926,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6112931163620622315">Телефонуңузду текшериңиз</translation>
 <translation id="6113434369102685411">Chrome серепчиси менен <ph name="DEVICE_TYPE" /> Жүргүзгүчү үчүн демейки издөө каражатын жөндөңүз</translation>
 <translation id="6113942107547980621">Smart Lock'ту колдонуу үчүн телефонуңуздагы негизги колдонуучунун профилин которуштуруңуз</translation>
+<translation id="611684075852771314">Бул таржымалдар Менин файлдарымда сакталган:</translation>
 <translation id="6116921718742659598">Тил жана текст киргизүү жөндөөлөрүн өзгөртүү</translation>
 <translation id="6119927814891883061">Түзмөктүн аталышын <ph name="DEVICE_NAME" /> деп коюу</translation>
 <translation id="6120205520491252677">Бул бетти баштоо экранына кадап коюу…</translation>
@@ -5701,6 +5703,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6930036377490597025">Тышкы коопсуздук ачкычы же орнотулган сенсор</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Кеңейтүү четке кагылды}other{# кеңейтүү четке кагылды}}</translation>
 <translation id="6930321203306643451">Жаңыртуу аягына чыкты</translation>
+<translation id="6931690462168617033">Чыкылдатуу күчү</translation>
 <translation id="6935286146439255109">Кагаз тактасы жок</translation>
 <translation id="693807610556624488">"<ph name="DEVICE_NAME" />" түзмөгүнө дайындарды жазып жатканда атрибут өтө узун болуп кетти.</translation>
 <translation id="6938386202199793006">1 сакталган принтериңиз бар.</translation>
@@ -6833,6 +6836,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> тобу – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Байланыш диалогу</translation>
 <translation id="8069615408251337349">Google Булуттагы Принтер</translation>
+<translation id="8070662218171013510">Сенсордук жооп</translation>
 <translation id="8071432093239591881">Сүрөт форматында басып чыгаруу</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Колдонмо дайындарына иштеп чыгуучунун жөндөөлөрүнүн негизинде сакталган бардык дайындар, анын ичинде байланыштар, билдирүүлөр жана сүрөттөр сыяктуу дайындар кириши мүмкүн.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дайындардын камдык көчүрмөлөрү балаңыздын Drive сактагычынан орун ээлебейт.<ph name="END_PARAGRAPH2" />

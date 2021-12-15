@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ഡെസ്ക് 7</translation>
 <translation id="2224075387478458881">പരിരക്ഷിത ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ സ്ക്രീൻ റെക്കോർഡിംഗ് അനുവദനീയമല്ല</translation>
 <translation id="225680501294068881">ഉപകരണങ്ങൾക്കായി സ്‌കാൻ ചെയ്യുന്നു...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുന്നതിനിടെ എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="2268130516524549846">Bluetooth അപ്രാപ്‌തമാക്കി</translation>
 <translation id="2268813581635650749">എല്ലാം സൈൻ ഔട്ട്</translation>
 <translation id="2269016722240250274">ഒരു ആപ്പ് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="4849058404725798627">കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഒബ്‌ജക്‌റ്റിനെ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="485592688953820832">പ്രവർത്തനമൊന്നും വേണ്ട (താൽക്കാലികമായി നിർത്തുക)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യാൻ നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="486056901304535126">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിക്കും. ഡൗൺലോഡ് പൂർത്തിയാകുന്നത് വരെ സംഭാഷണം പ്രോസസ് ചെയ്യുന്നതിനായി Google-ലേക്ക് അയയ്ക്കും.</translation>
 <translation id="4868492592575313542">സജീവമാക്കി</translation>
 <translation id="4872237917498892622">Alt+തിരയൽ അല്ലെങ്കിൽ Shift</translation>
@@ -621,6 +623,7 @@
 <translation id="5075554201838155866">സബ്‌ടൈറ്റിലുകൾ ആരംഭിക്കുക</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
+<translation id="5106223312672646208">വ്യക്തിപരമാക്കുക</translation>
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
@@ -804,6 +807,7 @@
 <translation id="6452181791372256707">നിരസിക്കുക</translation>
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
+<translation id="6477681113376365978">ഫയൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6482559668224714696">പൂർണ്ണസ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
 <translation id="6490471652906364588">USB-C ഉപകരണം (വലത് പോർട്ട്)</translation>
 <translation id="6491071886865974820">സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
@@ -817,6 +821,8 @@
 <translation id="6537924328260219877">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ഡൗൺലോഡ് സ്‌കാൻ ചെയ്യുന്നു <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ഉപകരണത്തിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+പുതിയ ഇൻസ്റ്റാൾ</translation>
 <translation id="6559976592393364813">അഡ്‌മിനിസ്‌ട്രേറ്ററോട് ചോദിക്കുക</translation>
 <translation id="6565007273808762236">eSIM കണക്ഷൻ ലഭ്യമല്ല</translation>
 <translation id="6570831796530454248">{0,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# മണിക്കൂറിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
@@ -848,6 +854,7 @@
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6727969043791803658">കണക്റ്റ് ചെയ്‌തു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> എണ്ണം</translation>
+<translation id="6739144137573853180">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="6751052314767925245">നിങ്ങളുടെ അഡ്‌മിൻ നടപ്പിലാക്കിയതാണ്</translation>
 <translation id="6751826523481687655">പ്രകടനം പിന്തുടരൽ ഓണാണ്</translation>
 <translation id="6752912906630585008">ഡെസ്‌ക് <ph name="REMOVED_DESK" /> നീക്കം ചെയ്‌ത്, ഡെസ്‌ക് <ph name="RECEIVE_DESK" />-മായി ലയിപ്പിച്ചു</translation>
@@ -983,6 +990,7 @@
 <translation id="7662283695561029522">കോൺഫിഗർ ചെയ്യുന്നതിന് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">പുതിയ സെല്ലുലാർ നെറ്റ്‌വർക്ക് ചേർക്കുക</translation>
+<translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7745560842763881396">ഷെൽഫിലെ ആപ്പുകൾ കാണിക്കുക</translation>
@@ -1169,6 +1177,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="899350903320462459">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കാൻ, <ph name="LOGIN_ID" /> ആയി ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="9000771174482730261">സ്‌റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക</translation>
@@ -1214,6 +1223,7 @@
 <translation id="938963181863597773">എന്റെ കലണ്ടറിൽ എന്താണുള്ളത്?</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="951991426597076286">നിരസിക്കുക</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> എന്നതിനാവശ്യമായ ഇടം ലഭ്യമല്ല. ഇടം സൃഷ്ടിക്കുക.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="98515147261107953">ലാന്‍ഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> വിൻഡോ അടച്ചു.</translation>

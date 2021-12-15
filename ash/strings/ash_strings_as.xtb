@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
 <translation id="2224075387478458881">সুৰক্ষিত সমল দৃশ্যমান হৈ থকাৰ সময়ত স্ক্ৰীন ৰেকৰ্ডিঙৰ অনুমতি দিয়া নহয়</translation>
 <translation id="225680501294068881">ডিভাইচসমূহৰ বাবে স্কেন কৰি থকা হৈছে...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> ডাউনল’ড কৰি থাকোঁতে কিবা ভুল হৈছে</translation>
 <translation id="2268130516524549846">ব্লুটুথ অক্ষম কৰা হ’ল</translation>
 <translation id="2268813581635650749">সকলো ছাইন আউট কৰক</translation>
 <translation id="2269016722240250274">এটা এপ্লিকেশ্বনে আপোনাৰ মাইক্ৰ’ফ’নটো ব্যৱহাৰ কৰি আছে</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">আপুনি স্বয়ংক্ৰিয়ভাৱে ক্লিক অফ কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="4849058404725798627">কীব’ৰ্ডৰ ফ’কাছেৰে বস্তু হাইলাইট কৰক</translation>
 <translation id="485592688953820832">কোনো কাৰ্য নাই (পজ)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> ডাউনল’ড কৰিবলৈ আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="486056901304535126">পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। ডাউনল’ড সম্পূৰ্ণ নোহোৱা পৰ্যন্ত প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হ’ব।</translation>
 <translation id="4868492592575313542">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="4872237917498892622">Alt+Search বা Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">প্ৰত্যাখ্যান কৰক</translation>
 <translation id="6453179446719226835">ভাষা সলনি কৰা হৈছে</translation>
 <translation id="6459472438155181876">স্ক্রীণখন <ph name="DISPLAY_NAME" />লৈ বিস্তাৰ কৰা হৈছে</translation>
+<translation id="6477681113376365978">ফাইল ডাউনল’ড কৰিব নোৱাৰি</translation>
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীণৰ বিৱৰ্ধক</translation>
 <translation id="6490471652906364588">USB-C ডিভাইচ (সোঁফালৰ পর্ট)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" />ৰ বাবে আপুনি নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এই <ph name="DEVICE_TYPE" />টো আপডে’ট কৰাৰ আৱশ্যক</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">ইম'জিসমূহ</translation>
 <translation id="6537924328260219877">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> লৈ কাষ্ট কৰি থকা হৈছে</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+নতুনকৈ ইনষ্টল কৰা</translation>
 <translation id="6559976592393364813">প্ৰশাসকক সোধক</translation>
 <translation id="6565007273808762236">ই-ছিমৰ সংযোগ উপলব্ধ নহয়</translation>
 <translation id="6570831796530454248">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="6727969043791803658">সংযোগ কৰা আছে, <ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> টা</translation>
+<translation id="6739144137573853180">ছেটিঙলৈ যাওক</translation>
 <translation id="6751052314767925245">আপোনাৰ প্ৰশাসকে বলৱৎ কৰা</translation>
 <translation id="6751826523481687655">কাৰ্যদক্ষতাৰ ট্ৰেচিং অন কৰা হৈছে</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ডেস্কখন আঁতৰোৱা হৈছে আৰু <ph name="RECEIVE_DESK" /> ডেস্কৰ সৈতে একত্ৰিত কৰা হৈছে</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">কনফিগাৰ কৰিবলৈ টিপক</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">নতুন চেলুলাৰ নেটৱৰ্ক যোগ দিয়ক</translation>
+<translation id="7720410380936703141">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টা জাননী}one{#টা জাননী}other{#টা জাননী}}</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
 <translation id="7745560842763881396">শ্বেল্‌ফত এপ্‌সমূহ দেখুৱাওক</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যৱহাৰ কৰি</translation>
 <translation id="899350903320462459">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ <ph name="LOGIN_ID" /> হিচাপে ডিভাইচটো আনলক কৰক</translation>
+<translation id="9000771174482730261">ষ্ট’ৰেজ পৰিচালনা কৰক</translation>
 <translation id="9017320285115481645">Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক।</translation>
 <translation id="9024331582947483881">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />ৰ বাবে ছেটিংসমূহ খোলক</translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">আপোনাৰ কেলেণ্ডাৰত কি আছে?</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="951991426597076286">অস্বীকাৰ কৰক</translation>
+<translation id="954052413789300507"><ph name="FILENAME" />ৰ বাবে পৰ্যাপ্ত ঠাই নাই। ঠাই খালী কৰক।</translation>
 <translation id="974545358917229949"><ph name="QUERY" />ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল দেখুৱাই থকা হৈছে</translation>
 <translation id="98515147261107953">লেণ্ডস্কেইপ</translation>
 <translation id="990277280839877440">ৱিণ্ড’ <ph name="WINDOW_TITILE" /> বন্ধ হৈ আছে৷</translation>

@@ -192,6 +192,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2222841058024245321">7. plocha</translation>
 <translation id="2224075387478458881">Nahrávanie obrazovky nie je povolené, keď je viditeľný chránený obsah</translation>
 <translation id="225680501294068881">Hľadajú sa zariadenia...</translation>
+<translation id="2257486738914982088">Pri sťahovaní súboru <ph name="FILENAME" /> sa vyskytol problém</translation>
 <translation id="2268130516524549846">Rozhranie Bluetooth je deaktivované</translation>
 <translation id="2268813581635650749">Odhlásiť všetkých</translation>
 <translation id="2269016722240250274">Nejaká aplikácia používa váš mikrofón</translation>
@@ -587,6 +588,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4831034276697007977">Naozaj chcete vypnúť automatické kliknutia?</translation>
 <translation id="4849058404725798627">Zvýrazniť objekt so zameraním klávesnice</translation>
 <translation id="485592688953820832">Žiadna akcia (pozastaviť)</translation>
+<translation id="4860284199500934869">Ak chcete stiahnuť <ph name="FILENAME" />, skontrolujte pripojenie k sieti</translation>
 <translation id="486056901304535126">K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč bude odosielaná na spracovanie Googlu.</translation>
 <translation id="4868492592575313542">aktivované</translation>
 <translation id="4872237917498892622">Alt + Hľadať alebo Shift</translation>
@@ -621,6 +623,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5075554201838155866">Spustiť skryté titulky</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
+<translation id="5106223312672646208">Prispôsobiť</translation>
 <translation id="5117590920725113268">Zobraziť ďalší mesiac</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
 <translation id="5147567197700016471">Odomknutý</translation>
@@ -804,6 +807,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6452181791372256707">Odmietnuť</translation>
 <translation id="6453179446719226835">Bol zmenený jazyk.</translation>
 <translation id="6459472438155181876">Rozšírenie obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Súbor sa nedá stiahnuť</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vyžaduje, aby ste zariadenie <ph name="DEVICE_TYPE" /> aktualizovali do stanoveného termínu</translation>
@@ -817,6 +821,8 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6537924328260219877">Sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Kontroluje sa stiahnutý súbor <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Prebieha prenášanie do zariadenia <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nová inštalácia</translation>
 <translation id="6559976592393364813">Požiadajte o to správcu</translation>
 <translation id="6565007273808762236">Pripojenie eSIM nie je k dispozícii</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aktualizujte zariadenie do hodiny}few{Aktualizujte zariadenie do # hodín}many{Aktualizujte zariadenie do # hodiny}other{Aktualizujte zariadenie do # hodín}}</translation>
@@ -848,6 +854,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="6727969043791803658">Pripojené, <ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">PREJSŤ DO NASTAVENÍ</translation>
 <translation id="6751052314767925245">Presadzuje váš správca</translation>
 <translation id="6751826523481687655">Trasovanie výkonnosti je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> bola odstránená a zlúčená s plochou <ph name="RECEIVE_DESK" /></translation>
@@ -983,6 +990,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7662283695561029522">Klepnutím spustíte konfiguráciu</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridať novú mobilnú sieť</translation>
+<translation id="7720410380936703141">SKÚSIŤ ZNOVA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 upozornenie}few{# upozornenia}many{# notifications}other{# upozornení}}</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7745560842763881396">Zobraziť aplikácie na poličke</translation>
@@ -1169,6 +1177,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Práve sa používa <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ak chcete vykonať akciu s upozornením, odomknite zariadenie ako <ph name="LOGIN_ID" /></translation>
+<translation id="9000771174482730261">SPRAVOVAŤ PRIESTOR</translation>
 <translation id="9017320285115481645">Zadajte prístupový kód rodiča Family Link.</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9047624247355796468">Otvoriť nastavenia siete <ph name="NETWORK_NAME" /></translation>
@@ -1214,6 +1223,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="938963181863597773">Čo mám v kalendári?</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="951991426597076286">Odmietnuť</translation>
+<translation id="954052413789300507">Nie je dostatok priestoru na súbor <ph name="FILENAME" />. Uvoľnite miesto.</translation>
 <translation id="974545358917229949">Zobrazujú sa výsledky (<ph name="RESULT_COUNT" />) pre <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Na šírku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bolo zatvorené.</translation>

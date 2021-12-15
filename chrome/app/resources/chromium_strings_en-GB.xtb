@@ -111,6 +111,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4271805377592243930">Get help with Chromium</translation>
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
+<translation id="4414390922528416758">Customise the privacy choices that Chromium considers most important. This guide doesn't include every setting and option.</translation>
 <translation id="4415566066719264597">Let Chromium Run in the Background</translation>
 <translation id="4423735387467980091">Customise and control Chromium</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
@@ -298,5 +299,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9214764063801632699">Chromium OS system</translation>
 <translation id="93478295209880648">Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
+<translation id="967427899662692980">Get Chromium's strongest security</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

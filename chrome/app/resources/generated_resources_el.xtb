@@ -2524,6 +2524,7 @@
 <translation id="3557101512409028104">Ορίστε περιορισμούς ιστοτόπων και όρια χρόνου χρήσης με το Family Link</translation>
 <translation id="3559262020195162408">Αποτυχία εγκατάστασης πολιτικής στη συσκευή.</translation>
 <translation id="3559533181353831840">Απομένουν περίπου <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Λήψη δόνησης επιβεβαίωσης για ενέργειες όπως ο διαχωρισμός οθόνης και η εναλλαγή γραφείων.</translation>
 <translation id="3560034655160545939">&amp;Ορθογραφικός έλεγχος</translation>
 <translation id="3562423906127931518">Αυτή η διαδικασία μπορεί να διαρκέσει μερικά λεπτά. Ρύθμιση του κοντέινερ Linux.</translation>
 <translation id="3562655211539199254">Δείτε τις πρόσφατες καρτέλες Chrome από το τηλέφωνό σας.</translation>
@@ -4926,6 +4927,7 @@
 <translation id="6112931163620622315">Ελέγξτε το τηλέφωνό σας</translation>
 <translation id="6113434369102685411">Ρυθμίστε την προεπιλεγμένη μηχανή αναζήτησης για το πρόγραμμα περιήγησης Chrome και την Εφαρμογή εκκίνησης <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Για να χρησιμοποιήσετε το Smart Lock, κάντε εναλλαγή στο προφίλ κύριου χρήστη στο τηλέφωνό σας</translation>
+<translation id="611684075852771314">Αυτά τα αρχεία καταγραφής έχουν αποθηκευτεί στην ενότητα Τα αρχεία μου ως</translation>
 <translation id="6116921718742659598">Αλλαγή γλώσσας και ρυθμίσεις εισόδου</translation>
 <translation id="6119927814891883061">Ονομασία συσκευής ως <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Καρφίτσωμα αυτής της σελίδας στην Οθόνη έναρξης…</translation>
@@ -5702,6 +5704,7 @@
 <translation id="6930036377490597025">Εξωτερικό κλειδί ασφαλείας ή ενσωματωμένος αισθητήρας</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Απορρίφθηκε μια επέκταση}other{Απορρίφθηκαν # επεκτάσεις}}</translation>
 <translation id="6930321203306643451">Η αναβάθμιση ολοκληρώθηκε</translation>
+<translation id="6931690462168617033">Ισχύς κλικ</translation>
 <translation id="6935286146439255109">Ο δίσκος χαρτιού λείπει</translation>
 <translation id="693807610556624488">Η λειτουργία εγγραφής υπερβαίνει το μέγιστο μέγεθος του χαρακτηριστικού στη συσκευή: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Έχετε 1 αποθηκευμένο εκτυπωτή.</translation>
@@ -6835,6 +6838,7 @@
 <translation id="8064279191081105977">Ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Παράθυρο διαλόγου σύνδεσης</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Ανάδραση αφής</translation>
 <translation id="8071432093239591881">Εκτύπωση ως εικόνα</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Τα δεδομένα εφαρμογής μπορεί να είναι οποιουδήποτε είδους δεδομένα έχουν αποθηκευτεί από μια εφαρμογή (βάσει των ρυθμίσεων προγραμματιστή σας), συμπεριλαμβανομένων δεδομένων όπως επαφών, μηνυμάτων και φωτογραφιών.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Τα δεδομένα αντιγράφων ασφαλείας δεν υπολογίζονται στο όριο του αποθηκευτικού χώρου του παιδιού σας στο Drive.<ph name="END_PARAGRAPH2" />

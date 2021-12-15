@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">ഉപയോക്തൃനാമം പകർത്തുക</translation>
 <translation id="1592864538817356322">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം നീക്കംചെയ്യുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ നീക്കംചെയ്യുക}}</translation>
+<translation id="1633659023549081553">Chrome-ന്റെ ഹോം പേജിൽ പുതിയ ഉള്ളടക്കം കണ്ടെത്തുക</translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">നിങ്ങൾക്ക് ഇത് സൗകര്യപ്രദമായി വായിക്കാൻ കഴിയുന്നതുവരെ സ്ലൈഡർ വലിക്കുക. ഒരു ഖണ്ഡികയിൽ ഇരട്ട-ടാപ്പ് ചെയ്‌തതിനുശേഷം ടെക്‌സ്റ്റിന് ഈ വലുപ്പമെങ്കിലും ഉണ്ടായിരിക്കണം.</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2328985652426384049">സൈൻ ഇൻ ചെയ്യാനാകില്ല</translation>
+<translation id="2342601525305963189">Chrome നുറുങ്ങുകൾ:</translation>
 <translation id="234265804618409743">നിങ്ങളുടെ ക്യാമറ തുറക്കാനാവുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="2345671828921229300">തിരയുന്നതിന്, ഒരു പദം സ്‌പർശിച്ച് പിടിക്കുക</translation>
 <translation id="2349710944427398404">അക്കൗണ്ടുകളും ബുക്ക്‌മാർക്കുകളും സംരക്ഷിച്ച ക്രമീകരണവും ഉൾപ്പെടെ Chrome ഉപയോഗിക്കുന്ന മൊത്തം വിവരങ്ങൾ</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="2536728043171574184">ഈ പേജിന്റെ ഒരു ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
+<translation id="2558692642259318568">നിങ്ങളുടെ ഉപകരണത്തിൽ ആക്റ്റിവിറ്റി സംരക്ഷിക്കാതെ ബ്രൗസ് ചെയ്യാൻ അദൃശ്യ മോഡ് പരീക്ഷിക്കൂ</translation>
 <translation id="2561519700418191927">വീഡിയോ പ്രിവ്യൂകൾ</translation>
 <translation id="2567385386134582609">ചിത്രം</translation>
 <translation id="2567545343356994513">അപകടകരമായ വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് വേഗത്തിലും സമയോചിതവുമായ പരിരക്ഷ</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">കാർഡ് നമ്പർ</translation>
 <translation id="2625189173221582860">പാസ്‌വേഡ് പകർത്തി</translation>
 <translation id="2631006050119455616">ലാഭിച്ചത്</translation>
+<translation id="2634905176438867146">Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുന്നത് എങ്ങനെയെന്ന് അറിയുക</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> കണക്ഷൻ നിങ്ങളുടെ ഡൗൺലോഡിന്റെ വേഗത കുറച്ചേക്കാം</translation>
 <translation id="2647434099613338025">ഭാഷ ചേര്‍ക്കുക</translation>
 <translation id="2649068648233607930">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3046945242843292318">അടുത്ത തവണ കൂടുതൽ വേഗത്തിൽ ഈ സൈറ്റിലേക്ക് എത്തുക</translation>
+<translation id="3055259925215945098">ബുക്ക്‌മാർക്ക് നീക്കി</translation>
 <translation id="305593374596241526">ലൊക്കേഷൻ ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">ഉപകരണത്തിൽ സംരക്ഷിക്കുക</translation>
 <translation id="3236059992281584593">ഒരു മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="3237087289225714896">സാധാരണ മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
+<translation id="3237433641417325993">നിർദ്ദേശിക്കുന്ന ലേഖനങ്ങൾ കാണാൻ താഴേക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">നിങ്ങൾ Chrome ഉപയോഗ റിപ്പോർട്ടുകളും പങ്കിടുന്നുവെങ്കിൽ ആ റിപ്പോർട്ടുകളിൽ നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളും ഉൾപ്പെടും</translation>
 <translation id="3250563604907490871">നിങ്ങൾ വൈഫൈയിലേക്ക് കണക്റ്റ് ചെയ്യുമ്പോൾ ചിത്രത്തിന്റെ വിവരണങ്ങൾ പുനരാരംഭിക്കും</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">അഭ്യർത്ഥിച്ച ഉറവിടത്തിലേക്ക് Chrome-ന് ആക്‌സസ് ഇല്ല.</translation>
 <translation id="4837753911714442426">പേജ് പ്രിന്റ് ചെയ്യുന്നതിനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുക</translation>
 <translation id="4842092870884894799">പാസ്‌വേഡ് സൃഷ്ടിക്കൽ പോപ്പ് അപ്പ് കാണിക്കുന്നു</translation>
+<translation id="4842515939542199281">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് തിരയാൻ മൈക്രോഫോൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
 <translation id="4864369630010738180">സൈൻ ഇൻ ചെയ്യുന്നു...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">വിപുലീകൃത ഉപയോഗ ഡാറ്റ</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="510275257476243843">ഒരു മണിക്കൂർ ശേഷിക്കുന്നു</translation>
+<translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> എന്നതിലേക്ക്</translation>
 <translation id="5118713593561876160">താൽപ്പര്യങ്ങൾ</translation>
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
 <translation id="5126510351761255129">നിങ്ങളുടെ കാർഡ് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ Chrome-ന് സ്റ്റോറേജ് ആക്‌സസ് ആവശ്യമുണ്ട്.</translation>
 <translation id="5749237766298580851">ഓഫാണ് <ph name="SEPARATOR" /> ശുപാർശ ചെയ്യുന്നില്ല</translation>
 <translation id="5752232708629533680">GIF മാത്രം പങ്കിടുക</translation>
+<translation id="5753139477036638699">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് Chrome-ൽ തിരയാം</translation>
 <translation id="5754350196967618083">Discover റീഫ്രഷ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="5763382633136178763">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, തുറന്നു.</translation>
 <translation id="6814033694018386318">Google-മായി നിങ്ങൾ പങ്കിടുന്നത്</translation>
 <translation id="6817747507826986771">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
+<translation id="6819199143469632133">Google-ലുള്ള നിങ്ങളുടെ കാര്യങ്ങളെല്ലാം ഉപകരണങ്ങളിൽ ഉടനീളം ലഭ്യമാകാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ടാബ്, തിരഞ്ഞെടുത്തു</translation>
 <translation id="6828070228333235514">നിരക്ക് ട്രാക്ക് ചെയ്യൽ നിർത്തുക</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="7029390216614421513">ഈ ഫ്രെയിമിൽ QR കോഡ്/ബാർ‌കോഡ് സ്ഥാപിക്കുക.</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
+<translation id="7037830628447527439">നിങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - ഈ ഭാഷ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8951232171465285730">Chrome നിങ്ങളുടെ <ph name="MEGABYTES" /> MB ലാഭിച്ചു</translation>
 <translation id="8955719471735800169">മുകളിലേക്ക് മടങ്ങുക</translation>
+<translation id="8964479563882643397">പുതിയ അദൃശ്യ ടാബ് തുറക്കാൻ മെനു തുറക്കുക</translation>
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
 <translation id="8967427617812342790">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>

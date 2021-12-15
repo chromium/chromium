@@ -249,6 +249,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7408085963519505752">Chrome OS terms</translation>
 <translation id="7419046106786626209">Chrome OS could not sync your data because Sync is not available for your domain.</translation>
+<translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="7486227612705979895">Chrome will access your Drive to make suggestions in the address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chrome OS Settings<ph name="LINK_END" /></translation>
@@ -308,6 +309,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
+<translation id="8927704157641862988">Customise the privacy choices that Chrome considers most important. This guide doesn't include every setting and option.</translation>
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
 <translation id="9026991721384951619">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>

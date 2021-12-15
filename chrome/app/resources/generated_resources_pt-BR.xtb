@@ -2526,6 +2526,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3557101512409028104">Defina restrições de sites e limites de tempo de uso com o Family Link</translation>
 <translation id="3559262020195162408">Falha ao instalar a política no dispositivo.</translation>
 <translation id="3559533181353831840">Tempo restante: <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Receber vibrações de confirmação para ações como divisão de tela e mudança de espaço de trabalho.</translation>
 <translation id="3560034655160545939">&amp;Verificação ortográfica</translation>
 <translation id="3562423906127931518">O processo pode levar alguns minutos. Configurando o contêiner Linux.</translation>
 <translation id="3562655211539199254">Ver guias recentes do Chrome no seu smartphone</translation>
@@ -4928,6 +4929,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6112931163620622315">Verifique seu smartphone</translation>
 <translation id="6113434369102685411">Defina seu mecanismo de pesquisa padrão para o navegador Chrome e o acesso rápido do <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Para usar o Smart Lock, acesse o perfil de usuário principal no smartphone</translation>
+<translation id="611684075852771314">Esses registros foram salvos em "Meus arquivos" como</translation>
 <translation id="6116921718742659598">Alterar configurações de idioma e de entrada</translation>
 <translation id="6119927814891883061">Nomear dispositivo como <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fixar esta página na tela inicial...</translation>
@@ -5704,6 +5706,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6930036377490597025">Chave de segurança externa ou sensor integrado</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}one{# extensão foi rejeitada}other{# extensões foram rejeitadas}}</translation>
 <translation id="6930321203306643451">Atualização concluída</translation>
+<translation id="6931690462168617033">Força do clique</translation>
 <translation id="6935286146439255109">A bandeja de papel não foi encontrada</translation>
 <translation id="693807610556624488">A operação de escrita excede o comprimento máximo do atributo para "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Você tem 1 impressora salva.</translation>
@@ -6837,6 +6840,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Caixa de diálogo de conexão</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Retorno tátil</translation>
 <translation id="8071432093239591881">Imprimir como imagem</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que um app tenha salvado (com base nas configurações de desenvolvedores), incluindo dados como contatos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os dados de backup não serão contabilizados na cota de armazenamento do Drive do seu filho.<ph name="END_PARAGRAPH2" />

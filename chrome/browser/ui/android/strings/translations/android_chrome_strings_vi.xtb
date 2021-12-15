@@ -826,6 +826,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5854512288214985237">Không có số liệu thống kê hoặc báo cáo sự cố nào được gửi cho Google</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Đã xảy ra lỗi. Không thể cập nhật tính năng Theo dõi giá.</translation>
+<translation id="5859968346865909126">Bạn có thể bật hoặc tắt chế độ này trong phần cài đặt.</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5862731021271217234">Để sử dụng các thẻ từ những thiết bị khác, hãy bật tính năng đồng bộ hóa</translation>
@@ -1100,6 +1101,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7359002509206457351">Truy cập vào phương thức thanh toán</translation>
 <translation id="7375125077091615385">Loại:</translation>
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
+<translation id="7379900596734708416">Đã có giao diện tối cho các trang web</translation>
 <translation id="7386842512861524348">Trang web có kết nối an toàn, trừ phi Chrome thông báo cho bạn thông tin khác.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>

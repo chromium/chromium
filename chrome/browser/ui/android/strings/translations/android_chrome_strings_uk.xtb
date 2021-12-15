@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1592864538817356322">Стандартний захист:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Вилучити 1 вибраний елемент}one{Вилучити # вибраний елемент}few{Вилучити # вибрані елементи}many{Вилучити # вибраних елементів}other{Вилучити # вибраного елемента}}</translation>
+<translation id="1633659023549081553">Переглядайте новий контент на головній сторінці Chrome</translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
 <translation id="164269334534774161">Ви переглядаєте офлайн-копію цієї сторінки, створену <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Історія</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">Перетягуйте повзунок, доки розмір тексту не стане зручним для читання. Якщо двічі торкнутись абзацу, розмір тексту має стати принаймні таким, як цей.</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
 <translation id="2328985652426384049">Не вдається ввійти</translation>
+<translation id="2342601525305963189">Поради щодо Chrome</translation>
 <translation id="234265804618409743">Не вдається відкрити камеру. Помилка.</translation>
 <translation id="2345671828921229300">Щоб почати пошук, натисніть і утримуйте слово</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google</translation>
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
+<translation id="2558692642259318568">Увімкніть анонімний режим, якщо не хочете зберігати історію активності на пристрої</translation>
 <translation id="2561519700418191927">Анімовані значки відео</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2567545343356994513">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="2625189173221582860">Пароль скопійовано</translation>
 <translation id="2631006050119455616">Збережено</translation>
+<translation id="2634905176438867146">Дізнайтеся, як зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="2645657967708199252">Завантаження через підключення <ph name="CONNECTION_TYPE" /> може бути повільнішим</translation>
 <translation id="2647434099613338025">Додати мову</translation>
 <translation id="2649068648233607930">Вашим веб-переглядачем керує <ph name="DOMAIN" /></translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
 <translation id="3046945242843292318">Переходьте на цей сайт швидше</translation>
+<translation id="3055259925215945098">Закладку переміщено</translation>
 <translation id="305593374596241526">Геодані вимкнено. Увімкніть їх у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Статті на цікаві вам теми в Chrome</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">Зберегти на пристрій</translation>
 <translation id="3236059992281584593">Залишилась 1 хв</translation>
 <translation id="3237087289225714896">Стандартне попереднє завантаження:</translation>
+<translation id="3237433641417325993">Прокрутіть униз, що переглянути рекомендовані статті</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Якщо ви також будете надсилати звіти про використання Chrome, у них буде включено дані про відвідані URL-адреси</translation>
 <translation id="3250563604907490871">Описи зображень з'являться знову, коли пристрій підключиться до мережі Wi-Fi</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome не має доступу до потрібного ресурсу.</translation>
 <translation id="4837753911714442426">Відкрити налаштування друку сторінки</translation>
 <translation id="4842092870884894799">Показ спливаючих вікон для створення пароля</translation>
+<translation id="4842515939542199281">Щоб шукати за допомогою голосу, натисніть значок мікрофона</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
 <translation id="4864369630010738180">Вхід…</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">Розширені дані про використання</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
 <translation id="510275257476243843">Залишилась 1 година</translation>
+<translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Інтереси</translation>
 <translation id="5123685120097942451">Анонімна вкладка</translation>
 <translation id="5126510351761255129">Підтвердьте дані картки</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">Щоб завантажувати файли, Chrome потребує доступу до пам’яті.</translation>
 <translation id="5749237766298580851">Вимкнено <ph name="SEPARATOR" /> Не рекомендовано</translation>
 <translation id="5752232708629533680">Поділитися лише файлом у форматі GIF</translation>
+<translation id="5753139477036638699">У Chrome можна шукати голосом</translation>
 <translation id="5754350196967618083">Не вдається оновити рекомендації</translation>
 <translation id="5763382633136178763">Анонімні вкладки</translation>
 <translation id="5763514718066511291">Торкніться, щоб скопіювати URL-адресу цього додатка</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">Вікно "Увійти в Chrome" відкрите.</translation>
 <translation id="6814033694018386318">До якої інформації отримає доступ компанія Google</translation>
 <translation id="6817747507826986771">Швидко діліться цією сторінкою. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
+<translation id="6819199143469632133">Увійдіть в обліковий запис, щоб користуватися сервісами Google на кількох пристроях</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Вибрано вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="6828070228333235514">Зупинити відстеження ціни</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029390216614421513">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="7029809446516969842">Паролі</translation>
+<translation id="7037830628447527439">Увійдіть у Chrome через обліковий запис Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> – Не вдалося завантажити цю мову. Повторіть спробу пізніше.</translation>
 <translation id="8951232171465285730">Chrome заощадив <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8955719471735800169">На початок</translation>
+<translation id="8964479563882643397">Щоб відкрити нову анонімну вкладку, натисніть значок меню</translation>
 <translation id="8965591936373831584">очікується</translation>
 <translation id="8967427617812342790">Додати в список читання</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>

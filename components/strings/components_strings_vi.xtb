@@ -176,6 +176,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1472675084647422956">Hiện thêm</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">Bạn đang tìm phiên bản trình duyệt? Hãy truy cập</translation>
 <translation id="1476595624592550506">Thay đổi mật khẩu của bạn</translation>
 <translation id="1483493594462132177">Gửi</translation>
 <translation id="1484290072879560759">Chọn địa chỉ giao hàng</translation>
@@ -1886,6 +1887,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7118618213916969306">Tìm kiếm URL trong bảng nhớ tạm, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Đóng các thẻ hoặc chương trình khác</translation>
 <translation id="7129409597930077180">Không thể giao hàng đến địa chỉ này. Chọn một địa chỉ khác.</translation>
+<translation id="7132939140423847331">Quản trị viên của bạn đã cấm sao chép dữ liệu này.</translation>
 <translation id="7135130955892390533">Hiển thị trạng thái</translation>
 <translation id="7138472120740807366">Phương thức phân phối</translation>
 <translation id="7139724024395191329">Tiểu vương quốc Ả rập</translation>
@@ -2445,6 +2447,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn Enter để xem nhật ký duyệt web của bạn trong Chrome</translation>
 <translation id="8987927404178983737">Tháng</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">Bạn đang tìm phiên bản hệ thống? Hãy truy cập</translation>
 <translation id="899688752321268742"><ph name="URL" /> muốn biết khi bạn đang sử dụng thiết bị này</translation>
 <translation id="8996941253935762404">Trang web sắp truy cập chứa chương trình độc hại</translation>
 <translation id="8997023839087525404">Máy chủ đã đưa ra chứng chỉ không được tiết lộ công khai theo chính sách Tính minh bạch của chứng chỉ. Đây là yêu cầu đối với một số chứng chỉ, để đảm bảo chúng đáng tin cậy và giúp chống lại những kẻ tấn công.</translation>

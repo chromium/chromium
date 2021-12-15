@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{сұрақ белгісі}other{# сұрақ белгісі}}</translation>
 <translation id="3505359110822747654">ChromeVox мәзірлерін ашу</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{кірістіру белгісі}other{# кірістіру белгісі}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ақ таңбалауыш}other{# ақ таңбалауыш}}</translation>
 <translation id="352577523970648069">Өңделетін мәтін өрісі</translation>
 <translation id="3538907380453898475">сипаттама тізімі</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> бөлігін қиып алу.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Келесі құсбелгі ұяшығы</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, радио түйме белгісі алып тасталды</translation>
 <translation id="5601172225407283979">Әдепкі әрекетті орындау</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{шаршы таңбалауыш}other{# шаршы таңбалауыш}}</translation>
 <translation id="5608798115546226984">Автотолтыру жолы</translation>
 <translation id="5616029807486814372">Келесі сабақ</translation>
 <translation id="561939826962581046">time</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8659501358298941449">Ашылмалы тізімдер</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />, соңы</translation>
 <translation id="867187640362843212">5-тақырып</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{# орналастырылған деңгей}}</translation>
 <translation id="8693391540059827073">Сүйікті маусымым</translation>
 <translation id="8696284982970258155">Бал реңкті</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{құбыр}other{# тік құбыр}}</translation>

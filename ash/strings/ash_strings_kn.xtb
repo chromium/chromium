@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ಡೆಸ್ಕ್ 7</translation>
 <translation id="2224075387478458881">ಸುರಕ್ಷಿತ ವಿಷಯವು ಗೋಚರಿಸಿದಾಗ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="225680501294068881">ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="2268130516524549846">ಬ್ಲೂಟೂತ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2268813581635650749">ಎಲ್ಲಾ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="2269016722240250274">ಆ್ಯಪ್‌ವೊಂದು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಆಫ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4849058404725798627">ಕೀಬೋರ್ಡ್‌ ಫೋಕಸ್‌ ಮೂಲಕ ವಿಷಯವನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="485592688953820832">ಯಾವುದೇ ಕ್ರಮ ಕೈಗೊಳ್ಳಬೇಡಿ (ವಿರಾಮಗೊಳಿಸಿ)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="486056901304535126">ನಂತರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುವುದು. ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ, ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಧ್ವನಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4868492592575313542">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4872237917498892622">Alt+ಹುಡುಕಾಟ ಅಥವಾ Shift</translation>
@@ -805,6 +807,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6452181791372256707">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6453179446719226835">ಭಾಷೆಯನ್ನು ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> ಗೆ ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="6477681113376365978">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6482559668224714696">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="6490471652906364588">USB-C ಸಾಧನ (ಬಲ ಪೋರ್ಟ್)</translation>
 <translation id="6491071886865974820">ಗಡುವಿನ ಮೊದಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ನೀವು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ</translation>
@@ -817,6 +820,8 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="65320610082834431">ಎಮೋಜಿಗಳು</translation>
 <translation id="6537924328260219877">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+ಹೊಸ ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="6559976592393364813">ನಿರ್ವಾಹಕರನ್ನು ಕೇಳಿ</translation>
 <translation id="6565007273808762236">eSIM ಕನೆಕ್ಷನ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6570831796530454248">{0,plural, =1{ಒಂದು ಗಂಟೆಯೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ಗಂಟೆಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ಗಂಟೆಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
@@ -848,6 +853,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6727969043791803658">ಸಂಪರ್ಕಗೊಂಡಿದೆ, <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="6751052314767925245">ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಮೂಲಕ ಜಾರಿಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6751826523481687655">ಕಾರ್ಯಕ್ಷಮತೆಯ ಟ್ರೇಸಿಂಗ್ ಅನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಮತ್ತು <ph name="RECEIVE_DESK" /> ಡೆಸ್ಕ್‌ನೊಂದಿಗೆ ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -983,6 +989,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7662283695561029522">ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ಅಧಿಸೂಚನೆ}one{# ಅಧಿಸೂಚನೆಗಳು}other{# ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7745560842763881396">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -1169,6 +1176,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="899350903320462459">ಅಧಿಸೂಚನೆ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು <ph name="LOGIN_ID" /> ನಂತೆ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="9000771174482730261">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9017320285115481645">Family Link ಪೋಷಕ ಪ್ರವೇಶದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="9024331582947483881">ಪೂರ್ಣ ಪರದೆ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1214,6 +1222,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="938963181863597773">ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ಏನಿದೆ?</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="951991426597076286">ನಿರಾಕರಿಸಿ</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> ಗಾಗಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ಕುರಿತಾದ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="98515147261107953">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" />ವಿಂಡೋವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
