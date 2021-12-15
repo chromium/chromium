@@ -208,10 +208,14 @@ const base::Feature kWebRTCGpuMemoryBufferReadback {
 bool CanUseGpuMemoryBufferReadback(
     media::VideoPixelFormat format,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
-  // GMB readback only works with NV12, so only opaque buffers can be used.
+  // Since ConvertToWebRtcVideoFrameBuffer will always produce an opaque frame
+  // (unless the input is already I420A), we allow using GMB readback from
+  // ABGR/ARGB to NV12.
   return gpu_factories &&
          (format == media::PIXEL_FORMAT_XBGR ||
-          format == media::PIXEL_FORMAT_XRGB) &&
+          format == media::PIXEL_FORMAT_XRGB ||
+          format == media::PIXEL_FORMAT_ABGR ||
+          format == media::PIXEL_FORMAT_ARGB) &&
          base::FeatureList::IsEnabled(kWebRTCGpuMemoryBufferReadback);
 }
 
@@ -244,7 +248,8 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     // Expose the color space and pixel format that is backing
     // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
     // SkImage.
-    auto format = source_frame->format() == media::PIXEL_FORMAT_XBGR
+    auto format = (source_frame->format() == media::PIXEL_FORMAT_XBGR ||
+                   source_frame->format() == media::PIXEL_FORMAT_ABGR)
                       ? viz::ResourceFormat::RGBA_8888
                       : viz::ResourceFormat::BGRA_8888;
 
