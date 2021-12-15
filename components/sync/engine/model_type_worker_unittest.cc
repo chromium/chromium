@@ -1359,7 +1359,7 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
-      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+      ModelTypeForHistograms::kPreferences, 1);
 
   // Send empty GetUpdatesResponse. The counter shouldn't change.
   worker()->ProcessGetUpdatesResponse(
@@ -1386,17 +1386,24 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   ApplyUpdates();
 
   // Double check the histogram hasn't been recorded so far.
-  const std::string histogram_name =
-      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound2.") +
-      ModelTypeToHistogramSuffix(worker()->GetModelType());
-  EXPECT_TRUE(histogram_tester.GetAllSamples(histogram_name).empty());
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples("Sync.ModelTypeTimeUntilEncryptionKeyFound2")
+                  .empty());
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples(
+                      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE")
+                  .empty());
 
   // Make the key available. The correct number of GetUpdates cycles should
   // have been recorded.
   DecryptPendingKey();
   ASSERT_EQ(2, get_updates_while_should_have_been_known);
   histogram_tester.ExpectUniqueSample(
-      histogram_name, get_updates_while_should_have_been_known, 1);
+      "Sync.ModelTypeTimeUntilEncryptionKeyFound2",
+      get_updates_while_should_have_been_known, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE",
+      get_updates_while_should_have_been_known, 1);
 }
 
 TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
@@ -1427,9 +1434,9 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
 
   // Should have recorded that 1 entity was dropped.
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Sync.ModelTypeUndecryptablePendingUpdatesDropped.",
-                    ModelTypeToHistogramSuffix(worker()->GetModelType())}),
-      1, 1);
+      "Sync.ModelTypeUndecryptablePendingUpdatesDropped", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
 
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
@@ -1439,7 +1446,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // Should have recorded that 1 incoming update was ignored.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeUpdateDrop.DecryptionPendingForTooLong",
-      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+      ModelTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got

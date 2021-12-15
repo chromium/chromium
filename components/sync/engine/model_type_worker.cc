@@ -45,10 +45,10 @@ namespace syncer {
 
 namespace {
 
-const char kTimeUntilEncryptionKeyFoundHistogramPrefix[] =
-    "Sync.ModelTypeTimeUntilEncryptionKeyFound2.";
-const char kUndecryptablePendingUpdatesDroppedHistogramPrefix[] =
-    "Sync.ModelTypeUndecryptablePendingUpdatesDropped.";
+const char kTimeUntilEncryptionKeyFoundHistogramName[] =
+    "Sync.ModelTypeTimeUntilEncryptionKeyFound2";
+const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
+    "Sync.ModelTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
 
@@ -712,7 +712,10 @@ void ModelTypeWorker::DecryptStoredEntities() {
     // while the cryptographer was pending external interaction.
     if (newly_found_key.get_updates_while_should_have_been_known > 0) {
       base::UmaHistogramCounts1000(
-          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramPrefix,
+          kTimeUntilEncryptionKeyFoundHistogramName,
+          newly_found_key.get_updates_while_should_have_been_known);
+      base::UmaHistogramCounts1000(
+          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramName, ".",
                         ModelTypeToHistogramSuffix(type_)}),
           newly_found_key.get_updates_while_should_have_been_known);
     }
@@ -846,11 +849,15 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   });
 
   // If updates were dropped, record how many.
-  if (entries_pending_decryption_.size() < updates_before_dropping) {
+  const size_t dropped_updates =
+      updates_before_dropping - entries_pending_decryption_.size();
+  if (dropped_updates > 0) {
     base::UmaHistogramCounts1000(
-        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramPrefix,
+        kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
+    base::UmaHistogramCounts1000(
+        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
                       ModelTypeToHistogramSuffix(type_)}),
-        updates_before_dropping - entries_pending_decryption_.size());
+        dropped_updates);
   }
 }
 
