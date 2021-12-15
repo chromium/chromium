@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/delayed_task_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -214,6 +215,11 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // The line that is currently selected by the user, null indicates that no
   // line is currently selected.
   absl::optional<int> selected_line_;
+
+  // AutofillPopupControllerImpl deletes itself. To simplify memory management,
+  // we delete the object asynchronously if AutofillDelayPopupControllerDeletion
+  // is enabled (TODO(crbug.com/1277218): Remove "if" clause).
+  base::DelayedTaskHandle self_deletion_task_handle_;
 
   base::WeakPtrFactory<AutofillPopupControllerImpl> weak_ptr_factory_{this};
 };
