@@ -63,7 +63,7 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
       base::BindOnce(
           &RpcMessenger::RegisterMessageReceiverCallback, rpc_messenger_,
           rpc_handle_,
-          [cb = receive_callback](
+          [cb = std::move(receive_callback)](
               std::unique_ptr<openscreen::cast::RpcMessage> message) {
             cb.Run(std::move(message));
           }));

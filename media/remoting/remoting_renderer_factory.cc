@@ -4,6 +4,7 @@
 
 #include "media/remoting/remoting_renderer_factory.h"
 
+#include "base/task/bind_post_task.h"
 #include "media/base/demuxer.h"
 #include "media/remoting/receiver.h"
 #include "media/remoting/receiver_controller.h"
@@ -28,13 +29,15 @@ RemotingRendererFactory::RemotingRendererFactory(
   DCHECK(receiver_controller_);
 
   // Register the callback to listen RPC_ACQUIRE_RENDERER message.
+  auto receive_callback = base::BindPostTask(
+      media_task_runner,
+      BindRepeating(&RemotingRendererFactory::OnAcquireRenderer,
+                    weak_factory_.GetWeakPtr()));
   rpc_messenger_->RegisterMessageReceiverCallback(
       RpcMessenger::kAcquireRendererHandle,
-      [ptr = weak_factory_.GetWeakPtr()](
+      [cb = std::move(receive_callback)](
           std::unique_ptr<openscreen::cast::RpcMessage> message) {
-        if (ptr) {
-          ptr->OnAcquireRenderer(std::move(message));
-        }
+        cb.Run(std::move(message));
       });
   receiver_controller_->Initialize(std::move(remotee));
 }

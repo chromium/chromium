@@ -69,9 +69,9 @@ StreamProvider::MediaStream::MediaStream(
       media_task_runner_,
       BindRepeating(&MediaStream::OnReceivedRpc, media_weak_this_));
   rpc_messenger_->RegisterMessageReceiverCallback(
-      rpc_handle_, [receive_callback](
+      rpc_handle_, [cb = std::move(receive_callback)](
                        std::unique_ptr<openscreen::cast::RpcMessage> message) {
-        receive_callback.Run(std::move(message));
+        cb.Run(std::move(message));
       });
 }
 
@@ -441,8 +441,9 @@ StreamProvider::StreamProvider(
       base::BindRepeating(&StreamProvider::OnReceivedRpc, media_weak_this_));
   rpc_messenger_->RegisterMessageReceiverCallback(
       RpcMessenger::kAcquireDemuxerHandle,
-      [callback](std::unique_ptr<openscreen::cast::RpcMessage> message) {
-        callback.Run(std::move(message));
+      [cb = std::move(callback)](
+          std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        cb.Run(std::move(message));
       });
 }
 

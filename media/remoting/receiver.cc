@@ -61,7 +61,7 @@ Receiver::Receiver(
 
   // Listening all renderer rpc messages.
   rpc_messenger_->RegisterMessageReceiverCallback(
-      rpc_handle_, [cb = receive_callback](
+      rpc_handle_, [cb = std::move(receive_callback)](
                        std::unique_ptr<openscreen::cast::RpcMessage> message) {
         cb.Run(std::move(message));
       });
