@@ -19,8 +19,6 @@ namespace safe_browsing {
 
 // A tab modal dialog that is shown when the user's tailored security bit
 // changes and the user isn't consented to sync.
-//
-// TODO(crbug/1257622): Add profile icon as seen in mocks.
 class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
  public:
   METADATA_HEADER(TailoredSecurityUnconsentedModal);
@@ -40,6 +38,9 @@ class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   bool ShouldShowCloseButton() const override;
 
  private:
+  // views::DialogDelegateView:
+  void AddedToWidget() override;
+
   raw_ptr<content::WebContents> web_contents_;
 };
 
