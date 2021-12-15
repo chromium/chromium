@@ -21,6 +21,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -185,6 +186,49 @@ TEST_P(CrossSiteFederatedAuthNavigationThrottleTest, SameSiteAuthRequest) {
   ASSERT_TRUE(throttle);
 
   EXPECT_EQ(test_case.expected_action, throttle->WillStartRequest().action());
+}
+
+class ContentSubresourceFilterThrottleManagerFencedFramesTest
+    : public FederatedAuthNavigationThrottleWithFlagEnabledTest {
+ public:
+  ContentSubresourceFilterThrottleManagerFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~ContentSubresourceFilterThrottleManagerFencedFramesTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContentSubresourceFilterThrottleManagerFencedFramesTest,
+       BlockThrottleCreationForFencedFrames) {
+  const GURL kUrl("https://idp.example");
+  GURL kFencedFrameUrl("https://child.example");
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+
+  MockNavigationHandle top_frame_handle(kUrl, main_rfh());
+  MockNavigationHandle fenced_frame_handle(kFencedFrameUrl, fenced_frame_rfh);
+
+  // Should be able to create throttle for the main frame.
+  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &top_frame_handle);
+  ASSERT_TRUE(throttle);
+
+  // A throttle should not be allowed for a fenced frame.
+  throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &fenced_frame_handle);
+  ASSERT_FALSE(throttle);
 }
 
 }  // namespace content
