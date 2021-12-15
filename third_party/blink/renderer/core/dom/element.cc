@@ -4592,8 +4592,10 @@ void Element::blur() {
     if (doc.GetPage()) {
       doc.GetPage()->GetFocusController().SetFocusedElement(nullptr,
                                                             doc.GetFrame());
-      doc.GetPage()->GetChromeClient().ClearKeyboardTriggeredTooltip(
-          *doc.GetFrame());
+      if (doc.GetFrame()) {
+        doc.GetPage()->GetChromeClient().ClearKeyboardTriggeredTooltip(
+            *doc.GetFrame());
+      }
     } else {
       doc.ClearFocusedElement();
     }
