@@ -98,7 +98,7 @@ void DisplayOverlayController::RemoveInputMappingView() {
   DCHECK(overlay_widget);
   if (!overlay_widget)
     return;
-  overlay_widget->GetContentsView()->RemoveChildView(input_mapping_view_);
+  overlay_widget->GetContentsView()->RemoveChildViewT(input_mapping_view_);
   input_mapping_view_ = nullptr;
 }
 
