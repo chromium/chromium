@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_hand.h"
 
+#include <memory>
+#include <utility>
+
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"

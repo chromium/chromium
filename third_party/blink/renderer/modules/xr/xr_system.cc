@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 
+#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"

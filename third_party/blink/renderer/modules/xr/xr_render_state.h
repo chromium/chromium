@@ -20,7 +20,7 @@ class XRRenderState : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRRenderState(bool immersive);
+  explicit XRRenderState(bool immersive);
   ~XRRenderState() override = default;
 
   // Near and far depths are used when computing projection matrices for the

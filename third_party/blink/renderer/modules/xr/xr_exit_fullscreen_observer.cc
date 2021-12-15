@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_exit_fullscreen_observer.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"

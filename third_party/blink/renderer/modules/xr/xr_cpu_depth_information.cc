@@ -28,7 +28,7 @@ size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
       return 4;
   }
 }
-}
+}  // namespace
 
 namespace blink {
 

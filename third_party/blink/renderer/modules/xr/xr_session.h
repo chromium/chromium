@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_H_
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

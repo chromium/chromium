@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -22,8 +25,6 @@
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-
-#include <algorithm>
 
 namespace blink {
 
@@ -113,8 +114,8 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
 
     // Clamp the developer-requested framebuffer size to ensure it's not too
     // small to see or unreasonably large.
-    // TODO: Would be best to have the max value communicated from the service
-    // rather than limited to the native res.
+    // TODO(bajones): Would be best to have the max value communicated from the
+    // service rather than limited to the native res.
     framebuffer_scale = base::clamp(initializer->framebufferScaleFactor(),
                                     kFramebufferMinScale, max_scale);
   }

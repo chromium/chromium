@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 
 #include <sstream>
+#include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"

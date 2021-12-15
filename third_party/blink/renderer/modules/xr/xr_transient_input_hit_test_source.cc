@@ -43,8 +43,9 @@ void XRTransientInputHitTestSource::Update(
     const HashMap<uint32_t, Vector<device::mojom::blink::XRHitResultPtr>>&
         hit_test_results,
     XRInputSourceArray* input_source_array) {
-  // TODO: Be smarter about the update - it's possible to add new resulst /
-  // remove the ones that were removed & update the ones that are being changed.
+  // TODO(bialpio): Be smarter about the update. It's possible to add new
+  // results or remove the ones that were removed & update the ones that are
+  // being changed.
   current_frame_results_.clear();
 
   // If we don't know anything about input sources, we won't be able to

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_target_ray_space.h"
 
+#include <string>
 #include <utility>
 
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
