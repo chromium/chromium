@@ -486,11 +486,14 @@ crbug.com/1238570 [ win nvidia-0x1cb3 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
+crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
 crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
+crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
 crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
+crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
 
 # Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
 crbug.com/1274796 [ win nvidia-0x2184 ] Pixel_WebGPUImportVideoFrame [ Failure ]
