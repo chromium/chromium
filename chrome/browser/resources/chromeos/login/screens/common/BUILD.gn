@@ -235,6 +235,7 @@ js_library("fingerprint_setup.m") {
 js_library("gesture_navigation.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gesture_navigation.m.js" ]
   deps = [
+    "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

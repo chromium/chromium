@@ -154,6 +154,9 @@
       #contentContainer {
         width: var(--oobe-adaptive-dialog-content-width);
       }
+      #contentContainer ::slotted(*) {
+        max-width: var(--oobe-adaptive-dialog-content-width);
+      }
 
       .vertical-mode-centering {
         align-items: var(--oobe-adaptive-dialog-item-alignment);
