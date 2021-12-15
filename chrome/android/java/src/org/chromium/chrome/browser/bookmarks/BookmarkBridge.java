@@ -27,12 +27,14 @@ import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -70,6 +72,16 @@ public class BookmarkBridge {
         @CalledByNative("BookmarksCallback")
         void onBookmarksFolderHierarchyAvailable(BookmarkId folderId,
                 List<BookmarkItem> bookmarksList);
+    }
+
+    /** A callback for updates to the price of a product. */
+    public interface PriceUpdateCallback {
+        /**
+         * @param id The bookmark ID that the price information was fetched for.
+         * @param url The URL of the product that was updated.
+         * @param price The price of the product.
+         */
+        void onPriceUpdated(BookmarkId id, GURL url, ProductPrice price);
     }
 
     /**
@@ -1125,6 +1137,46 @@ public class BookmarkBridge {
         }
     }
 
+    /**
+     * Get updated price information for a given list of bookmark IDs.
+     * @param bookmarksToUpdate The IDs of the bookmarks to update.
+     * @param callback A callback to be called for each ID iff price information is available.
+     */
+    public void getUpdatedProductPrices(
+            List<BookmarkId> bookmarksToUpdate, PriceUpdateCallback callback) {
+        final HashMap<GURL, BookmarkId> urlToId = new HashMap<>();
+        GURL[] urls = new GURL[bookmarksToUpdate.size()];
+        for (int i = 0; i < bookmarksToUpdate.size(); i++) {
+            GURL url = getBookmarkById(bookmarksToUpdate.get(i)).getUrl();
+            urls[i] = url;
+            urlToId.put(url, bookmarksToUpdate.get(i));
+        }
+
+        // This wrapper is used to avoid needing to pass the map of URL -> BookmarkId to native.
+        PriceUpdateCallback callbackWrapper = new PriceUpdateCallback() {
+            @Override
+            public void onPriceUpdated(BookmarkId id, GURL url, ProductPrice price) {
+                callback.onPriceUpdated(urlToId.get(url), url, price);
+            }
+        };
+
+        BookmarkBridgeJni.get().getUpdatedProductPrices(
+                mNativeBookmarkBridge, BookmarkBridge.this, urls, callbackWrapper);
+    }
+
+    @CalledByNative
+    private void onProductPriceUpdated(
+            GURL url, byte[] productPriceBytes, PriceUpdateCallback callback) {
+        try {
+            ProductPrice price = ProductPrice.parseFrom(productPriceBytes);
+            // Intentionally pass |null| for the bookmark ID here, the wrapper will populate this
+            // field. See #getUpdatedProductPrices
+            callback.onPriceUpdated(null, url, price);
+        } catch (InvalidProtocolBufferException ex) {
+            // Intentional noop
+        }
+    }
+
     @CalledByNative
     private static BookmarkItem createBookmarkItem(long id, int type, String title, GURL url,
             boolean isFolder, long parentId, int parentIdType, boolean isEditable,
@@ -1224,6 +1276,8 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, int index);
         int getTotalBookmarkCount(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
+        void getUpdatedProductPrices(long nativeBookmarkBridge, BookmarkBridge caller, GURL[] gurls,
+                PriceUpdateCallback callback);
         void setBookmarkTitle(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String title);
         void setBookmarkUrl(
