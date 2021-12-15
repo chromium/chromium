@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -196,7 +197,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   init_params.insets = GetTrayBubbleInsets();
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
 

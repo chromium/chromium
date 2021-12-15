@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/switch_access/switch_access_back_button_bubble_controller.h"
@@ -45,8 +46,8 @@ void SwitchAccessMenuBubbleController::ShowMenu(
                             kShellWindowId_AccessibilityBubbleContainer);
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
     init_params.is_anchored_to_status_area = false;
-    init_params.insets = gfx::Insets(kUnifiedMenuPadding, kUnifiedMenuPadding);
-    init_params.corner_radius = kUnifiedTrayCornerRadius;
+    init_params.insets = gfx::Insets(kBubbleMenuPadding, kBubbleMenuPadding);
+    init_params.corner_radius = kBubbleCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;
     bubble_view_ = new TrayBubbleView(init_params);
@@ -54,7 +55,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
 
     menu_view_ = new SwitchAccessMenuView();
     menu_view_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kUnifiedMenuPadding)));
+        views::CreateEmptyBorder(gfx::Insets(kBubbleMenuPadding)));
     bubble_view_->AddChildView(menu_view_);
 
     menu_view_->SetPaintToLayer();
@@ -96,7 +97,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
   // The resting bounds includes padding on each side of the menu.
   // Remove that before passing to the back button controller so the back button
   // appears in the correct position.
-  resting_bounds.Inset(kUnifiedMenuPadding, kUnifiedMenuPadding);
+  resting_bounds.Inset(kBubbleMenuPadding, kBubbleMenuPadding);
   back_button_controller_->ShowBackButton(resting_bounds,
                                           /*show_focus_ring=*/false,
                                           /*for_menu=*/true);

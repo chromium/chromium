@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/floating_accessibility_detailed_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -73,10 +74,10 @@ void FloatingAccessibilityDetailedController::Show(
       Shell::GetPrimaryRootWindow(), kShellWindowId_SettingBubbleContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = anchor_rect;
-  init_params.insets = gfx::Insets(0, kUnifiedMenuPadding, kUnifiedMenuPadding,
-                                   kUnifiedMenuPadding);
+  init_params.insets = gfx::Insets(0, kBubbleMenuPadding, kBubbleMenuPadding,
+                                   kBubbleMenuPadding);
   init_params.close_on_deactivate = false;
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
 

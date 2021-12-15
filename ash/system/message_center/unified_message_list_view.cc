@@ -5,6 +5,7 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 #include <string>
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/message_center/ash_notification_view.h"
@@ -138,8 +139,8 @@ class UnifiedMessageListView::MessageViewContainer
                   : views::CreateSolidSidedBorder(
                         0, 0, kUnifiedNotificationSeparatorThickness, 0,
                         message_center_style::kSeperatorColor));
-    const int top_radius = is_top ? kUnifiedTrayCornerRadius : 0;
-    const int bottom_radius = is_bottom ? kUnifiedTrayCornerRadius : 0;
+    const int top_radius = is_top ? kBubbleCornerRadius : 0;
+    const int bottom_radius = is_bottom ? kBubbleCornerRadius : 0;
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);
     control_view_->UpdateCornerRadius(top_radius, bottom_radius);
   }

@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -47,8 +48,8 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
                             kShellWindowId_AccessibilityBubbleContainer);
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
     init_params.is_anchored_to_status_area = false;
-    init_params.insets = gfx::Insets(kUnifiedMenuPadding, kUnifiedMenuPadding);
-    init_params.corner_radius = kUnifiedTrayCornerRadius;
+    init_params.insets = gfx::Insets(kBubbleMenuPadding, kBubbleMenuPadding);
+    init_params.corner_radius = kBubbleCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;
     init_params.preferred_width = kPreferredWidth;

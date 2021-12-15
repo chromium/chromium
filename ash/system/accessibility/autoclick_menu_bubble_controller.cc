@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -155,7 +156,7 @@ void AutoclickMenuBubbleController::ShowBubble(AutoclickEventType type,
                                    kCollisionWindowWorkAreaInsetsDp,
                                    kCollisionWindowWorkAreaInsetsDp);
   init_params.preferred_width = kAutoclickMenuWidth;
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
   bubble_view_ = new TrayBubbleView(init_params);

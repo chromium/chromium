@@ -9,6 +9,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
@@ -273,8 +274,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     DCHECK(!init_params.has_shadow);
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

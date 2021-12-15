@@ -212,6 +212,7 @@ component("ash") {
     "autotest_private_api_utils.cc",
     "bluetooth_devices_observer.cc",
     "bluetooth_devices_observer.h",
+    "bubble/bubble_constants.h",
     "bubble/bubble_utils.cc",
     "bubble/bubble_utils.h",
     "bubble/simple_grid_layout.cc",

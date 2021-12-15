@@ -6,13 +6,13 @@
 
 #include <set>
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
-#include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -135,8 +135,7 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetOpacity(0.f);
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
 
   // Sections.
   for (auto& section : CreateSections()) {

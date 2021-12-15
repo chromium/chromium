@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -68,7 +69,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   init_params.insets = gfx::Insets(0, kCollisionWindowWorkAreaInsetsDp,
                                    kCollisionWindowWorkAreaInsetsDp,
                                    kCollisionWindowWorkAreaInsetsDp);
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.max_height = kFloatingMenuHeight;
   init_params.translucent = true;

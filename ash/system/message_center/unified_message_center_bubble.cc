@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -58,7 +59,7 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(canvas->image_scale());
     flags.setAntiAlias(true);
-    canvas->DrawRoundRect(bounds, kUnifiedTrayCornerRadius, flags);
+    canvas->DrawRoundRect(bounds, kBubbleCornerRadius, flags);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -102,7 +103,7 @@ void UnifiedMessageCenterBubble::ShowBubble() {
 
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
   if (!features::IsNotificationsRefreshEnabled()) {
-    float radius = kUnifiedTrayCornerRadius;
+    float radius = kBubbleCornerRadius;
     widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
     widget_layer->SetIsFastRoundedCorner(true);
   }

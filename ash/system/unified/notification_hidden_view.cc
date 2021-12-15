@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/notification_hidden_view.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -52,7 +53,7 @@ NotificationHiddenView::NotificationHiddenView()
       views::CreateEmptyBorder(kUnifiedNotificationHiddenPadding));
 
   container_->SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), kUnifiedTrayCornerRadius));
+      GetBackgroundColor(), kBubbleCornerRadius));
 
   auto* layout =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(

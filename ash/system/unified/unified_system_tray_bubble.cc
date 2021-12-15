@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/unified_system_tray_bubble.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -82,7 +83,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
   init_params.reroute_event_handler = true;
@@ -242,7 +243,7 @@ int UnifiedSystemTrayBubble::CalculateMaxHeight() const {
       WorkAreaInsets::ForWindow(tray_->shelf()->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
       bottom - work_area->user_work_area_bounds().y();
-  return free_space_height_above_anchor - kUnifiedMenuPadding * 2;
+  return free_space_height_above_anchor - kBubbleMenuPadding * 2;
 }
 
 bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {

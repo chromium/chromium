@@ -22,6 +22,7 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -29,7 +30,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -111,8 +111,7 @@ AppListBubbleView::AppListBubbleView(
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   // Layer color is set in OnThemeChanged().
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

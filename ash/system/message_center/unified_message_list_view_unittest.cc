@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/unified_message_list_view.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/tray/tray_constants.h"
@@ -305,7 +306,7 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, Open) {
   // Check rounded corners when the feature is not enabled (when the feature is
   // enabled we round corners in the scroll view).
   if (!IsNotificationsRefreshEnabled())
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(2)->bottom_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());
 
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
 }
@@ -322,8 +323,8 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, AddNotifications) {
   // Check rounded corners when the feature is not enabled (when the feature is
   // enabled we round corners in the scroll view).
   if (!IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->bottom_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
   }
 
   int previous_message_list_view_height =
@@ -365,7 +366,7 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, AddNotifications) {
   // Check rounded corners when the feature is not enabled (when the feature is
   // enabled, we round corners in the scroll view).
   if (!IsNotificationsRefreshEnabled())
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(1)->bottom_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
 }
 
 TEST_P(ParameterizedUnifiedMessageListViewTest, RemoveNotification) {
@@ -391,8 +392,8 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemoveNotification) {
   // Check rounded corners when the feature is not enabled (when the feature is
   // enabled, we round corners in the scroll view).
   if (!IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
-    EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->bottom_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
   }
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
