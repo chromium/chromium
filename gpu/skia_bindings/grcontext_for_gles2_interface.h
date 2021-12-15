@@ -24,11 +24,12 @@ namespace skia_bindings {
 // is alive.
 class GrContextForGLES2Interface : public GrContextOptions::ShaderErrorHandler {
  public:
-  explicit GrContextForGLES2Interface(gpu::gles2::GLES2Interface* gl,
-                                      gpu::ContextSupport* context_support,
-                                      const gpu::Capabilities& capabilities,
-                                      size_t max_resource_cache_bytes,
-                                      size_t max_glyph_cache_texture_bytes);
+  GrContextForGLES2Interface(gpu::gles2::GLES2Interface* gl,
+                             gpu::ContextSupport* context_support,
+                             const gpu::Capabilities& capabilities,
+                             size_t max_resource_cache_bytes,
+                             size_t max_glyph_cache_texture_bytes,
+                             bool support_bilerp_from_flyph_atlas = false);
 
   GrContextForGLES2Interface(const GrContextForGLES2Interface&) = delete;
   GrContextForGLES2Interface& operator=(const GrContextForGLES2Interface&) =
