@@ -187,6 +187,13 @@ base::TimeTicks WebPerformance::FirstContentfulPaintAsMonotonicTime() const {
   return private_->timing()->FirstContentfulPaintAsMonotonicTime();
 }
 
+base::TimeTicks
+WebPerformance::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+    const {
+  return private_->timing()
+      ->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+}
+
 double WebPerformance::FirstMeaningfulPaint() const {
   return MillisecondsToSeconds(private_->timing()->FirstMeaningfulPaint());
 }
