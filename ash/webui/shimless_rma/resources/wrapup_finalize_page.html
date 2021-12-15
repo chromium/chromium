@@ -1,13 +1,19 @@
 <style include="cr-shared-style shimless-rma-shared">
+paper-spinner-lite {
+    height: 300px;
+    width: 300px;
+}
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('finalizePageTitleText')]]</h1>
-  </div>
-  <div slot="body">
     <p id="finalizationMessage">
       [[finalizationMessage_]]
     </p>
+  </div>
+  <div slot="body">
+    <paper-spinner-lite active hidden$="[[finalizationComplete_]]">
+    </paper-spinner-lite>
   </div>
 </base-page>

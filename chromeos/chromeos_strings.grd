@@ -2237,7 +2237,7 @@ Try tapping the mic to ask me anything.
         Finalizing repair
       </message>
       <message name="IDS_SHIMLESS_RMA_FINALIZE_PROGRESS" translateable="false" desc="Message to display current progress of finalization.">
-        Progress <ph name="PROGRESS_PERCENT">$1<ex>25</ex></ph>%.
+        Finalizing the device. Do not turn off power.
       </message>
       <message name="IDS_SHIMLESS_RMA_FINALIZE_COMPLETE" translateable="false" desc="Message to display when finalization is complete.">
         Complete.

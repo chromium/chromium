@@ -74,12 +74,7 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
    * @param {number} progress
    */
   onFinalizationUpdated(status, progress) {
-    if (status === FinalizationStatus.kInProgress) {
-      this.finalizationMessage_ = this.i18n(
-          finalizationStatusTextKeys[status], Math.round(progress * 100));
-    } else {
-      this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
-    }
+    this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
     this.finalizationComplete_ = status === FinalizationStatus.kComplete ||
         status === FinalizationStatus.kFailedNonBlocking;
     this.dispatchEvent(new CustomEvent(
