@@ -86,9 +86,11 @@ class SystemWebAppDelegate {
   // ShouldReuseExistingWindow() should return false at the same time.
   virtual bool ShouldShowNewWindowMenuOption() const;
 
-  // If true, when the app is launched through the File Handling Web API, we
-  // will include the file's directory in window.launchQueue as the first value.
-  virtual bool ShouldIncludeLaunchDirectory() const;
+  // Called when the app is launched with `params`. If the returned value is
+  // non-empty, it will be passed to the page as a FileSystemDirectoryHandle
+  // pre-pended to the `launchParams` list.
+  virtual base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const;
 
   // Map from origin to enabled origin trial names for this app. For example,
   // "chrome://sample-web-app/" to ["Frobulate"]. If set, we will enable the
@@ -176,10 +178,14 @@ class SystemWebAppDelegate {
   virtual bool IsUrlInSystemAppScope(const GURL& url) const;
 
  protected:
+  Profile* profile() const { return profile_; }
+
+  // These should all be private. See
+  // https://google.github.io/styleguide/cppguide.html#Access_Control
   SystemAppType type_;
   std::string internal_name_;
   GURL install_url_;
-  raw_ptr<const Profile> profile_;
+  raw_ptr<Profile> profile_;
   OriginTrialsMap origin_trials_map_;
 };
 

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -161,8 +162,24 @@ std::unique_ptr<WebApplicationInfo> MediaSystemAppDelegate::GetWebAppInfo()
   return CreateWebAppInfoForMediaWebApp();
 }
 
-bool MediaSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return true;
+base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  // |launch_dir| is the directory that contains all |launch_files|. If
+  // there are no launch files, launch_dir is empty.
+  base::FilePath launch_dir = params.launch_files.size()
+                                  ? params.launch_files[0].DirName()
+                                  : base::FilePath();
+
+#if DCHECK_IS_ON()
+  // Check |launch_files| all come from the same directory.
+  if (!launch_dir.empty()) {
+    for (auto path : params.launch_files) {
+      DCHECK_EQ(launch_dir, path.DirName());
+    }
+  }
+#endif
+
+  return launch_dir;
 }
 
 bool MediaSystemAppDelegate::ShouldShowInLauncher() const {

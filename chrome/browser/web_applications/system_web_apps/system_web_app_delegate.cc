@@ -54,8 +54,9 @@ bool SystemWebAppDelegate::ShouldShowNewWindowMenuOption() const {
   return false;
 }
 
-bool SystemWebAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return false;
+base::FilePath SystemWebAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  return base::FilePath();
 }
 
 std::vector<int> SystemWebAppDelegate::GetAdditionalSearchTerms() const {

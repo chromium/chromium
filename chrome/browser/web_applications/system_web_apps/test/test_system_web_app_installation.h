@@ -35,7 +35,8 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   gfx::Size GetMinimumWindowSize() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
-  bool ShouldIncludeLaunchDirectory() const override;
+  base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;

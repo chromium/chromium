@@ -20,33 +20,6 @@
 
 namespace web_app {
 
-namespace {
-
-base::FilePath GetLaunchDirectory(
-    bool should_include_launch_directory,
-    const std::vector<base::FilePath>& launch_files) {
-  if (!should_include_launch_directory)
-    return base::FilePath();
-
-  // |launch_dir| is the directory that contains all |launch_files|. If
-  // there are no launch files, launch_dir is empty.
-  base::FilePath launch_dir =
-      launch_files.size() ? launch_files[0].DirName() : base::FilePath();
-
-#if DCHECK_IS_ON()
-  // Check |launch_files| all come from the same directory.
-  if (!launch_dir.empty()) {
-    for (auto path : launch_files) {
-      DCHECK_EQ(launch_dir, path.DirName());
-    }
-  }
-#endif
-
-  return launch_dir;
-}
-
-}  // namespace
-
 Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     WebAppProvider* provider,
@@ -105,8 +78,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
     GURL app_scope = provider->registrar().GetAppScope(params.app_id);
-    base::FilePath launch_dir =
-        GetLaunchDirectory(ShouldIncludeLaunchDirectory(), params.launch_files);
+    base::FilePath launch_dir = GetLaunchDirectory(params);
 
     if (!launch_dir.empty() || !params.launch_files.empty()) {
       web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(

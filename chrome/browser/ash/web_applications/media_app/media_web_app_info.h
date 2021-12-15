@@ -16,12 +16,13 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
 
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
-  bool ShouldIncludeLaunchDirectory() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldReuseExistingWindow() const override;
+  base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const override;
 };
 
 // Return a WebApplicationInfo used to install the app.

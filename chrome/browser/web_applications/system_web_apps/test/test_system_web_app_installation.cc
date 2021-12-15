@@ -115,8 +115,13 @@ bool UnittestingSystemAppDelegate::ShouldReuseExistingWindow() const {
 bool UnittestingSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return show_new_window_menu_option_;
 }
-bool UnittestingSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return include_launch_directory_;
+base::FilePath UnittestingSystemAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  // When set to include a launch directory, use the directory of the first
+  // file.
+  return include_launch_directory_ && !params.launch_files.empty()
+             ? params.launch_files[0].DirName()
+             : base::FilePath();
 }
 
 std::vector<int> UnittestingSystemAppDelegate::GetAdditionalSearchTerms()
