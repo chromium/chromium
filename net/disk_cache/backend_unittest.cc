@@ -4641,7 +4641,7 @@ TEST_F(DiskCacheBackendTest, SimpleFdLimit) {
   disk_cache::Entry* alt_entry;
   ASSERT_THAT(CreateEntry(keys[0], &alt_entry), IsOk());
 
-  // One more file closure here to accomodate for alt_entry.
+  // One more file closure here to accommodate for alt_entry.
   histogram_tester.ExpectBucketCount("SimpleCache.FileDescriptorLimiterAction",
                                      disk_cache::FD_LIMIT_CLOSE_FILE,
                                      kLargeNumEntries - 64 + 1);
