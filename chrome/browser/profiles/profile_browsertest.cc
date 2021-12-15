@@ -438,13 +438,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNewProfileAsynchronous) {
 
 // Test OnProfileCreate is called with is_new_profile set to false when
 // creating a profile asynchronously with an existing prefs file.
-// TODO(1232030): Flakily crashes on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_CreateOldProfileAsynchronous DISABLED_CreateOldProfileAsynchronous
-#else
-#define MAYBE_CreateOldProfileAsynchronous CreateOldProfileAsynchronous
-#endif
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileAsynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
