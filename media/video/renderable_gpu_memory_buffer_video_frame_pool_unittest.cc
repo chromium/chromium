@@ -5,6 +5,8 @@
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/video_frame.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -165,6 +167,31 @@ TEST(RenderableGpuMemoryBufferVideoFramePool, FrameFreedAfterPool) {
   EXPECT_CALL(*context, DestroySharedImage(_, _)).Times(2);
   task_environment.RunUntilIdle();
   EXPECT_FALSE(!!context);
+}
+
+TEST(RenderableGpuMemoryBufferVideoFramePool, CrossThread) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const gfx::Size size0(128, 256);
+  const gfx::ColorSpace color_space0 = gfx::ColorSpace::CreateREC709();
+
+  // Create a pool on the main thread.
+  auto pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+      std::make_unique<FakeContext>());
+
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      // Create a frame on another thread.
+      base::BindLambdaForTesting(
+          [&]() { return pool->MaybeCreateVideoFrame(size0, color_space0); }),
+      // Destroy the video frame on the main thread.
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<VideoFrame> video_frame0) {}));
+  task_environment.RunUntilIdle();
+
+  // Destroy the pool.
+  pool = nullptr;
+  task_environment.RunUntilIdle();
 }
 
 TEST(RenderableGpuMemoryBufferVideoFramePool, RespectSizeAndColorSpace) {
