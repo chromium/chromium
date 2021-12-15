@@ -10,15 +10,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,7 +24,6 @@
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 #include "ui/gl/gl_switches.h"
 
-using base::test::RunOnceClosure;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
@@ -57,24 +54,24 @@ using BarcodeDetectorFactory =
 const std::string kInfoString = "https://www.chromium.org";
 
 struct TestParams {
-  size_t num_barcodes;
+  bool allow_duplicates;
   mojom::BarcodeFormat symbology;
   BarcodeDetectorFactory factory;
   NSString* test_code_generator;
 } kTestParams[] = {
     // CoreImage only supports QR Codes.
-    {1, mojom::BarcodeFormat::QR_CODE,
+    {false, mojom::BarcodeFormat::QR_CODE,
      base::BindRepeating(&CreateBarcodeDetectorImplMacCoreImage),
      @"CIQRCodeGenerator"},
     // Vision only supports a number of 1D/2D codes. Not all of them are
     // available for generation, though, only a few.
-    {1, mojom::BarcodeFormat::PDF417,
+    {false, mojom::BarcodeFormat::PDF417,
      base::BindRepeating(&CreateBarcodeDetectorImplMacVision),
      @"CIPDF417BarcodeGenerator"},
-    {1, mojom::BarcodeFormat::QR_CODE,
+    {false, mojom::BarcodeFormat::QR_CODE,
      base::BindRepeating(&CreateBarcodeDetectorImplMacVision),
      @"CIQRCodeGenerator"},
-    {6 /* 1D barcode makes the detector find the same code several times. */,
+    {true,  // 1D barcode makes the detector find the same code several times.
      mojom::BarcodeFormat::CODE_128,
      base::BindRepeating(&CreateBarcodeDetectorImplMacVision),
      @"CICode128BarcodeGenerator"}};
@@ -84,27 +81,14 @@ class BarcodeDetectionImplMacTest : public TestWithParam<struct TestParams> {
  public:
   ~BarcodeDetectionImplMacTest() override = default;
 
-  void DetectCallback(size_t num_barcodes,
-                      mojom::BarcodeFormat symbology,
-                      const std::string& barcode_value,
-                      std::vector<mojom::BarcodeDetectionResultPtr> results) {
-    EXPECT_EQ(num_barcodes, results.size());
-    for (const auto& barcode : results) {
-      EXPECT_EQ(barcode_value, barcode->raw_value);
-      EXPECT_EQ(symbology, barcode->format);
-    }
-
-    Detection();
-  }
-  MOCK_METHOD0(Detection, void(void));
-
-  std::unique_ptr<mojom::BarcodeDetection> impl_;
+ private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_P(BarcodeDetectionImplMacTest, CreateAndDestroy) {
-  impl_ = GetParam().factory.Run(mojom::BarcodeDetectorOptions::New());
-  if (!impl_) {
+  std::unique_ptr<mojom::BarcodeDetection> impl =
+      GetParam().factory.Run(mojom::BarcodeDetectorOptions::New());
+  if (!impl) {
     LOG(WARNING) << "Barcode Detection for this (library, OS version) pair is "
                     "not supported, skipping test.";
     return;
@@ -112,16 +96,15 @@ TEST_P(BarcodeDetectionImplMacTest, CreateAndDestroy) {
 }
 
 // This test generates a single barcode and scans it back.
-// Currently disabled due to failures on Mac 12.0
-// TODO(crbug.com/1279895): Re-enable this test.
-TEST_P(BarcodeDetectionImplMacTest, DISABLED_ScanOneBarcode) {
+TEST_P(BarcodeDetectionImplMacTest, ScanOneBarcode) {
   // Barcode detection needs GPU infrastructure.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseGpuInTests)) {
     return;
   }
 
-  impl_ = GetParam().factory.Run(mojom::BarcodeDetectorOptions::New());
+  std::unique_ptr<mojom::BarcodeDetection> impl =
+      GetParam().factory.Run(mojom::BarcodeDetectorOptions::New());
 
   // Generate a barcode image as a CIImage by using |qr_code_generator|.
   NSData* const qr_code_data = [base::SysUTF8ToNSString(kInfoString)
@@ -146,17 +129,19 @@ TEST_P(BarcodeDetectionImplMacTest, DISABLED_ScanOneBarcode) {
   SkBitmap bitmap;
   ASSERT_TRUE(SkCreateBitmapFromCGImage(&bitmap, cg_image));
 
-  base::RunLoop run_loop;
-  // Send the image Detect() and expect the response in callback.
-  EXPECT_CALL(*this, Detection())
-      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  // TODO(crbug.com/938663): expect detected symbology.
-  impl_->Detect(bitmap,
-                base::BindOnce(&BarcodeDetectionImplMacTest::DetectCallback,
-                               base::Unretained(this), GetParam().num_barcodes,
-                               GetParam().symbology, kInfoString));
+  base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>> future;
+  impl->Detect(bitmap, future.GetCallback());
 
-  run_loop.Run();
+  auto results = future.Take();
+  if (GetParam().allow_duplicates) {
+    EXPECT_GE(results.size(), 1u);
+  } else {
+    EXPECT_EQ(results.size(), 1u);
+  }
+  for (const auto& barcode : results) {
+    EXPECT_EQ(kInfoString, barcode->raw_value);
+    EXPECT_EQ(GetParam().symbology, barcode->format);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(, BarcodeDetectionImplMacTest, ValuesIn(kTestParams));
