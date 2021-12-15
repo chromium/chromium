@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_SAME_ORIGIN_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -24,18 +23,16 @@ class WebContents;
 class SameOriginObserver : public content::WebContentsObserver {
  public:
   SameOriginObserver(content::WebContents* observed_contents,
-                     const GURL& reference_origin,
+                     const url::Origin& reference_origin,
                      base::RepeatingCallback<void(content::WebContents*)>
                          on_same_origin_state_changed);
   ~SameOriginObserver() override;
 
   // WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
-  const raw_ptr<content::WebContents> observed_contents_;
-  const GURL reference_origin_;
+  const url::Origin reference_origin_;
   base::RepeatingCallback<void(content::WebContents*)>
       on_same_origin_state_changed_;
   bool is_same_origin_ = false;

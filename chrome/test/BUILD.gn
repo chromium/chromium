@@ -1600,6 +1600,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/media/webrtc/conditional_focus_browsertest.cc",
       "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
       "../browser/media/webrtc/region_capture_browsertest.cc",
+      "../browser/media/webrtc/same_origin_observer_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
       "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
       "../browser/media/webrtc/webrtc_browsertest_perf.cc",

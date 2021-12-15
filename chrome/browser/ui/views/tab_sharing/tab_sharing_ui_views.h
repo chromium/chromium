@@ -127,7 +127,7 @@ class TabSharingUIViews : public TabSharingUI,
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
       same_origin_observers_;
   const content::GlobalRenderFrameHostId capturer_;
-  const GURL capturer_origin_;
+  const url::Origin capturer_origin_;
   const bool can_focus_capturer_;
   const bool capturer_restricted_to_same_origin_ = false;
   content::DesktopMediaID shared_tab_media_id_;

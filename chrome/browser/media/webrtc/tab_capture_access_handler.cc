@@ -34,7 +34,7 @@ class SameOriginPolicyUI : public MediaStreamUI {
  public:
   // Since we own the observer, the base::Unretained for the callback is safe.
   SameOriginPolicyUI(content::WebContents* observed_contents,
-                     const GURL& reference_origin)
+                     const url::Origin& reference_origin)
       : observer_(
             observed_contents,
             reference_origin,
@@ -163,8 +163,8 @@ void TabCaptureAccessHandler::HandleRequest(
   if (!devices.empty()) {
     std::unique_ptr<MediaStreamUI> media_ui;
     if (capture_level == AllowedScreenCaptureLevel::kSameOrigin) {
-      media_ui = std::make_unique<SameOriginPolicyUI>(target_web_contents,
-                                                      request.security_origin);
+      media_ui = std::make_unique<SameOriginPolicyUI>(
+          target_web_contents, url::Origin::Create(request.security_origin));
     }
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
