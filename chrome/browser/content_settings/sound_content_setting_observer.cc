@@ -86,14 +86,9 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
                            blink::mojom::kAutoplayFlagUserException);
 }
 
-void SoundContentSettingObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted() &&
-      !navigation_handle->IsSameDocument()) {
-    MuteOrUnmuteIfNecessary();
-    logged_site_muted_ukm_ = false;
-  }
+void SoundContentSettingObserver::PrimaryPageChanged(content::Page& page) {
+  MuteOrUnmuteIfNecessary();
+  logged_site_muted_ukm_ = false;
 }
 
 void SoundContentSettingObserver::OnAudioStateChanged(bool audible) {
