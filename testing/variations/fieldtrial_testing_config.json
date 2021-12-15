@@ -1888,6 +1888,22 @@
             ]
         }
     ],
+    "CertificateTransparencyAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CertificateTransparencyAndroid",
+                        "CertificateTransparencyComponentUpdater"
+                    ]
+                }
+            ]
+        }
+    ],
     "CertificateTransparencyComponentUpdater": [
         {
             "platforms": [
