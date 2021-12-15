@@ -18,6 +18,7 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_egl_angle_vulkan.h"
@@ -62,6 +63,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         context_state_(context_state) {}
 
   ~AngleVulkanBacking() override {
+    DCHECK_EQ(access_mode_, kNone);
     if (passthrough_texture_) {
       if (!gl::GLContext::GetCurrent())
         context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
@@ -154,6 +156,12 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
 
   // SharedImageRepresentationGLTextureClient implementation.
   bool SharedImageRepresentationGLTextureBeginAccess() override {
+    if (access_mode_ != kNone) {
+      LOG(DFATAL) << "The backing is being accessed with mode:" << access_mode_;
+      return false;
+    }
+    access_mode_ = kGLReadWrite;
+
     gl::GLApi* api = gl::g_current_gl_context;
     GLuint texture = passthrough_texture_->service_id();
     // Acquire the texture, so ANGLE can access it.
@@ -162,6 +170,13 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void SharedImageRepresentationGLTextureEndAccess(bool readonly) override {
+    if (access_mode_ != kGLReadWrite) {
+      LOG(DFATAL) << "The backing is not being accessed by GL. mode:"
+                  << access_mode_;
+      return;
+    }
+    access_mode_ = kNone;
+
     gl::GLApi* api = gl::g_current_gl_context;
     GLuint texture = passthrough_texture_->service_id();
     // Release the texture from ANGLE, so it can be used elsewhere.
@@ -173,7 +188,14 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
  private:
   class SkiaRepresentation;
 
-  bool BeginAccessSkia() {
+  bool BeginAccessSkia(bool readonly) {
+    if (access_mode_ != kNone) {
+      LOG(DFATAL) << "The backing is being accessed with mode:" << access_mode_;
+      return false;
+    }
+
+    access_mode_ = readonly ? kSkiaReadOnly : kSkiaReadWrite;
+
     if (!backend_texture_.isValid()) {
       GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
       backend_texture_ =
@@ -185,6 +207,13 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void EndAccessSkia() {
+    if (access_mode_ != kSkiaReadOnly && access_mode_ != kSkiaReadWrite) {
+      LOG(DFATAL) << "The backing is not being accessed by Skia. mode:"
+                  << access_mode_;
+      return;
+    }
+    access_mode_ = kNone;
+
     GrVkImageInfo info;
     bool result = backend_texture_.getVkImageInfo(&info);
     DCHECK(result);
@@ -223,6 +252,13 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
   GLenum layout_ = GL_NONE;
+  enum AccessMode {
+    kNone,
+    kSkiaReadOnly,
+    kSkiaReadWrite,
+    kGLReadWrite,
+  };
+  AccessMode access_mode_ = kNone;
 };  // namespace
 
 class AngleVulkanBacking::SkiaRepresentation
@@ -240,7 +276,7 @@ class AngleVulkanBacking::SkiaRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    if (!backing_impl()->BeginAccessSkia())
+    if (!backing_impl()->BeginAccessSkia(/*readonly=*/true))
       return nullptr;
     return SkPromiseImageTexture::Make(backing_impl()->backend_texture_);
   }
@@ -251,23 +287,64 @@ class AngleVulkanBacking::SkiaRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    // TODO(penghuang): support it for OOP-C.
-    NOTIMPLEMENTED();
-    return nullptr;
+    if (!backing_impl()->BeginAccessSkia(/*readonly=*/false))
+      return nullptr;
+    return SkPromiseImageTexture::Make(backing_impl()->backend_texture_);
   }
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {}
+
+  sk_sp<SkSurface> BeginWriteAccess(
+      int final_msaa_count,
+      const SkSurfaceProps& surface_props,
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    auto promise_image_texture =
+        BeginWriteAccess(begin_semaphores, end_semaphores, end_state);
+    if (!promise_image_texture)
+      return nullptr;
+
+    auto surface = backing_impl()->context_state_->GetCachedSkSurface(this);
+
+    // If surface properties are different from the last access, then we cannot
+    // reuse the cached SkSurface.
+    if (!surface || surface_props != surface->props() ||
+        final_msaa_count != surface_msaa_count_) {
+      SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
+          true /* gpu_compositing */, format());
+      surface = SkSurface::MakeFromBackendTexture(
+          backing_impl()->context_state_->gr_context(),
+          promise_image_texture->backendTexture(), surface_origin(),
+          final_msaa_count, sk_color_type,
+          backing_impl()->color_space().ToSkColorSpace(), &surface_props);
+      if (!surface) {
+        backing_impl()->context_state_->EraseCachedSkSurface(this);
+        return nullptr;
+      }
+      surface_msaa_count_ = final_msaa_count;
+      backing_impl()->context_state_->CacheSkSurface(this, surface);
+    }
+
+    int count = surface->getCanvas()->save();
+    DCHECK_EQ(count, 1);
+    ALLOW_UNUSED_LOCAL(count);
+
+    return surface;
+  }
+
+  void EndWriteAccess(sk_sp<SkSurface> surface) override {
+    if (surface) {
+      surface->getCanvas()->restoreToCount(1);
+      surface = nullptr;
+      DCHECK(backing_impl()->context_state_->CachedSkSurfaceIsUnique(this));
+    }
+    backing_impl()->EndAccessSkia();
+  }
 
  private:
   AngleVulkanBacking* backing_impl() const {
     return static_cast<AngleVulkanBacking*>(backing());
   }
 
-  sk_sp<SkPromiseImageTexture> BeginAccess(
-      bool readonly,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores);
-
-  void EndAccess(bool readonly);
   int surface_msaa_count_ = 0;
 };
 

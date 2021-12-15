@@ -237,7 +237,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout) {
   switch (layout) {
     case GL_NONE:
-      break;
+      return VK_IMAGE_LAYOUT_UNDEFINED;
     case GL_LAYOUT_GENERAL_EXT:
       return VK_IMAGE_LAYOUT_GENERAL;
     case GL_LAYOUT_COLOR_ATTACHMENT_EXT:
