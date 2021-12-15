@@ -8,7 +8,7 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationFailedPage} from 'chrome://shimless-rma/reimaging_calibration_failed_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {CalibrationComponentStatus, CalibrationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -73,7 +73,6 @@ export function reimagingCalibrationFailedPageTest() {
   function clickComponentCameraToggle() {
     const cameraComponent =
         component.shadowRoot.querySelector('#componentCamera');
-    assertFalse(cameraComponent.disabled);
     cameraComponent.click();
     return flushTasks();
   }
@@ -96,39 +95,6 @@ export function reimagingCalibrationFailedPageTest() {
     return component.getComponentsList_();
   }
 
-  /**
-   * @param {!Array<!CalibrationComponentStatus>} components
-   * @return {!Array<!CalibrationComponentStatus>}
-   */
-  function getExpectedComponentsList(components) {
-    /** @type {!Array<!CalibrationComponentStatus>} */
-    let expectedComponents = [];
-    components.forEach(componentStatus => {
-      let status = componentStatus.status;
-      if (status === CalibrationStatus.kCalibrationFailed) {
-        status = CalibrationStatus.kCalibrationWaiting;
-      }
-      expectedComponents.push({
-        component: componentStatus.component,
-        status: status,
-        progress: 0.0
-      });
-    });
-    return expectedComponents;
-  }
-
-  /**
-   * @param {!Array<!CalibrationComponentStatus>} components
-   * @return {!Array<!CalibrationComponentStatus>}
-   */
-  function getAllSkippedComponentsList(components) {
-    components.forEach(component => {
-      component.status = CalibrationStatus.kCalibrationSkip;
-      component.progress = 0.0;
-    });
-    return components;
-  }
-
 
   test('Initializes', async () => {
     await initializeCalibrationPage(fakeCalibrationComponents);
@@ -144,48 +110,51 @@ export function reimagingCalibrationFailedPageTest() {
     const touchpadComponent =
         component.shadowRoot.querySelector('#componentTouchpad');
     assertEquals('Camera', cameraComponent.componentName);
-    assertFalse(cameraComponent.disabled);
-    assertFalse(cameraComponent.skip);
-    assertFalse(cameraComponent.completed);
+    assertFalse(cameraComponent.checked);
+    assertFalse(cameraComponent.failed);
     assertEquals('Battery', batteryComponent.componentName);
-    assertTrue(batteryComponent.disabled);
-    assertFalse(batteryComponent.skip);
-    assertTrue(batteryComponent.completed);
+    assertFalse(batteryComponent.checked);
+    assertFalse(batteryComponent.failed);
     assertEquals(
         'Base Accelerometer', baseAccelerometerComponent.componentName);
-    assertTrue(baseAccelerometerComponent.disabled);
-    assertFalse(baseAccelerometerComponent.skip);
-    assertFalse(baseAccelerometerComponent.completed);
+    assertFalse(baseAccelerometerComponent.checked);
+    assertFalse(baseAccelerometerComponent.failed);
     assertEquals('Lid Accelerometer', lidAccelerometerComponent.componentName);
-    assertFalse(lidAccelerometerComponent.disabled);
-    assertFalse(lidAccelerometerComponent.skip);
-    assertFalse(lidAccelerometerComponent.completed);
+    assertFalse(lidAccelerometerComponent.checked);
+    assertTrue(lidAccelerometerComponent.failed);
     assertEquals('Touchpad', touchpadComponent.componentName);
-    assertFalse(touchpadComponent.disabled);
-    assertTrue(touchpadComponent.skip);
-    assertFalse(touchpadComponent.completed);
+    assertFalse(touchpadComponent.checked);
+    assertFalse(touchpadComponent.failed);
   });
 
   test('ToggleComponent', async () => {
     await initializeCalibrationPage(fakeCalibrationComponents);
+    getComponentsList().forEach(
+        component =>
+            assertEquals(CalibrationStatus.kCalibrationSkip, component.status));
+
+    // Click the camera button to check it.
     await clickComponentCameraToggle();
-    let expectedComponents =
-        getExpectedComponentsList(fakeCalibrationComponents);
-    let components = getComponentsList();
-    assertNotEquals(expectedComponents, components);
     // Camera should be the first entry in the list.
-    expectedComponents[0].status = CalibrationStatus.kCalibrationSkip;
-    assertDeepEquals(expectedComponents, components);
+    assertEquals(
+        CalibrationStatus.kCalibrationWaiting, getComponentsList()[0].status);
+
+    // Click the camera button to check it.
+    await clickComponentCameraToggle();
+    // Camera should be the first entry in the list.
+    assertEquals(
+        CalibrationStatus.kCalibrationSkip, getComponentsList()[0].status);
   });
 
   test('NextButtonTriggersCalibrationComplete', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponents);
-    let expectedComponents =
-        getAllSkippedComponentsList(fakeCalibrationComponents);
     let startCalibrationCalls = 0;
     service.startCalibration = (components) => {
-      assertDeepEquals(expectedComponents, components);
+      assertEquals(5, components.length);
+      components.forEach(
+          component => assertEquals(
+              CalibrationStatus.kCalibrationSkip, component.status));
       startCalibrationCalls++;
       return resolver.promise;
     };
@@ -205,11 +174,21 @@ export function reimagingCalibrationFailedPageTest() {
   test('RetryButtonTriggersCalibration', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponents);
-    let expectedComponents =
-        getExpectedComponentsList(fakeCalibrationComponents);
+
+    getComponentsList().forEach(
+        component =>
+            assertEquals(CalibrationStatus.kCalibrationSkip, component.status));
+    await clickComponentCameraToggle();
+
     let startCalibrationCalls = 0;
     service.startCalibration = (components) => {
-      assertDeepEquals(expectedComponents, components);
+      assertEquals(5, components.length);
+      components.forEach(
+          component => assertEquals(
+              component.component === ComponentType.kCamera ?
+                  CalibrationStatus.kCalibrationWaiting :
+                  CalibrationStatus.kCalibrationSkip,
+              component.status));
       startCalibrationCalls++;
       return resolver.promise;
     };

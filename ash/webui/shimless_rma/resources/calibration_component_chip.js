@@ -30,13 +30,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
   static get properties() {
     return {
       /** @type {boolean} */
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @type {boolean} */
-      skip: {
+      checked: {
         notify: true,
         reflectToAttribute: true,
         type: Boolean,
@@ -44,32 +38,16 @@ export class CalibrationComponentChipElement extends PolymerElement {
       },
 
       /** @type {boolean} */
-      completed: {
-        notify: true,
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false,
-      },
-
-      /** @type {boolean} */
-      failed: {
-        notify: true,
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false,
-      },
+      failed: {type: Boolean, value: false},
 
       /** @type {string} */
       componentName: {type: String, value: ''},
-
-      /** @type {string} */
-      componentStatus: {type: String, value: ''}
     };
   }
 
   /** @protected */
   onComponentButtonClicked_() {
-    this.skip = !this.skip;
+    this.checked = !this.checked;
   }
 
   click() {

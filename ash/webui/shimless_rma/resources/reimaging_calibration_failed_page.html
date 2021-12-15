@@ -20,10 +20,8 @@
     <div>
       <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
         <calibration-component-chip id="[[component.id]]"
-          skip="{{component.skip}}"
-          completed="{{component.completed}}"
-          failed$="[[component.failed]]"
-          disabled$="[[component.disabled]]"
+          checked="{{component.checked}}"
+          failed="[[component.failed]]"
           component-name="[[component.name]]">
         </calibration-component-chip>
       </template>

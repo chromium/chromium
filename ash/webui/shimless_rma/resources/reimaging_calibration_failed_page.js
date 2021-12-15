@@ -31,10 +31,8 @@ import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRm
  *   component: !ComponentType,
  *   id: string,
  *   name: string,
- *   skip: boolean,
- *   completed: boolean,
+ *   checked: boolean,
  *   failed: boolean,
- *   disabled: boolean
  * }}
  */
 let ComponentCheckbox;
@@ -93,23 +91,15 @@ export class ReimagingCalibrationFailedPage extends
         return;
       }
 
-      /** @type {!Array<!ComponentCheckbox>} */
-      const componentList = [];
-      result.components.forEach(item => {
-        const component = assert(item.component);
-
-        componentList.push({
+      this.componentCheckboxes_ = result.components.map(item => {
+        return {
           component: item.component,
           id: ComponentTypeToId[item.component],
           name: this.i18n(ComponentTypeToId[item.component]),
-          skip: item.status === CalibrationStatus.kCalibrationSkip,
-          completed: item.status === CalibrationStatus.kCalibrationComplete,
+          checked: false,
           failed: item.status === CalibrationStatus.kCalibrationFailed,
-          disabled: item.status === CalibrationStatus.kCalibrationComplete ||
-              item.status === CalibrationStatus.kCalibrationInProgress
-        });
+        };
       });
-      this.componentCheckboxes_ = componentList;
     });
   }
 
@@ -119,16 +109,12 @@ export class ReimagingCalibrationFailedPage extends
    */
   getComponentsList_() {
     return this.componentCheckboxes_.map(item => {
-      /** @type {!CalibrationStatus} */
-      let status = CalibrationStatus.kCalibrationWaiting;
-      if (item.skip) {
-        status = CalibrationStatus.kCalibrationSkip;
-      } else if (item.completed) {
-        status = CalibrationStatus.kCalibrationComplete;
-      } else if (item.disabled) {
-        status = CalibrationStatus.kCalibrationInProgress;
-      }
-      return {component: item.component, status: status, progress: 0.0};
+      return {
+        component: item.component,
+        status: item.checked ? CalibrationStatus.kCalibrationWaiting :
+                               CalibrationStatus.kCalibrationSkip,
+        progress: 0.0
+      };
     });
   }
 
