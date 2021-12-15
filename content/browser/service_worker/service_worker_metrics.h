@@ -132,14 +132,6 @@ class ServiceWorkerMetrics {
     base::TimeTicks local_end;
   };
 
-  // Used for UMA. Append-only.
-  enum class OfflineCapableReason {
-    kTimeout = 0,
-    kSuccess = 1,
-    kRedirect = 2,
-    kMaxValue = kRedirect,
-  };
-
   ServiceWorkerMetrics() = delete;
   ServiceWorkerMetrics(const ServiceWorkerMetrics&) = delete;
   ServiceWorkerMetrics& operator=(const ServiceWorkerMetrics&) = delete;
@@ -192,12 +184,6 @@ class ServiceWorkerMetrics {
   // Records the size of Service-Worker-Navigation-Preload header when the
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);
-
-  // Records the reason a service worker was deemed to be offline capable. The
-  // reason may be that the service worker responded with 2xx..., 3xx..., or the
-  // check timed out.
-  static void RecordOfflineCapableReason(blink::ServiceWorkerStatusCode status,
-                                         int status_code);
 };
 
 }  // namespace content

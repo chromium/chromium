@@ -743,6 +743,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ServiceWorker.OfflineCapable.Reason"
     enum="OfflineCapableReason" expires_after="2022-01-02">
+  <obsolete>
+    Removed 2021-12-14.
+  </obsolete>
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

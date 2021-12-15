@@ -140,8 +140,6 @@ void ServiceWorkerOfflineCapabilityChecker::OnFetchResult(
        result == ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse &&
        (200 <= response->status_code && response->status_code <= 399)) ||
       status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
-    ServiceWorkerMetrics::RecordOfflineCapableReason(status,
-                                                     response->status_code);
     std::move(callback_).Run(OfflineCapability::kSupported,
                              version->registration_id());
   } else {
