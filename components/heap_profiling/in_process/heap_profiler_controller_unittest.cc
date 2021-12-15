@@ -108,12 +108,21 @@ class HeapProfilerControllerTest : public ::testing::Test {
     sampler->RecordFree(reinterpret_cast<void*>(0x1337));
   }
 
+  // Initialize `mute_hooks_` before `task_environment_` so that memory
+  // allocations aren't sampled while TaskEnvironment creates a thread. The
+  // sampling is crashing in the hooked FreeFunc on some test bots.
+  base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks_;
+
+  // Create `feature_list_` before `task_environment_` and destroy it after to
+  // avoid a race in destruction.
+  base::test::ScopedFeatureList feature_list_;
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
-  base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks_;
+
   std::unique_ptr<HeapProfilerController> controller_;
   base::HistogramTester histogram_tester_;
+
   // `sample_received_` is read from the main thread and written from a
   // background thread, but does not need to be atomic because the write happens
   // during a scheduled sample and the read happens well after that.
