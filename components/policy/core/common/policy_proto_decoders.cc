@@ -129,7 +129,7 @@ void DecodeProtoFields(
     PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
 
-  for (const BooleanPolicyAccess& access : GetBooleanPolicyAccess()) {
+  for (const BooleanPolicyAccess& access : kBooleanPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
         !access.has_proto(policy))
       continue;
@@ -142,7 +142,7 @@ void DecodeProtoFields(
              nullptr);
   }
 
-  for (const IntegerPolicyAccess& access : GetIntegerPolicyAccess()) {
+  for (const IntegerPolicyAccess& access : kIntegerPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
         !access.has_proto(policy))
       continue;
@@ -160,7 +160,7 @@ void DecodeProtoFields(
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringPolicyAccess& access : GetStringPolicyAccess()) {
+  for (const StringPolicyAccess& access : kStringPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
         !access.has_proto(policy))
       continue;
@@ -196,7 +196,7 @@ void DecodeProtoFields(
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringListPolicyAccess& access : GetStringListPolicyAccess()) {
+  for (const StringListPolicyAccess& access : kStringListPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
         !access.has_proto(policy))
       continue;

@@ -502,7 +502,6 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
 #include <cstdint>
 #include <string>
 
-#include "base/no_destructor.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -597,15 +596,13 @@ def _WriteChromePolicyAccessHeader(policies, f, protobuf_type):
   f.write('struct %sPolicyAccess {\n' % protobuf_type)
   f.write('  const char* policy_key;\n'
           '  bool per_profile;\n'
-          '  std::function<bool(const em::CloudPolicySettings& policy)>\n'
-          '      has_proto;\n'
-          '  std::function<const em::%sPolicyProto&(\n'
-          '      const em::CloudPolicySettings& policy)>\n'
-          '      get_proto;\n' % protobuf_type)
+          '  bool (*has_proto)(const em::CloudPolicySettings& policy);\n'
+          '  const em::%sPolicyProto& (*get_proto)(\n'
+          '      const em::CloudPolicySettings& policy);\n' % protobuf_type)
   if protobuf_type == 'String':
     f.write('  const StringPolicyType type;\n')
   f.write('};\n')
-  f.write('const std::array<%sPolicyAccess, %d>& Get%sPolicyAccess();\n\n' %
+  f.write('extern const std::array<%sPolicyAccess, %d> k%sPolicyAccess;\n\n' %
           (protobuf_type, len(supported_user_policies), protobuf_type))
 
 
@@ -1341,31 +1338,25 @@ def _GetStringPolicyType(policy_type):
 def _WriteChromePolicyAccessSource(policies, f, protobuf_type):
   supported_user_policies = _GetSupportedChromeUserPolicies(
       policies, protobuf_type)
-  f.write('const std::array<%sPolicyAccess, %d>& Get%sPolicyAccess() {\n' %
-          (protobuf_type, len(supported_user_policies), protobuf_type))
-  f.write('  static const base::NoDestructor<std::array<%sPolicyAccess, %d>>\n'
-          '      k%sPolicyAccess({{\n' %
+  f.write('const std::array<%sPolicyAccess, %d> k%sPolicyAccess {{\n' %
           (protobuf_type, len(supported_user_policies), protobuf_type))
   extra_args = ''
   for policy in supported_user_policies:
     name = policy.name
     if protobuf_type == 'String':
-      extra_args = ',\n     ' + _GetStringPolicyType(policy.policy_type)
-    f.write('    {key::k%s,\n'
-            '     %s,\n'
-            '     [](const em::CloudPolicySettings& policy) {\n'
-            '       return policy.has_%s();\n'
-            '     },\n'
-            '     [](const em::CloudPolicySettings& policy)\n'
-            '         -> const em::%sPolicyProto& {\n'
-            '       return policy.%s();\n'
-            '     }%s\n'
-            '    },\n' % (name, str(policy.per_profile).lower(), name.lower(),
-                          protobuf_type, name.lower(), extra_args))
-  f.write('  }});\n\n')
-  f.write('  return *k%sPolicyAccess;\n' % protobuf_type)
-  f.write('}\n\n')
-
+      extra_args = ',\n   ' + _GetStringPolicyType(policy.policy_type)
+    f.write('  {key::k%s,\n'
+            '   %s,\n'
+            '   [](const em::CloudPolicySettings& policy) {\n'
+            '     return policy.has_%s();\n'
+            '   },\n'
+            '   [](const em::CloudPolicySettings& policy)\n'
+            '       -> const em::%sPolicyProto& {\n'
+            '     return policy.%s();\n'
+            '   }%s\n'
+            '  },\n' % (name, str(policy.per_profile).lower(), name.lower(),
+                        protobuf_type, name.lower(), extra_args))
+  f.write('}};\n\n')
 
 #------------------ policy risk tag header -------------------------#
 
