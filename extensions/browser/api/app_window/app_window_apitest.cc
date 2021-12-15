@@ -12,12 +12,14 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/filename_util.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -188,6 +190,28 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
       "platform_apps/windows_api_visible_on_all_workspaces/in_stable",
       {.launch_as_platform_app = true}))
       << message_;
+}
+
+// Tests that component extensions are allowed to open chrome:-scheme URLs in
+// app windows, but not other absolute URLs.
+IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OpeningAbsoluteURLs) {
+  base::FilePath file_path = test_data_dir_.AppendASCII("body1.html");
+  GURL file_url = net::FilePathToFileURL(file_path);
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_opening_absolute_urls",
+      {.custom_arg = file_url.spec().c_str(), .launch_as_platform_app = true},
+      {.load_as_component = true}))
+      << message_;
+  // The app should have successfully opened the chrome://version page.
+  AppWindowRegistry::AppWindowList app_windows =
+      AppWindowRegistry::Get(profile())->GetAppWindowsForApp(
+          last_loaded_extension_id());
+  ASSERT_EQ(1u, app_windows.size());
+  content::WebContents* app_window_contents =
+      (*app_windows.begin())->web_contents();
+  EXPECT_EQ(GURL("chrome://version"),
+            app_window_contents->GetLastCommittedURL());
+  EXPECT_FALSE(app_window_contents->GetMainFrame()->IsErrorDocument());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

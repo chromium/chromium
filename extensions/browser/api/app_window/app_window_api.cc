@@ -149,15 +149,16 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url = extension()->GetResourceURL(params->url);
-  // Allow absolute URLs for component apps, otherwise prepend the extension
-  // path.
-  // TODO(devlin): Investigate if this is still used. If not, kill it dead!
+  // URLs normally must be relative to the extension. We make an exception
+  // to allow component apps to open chrome URLs (e.g. for the settings page
+  // on ChromeOS).
   GURL absolute = GURL(params->url);
   if (absolute.has_scheme()) {
-    if (extension()->location() == mojom::ManifestLocation::kComponent) {
+    if (extension()->location() == mojom::ManifestLocation::kComponent &&
+        absolute.SchemeIs(content::kChromeUIScheme)) {
       url = absolute;
     } else {
-      // Show error when url passed isn't local.
+      // Show error when url passed isn't valid.
       return RespondNow(Error(app_window_constants::kInvalidUrlParameter));
     }
   }
