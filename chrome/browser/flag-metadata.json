@@ -3117,7 +3117,7 @@
   {
     "name": "feed-v2-autoplay",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "feed-v2-hearts",
