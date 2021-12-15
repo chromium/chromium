@@ -107,6 +107,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_contentful_paint_presentation_;
   }
 
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+      const {
+    return first_contentful_paint_;
+  }
+
   // FirstImagePaint returns the first time that image content was painted.
   base::TimeTicks FirstImagePaint() const {
     return first_image_paint_presentation_;
@@ -196,10 +201,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       wtf_size_t index);
 
   base::TimeTicks FirstPaintRendered() const { return first_paint_; }
-
-  base::TimeTicks FirstContentfulPaintRendered() const {
-    return first_contentful_paint_;
-  }
 
   // TODO(crbug/738235): Non first_*_presentation_ variables are only being
   // tracked to compute deltas for reporting histograms and should be removed

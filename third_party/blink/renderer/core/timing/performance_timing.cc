@@ -393,6 +393,16 @@ uint64_t PerformanceTiming::FirstContentfulPaint() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstContentfulPaint());
 }
 
+base::TimeTicks
+PerformanceTiming::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+    const {
+  const PaintTiming* timing = GetPaintTiming();
+  if (!timing)
+    return base::TimeTicks();
+
+  return timing->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+}
+
 base::TimeTicks PerformanceTiming::FirstContentfulPaintAsMonotonicTime() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)

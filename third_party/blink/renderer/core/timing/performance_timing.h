@@ -112,6 +112,13 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   uint64_t FirstPaint() const;
   // The time the first paint operation for image was performed.
   uint64_t FirstImagePaint() const;
+  // The first 'contentful' paint as full-resolution monotonic time. This is
+  // the point at which blink painted the content for FCP; actual FCP is
+  // recorded as the time the generated content makes it to the screen (also
+  // known as presentation time). Intended to be used for correlation with other
+  // events internal to blink.
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+      const;
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
   uint64_t FirstContentfulPaint() const;

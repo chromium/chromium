@@ -255,6 +255,8 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 
   if (frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
+
+  NotifyPaintTimingChanged();
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {

@@ -112,6 +112,8 @@ class WebPerformance {
   BLINK_EXPORT double FirstImagePaint() const;
   BLINK_EXPORT double FirstContentfulPaint() const;
   BLINK_EXPORT base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
+  BLINK_EXPORT base::TimeTicks
+  FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime() const;
   BLINK_EXPORT double FirstMeaningfulPaint() const;
   BLINK_EXPORT double FirstMeaningfulPaintCandidate() const;
   BLINK_EXPORT double LargestImagePaint() const;
