@@ -28,8 +28,10 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -61,6 +63,9 @@ namespace {
 
 // Folder view inset from the edge of the bubble.
 constexpr int kFolderViewInset = 16;
+
+// Elevation for the bubble's shadow.
+constexpr int kShadowElevation = 3;
 
 AppListConfig* GetAppListConfig() {
   return AppListConfigProvider::Get().GetConfigForType(
@@ -109,8 +114,8 @@ AppListBubbleView::AppListBubbleView(
   DCHECK(drag_and_drop_host);
 
   // Set up rounded corners and background blur, similar to TrayBubbleView.
-  // Layer color is set in OnThemeChanged().
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  // Layer background is set in OnThemeChanged().
+  SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
@@ -216,6 +221,9 @@ void AppListBubbleView::InitFolderView(
 }
 
 void AppListBubbleView::StartShowAnimation() {
+  // For performance, don't animate the shadow.
+  view_shadow_.reset();
+
   // Ensure layout is up-to-date before animating views.
   if (needs_layout())
     Layout();
@@ -263,6 +271,9 @@ void AppListBubbleView::StartShowAnimation() {
 void AppListBubbleView::StartHideAnimation(
     base::OnceClosure on_animation_ended) {
   on_hide_animation_ended_ = std::move(on_animation_ended);
+
+  // For performance, don't animate the shadow.
+  view_shadow_.reset();
 
   // Ensure any in-progress animations have their cleanup callbacks called.
   AbortAllAnimations();
@@ -388,8 +399,13 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 void AppListBubbleView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
+  SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80),
+      kBubbleCornerRadius));
+  SetBorder(std::make_unique<HighlightBorder>(
+      kBubbleCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 }
 
 void AppListBubbleView::Layout() {
@@ -530,6 +546,10 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
   // visible because the bounds won't change. If the animation was aborted, this
   // is needed to reset state before starting the hide animation.
   layer()->SetBounds(layer_bounds);
+
+  // Add a shadow.
+  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
 }
 
 void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {

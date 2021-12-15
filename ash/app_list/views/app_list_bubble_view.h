@@ -28,6 +28,7 @@ class AppListViewDelegate;
 class FolderBackgroundView;
 class SearchBoxView;
 class SearchResultPageDialogController;
+class ViewShadow;
 
 // Contains the views for the bubble version of the launcher. It looks like a
 // system tray bubble. It does not derive from TrayBubbleView because it takes
@@ -97,6 +98,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   AppListBubbleAppsPage* apps_page() { return apps_page_; }
 
+  ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
   AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }
@@ -129,6 +131,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   std::unique_ptr<SearchResultPageDialogController>
       search_page_dialog_controller_;
 
+  std::unique_ptr<ViewShadow> view_shadow_;
   SearchBoxView* search_box_view_ = nullptr;
   views::View* separator_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;

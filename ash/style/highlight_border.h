@@ -11,6 +11,7 @@
 namespace ash {
 
 // A rounded rectangle border that has inner (highlight) and outer color.
+// Useful when go/cros-launcher-spec mentions "BorderHighlight".
 class ASH_EXPORT HighlightBorder : public views::Border {
  public:
   enum class Type {

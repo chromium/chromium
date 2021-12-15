@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/style/highlight_border.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
