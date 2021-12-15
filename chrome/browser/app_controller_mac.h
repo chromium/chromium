@@ -200,15 +200,6 @@ class TabMenuBridge;
 //     keyEquivalent.
 - (void)updateMenuItemKeyEquivalents;
 
-// Returns YES if `window` is a normal, tabbed, non-app browser window.
-// Serves as a swizzle point for unit tests to avoid creating Browser
-// instances.
-- (BOOL)windowHasBrowserTabs:(NSWindow*)window;
-
-// Testing API.
-- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
-- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
-
 @end
 
 #endif  // __OBJC__
