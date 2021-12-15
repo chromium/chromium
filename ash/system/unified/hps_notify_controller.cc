@@ -55,6 +55,10 @@ void HpsNotifyController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSnoopingProtectionEnabled,
       /*default_value=*/false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kSnoopingProtectionNotificationSuppressionEnabled,
+      /*default_value=*/false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void HpsNotifyController::OnSessionStateChanged(

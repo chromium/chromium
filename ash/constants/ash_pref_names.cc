@@ -431,9 +431,11 @@ const char kManagedGuestSessionPrivacyWarningsEnabled[] =
     "managed_session.privacy_warning_enabled";
 
 // Boolean pref indicating whether the user has enabled detection of snooping
-// over their shoulder.
+// over their shoulder, and hiding of notifications when a snooper is detected.
 const char kSnoopingProtectionEnabled[] =
     "ash.privacy.snooping_protection_enabled";
+const char kSnoopingProtectionNotificationSuppressionEnabled[] =
+    "ash.privacy.snooping_protection_notification_suppression_enabled";
 
 // A string pref storing the type of lock screen notification mode.
 // "show" -> show notifications on the lock screen

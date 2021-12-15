@@ -4,6 +4,10 @@
     flex-flow: column wrap;
   }
 
+  .indented {
+    margin-inline-start: var(--cr-section-padding);
+  }
+
   .underbar {
     border-bottom: var(--cr-separator-line);
   }
@@ -67,15 +71,9 @@
   </settings-toggle-button>
   <iron-collapse id="snoopingProtectionOptions"
       opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
-    <div class="settings-box continuation embedded">
-      <cr-radio-group>
-        <cr-radio-button name="dim" class="list-item"
-            label="$i18n{smartPrivacySnoopingDim}">
-        </cr-radio-button>
-        <cr-radio-button name="icon" class="list-item"
-            label="$i18n{smartPrivacySnoopingIcon}">
-        </cr-radio-button>
-      </cr-radio-group>
-    </div>
+      <settings-toggle-button class="settings-box continuation indented"
+          pref="{{prefs.ash.privacy.snooping_protection_notification_suppression_enabled}}"
+          label="$i18n{smartPrivacySnoopingNotifications}">
+      </settings-toggle-button>
   </iron-collapse>
 </template>
