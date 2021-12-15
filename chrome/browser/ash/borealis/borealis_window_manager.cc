@@ -54,7 +54,7 @@ std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
            ->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
                                    ApplicationList_VmType_BOREALIS)) {
     absl::optional<int> app_id = GetBorealisAppId(item.second.Exec());
-    if (app_id && app_id.value() == borealis_id) {
+    if (app_id && app_id.value() == static_cast<int>(borealis_id)) {
       return item.first;
     }
   }
