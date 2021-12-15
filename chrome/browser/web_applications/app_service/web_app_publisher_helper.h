@@ -162,9 +162,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   bool IsPaused(const std::string& app_id);
 
   void LoadIcon(const std::string& app_id,
-                const apps::IconKey& icon_key,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
+                apps::IconEffects icon_effects,
                 LoadIconCallback callback);
 
   content::WebContents* Launch(const std::string& app_id,

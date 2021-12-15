@@ -613,9 +613,9 @@ bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
 }
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
-                                     const apps::IconKey& icon_key,
                                      apps::IconType icon_type,
                                      int32_t size_hint_in_dip,
+                                     apps::IconEffects icon_effects,
                                      LoadIconCallback callback) {
   DCHECK(provider_);
   if (IsShuttingDown()) {
@@ -623,8 +623,7 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
   }
 
   LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
-                     static_cast<IconEffects>(icon_key.icon_effects),
-                     std::move(callback));
+                     icon_effects, std::move(callback));
 }
 
 content::WebContents* WebAppPublisherHelper::Launch(

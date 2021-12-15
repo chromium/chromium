@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -72,11 +72,22 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
   }
 
   const uint32_t icon_effects = icon_key.icon_effects;
+
+  IconType crosapi_icon_type = icon_type;
+  apps::mojom::IconKeyPtr crosapi_icon_key =
+      ConvertIconKeyToMojomIconKey(icon_key);
+  if (crosapi_icon_type == apps::IconType::kCompressed) {
+    // The effects are applied here in Ash.
+    crosapi_icon_type = apps::IconType::kUncompressed;
+    crosapi_icon_key->icon_effects = apps::IconEffects::kNone;
+  }
+
   controller_->LoadIcon(
-      app_id, ConvertIconKeyToMojomIconKey(icon_key), icon_type,
-      size_hint_in_dip,
+      app_id, std::move(crosapi_icon_key), crosapi_icon_type, size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
-                     icon_effects, size_hint_in_dip, std::move(callback)));
+                     icon_type, size_hint_in_dip,
+                     static_cast<apps::IconEffects>(icon_effects),
+                     std::move(callback)));
 }
 
 void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
@@ -100,7 +111,7 @@ void WebAppsCrosapi::Connect(
 
 void WebAppsCrosapi::LoadIcon(const std::string& app_id,
                               apps::mojom::IconKeyPtr icon_key,
-                              apps::mojom::IconType icon_type,
+                              apps::mojom::IconType mojom_icon_type,
                               int32_t size_hint_in_dip,
                               bool allow_placeholder_icon,
                               LoadIconCallback callback) {
@@ -114,12 +125,13 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
     return;
   }
 
-  const uint32_t icon_effects = icon_key->icon_effects;
+  const IconType icon_type = ConvertMojomIconTypeToIconType(mojom_icon_type);
+  const apps::IconEffects icon_effects =
+      static_cast<apps::IconEffects>(icon_key->icon_effects);
   controller_->LoadIcon(
-      app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
-      size_hint_in_dip,
+      app_id, std::move(icon_key), icon_type, size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
-                     icon_effects, size_hint_in_dip,
+                     icon_type, size_hint_in_dip, icon_effects,
                      IconValueToMojomIconValueCallback(std::move(callback))));
 }
 
@@ -407,13 +419,33 @@ void WebAppsCrosapi::OnControllerDisconnected() {
   controller_.reset();
 }
 
-void WebAppsCrosapi::OnLoadIcon(uint32_t icon_effects,
+void WebAppsCrosapi::OnLoadIcon(IconType icon_type,
                                 int size_hint_in_dip,
+                                apps::IconEffects icon_effects,
                                 apps::LoadIconCallback callback,
                                 IconValuePtr icon_value) {
+  if (!icon_value) {
+    std::move(callback).Run(IconValuePtr());
+    return;
+  }
   // We apply the masking effect here, as masking is not implemented in Lacros.
-  ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
-                   std::move(icon_value), std::move(callback));
+  // (There is no resource file in the Lacros side to apply the icon effects.)
+  ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon_value),
+                   base::BindOnce(&WebAppsCrosapi::OnApplyIconEffects,
+                                  weak_factory_.GetWeakPtr(), icon_type,
+                                  std::move(callback)));
+}
+
+void WebAppsCrosapi::OnApplyIconEffects(IconType icon_type,
+                                        apps::LoadIconCallback callback,
+                                        IconValuePtr icon_value) {
+  if (icon_type == apps::IconType::kCompressed) {
+    ConvertUncompressedIconToCompressedIcon(std::move(icon_value),
+                                            std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(std::move(icon_value));
 }
 
 }  // namespace apps

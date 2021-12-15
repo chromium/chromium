@@ -168,6 +168,20 @@ gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
   return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
 }
 
+// Calls |callback| with the compressed icon |data|.
+void CompleteIconWithCompressed(apps::LoadIconCallback callback,
+                                std::vector<uint8_t> data) {
+  if (data.empty()) {
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+  auto iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = apps::IconType::kCompressed;
+  iv->compressed = std::move(data);
+  iv->is_placeholder_icon = false;
+  std::move(callback).Run(std::move(iv));
+}
+
 }  // namespace
 
 namespace apps {
@@ -419,6 +433,16 @@ void ApplyIconEffects(IconEffects icon_effects,
       base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,
                                           std::move(callback));
   icon_loader->ApplyIconEffects(icon_effects, std::move(iv));
+}
+
+void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
+                                             LoadIconCallback callback) {
+  iv->uncompressed.MakeThreadSafe();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
+                     /*rep_icon_scale=*/1.0f),
+      base::BindOnce(&CompleteIconWithCompressed, std::move(callback)));
 }
 
 void LoadIconFromExtension(IconType icon_type,

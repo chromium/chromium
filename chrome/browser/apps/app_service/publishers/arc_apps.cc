@@ -25,8 +25,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -71,27 +69,9 @@
 
 namespace {
 
-void CompleteWithCompressed(apps::LoadIconCallback callback,
-                            std::vector<uint8_t> data) {
-  if (data.empty()) {
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-  auto iv = std::make_unique<apps::IconValue>();
-  iv->icon_type = apps::IconType::kCompressed;
-  iv->compressed = std::move(data);
-  iv->is_placeholder_icon = false;
-  std::move(callback).Run(std::move(iv));
-}
-
 void UpdateIconImage(apps::LoadIconCallback callback, apps::IconValuePtr iv) {
   if (iv->icon_type == apps::IconType::kCompressed) {
-    iv->uncompressed.MakeThreadSafe();
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
-                       /*rep_icon_scale=*/1.0f),
-        base::BindOnce(&CompleteWithCompressed, std::move(callback)));
+    ConvertUncompressedIconToCompressedIcon(std::move(iv), std::move(callback));
     return;
   }
   std::move(callback).Run(std::move(iv));

@@ -133,6 +133,10 @@ void ApplyIconEffects(IconEffects icon_effects,
                       IconValuePtr iv,
                       LoadIconCallback callback);
 
+// Encodes |iv| as a compressed PNG icon.
+void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
+                                             LoadIconCallback callback);
+
 // Loads an icon from an extension.
 void LoadIconFromExtension(IconType icon_type,
                            int size_hint_in_dip,

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -134,10 +135,14 @@ class WebAppsCrosapi : public KeyedService,
       GetMenuModelCallback callback,
       crosapi::mojom::MenuItemsPtr crosapi_menu_items);
 
-  void OnLoadIcon(uint32_t icon_effects,
+  void OnLoadIcon(IconType icon_type,
                   int size_hint_in_dip,
+                  apps::IconEffects icon_effects,
                   apps::LoadIconCallback callback,
                   IconValuePtr icon_value);
+  void OnApplyIconEffects(IconType icon_type,
+                          apps::LoadIconCallback callback,
+                          IconValuePtr icon_value);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
