@@ -1,0 +1,9 @@
+{
+  "name": "chrome.runtime.sendMessage test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "end-to-end browser test for chrome.runtime.sendMessage API",
+  "background": {
+    "service_worker": "worker.js"
+  }
+}

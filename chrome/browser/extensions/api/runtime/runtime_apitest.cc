@@ -279,6 +279,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
   EXPECT_TRUE(reload_catcher.GetNextResult());
 }
 
+// Tests sending messages from a webpage in the extension using
+// chrome.runtime.sendMessage and responding to those from the extension's
+// service worker in a chrome.runtime.onMessage listener.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeSendMessage) {
+  ASSERT_TRUE(
+      RunExtensionTest("runtime/send_message", {.page_url = "test.html"}));
+}
+
 // Tests that updating a terminated extension sends runtime.onInstalled event
 // with correct previousVersion.
 // Regression test for https://crbug.com/724563.

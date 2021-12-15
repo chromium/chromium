@@ -372,6 +372,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpenerCraziness) {
   ASSERT_TRUE(RunExtensionTest("tabs/tab_opener_id"));
 }
 
+// Tests sending messages from an extension's service worker using
+// chrome.tabs.sendMessage to a webpage in the extension listening for them
+// using chrome.runtime.OnMessage.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessage) {
+  ASSERT_TRUE(RunExtensionTest("tabs/send_message"));
+}
+
 class IncognitoExtensionApiTabTest : public ExtensionApiTabTest,
                                      public testing::WithParamInterface<bool> {
 };
