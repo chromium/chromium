@@ -415,7 +415,7 @@ Builder].
     1. Updates [`ci.star`][ci.star] and its related generated files
        [`cr-buildbucket.cfg`][cr-buildbucket.cfg],
        [`luci-scheduler.cfg`][luci-scheduler.cfg], and
-       ['luci-milo.cfg`][luci-milo.cfg]:
+       [`luci-milo.cfg`][luci-milo.cfg]:
         *   Use the appropriate definition for the type of the bot being added,
             for example, `ci.gpu_fyi_thin_tester()` should be used for all CI
             tester bots on GPU FYI waterfall.
@@ -681,7 +681,12 @@ or OS update. To do this:
 1.  If an "experimental" version of this bot doesn't yet exist, follow the
     instructions above for [How to add a new tester bot to the chromium.gpu.fyi
     waterfall](#How-to-add-a-new-tester-bot-to-the-chromium_gpu_fyi-waterfall)
-    to deploy one.
+    to deploy one. However, you do not need to request additional GCE resources
+    since there should be enough spare capacity in the GPU builderless pool to
+    handle them.
+1.  If an "experimental" version does already exist, move it from the
+    `chromium.gpu.experimental` console to its default console in
+    [`ci.star`][ci.star] and unpause it in the [luci scheduler].
 1.  Have this experimental bot target the new version of the driver or the OS
     in [`waterfalls.pyl`][waterfalls.pyl] and [`mixins.pyl`][mixins.pyl].
     [Sample CL][sample driver cl].
@@ -718,6 +723,10 @@ or OS update. To do this:
     added above.
 1.  Remove the old driver or OS version from the `_stable` mixin, leaving just
     the new stable version.
+1.  Clean up the "experimental" version of the bot by pausing it in the
+    [luci scheduler] and moving it to the `chromium.gpu.experimental` console in
+    [`ci.star`][ci.star]. This is done by adding a `console_view` argument to
+    its `console_view_entry`.
 
 Note that we leave the experimental bot in place. We could reclaim it, but it
 seems worthwhile to continuously test the "next" version of graphics drivers as
@@ -725,6 +734,7 @@ well as the current stable ones.
 
 [sample driver cl]: https://chromium-review.googlesource.com/c/chromium/src/+/1726875
 [updating gold baselines]: http://go/gpu-pixel-wrangler-info#how-to-keep-the-bots-green
+[luci scheduler]: https://luci-scheduler.appspot.com/
 
 ## Credentials for various servers
 
