@@ -681,16 +681,11 @@ UIWindow* GetAnyKeyWindow() {
 - (void)triggerRestoreViaTabGridRemoveAllUndo {
   [ChromeEarlGrey showTabSwitcher];
   GREYWaitForAppToIdle(@"App failed to idle");
-  if ([self isTabGridBulkActionsEnabled]) {
-    [ChromeEarlGrey
-        waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                       grey_sufficientlyVisible(), nil)];
-    [ChromeEarlGrey
-        waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
-  } else {
-    [ChromeEarlGrey
-        waitForAndTapButton:chrome_test_util::TabGridCloseAllButton()];
-  }
+  [ChromeEarlGrey
+      waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
+                                     grey_sufficientlyVisible(), nil)];
+  [ChromeEarlGrey
+      waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
   [ChromeEarlGrey
       waitForAndTapButton:chrome_test_util::TabGridUndoCloseAllButton()];
   [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
@@ -1219,10 +1214,6 @@ UIWindow* GetAnyKeyWindow() {
 
 - (BOOL)isContextMenuActionsRefreshEnabled {
   return [ChromeEarlGreyAppInterface isContextMenuActionsRefreshEnabled];
-}
-
-- (BOOL)isTabGridBulkActionsEnabled {
-  return [ChromeEarlGreyAppInterface isTabGridBulkActionsEnabled];
 }
 
 #pragma mark - ScopedBlockPopupsPref

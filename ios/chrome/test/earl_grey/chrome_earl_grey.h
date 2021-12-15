@@ -643,9 +643,6 @@ UIWindow* GetAnyKeyWindow();
 // Returns whether the ContextMenuActionsRefresh feature is enabled.
 - (BOOL)isContextMenuActionsRefreshEnabled;
 
-// Returns whether the TabGridBulkActions feature is enabled.
-- (BOOL)isTabGridBulkActionsEnabled;
-
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the

@@ -150,12 +150,10 @@
     }
   }
 
-  if (IsTabsBulkActionsEnabled()) {
-    if ([self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
-      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                      [self.contextMenuDelegate selectTabs];
-                    }]];
-    }
+  if ([self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
+    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                    [self.contextMenuDelegate selectTabs];
+                  }]];
   }
 
   if ([self.contextMenuDelegate

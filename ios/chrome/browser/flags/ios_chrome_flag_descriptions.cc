@@ -491,11 +491,6 @@ const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
     "icon or the app switcher.";
 
-const char kTabsBulkActionsName[] = "Enable Tab Grid Bulk Actions";
-const char kTabsBulkActionsDescription[] =
-    "Enables the selection mode in the Tab grid where users can perform "
-    "actions on multiple tabs at once for iOS 13 and above.";
-
 const char kTabsSearchName[] = "Enable Tabs Search";
 const char kTabsSearchDescription[] =
     "Enables the search mode in the Tab grid where users can search open tabs "

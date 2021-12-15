@@ -275,7 +275,7 @@ const int kSearchBarTrailingSpace = 20;
   }
   // In Landscape normal mode leading button is always "closeAll", or "Edit" if
   // bulk actions feature is enabled.
-  if (IsTabsBulkActionsEnabled() && !_undoActive)
+  if (!_undoActive)
     _leadingButton = _editButton;
   else
     _leadingButton = _closeAllOrUndoButton;
@@ -290,7 +290,7 @@ const int kSearchBarTrailingSpace = 20;
     return;
   }
 
-  if (IsTabsBulkActionsEnabled() && _mode == TabGridModeSelection) {
+  if (_mode == TabGridModeSelection) {
     // In the selection mode, Done button is much smaller than SelectAll
     // we need to calculate the difference on the width and use it as a
     // fixed space to make sure that the title is still centered.
@@ -353,37 +353,34 @@ const int kSearchBarTrailingSpace = 20;
   _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
   _doneButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
 
-  if (IsTabsBulkActionsEnabled()) {
-    _editButton = [[UIBarButtonItem alloc] init];
-    _editButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-    _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
-    _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
+  _editButton = [[UIBarButtonItem alloc] init];
+  _editButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
+  _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
 
-    _selectAllButton = [[UIBarButtonItem alloc] init];
-    _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-    _selectAllButton.title =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
-    _selectAllButton.accessibilityIdentifier =
-        kTabGridEditSelectAllButtonIdentifier;
+  _selectAllButton = [[UIBarButtonItem alloc] init];
+  _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _selectAllButton.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
+  _selectAllButton.accessibilityIdentifier =
+      kTabGridEditSelectAllButtonIdentifier;
 
-    _selectedTabsItem = [[UIBarButtonItem alloc] init];
-    _selectedTabsItem.title =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
-    _selectedTabsItem.tintColor =
-        UIColorFromRGB(kTabGridToolbarTextButtonColor);
-    _selectedTabsItem.action = nil;
-    _selectedTabsItem.target = nil;
-    _selectedTabsItem.enabled = NO;
-    [_selectedTabsItem setTitleTextAttributes:@{
-      NSForegroundColorAttributeName :
-          UIColorFromRGB(kTabGridToolbarTextButtonColor),
-      NSFontAttributeName : [[UIFontMetrics
-          metricsForTextStyle:UIFontTextStyleBody]
-          scaledFontForFont:[UIFont systemFontOfSize:kSelectionModeButtonSize
-                                              weight:UIFontWeightSemibold]]
-    }
-                                     forState:UIControlStateDisabled];
+  _selectedTabsItem = [[UIBarButtonItem alloc] init];
+  _selectedTabsItem.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
+  _selectedTabsItem.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _selectedTabsItem.action = nil;
+  _selectedTabsItem.target = nil;
+  _selectedTabsItem.enabled = NO;
+  [_selectedTabsItem setTitleTextAttributes:@{
+    NSForegroundColorAttributeName :
+        UIColorFromRGB(kTabGridToolbarTextButtonColor),
+    NSFontAttributeName :
+        [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody]
+            scaledFontForFont:[UIFont systemFontOfSize:kSelectionModeButtonSize
+                                                weight:UIFontWeightSemibold]]
   }
+                                   forState:UIControlStateDisabled];
 
   if (IsTabsSearchEnabled()) {
     _searchButton = [[UIBarButtonItem alloc]

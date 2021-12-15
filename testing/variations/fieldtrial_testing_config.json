@@ -7684,21 +7684,6 @@
             ]
         }
     ],
-    "TabsBulkActions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabsBulkActions"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarMicIphAndroid": [
         {
             "platforms": [

@@ -7,14 +7,8 @@
 
 #include "base/feature_list.h"
 
-// Feature flag to enable Bulk Actions.
-extern const base::Feature kTabsBulkActions;
-
 // Feature flag to enable Tabs Search.
 extern const base::Feature kTabsSearch;
-
-// Whether the kTabsBulkActions flag is enabled.
-bool IsTabsBulkActionsEnabled();
 
 // Whether the kTabsSearch flag is enabled.
 bool IsTabsSearchEnabled();

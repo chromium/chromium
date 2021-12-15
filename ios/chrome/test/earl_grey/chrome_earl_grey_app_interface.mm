@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -1006,10 +1005,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (BOOL)isContextMenuActionsRefreshEnabled {
   return IsContextMenuActionsRefreshEnabled();
-}
-
-+ (BOOL)isTabGridBulkActionsEnabled {
-  return IsTabsBulkActionsEnabled();
 }
 
 #pragma mark - ScopedBlockPopupsPref

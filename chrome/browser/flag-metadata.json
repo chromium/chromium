@@ -5310,11 +5310,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "tabs-bulkactions-ios",
-    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "tabs-search-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
     "expiry_milestone":100

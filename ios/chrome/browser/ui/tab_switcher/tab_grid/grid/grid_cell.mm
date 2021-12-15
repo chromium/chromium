@@ -223,7 +223,7 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (NSArray*)accessibilityCustomActions {
-  if (IsTabsBulkActionsEnabled() && self.isInSelectionMode) {
+  if (self.isInSelectionMode) {
     // If the cell is in tab grid selection mode, only allow toggling the
     // selection state.
     return nil;
@@ -376,17 +376,15 @@ void PositionView(UIView* view, CGPoint point) {
   closeIconView.image = [[UIImage imageNamed:@"grid_cell_close_button"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  if (IsTabsBulkActionsEnabled()) {
-    UIImageView* selectIconView = [[UIImageView alloc] init];
-    selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    selectIconView.contentMode = UIViewContentModeScaleAspectFit;
-    selectIconView.hidden = !self.isInSelectionMode;
+  UIImageView* selectIconView = [[UIImageView alloc] init];
+  selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  selectIconView.contentMode = UIViewContentModeScaleAspectFit;
+  selectIconView.hidden = !self.isInSelectionMode;
 
-    selectIconView.image = [self selectIconImageForCurrentState];
+  selectIconView.image = [self selectIconImageForCurrentState];
 
-    [topBar addSubview:selectIconView];
-    _selectIconView = selectIconView;
-  }
+  [topBar addSubview:selectIconView];
+  _selectIconView = selectIconView;
 
   [topBar addSubview:iconView];
   [topBar addSubview:activityIndicator];
