@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
+#include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/enrollment_status.h"
@@ -103,38 +104,6 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
 
   NOTREACHED() << "Bad enrollment mode: " << mode;
   return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
-}
-
-// Returns whether block_devmode is set.
-bool GetBlockdevmodeFromPolicy(
-    const enterprise_management::PolicyFetchResponse* policy) {
-  DCHECK(policy);
-  em::PolicyData policy_data;
-  if (!policy_data.ParseFromString(policy->policy_data())) {
-    LOG(ERROR) << "Failed to parse policy data";
-    return false;
-  }
-
-  em::ChromeDeviceSettingsProto payload;
-  if (!payload.ParseFromString(policy_data.policy_value())) {
-    LOG(ERROR) << "Failed to parse policy value";
-    return false;
-  }
-
-  bool block_devmode = false;
-  if (payload.has_system_settings()) {
-    const em::SystemSettingsProto& container = payload.system_settings();
-    if (container.has_block_devmode()) {
-      block_devmode = container.block_devmode();
-    }
-  }
-
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
-  LOG(WARNING) << (block_devmode ? "Blocking" : "Allowing")
-               << " dev mode by device policy";
-
-  return block_devmode;
 }
 
 // A utility funciton of base::ReadFileToString which returns an optional
@@ -613,6 +582,14 @@ void EnrollmentHandler::HandlePolicyValidationResult(
   std::string username = validator->policy_data()->username();
   device_id_ = validator->policy_data()->device_id();
   policy_ = std::move(validator->policy());
+
+  if (GetDeviceBlockDevModePolicyValue(*policy_) &&
+      !IsDeviceBlockDevModePolicyAllowed()) {
+    ReportResult(
+        EnrollmentStatus::ForStatus(EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE));
+    return;
+  }
+
   if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
     // Don't use robot account for the Active Directory managed devices.
     skip_robot_auth_ = true;
@@ -671,8 +648,13 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
     return;
   }
 
+  const bool block_devmode = GetDeviceBlockDevModePolicyValue(*policy_);
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << (block_devmode ? "Blocking" : "Allowing")
+               << " dev mode by device policy";
   install_attributes_->SetBlockDevmodeInTpm(
-      GetBlockdevmodeFromPolicy(policy_.get()),
+      block_devmode,
       base::BindOnce(&EnrollmentHandler::OnFirmwareManagementParametersDataSet,
                      weak_ptr_factory_.GetWeakPtr()));
 }

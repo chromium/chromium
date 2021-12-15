@@ -469,6 +469,12 @@ const char kEnterpriseEnrollmentInitialModulus[] =
 const char kEnterpriseEnrollmentModulusLimit[] =
     "enterprise-enrollment-modulus-limit";
 
+// Disallow blocking developer mode through enterprise device policy:
+// - Fail enterprise enrollment if enrolling would block dev mode.
+// - Don't apply new device policy if it would block dev mode.
+// This is only usable on test builds.
+const char kDisallowPolicyBlockDevMode[] = "disallow-policy-block-dev-mode";
+
 // Write extension install events to chrome log for integration test.
 const char kExtensionInstallEventChromeLogForTests[] =
     "extension-install-event-chrome-log-for-tests";

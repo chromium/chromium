@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
@@ -340,6 +341,25 @@ TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyNotEnterprise) {
   FlushDeviceSettings();
   ExpectFailure(CloudPolicyStore::STATUS_BAD_STATE);
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
+}
+
+TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceBlockDevmodeAllowed) {
+  PrepareExistingPolicy();
+  device_policy_->payload().mutable_system_settings()->set_block_devmode(true);
+  store_->Store(device_policy_->policy());
+  FlushDeviceSettings();
+  ExpectSuccess();
+}
+
+TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceBlockDevmodeDisallowed) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kDisallowPolicyBlockDevMode);
+  PrepareExistingPolicy();
+  device_policy_->payload().mutable_system_settings()->set_block_devmode(true);
+  device_policy_->Build();
+  store_->Store(device_policy_->policy());
+  FlushDeviceSettings();
+  EXPECT_EQ(store_->status(), CloudPolicyStore::STATUS_BAD_STATE);
 }
 
 }  // namespace policy

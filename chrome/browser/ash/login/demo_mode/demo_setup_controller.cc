@@ -300,6 +300,9 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
     case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
       return DemoSetupError(ErrorCode::kOfflinePolicyError,
                             RecoveryMethod::kOnlineOnly, debug_message);
+    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+      return DemoSetupError(ErrorCode::kUnexpectedError,
+                            RecoveryMethod::kUnknown, debug_message);
   }
   NOTREACHED() << "Demo mode setup received unsupported enrollment status";
   return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,

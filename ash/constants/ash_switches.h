@@ -159,6 +159,8 @@ extern const char kEnterpriseEnrollmentInitialModulus[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnrollmentModulusLimit[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisallowPolicyBlockDevMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kExtensionInstallEventChromeLogForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kExternalMetricsCollectionInterval[];

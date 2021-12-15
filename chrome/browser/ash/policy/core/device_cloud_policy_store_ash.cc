@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
+#include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
@@ -168,6 +169,14 @@ void DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated(
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
+    NotifyStoreError();
+    return;
+  }
+
+  if (GetDeviceBlockDevModePolicyValue(*(validator->payload())) &&
+      !IsDeviceBlockDevModePolicyAllowed()) {
+    LOG(ERROR) << "Rejected device policy: DeviceBlockDevmode not allowed";
+    status_ = STATUS_BAD_STATE;
     NotifyStoreError();
     return;
   }

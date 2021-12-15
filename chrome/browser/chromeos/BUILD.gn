@@ -2447,6 +2447,8 @@ source_set("chromeos") {
     "../ash/policy/core/user_cloud_policy_token_forwarder_factory.h",
     "../ash/policy/core/user_policy_manager_builder_ash.cc",
     "../ash/policy/core/user_policy_manager_builder_ash.h",
+    "../ash/policy/dev_mode/dev_mode_policy_util.cc",
+    "../ash/policy/dev_mode/dev_mode_policy_util.h",
     "../ash/policy/display/display_resolution_handler.cc",
     "../ash/policy/display/display_resolution_handler.h",
     "../ash/policy/display/display_rotation_default_handler.cc",

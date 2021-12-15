@@ -416,6 +416,41 @@ IN_PROC_BROWSER_TEST_F(EnrollmentOnRevenWithNoStateKeysResponse,
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
+// Device policy blocks dev mode and this is not prohibited by a command-line
+// flag.
+IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
+                       DeviceBlockDevmodeAllowed) {
+  enterprise_management::ChromeDeviceSettingsProto proto;
+  proto.mutable_system_settings()->set_block_devmode(true);
+  policy_server_.UpdateDevicePolicy(proto);
+
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+}
+
+// Device policy blocks dev mode and a command-line flag prevents this from
+// applying.
+IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
+                       DeviceBlockDevmodeDisallowed) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kDisallowPolicyBlockDevMode);
+  enterprise_management::ChromeDeviceSettingsProto proto;
+  proto.mutable_system_settings()->set_block_devmode(true);
+  policy_server_.UpdateDevicePolicy(proto);
+
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  enrollment_ui_.ExpectErrorMessage(
+      IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE,
+      /*can_retry=*/false);
+  enrollment_ui_.CancelAfterError();
+}
+
 // Simple manual enrollment with device attributes prompt.
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
                        ManualEnrollmentWithDeviceAttributes) {

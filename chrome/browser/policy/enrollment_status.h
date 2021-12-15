@@ -54,6 +54,9 @@ class EnrollmentStatus {
                                       // offline demo mode.
     OFFLINE_POLICY_DECODING_FAILED = 21,  // Failed when the policy data fails
                                           // to be decoded.
+    // Device policy would block dev mode but the
+    // kEnterpriseEnrollmentFailOnBlockDevMode flag was given.
+    MAY_NOT_BLOCK_DEV_MODE = 22,
   };
 
   // Helpers for constructing errors for relevant cases.

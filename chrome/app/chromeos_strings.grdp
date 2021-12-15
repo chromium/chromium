@@ -2847,6 +2847,9 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_SAVE_DEVICE_CONFIGURATION" desc="Error message shown on the enrollment screen when the system failed to save some part of the device configuration. E.g. token from the Device Management server.">
     Oops!  The system failed to save device configuration.
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE" desc="Error message shown on the enrollment screen when the incoming device policy block developer mode but a command-line switch prevents this." translateable="false">
+    Device policy would block developer mode but a command-line switch prevents this.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_SCREEN_TITLE" desc="The title on the enterprise enrollment dialog.">
     Enterprise enrollment
   </message>

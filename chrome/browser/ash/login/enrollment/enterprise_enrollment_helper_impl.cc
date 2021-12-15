@@ -526,6 +526,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
       UMA(policy::kMetricEnrollmentRegisterPolicyResponseInvalid);
       break;
+    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+      UMA(policy::kMetricEnrollmentMayNotBlockDevMode);
+      break;
   }
 }
 

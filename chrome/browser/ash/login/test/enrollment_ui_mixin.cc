@@ -48,7 +48,10 @@ std::string StepElementID(const std::string& step) {
 }
 
 const UIPath kEnrollmentErrorMsg = {kEnrollmentUI, "errorMsg"};
-const UIPath kEnrollmentErrorButtonPath = {kEnrollmentUI, "errorRetryButton"};
+const UIPath kEnrollmentErrorRetryButtonPath = {kEnrollmentUI,
+                                                "errorRetryButton"};
+const UIPath kEnrollmentErrorCancelButtonPath = {kEnrollmentUI,
+                                                 "errorGenericCancelButton"};
 const UIPath kEnrollmentSuccessButtonPath = {kEnrollmentUI,
                                              "successDoneButton"};
 const UIPath kEnrollmentAttributeErrorButtonPath = {kEnrollmentUI,
@@ -89,15 +92,21 @@ void EnrollmentUIMixin::ExpectErrorMessage(int error_message_id,
   OobeJS().ExpectElementContainsText(l10n_util::GetStringUTF8(error_message_id),
                                      kEnrollmentErrorMsg);
   if (can_retry) {
-    OobeJS().ExpectVisiblePath(kEnrollmentErrorButtonPath);
+    OobeJS().ExpectVisiblePath(kEnrollmentErrorRetryButtonPath);
   } else {
-    OobeJS().ExpectHiddenPath(kEnrollmentErrorButtonPath);
+    OobeJS().ExpectHiddenPath(kEnrollmentErrorRetryButtonPath);
   }
 }
 
 void EnrollmentUIMixin::RetryAfterError() {
-  OobeJS().ClickOnPath(kEnrollmentErrorButtonPath);
+  OobeJS().ClickOnPath(kEnrollmentErrorRetryButtonPath);
   WaitForStep(ui::kEnrollmentStepSignin);
+}
+
+void EnrollmentUIMixin::CancelAfterError() {
+  SetExitHandler();
+  OobeJS().ClickOnPath(kEnrollmentErrorCancelButtonPath);
+  WaitForScreenExit();
 }
 
 void EnrollmentUIMixin::LeaveDeviceAttributeErrorScreen() {

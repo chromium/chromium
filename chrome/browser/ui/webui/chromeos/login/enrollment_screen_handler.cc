@@ -620,6 +620,9 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // only within MODE_OFFLINE_DEMO flow, which shouldn't happen here.
       NOTREACHED();
       return;
+    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+      ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE, false);
+      return;
   }
   NOTREACHED();
 }
