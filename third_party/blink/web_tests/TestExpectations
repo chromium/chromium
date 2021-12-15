@@ -7988,3 +7988,7 @@ crbug.com/1277973 http/tests/xmlhttprequest/uri-resolution-opera-open-007.html [
 
 # Sheriff 2021-12-13
 crbug.com/1279586 [ Mac ] external/wpt/IndexedDB/idbobjectstore-rename-abort.html [ Failure ]
+
+# Sheriff 2021-12-15
+crbug.com/1280387 [ Mac ] external/wpt/dom/abort/event.any.html [ Failure ]
+crbug.com/1280387 [ Mac ] external/wpt/dom/abort/event.any.worker.html [ Failure ]
