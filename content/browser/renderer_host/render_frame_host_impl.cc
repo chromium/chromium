@@ -10499,7 +10499,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // that.
     if (navigation_request->pending_ad_components_map()) {
       navigation_request->pending_ad_components_map()->ExportToMapping(
-          GetMainFrame()->GetPage().fenced_frame_urls_map());
+          GetPage().fenced_frame_urls_map());
     }
 
     // Continue observing the events for the committed navigation.
