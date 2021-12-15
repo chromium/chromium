@@ -13,10 +13,21 @@
 // #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
+// Prefs used by settings-multidevice-wifi-sync-item if
+// SyncSettingsCategorization is disabled.
 function getPrefs() {
   return {
     wifiConfigurationsRegistered: true,
     wifiConfigurationsSynced: true,
+  };
+}
+
+// Prefs used by settings-multidevice-wifi-sync-item if
+// SyncSettingsCategorization is enabled.
+function getOsPrefs() {
+  return {
+    osWifiConfigurationsRegistered: true,
+    osWifiConfigurationsSynced: true,
   };
 }
 
@@ -104,8 +115,8 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   });
 
   test('Chrome Sync off', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = false;
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = false;
     cr.webUIListenerCallback('os-sync-prefs-changed', false, prefs);
     Polymer.dom.flush();
 
@@ -119,8 +130,8 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   });
 
   test('Chrome Sync on', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = true;
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = true;
     cr.webUIListenerCallback('os-sync-prefs-changed', true, prefs);
     Polymer.dom.flush();
 
