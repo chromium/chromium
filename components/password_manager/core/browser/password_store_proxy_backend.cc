@@ -26,16 +26,32 @@ namespace {
 
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
-bool IsPasswordUniquePtrLess(const std::unique_ptr<PasswordForm>& lhs,
-                             const std::unique_ptr<PasswordForm>& rhs) {
-  return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
-}
+struct LoginsResultOrErrorImpl {
+  using ResultType = LoginsResultOrError;
+  using ElementsType = LoginsResult;
 
-bool IsPasswordUniquePtrWithSameKeyInconsistent(
-    const std::unique_ptr<PasswordForm>& lhs,
-    const std::unique_ptr<PasswordForm>& rhs) {
-  return lhs->password_value != rhs->password_value;
-}
+  static LoginsResult* GetElements(LoginsResultOrError& logins_or_error) {
+    return absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)
+               ? nullptr
+               : &absl::get<LoginsResult>(logins_or_error);
+  }
+
+  static std::unique_ptr<PasswordForm> Clone(
+      const std::unique_ptr<PasswordForm>& login) {
+    return std::make_unique<PasswordForm>(*login);
+  }
+
+  static bool IsLess(const std::unique_ptr<PasswordForm>& lhs,
+                     const std::unique_ptr<PasswordForm>& rhs) {
+    return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
+  }
+
+  static bool HaveInconsistentPasswords(
+      const std::unique_ptr<PasswordForm>& lhs,
+      const std::unique_ptr<PasswordForm>& rhs) {
+    return lhs->password_value != rhs->password_value;
+  }
+};
 
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
@@ -110,59 +126,63 @@ void RecordMetrics(const MethodName& method_name,
 }
 
 // Records the metrics of a pair of MethodName calls to the main and
-// the shadow backends once both calls are finished.
+// the shadow backends once both calls are finished. MethodName() is expected to
+// return an std::vector<ApiMethodImpl::ResultType>. ApiMethodImpl classes need
+// to provide 4 methods:
+// - GetElements(): returns the elements to be compared
+// - Clone(): Returns a copy of an element, used to cache the main results.
+// - IsLess(): to compare elements.
+// - HaveInconsistentPasswords(): Whether elements have inconsistent passwords
 //
 // The class is ref-counted because it is equally owned by the two parallel
 // method calls : it must outlive the first returning one and shall  be
 // destroyed after the second one returns.
+template <typename ApiMethodImpl>
 class ShadowTrafficMetricsRecorder
-    : public base::RefCounted<ShadowTrafficMetricsRecorder> {
+    : public base::RefCounted<ShadowTrafficMetricsRecorder<ApiMethodImpl>> {
  public:
   explicit ShadowTrafficMetricsRecorder(MethodName method_name)
       : method_name_(std::move(method_name)) {}
 
   // Returns the unchanged |result| so it can be passed to the main handler.
-  LoginsResultOrError RecordMainLoginsResultOrError(
-      LoginsResultOrError logins_or_error) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
-      return logins_or_error;
+  typename ApiMethodImpl::ResultType RecordMainResult(
+      typename ApiMethodImpl::ResultType result) {
+    if (auto* elements = ApiMethodImpl::GetElements(result)) {
+      if (!first_result_) {
+        first_result_ =
+            absl::make_optional<typename ApiMethodImpl::ElementsType>();
+        first_result_->reserve(elements->size());
+        for (const auto& e : *elements)
+          first_result_->push_back(ApiMethodImpl::Clone(e));
+      } else {
+        RecordMetrics(method_name_, /*main_result=*/*elements,
+                      /*shadow_result=*/*first_result_, &ApiMethodImpl::IsLess,
+                      &ApiMethodImpl::HaveInconsistentPasswords);
+      }
     }
 
-    LoginsResult logins = std::move(absl::get<LoginsResult>(logins_or_error));
-    if (!first_result_) {
-      first_result_ = absl::make_optional<LoginsResult>();
-      first_result_->reserve(logins.size());
-      for (const auto& login : logins)
-        first_result_->push_back(std::make_unique<PasswordForm>(*login));
-    } else {
-      RecordMetrics(method_name_, /*main_result=*/logins,
-                    /*shadow_result=*/*first_result_, &IsPasswordUniquePtrLess,
-                    &IsPasswordUniquePtrWithSameKeyInconsistent);
-    }
-
-    return logins;
+    return result;
   }
 
-  void RecordShadowLoginsResultOrError(LoginsResultOrError logins_or_error) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
-      return;
+  void RecordShadowResult(typename ApiMethodImpl::ResultType result) {
+    if (auto* elements = ApiMethodImpl::GetElements(result)) {
+      if (!first_result_) {
+        first_result_ = std::move(*elements);
+      } else {
+        RecordMetrics(method_name_,
+                      /*main_result=*/*first_result_,
+                      /*shadow_result=*/*elements, &ApiMethodImpl::IsLess,
+                      &ApiMethodImpl::HaveInconsistentPasswords);
+      }
     }
-
-    LoginsResult logins = std::move(absl::get<LoginsResult>(logins_or_error));
-    if (!first_result_)
-      first_result_ = std::move(logins);
-    else
-      RecordMetrics(method_name_, /*main_result=*/*first_result_,
-                    /*shadow_result=*/logins, &IsPasswordUniquePtrLess,
-                    &IsPasswordUniquePtrWithSameKeyInconsistent);
   }
 
  private:
-  friend class RefCounted<ShadowTrafficMetricsRecorder>;
+  friend class base::RefCounted<ShadowTrafficMetricsRecorder<ApiMethodImpl>>;
   ~ShadowTrafficMetricsRecorder() = default;
 
   // Stores the result of the backend that returns first.
-  absl::optional<LoginsResult> first_result_;
+  absl::optional<typename ApiMethodImpl::ElementsType> first_result_;
   const MethodName method_name_;
 };
 
@@ -207,20 +227,23 @@ void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
-  scoped_refptr<ShadowTrafficMetricsRecorder> handler =
-      base::MakeRefCounted<ShadowTrafficMetricsRecorder>(
+  scoped_refptr<ShadowTrafficMetricsRecorder<LoginsResultOrErrorImpl>> handler =
+      base::MakeRefCounted<
+          ShadowTrafficMetricsRecorder<LoginsResultOrErrorImpl>>(
           MethodName("GetAllLoginsAsync"));
   main_backend_->GetAllLoginsAsync(
-      base::BindOnce(
-          &ShadowTrafficMetricsRecorder::RecordMainLoginsResultOrError, handler)
+      base::BindOnce(&ShadowTrafficMetricsRecorder<
+                         LoginsResultOrErrorImpl>::RecordMainResult,
+                     handler)
           .Then(std::move(callback)));
 
   if (is_syncing_passwords_callback_.Run() &&
       base::FeatureList::IsEnabled(
           features::kUnifiedPasswordManagerShadowAndroid)) {
-    shadow_backend_->GetAllLoginsAsync(base::BindOnce(
-        &ShadowTrafficMetricsRecorder::RecordShadowLoginsResultOrError,
-        handler));
+    shadow_backend_->GetAllLoginsAsync(
+        base::BindOnce(&ShadowTrafficMetricsRecorder<
+                           LoginsResultOrErrorImpl>::RecordShadowResult,
+                       handler));
   }
 }
 
