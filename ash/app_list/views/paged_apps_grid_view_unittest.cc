@@ -167,20 +167,20 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   // Test with a display in landscape mode with more height. This should have
   // more rows.
   UpdateDisplay("1400x1100");
-  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 
   // Test with a display in portrait mode.
   UpdateDisplay("700x1100");
-  EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 
   // Test with a display in portrait mode with more height. This should have
   // more rows.
   UpdateDisplay("700x1400");
-  EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(6, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }

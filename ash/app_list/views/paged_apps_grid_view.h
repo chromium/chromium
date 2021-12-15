@@ -150,11 +150,22 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Gets the PaginationModel used for the grid view.
   PaginationModel* pagination_model() { return &pagination_model_; }
 
-  int first_page_offset() const { return first_page_offset_; }
-  void set_first_page_offset(int offset) { first_page_offset_ = offset; }
+  // Sets `first_page_offset_` and `shown_under_recent_apps_`, which are used to
+  // calculate the first apps grid page layout (number of rows and the padding
+  // between them).
+  // `offset` is reserved space for continue section in the apps
+  // container (which is shown above the grid on the first app list page with
+  // productivity launcher).
+  // `shown_under_recent_apps` indicates whether the
+  // continue section contains list of recent apps. If this is the case, the
+  // apps grid will add additional padding above the apps grid (i.e. treat the
+  // recent apps row as additional row of apps).
+  // Returns whether the first page configuration changed.
+  bool ConfigureFirstPagePadding(int offset, bool shown_under_recent_apps);
 
   // Calculates the maximum number of rows on the first page. Relies on tile
-  // size, `first_page_offset_`, and the bounds of the apps grid.
+  // size, `first_page_offset_`, `shown_under_recent_apps_` and the bounds of
+  // the apps grid.
   int CalculateFirstPageMaxRows(int available_height, int preferred_rows);
 
   // Calculates the maximum number of rows. Relies on tile size and the bounds
@@ -168,6 +179,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   friend class test::AppsGridViewTest;
 
   class FadeoutLayerDelegate;
+
+  // Gets the leading padding for app list item grid on the first app list page.
+  // Includes the space reserved for the continue seaction of the app list UI,
+  // and additional vertical tile padding before the first row of apps when
+  // needed (i.e. if the grid is shown under a row of recent apps).
+  int GetTotalTopPaddingOnFirstPage() const;
 
   // Returns the size reserved for a single apps grid page. May not match the
   // tile grid size when the first page selected, as the first page may have
@@ -296,6 +313,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // The amount that tiles need to be offset on the y-axis to avoid overlap
   // with the recent apps and continue section.
   int first_page_offset_ = 0;
+
+  // Whether the apps grid is shown underneath recent apps container. If this is
+  // the case, layout will add additional vertical tile padding before the first
+  // apps grid row on the first page.
+  bool shown_under_recent_apps_ = false;
 
   // Vertical tile spacing between the tile views on the first page.
   int first_page_vertical_tile_padding_ = 0;

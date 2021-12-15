@@ -311,6 +311,10 @@ class AppsContainerView::ContinueContainer : public views::View {
         ColorProvider::ContentLayerType::kSeparatorColor));
   }
 
+  bool HasRecentApps() const {
+    return recent_apps_ && recent_apps_->GetVisible();
+  }
+
   ContinueSectionView* continue_section() { return continue_section_; }
   RecentAppsView* recent_apps() { return recent_apps_; }
   views::View* separator() { return separator_; }
@@ -834,7 +838,7 @@ void AppsContainerView::Layout() {
   // added margins.
   grid_rect.Inset(-grid_insets);
   scrollable_container_->SetBoundsRect(grid_rect);
-  bool first_page_offset_changed = false;
+  bool first_page_config_changed = false;
   if (features::IsProductivityLauncherEnabled()) {
     const int continue_container_height =
         continue_container_->GetPreferredSize().height();
@@ -842,9 +846,8 @@ void AppsContainerView::Layout() {
         gfx::Rect(0, 0, grid_rect.width(), continue_container_height));
     // Setting this offset prevents the app items in the grid from overlapping
     // with the continue section.
-    first_page_offset_changed =
-        continue_container_height != apps_grid_view_->first_page_offset();
-    apps_grid_view_->set_first_page_offset(continue_container_height);
+    first_page_config_changed = apps_grid_view_->ConfigureFirstPagePadding(
+        continue_container_height, continue_container_->HasRecentApps());
   }
 
   // Make sure that UpdateTopLevelGridDimensions() happens after setting the
@@ -855,7 +858,7 @@ void AppsContainerView::Layout() {
   const gfx::Rect apps_grid_bounds(grid_rect.size());
   if (apps_grid_view_->bounds() != apps_grid_bounds) {
     apps_grid_view_->SetBoundsRect(apps_grid_bounds);
-  } else if (first_page_offset_changed) {
+  } else if (first_page_config_changed) {
     // Apps grid layout depends on the continue container bounds, so explicitly
     // call layout to ensure apps grid view gets laid out even if its bounds do
     // not change.

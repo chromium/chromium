@@ -639,7 +639,7 @@ int PagedAppsGridView::GetMaxRowsInPage(int page) const {
 }
 
 gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
-  const int y_offset = page == 0 ? first_page_offset_ : 0;
+  const int y_offset = page == 0 ? GetTotalTopPaddingOnFirstPage() : 0;
   if (!cardified_state_)
     return gfx::Vector2d(0, y_offset);
   const gfx::Rect bounds = GetContentsBounds();
@@ -1235,8 +1235,9 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
       (GetContentsBounds().width() - background_card_size.width()) / 2 +
       extra_padding_for_cardified_state;
 
-  int y_offset = std::max(new_page_index == 0 ? first_page_offset_ : 0,
-                          GetFadeoutMaskHeight());
+  int y_offset =
+      std::max(new_page_index == 0 ? GetTotalTopPaddingOnFirstPage() : 0,
+               GetFadeoutMaskHeight());
   // The vertical padding should account for the fadeout mask.
   const int vertical_padding =
       y_offset + (GetContentsBounds().height() - y_offset -
@@ -1341,15 +1342,51 @@ void PagedAppsGridView::UpdateTilePadding() {
 
   // NOTE: The padding on the first page can be different than other pages
   // depending on `first_page_offset_` and `max_rows_on_first_page_`.
-  first_page_vertical_tile_padding_ =
-      calculate_tile_padding(content_size.height(), max_rows_on_first_page_,
-                             tile_size.height(), first_page_offset_);
+  // When shown under recent apps, assume an extra row when calculating padding,
+  // as an extra leading tile padding will get added above the first row of apps
+  // (as a margin to recent apps container).
+  // Adjust `first_page_offset_` by removing space required for recent apps
+  // (assumes that recent apps tile size matches the apps grid tile size, and
+  // that recent apps container has a single row of apps) so padding is
+  // calculated assuming recent apps container is part of the apps grid.
+  if (shown_under_recent_apps_) {
+    first_page_vertical_tile_padding_ = calculate_tile_padding(
+        content_size.height(), max_rows_on_first_page_ + 1, tile_size.height(),
+        std::max(0, first_page_offset_ - tile_size.height()));
+  } else {
+    first_page_vertical_tile_padding_ =
+        calculate_tile_padding(content_size.height(), max_rows_on_first_page_,
+                               tile_size.height(), first_page_offset_);
+  }
+}
+
+bool PagedAppsGridView::ConfigureFirstPagePadding(
+    int offset,
+    bool shown_under_recent_apps) {
+  if (offset == first_page_offset_ &&
+      shown_under_recent_apps == shown_under_recent_apps_) {
+    return false;
+  }
+  first_page_offset_ = offset;
+  shown_under_recent_apps_ = shown_under_recent_apps;
+  return true;
 }
 
 int PagedAppsGridView::CalculateFirstPageMaxRows(int available_height,
                                                  int preferred_rows) {
-  return CalculateMaxRows(available_height - first_page_offset_,
-                          preferred_rows);
+  // When shown under recent apps, calculate max rows as if recent apps
+  // container is part of the grid, i.e. calculate number of rows as if grid
+  // allows for an extra row of apps.
+  const int space_for_recent_apps =
+      shown_under_recent_apps_ ? app_list_config()->grid_tile_height() : 0;
+  const int max_rows = CalculateMaxRows(
+      available_height -
+          std::max(0, first_page_offset_ - space_for_recent_apps),
+      preferred_rows);
+  // If `shown_under_recent_apps_`, subtract a row from the result of
+  // `CalculateMaxRows()` which was calculated assuming there's an extra row of
+  // apps added for recent apps.
+  return shown_under_recent_apps_ ? std::max(0, max_rows - 1) : max_rows;
 }
 
 int PagedAppsGridView::CalculateMaxRows(int available_height,
@@ -1381,6 +1418,14 @@ int PagedAppsGridView::CalculateMaxRows(int available_height,
                   (tile_height + kMaxVerticalPaddingBetweenTiles));
   }
   return final_row_count;
+}
+
+int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {
+  // Add the page offset that accommodates continue section content, and if
+  // shown under recent apps, additional tile padding above the first row of
+  // apps.
+  return first_page_offset_ +
+         (shown_under_recent_apps_ ? 2 * first_page_vertical_tile_padding_ : 0);
 }
 
 }  // namespace ash
