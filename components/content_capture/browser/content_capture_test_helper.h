@@ -150,6 +150,12 @@ class ContentCaptureTestHelper {
   ContentCaptureData test_data_update_;
 };
 
+void VerifySession(const ContentCaptureSession& expected,
+                   const ContentCaptureSession& result);
+
+ContentCaptureFrame GetExpectedTestData(const ContentCaptureData& data,
+                                        int64_t expected_id);
+
 }  // namespace content_capture
 
 #endif  // COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_TEST_HELPER_H_

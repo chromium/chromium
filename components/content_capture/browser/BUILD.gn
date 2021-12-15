@@ -31,7 +31,10 @@ source_set("test_support") {
     "content_capture_test_helper.h",
   ]
 
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//testing/gtest",
+  ]
 }
 
 source_set("unit_tests") {

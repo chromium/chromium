@@ -4,6 +4,8 @@
 
 #include "components/content_capture/browser/content_capture_test_helper.h"
 
+#include "testing/gtest/include/gtest/gtest.h"
+
 namespace content_capture {
 
 FakeContentCaptureSender::FakeContentCaptureSender() = default;
@@ -150,6 +152,25 @@ void ContentCaptureTestHelper::InitTestData(const std::u16string& data1,
   test_data_update_.value = data1;
   test_data_update_.bounds = gfx::Rect(10, 10);
   test_data_update_.children.push_back(child2);
+}
+
+void VerifySession(const ContentCaptureSession& expected,
+                   const ContentCaptureSession& result) {
+  EXPECT_EQ(expected.size(), result.size());
+  for (size_t i = 0; i < expected.size(); i++) {
+    EXPECT_EQ(expected[i].id, result[i].id);
+    EXPECT_EQ(expected[i].url, result[i].url);
+    EXPECT_EQ(expected[i].bounds, result[i].bounds);
+    EXPECT_TRUE(result[i].children.empty());
+  }
+}
+
+ContentCaptureFrame GetExpectedTestData(const ContentCaptureData& data,
+                                        int64_t expected_id) {
+  ContentCaptureFrame expected(data);
+  // Replaces the id with expected id.
+  expected.id = expected_id;
+  return expected;
 }
 
 }  // namespace content_capture
