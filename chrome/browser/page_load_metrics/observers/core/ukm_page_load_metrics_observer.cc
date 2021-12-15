@@ -1251,6 +1251,11 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   RecordMemoriesMetrics(builder, page_end_reason);
 
   builder.Record(ukm::UkmRecorder::Get());
+
+  // Also log UserInitiated in UserPerceivedPageVisit.
+  ukm::builders::UserPerceivedPageVisit(GetDelegate().GetPageUkmSourceId())
+      .SetUserInitiated(is_user_initiated_navigation)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 absl::optional<int64_t>

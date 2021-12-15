@@ -312,6 +312,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
   }
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> pagevisit_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          ukm::builders::UserPerceivedPageVisit::kEntryName);
+  EXPECT_EQ(1ul, pagevisit_entries.size());
+  for (const auto& kv : pagevisit_entries) {
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        ukm::builders::UserPerceivedPageVisit::kUserInitiatedName, true);
+  }
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, FailedProvisionalLoad) {

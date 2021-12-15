@@ -340,6 +340,16 @@ void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
   if (has_ever_entered_back_forward_cache_) {
     page_load_metrics::RecordPageVisitFinalStatusForTiming(
         timing, GetDelegate(), GetLastUkmSourceIdForBackForwardCacheRestore());
+    bool is_user_initiated_navigation =
+        // All browser initiated page loads are user-initiated.
+        GetDelegate().GetUserInitiatedInfo().browser_initiated ||
+        // Renderer-initiated navigations are user-initiated if there is an
+        // associated input event.
+        GetDelegate().GetUserInitiatedInfo().user_input_event;
+    ukm::builders::UserPerceivedPageVisit(
+        GetLastUkmSourceIdForBackForwardCacheRestore())
+        .SetUserInitiated(is_user_initiated_navigation)
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

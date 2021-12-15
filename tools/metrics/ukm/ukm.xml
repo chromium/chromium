@@ -18650,6 +18650,13 @@ be describing additional metrics about the same event.
       happens.
     </summary>
   </metric>
+  <metric name="UserInitiated" enum="Boolean">
+    <summary>
+      True if this page visit was initiated by user input. For renderer
+      navigations, only true if the code can trace back to the original input
+      event - there are cases where this known not to be possible.
+    </summary>
+  </metric>
 </event>
 
 <event name="UserSettingsEvent">

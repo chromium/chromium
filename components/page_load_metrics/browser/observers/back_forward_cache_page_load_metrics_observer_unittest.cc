@@ -8,6 +8,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -533,4 +534,63 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsNonCWVPageVisit) {
               result_metrics[1].begin()->first);
     EXPECT_FALSE(result_metrics[1].begin()->second);
   }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::NotUserInitiated();
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
+
+  // Browser initiated; this is always considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::BrowserInitiated();
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(2U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[1].begin()->first);
+  EXPECT_TRUE(result_metrics[1].begin()->second);
+
+  // Renderer initiated, with user input, considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::RenderInitiated(true, true);
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(3U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[2].begin()->first);
+  EXPECT_TRUE(result_metrics[2].begin()->second);
+
+  // Renderer initiated, without user input, not considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::RenderInitiated(false, false);
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(4U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[3].begin()->first);
+  EXPECT_FALSE(result_metrics[3].begin()->second);
 }
