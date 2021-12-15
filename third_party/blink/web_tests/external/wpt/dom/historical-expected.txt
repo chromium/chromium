@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 77 tests; 72 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 78 tests; 73 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Historical DOM features must be removed: DOMConfiguration
 PASS Historical DOM features must be removed: DOMCursor
 FAIL Historical DOM features must be removed: DOMError assert_false: expected false got true
@@ -19,6 +19,7 @@ PASS Historical DOM features must be removed: Notation
 PASS Historical DOM features must be removed: TypeInfo
 PASS Historical DOM features must be removed: UserDataHandler
 PASS Historical DOM features must be removed: RangeException
+PASS Historical DOM features must be removed: SVGPathSegList
 PASS Historical DOM features must be removed: createEntityReference
 FAIL Historical DOM features must be removed: xmlEncoding assert_false: expected false got true
 FAIL Historical DOM features must be removed: xmlStandalone assert_false: expected false got true

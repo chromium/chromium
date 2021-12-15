@@ -13499,6 +13499,13 @@
     ]
    },
    "web-nfc": {
+    "NDEFReader-make-read-only-document-hidden-manual.https.html": [
+     "25cefcbca725ce97cd3ac374b9d1c7c757c2f6b9",
+     [
+      null,
+      {}
+     ]
+    ],
     "NDEFReader-read-document-hidden-manual.https.html": [
      "47c1332713eef2069820a2149a79dd667e6a62ad",
      [
@@ -79777,6 +79784,32 @@
         ],
         {}
        ]
+      ],
+      "grid-item-fragmentation-037.html": [
+       "d5d97394c574b092a5672dc4fa8c1c9013ee0493",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-038.html": [
+       "40008b5dcd645035f207a95b9a71c1c852193ecf",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "ink-overflow-002.html": [
@@ -82448,6 +82481,19 @@
        {}
       ]
      ],
+     "color-contrast-001.html": [
+      "d2fd196a33a338c08cba1445a4e44a8809dad9ad",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "composited-filters-under-opacity.html": [
       "f613748af3ac5bb59c9fa207937ae6207d71062e",
       [
@@ -83047,7 +83093,7 @@
       ]
      ],
      "oklab-001.html": [
-      "295c24c88c1648e1d997f4d551ae63d52e0dfe67",
+      "835a8ca4a91d52322af1d51bf6dae0d6a8968009",
       [
        null,
        [
@@ -83060,7 +83106,7 @@
       ]
      ],
      "oklab-002.html": [
-      "049e403c1d5ca1efe0c87dac1963983f755bf8fc",
+      "4ddf4d9e7e6e07b41a162846d65127a54ec5e0d2",
       [
        null,
        [
@@ -83073,7 +83119,7 @@
       ]
      ],
      "oklab-003.html": [
-      "9da9bbc7f9cdf45eccf9cbd5117868f2072b3dcd",
+      "38c921e31ac0893c14892fc57906e1120653cac0",
       [
        null,
        [
@@ -83086,7 +83132,7 @@
       ]
      ],
      "oklab-004.html": [
-      "d9456d720e967a596523c85c19d3801a674c1c7d",
+      "c403f244f94495543f82899018bdbb89481a2464",
       [
        null,
        [
@@ -83099,7 +83145,7 @@
       ]
      ],
      "oklab-005.html": [
-      "f3d39dfe2466b541947ea7c9ae7ff2bdbd728c8d",
+      "0738d21017b2007bfa7e64cdf22573c2ae5f4974",
       [
        null,
        [
@@ -83112,7 +83158,7 @@
       ]
      ],
      "oklab-006.html": [
-      "9e8845c47db473682141b36a215cb3d4a1d1b003",
+      "2a918ecbda58cf2ee05664a4e53da7809b3ef754",
       [
        null,
        [
@@ -83125,7 +83171,7 @@
       ]
      ],
      "oklab-007.html": [
-      "5580ede5b4a87981b9798bbcf28e75b935a5acf1",
+      "5fdf0ab15b4edadf3abd0e778c04fb8bff0e9b29",
       [
        null,
        [
@@ -83138,7 +83184,7 @@
       ]
      ],
      "oklab-008.html": [
-      "19a165da200b83a391b75f16efc97aa57c1451af",
+      "be8b4ae596c584ba0f17d07962387f40c72d5f1e",
       [
        null,
        [
@@ -83151,7 +83197,7 @@
       ]
      ],
      "oklch-001.html": [
-      "81d187c784ab6732bc4c0e3452504c9089129946",
+      "f32b7fe888b304576790175a0f7e6b5bbe45b354",
       [
        null,
        [
@@ -83164,7 +83210,7 @@
       ]
      ],
      "oklch-002.html": [
-      "64b09b559810282d82455055e1e174491b86801a",
+      "5c456319db6e3ee1c19f0d7db7a579853c65428b",
       [
        null,
        [
@@ -83177,7 +83223,7 @@
       ]
      ],
      "oklch-003.html": [
-      "8d8396309c9f23658a4114a80fb31990f7ad100b",
+      "abfaff1d793fe203fd61f22e9041151b3fb44b0f",
       [
        null,
        [
@@ -83190,7 +83236,7 @@
       ]
      ],
      "oklch-004.html": [
-      "35d9e6af50700caa4216a72ac481c9e521621751",
+      "c5fc4d09c982a170ebc175ad8df778f1824f6641",
       [
        null,
        [
@@ -83203,7 +83249,7 @@
       ]
      ],
      "oklch-005.html": [
-      "4f935bbb9e92ae76d9c087643df92cf3ac640fa0",
+      "0c7623315ce0ff5dc7b2549f042eb50d91a4b895",
       [
        null,
        [
@@ -83216,7 +83262,7 @@
       ]
      ],
      "oklch-006.html": [
-      "95aea6fdbc2ac8b2ef0447509ea1a2c25c1313ff",
+      "dc0193e52d5ee6ea086d3b659290298e2d319149",
       [
        null,
        [
@@ -83229,7 +83275,7 @@
       ]
      ],
      "oklch-007.html": [
-      "1cd9b97ceef99205803513a959231edcadead656",
+      "3ff21b25e51c78abe9c60de3e8c1260c1b4e49fe",
       [
        null,
        [
@@ -83242,7 +83288,7 @@
       ]
      ],
      "oklch-008.html": [
-      "fef6ffa31d81b4137fce7ddeaecd0cc9c513ab5e",
+      "baa7c5c372540977d536abffa29fc8086a4e2f57",
       [
        null,
        [
@@ -83268,7 +83314,7 @@
       ]
      ],
      "predefined-001.html": [
-      "ea8bd693f22dcb80323681da1eebcf936c6ceae5",
+      "dff6bd9a11130b4972d5d283d96fb6bc793f5dd2",
       [
        null,
        [
@@ -83281,7 +83327,7 @@
       ]
      ],
      "predefined-002.html": [
-      "a6f9a1b013421582e0ac4b6a15166c5321316510",
+      "9ed4b392d1ee7a92cb0afea734d741382e8763f4",
       [
        null,
        [
@@ -83294,7 +83340,7 @@
       ]
      ],
      "predefined-005.html": [
-      "99b611c063eb878aadaa1adfa788fc506a52a46c",
+      "02eb39ffffb69a6626492aa8df1be7e72b5db175",
       [
        null,
        [
@@ -83307,7 +83353,7 @@
       ]
      ],
      "predefined-006.html": [
-      "998865e13a7f732933063915a4efb06675a6e497",
+      "bfbccbcb14b6d2c2d0e7b7f7f0b34489e9c374bb",
       [
        null,
        [
@@ -148341,6 +148387,19 @@
         {}
        ]
       ],
+      "block-aspect-ratio-036.html": [
+       "e264646c107822a14794c22ef30de378fcd8f37b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-aspect-ratio-with-margin-collapsing-001.html": [
        "78a0418fe285da58030cdd863460add0533e6af5",
        [
@@ -169861,6 +169920,227 @@
        {}
       ]
      ],
+     "text-emphasis-color-property-001.html": [
+      "347d2df95c4f06a8e10e40509d6710122def6f76",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-color-property-001a.html": [
+      "f4984d9a286dd63e226ef74c41cec55c04490a29",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-color-property-001b.html": [
+      "a2bf1ca7ec2ae1c37cdfd7a582b4f5bd192ad4da",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-color-property-002.html": [
+      "9d6419b3bbd256da41ea97d66187d70b5812f311",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-001a.html": [
+      "ea9589516dc4888f6746e614811c69cafb724d0b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-001b.html": [
+      "d6468cb6c9cd39189b277d344c02e1a6e32be27c",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-001z.html": [
+      "dded6094e35b8b793d648a55be09b44e0bb60b61",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-002a.html": [
+      "f4a47467a155de18f2124008ddf52ce305d4a851",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-002b.html": [
+      "28a14cf4792bbe9aae67438980773da481430df2",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-003a.html": [
+      "2b0684a78d10cbc002d75c392f89fea995205521",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-003b.html": [
+      "a8a6e1f6c1d1c92d8062327be7edf410abf4a010",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-003c.html": [
+      "35589cb8d7b2b3ce4fb4840da19a3fc00f0076e0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-003d.html": [
+      "b02990774e23f3d0f0d95c10ddc5a35d088353b3",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-004a.html": [
+      "e8922e97d2a3ecf55ce752774ef1140b61c4a985",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-004b.html": [
+      "f6ad46dec4261566ee2bb19f501e6dc217a40fc4",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-004c.html": [
+      "d572de3f18b9ba0fe2f4dc49c895304d909e0f66",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-line-height-004d.html": [
+      "3010b9510eb5442c71eb7176a254bf7d8fee12e7",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-line-height-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-emphasis-position-over-left-001.xht": [
       "94a2a8c3db16072b4d9c1de0de6b1a1807c774b9",
       [
@@ -169913,6 +170193,526 @@
        {}
       ]
      ],
+     "text-emphasis-position-property-001.html": [
+      "c6d6c94b4467be165e883344ff1755d28ae9de1f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-001a.html": [
+      "8f7f4025d76022ccc15b711863ab54fa33d197c2",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-001b.html": [
+      "de111ddd1677d0235a0e8f9c45a933967b51418d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-001c.html": [
+      "2b15c1602c4c7034d56f6023a4de0aaafcbf8ee5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-002.html": [
+      "3b4bba33c87dfb80f2e3c959a9d133f735a4ddae",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-002a.html": [
+      "705830656477727dc68c508be9fcd68c0c0de6e0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-002b.html": [
+      "d444e50fc02ae98359457bee80d0a871c53cdaad",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-002c.html": [
+      "ef23120d897d6ed6dd1e1275d3af37fa248846e0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003.html": [
+      "ea43b14eb7216aed9db91bfba78460c8bf6a020b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003a.html": [
+      "5ab81b99eba8e7b6810cb5fb0534ec5155f9d926",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003b.html": [
+      "7737205212e528554b3eadfcb40c19a4a456ade5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003c.html": [
+      "0420d8fe0bc71591b118a5b59b2e77042e6a2985",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003d.html": [
+      "a87b6e83a2227a55fbdf083e32bf58a14045b272",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003e.html": [
+      "69c2ba26a6540414008a7616412ca2f10b74bc64",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003f.html": [
+      "85124d7810b64ad77580ff7d92ce9912a8476591",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-003g.html": [
+      "8de092468aaad3701987d6ff17a55e6278d0ebf3",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004.html": [
+      "dcde40b1e01f5ff65562d0d6fbc10435985933cc",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004a.html": [
+      "cdee90a84b70dba9e1aed57b8dfd20ba863d9600",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004b.html": [
+      "fe6685e2aa6096d0b79c1d1e2597502a161e10f9",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004c.html": [
+      "6771741ca7e3510206eeb113ecbc0b2eea6bc1f4",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004d.html": [
+      "60b326030368784eab83dd734fd4fc97068462d0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004e.html": [
+      "f1c22571f7290bbdd6b773f70de38297945ab2ef",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004f.html": [
+      "0d808df8317c181dd2f4506d5b748a7f05d05041",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-004g.html": [
+      "607455d497c14dfa3a2a5fab4e1b4536cf91d974",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005.html": [
+      "c6578def6cd9f4408ebe8e3332fdf686658ab3ad",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005a.html": [
+      "b67216ff796a6c68074cb4f26498480643b4ac55",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005b.html": [
+      "87f3c674609a3b6c29f647a4e182dcc52bd57313",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005c.html": [
+      "9572d0ef2f71bb58ae6cd8fc8298a316baaed2a7",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005d.html": [
+      "730ffafe41ca21aad7c606bd3f1894047d479d1b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005e.html": [
+      "a359c24be5f6eb902e3edd05fd24318bd8a5a1f7",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005f.html": [
+      "d9cb51a48e1dab3b61d08ac684fc5bf47ec13a84",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-005g.html": [
+      "f6698110d50736a4b44298acd9df6dae68c4f2f6",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006.html": [
+      "d0f018b73fc75b9a209ebae9522191d5d3f67c91",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006a.html": [
+      "c1907197551f588db454303d7f3077092b575712",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006b.html": [
+      "769f8be30e14109ef29a79b9cb510b563b87a218",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006c.html": [
+      "be9a4f0d29efdc88912709f779ee0df306999807",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006d.html": [
+      "c60768aa35868bbd841cffc6ad13f847fc9ad7cc",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006e.html": [
+      "cdc57bad01ef9d4f8fe2ba9ea1c0a3bdb3b12acc",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006f.html": [
+      "103926cb3bb09edae2446cc8c4caa7e84cd241ac",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-property-006g.html": [
+      "1660104a256d11aadbba48b446351d8c1e17ed27",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-property-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-emphasis-position-under-left-001.xht": [
       "84b779b9fcce512961183373e622324257554893",
       [
@@ -169959,6 +170759,175 @@
        [
         [
          "/css/css-text-decor/reference/text-emphasis-position-under-right-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-001.html": [
+      "e208adc8242ddb52a2d816bb57f4e3b14be409a9",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-002.html": [
+      "0048f4fd141815584d11c3c2f4dc2a24011181e5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-003.html": [
+      "cc564df57cea28feeedc82a1b1a9f21c22e5867f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-003a.html": [
+      "313cf0ee17668ab456b57b1393279ea158ae9b30",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-003b.html": [
+      "c90d455126d591bbd5b12b956cd32e6b61d13152",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-004.html": [
+      "6af2210d22d35e7a785e2543577837a25e4d8c1b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-property-004a.html": [
+      "23039ae6ced526c64ac14edcf2e62d13f87c241f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-color-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-001.html": [
+      "03f562bc8db13c7a6ade9724878c937cded47837",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-002.html": [
+      "c43a2a6d11206781c1f6cd1c01eae93786d685e0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-003.html": [
+      "2ac104077d19fda1c12fd616668b7477fce5eb7d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-003a.html": [
+      "6d49877fddf1dd952933cca15feea753b23684de",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-004.html": [
+      "d32dcb55cefc1c605b9d45b5c6823d24d842d500",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-ruby-004a.html": [
+      "75146654054430e2c9921f58211d21895d0bbf0f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-ruby-004-ref.html",
          "=="
         ]
        ],
@@ -170108,6 +171077,513 @@
        {}
       ]
      ],
+     "text-emphasis-style-property-001.html": [
+      "e2bc386afd6b94f5d3732d8093d21d8ab391cee6",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-002.html": [
+      "20162842a84304a4f4c892d94d2ec6f657ba70e5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-003.html": [
+      "4bfcffffa2e0d739c3040593e9d035f041c5474e",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-004.html": [
+      "360b0357c2445905c383c22ce5721634b2ee4961",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-005.html": [
+      "fc8ae4e46135af345f4fc4aef5d8b37733be8046",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-005a.html": [
+      "3ea24ba611a408c05a3a8bfa896bff097dc3ac45",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Cc.html": [
+      "0cb335773140701956d50ec88f7a20a7bea19ed1",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Cf.html": [
+      "9bc696adeb67efec7e108c9594134a60c24668bf",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Cn.html": [
+      "90f583df33a9cd5e0bc258dd91b316c561a3e3a0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Zl.html": [
+      "6884553d26893146b4653487cfdd34be5a95bf86",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Zp.html": [
+      "e46f3f80ef78061682ba63317b4a13c5716c434a",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-010Zs.html": [
+      "f00874cecd25baf6e8a28128c4e0856fbfc34c4b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-011.html": [
+      "91be2c00168969f7dc987d0ef4a374bd63c328f6",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-011a.html": [
+      "1d7b6e31c0f937be232ab9a679b623348e0e47d9",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-011b.html": [
+      "bec775b77349953346ffbe4b902fb2a128513532",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-012.html": [
+      "5e1362f7595521f156e073367749577d579c57d2",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-012a.html": [
+      "83e8d79c8f217d5c6fec6fa40f25ae33c1e43ac6",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-012b.html": [
+      "df71056457be0d642697780c8aa381dedfd64cbc",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-012c.html": [
+      "552b62bf7f37ab9e12e3038eea337d41bbad5a04",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-013.html": [
+      "39d2c6325f8a49afc9d9a147adac2525d83bf94f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-013a.html": [
+      "0ac4b83537066855d5134355d9812e146e3bcc96",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-013b.html": [
+      "25768be05d64e5878cab8e733a6b52c3fa821564",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-014.html": [
+      "2e3c69dd09c7c9efc6237a3f94f291fbc8ed1ba0",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-014-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-014a.html": [
+      "9fa3f14a40e72c1d8cdae8478506705db23c7754",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-014-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-014b.html": [
+      "fd5db557166bb9b3ca0ebf48cc7e92e83cc02a65",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-014-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-015.html": [
+      "9b11e53e8d838bf7fbb36f5d173cd0db048b652b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-015a.html": [
+      "e8b3c73bba3f2ef4efed129a203cb8766134adc6",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-015b.html": [
+      "dcc30c0cf9aefd222704ead2cc4e381115dcf780",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-016.html": [
+      "e8303756753af2e625be614d044ffdab6dc39a32",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-016-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-016a.html": [
+      "eb7be9a602cda6d937e148b10c7cca7df25c86b3",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-016-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-017.html": [
+      "1d778a8af5e7f9ec4b0c5c42274f37b76dbb92e5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-017-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-017a.html": [
+      "8e1b0b2859fc39fbe8db37f61fe442c69f3a53d3",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-017-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-017b.html": [
+      "e6b75fdc883923a2f4e8b24b733577a0ea12aa5d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-017-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-018.html": [
+      "6fe162d67a9ef36092fa9076c1a104a475c76ab8",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-018-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-018a.html": [
+      "44c0cb7bb6fa4b89e532cb0a3ba1abe7152fd4b5",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-018-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-019.html": [
+      "8014ceccb2dc7e0a073229cbb15ada20a894e842",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-019-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-019a.html": [
+      "7e79b41d82266b0a3725c8baf18cb79f9203851f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-019-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-020.html": [
+      "e77c3173d2cd63cac32015ed0be97a3b493b8686",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-style-property-020a.html": [
+      "19a9059e2fa69ef8a61597d633a364fcb3b8f203",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-style-property-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-emphasis-style-shape-001.xht": [
       "dd9b71edc595248209a30dc102a6b998b7953c18",
       [
@@ -170134,19 +171610,233 @@
        {}
       ]
      ],
-     "text-shadow-currentcolor.html": [
-      "6e8bb20df961a7ab1e9dac48757402e1133e67e5",
-      [
-       null,
+     "text-shadow": {
+      "basic-negcoord.html": [
+       "1e29b42f733ff7b2f76f4dd20a34d9a3528cb84d",
        [
+        null,
         [
-         "/css/css-text-decor/reference/text-shadow-currentcolor-ref.html",
-         "=="
-        ]
-       ],
-       {}
+         [
+          "/css/css-text-decor/text-shadow/basic-negcoord-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "basic-opacity.html": [
+       "a8cea6ad0e64d4e2e185d45c9a49262d33e59da0",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/basic-opacity-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "basic.html": [
+       "fc470ea6d0356702f593699cf7019be11bff11d7",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/basic-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "blur.html": [
+       "f6dd3cff8b6678b5aab74281d95272269adfd857",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/blur-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "color-inherit.html": [
+       "abb2cffd0ac24796c06b7225dc94528f7d6efd72",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/color-inherit-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "color-parserorder.html": [
+       "829383bf9cbd0411478fdcbe108bc83b4b6e14ee",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/color-parserorder-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "currentcolor.html": [
+       "0bed94895521c0bdc6ae92cbc234c21806200238",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/currentcolor-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "decorations-multiple-zorder.html": [
+       "22406534b689e1ee810a4ad3eb5e41a86f93e088",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/decorations-multiple-zorder-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dynamic-blur.html": [
+       "3f1f02b37b6476ad16a9e75f1757465b7fc3d7f5",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/dynamic-blur-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "lineoverflow.html": [
+       "050ee6583aaf4343fa57bed63464cb16a5edffae",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/lineoverflow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multiple-noblur.html": [
+       "cf86e4bb71e8e7a730e8aa95df8d1be3022a7fe6",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/multiple-noblur-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overflow-not-scrollable-1.html": [
+       "ca9fc8c4aed0b9bba1e61487397681a1051854ff",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/overflow-not-scrollable-1-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text-decor/text-shadow/overflow-not-scrollable-1-ref2.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overflow-not-scrollable-2.html": [
+       "b53278900cba84585b0302ebf963c4d47647c5a5",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/overflow-not-scrollable-2-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "padding-decoration.html": [
+       "7512f28931db80d070a798e23dbdd519d4d2ce28",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/padding-decoration-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "quirks-decor-noblur.html": [
+       "e5de43d67bab8fc838a02bd6c2215164efc52fb6",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/quirks-decor-noblur-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "standards-decor-noblur.html": [
+       "d5a2f4e0eea6d12e82612684d512240af3b7ea82",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/standards-decor-noblur-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textindent.html": [
+       "4b66f9dcb8916a125bced71bec37d757a5521af5",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/textindent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
-     ],
+     },
      "text-underline-offset-001.html": [
       "88de83a0cfc60b66c09cafb8e4d3dcf1cdcdacb3",
       [
@@ -212214,6 +213904,32 @@
          {}
         ]
        ],
+       "grouping-li-reftest-006.html": [
+        "d6a260bbc055093b4faf3ce09a7bcd444c592de1",
+        [
+         null,
+         [
+          [
+           "/html/semantics/grouping-content/the-li-element/grouping-li-reftest-004-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grouping-li-reftest-007.html": [
+        "8eda7057da08b60ee3b6ddf1aad05adcaa64642a",
+        [
+         null,
+         [
+          [
+           "/html/semantics/grouping-content/the-li-element/grouping-li-reftest-004-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "grouping-li-reftest-display-list-item.html": [
         "ce63cf7c7c043ef80b53a7c1beaade4a15d4a2b0",
         [
@@ -229090,7 +230806,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "318419792c2986c16d805bb8ed68c68192c19d1c",
+      "2fa351446c2601580c525f4ef75b01f2ba2a19c8",
       []
      ],
      "federatedcredential-get.html": [
@@ -238782,7 +240498,7 @@
       []
      ],
      "META.yml": [
-      "287f1f32a77a69afee10c5f548b078f9a8ef0610",
+      "f5030db7cb57a09012f740fe54ae26d466bcef24",
       []
      ],
      "a98rgb-003-ref.html": [
@@ -238837,8 +240553,16 @@
       "048d1730015ba9948cb19040fad877cd0effa459",
       []
      ],
+     "color-mix-basic-001-expected.txt": [
+      "3ec831c4d314ef9ba6df43839779a35784210359",
+      []
+     ],
      "color-mix-basic-001.tentative-expected.txt": [
       "3ec831c4d314ef9ba6df43839779a35784210359",
+      []
+     ],
+     "color-mix-non-srgb-001-expected.txt": [
+      "77ccec0d3adfc6bb9840f529ad5e574792c96cef",
       []
      ],
      "color-mix-non-srgb-001.tentative-expected.txt": [
@@ -238980,6 +240704,14 @@
       ],
       "color-valid-expected.txt": [
        "36e511b3edc2a053f51abfe75da15d6095644022",
+       []
+      ],
+      "relative-color-computed-expected.txt": [
+       "6b9f5f94de3d30775647a10d97273a6246cc7daf",
+       []
+      ],
+      "relative-color-valid-expected.txt": [
+       "feb3805b2a6b0c47c5a2fdc30296d0dbf09c0e9e",
        []
       ],
       "system-color-valid-expected.txt": [
@@ -261924,7 +263656,7 @@
        "a01122900982ce9b7aa2cd71094a1c2a0ba2c976",
        []
       ],
-      "support": {
+      "tools": {
        "generate-segment-break-transformation-rules-tests.py": [
         "fc894161bda1b4e3f5b643b6e668a6d1d0bcc614",
         []
@@ -264208,10 +265940,6 @@
        "e24c86abeb1e3aa8da4d5c69e36d6395b0a6c469",
        []
       ],
-      "text-shadow-currentcolor-ref.html": [
-       "943c750f6f2319729c32514de82089b49ff4140b",
-       []
-      ],
       "text-underline-offset-001-notref.html": [
        "c9aea5de2f0da6a75f6ed89f9475dafdc89f17af",
        []
@@ -264326,7 +266054,231 @@
      "text-decoration-width-initial-expected.txt": [
       "cd582e81b24d0c96c7213f01d9f77df284a2b2b0",
       []
-     ]
+     ],
+     "text-emphasis-color-property-001-ref.html": [
+      "43257f99e9c4c1ba1b2e8984900a30f4d06601fe",
+      []
+     ],
+     "text-emphasis-color-property-002-ref.html": [
+      "345d287395460754bce4b3a750b8ef68e3ced969",
+      []
+     ],
+     "text-emphasis-line-height-001-ref.html": [
+      "6f02e05bdd986c5e064060d9685f93acb5fe8b81",
+      []
+     ],
+     "text-emphasis-line-height-002-ref.html": [
+      "abff3e9e55347e4a476405727fae34e8cb3f2585",
+      []
+     ],
+     "text-emphasis-line-height-003-ref.html": [
+      "d427c76c969714631b89f67c55b57763aa52b5d4",
+      []
+     ],
+     "text-emphasis-line-height-004-ref.html": [
+      "b88ca7c3a35a8e6d2e12e38ef8eef4dccbdf5b9d",
+      []
+     ],
+     "text-emphasis-position-property-001-ref.html": [
+      "1121e1602f4a3973d1fd1d2a6348be90d8d53492",
+      []
+     ],
+     "text-emphasis-position-property-002-ref.html": [
+      "a0371c1f0313fda52d289267cce27c4636c8cd37",
+      []
+     ],
+     "text-emphasis-position-property-003-ref.html": [
+      "9b0ad4d1e98765abd8f632a1104878e4a098987f",
+      []
+     ],
+     "text-emphasis-position-property-004-ref.html": [
+      "b82a758f830632122aefa3eef0d4d3dc0d7364c4",
+      []
+     ],
+     "text-emphasis-position-property-005-ref.html": [
+      "c6a6df1e03e19c886cdb326f1ca9eaf52c022b11",
+      []
+     ],
+     "text-emphasis-position-property-006-ref.html": [
+      "b19d776410cd1ea443a912974bcfdf671a7269fc",
+      []
+     ],
+     "text-emphasis-ruby-001-ref.html": [
+      "6b1d6bd2f0e11f74b0065f39ef4ad0a73a434755",
+      []
+     ],
+     "text-emphasis-ruby-002-ref.html": [
+      "a3ecaf6c69e5bb49b05a49b647f982a90c8644d6",
+      []
+     ],
+     "text-emphasis-ruby-003-ref.html": [
+      "31cb1e6a0d08b9b0eb6c44c922657bd654ad7fa5",
+      []
+     ],
+     "text-emphasis-ruby-004-ref.html": [
+      "22b628d964145295d533013a908454e24862603c",
+      []
+     ],
+     "text-emphasis-style-property-001-ref.html": [
+      "9dc6c897cf4b3c1777c0332dff3ceebfed24346a",
+      []
+     ],
+     "text-emphasis-style-property-002-ref.html": [
+      "10504677c72c2a15a1d5f6c5ac93720d296aa46b",
+      []
+     ],
+     "text-emphasis-style-property-003-ref.html": [
+      "fadc7d2773eaa9979e6b7d732659da7e40ad1ec3",
+      []
+     ],
+     "text-emphasis-style-property-004-ref.html": [
+      "d89ae5a5c8718cf5857bb1e842f782fb31585e53",
+      []
+     ],
+     "text-emphasis-style-property-005-ref.html": [
+      "361591860adc0977f63f823585cb7c6712f8295d",
+      []
+     ],
+     "text-emphasis-style-property-010-ref.html": [
+      "93028d6e7c9e54cb0c0b0ae1ca748dc46839e113",
+      []
+     ],
+     "text-emphasis-style-property-011-ref.html": [
+      "4d601378ede4a9879079b61b52b57dffc797d82e",
+      []
+     ],
+     "text-emphasis-style-property-012-ref.html": [
+      "ba6d4c2e56c4d97ef34b753b257d3f9a20b10a8d",
+      []
+     ],
+     "text-emphasis-style-property-013-ref.html": [
+      "c22aecee515b8136bbb245cb07e092f6166ee42d",
+      []
+     ],
+     "text-emphasis-style-property-014-ref.html": [
+      "c816fd524cad165fac398effd5b8c6d86cef592c",
+      []
+     ],
+     "text-emphasis-style-property-015-ref.html": [
+      "0b0cc8da3740e0f8178cdc452ca41d7a05248c7b",
+      []
+     ],
+     "text-emphasis-style-property-016-ref.html": [
+      "47a6377ca2b465b1b9ecdb2492044431077368d6",
+      []
+     ],
+     "text-emphasis-style-property-017-ref.html": [
+      "b033567cc62bdac679ce7d3214df3fa81e84f4d8",
+      []
+     ],
+     "text-emphasis-style-property-018-ref.html": [
+      "e1a6039701771ddb48d049115688903454e16ba9",
+      []
+     ],
+     "text-emphasis-style-property-019-ref.html": [
+      "ec50cc8b4cce6c75684acd54b2724760b172741a",
+      []
+     ],
+     "text-emphasis-style-property-020-ref.html": [
+      "81a2aedd3539d2994858da0b17ff5f419ae858a5",
+      []
+     ],
+     "text-shadow": {
+      "basic-negcoord-ref.html": [
+       "79c3d996cff4f212d9f9c8ec5818bece45734805",
+       []
+      ],
+      "basic-opacity-ref.html": [
+       "11aa6d5176b8715280447fc107c6a2cf07f3df15",
+       []
+      ],
+      "basic-ref.html": [
+       "26b07d2e290668d252f6088b22d9cc8bc5e1c88e",
+       []
+      ],
+      "blur-notref.html": [
+       "28404095aca46899b30a5bb98c54ed9020b4f954",
+       []
+      ],
+      "color-inherit-ref.html": [
+       "8fa2dafa5e6824fc8e5bb910d9b84a84b2ed33dc",
+       []
+      ],
+      "color-parserorder-ref.html": [
+       "16d53ce0b68d26d9dcf9825c3abda4f1edc6470e",
+       []
+      ],
+      "currentcolor-ref.html": [
+       "943c750f6f2319729c32514de82089b49ff4140b",
+       []
+      ],
+      "decorations-multiple-zorder-ref.html": [
+       "563867391df1310e1a2905a86083d245ccc86e83",
+       []
+      ],
+      "dynamic-blur-ref.html": [
+       "779f4adcf4498d87d677ab26bf6006b0c3889625",
+       []
+      ],
+      "lineoverflow-ref.html": [
+       "07fad32ce7313338b1989d21f5f2c7547ef62d4a",
+       []
+      ],
+      "multiple-noblur-ref.html": [
+       "a5f125e475c4376f42c86fe1ad2b6e252f34df5b",
+       []
+      ],
+      "overflow-not-scrollable-1-ref.html": [
+       "642d10181f25a1d577359567ef7486e5eb44462d",
+       []
+      ],
+      "overflow-not-scrollable-1-ref2.html": [
+       "4ed3a46ec2fe6501648b78fb7b413bebd7d0ae51",
+       []
+      ],
+      "overflow-not-scrollable-2-ref.html": [
+       "4d0e7457f697c3848f4438b5255ffbd03fcec4d0",
+       []
+      ],
+      "padding-decoration-ref.html": [
+       "1cc1f5ec4e34604fe974096c77f6a548551bc263",
+       []
+      ],
+      "quirks-decor-noblur-ref.html": [
+       "9644146226609884b89148be28b35cf6d964e8b1",
+       []
+      ],
+      "standards-decor-noblur-ref.html": [
+       "8a962a41e923c50a6d891bc3f1b9c7bff3bbd180",
+       []
+      ],
+      "textindent-ref.html": [
+       "c3e3315e9b2795a5a5fb8a7e367bb133d6e442fe",
+       []
+      ]
+     },
+     "tools": {
+      "generate-text-emphasis-line-height-tests.py": [
+       "12fb6a3ad850b357808c47a90a818dd73be2de5b",
+       []
+      ],
+      "generate-text-emphasis-position-property-tests.py": [
+       "527959068762f5a7185bf11bdc2536054d2db258",
+       []
+      ],
+      "generate-text-emphasis-ruby-tests.py": [
+       "fdbaec052e4e4bdfdcad1e9fc9731bf26a518509",
+       []
+      ],
+      "generate-text-emphasis-style-property-010-tests.sh": [
+       "0cf60db1b0daff62cc30ab390d0f4cbe6e70edf9",
+       []
+      ],
+      "generate-text-emphasis-style-property-tests.py": [
+       "1b1d6fc16f24b91eef28cd99c428f426cc61c349",
+       []
+      ]
+     }
     },
     "css-transforms": {
      "3dtransform-and-filter-no-perspective-001-ref.html": [
@@ -268224,11 +270176,7 @@
       []
      ],
      "variable-definition-expected.txt": [
-      "38da73a2dbf4d27f39be1573d0b88caf6ba7a978",
-      []
-     ],
-     "variable-empty-name-reserved-expected.txt": [
-      "687535526d578b09eecbc64c3035ca5017390a57",
+      "3cccbb476ae7375e6a089eb8d8d4ebc043745e16",
       []
      ],
      "variable-external-font-face-01-ref.html": [
@@ -272904,10 +274852,6 @@
     },
     "vendor-imports": {
      "mozilla": {
-      "META.yml": [
-       "427ab62baa011151f797d537e646961d7df78630",
-       []
-      ],
       "mozilla-central-reftests": {
        "DIR_METADATA": [
         "97e2659bf8cff713dc731eec03ac942794cc5fd2",
@@ -273839,7 +275783,7 @@
      }
     },
     "historical-expected.txt": [
-     "66cad48a780d6f7db671131c5bb4fe31124d8e78",
+     "e31ca4f3c12693d4faa4a336b46edb3df545a09f",
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
@@ -276670,7 +278614,7 @@
       []
      ],
      "event-timing-test-utils.js": [
-      "70fd66abfbcb22a62c699dba4466f76a539729ed",
+      "32ff2b23c02f9faa4e90b65b5ef4b473a5ecc691",
       []
      ],
      "slow-image.py": [
@@ -295903,11 +297847,7 @@
          ]
         }
        }
-      },
-      "reporterror-cross-realm-method-expected.txt": [
-       "0f9f13adf56a1490fff2995d2c9fa586239b2867",
-       []
-      ]
+      }
      },
      "structured-clone": {
       "structured-clone-battery-of-tests-harness.js": [
@@ -295920,10 +297860,6 @@
       ],
       "structured-clone-battery-of-tests.js": [
        "301cda5e38f3c678f79b60269df2fab22d3c382c",
-       []
-      ],
-      "structured-clone-cross-realm-method-expected.txt": [
-       "3422f26d41ee1fe5a6daf42d2a2e923c6c1aba8a",
        []
       ],
       "structured-clone-expected.txt": [
@@ -305106,7 +307042,7 @@
       []
      ],
      "nfc-mock.js": [
-      "6a0437a7975420bc802b2715a8707bf518092349",
+      "a7ce560a9f9a7c0cc3f725dc9d352c3c76d17c55",
       []
      ],
      "web-bluetooth-test.js": [
@@ -312905,7 +314841,23 @@
       "cc71631ba6fa22b126bf39d399f8db991d74a267",
       []
      ]
-    }
+    },
+    "signal.tentative.https.any-expected.txt": [
+     "47df25ed030045327256f3aceef891c2194fa7b0",
+     []
+    ],
+    "signal.tentative.https.any.serviceworker-expected.txt": [
+     "47df25ed030045327256f3aceef891c2194fa7b0",
+     []
+    ],
+    "signal.tentative.https.any.sharedworker-expected.txt": [
+     "47df25ed030045327256f3aceef891c2194fa7b0",
+     []
+    ],
+    "signal.tentative.https.any.worker-expected.txt": [
+     "47df25ed030045327256f3aceef891c2194fa7b0",
+     []
+    ]
    },
    "web-nfc": {
     "DIR_METADATA": [
@@ -312921,7 +314873,7 @@
      []
     ],
     "README.md": [
-     "15c6534a7be35c478993836d54d451a791619cea",
+     "b51018d68f1fbc91249d2f07ecbbfd2e8f5e0e1c",
      []
     ],
     "resources": {
@@ -338594,77 +340546,277 @@
     },
     "server": {
      "connect": {
-      "connection-succeeds.https.html": [
-       "1326b073879e554e141390dd9c42c12f64681165",
+      "connection-succeeds.https.window.js": [
+       "d78d261338c526bf6e6af44e053321dc8055a01f",
        [
-        null,
+        "bluetooth/server/connect/connection-succeeds.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "garbage-collection-ran-during-success.https.html": [
-       "d9c07b64bc05512ca9e45a69aeba6c8b65c73f0c",
+      "garbage-collection-ran-during-success.https.window.js": [
+       "1a4ad4711edc550038e01ddc942e0f69756d0165",
        [
-        null,
+        "bluetooth/server/connect/garbage-collection-ran-during-success.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "get-same-gatt-server.https.html": [
-       "5e9383851f39a316582d2e672cb5afa0c11b27ab",
+      "get-same-gatt-server.https.window.js": [
+       "a962d9d28afc4fb3623afa63a34c4b0e30cdeae1",
        [
-        null,
+        "bluetooth/server/connect/get-same-gatt-server.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ]
      },
-     "device-same-object.https.html": [
-      "b861040b2366aa98aca067b80218f030cb9c94d0",
+     "device-same-object.https.window.js": [
+      "1c10a34488bfa1a785cc957c95ae9e452b0c16ae",
       [
-       null,
+       "bluetooth/server/device-same-object.https.window.html",
        {
-        "testdriver": true
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-test.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-fake-devices.js"
+         ]
+        ]
        }
       ]
      ],
      "disconnect": {
-      "connect-disconnect-twice.https.html": [
-       "7ed2cb946035c7a8a828b2830c60ded5eca0290f",
+      "connect-disconnect-twice.https.window.js": [
+       "4d832f2ecd84921a79623b519da292ed403b4eff",
        [
-        null,
+        "bluetooth/server/disconnect/connect-disconnect-twice.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "detach-gc.https.html": [
-       "c1863e923227a6f80763e5c374d480a6169b6bf0",
+      "detach-gc.https.window.js": [
+       "7495c9deae62473f1f3ff14bf1f46518b39cfaf5",
        [
-        null,
+        "bluetooth/server/disconnect/detach-gc.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "disconnect-twice-in-a-row.https.html": [
-       "d4d6e2fca782eb4a23c92d9966d6235b19632440",
+      "disconnect-twice-in-a-row.https.window.js": [
+       "6f40bf3bc4eb44950bda2191e80d8de37d0214f5",
        [
-        null,
+        "bluetooth/server/disconnect/disconnect-twice-in-a-row.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "gc-detach.https.html": [
-       "41d2b151d33c6535241299b2cb3e55ffa40cafec",
+      "gc-detach.https.window.js": [
+       "cb0899bbe2f3f07b59f7de00d56cc7f42baeb95b",
        [
-        null,
+        "bluetooth/server/disconnect/gc-detach.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ]
@@ -339086,50 +341238,175 @@
         }
        ]
       ],
-      "service-found.https.html": [
-       "6484b8227d27bc474bdfa7d156d7d3acedd30f3e",
+      "service-found.https.window.js": [
+       "fe700d6ef61021075b81a81a8389591448587998",
        [
-        null,
+        "bluetooth/server/getPrimaryService/service-found.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "two-iframes-from-same-origin.https.html": [
-       "064d8d2e3b4ca216179f912327f019f3f61d02df",
+      "two-iframes-from-same-origin.https.window.js": [
+       "cbb3c19a049337ae17752576ebf420b8595b799b",
        [
-        null,
+        "bluetooth/server/getPrimaryService/two-iframes-from-same-origin.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ]
      },
      "getPrimaryServices": {
-      "blocklisted-services-with-uuid.https.html": [
-       "90d776c77ee3ccc8c265ec82fff80423b9f392ba",
+      "blocklisted-services-with-uuid.https.window.js": [
+       "5d57e9dc9570c4b63b0ebdfe8b621c22c3f3761e",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/blocklisted-services-with-uuid.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "blocklisted-services.https.html": [
-       "df83dfe193fe40b55f37aa0c1e1b4e204c7b340f",
+      "blocklisted-services.https.window.js": [
+       "4dc78bfdd7bf3a015ed777a258ece7d9fc11e9b5",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/blocklisted-services.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "correct-services.https.html": [
-       "9672d50a2bc2291003823c2da1cdcde77f6edbae",
+      "correct-services.https.window.js": [
+       "4debf5dea4ed3cb274c15e8ffde46c5498d27ab4",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/correct-services.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
@@ -339809,30 +342086,105 @@
         }
        ]
       ],
-      "services-found-with-uuid.https.html": [
-       "92ca4ea6a6e583d236381bbaaa97470d40e4be10",
+      "services-found-with-uuid.https.window.js": [
+       "b18bda8247a327ea3bd4c695460fa109e491fa31",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/services-found-with-uuid.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "services-found.https.html": [
-       "d39c69fc7f1fd1d8213367bcfb1f4b7e11e65a4f",
+      "services-found.https.window.js": [
+       "8098e8e8bebb95703b38d437d4eda8b8d2cdad58",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/services-found.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ],
-      "services-not-found.https.html": [
-       "4c78ad19d0ea8a8a3f2b38dc75e0a15f5ed3d083",
+      "services-not-found.https.window.js": [
+       "6dda95ed4307048c2ec9278ffefa89fc39ffa25d",
        [
-        null,
+        "bluetooth/server/getPrimaryServices/services-not-found.https.window.html",
         {
-         "testdriver": true
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testharness.js"
+          ],
+          [
+           "script",
+           "/resources/testharnessreport.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
         }
        ]
       ]
@@ -350739,7 +353091,7 @@
      ]
     ],
     "fedcm.https.html": [
-     "655bff8c2360dfe9a0ccb4e3b77cfdf352ca8e97",
+     "71ff0ab70f49258f5e6d701b8e7034933ae1ae42",
      [
       null,
       {}
@@ -354095,15 +356447,15 @@
        {}
       ]
      ],
-     "color-mix-basic-001.tentative.html": [
-      "9e3b8146a3272900a0f2571f036ad460d19c0be4",
+     "color-mix-basic-001.html": [
+      "38e3504d5e2fced107c3c67f1587ffa26c92f67a",
       [
        null,
        {}
       ]
      ],
-     "color-mix-non-srgb-001.tentative.html": [
-      "045dee02fb678d64c7b3a013b4f81ca69cbb92f3",
+     "color-mix-non-srgb-001.html": [
+      "b38923fe23ee7ec5ba1c6877a15fa6faf74fc3d3",
       [
        null,
        {}
@@ -354228,6 +356580,27 @@
       ],
       "opacity-valid.html": [
        "daa8d8647f17ec48a1c648dfaea48bc8373c20ea",
+       [
+        null,
+        {}
+       ]
+      ],
+      "relative-color-computed.html": [
+       "b7eccdba9f45ae0b8d8abb0e242c20be1873187f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "relative-color-invalid.html": [
+       "c6f19e1e8b911dec234aeb10f3b3f41b38cd12fb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "relative-color-valid.html": [
+       "257939633b2ef8ba530baec37ec45e03f459e9b4",
        [
         null,
         {}
@@ -356120,7 +358493,14 @@
       ]
      ],
      "flexbox-justify-content-wmvert-002.html": [
-      "6dd287e31d362873807126df8702a3e960868f3b",
+      "2aaee48596bbb0a17e0dd9e022d7a60e10670979",
+      [
+       null,
+       {}
+      ]
+     ],
+     "flexbox-justify-content-wmvert-003.html": [
+      "5e5036c5816094fc6e4567ca90fd9b9182865191",
       [
        null,
        {}
@@ -371013,27 +373393,6 @@
         {}
        ]
       ],
-      "text-shadow-computed.html": [
-       "a90738d825f2132bd6236f550f7525157b18e102",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-shadow-invalid.html": [
-       "dfaa4a5b48b9e6b6c668bc1833083b1b2f453ced",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-shadow-valid.html": [
-       "cbf9df547906aaa5095359ad3847123d3756205e",
-       [
-        null,
-        {}
-       ]
-      ],
       "text-underline-position-computed.html": [
        "a1bf54b068bc848a9e253500f692eeff692f4e61",
        [
@@ -371105,6 +373464,31 @@
        {}
       ]
      ],
+     "text-shadow": {
+      "parsing": {
+       "text-shadow-computed.html": [
+        "a90738d825f2132bd6236f550f7525157b18e102",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-shadow-invalid.html": [
+        "dfaa4a5b48b9e6b6c668bc1833083b1b2f453ced",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-shadow-valid.html": [
+        "cbf9df547906aaa5095359ad3847123d3756205e",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "text-underline-offset-computed.html": [
       "26861c1565bcada9d14bb6f045bfcddf39cbdaab",
       [
@@ -382674,7 +385058,7 @@
      ]
     },
     "historical.html": [
-     "0e337c12af78e82b5bf9b3997719636b2105ed25",
+     "155dc89556078e629bfb8392ca49c04536dc3c27",
      [
       null,
       {}
@@ -398716,7 +401100,7 @@
      ]
     ],
     "buffered-and-duration-threshold.html": [
-     "dbc9d92bf04e0a5b40033073b88bad1fc533836a",
+     "4a7a63f59afccf79e14fce3d543078938e7c6dab",
      [
       null,
       {
@@ -398743,7 +401127,7 @@
      ]
     ],
     "click-timing.html": [
-     "84943f9590a9f2df83ee841503878f1e455107aa",
+     "24bad0aedca88c029e0fb1b4be7cb54d65cd7ba2",
      [
       null,
       {
@@ -398770,7 +401154,7 @@
      ]
     ],
     "crossiframe.html": [
-     "7a9ede0f9ae78d6ea28add6fcafc8497d8789b8d",
+     "df4d94f09aef1d569be608546941d1e6b7c874ae",
      [
       null,
       {
@@ -398789,7 +401173,7 @@
      ]
     ],
     "disconnect-target.html": [
-     "6d6770d3188dcb5b23806d1ab03d77e76e4e137f",
+     "04c7c290b67afa6bf3600274553b26cabdc676cc",
      [
       null,
       {
@@ -398816,7 +401200,7 @@
      ]
     ],
     "event-retarget.html": [
-     "29c114f356b51b869b9550830815cb6e68b3c7a5",
+     "2ddc85d566c78b14ba8f1bfa0235a15df35b4e37",
      [
       null,
       {
@@ -398825,7 +401209,7 @@
      ]
     ],
     "first-input-shadow-dom.html": [
-     "66eb6597552fb9ec48a0a733a4d67f22b427f760",
+     "5911dabd54e65f34b04eb40f2e99dd0089047e66",
      [
       null,
       {
@@ -398995,7 +401379,7 @@
      ]
     ],
     "only-observe-firstInput.html": [
-     "54a6036f91adb89c7b6528e40850937d70520b77",
+     "53f96416720332dd821bd803140ecfa06853f92e",
      [
       null,
       {
@@ -399059,7 +401443,7 @@
      ]
     ],
     "programmatic-click-not-observed.html": [
-     "4060d2d00dc1c0210854317bce5bbc5bc25fff57",
+     "049607e04e1b0bcf8c7c982edbe20f6fc9014aed",
      [
       null,
       {
@@ -399078,7 +401462,7 @@
      ]
     ],
     "retrieve-firstInput.html": [
-     "27b17cd18165f975fbbd98e7de07dad71251c1fa",
+     "c4536cb4468dda8e5eff97b34a761e6ef45cb442",
      [
       null,
       {
@@ -504517,6 +506901,13 @@
         null,
         {}
        ]
+      ],
+      "test_style_flush_on_dom_api_with_d_property.html": [
+       "248118443b597f6d84d4e84bd3ba73c114c2fc45",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -515492,7 +517883,7 @@
      ]
     ],
     "signal.tentative.https.any.js": [
-     "c4509de637b81f55a3bc29a75f4b381b93f11b7b",
+     "cbb23df8a0567fcdb4c86ffeea0579fb5f8acb23",
      [
       "web-locks/signal.tentative.https.any.html",
       {
@@ -515679,8 +518070,30 @@
       {}
      ]
     ],
+    "NDEFReader_make-read-only.https.window.js": [
+     "244dd6369fd1bd7088682907dd10968ca827e0f5",
+     [
+      "web-nfc/NDEFReader_make-read-only.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "resources/nfc-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "NDEFReader_scan.https.html": [
-     "281f3db5b7bd56a48ac6eb2cccea814912e07006",
+     "cb35aba20faa63d30ac3b2d95947a4069b4b9733",
      [
       null,
       {}
@@ -515694,7 +518107,7 @@
      ]
     ],
     "NDEFReader_write.https.html": [
-     "35e6dd37299485d914df3e9f0c36d5aed4f10e8b",
+     "8f6cd81de5547c4e1a0d37b746bf6addde983e64",
      [
       null,
       {}
