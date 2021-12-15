@@ -2094,6 +2094,150 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
+    expires_after="2022-07-15">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    An enum status result for attempted delegated compositing (success or
+    failure reason) recorded every drawn frame. Currently only recorded for
+    LaCros delegated compositing.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
+    units="units" expires_after="2022-04-17">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    A count of the number of proposed overlay candidates available for overlay
+    selection. Recorded every time a frame is rendered by the display
+    compositor.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.OverlayQuadMaterial"
+    enum="OverlayQuadMaterial" expires_after="2022-04-17">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    Quad material for current promoted overlay, per frame. Recorded every time a
+    frame is rendered by the display compositor.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.OverlayStrategy"
+    enum="OverlayStrategies" expires_after="2022-05-15">
+  <owner>dcastagna@chromium.org</owner>
+  <owner>hoegsberg@chromium.org</owner>
+  <summary>
+    Overlay strategies used to promote Hardware Overlays, per frame. Recorded
+    every time a frame is rendered by the display compositor.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
+    expires_after="2022-05-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    The time, in milliseconds, since the change in overlay selection. Recorded
+    every time a frame is rendered by the display compositor.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
+    enum="BooleanOverlayDamageRect" expires_after="2022-04-17">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <summary>
+    Any root damage excluding overlay damage in the current frame?
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.RootDamageRect.Underlay"
+    enum="UnderlayDamageRect" expires_after="2022-04-17">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <summary>
+    The root damage type excluding underlay damage in the current frame.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
+    expires_after="2022-07-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    Time spent computing the number of active File Descriptors. This is logged
+    once every 5 minutes as the cost of this computation is estimated to be at
+    least 1ms. Currently only recorded for LaCros delegated compositing.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
+    expires_after="2022-07-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    {FdStat} File Descriptors for the GPU process. This is logged once every 5
+    minutes as the cost of this computation is estimated to be at least 1ms.
+    Currently only recorded for LaCros delegated compositing.
+  </summary>
+  <token key="FdStat">
+    <variant name="NumActive" summary="Current number of active"/>
+    <variant name="NumSoftMax" summary="Maximum number of"/>
+    <variant name="PercentageUsed" summary="Percentage of in use"/>
+  </token>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureDuration" units="ms"
+    expires_after="2021-03-07">
+  <owner>samans@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>viz-team-wat@google.com</owner>
+  <summary>
+    The time it took from when FrameSinkVideoCapturerImpl sent a request for an
+    I420 readback until the result comes back and ReadI420Planes successfully
+    finishes.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureSucceeded"
+    enum="BooleanSuccess" expires_after="2020-12-31">
+  <owner>samans@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>viz-team-wat@google.com</owner>
+  <summary>
+    Whether an I420 readback initiated by FrameSinkVideoCapturerImpl succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
+    expires_after="2022-05-01">
+  <owner>samans@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>viz-team-wat@google.com</owner>
+  <summary>
+    The time it took from when FrameSinkVideoCapturerImpl sent a request for an
+    RGBA readback until the result comes back and ReadRGBAPlane successfully
+    finishes.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureSucceeded"
+    enum="BooleanSuccess" expires_after="2020-12-31">
+  <owner>samans@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>viz-team-wat@google.com</owner>
+  <summary>
+    Whether an RGBA readback initiated by FrameSinkVideoCapturerImpl succeeded.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -777,6 +777,356 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Graphics.PresentationTimestamp.InvalidBeforeSwap" units="ms"
+    expires_after="2022-05-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Presentation timestamp comes from the driver when showing a display frame on
+    screen. These timestamps could be invalid, and be earlier than the swap
+    time. This metric records how much time before the swap-time such invalid
+    timestamps are. If the presentation timestamp is after the swap-time, then
+    this metric is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.PresentationTimestamp.InvalidFromFuture" units="ms"
+    expires_after="2022-01-02">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Presentation timestamp comes from the driver when showing a display frame on
+    screen. These timestamps can sometimes be in the future. This metric records
+    how far in the future these timestamps can be. If the timestamp is not in
+    the future, then this metric is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.PresentationTimestamp.LargePresentationDelta"
+    units="ms" expires_after="2022-01-02">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Measures very large (more than 3 minutes) delay in presenting display
+    frames. Presentation timestamp comes from the driver when showing a display
+    frame on screen. There are times when the presentation can be delayed a long
+    time. This metric reports how often this can happen. This is reported only
+    if the presentation takes 3 minutes or more.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
+    units="%" expires_after="2022-04-17">
+  <owner>behdadb@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    The percent dropped frame is calculated for each sliding window of 1 second
+    length and added to a histogram, and then the 95 percentile of that
+    histogram is reported as 95pctPercentDroppedFrames_1sWindow.
+
+    The sliding windows cover the duration of page-load (From start of page-load
+    until user navigates away, or closes the tab/chrome, or when app goes to
+    background). Note that this means that this metric will bias toward tabs
+    that are closed more quickly, and might underreport tabs that remain open
+    for a long duration.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Checkerboarding" units="%"
+    expires_after="2022-05-22">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that were shown with checkerboards during a
+    particular sequence of frames (e.g. during scroll, animation, etc.). Note
+    that this is only recorded for sequences of length &gt; 4.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Diagnostic.DiscardedDependentCount"
+    units="dependent reporters" expires_after="2022-04-17">
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>
+    Diagnostic metric to measure how many dependent reporters have been
+    discarded.
+
+    The reporters might be dependant on another reporter (when having partial
+    updates) but if the number of dependents go over a limit we would discard
+    them earlier. This metric count how many of such reporters been discarded
+    earlier than expected as a result of outstanding number of dependent
+    reporters. The metric will be reported at the end of each frame if there has
+    been any discarded dependent reporters.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Frames"
+    units="vsyncs" expires_after="2021-09-01">
+  <obsolete>
+    Removed 2021-11-29.
+  </obsolete>
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time"
+    units="ms" expires_after="2021-09-01">
+  <obsolete>
+    Removed 2021-11-29.
+  </obsolete>
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Frames"
+    units="vsyncs" expires_after="2022-11-29">
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>
+    Diagnostic metric to measure how long after scroll-start a frame is dropped.
+
+    For every frame dropped during a scroll, this metric reports how long after
+    scroll started the frame dropped (in number of vsyncs).
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time"
+    units="ms" expires_after="2022-11-29">
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>
+    Diagnostic metric to measure how long after scroll-start a frame is dropped.
+
+    For every frame dropped during a scroll, this metric reports how long after
+    scroll started the frame dropped (in milliseconds).
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration"
+    units="microseconds" expires_after="2021-09-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>
+    Diagnostic metric to track how long it takes to read the smoothness data
+    from shared memory.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess"
+    units="boolean" expires_after="2021-09-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <summary>
+    Diagnostic metric to track how often reading the smoothness data for UKM
+    from the shared memory (using atomic memcpy) fails (or succeeds).
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.FrameSequenceLength" units="count"
+    expires_after="2021-08-15">
+  <obsolete>
+    Removed 2021-07-09.
+  </obsolete>
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Counts the number of frames expected during a particular sequence of frames
+    (e.g. during scroll, animation, etc.).
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2022-06-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of janks for a particular sequence of frames (e.g. during
+    scroll, animation, etc.). This is reported in various sub-metrics with
+    suffixes describing the type of the sequence (e.g. TouchScroll etc.).
+
+    Jank is measured by tracking the number of abrupt increases in frame
+    presentation interval, divided by the total number of frames expected to be
+    produced and displayed. The lower this number is, the less the smoothness
+    varies over time.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Jank.All{Type}" units="%"
+    expires_after="2022-06-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of janks for a particular frame sequence. {Type}
+
+    Jank is measured by tracking the number of abrupt increases in frame
+    presentation interval, divided by the total number of frames expected to be
+    produced and displayed. The lower this number is, the less the smoothness
+    varies over time.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+  <token key="Type">
+    <variant name="Animations"
+        summary="This metric aggregates data reported from all types of
+                 animations (e.g. comositor-driven animations, main-thread
+                 driven animations, and raf-driven animations, etc.)."/>
+    <variant name="Interactions"
+        summary="This metric aggregates data reported for all supported
+                 combinations of interaction types (e.g. scrolling, pinching,
+                 etc.) and input device types (e.g. touchscreen, touchpad,
+                 mousewheel, etc.)."/>
+    <variant name="Sequences"
+        summary="This metric aggregates data from all animations and all
+                 interactions."/>
+  </token>
+</histogram>
+
+<histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
+    units="%" expires_after="2022-06-12">
+  <owner>behdadb@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for in a 1 second sliding window.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.MaxStale" units="ms"
+    expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the maximum staleness value for all presentations for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    Typically, a frame presentation is expected to last at least one vsync
+    cycle, plus any number of additional vsync cycles if no updates are expected
+    duration that time. If the presentation interval is prolonged due to reasons
+    other than listed above, then that prolonged portion will be considered
+    staleness for that frame.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames" units="%"
+    expires_after="2022-09-30">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a particular sequence of frames
+    (e.g. during scroll, animation, etc.). This is reported in various
+    sub-metrics with suffixes describing the type of the sequence (e.g.
+    TouchScroll etc.).
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames.AllAnimations"
+    units="%" expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>ericrk@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a particular sequence of frames for
+    all animations. This metric is reported for all animations (e.g.
+    comositor-driven animations, main-thread driven animations, and raf-driven
+    animations).
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames.AllInteractions"
+    units="%" expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>ericrk@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a particular sequence of frames
+    where a user-input (e.g. scroll, pinch) is active. This metric is reported
+    for all sources of user-input (i.e. both touchscreen and
+    touchpad/mouse-wheel).
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames.AllSequences"
+    units="%" expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>ericrk@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a particular sequence of frames.
+    This metric is reported for all animations and all interactions.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.PercentDroppedFrames2.AllAnimations"
     units="%" expires_after="2022-09-10">
   <owner>sadrul@chromium.org</owner>
@@ -844,6 +1194,202 @@ chromium-metrics-reviews@google.com.
 
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllSequences metric.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"
+    units="%" expires_after="2022-09-30">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations"
+    units="%" expires_after="2022-09-30">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames for all animations. This metric is reported for all
+    animations (e.g. comositor-driven animations, main-thread driven animations,
+    and raf-driven animations).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions"
+    units="%" expires_after="2022-09-30">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames where a user-input (e.g. scroll, pinch) is active. This
+    metric is reported for all sources of user-input (i.e. both touchscreen and
+    touchpad/mouse-wheel).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences"
+    units="%" expires_after="2022-09-30">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames. This metric is reported for all animations and all
+    interactions.
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow"
+    units="%" expires_after="2022-04-17">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the 95th percentile of dropped frames percent of a sliding window of
+    1 second. The metric is reported once per page-load when the page closes. If
+    there are fewer than 20 sliding windows for calculating 95th percentile, the
+    max value will be used instead of 95th percentile.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PerSession.AveragePercentDroppedFrames"
+    units="%" expires_after="2022-06-05">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames. The metric is reported once per
+    page-load when the page closes.
+
+    AveragePercentDroppedFrames is measured by tracking the number of frames
+    which were not displayed on screen out of the total number of frames
+    expected to be produced and displayed. In other words, the lower this number
+    is, the smoother experience.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow"
+    units="%" expires_after="2022-05-29">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the Max of dropped frames percent of a sliding window of 1 second.
+    The metric is reported once per page-load when the page closes.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.PerSession.TimeMaxPercentDroppedFrames_1sWindow"
+    units="ms" expires_after="2021-11-18">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the time since First Contentful Paint when the sliding window with
+    the max percent of dropped frames occurs, up to 25 seconds. The metric is
+    reported once per page-load when the page closes.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Stale" units="ms"
+    expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the staleness value for each frame presentation for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    Typically, a frame presentation is expected to last at least one vsync
+    cycle, plus any number of additional vsync cycles if no updates are expected
+    duration that time. If the presentation interval is prolonged due to reasons
+    other than listed above, then that prolonged portion will be considered
+    staleness.
+
+    Note that the reporting of this metric occurs as soon as a frame is
+    presented, and is not affected by the length of the frame sequence.
+  </summary>
+</histogram>
+
+<histogram name="GraphicsPipeline.ReceivedBeginFrame" units="microseconds"
+    expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
+  <owner>yiyix@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    The amount of time it takes for the BeginFrame to travel to the Client from
+    the DisplayCompositor.
+
+    Note that this metrics is only recorded on clients on which a
+    high-resolution clock is available
+  </summary>
+</histogram>
+
+<histogram name="GraphicsPipeline.SubmitCompositorFrameAfterBeginFrame"
+    units="microseconds" expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
+  <owner>yiyix@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    How long the client takes to prepare a compositor frame after receiving a
+    BeginFrameArgs.
+
+    Note that this is only recorded on clients on which a high-resolution clock
+    is available.
   </summary>
 </histogram>
 
