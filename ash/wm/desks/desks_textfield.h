@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
-#include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -27,9 +26,6 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   DesksTextfield& operator=(const DesksTextfield&) = delete;
   ~DesksTextfield() override;
 
-  // The border radius on the text field.
-  static constexpr size_t kDesksTextfieldBorderRadius = 4;
-
   // The max number of characters (UTF-16) allowed for the textfield.
   static constexpr size_t kMaxLength = 300;
 
@@ -44,6 +40,7 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void SetBorder(std::unique_ptr<views::Border> b) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -60,15 +57,11 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   void OnViewUnhighlighted() override;
 
  protected:
-  // Owned by this View via `View::border_`. This is just a convenient pointer
-  // to it.
-  WmHighlightItemBorder* border_ptr_;
-
   // Full text without being elided.
   std::u16string full_text_;
 
  private:
-  void UpdateBorderState();
+  void UpdateFocusRingState();
 
   // Returns the background color for this view based on whether it has focus
   // and if the mouse is entering/exiting the view.

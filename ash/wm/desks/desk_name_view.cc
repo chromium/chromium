@@ -20,6 +20,8 @@ namespace ash {
 
 namespace {
 
+constexpr int kDeskNameViewHorizontalPadding = 6;
+
 bool IsDesksBarWidget(const views::Widget* widget) {
   if (!widget)
     return false;
@@ -39,7 +41,10 @@ bool IsDesksBarWidget(const views::Widget* widget) {
 
 }  // namespace
 
-DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {}
+DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {
+  SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(0, kDeskNameViewHorizontalPadding)));
+}
 
 DeskNameView::~DeskNameView() = default;
 

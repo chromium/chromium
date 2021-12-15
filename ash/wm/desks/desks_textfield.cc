@@ -12,25 +12,27 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/native_cursor.h"
 
 namespace ash {
 
 namespace {
 
-constexpr int kDesksTextfieldMinHeight = 24;
-constexpr int kDesksTextfieldHorizontalPadding = 6;
+// The border radius on the text field.
+constexpr int kDesksTextfieldBorderRadius = 4;
+
+constexpr int kDesksTextfieldMinHeight = 16;
+
+// Inset for the focus ring around the textfield.
+constexpr int kFocusRingHaloInset = -2;
 
 }  // namespace
 
 DesksTextfield::DesksTextfield() {
-  auto border = std::make_unique<WmHighlightItemBorder>(
-      kDesksTextfieldBorderRadius,
-      gfx::Insets(0, kDesksTextfieldHorizontalPadding));
-  border_ptr_ = border.get();
-
   views::Builder<DesksTextfield>(this)
-      .SetBorder(std::move(border))
+      .SetBorder(nullptr)
       .SetCursorEnabled(true)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       // TODO(crbug.com/1218186): Remove this, this is in place temporarily to
@@ -38,12 +40,22 @@ DesksTextfield::DesksTextfield() {
       // to add a name so that the screen reader knows what to announce.
       .SetProperty(views::kSkipAccessibilityPaintChecks, true)
       .BuildChildren();
+
+  views::FocusRing::Install(this);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHasFocusPredicate([](views::View* view) {
+    return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
+           view->HasFocus();
+  });
+  focus_ring->SetHaloInset(kFocusRingHaloInset);
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(), kDesksTextfieldBorderRadius));
 }
 
 DesksTextfield::~DesksTextfield() = default;
 
 // static
-constexpr size_t DesksTextfield::kDesksTextfieldBorderRadius;
 constexpr size_t DesksTextfield::kMaxLength;
 
 void DesksTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
@@ -58,7 +70,7 @@ void DesksTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
 
 void DesksTextfield::UpdateViewAppearance() {
   background()->SetNativeControlColor(GetBackgroundColor());
-  UpdateBorderState();
+  UpdateFocusRingState();
 }
 
 gfx::Size DesksTextfield::CalculatePreferredSize() const {
@@ -72,6 +84,12 @@ gfx::Size DesksTextfield::CalculatePreferredSize() const {
   size.Enlarge(insets.width(), insets.height());
   size.SetToMax(gfx::Size(0, kDesksTextfieldMinHeight));
   return size;
+}
+
+void DesksTextfield::SetBorder(std::unique_ptr<views::Border> b) {
+  // `views::Textfield` override of `SetBorder()` removes an installed focus
+  // ring, which we want to keep.
+  views::View::SetBorder(std::move(b));
 }
 
 bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
@@ -108,7 +126,11 @@ void DesksTextfield::OnThemeChanged() {
   const SkColor selection_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
-  UpdateBorderState();
+
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+
+  UpdateFocusRingState();
 }
 
 gfx::NativeCursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
@@ -128,16 +150,17 @@ void DesksTextfield::MaybeCloseHighlightedView() {}
 void DesksTextfield::MaybeSwapHighlightedView(bool right) {}
 
 void DesksTextfield::OnViewHighlighted() {
-  UpdateBorderState();
+  UpdateFocusRingState();
 }
 
 void DesksTextfield::OnViewUnhighlighted() {
-  UpdateBorderState();
+  UpdateFocusRingState();
 }
 
-void DesksTextfield::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted() || HasFocus());
-  SchedulePaint();
+void DesksTextfield::UpdateFocusRingState() {
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  DCHECK(focus_ring);
+  focus_ring->SchedulePaint();
 }
 
 SkColor DesksTextfield::GetBackgroundColor() const {

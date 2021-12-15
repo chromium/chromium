@@ -487,9 +487,16 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
   // Desk preview's width is supposed to be larger than kMinDeskNameViewWidth,
   // but it might be not the truth for tests with extreme abnormal size of
-  // display.
-  const int min_width = std::min(preview_bounds.width(), kMinDeskNameViewWidth);
-  const int max_width = std::max(preview_bounds.width(), kMinDeskNameViewWidth);
+  // display. The preview uses a border to display focus and the name view uses
+  // a focus ring (which does not inset the view), so subtract the focus ring
+  // from the size calculations so that the focus UI is aligned.
+  views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
+  const int focus_ring_length =
+      focus_ring->halo_thickness() - focus_ring->halo_inset();
+  const int min_width = std::min(preview_bounds.width() - focus_ring_length,
+                                 kMinDeskNameViewWidth);
+  const int max_width = std::max(preview_bounds.width() - focus_ring_length,
+                                 kMinDeskNameViewWidth);
   const int text_width =
       base::clamp(desk_name_view_size.width(), min_width, max_width);
   const int desk_name_view_x =
@@ -497,7 +504,7 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   gfx::Rect desk_name_view_bounds{desk_name_view_x,
                                   preview_bounds.bottom() -
                                       GetPreviewBorderInsets().bottom() +
-                                      kLabelPreviewSpacing,
+                                      kLabelPreviewSpacing + focus_ring_length,
                                   text_width, desk_name_view_size.height()};
   desk_name_view_->SetBoundsRect(desk_name_view_bounds);
 

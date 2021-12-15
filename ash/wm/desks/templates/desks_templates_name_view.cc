@@ -42,17 +42,8 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 }  // namespace
 
 DesksTemplatesNameView::DesksTemplatesNameView() {
-  // TODO(richui): We need to shift the alignment of the `name_view_` in the
-  // `DesksTemplatesItemView` so that the text lines up with the other UI
-  // elements. This will be done by refactoring `WmHighlightItemBorder` to
-  // adjust the border, which we update here.
-  auto border = std::make_unique<WmHighlightItemBorder>(
-      DesksTextfield::kDesksTextfieldBorderRadius);
-  border_ptr_ = border.get();
-
   views::Builder<DesksTemplatesNameView>(this)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .SetBorder(std::move(border))
       .BuildChildren();
 
   SetFontList(GetFontList().Derive(kNameFontSizeDeltaDp, gfx::Font::NORMAL,
