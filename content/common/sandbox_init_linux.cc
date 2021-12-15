@@ -20,10 +20,8 @@ bool InitializeSandbox(std::unique_ptr<sandbox::bpf_dsl::Policy> policy,
       std::move(policy), std::move(proc_fd));
 }
 
-#if !defined(OS_NACL_NONSFI)
 std::unique_ptr<sandbox::bpf_dsl::Policy> GetBPFSandboxBaselinePolicy() {
   return sandbox::policy::SandboxSeccompBPF::GetBaselinePolicy();
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace content

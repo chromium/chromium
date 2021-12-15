@@ -59,7 +59,7 @@ CONTENT_EXPORT sandbox::ResultCode StartSandboxedProcess(
     const base::HandlesToInheritVector& handles_to_inherit,
     base::Process* process);
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // Initialize a seccomp-bpf sandbox. |policy| may not be NULL.
 // If an existing layer of sandboxing is present that would prevent access to
@@ -73,7 +73,7 @@ CONTENT_EXPORT bool InitializeSandbox(
 // policy that is derived from the baseline.
 CONTENT_EXPORT std::unique_ptr<sandbox::bpf_dsl::Policy>
 GetBPFSandboxBaselinePolicy();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace content
 

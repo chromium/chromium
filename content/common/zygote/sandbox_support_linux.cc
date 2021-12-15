@@ -7,13 +7,11 @@
 #include "base/pickle.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
-#include "build/build_config.h"
 #include "content/public/common/content_descriptors.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
 namespace content {
 
-#if !defined(OS_NACL_NONSFI)
 int SharedMemoryIPCSupport::MakeSharedMemorySegment(size_t length,
                                                     bool executable) {
   base::Pickle request;
@@ -29,7 +27,6 @@ int SharedMemoryIPCSupport::MakeSharedMemorySegment(size_t length,
     return -1;
   return result_fd;
 }
-#endif
 
 int GetSandboxFD() {
   return kSandboxIPCChannel + base::GlobalDescriptors::kBaseDescriptor;
