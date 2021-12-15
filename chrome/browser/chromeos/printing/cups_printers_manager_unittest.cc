@@ -391,7 +391,11 @@ class CupsPrintersManagerTest : public testing::Test,
     manager_->AddObserver(this);
   }
 
-  ~CupsPrintersManagerTest() override {}
+  ~CupsPrintersManagerTest() override {
+    // Fast forwarding so that delayed tasks like |SendScannerCountToUMA| will
+    // run and not leak memory in unused callbacks.
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
 
   // CupsPrintersManager::Observer implementation
   void OnPrintersChanged(PrinterClass printer_class,
@@ -431,7 +435,8 @@ class CupsPrintersManagerTest : public testing::Test,
   // See
   // //docs/threading_and_tasks_testing.md#mainthreadtype-trait
   content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
