@@ -28,6 +28,117 @@ chromium-metrics-reviews@google.com.
                uniques"/>
 </variants>
 
+<variants name="SwitchAccessMenuAction">
+  <variant name="ActionRecorder"
+      summary="Switch Access Menu Action: Action Recorder"/>
+  <variant name="Copy" summary="Switch Access Menu Action: Copy"/>
+  <variant name="Cut" summary="Switch Access Menu Action: Cut"/>
+  <variant name="Decrement" summary="Switch Access Menu Action: Decrement"/>
+  <variant name="Dictation" summary="Switch Access Menu Action: Dictation"/>
+  <variant name="DisplayBrightnessDown"
+      summary="Switch Access Menu Action: Display Brightness Down"/>
+  <variant name="DisplayBrightnessUp"
+      summary="Switch Access Menu Action: Display Brightness Up"/>
+  <variant name="DisplayMenu"
+      summary="Switch Access Menu Action: Display Menu"/>
+  <variant name="DisplayMirror"
+      summary="Switch Access Menu Action: Display Mirror"/>
+  <variant name="DisplayRotate"
+      summary="Switch Access Menu Action: Display Rotate"/>
+  <variant name="DisplayZoomIn"
+      summary="Switch Access Menu Action: Display Zoom In"/>
+  <variant name="DisplayZoomOut"
+      summary="Switch Access Menu Action: Display Zoom Out"/>
+  <variant name="EndTextSelection"
+      summary="Switch Access Menu Action: End Text Selection"/>
+  <variant name="ExecuteMacro"
+      summary="Switch Access Menu Action: Execute Macro"/>
+  <variant name="Increment" summary="Switch Access Menu Action: Increment"/>
+  <variant name="ItemScan" summary="Switch Access Menu Action: Item Scan"/>
+  <variant name="JumpToBeginningOfText"
+      summary="Switch Access Menu Action: Jump To Beginning Of Text"/>
+  <variant name="JumpToEndOfText"
+      summary="Switch Access Menu Action: Jump To End Of Text"/>
+  <variant name="Keyboard" summary="Switch Access Menu Action: Keyboard"/>
+  <variant name="LeaveGroup" summary="Switch Access Menu Action: Leave Group"/>
+  <variant name="LeftClick" summary="Switch Access Menu Action: Left Click"/>
+  <variant name="MediaFastforward"
+      summary="Switch Access Menu Action: Media Fastforward"/>
+  <variant name="MediaMenu" summary="Switch Access Menu Action: Media Menu"/>
+  <variant name="MediaMute" summary="Switch Access Menu Action: Media Mute"/>
+  <variant name="MediaPlayPause"
+      summary="Switch Access Menu Action: Media Play Pause"/>
+  <variant name="MediaRewind"
+      summary="Switch Access Menu Action: Media Rewind"/>
+  <variant name="MediaVolumeDown"
+      summary="Switch Access Menu Action: Media Volume Down"/>
+  <variant name="MediaVolumeUp"
+      summary="Switch Access Menu Action: Media Volume Up"/>
+  <variant name="MoveBackwardOneCharOfText"
+      summary="Switch Access Menu Action: Move Backward One Char Of Text"/>
+  <variant name="MoveBackwardOneWordOfText"
+      summary="Switch Access Menu Action: Move Backward One Word Of Text"/>
+  <variant name="MoveCursor" summary="Switch Access Menu Action: Move Cursor"/>
+  <variant name="MoveDownOneLineOfText"
+      summary="Switch Access Menu Action: Move Down One Line Of Text"/>
+  <variant name="MoveForwardOneCharOfText"
+      summary="Switch Access Menu Action: Move Forward One Char Of Text"/>
+  <variant name="MoveForwardOneWordOfText"
+      summary="Switch Access Menu Action: Move Forward One Word Of Text"/>
+  <variant name="MoveUpOneLineOfText"
+      summary="Switch Access Menu Action: Move Up One Line Of Text"/>
+  <variant name="Paste" summary="Switch Access Menu Action: Paste"/>
+  <variant name="PointScan" summary="Switch Access Menu Action: Point Scan"/>
+  <variant name="RightClick" summary="Switch Access Menu Action: Right Click"/>
+  <variant name="ScrollDown" summary="Switch Access Menu Action: Scroll Down"/>
+  <variant name="ScrollLeft" summary="Switch Access Menu Action: Scroll Left"/>
+  <variant name="ScrollRight"
+      summary="Switch Access Menu Action: Scroll Right"/>
+  <variant name="ScrollUp" summary="Switch Access Menu Action: Scroll Up"/>
+  <variant name="Select" summary="Switch Access Menu Action: Select"/>
+  <variant name="Settings" summary="Switch Access Menu Action: Settings"/>
+  <variant name="Shortcuts" summary="Switch Access Menu Action: Shortcuts"/>
+  <variant name="StartRecording"
+      summary="Switch Access Menu Action: Start Recording"/>
+  <variant name="StartTextSelection"
+      summary="Switch Access Menu Action: Start Text Selection"/>
+  <variant name="StopRecording"
+      summary="Switch Access Menu Action: Stop Recording"/>
+  <variant name="SystemDiagnostics"
+      summary="Switch Access Menu Action: System Diagnostics"/>
+  <variant name="SystemHelp" summary="Switch Access Menu Action: System Help"/>
+  <variant name="SystemLauncher"
+      summary="Switch Access Menu Action: System Launcher"/>
+  <variant name="SystemMenu" summary="Switch Access Menu Action: System Menu"/>
+  <variant name="SystemScreenshot"
+      summary="Switch Access Menu Action: System Screenshot"/>
+  <variant name="SystemStatusBar"
+      summary="Switch Access Menu Action: System Status Bar"/>
+  <variant name="SystemTaskManager"
+      summary="Switch Access Menu Action: System Task Manager"/>
+  <variant name="UserLock" summary="Switch Access Menu Action: User Lock"/>
+  <variant name="UserMenu" summary="Switch Access Menu Action: User Menu"/>
+  <variant name="UserNextUser"
+      summary="Switch Access Menu Action: User Next User"/>
+  <variant name="UserPreviousUser"
+      summary="Switch Access Menu Action: User Previous User"/>
+  <variant name="UserSignOut"
+      summary="Switch Access Menu Action: User Sign Out"/>
+  <variant name="WebBookmark"
+      summary="Switch Access Menu Action: Web Bookmark"/>
+  <variant name="WebBottomOfPage"
+      summary="Switch Access Menu Action: Web Bottom Of Page"/>
+  <variant name="WebClearHistory"
+      summary="Switch Access Menu Action: Web Clear History"/>
+  <variant name="WebDownloads"
+      summary="Switch Access Menu Action: Web Downloads"/>
+  <variant name="WebFindInPage"
+      summary="Switch Access Menu Action: Web Find In Page"/>
+  <variant name="WebMenu" summary="Switch Access Menu Action: Web Menu"/>
+  <variant name="WebTopOfPage"
+      summary="Switch Access Menu Action: Web Top Of Page"/>
+</variants>
+
 <histogram name="Accessibility.ActiveTime" units="ms"
     expires_after="2022-04-17">
   <owner>aleventhal@chromium.org</owner>
@@ -627,6 +738,99 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the Chrome OS switch access is on (logged once 45 secs after
     startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan" enum="BooleanEnabled"
+    expires_after="2022-04-03">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The value of the Switch Access &quot;Auto Scan&quot; setting, logged
+    immediately after toggling. This will show us how often users are turning
+    the feature on, and how often they are turning it back off again.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs"
+    units="ms" expires_after="2022-04-03">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures the user-set speed for scanning between keyboard keys in Switch
+    Access, logged immediately after changing the setting. Values range from 1ms
+    to 10000ms, in 100ms buckets.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan.SpeedMs" units="ms"
+    expires_after="2022-04-03">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures the user-set speed for auto scanning between items in Switch
+    Access, logged immediately after changing the setting. Values range from 1ms
+    to 10000ms, in 100ms buckets.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.Error"
+    enum="CrosSwitchAccessError" expires_after="2022-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Switch Access error occurred. See CrosSwitchAccessError enum for error
+    types.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.CrosSwitchAccess.MenuAction.{SwitchAccessMenuAction}"
+    enum="BooleanUsage" expires_after="2022-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Switch Access menu action chosen by user, logged immediately upon selection.
+    See SwitchAccessMenuAction variants for details.
+  </summary>
+  <token key="SwitchAccessMenuAction" variants="SwitchAccessMenuAction"/>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.NextKeyCode" enum="KeyCode"
+    expires_after="2022-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Next Action (e.g. 32 for the Space
+    key)
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.PreviousKeyCode" enum="KeyCode"
+    expires_after="2022-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Previous Action (e.g. 32 for the
+    Space key)
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.SelectKeyCode" enum="KeyCode"
+    expires_after="2022-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Select Action (e.g. 32 for the Space
+    key)
   </summary>
 </histogram>
 

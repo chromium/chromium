@@ -5,14 +5,14 @@
 /**
  * Class to record metrics for Switch Access.
  */
-const SwitchAccessMetrics = {
+export const SwitchAccessMetrics = {
   /**
-   * @param {string} action
+   * @param {string} menuAction
    */
-  recordMenuAction: (action) => {
+  recordMenuAction: (menuAction) => {
     const metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
-        SwitchAccessMetrics.toUpperCamelCase(action);
-    chrome.metricsPrivate.recordUserAction(metricName);
+        SwitchAccessMetrics.toUpperCamelCase(menuAction);
+    chrome.metricsPrivate.recordBoolean(metricName, true);
   },
 
   /**

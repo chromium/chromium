@@ -18079,6 +18079,25 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="The system clock is known to be inaccurate"/>
 </enum>
 
+<enum name="CrosSwitchAccessError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Preference type"/>
+  <int value="2" label="Untranslated string"/>
+  <int value="3" label="Invalid color"/>
+  <int value="4" label="Next undefined"/>
+  <int value="5" label="Previous undefined"/>
+  <int value="6" label="Null child"/>
+  <int value="7" label="No children"/>
+  <int value="8" label="Malformed desktop"/>
+  <int value="9" label="Missing location"/>
+  <int value="10" label="Missing keyboard"/>
+  <int value="11" label="Row too short"/>
+  <int value="12" label="Missing base node"/>
+  <int value="13" label="Next invalid"/>
+  <int value="14" label="Previous invalid"/>
+  <int value="15" label="Invalid selection bounds"/>
+</enum>
+
 <enum name="CrosSystemTrayFirstInteraction">
   <int value="0" label="Quick Settings"/>
   <int value="1" label="Message Center"/>
@@ -47122,6 +47141,266 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Migration succeeded, Keychain cleaned up"/>
   <int value="5" label="Partial migration"/>
   <int value="6" label="Migration stopped"/>
+</enum>
+
+<enum name="KeyCode">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="KEYCODE_1"/>
+  <int value="2" label="KEYCODE_2"/>
+  <int value="3" label="KEYCODE_3"/>
+  <int value="4" label="KEYCODE_4"/>
+  <int value="5" label="KEYCODE_5"/>
+  <int value="6" label="KEYCODE_6"/>
+  <int value="7" label="KEYCODE_7"/>
+  <int value="8" label="BACKSPACE"/>
+  <int value="9" label="TAB"/>
+  <int value="10" label="KEYCODE_10"/>
+  <int value="11" label="KEYCODE_11"/>
+  <int value="12" label="CLEAR"/>
+  <int value="13" label="RETURN"/>
+  <int value="14" label="KEYCODE_14"/>
+  <int value="15" label="KEYCODE_15"/>
+  <int value="16" label="SHIFT"/>
+  <int value="17" label="CONTROL"/>
+  <int value="18" label="ALT"/>
+  <int value="19" label="PAUSE"/>
+  <int value="20" label="CAPITAL"/>
+  <int value="21" label="KANA"/>
+  <int value="22" label="KEYCODE_22"/>
+  <int value="23" label="JUNJA"/>
+  <int value="24" label="FINAL"/>
+  <int value="25" label="HANJA"/>
+  <int value="26" label="KEYCODE_26"/>
+  <int value="27" label="ESCAPE"/>
+  <int value="28" label="CONVERT"/>
+  <int value="29" label="NONCONVERT"/>
+  <int value="30" label="ACCEPT"/>
+  <int value="31" label="MODECHANGE"/>
+  <int value="32" label="SPACE"/>
+  <int value="33" label="PRIOR"/>
+  <int value="34" label="NEXT"/>
+  <int value="35" label="END"/>
+  <int value="36" label="HOME"/>
+  <int value="37" label="LEFT"/>
+  <int value="38" label="UP"/>
+  <int value="39" label="RIGHT"/>
+  <int value="40" label="DOWN"/>
+  <int value="41" label="SELECT"/>
+  <int value="42" label="PRINT"/>
+  <int value="43" label="EXECUTE"/>
+  <int value="44" label="SNAPSHOT"/>
+  <int value="45" label="INSERT"/>
+  <int value="46" label="KEY_DELETE"/>
+  <int value="47" label="HELP"/>
+  <int value="48" label="NUM_0"/>
+  <int value="49" label="NUM_1"/>
+  <int value="50" label="NUM_2"/>
+  <int value="51" label="NUM_3"/>
+  <int value="52" label="NUM_4"/>
+  <int value="53" label="NUM_5"/>
+  <int value="54" label="NUM_6"/>
+  <int value="55" label="NUM_7"/>
+  <int value="56" label="NUM_8"/>
+  <int value="57" label="NUM_9"/>
+  <int value="58" label="KEYCODE_58"/>
+  <int value="59" label="KEYCODE_59"/>
+  <int value="60" label="KEYCODE_60"/>
+  <int value="61" label="KEYCODE_61"/>
+  <int value="62" label="KEYCODE_62"/>
+  <int value="63" label="KEYCODE_63"/>
+  <int value="64" label="KEYCODE_64"/>
+  <int value="65" label="A"/>
+  <int value="66" label="B"/>
+  <int value="67" label="C"/>
+  <int value="68" label="D"/>
+  <int value="69" label="E"/>
+  <int value="70" label="F"/>
+  <int value="71" label="G"/>
+  <int value="72" label="H"/>
+  <int value="73" label="I"/>
+  <int value="74" label="J"/>
+  <int value="75" label="K"/>
+  <int value="76" label="L"/>
+  <int value="77" label="M"/>
+  <int value="78" label="N"/>
+  <int value="79" label="O"/>
+  <int value="80" label="P"/>
+  <int value="81" label="Q"/>
+  <int value="82" label="R"/>
+  <int value="83" label="S"/>
+  <int value="84" label="T"/>
+  <int value="85" label="U"/>
+  <int value="86" label="V"/>
+  <int value="87" label="W"/>
+  <int value="88" label="X"/>
+  <int value="89" label="Y"/>
+  <int value="90" label="Z"/>
+  <int value="91" label="LWIN"/>
+  <int value="92" label="RWIN"/>
+  <int value="93" label="APPS"/>
+  <int value="94" label="KEYCODE_94"/>
+  <int value="95" label="SLEEP"/>
+  <int value="96" label="NUMPAD0"/>
+  <int value="97" label="NUMPAD1"/>
+  <int value="98" label="NUMPAD2"/>
+  <int value="99" label="NUMPAD3"/>
+  <int value="100" label="NUMPAD4"/>
+  <int value="101" label="NUMPAD5"/>
+  <int value="102" label="NUMPAD6"/>
+  <int value="103" label="NUMPAD7"/>
+  <int value="104" label="NUMPAD8"/>
+  <int value="105" label="NUMPAD9"/>
+  <int value="106" label="MULTIPLY"/>
+  <int value="107" label="ADD"/>
+  <int value="108" label="SEPARATOR"/>
+  <int value="109" label="SUBTRACT"/>
+  <int value="110" label="DECIMAL"/>
+  <int value="111" label="DIVIDE"/>
+  <int value="112" label="F1"/>
+  <int value="113" label="F2"/>
+  <int value="114" label="F3"/>
+  <int value="115" label="F4"/>
+  <int value="116" label="F5"/>
+  <int value="117" label="F6"/>
+  <int value="118" label="F7"/>
+  <int value="119" label="F8"/>
+  <int value="120" label="F9"/>
+  <int value="121" label="F10"/>
+  <int value="122" label="F11"/>
+  <int value="123" label="F12"/>
+  <int value="124" label="F13"/>
+  <int value="125" label="F14"/>
+  <int value="126" label="F15"/>
+  <int value="127" label="F16"/>
+  <int value="128" label="F17"/>
+  <int value="129" label="F18"/>
+  <int value="130" label="F19"/>
+  <int value="131" label="F20"/>
+  <int value="132" label="F21"/>
+  <int value="133" label="F22"/>
+  <int value="134" label="F23"/>
+  <int value="135" label="F24"/>
+  <int value="136" label="KEYCODE_136"/>
+  <int value="137" label="KEYCODE_137"/>
+  <int value="138" label="KEYCODE_138"/>
+  <int value="139" label="KEYCODE_139"/>
+  <int value="140" label="KEYCODE_140"/>
+  <int value="141" label="KEYCODE_141"/>
+  <int value="142" label="KEYCODE_142"/>
+  <int value="143" label="KEYCODE_143"/>
+  <int value="144" label="NUMLOCK"/>
+  <int value="145" label="SCROLL"/>
+  <int value="146" label="KEYCODE_146"/>
+  <int value="147" label="KEYCODE_147"/>
+  <int value="148" label="KEYCODE_148"/>
+  <int value="149" label="KEYCODE_149"/>
+  <int value="150" label="KEYCODE_150"/>
+  <int value="151" label="WLAN"/>
+  <int value="152" label="POWER"/>
+  <int value="153" label="ASSISTANT"/>
+  <int value="154" label="KEYCODE_154"/>
+  <int value="155" label="KEYCODE_155"/>
+  <int value="156" label="KEYCODE_156"/>
+  <int value="157" label="KEYCODE_157"/>
+  <int value="158" label="KEYCODE_158"/>
+  <int value="159" label="KEYCODE_159"/>
+  <int value="160" label="LSHIFT"/>
+  <int value="161" label="RSHIFT"/>
+  <int value="162" label="LCONTROL"/>
+  <int value="163" label="RCONTROL"/>
+  <int value="164" label="LMENU"/>
+  <int value="165" label="RMENU"/>
+  <int value="166" label="BROWSER_BACK"/>
+  <int value="167" label="BROWSER_FORWARD"/>
+  <int value="168" label="BROWSER_REFRESH"/>
+  <int value="169" label="BROWSER_STOP"/>
+  <int value="170" label="BROWSER_SEARCH"/>
+  <int value="171" label="BROWSER_FAVORITES"/>
+  <int value="172" label="BROWSER_HOME"/>
+  <int value="173" label="VOLUME_MUTE"/>
+  <int value="174" label="VOLUME_DOWN"/>
+  <int value="175" label="VOLUME_UP"/>
+  <int value="176" label="MEDIA_NEXT_TRACK"/>
+  <int value="177" label="MEDIA_PREV_TRACK"/>
+  <int value="178" label="MEDIA_STOP"/>
+  <int value="179" label="MEDIA_PLAY_PAUSE"/>
+  <int value="180" label="MEDIA_LAUNCH_MAIL"/>
+  <int value="181" label="MEDIA_LAUNCH_MEDIA_SELECT"/>
+  <int value="182" label="MEDIA_LAUNCH_APP1"/>
+  <int value="183" label="MEDIA_LAUNCH_APP2"/>
+  <int value="184" label="KEYCODE_184"/>
+  <int value="185" label="KEYCODE_185"/>
+  <int value="186" label="OEM_1"/>
+  <int value="187" label="OEM_PLUS"/>
+  <int value="188" label="OEM_COMMA"/>
+  <int value="189" label="OEM_MINUS"/>
+  <int value="190" label="OEM_PERIOD"/>
+  <int value="191" label="OEM_2"/>
+  <int value="192" label="OEM_3"/>
+  <int value="193" label="KEYCODE_193"/>
+  <int value="194" label="KEYCODE_194"/>
+  <int value="195" label="KEYCODE_195"/>
+  <int value="196" label="KEYCODE_196"/>
+  <int value="197" label="KEYCODE_197"/>
+  <int value="198" label="KEYCODE_198"/>
+  <int value="199" label="KEYCODE_199"/>
+  <int value="200" label="KEYCODE_200"/>
+  <int value="201" label="KEYCODE_201"/>
+  <int value="202" label="KEYCODE_202"/>
+  <int value="203" label="KEYCODE_203"/>
+  <int value="204" label="KEYCODE_204"/>
+  <int value="205" label="KEYCODE_205"/>
+  <int value="206" label="KEYCODE_206"/>
+  <int value="207" label="KEYCODE_207"/>
+  <int value="208" label="KEYCODE_208"/>
+  <int value="209" label="KEYCODE_209"/>
+  <int value="210" label="KEYCODE_210"/>
+  <int value="211" label="KEYCODE_211"/>
+  <int value="212" label="KEYCODE_212"/>
+  <int value="213" label="KEYCODE_213"/>
+  <int value="214" label="KEYCODE_214"/>
+  <int value="215" label="KEYCODE_215"/>
+  <int value="216" label="BRIGHTNESS_DOWN"/>
+  <int value="217" label="BRIGHTNESS_UP"/>
+  <int value="218" label="KBD_BRIGHTNESS_DOWN"/>
+  <int value="219" label="OEM_4"/>
+  <int value="220" label="OEM_5"/>
+  <int value="221" label="OEM_6"/>
+  <int value="222" label="OEM_7"/>
+  <int value="223" label="OEM_8"/>
+  <int value="224" label="KEYCODE_224"/>
+  <int value="225" label="ALTGR"/>
+  <int value="226" label="OEM_102"/>
+  <int value="227" label="KEYCODE_227"/>
+  <int value="228" label="KEYCODE_228"/>
+  <int value="229" label="PROCESSKEY"/>
+  <int value="230" label="COMPOSE"/>
+  <int value="231" label="PACKET"/>
+  <int value="232" label="KBD_BRIGHTNESS_UP"/>
+  <int value="233" label="KEYCODE_233"/>
+  <int value="234" label="KEYCODE_234"/>
+  <int value="235" label="KEYCODE_235"/>
+  <int value="236" label="KEYCODE_236"/>
+  <int value="237" label="KEYCODE_237"/>
+  <int value="238" label="KEYCODE_238"/>
+  <int value="239" label="KEYCODE_239"/>
+  <int value="240" label="KEYCODE_240"/>
+  <int value="241" label="KEYCODE_241"/>
+  <int value="242" label="KEYCODE_242"/>
+  <int value="243" label="DBE_SBCSCHAR"/>
+  <int value="244" label="DBE_DBCSCHAR"/>
+  <int value="245" label="KEYCODE_245"/>
+  <int value="246" label="ATTN"/>
+  <int value="247" label="CRSEL"/>
+  <int value="248" label="EXSEL"/>
+  <int value="249" label="EREOF"/>
+  <int value="250" label="PLAY"/>
+  <int value="251" label="ZOOM"/>
+  <int value="252" label="NONAME"/>
+  <int value="253" label="PA1"/>
+  <int value="254" label="OEM_CLEAR"/>
+  <int value="255" label="KEYCODE_255"/>
+  <int value="256" label="NONE"/>
 </enum>
 
 <enum name="KeyPermissionsManagerArcUsageUpdateStatus">

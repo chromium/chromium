@@ -5,6 +5,7 @@
 import {ActionRecorder} from './action_recorder.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
+import {SwitchAccessMetrics} from './metrics.js';
 import {Navigator} from './navigator.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
@@ -98,6 +99,8 @@ export class ActionManager {
    * @param {!SwitchAccessMenuAction} action
    */
   static performAction(action) {
+    SwitchAccessMetrics.recordMenuAction(action);
+
     // If feature flag is enabled, perform action and escape if successful.
     if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
       if (ActionManager.performActionMultistep(action)) {
