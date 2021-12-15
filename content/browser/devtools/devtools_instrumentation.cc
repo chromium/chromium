@@ -490,11 +490,13 @@ void ThrottleWorkerMainScriptFetch(
   WorkerDevToolsAgentHost* agent_host =
       WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
           devtools_worker_token);
-  DCHECK(agent_host);
+  if (!agent_host)
+    return;
 
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
-  DCHECK(rfh);
+  if (!rfh)
+    return;
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
   DispatchToAgents(ftn, &protocol::TargetHandler::AddWorkerThrottle, agent_host,
