@@ -152,7 +152,7 @@ class TextProtoPrinter {
   }
   TextProtoPrinter& operator<<(const feedwire::ActionPayload& v) {
     BeginMessage();
-    PRINT_FIELD(action_payload_data);
+    PRINT_FIELD(batched_action_payload_data);
     EndMessage();
     return *this;
   }

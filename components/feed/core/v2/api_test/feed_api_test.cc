@@ -110,7 +110,7 @@ feedwire::FeedAction MakeFeedAction(int64_t id, size_t pad_size) {
     pad = " " + std::string(pad_size - 1, 'a');
   }
 
-  action.mutable_action_payload()->set_action_payload_data(
+  action.mutable_action_payload()->add_batched_action_payload_data(
       base::StrCat({base::NumberToString(id), pad}));
   return action;
 }
