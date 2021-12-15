@@ -117,15 +117,9 @@ class NativeLibInfo {
   // unittest LoadLibrary() directly.
   bool CreateSharedRelroFdForTesting();
 
-  int get_relro_fd_for_testing() const { return relro_fd_; }
-  size_t get_relro_start_for_testing() const { return relro_start_; }
-  size_t get_load_size_for_testing() const { return load_size_; }
+  int get_relro_fd_for_testing() { return relro_fd_; }
 
   static bool SharedMemoryFunctionsSupportedForTesting();
-
-  bool FindRelroAndLibraryRangesInElfForTesting() {
-    return FindRelroAndLibraryRangesInElf();
-  }
 
  private:
   NativeLibInfo() = delete;
@@ -144,9 +138,14 @@ class NativeLibInfo {
 
   void CloseRelroFd();
 
-  // Determines the minimal address ranges for the union of all the loadable
-  // (and RELRO) segments by parsing ELF starting at |load_address()|. May fail
-  // or return incorrect results for some creative ELF libraries.
+  // Callback for dl_iterate_phdr(). From program headers (phdr(s)) of a loaded
+  // library determines its load address, and in case it is equal to
+  // |lib_info.load_address()|, extracts the RELRO and size information from
+  // corresponding phdr(s).
+  static int VisitLibraryPhdrs(dl_phdr_info* info, size_t size, void* lib_info);
+
+  // Invokes dl_iterate_phdr() for the current load address, with
+  // VisitLibraryPhdrs() as a callback.
   bool FindRelroAndLibraryRangesInElf();
 
   // Loads and initializes the load address ranges: |load_address_|,
