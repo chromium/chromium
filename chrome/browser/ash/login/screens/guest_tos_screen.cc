@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -17,11 +19,23 @@ constexpr const char kUserActionBackClicked[] = "back-button";
 constexpr const char kUserActionCancelClicked[] = "cancel";
 
 std::string GetGoogleEulaOnlineUrl() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOobeEulaUrlForTests)) {
+    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kOobeEulaUrlForTests);
+  }
+
   return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 
 std::string GetCrosEulaOnlineUrl() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOobeEulaUrlForTests)) {
+    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kOobeEulaUrlForTests);
+  }
+
   return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
