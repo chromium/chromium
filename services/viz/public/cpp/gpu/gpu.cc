@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -333,6 +334,7 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   if (channel)
     return channel;
 
+  SCOPED_UMA_HISTOGRAM_TIMER("GPU.EstablishGpuChannelSyncTime");
   SendEstablishGpuChannelRequest();
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::SIGNALED);
