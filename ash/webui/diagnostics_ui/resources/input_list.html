@@ -9,16 +9,22 @@
 <div id="inputListContainer">
   <div class="diagnostics-cards-container">
     <div class="card-width">
-      <input-card device-type="keyboard" devices="[[keyboards_]]"
-          on-test-button-click="handleKeyboardTestButtonClick_">
-        <div slot="title">[[i18n('inputCategoryKeyboard')]]</div>
-      </input-card>
-      <input-card device-type="touchpad" devices="[[touchpads_]]">
-        <div slot="title">[[i18n('inputCategoryTouchpad')]]</div>
-      </input-card>
-      <input-card device-type="touchscreen" devices="[[touchscreens_]]">
-        <div slot="title">[[i18n('inputCategoryTouchscreen')]]</div>
-      </input-card>
+      <template is="dom-if" if="[[keyboards_.length]]">
+        <input-card device-type="keyboard" devices="[[keyboards_]]"
+            on-test-button-click="handleKeyboardTestButtonClick_">
+          <div slot="title">[[i18n('inputCategoryKeyboard')]]</div>
+        </input-card>
+      </template>
+      <template is="dom-if" if="[[touchpads_.length]]">
+        <input-card device-type="touchpad" devices="[[touchpads_]]">
+          <div slot="title">[[i18n('inputCategoryTouchpad')]]</div>
+        </input-card>
+      </template>
+      <template is="dom-if" if="[[touchscreens_.length]]">
+        <input-card device-type="touchscreen" devices="[[touchscreens_]]">
+          <div slot="title">[[i18n('inputCategoryTouchscreen')]]</div>
+        </input-card>
+      </template>
     </div>
   </div>
 </div>

@@ -51,8 +51,16 @@ export function inputListTestSuite() {
   /** @return {!InputCardElement} */
   function getCardByDeviceType(deviceType) {
     const card = inputListElement.$$(`input-card[device-type="${deviceType}"]`);
-    assertTrue(!!card);
     return /** @type {!InputCardElement} */ (card);
+  }
+
+  /**
+   * Returns whether the element both exists and is visible.
+   * @param {?Element} element
+   * @return {boolean}
+   */
+  function isVisible(element) {
+    return !!element && element.style.display !== 'none';
   }
 
   test('InputListPopulated', () => {
@@ -170,5 +178,39 @@ export function inputListTestSuite() {
           assertEquals(
               fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
         });
+  });
+
+  test('EmptySectionsHidden', async () => {
+    await initializeInputList([], []);
+    assertFalse(isVisible(getCardByDeviceType('keyboard')));
+    assertFalse(isVisible(getCardByDeviceType('touchpad')));
+    assertFalse(isVisible(getCardByDeviceType('touchscreen')));
+
+    provider.addFakeConnectedTouchDevice(fakeTouchDevices[1]);
+    await flushTasks();
+    assertTrue(!!getCardByDeviceType('touchscreen'));
+    assertFalse(isVisible(getCardByDeviceType('keyboard')));
+    assertFalse(isVisible(getCardByDeviceType('touchpad')));
+    assertTrue(isVisible(getCardByDeviceType('touchscreen')));
+
+    provider.removeFakeConnectedTouchDeviceById(fakeTouchDevices[1].id);
+    provider.addFakeConnectedTouchDevice(fakeTouchDevices[0]);
+    await flushTasks();
+    assertFalse(isVisible(getCardByDeviceType('keyboard')));
+    assertTrue(isVisible(getCardByDeviceType('touchpad')));
+    assertFalse(isVisible(getCardByDeviceType('touchscreen')));
+
+    provider.removeFakeConnectedTouchDeviceById(fakeTouchDevices[0].id);
+    provider.addFakeConnectedKeyboard(fakeKeyboards[0]);
+    await flushTasks();
+    assertTrue(isVisible(getCardByDeviceType('keyboard')));
+    assertFalse(isVisible(getCardByDeviceType('touchpad')));
+    assertFalse(isVisible(getCardByDeviceType('touchscreen')));
+
+    provider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    assertFalse(isVisible(getCardByDeviceType('keyboard')));
+    assertFalse(isVisible(getCardByDeviceType('touchpad')));
+    assertFalse(isVisible(getCardByDeviceType('touchscreen')));
   });
 }
