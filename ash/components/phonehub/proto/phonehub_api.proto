@@ -122,7 +122,9 @@ enum ScreenLockState {
 // device
 message CameraRollAccessState {
   // Whether the camera roll feature is enabled
-  bool feature_enabled = 1;
+  // DEPRECATED: this is now checked during CryptAuth enrollment on the Android
+  // device and no longer checked by the Phone Hub CrOS code.
+  bool feature_enabled = 1 [deprecated = true];
   // Whether necessary storage permissions have been granted to access camera
   // roll items
   bool storage_permission_granted = 2;

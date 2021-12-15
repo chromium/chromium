@@ -159,8 +159,7 @@ void CameraRollManagerImpl::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_snapshot.properties().camera_roll_access_state());
-  if (!is_android_feature_enabled_ || !is_android_storage_granted_ ||
-      !IsCameraRollSettingEnabled()) {
+  if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     resetViewRefreshingFlagIfNeeded();
@@ -174,8 +173,7 @@ void CameraRollManagerImpl::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_update.properties().camera_roll_access_state());
-  if (!is_android_feature_enabled_ || !is_android_storage_granted_ ||
-      !IsCameraRollSettingEnabled()) {
+  if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     resetViewRefreshingFlagIfNeeded();
@@ -261,12 +259,8 @@ void CameraRollManagerImpl::OnFeatureStatesChanged(
 
 void CameraRollManagerImpl::UpdateCameraRollAccessStateAndNotifyIfNeeded(
     const proto::CameraRollAccessState& access_state) {
-  bool updated_feature_enabled = access_state.feature_enabled();
   bool updated_storage_granted = access_state.storage_permission_granted();
-
-  if (is_android_feature_enabled_ != updated_feature_enabled ||
-      is_android_storage_granted_ != updated_storage_granted) {
-    is_android_feature_enabled_ = updated_feature_enabled;
+  if (is_android_storage_granted_ != updated_storage_granted) {
     is_android_storage_granted_ = updated_storage_granted;
 
     util::LogCameraRollAndroidHasStorageAccessPermission(
@@ -282,11 +276,7 @@ void CameraRollManagerImpl::OnCameraRollOnboardingUiDismissed() {
 }
 
 void CameraRollManagerImpl::ComputeAndUpdateUiState() {
-  if (!is_android_feature_enabled_) {
-    ui_state_ = CameraRollUiState::SHOULD_HIDE;
-    NotifyCameraRollViewUiStateUpdated();
-    return;
-  } else if (!is_android_storage_granted_) {
+  if (!is_android_storage_granted_) {
     ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
     NotifyCameraRollViewUiStateUpdated();
     return;
