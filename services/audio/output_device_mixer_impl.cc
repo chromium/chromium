@@ -465,7 +465,7 @@ OutputDeviceMixerImpl::OutputDeviceMixerImpl(
 
 OutputDeviceMixerImpl::~OutputDeviceMixerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK(!active_tracks_.size());
+  DCHECK(active_tracks_.empty());
   DCHECK(!HasListeners());
   DCHECK(!mixing_graph_output_stream_);
 
@@ -561,7 +561,7 @@ void OutputDeviceMixerImpl::StartListening(Listener* listener) {
       mixing_stats_->AddListener();
     }
   }
-  if (!mixing_graph_output_stream_ && active_tracks_.size()) {
+  if (!mixing_graph_output_stream_ && !active_tracks_.empty()) {
     // Start reference playback only if at least one audio stream is playing.
     for (MixTrack* mix_track : active_tracks_)
       mix_track->StopIndependentRenderingStream();
@@ -602,7 +602,7 @@ void OutputDeviceMixerImpl::StopListening(Listener* listener) {
 
   // Mixing graph playback is ongoing.
 
-  if (!active_tracks_.size()) {
+  if (active_tracks_.empty()) {
     // There is no actual playback: we were just sending silence to the
     // listener as a reference.
     StopMixingGraphPlayback(MixingError::kNone);
@@ -671,18 +671,26 @@ void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
   active_tracks_.erase(mix_track);
 
   if (mixing_graph_output_stream_) {
-    // We are playing all audio a |mixing_graph_| output.
+    // We are playing all audio as a |mixing_graph_| output.
     mix_track->StopProvidingAudioToMixingGraph();
     DCHECK(mixing_stats_);
     mixing_stats_->RemoveActiveTrack();
 
-    // Note: we do not stop the reference playback even if there are no active
-    // mix members. This way the echo canceller will be in a consistent state
-    // when the playback is activated again. Drawback: we keep playing silent
-    // audio. An example would some occasional notification sounds and no other
-    // audio output: we start the mixing playback at the first notification, and
-    // stop it only when the echo cancellation session is finished (i.e. all the
-    // listeners are gone).
+    if (!HasListeners() && active_tracks_.empty()) {
+      // All listeners are gone, which means a switch to an independent playback
+      // is scheduled. But since we have no active tracks, we can stop mixing
+      // immediately.
+      DCHECK(switch_to_unmixed_playback_delay_timer_.IsRunning());
+      StopMixingGraphPlayback(MixingError::kNone);
+    }
+
+    // Note: if there are listeners, we do not stop the reference playback even
+    // if there are no active mix members. This way the echo canceller will be
+    // in a consistent state when the playback is activated again. Drawback: we
+    // keep playing silent audio. An example would be some occasional
+    // notification sounds and no other audio output: we start the mixing
+    // playback at the first notification, and stop it only when the echo
+    // cancellation session is finished (i.e. all the listeners are gone).
   } else {
     mix_track->StopIndependentRenderingStream();
   }

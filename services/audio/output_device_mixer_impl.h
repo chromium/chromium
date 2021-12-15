@@ -159,7 +159,8 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   // Delays switching to unmixed playback in case a new listener is coming
   // soon (within kSwitchToIndependentPlaybackDelay).
-  base::OneShotTimer switch_to_unmixed_playback_delay_timer_;
+  base::OneShotTimer switch_to_unmixed_playback_delay_timer_
+      GUARDED_BY_CONTEXT(owning_sequence_);
 
   // Non-null when the playback is being mixed. Collects mixing statistics.
   // Logs them upon the destruction when mixing stops.

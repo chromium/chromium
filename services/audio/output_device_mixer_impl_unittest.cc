@@ -914,6 +914,30 @@ TEST_P(OutputDeviceMixerImplTest, StartStopNStreamsWhileListening_DeleteMixer) {
   VerifyAndClearAllExpectations();
 }
 
+TEST_F(OutputDeviceMixerImplTest,
+       DeleteMixer_WhileGraphOutputStreamStopIsDelayed) {
+  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
+
+  MockListener listener;
+  mixer->StartListening(&listener);
+  VerifyAndClearAllExpectations();
+
+  auto stream_under_test = CreateNextStreamUnderTest(mixer.get());
+  OpenAndVerifyStreamUnderTest(stream_under_test);
+  StartAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+  mixer->StopListening(&listener);
+
+  // Since there are no listeners left, mixing playback must be stopped as soon
+  // as the stream is gone.
+  ExpectMixingGraphOutputStreamStopped();
+  StopAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+
+  CloseAndVerifyStreamUnderTest(stream_under_test);
+
+  mixer = nullptr;
+  VerifyAndClearAllExpectations();
+}
+
 TEST_P(OutputDeviceMixerImplTest, NStreamsMixing_OnMixingStreamError) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
