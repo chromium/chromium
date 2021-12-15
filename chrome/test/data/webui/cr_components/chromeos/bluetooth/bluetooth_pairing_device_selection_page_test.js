@@ -36,6 +36,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     deviceSelectionPage =
         /** @type {?SettingsBluetoothPairingDeviceSelectionPageElement} */ (
             document.createElement('bluetooth-pairing-device-selection-page'));
+    deviceSelectionPage.isBluetoothEnabled = true;
     document.body.appendChild(deviceSelectionPage);
     flush();
 
@@ -65,6 +66,9 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     const getDeviceListItems = () =>
         deviceSelectionPage.shadowRoot.querySelectorAll(
             'bluetooth-pairing-device-item');
+    const getBasePage = () =>
+        deviceSelectionPage.shadowRoot.querySelector('bluetooth-base-page');
+    assertTrue(getBasePage().showScanProgress);
 
     const learnMoreLink =
         deviceSelectionPage.shadowRoot.querySelector('localized-link');
@@ -116,5 +120,17 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     await flushAsync();
     assertEquals(
         getDeviceListItems()[0].deviceItemState, DeviceItemState.PAIRING);
+
+    // Disable Bluetooth.
+    deviceSelectionPage.isBluetoothEnabled = false;
+    await flushAsync();
+
+    // Scanning progress should be hidden and the 'Bluetooth disabled' message
+    // shown.
+    assertFalse(getBasePage().showScanProgress);
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothDisabled'),
+        getDeviceListTitle().textContent.trim());
   });
 });

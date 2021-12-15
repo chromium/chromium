@@ -106,6 +106,8 @@ export class FakeBluetoothConfig {
     this.pendingForgetRequest_ = null;
 
     /**
+     * The last pairing handler created. If defined, indicates discovery in is
+     * progress. If null, indicates no discovery is occurring.
      * @private {?FakeDevicePairingHandler}
      */
     this.lastPairingHandler_ = null;
@@ -236,6 +238,21 @@ export class FakeBluetoothConfig {
          */
         (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
+
+    // If discovery is in progress and Bluetooth is no longer enabled, stop
+    // discovery and any pairing that may be occurring.
+    if (!this.lastPairingHandler_) {
+      return;
+    }
+
+    if (systemState ===
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled) {
+      return;
+    }
+
+    this.lastPairingHandler_.rejectPairDevice();
+    this.lastPairingHandler_ = null;
+    this.notifyDiscoveryStopped_();
   }
 
   /**
@@ -440,6 +457,14 @@ export class FakeBluetoothConfig {
             this.lastPairingHandler_);
     this.lastDiscoveryDelegate_.onBluetoothDiscoveryStarted(
         devicePairingHandlerReciever.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * @private
+   * Notifies the last delegate that device discovery has stopped.
+   */
+  notifyDiscoveryStopped_() {
+    this.lastDiscoveryDelegate_.onBluetoothDiscoveryStopped();
   }
 
   /**

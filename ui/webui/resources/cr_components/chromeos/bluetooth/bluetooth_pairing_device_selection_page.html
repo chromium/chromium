@@ -14,14 +14,18 @@
     margin: 20px 0 8px 0;
   }
 </style>
-<bluetooth-base-page show-scan-progress
+<bluetooth-base-page
+    show-scan-progress="[[isBluetoothEnabled]]"
     button-bar-state="[[buttonBarState_]]">
   <div slot="page-body" id="pageBody">
     <localized-link
         localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
     </localized-link>
-    <div id="deviceListTitle">[[getDeviceListTitle_(devices.*)]]</div>
-    <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*)]]">
+    <div id="deviceListTitle" tabindex="0">
+      [[getDeviceListTitle_(devices.*, isBluetoothEnabled)]]
+    </div>
+    <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*,
+        isBluetoothEnabled)]]" restamp>
       <div id="container" class="layout vertical flex" scrollable
           no-bottom-scroll-border>
         <iron-list items="[[devices]]"

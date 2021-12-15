@@ -65,6 +65,12 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
         value: null,
       },
 
+      /** @type {boolean} */
+      isBluetoothEnabled: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
@@ -93,7 +99,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
    * @return {boolean}
    */
   shouldShowDeviceList_() {
-    return this.devices && this.devices.length > 0;
+    return this.isBluetoothEnabled && this.devices && this.devices.length > 0;
   }
 
   /**
@@ -101,6 +107,10 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
    * @return {string}
    */
   getDeviceListTitle_() {
+    if (!this.isBluetoothEnabled) {
+      return this.i18n('bluetoothDisabled');
+    }
+
     if (this.shouldShowDeviceList_()) {
       return this.i18n('bluetoothAvailableDevices');
     }

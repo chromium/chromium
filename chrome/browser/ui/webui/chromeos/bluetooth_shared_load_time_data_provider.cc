@@ -26,6 +26,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_BLUETOOTH_PAIRING_PAIRING_AVAILABLE_DEVICES},
       {"bluetoothNoAvailableDevices",
        IDS_BLUETOOTH_PAIRING_PAIRING_NO_AVAILABLE_DEVICES},
+      {"bluetoothDisabled", IDS_BLUETOOTH_PAIRING_PAIRING_BLUETOOTH_DISABLED},
       {"bluetoothAccept", IDS_BLUETOOTH_PAIRING_ACCEPT_PASSKEY},
       {"bluetoothEnterKey", IDS_BLUETOOTH_PAIRING_ENTER_KEY},
       {"bluetoothPair", IDS_BLUETOOTH_PAIRING_PAIR},
