@@ -91,10 +91,13 @@ MicrophoneMuteNotificationDelegateImpl::
 absl::optional<std::u16string>
 MicrophoneMuteNotificationDelegateImpl::GetAppAccessingMicrophone() {
   apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
-  DCHECK(reg_cache);
   apps::AppCapabilityAccessCache* cap_cache =
       GetActiveUserAppCapabilityAccessCache();
-  DCHECK(cap_cache);
+  // A reg_cache and/or cap_cache of value nullptr is possible if we have
+  // no active user, e.g. the login screen, so we test and return nullopt
+  // in that case instead of using DCHECK().
+  if (!reg_cache || !cap_cache)
+    return absl::nullopt;
   return GetAppAccessingMicrophone(cap_cache, reg_cache);
 }
 
