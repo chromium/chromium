@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -138,11 +139,12 @@ class TrustedSignalsRequestManager {
 
     // The TrustedSignalsRequestManager that created `this`. Cleared on
     // completion.
-    TrustedSignalsRequestManager* trusted_signals_request_manager_ = nullptr;
+    raw_ptr<TrustedSignalsRequestManager> trusted_signals_request_manager_ =
+        nullptr;
 
     // If this request is currently assigned to a batched request, points to
     // that request. nullptr otherwise.
-    BatchedTrustedSignalsRequest* batched_request_ = nullptr;
+    raw_ptr<BatchedTrustedSignalsRequest> batched_request_ = nullptr;
   };
 
   // Manages a single TrustedSignals object, which is associated with one or
@@ -173,7 +175,7 @@ class TrustedSignalsRequestManager {
   void OnRequestDestroyed(RequestImpl* request);
 
   const Type type_;
-  network::mojom::URLLoaderFactory* const url_loader_factory_;
+  const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const url::Origin top_level_origin_;
   const GURL trusted_signals_url_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;

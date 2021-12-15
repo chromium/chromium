@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -194,7 +195,8 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
   // Cancel and delete the corresponding BatchedTrustedSignalsRequest if it's
   // no longer associated with any live requests.
   if (request->batched_request_->requests.empty())
-    batched_requests_.erase(batched_requests_.find(request->batched_request_));
+    batched_requests_.erase(
+        batched_requests_.find(request->batched_request_.get()));
 }
 
 }  // namespace auction_worklet
