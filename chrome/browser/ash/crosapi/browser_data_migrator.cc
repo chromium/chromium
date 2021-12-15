@@ -160,20 +160,6 @@ static_assert(HasNoOverlapBetweenPathsSets(),
               "There must be no overlap between kNoCopyPaths, kAshDataPaths "
               "and kLacrosDataPaths");
 
-void OnRestartRequestResponse(bool result) {
-  if (!result) {
-    LOG(ERROR) << "SessionManagerClient::RequestBrowserDataMigration() failed.";
-    return;
-  }
-
-  // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove this
-  // log message.
-  LOG(WARNING)
-      << "SessionManagerClient::RequestBrowserDataMigration() succeeded "
-         "and now attempting a restart.";
-  chrome::AttemptRestart();
-}
-
 base::span<const char* const> GetNoCopyDataPaths() {
   if (base::FeatureList::IsEnabled(
           kLacrosProfileMigrationUseDeprecatedNoCopyPaths)) {
@@ -230,7 +216,7 @@ int64_t BrowserDataMigrator::TargetInfo::TotalDirSize() const {
 }
 
 // static
-void BrowserDataMigrator::MaybeRestartToMigrate(
+bool BrowserDataMigrator::MaybeRestartToMigrate(
     const AccountId& account_id,
     const std::string& user_id_hash) {
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove this
@@ -265,7 +251,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
         break;
     }
 
-    return;
+    return false;
   }
 
   // Check if the switch for testing is present.
@@ -273,18 +259,17 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kForceBrowserDataMigrationForTesting);
   if (force_migration_switch == kBrowserDataMigrationForceSkip)
-    return;
+    return false;
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
     LOG(WARNING) << "`kBrowserDataMigrationForceMigration` switch is present.";
-    RestartToMigrate(account_id, user_id_hash);
-    return;
+    return RestartToMigrate(account_id, user_id_hash);
   }
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   // Check if user exists i.e. not a guest session.
   if (!user)
-    return;
+    return false;
   // Check if lacros is enabled. If not immediately return.
   if (!crosapi::browser_util::IsLacrosEnabledForMigration(user)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
@@ -302,7 +287,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
                                       user_id_hash);
     crosapi::browser_util::ClearProfileMigrationCompletedForUser(
         g_browser_process->local_state(), user_id_hash);
-    return;
+    return false;
   }
 
   //  Currently we turn on profile migration only for Googlers. To test profile
@@ -314,7 +299,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING) << "Profile migration is disabled.";
-    return;
+    return false;
   }
 
   // If the user is a new user, then there shouldn't be anything to migrate.
@@ -325,7 +310,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING) << "Setting migration as completed since it is a new user.";
-    return;
+    return false;
   }
 
   int attempts = GetMigrationAttemptCountForUser(
@@ -338,7 +323,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     // this log message.
     LOG(WARNING) << "Skipping profile migration since migration attemp count = "
                  << attempts << " has exceeded " << kMaxMigrationAttemptCount;
-    return;
+    return false;
   }
 
   if (crosapi::browser_util::IsDataWipeRequired(user_id_hash)) {
@@ -348,8 +333,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
         << "Restarting to run profile migration since data wipe is required.";
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
-    RestartToMigrate(account_id, user_id_hash);
-    return;
+    return RestartToMigrate(account_id, user_id_hash);
   }
 
   if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
@@ -357,16 +341,15 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
     // remove this log message.
     LOG(WARNING) << "Profile migration has been completed already.";
-    return;
+    return false;
   }
 
-  RestartToMigrate(account_id, user_id_hash);
+  return RestartToMigrate(account_id, user_id_hash);
 }
 
 // static
-void BrowserDataMigrator::RestartToMigrate(const AccountId& account_id,
+bool BrowserDataMigrator::RestartToMigrate(const AccountId& account_id,
                                            const std::string& user_id_hash) {
-  LOG(WARNING) << "Restarting to start profile migration.";
   SetMigrationStep(g_browser_process->local_state(),
                    MigrationStep::kRestartCalled);
 
@@ -378,9 +361,17 @@ void BrowserDataMigrator::RestartToMigrate(const AccountId& account_id,
 
   g_browser_process->local_state()->CommitPendingWrite();
 
-  SessionManagerClient::Get()->RequestBrowserDataMigration(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      base::BindOnce(&OnRestartRequestResponse));
+  // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
+  // this log message.
+  LOG(WARNING) << "Making a dbus method call to session_manager";
+  bool success = SessionManagerClient::Get()->RequestBrowserDataMigration(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id));
+
+  if (!success)
+    return false;
+
+  chrome::AttemptRestart();
+  return true;
 }
 
 // static

@@ -402,18 +402,23 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kSessionManagerHandleLockScreenDismissed);
   }
 
-  void RequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      VoidDBusMethodCallback callback) override {
+  bool RequestBrowserDataMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerStartBrowserDataMigration);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
-    session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    dbus::ScopedDBusError error;
+    std::unique_ptr<dbus::Response> response =
+        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
+                                                             &error);
+    if (!response) {
+      LOG(ERROR) << "RequestBrowserDataMigration failed.";
+      return false;
+    }
+
+    return true;
   }
 
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override {
