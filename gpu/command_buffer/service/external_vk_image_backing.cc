@@ -424,19 +424,14 @@ bool ExternalVkImageBacking::BeginAccess(
         backend_texture_,
         GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                      VK_QUEUE_FAMILY_EXTERNAL));
+
     auto semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
-    VkSemaphore vk_semaphore = semaphore.GetVkSemaphore();
-    GrBackendSemaphore backend_semaphore;
-    backend_semaphore.initVulkan(vk_semaphore);
-    GrFlushInfo flush_info = {
-        .fNumSemaphores = 1,
-        .fSignalSemaphores = &backend_semaphore,
-    };
-    gpu::AddVulkanCleanupTaskForSkiaFlush(
-        context_state()->vk_context_provider(), &flush_info);
-    auto flush_result = gr_context->flush(flush_info);
-    DCHECK_EQ(flush_result, GrSemaphoresSubmitted::kYes);
-    gr_context->submit();
+    if (!SubmitSignalVkSemaphore(
+            context_provider()->GetDeviceQueue()->GetVulkanQueue(),
+            semaphore.GetVkSemaphore())) {
+      LOG(ERROR) << "Failed to create a signaled semaphore";
+      return false;
+    }
     external_semaphores->push_back(std::move(semaphore));
   }
 
