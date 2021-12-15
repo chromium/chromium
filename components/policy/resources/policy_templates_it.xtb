@@ -4537,7 +4537,8 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6438972408080276697">Se il criterio è impostato su True, vengono inviati rapporti degli eventi principali di installazione delle app Android attivati dal criterio. Se il criterio è impostato su False, non viene acquisito alcun evento.</translation>
 <translation id="6440051664870270040">Consenti ai siti di navigare e aprire popup contemporaneamente</translation>
 <translation id="6447948611083700881">Backup e ripristino disabilitati</translation>
-<translation id="6449476513004303784">Non consentire più agli utenti di gestire i certificati</translation>
+<translation id="6449476513004303784">Non consentire agli utenti di gestire i certificati
+</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
 <translation id="6455842857207956758">Consente di attivare la sincronizzazione delle password SAML tra più dispositivi Chrome monitorando il valore del token di sincronizzazione delle password e facendo svolgere all'utente la procedura di riautenticazione online se la password è stata aggiornata e deve essere sincronizzata.
