@@ -21,9 +21,9 @@ public class TailSuggestionViewBinder {
             view.setTailText(model.get(TailSuggestionViewProperties.TEXT));
         } else if (propertyKey == TailSuggestionViewProperties.FILL_INTO_EDIT) {
             view.setFullText(model.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
-        } else if (propertyKey == SuggestionCommonProperties.OMNIBOX_THEME) {
+        } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             final @ColorInt int color = OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                    view.getContext(), model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+                    view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME));
             view.setTextColor(color);
         }
     }

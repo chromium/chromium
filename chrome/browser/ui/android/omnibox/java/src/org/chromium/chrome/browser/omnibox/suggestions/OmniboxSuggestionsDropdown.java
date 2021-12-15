@@ -14,7 +14,6 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -32,7 +31,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -247,10 +246,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /**
      * Update the suggestion popup background to reflect the current state.
-     * @param omniboxTheme The {@link @OmniboxTheme}.
+     * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    public void refreshPopupBackground(@OmniboxTheme int omniboxTheme) {
-        int color = omniboxTheme == OmniboxTheme.INCOGNITO ? mIncognitoBgColor : mStandardBgColor;
+    public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
+        int color = brandedColorScheme == BrandedColorScheme.INCOGNITO ? mIncognitoBgColor
+                                                                       : mStandardBgColor;
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
             // mOmniboxResultsContainer' background from the area not covered by

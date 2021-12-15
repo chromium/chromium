@@ -12,10 +12,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
  */
 public class SuggestionCommonProperties {
     /** Whether dark colors should be applied to text, icons. */
-    public static final WritableIntPropertyKey OMNIBOX_THEME = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
     /** The layout direction to be applied to the entire suggestion view. */
     public static final WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {OMNIBOX_THEME, LAYOUT_DIRECTION};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {COLOR_SCHEME, LAYOUT_DIRECTION};
 }

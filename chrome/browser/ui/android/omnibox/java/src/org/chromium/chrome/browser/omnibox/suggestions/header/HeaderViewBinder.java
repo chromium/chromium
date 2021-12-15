@@ -21,9 +21,9 @@ public class HeaderViewBinder {
     public static void bind(PropertyModel model, HeaderView view, PropertyKey propertyKey) {
         if (HeaderViewProperties.TITLE == propertyKey) {
             view.getTextView().setText(model.get(HeaderViewProperties.TITLE));
-        } else if (propertyKey == SuggestionCommonProperties.OMNIBOX_THEME) {
+        } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             final boolean useDarkColors = !OmniboxResourceProvider.isDarkMode(
-                    model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+                    model.get(SuggestionCommonProperties.COLOR_SCHEME));
             TextViewCompat.setTextAppearance(view.getTextView(),
                     ChromeColors.getTextMediumThickSecondaryStyle(!useDarkColors));
             ApiCompatibilityUtils.setImageTintList(view.getIconView(),

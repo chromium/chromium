@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -73,7 +73,7 @@ class UrlBarMediator
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
         mModel.set(UrlBarProperties.TEXT_CHANGED_LISTENER, this);
-        setOmniboxTheme(OmniboxTheme.DEFAULT);
+        setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
     }
 
     public void destroy() {
@@ -224,17 +224,17 @@ class UrlBarMediator
     }
 
     /**
-     * Sets the omnibox theme.
+     * Sets the color scheme.
      *
-     * @param omniboxTheme The {@link @OmniboxTheme}.
+     * @param brandedColorScheme The {@link @BrandedColorScheme}.
      * @return Whether this resulted in a change from the previous value.
      */
-    public boolean setOmniboxTheme(@OmniboxTheme int omniboxTheme) {
+    public boolean setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
         // TODO(bauerb): Make clients observe the property instead of checking the return value.
-        @OmniboxTheme
-        int previousValue = mModel.get(UrlBarProperties.OMNIBOX_THEME);
-        mModel.set(UrlBarProperties.OMNIBOX_THEME, omniboxTheme);
-        return previousValue != omniboxTheme;
+        @BrandedColorScheme
+        int previousValue = mModel.get(UrlBarProperties.BRANDED_COLOR_SCHEME);
+        mModel.set(UrlBarProperties.BRANDED_COLOR_SCHEME, brandedColorScheme);
+        return previousValue != brandedColorScheme;
     }
 
     /**

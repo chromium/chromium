@@ -57,7 +57,7 @@ public final class BaseSuggestionViewBinder<T extends View>
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
-        } else if (SuggestionCommonProperties.OMNIBOX_THEME == propertyKey) {
+        } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
@@ -147,7 +147,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** @return Whether currently used color scheme is considered to be dark. */
     private static boolean useDarkColors(PropertyModel model) {
         return !OmniboxResourceProvider.isDarkMode(
-                model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+                model.get(SuggestionCommonProperties.COLOR_SCHEME));
     }
 
     /** Update attributes of decorated suggestion icon. */
@@ -207,7 +207,7 @@ public final class BaseSuggestionViewBinder<T extends View>
      */
     private static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
         return OmniboxResourceProvider.resolveAttributeToDrawable(view.getContext(),
-                model.get(SuggestionCommonProperties.OMNIBOX_THEME),
+                model.get(SuggestionCommonProperties.COLOR_SCHEME),
                 R.attr.selectableItemBackground);
     }
 

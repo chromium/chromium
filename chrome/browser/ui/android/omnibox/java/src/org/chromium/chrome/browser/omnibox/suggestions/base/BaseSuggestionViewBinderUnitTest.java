@@ -29,9 +29,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -224,7 +224,7 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
         mBaseView.setActionButtonsCount(1);
         // Change in color scheme happening ahead of setting action could cause a crash.
-        mModel.set(SuggestionCommonProperties.OMNIBOX_THEME, OmniboxTheme.LIGHT_THEME);
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test

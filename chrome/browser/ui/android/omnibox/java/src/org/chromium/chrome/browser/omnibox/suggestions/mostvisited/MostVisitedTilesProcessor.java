@@ -22,12 +22,12 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
@@ -220,8 +220,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                                 .inflate(R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
 
-        Drawable background = OmniboxResourceProvider.resolveAttributeToDrawable(
-                parent.getContext(), OmniboxTheme.LIGHT_THEME, R.attr.selectableItemBackground);
+        Drawable background =
+                OmniboxResourceProvider.resolveAttributeToDrawable(parent.getContext(),
+                        BrandedColorScheme.LIGHT_BRANDED_THEME, R.attr.selectableItemBackground);
         tile.setBackgroundDrawable(background);
         return tile;
     }

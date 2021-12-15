@@ -28,9 +28,9 @@ public class EditUrlSuggestionViewBinder
     public void bind(PropertyModel model, EditUrlSuggestionView view, PropertyKey propertyKey) {
         mBinder.bind(model, view.getBaseSuggestionView(), propertyKey);
 
-        if (SuggestionCommonProperties.OMNIBOX_THEME == propertyKey) {
+        if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             Drawable drawable = OmniboxResourceProvider.resolveAttributeToDrawable(
-                    view.getContext(), model.get(SuggestionCommonProperties.OMNIBOX_THEME),
+                    view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME),
                     android.R.attr.listDivider);
             view.getDivider().setBackground(drawable);
         }

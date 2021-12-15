@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -976,9 +976,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateUseDarkColors() {
             updateButtonsTint();
-            @OmniboxTheme
-            int omniboxTheme = mUseDarkColors ? OmniboxTheme.LIGHT_THEME : OmniboxTheme.DARK_THEME;
-            if (mUrlCoordinator.setOmniboxTheme(omniboxTheme)) {
+            @BrandedColorScheme
+            int brandedColorScheme = mUseDarkColors ? BrandedColorScheme.LIGHT_BRANDED_THEME
+                                                    : BrandedColorScheme.DARK_BRANDED_THEME;
+            if (mUrlCoordinator.setBrandedColorScheme(brandedColorScheme)) {
                 // Update the URL to make it use the new color scheme.
                 updateUrlBar();
             }

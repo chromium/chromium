@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -81,6 +80,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -663,11 +663,12 @@ public class LocationBarMediatorTest {
                 .getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setUseDarkForegroundColors(true);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.LIGHT_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -675,11 +676,12 @@ public class LocationBarMediatorTest {
         doReturn(Color.BLACK).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -688,11 +690,11 @@ public class LocationBarMediatorTest {
         doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.INCOGNITO);
+        verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.INCOGNITO);
     }
 
     @Test
@@ -701,28 +703,29 @@ public class LocationBarMediatorTest {
         doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setUseDarkForegroundColors(true);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DEFAULT);
+        verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
-    public void testUpdateColors_setOmniboxTheme() {
+    public void testUpdateColors_setColorScheme() {
         String url = "https://www.google.com";
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(url).when(mLocationBarDataProvider).getCurrentUrl();
-        doReturn(true).when(mUrlCoordinator).setOmniboxTheme(anyInt());
+        doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
         verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
         verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test

@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -306,16 +306,18 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(getProfile());
-            final @OmniboxTheme int omniboxTheme = OmniboxResourceProvider.getOmniboxTheme(
-                    mContext, isIncognito(), getPrimaryColor());
+            final @BrandedColorScheme int brandedColorScheme =
+                    OmniboxResourceProvider.getBrandedColorScheme(
+                            mContext, isIncognito(), getPrimaryColor());
             final @ColorInt int nonEmphasizedColor =
-                    OmniboxResourceProvider.getUrlBarSecondaryTextColor(mContext, omniboxTheme);
+                    OmniboxResourceProvider.getUrlBarSecondaryTextColor(
+                            mContext, brandedColorScheme);
             final @ColorInt int emphasizedColor =
-                    OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, omniboxTheme);
+                    OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, brandedColorScheme);
             final @ColorInt int dangerColor =
-                    OmniboxResourceProvider.getUrlBarDangerColor(mContext, omniboxTheme);
+                    OmniboxResourceProvider.getUrlBarDangerColor(mContext, brandedColorScheme);
             final @ColorInt int secureColor =
-                    OmniboxResourceProvider.getUrlBarSecureColor(mContext, omniboxTheme);
+                    OmniboxResourceProvider.getUrlBarSecureColor(mContext, brandedColorScheme);
             OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
                     chromeAutocompleteSchemeClassifier, getSecurityLevel(), isInternalPage,
                     shouldEmphasizeHttpsScheme(), nonEmphasizedColor, emphasizedColor, dangerColor,
