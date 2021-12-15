@@ -648,9 +648,7 @@ void SitePerProcessBrowserTestBase::RunPostedTasks() {
   loop.Run();
 }
 
-//
 // SitePerProcessBrowserTest
-//
 
 SitePerProcessBrowserTest::SitePerProcessBrowserTest() {
   InitAndEnableRenderDocumentFeature(&feature_list_, GetParam());
@@ -662,15 +660,13 @@ std::string SitePerProcessBrowserTest::GetExpectedOrigin(
   return url::Origin::Create(url).Serialize();
 }
 
-//
 // SitePerProcessHighDPIBrowserTest
-//
 
 class SitePerProcessHighDPIBrowserTest : public SitePerProcessBrowserTest {
  public:
   const double kDeviceScaleFactor = 2.0;
 
-  SitePerProcessHighDPIBrowserTest() {}
+  SitePerProcessHighDPIBrowserTest() = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -683,35 +679,28 @@ class SitePerProcessHighDPIBrowserTest : public SitePerProcessBrowserTest {
 
 // SitePerProcessIgnoreCertErrorsBrowserTest
 
-class SitePerProcessIgnoreCertErrorsBrowserTest
-    : public SitePerProcessBrowserTest {
- public:
-  SitePerProcessIgnoreCertErrorsBrowserTest() {}
+void SitePerProcessIgnoreCertErrorsBrowserTest::SetUpOnMainThread() {
+  SitePerProcessBrowserTest::SetUpOnMainThread();
+  mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+}
 
- protected:
-  void SetUpOnMainThread() override {
-    SitePerProcessBrowserTest::SetUpOnMainThread();
-    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-  }
+void SitePerProcessIgnoreCertErrorsBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  SitePerProcessBrowserTest::SetUpCommandLine(command_line);
+  mock_cert_verifier_.SetUpCommandLine(command_line);
+}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessBrowserTest::SetUpCommandLine(command_line);
-    mock_cert_verifier_.SetUpCommandLine(command_line);
-  }
+void SitePerProcessIgnoreCertErrorsBrowserTest::
+    SetUpInProcessBrowserTestFixture() {
+  SitePerProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+}
 
-  void SetUpInProcessBrowserTestFixture() override {
-    SitePerProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    SitePerProcessBrowserTest::TearDownInProcessBrowserTestFixture();
-    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
-  }
-
- private:
-  content::ContentMockCertVerifier mock_cert_verifier_;
-};
+void SitePerProcessIgnoreCertErrorsBrowserTest::
+    TearDownInProcessBrowserTestFixture() {
+  SitePerProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+  mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+}
 
 // SitePerProcessAutoplayBrowserTest
 
@@ -735,27 +724,6 @@ class SitePerProcessAutoplayBrowserTest : public SitePerProcessBrowserTest {
                                           EXECUTE_SCRIPT_USE_MANUAL_REPLY)
         .ExtractBool();
   }
-};
-
-// SitePerProcessWebBundleBrowserTest.
-
-class SitePerProcessWebBundleBrowserTest
-    : public SitePerProcessIgnoreCertErrorsBrowserTest {
- public:
-  SitePerProcessWebBundleBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
-  }
-  void SetUpOnMainThread() override {
-    SitePerProcessIgnoreCertErrorsBrowserTest::SetUpOnMainThread();
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    ASSERT_TRUE(https_server_.Start());
-  }
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{
-      net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessHighDPIBrowserTest,
@@ -5824,181 +5792,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The popup's origin should match |b_url|, since it's not sandboxed.
   EXPECT_EQ(url::Origin::Create(b_url).Serialize(),
             EvalJs(foo_root, "self.origin;"));
-}
-
-// A subclass of SitePerProcessIgnoreCertErrorsBrowsertest that disables mixed
-// content autoupgrades.
-// TODO(carlosil): Since the flag will be cleaned up eventually, this should be
-// changed to proper plumbing that adds the relevant urls to the allowlist.
-class SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest
-    : public SitePerProcessIgnoreCertErrorsBrowserTest {
- public:
-  SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest() {
-    feature_list.InitAndDisableFeature(
-        blink::features::kMixedContentAutoupgrade);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list;
-};
-
-// Tests that the WebContents is notified when passive mixed content is
-// displayed in an OOPIF. The test ignores cert errors so that an HTTPS
-// iframe can be loaded from a site other than localhost (the
-// EmbeddedTestServer serves a certificate that is valid for localhost).
-// This test crashes on Windows under Dr. Memory, see https://crbug.com/600942.
-#if defined(OS_WIN)
-#define MAYBE_PassiveMixedContentInIframe DISABLED_PassiveMixedContentInIframe
-#else
-#define MAYBE_PassiveMixedContentInIframe PassiveMixedContentInIframe
-#endif
-IN_PROC_BROWSER_TEST_P(
-    SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest,
-    MAYBE_PassiveMixedContentInIframe) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  SetupCrossSiteRedirector(&https_server);
-  ASSERT_TRUE(https_server.Start());
-
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  GURL iframe_url(
-      https_server.GetURL("/mixed-content/basic-passive-in-iframe.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), iframe_url));
-  NavigationEntry* entry = web_contents->GetController().GetVisibleEntry();
-  EXPECT_TRUE(!!(entry->GetSSL().content_status &
-                 SSLStatus::DISPLAYED_INSECURE_CONTENT));
-
-  // When the subframe navigates, the WebContents should still be marked
-  // as having displayed insecure content.
-  GURL navigate_url(https_server.GetURL("/title1.html"));
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
-  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), navigate_url));
-  entry = web_contents->GetController().GetVisibleEntry();
-  EXPECT_TRUE(!!(entry->GetSSL().content_status &
-                 SSLStatus::DISPLAYED_INSECURE_CONTENT));
-
-  // When the main frame navigates, it should no longer be marked as
-  // displaying insecure content.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server.GetURL("b.com", "/title1.html")));
-  entry = web_contents->GetController().GetVisibleEntry();
-  EXPECT_FALSE(!!(entry->GetSSL().content_status &
-                  SSLStatus::DISPLAYED_INSECURE_CONTENT));
-}
-
-// Tests that, when a parent frame is set to strictly block mixed
-// content via Content Security Policy, child OOPIFs cannot display
-// mixed content.
-IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
-                       PassiveMixedContentInIframeWithStrictBlocking) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  SetupCrossSiteRedirector(&https_server);
-  ASSERT_TRUE(https_server.Start());
-
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  GURL iframe_url_with_strict_blocking(https_server.GetURL(
-      "/mixed-content/basic-passive-in-iframe-with-strict-blocking.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), iframe_url_with_strict_blocking));
-  NavigationEntry* entry = web_contents->GetController().GetVisibleEntry();
-  EXPECT_FALSE(!!(entry->GetSSL().content_status &
-                  SSLStatus::DISPLAYED_INSECURE_CONTENT));
-
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
-            root->current_replication_state().insecure_request_policy);
-  EXPECT_EQ(
-      blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
-      root->child_at(0)->current_replication_state().insecure_request_policy);
-
-  // When the subframe navigates, it should still be marked as enforcing
-  // strict mixed content.
-  GURL navigate_url(https_server.GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), navigate_url));
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
-            root->current_replication_state().insecure_request_policy);
-  EXPECT_EQ(
-      blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
-      root->child_at(0)->current_replication_state().insecure_request_policy);
-
-  // When the main frame navigates, it should no longer be marked as
-  // enforcing strict mixed content.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server.GetURL("b.com", "/title1.html")));
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-            root->current_replication_state().insecure_request_policy);
-}
-
-// Tests that, when a parent frame is set to upgrade insecure requests
-// via Content Security Policy, child OOPIFs will upgrade as well.
-IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
-                       PassiveMixedContentInIframeWithUpgrade) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  SetupCrossSiteRedirector(&https_server);
-  ASSERT_TRUE(https_server.Start());
-
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  GURL iframe_url_with_upgrade(https_server.GetURL(
-      "/mixed-content/basic-passive-in-iframe-with-upgrade.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), iframe_url_with_upgrade));
-  NavigationEntry* entry = web_contents->GetController().GetVisibleEntry();
-  EXPECT_FALSE(!!(entry->GetSSL().content_status &
-                  SSLStatus::DISPLAYED_INSECURE_CONTENT));
-
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
-            root->current_replication_state().insecure_request_policy);
-  EXPECT_EQ(
-      blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
-      root->child_at(0)->current_replication_state().insecure_request_policy);
-
-  // When the subframe navigates, it should still be marked as upgrading
-  // insecure requests.
-  GURL navigate_url(https_server.GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), navigate_url));
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
-            root->current_replication_state().insecure_request_policy);
-  EXPECT_EQ(
-      blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
-      root->child_at(0)->current_replication_state().insecure_request_policy);
-
-  // When the main frame navigates, it should no longer be marked as
-  // upgrading insecure requests.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server.GetURL("b.com", "/title1.html")));
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-            root->current_replication_state().insecure_request_policy);
-}
-
-// Tests that active mixed content is blocked in an OOPIF. The test
-// ignores cert errors so that an HTTPS iframe can be loaded from a site
-// other than localhost (the EmbeddedTestServer serves a certificate
-// that is valid for localhost).
-IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
-                       ActiveMixedContentInIframe) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  SetupCrossSiteRedirector(&https_server);
-  ASSERT_TRUE(https_server.Start());
-
-  GURL iframe_url(
-      https_server.GetURL("/mixed-content/basic-active-in-iframe.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), iframe_url));
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* mixed_child = root->child_at(0)->child_at(0);
-  ASSERT_TRUE(mixed_child);
-  // The child iframe attempted to create a mixed iframe; this should
-  // have been blocked, so the mixed iframe should still be on the initial empty
-  // document.
-  EXPECT_TRUE(mixed_child->is_on_initial_empty_document());
 }
 
 // Test that subresources with certificate errors get reported to the
@@ -15234,176 +15027,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   }
 }
 
-// Check that a uuid-in-package: subframe instantiated from a same-origin
-// WebBundle reuses its parent's process.
-IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, SameSiteBundle) {
-  GURL bundle_url(
-      https_server()->GetURL("foo.test", "/web_bundle/uuid-in-package.wbn"));
-  GURL frame_url("uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae");
-  GURL main_url(https_server()->GetURL(
-      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +
-                      "&frame=" + frame_url.spec()));
-  std::u16string expected_title(u"OK");
-  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* child_node = root->child_at(0);
-  EXPECT_EQ(child_node->current_url(), frame_url);
-  EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
-            child_node->current_frame_host()->GetSiteInstance());
-}
-
-// Check that a uuid-in-package: subframe instantiated from a WebBundle gets a
-// process for the Bundle's origin.
-IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
-  GURL bundle_url(
-      https_server()->GetURL("bar.test", "/web_bundle/uuid-in-package.wbn"));
-  GURL frame_url("uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae");
-  GURL main_url(https_server()->GetURL(
-      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +
-                      "&frame=" + frame_url.spec()));
-  std::u16string expected_title(u"OK");
-  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* child_node = root->child_at(0);
-  EXPECT_EQ(child_node->current_url(), frame_url);
-  url::Origin last_committed_origin =
-      child_node->current_frame_host()->GetLastCommittedOrigin();
-  EXPECT_TRUE(last_committed_origin.opaque());
-  const url::SchemeHostPort& tuple =
-      last_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
-  EXPECT_EQ("bar.test", tuple.host());
-
-  // An iframe nested in the uuid-in-package: iframe gets a non-opaque origin.
-  GURL c_url = https_server()->GetURL("c.test", "/title1.html");
-  TestNavigationObserver observer(c_url);
-  observer.WatchExistingWebContents();
-
-  // Create the subframe now.
-  std::string create_frame_script = base::StringPrintf(
-      "var new_iframe = document.createElement('iframe');"
-      "new_iframe.src = '%s';"
-      "document.body.appendChild(new_iframe);",
-      c_url.spec().c_str());
-  EXPECT_TRUE(ExecJs(child_node, create_frame_script));
-
-  observer.WaitForNavigationFinished();
-  EXPECT_TRUE(observer.last_navigation_succeeded());
-
-  ASSERT_EQ(1U, child_node->child_count());
-  FrameTreeNode* grandchild_node = child_node->child_at(0);
-  url::Origin grandchild_committed_origin =
-      grandchild_node->current_frame_host()->GetLastCommittedOrigin();
-  EXPECT_FALSE(grandchild_committed_origin.opaque());
-  const url::SchemeHostPort& c_tuple =
-      grandchild_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
-  EXPECT_EQ("c.test", c_tuple.host());
-  EXPECT_FALSE(
-      last_committed_origin.IsSameOriginWith(grandchild_committed_origin));
-
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        +--Site C -- proxies for A B\n"
-      "Where A = https://foo.test/\n"
-      "      B = https://bar.test/\n"
-      "      C = https://c.test/",
-      DepictFrameTree(root));
-}
-
-// Check that a urn:uuid subframe instantiated from a same-origin WebBundle
-// reuses its parent's process.
-IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest,
-                       SameSiteUrnUuidBundle) {
-  GURL bundle_url(
-      https_server()->GetURL("foo.test", "/web_bundle/urn-uuid.wbn"));
-  GURL frame_url("urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae");
-  GURL main_url(https_server()->GetURL(
-      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +
-                      "&frame=" + frame_url.spec()));
-  std::u16string expected_title(u"OK");
-  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* child_node = root->child_at(0);
-  EXPECT_EQ(child_node->current_url(), frame_url);
-  EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
-            child_node->current_frame_host()->GetSiteInstance());
-}
-
-// Check that a urn:uuid subframe instantiated from a WebBundle gets a process
-// for the Bundle's origin.
-IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest,
-                       CrossSiteUrnUuidBundle) {
-  GURL bundle_url(
-      https_server()->GetURL("bar.test", "/web_bundle/urn-uuid.wbn"));
-  GURL frame_url("urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae");
-  GURL main_url(https_server()->GetURL(
-      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +
-                      "&frame=" + frame_url.spec()));
-  std::u16string expected_title(u"OK");
-  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* child_node = root->child_at(0);
-  EXPECT_EQ(child_node->current_url(), frame_url);
-  url::Origin last_committed_origin =
-      child_node->current_frame_host()->GetLastCommittedOrigin();
-  EXPECT_TRUE(last_committed_origin.opaque());
-  const url::SchemeHostPort& tuple =
-      last_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
-  EXPECT_EQ("bar.test", tuple.host());
-
-  // An iframe nested in the urn:uuid iframe gets a non-opaque origin.
-  GURL c_url = https_server()->GetURL("c.test", "/title1.html");
-  TestNavigationObserver observer(c_url);
-  observer.WatchExistingWebContents();
-
-  // Create the subframe now.
-  std::string create_frame_script = base::StringPrintf(
-      "var new_iframe = document.createElement('iframe');"
-      "new_iframe.src = '%s';"
-      "document.body.appendChild(new_iframe);",
-      c_url.spec().c_str());
-  EXPECT_TRUE(ExecJs(child_node, create_frame_script));
-
-  observer.WaitForNavigationFinished();
-  EXPECT_TRUE(observer.last_navigation_succeeded());
-
-  ASSERT_EQ(1U, child_node->child_count());
-  FrameTreeNode* grandchild_node = child_node->child_at(0);
-  url::Origin grandchild_committed_origin =
-      grandchild_node->current_frame_host()->GetLastCommittedOrigin();
-  EXPECT_FALSE(grandchild_committed_origin.opaque());
-  const url::SchemeHostPort& c_tuple =
-      grandchild_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
-  EXPECT_EQ("c.test", c_tuple.host());
-  EXPECT_FALSE(
-      last_committed_origin.IsSameOriginWith(grandchild_committed_origin));
-
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        +--Site C -- proxies for A B\n"
-      "Where A = https://foo.test/\n"
-      "      B = https://bar.test/\n"
-      "      C = https://c.test/",
-      DepictFrameTree(root));
-}
-
 // Tests that verify the feature disabling process reuse.
 class DisableProcessReusePolicyTest : public SitePerProcessBrowserTest {
  public:
@@ -15486,13 +15109,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          DisableProcessReusePolicyTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest,
-    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-INSTANTIATE_TEST_SUITE_P(All,
-                         SitePerProcessWebBundleBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #if defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
