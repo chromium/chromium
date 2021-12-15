@@ -114,10 +114,8 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
-#if !defined(OS_ANDROID)
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
       *this, GetPedalImplementations(IsOffTheRecord(), false));
-#endif
 }
 
 ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() = default;
