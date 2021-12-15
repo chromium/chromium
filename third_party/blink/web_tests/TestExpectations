@@ -7908,7 +7908,5 @@ crbug.com/1278588 [ Win7 ] svg/filters/filter-hidden-content.svg [ Failure ]
 
 crbug.com/1277973 http/tests/xmlhttprequest/uri-resolution-opera-open-007.html [ Crash Failure Pass ]
 
-crbug.com/1278738 http/tests/devtools/console/console-format-style.js [ Failure Pass ]
-
 # Sheriff 2021-12-13
 crbug.com/1279586 [ Mac ] external/wpt/IndexedDB/idbobjectstore-rename-abort.html [ Failure ]
