@@ -29,9 +29,11 @@ class LensSidePanelControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kLensRegionSearch, ::features::kSidePanel,
-         reading_list::switches::kReadLater},
+    features.InitWithFeaturesAndParameters(
+        {{features::kLensRegionSearch,
+          {{"region-search-enable-side-panel", "true"}}},
+         {::features::kSidePanel, {}},
+         {reading_list::switches::kReadLater, {}}},
         {});
     TestWithBrowserView::SetUp();
     // Create the lens side panel controller in BrowserView.
