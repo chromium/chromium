@@ -184,8 +184,26 @@ void ArcScreenCaptureSession::NotificationStop() {
   Close();
 }
 
+void ArcScreenCaptureSession::SetOutputBufferDeprecated(
+    mojo::ScopedHandle graphics_buffer,
+    uint32_t stride,
+    SetOutputBufferDeprecatedCallback callback) {
+  // Defined locally to avoid having to add a dependency on drm_fourcc.h
+  constexpr uint64_t DRM_FORMAT_MOD_LINEAR = 0;
+
+  SetOutputBuffer(std::move(graphics_buffer), gfx::BufferFormat::RGBX_8888,
+                  DRM_FORMAT_MOD_LINEAR, stride,
+                  base::BindOnce(
+                      [](base::OnceCallback<void()> callback) {
+                        std::move(callback).Run();
+                      },
+                      std::move(callback)));
+}
+
 void ArcScreenCaptureSession::SetOutputBuffer(
     mojo::ScopedHandle graphics_buffer,
+    gfx::BufferFormat buffer_format,
+    uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -203,8 +221,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
-  // Dummy modifier.
-  handle.native_pixmap_handle.modifier = 0;
+  handle.native_pixmap_handle.modifier = buffer_format_modifier;
   base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
@@ -219,7 +236,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory_.get(), std::move(handle), size_,
-          gfx::BufferFormat::RGBX_8888, gfx::BufferUsage::SCANOUT,
+          buffer_format, gfx::BufferUsage::SCANOUT,
           gpu::GpuMemoryBufferImpl::DestructionCallback());
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed creating GpuMemoryBuffer";
