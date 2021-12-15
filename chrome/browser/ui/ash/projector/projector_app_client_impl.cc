@@ -39,10 +39,11 @@ inline const speech::LanguageCode GetLocaleLanguageCode() {
 void ProjectorAppClientImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
-      ash::prefs::kProjectorCreationFlowEnabled, false,
+      ash::prefs::kProjectorCreationFlowEnabled, /*default_value=*/false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterStringPref(
-      ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale,
+      ash::prefs::kProjectorCreationFlowLanguage,
+      /*default_value=*/kUsEnglishLocale,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterIntegerPref(
       ash::prefs::kProjectorGalleryOnboardingShowCount, 0,
@@ -50,6 +51,8 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       ash::prefs::kProjectorViewerOnboardingShowCount, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(ash::prefs::kProjectorAllowByPolicy,
+                                /*default_value=*/false);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl()

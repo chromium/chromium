@@ -1310,6 +1310,15 @@
       ],
     },
     {
+      'name': 'Projector',
+      'type': 'group',
+      'caption': '''Projector''',
+      'desc': '''Controls policies for Projector.''',
+      'policies': [
+        'ProjectorEnabled',
+      ]
+    },
+    {
       'name': 'HomepageLocation',
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
@@ -29114,6 +29123,37 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
       This policy should be removed after kEnableLazyLoginWebUILoading is fully rolled out.''',
     },
+    {
+      'name': 'ProjectorEnabled',
+      'owners': ['llin@google.com', 'cros-projector@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:99-'],
+      'tags' : ['google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Projector',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Projector',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 935,
+      'caption': '''Enable Projector''',
+      'desc': '''This policy gives Projector permission to create and transcribe screen recording and upload to Drive.
+
+      If the policy is enabled, Projector will be enabled.
+      If the policy is disabled, Projector will be disabled.
+      If the policy is not set, Projector will by default disabled.''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -30088,6 +30128,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 934,
+  'highest_id_currently_used': 935,
   'highest_atomic_group_id_currently_used': 41
 }

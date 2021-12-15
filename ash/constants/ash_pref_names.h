@@ -402,20 +402,23 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorCreationFlowEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kChromadToCloudMigrationEnabled[];
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorCreationFlowLanguage[];
-
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppFolderShortcuts[];
-
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppUIPrefsMigrated[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorGalleryOnboardingShowCount[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorViewerOnboardingShowCount[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorAllowByPolicy[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kChromadToCloudMigrationEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppFolderShortcuts[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppUIPrefsMigrated[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLoginScreenWebUILazyLoading[];

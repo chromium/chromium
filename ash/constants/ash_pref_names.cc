@@ -876,17 +876,31 @@ const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
 // A boolean pref that tracks whether the user has enabled Projector creation
 // flow during onboarding.
 const char kProjectorCreationFlowEnabled[] =
-    "ash.projector.creationFlowEnabled";
+    "ash.projector.creation_flow_enabled";
+
+// A string pref that tracks the language installed for the Projector creation
+// flow.
+const char kProjectorCreationFlowLanguage[] =
+    "ash.projector.creation_flow_language";
+
+// An integer pref counting the number of times the Onboarding flow has been
+// shown to the user inside the Projector Gallery.
+const char kProjectorGalleryOnboardingShowCount[] =
+    "ash.projector.gallery_onboarding_show_count";
+
+// An integer pref counting the number of times the Onboarding flow has been
+// shown to the user inside the Projector Viewer.
+const char kProjectorViewerOnboardingShowCount[] =
+    "ash.projector.viewer_onboarding_show_count";
+
+// A boolean pref that indicates the Projector has been enabled by admin
+// policy.
+const char kProjectorAllowByPolicy[] = "ash.projector.allow_by_policy";
 
 // A boolean pref that indicates whether the migration of Chromad devices to
 // cloud management can be started.
 const char kChromadToCloudMigrationEnabled[] =
     "ash.chromad_to_cloud_migration_enabled";
-
-// A string pref that tracks the language installed for the Projector creation
-// flow.
-const char kProjectorCreationFlowLanguage[] =
-    "ash.projector.creationFlowLanguage";
 
 // List of Drive Folder Shortcuts in the Files app. Used to sync the shortcuts
 // across devices.
@@ -895,16 +909,6 @@ const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
 // A boolean pref that indicates if the Files app UI prefs have migrated from
 // the Chrome app to System Web App.
 const char kFilesAppUIPrefsMigrated[] = "ash.filesapp.ui_prefs_migrated";
-
-// An integer pref counting the number of times the Onboarding flow has been
-// shown to the user inside the Projector Gallery.
-const char kProjectorGalleryOnboardingShowCount[] =
-    "ash.projector.galleryOnboardingShowCount";
-
-// An integer pref counting the number of times the Onboarding flow has been
-// shown to the user inside the Projector Viewer.
-const char kProjectorViewerOnboardingShowCount[] =
-    "ash.projector.viewerOnboardingShowCount";
 
 // Boolean value for the DeviceLoginScreenWebUILazyLoading device policy.
 const char kLoginScreenWebUILazyLoading[] =

@@ -1290,6 +1290,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kChromadToCloudMigrationEnabled,
     ash::prefs::kChromadToCloudMigrationEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kProjectorEnabled,
+    ash::prefs::kProjectorAllowByPolicy,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
