@@ -49,17 +49,37 @@ constexpr auto kSmoothnessTakesPriorityExpirationDelay =
 
 }  // namespace
 
-// Ensures that a CompletionEvent is always signaled.
-class ScopedCompletionEvent {
+// Ensures that a CompletionEvent for commit is always signaled.
+class ScopedCommitCompletionEvent {
  public:
-  explicit ScopedCompletionEvent(CompletionEvent* event) : event_(event) {}
-  ScopedCompletionEvent(const ScopedCompletionEvent&) = delete;
-  ~ScopedCompletionEvent() { event_->Signal(); }
+  ScopedCommitCompletionEvent(
+      CompletionEvent* event,
+      base::TimeTicks start_time,
+      base::SingleThreadTaskRunner* main_thread_task_runner,
+      base::WeakPtr<ProxyMain> proxy_main_weak_ptr)
+      : event_(event),
+        commit_timestamps_({start_time, base::TimeTicks()}),
+        main_thread_task_runner_(main_thread_task_runner),
+        proxy_main_weak_ptr_(proxy_main_weak_ptr) {}
+  ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
+  ~ScopedCommitCompletionEvent() {
+    event_->Signal();
+    main_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
+                                  proxy_main_weak_ptr_, commit_timestamps_));
+  }
+  ScopedCommitCompletionEvent& operator=(const ScopedCommitCompletionEvent&) =
+      delete;
 
-  ScopedCompletionEvent& operator=(const ScopedCompletionEvent&) = delete;
+  void SetFinishTime(base::TimeTicks finish_time) {
+    commit_timestamps_.finish = finish_time;
+  }
 
  private:
-  const raw_ptr<CompletionEvent> event_;
+  CompletionEvent* const event_;
+  CommitTimestamps commit_timestamps_;
+  base::SingleThreadTaskRunner* main_thread_task_runner_;
+  base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;
 };
 
 ProxyImpl::ProxyImpl(
@@ -275,13 +295,24 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     CommitTimestamps* commit_timestamps) {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!data_for_commit_.get());
-  DCHECK(IsImplThread() && IsMainThreadBlocked());
+  DCHECK(IsImplThread());
+  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
+         IsMainThreadBlocked());
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
 
   // Inform the layer tree host that the commit has started, so that metrics
   // can determine how long we waited for thread synchronization.
-  commit_timestamps->start = base::TimeTicks::Now();
+  //
+  // If NonBlockingCommit is disabled, then commit_timestamps points to a
+  // variable on the call stack of the main thread. If NonBlockingCommit is
+  // enabled, then the commit timestamps are transmitted back to the main thread
+  // by ScopedCommitCompletionEvent.
+  DCHECK_NE((bool)commit_timestamps,
+            base::FeatureList::IsEnabled(features::kNonBlockingCommit));
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  if (commit_timestamps)
+    commit_timestamps->start = start_time;
 
   if (!host_impl_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoLayerTree",
@@ -298,7 +329,9 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   data_for_commit_ = std::make_unique<DataForCommit>(
-      std::make_unique<ScopedCompletionEvent>(completion_event),
+      std::make_unique<ScopedCommitCompletionEvent>(
+          completion_event, start_time, MainThreadTaskRunner(),
+          proxy_main_weak_ptr_),
       std::move(commit_state), unsafe_state, commit_timestamps);
 
   // Extract metrics data from the layer tree host and send them to the
@@ -666,7 +699,8 @@ DrawResult ProxyImpl::ScheduledActionDrawForced() {
 void ProxyImpl::ScheduledActionCommit() {
   TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionCommit");
   DCHECK(IsImplThread());
-  DCHECK(IsMainThreadBlocked());
+  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
+         IsMainThreadBlocked());
   DCHECK(data_for_commit_.get());
   DCHECK(data_for_commit_->IsValid());
 
@@ -680,7 +714,10 @@ void ProxyImpl::ScheduledActionCommit() {
   auto* unsafe_state = data_for_commit_->unsafe_state;
   host_impl_->BeginCommit(commit_state->source_frame_number);
   host_impl_->FinishCommit(*commit_state, *unsafe_state);
-  data_for_commit_->commit_timestamps->finish = base::TimeTicks::Now();
+  base::TimeTicks finish_time = base::TimeTicks::Now();
+  if (data_for_commit_->commit_timestamps)
+    data_for_commit_->commit_timestamps->finish = finish_time;
+  data_for_commit_->commit_completion_event->SetFinishTime(finish_time);
 
   if (commit_state->commit_waits_for_activation) {
     // For some layer types in impl-side painting, the commit is held until the
@@ -859,7 +896,7 @@ void ProxyImpl::SetEnableFrameRateThrottling(
 }
 
 ProxyImpl::DataForCommit::DataForCommit(
-    std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
+    std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
     std::unique_ptr<CommitState> commit_state,
     ThreadUnsafeCommitState* unsafe_state,
     CommitTimestamps* commit_timestamps)
@@ -872,7 +909,8 @@ ProxyImpl::DataForCommit::~DataForCommit() = default;
 
 bool ProxyImpl::DataForCommit::IsValid() const {
   return commit_completion_event.get() && commit_state.get() && unsafe_state &&
-         commit_timestamps;
+         (base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
+          commit_timestamps);
 }
 
 }  // namespace cc

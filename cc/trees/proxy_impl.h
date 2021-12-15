@@ -28,7 +28,7 @@ class ProxyMain;
 class RenderFrameMetadataObserver;
 
 class JankInjector;
-class ScopedCompletionEvent;
+class ScopedCommitCompletionEvent;
 
 // This class aggregates all the interactions that the main side of the
 // compositor needs to have with the impl side.
@@ -169,7 +169,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   struct DataForCommit {
     DataForCommit(
-        std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
+        std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
         std::unique_ptr<CommitState> commit_state,
         ThreadUnsafeCommitState* unsafe_state,
         CommitTimestamps* commit_timestamps);
@@ -179,7 +179,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
     bool IsValid() const;
 
     // Set when the main thread is waiting on a commit to complete.
-    std::unique_ptr<ScopedCompletionEvent> commit_completion_event;
+    std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event;
     std::unique_ptr<CommitState> commit_state;
     ThreadUnsafeCommitState* unsafe_state;
     // This is passed from the main thread so the impl thread can record
@@ -190,7 +190,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   std::unique_ptr<DataForCommit> data_for_commit_;
 
   // Set when the main thread is waiting for activation to complete.
-  std::unique_ptr<ScopedCompletionEvent> activation_completion_event_;
+  std::unique_ptr<ScopedCommitCompletionEvent> activation_completion_event_;
 
   // Set when the next draw should post DidCommitAndDrawFrame to the main
   // thread.

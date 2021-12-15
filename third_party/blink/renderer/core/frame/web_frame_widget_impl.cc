@@ -2061,12 +2061,6 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
   commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
   probe::LayerTreePainted(LocalRootImpl()->GetFrame());
-}
-
-void WebFrameWidgetImpl::EndCommitCompositorFrame(
-    base::TimeTicks commit_start_time,
-    base::TimeTicks commit_finish_time) {
-  DCHECK(commit_compositor_frame_start_time_.has_value());
   if (ForTopMostMainFrame()) {
     Document* doc = local_root_->GetFrame()->GetDocument();
     if (doc->GetSettings()->GetViewportMetaEnabled() &&
@@ -2087,7 +2081,12 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       base::debug::DumpWithoutCrashing();
     }
   }
+}
 
+void WebFrameWidgetImpl::EndCommitCompositorFrame(
+    base::TimeTicks commit_start_time,
+    base::TimeTicks commit_finish_time) {
+  DCHECK(commit_compositor_frame_start_time_.has_value());
   LocalRootImpl()
       ->GetFrame()
       ->View()

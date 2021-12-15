@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/devtools_instrumentation.h"
+#include "cc/base/features.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -138,12 +139,6 @@ void ProxyMain::BeginMainFrame(
   if (layer_tree_host_->scheduling_client())
     layer_tree_host_->scheduling_client()->DidRunBeginMainFrame();
 
-  // If the commit finishes, LayerTreeHost will transfer its swap promises to
-  // LayerTreeImpl. The destructor of ScopedSwapPromiseChecker aborts the
-  // remaining swap promises.
-  ScopedAbortRemainingSwapPromises swap_promise_checker(
-      layer_tree_host_->GetSwapPromiseManager());
-
   // We need to issue image decode callbacks whether or not we will abort this
   // update and commit, since the request ids are only stored in
   // |begin_main_frame_state|.
@@ -171,6 +166,8 @@ void ProxyMain::BeginMainFrame(
                        begin_main_frame_start_time,
                        std::move(empty_swap_promises),
                        false /* scroll_and_viewport_changes_synced */));
+    layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
+        SwapPromise::COMMIT_FAILS);
     return;
   }
 
@@ -197,6 +194,8 @@ void ProxyMain::BeginMainFrame(
     // previously requested pipeline stages.
     deferred_final_pipeline_stage_ =
         std::max(final_pipeline_stage_, deferred_final_pipeline_stage_);
+    layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
+        SwapPromise::COMMIT_FAILS);
     return;
   }
 
@@ -292,6 +291,8 @@ void ProxyMain::BeginMainFrame(
     // When we stop deferring commits, we should resume any previously requested
     // pipeline stages.
     deferred_final_pipeline_stage_ = final_pipeline_stage_;
+    layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
+        SwapPromise::COMMIT_FAILS);
     return;
   }
 
@@ -317,7 +318,7 @@ void ProxyMain::BeginMainFrame(
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
-  devtools_instrumentation::ScopedCommitTrace commit_task(
+  commit_trace_ = std::make_unique<devtools_instrumentation::ScopedCommitTrace>(
       layer_tree_host_->GetId(),
       begin_main_frame_state->begin_frame_args.frame_id.sequence_number);
 
@@ -364,6 +365,7 @@ void ProxyMain::BeginMainFrame(
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
+    commit_trace_.reset();
     return;
   }
 
@@ -374,10 +376,13 @@ void ProxyMain::BeginMainFrame(
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
   CommitTimestamps commit_timestamps;
+  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit);
   {
     TRACE_EVENT0("cc,raf_investigation", "ProxyMain::BeginMainFrame::commit");
 
-    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
+    absl::optional<DebugScopedSetMainThreadBlocked> main_thread_blocked;
+    if (blocking)
+      main_thread_blocked.emplace(task_runner_provider_);
 
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
@@ -385,8 +390,9 @@ void ProxyMain::BeginMainFrame(
                                   completion_event, std::move(commit_state),
                                   &unsafe_state, begin_main_frame_start_time,
                                   begin_main_frame_state->begin_frame_args,
-                                  &commit_timestamps));
-    layer_tree_host_->WaitForCommitCompletion();
+                                  blocking ? &commit_timestamps : nullptr));
+    if (blocking)
+      layer_tree_host_->WaitForCommitCompletion();
   }
 
   // For Blink implementations, this updates frame throttling and
@@ -394,10 +400,19 @@ void ProxyMain::BeginMainFrame(
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
-  layer_tree_host_->CommitComplete(commit_timestamps);
+  if (blocking)
+    layer_tree_host_->CommitComplete(commit_timestamps);
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
+}
+
+void ProxyMain::DidCompleteCommit(CommitTimestamps commit_timestamps) {
+  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit))
+    return;
+  if (layer_tree_host_)
+    layer_tree_host_->CommitComplete(commit_timestamps);
+  commit_trace_.reset();
 }
 
 void ProxyMain::DidPresentCompositorFrame(
@@ -643,16 +658,15 @@ void ProxyMain::SetPaintWorkletLayerPainter(
 bool ProxyMain::MainFrameWillHappenForTesting() {
   DCHECK(IsMainThread());
   bool main_frame_will_happen = false;
-  {
-    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
-    CompletionEvent completion;
-    ImplThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProxyImpl::MainFrameWillHappenOnImplForTesting,
-                       base::Unretained(proxy_impl_.get()), &completion,
-                       &main_frame_will_happen));
-    completion.Wait();
-  }
+  if (layer_tree_host_)
+    layer_tree_host_->WaitForCommitCompletion();
+  DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
+  CompletionEvent completion;
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::MainFrameWillHappenOnImplForTesting,
+                                base::Unretained(proxy_impl_.get()),
+                                &completion, &main_frame_will_happen));
+  completion.Wait();
   return main_frame_will_happen;
 }
 

@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/base/features.h"
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/debug/layer_tree_debug_state.h"
@@ -279,6 +280,10 @@ void LayerTreeView::WillCommit(const cc::CommitState&) {
   if (!delegate_)
     return;
   delegate_->WillCommitCompositorFrame();
+  if (base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
+    if (web_main_thread_scheduler_)
+      web_main_thread_scheduler_->DidCommitFrameToCompositor();
+  }
 }
 
 void LayerTreeView::DidCommit(base::TimeTicks commit_start_time,
@@ -286,8 +291,10 @@ void LayerTreeView::DidCommit(base::TimeTicks commit_start_time,
   if (!delegate_)
     return;
   delegate_->DidCommitCompositorFrame(commit_start_time, commit_finish_time);
-  if (web_main_thread_scheduler_)
-    web_main_thread_scheduler_->DidCommitFrameToCompositor();
+  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
+    if (web_main_thread_scheduler_)
+      web_main_thread_scheduler_->DidCommitFrameToCompositor();
+  }
 }
 
 void LayerTreeView::DidCommitAndDrawFrame() {

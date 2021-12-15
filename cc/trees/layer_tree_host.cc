@@ -425,6 +425,7 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
 void LayerTreeHost::WaitForCommitCompletion() {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
+    TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
   }
@@ -442,6 +443,7 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 }
 
 void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
+  DCHECK(IsMainThread());
   // This DCHECK ensures that WaitForCommitCompletion() will not block.
   DCHECK(IsMainThread());
   DCHECK(!in_commit());

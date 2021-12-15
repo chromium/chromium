@@ -53,10 +53,16 @@ CC_BASE_EXPORT extern const base::Feature
 CC_BASE_EXPORT extern const base::Feature
     kDurationEstimatesInCompositorTimingHistory;
 
+// When enabled, the main thread does not block while commit is running on the
+// impl thread.
+// WARNING: This feature is not yet safe to enable. Work is needed to ensure
+// that main thread cc data structures are not modified on the main thread while
+// commit is running concurrently on the impl thread.
+CC_BASE_EXPORT extern const base::Feature kNonBlockingCommit;
+
 // When enabled, DroppedFrameCounter will use an adjusted sliding window
 // interval specified by field trial params.
 CC_BASE_EXPORT extern const base::Feature kSlidingWindowForDroppedFrameCounter;
-
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

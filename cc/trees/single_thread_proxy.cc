@@ -214,7 +214,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   // Strictly speaking, it's not necessary to pass a CompletionEvent to
   // WillCommit, since we can't have thread contention issues. The benefit to
   // creating one here is that it simplifies LayerTreeHost::in_commit(), which
-  // useful in DCHECKs sprinkled throughout the code.
+  // is useful in DCHECKs sprinkled throughout the code.
   auto completion_event_ptr = std::make_unique<CompletionEvent>(
       base::WaitableEvent::ResetPolicy::MANUAL);
   auto* completion_event = completion_event_ptr.get();

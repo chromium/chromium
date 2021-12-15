@@ -7981,7 +7981,18 @@ class LayerTreeHostTestNoTasksBetweenWillAndDidCommit
  public:
   LayerTreeHostTestNoTasksBetweenWillAndDidCommit() : did_commit_(false) {}
 
-  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+  void BeginTest() override {
+    // The entire purpose of Non-Blocking Commit is to allow the main thread to
+    // continue doing work while commit is running on the impl thread, making
+    // this test obsolete.
+    if (base::FeatureList::IsEnabled(features::kNonBlockingCommit) &&
+        layer_tree_host()->IsThreaded()) {
+      DidCommit();
+      EndTest();
+    } else {
+      PostSetNeedsCommitToMainThread();
+    }
+  }
 
   void WillCommit(const CommitState&) override {
     MainThreadTaskRunner()->PostTask(
