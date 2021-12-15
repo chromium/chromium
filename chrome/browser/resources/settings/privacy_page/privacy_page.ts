@@ -34,6 +34,7 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -269,6 +270,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.addWebUIListener(
         'cookieSettingDescriptionChanged',
         (description: string) => this.cookieSettingDescription_ = description);
+
+    this.addWebUIListener(
+        'is-managed-changed', this.onIsManagedChanged_.bind(this));
+    this.addWebUIListener(
+        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 
   currentRouteChanged() {
@@ -364,6 +370,24 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(
         routes.PRIVACY_REVIEW, /* dynamicParams */ undefined,
         /* removeSearch */ true);
+  }
+
+  private onIsManagedChanged_(isManaged: boolean) {
+    // If the user became managed, then hide the privacy review entry point.
+    // However, if the user was managed before and is no longer now, then do not
+    // make the privacy review entry point visible, as the Settings route for
+    // privacy review would still be unavailable until the page is reloaded.
+    this.enablePrivacyReview_ = this.enablePrivacyReview_ && !isManaged;
+  }
+
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    // If the user signed in to a child user account, then hide the privacy
+    // review entry point. However, if the user was a child user before and is
+    // no longer now then do not make the privacy review entry point visible, as
+    // the Settings route for privacy review would still be unavailable until
+    // the page is reloaded.
+    this.enablePrivacyReview_ =
+        this.enablePrivacyReview_ && !syncStatus.childUser;
   }
 
   private interactedWithPage_() {
