@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
@@ -482,6 +483,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkFooter];
   linkFooter.text =
       @"This is a footer text view with a BEGIN_LINKlinkEND_LINK in the middle";
+  linkFooter.urls =
+      @[ [[CrURL alloc] initWithGURL:GURL("http://www.example.com")] ];
   [model setFooter:linkFooter
       forSectionWithIdentifier:SectionIdentifierSettings];
 
