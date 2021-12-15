@@ -16,13 +16,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace extensions {
-class Extension;
-}  // namespace extensions
-
 namespace policy {
-
-extern const base::FilePath::CharType kTestExtensionsDir[];
 
 class PolicyMap;
 
@@ -48,9 +42,6 @@ class PolicyTest : public PlatformBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void SetScreenshotPolicy(bool enabled);
-
-  scoped_refptr<const extensions::Extension> LoadUnpackedExtension(
-      const base::FilePath::StringType& name);
 
   void UpdateProviderPolicy(const PolicyMap& policy);
 

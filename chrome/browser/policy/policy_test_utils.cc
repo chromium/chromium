@@ -14,12 +14,8 @@
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/net/safe_search_util.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -34,13 +30,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
-using testing::_;
-using testing::Return;
 
 namespace policy {
-
-const base::FilePath::CharType kTestExtensionsDir[] =
-    FILE_PATH_LITERAL("extensions");
 
 void GetTestDataDirectory(base::FilePath* test_data_directory) {
   ASSERT_TRUE(
@@ -66,14 +57,6 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
   variations::testing::VariationParamsManager::AppendVariationParams(
       "ReportCertificateErrors", "ShowAndPossiblySend",
       {{"sendingThreshold", "1.0"}}, command_line);
-}
-
-scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
-    const base::FilePath::StringType& name) {
-  base::FilePath extension_path(ui_test_utils::GetTestFilePath(
-      base::FilePath(kTestExtensionsDir), base::FilePath(name)));
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
-  return loader.LoadExtension(extension_path);
 }
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {

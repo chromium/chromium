@@ -60,6 +60,8 @@ source_set("test_support") {
 
   if (!is_android) {
     sources += [
+      "extension_policy_test_base.cc",
+      "extension_policy_test_base.h",
       "policy_test_utils.cc",
       "policy_test_utils.h",
       "safe_search_policy_test.cc",

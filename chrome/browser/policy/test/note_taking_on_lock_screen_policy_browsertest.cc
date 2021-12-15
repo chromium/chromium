@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/note_taking_helper.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/extension_policy_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,7 +23,7 @@
 
 namespace policy {
 
-class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
+class NoteTakingOnLockScreenPolicyTest : public ExtensionPolicyTestBase {
  public:
   NoteTakingOnLockScreenPolicyTest() = default;
   ~NoteTakingOnLockScreenPolicyTest() override = default;
@@ -39,7 +39,7 @@ class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kTestAppId);
     command_line->AppendSwitch(ash::switches::kAshForceEnableStylusTools);
-    PolicyTest::SetUpCommandLine(command_line);
+    ExtensionPolicyTestBase::SetUpCommandLine(command_line);
   }
 
   void SetUserLevelPrefValue(const std::string& app_id,

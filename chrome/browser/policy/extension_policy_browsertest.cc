@@ -33,6 +33,7 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/policy/extension_policy_test_base.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
@@ -205,7 +206,7 @@ void PerformClick(content::WebContents* contents, int x, int y) {
       click_event);
 }
 
-class ExtensionPolicyTest : public PolicyTest {
+class ExtensionPolicyTest : public ExtensionPolicyTestBase {
  public:
   ExtensionPolicyTest() = default;
 
@@ -219,11 +220,11 @@ class ExtensionPolicyTest : public PolicyTest {
         std::make_unique<extensions::ScopedIgnoreContentVerifierForTest>();
     test_extension_cache_ = std::make_unique<extensions::ExtensionCacheFake>();
     // Base class SetUp() should be invoked at the end as it runs the test body.
-    PolicyTest::SetUp();
+    ExtensionPolicyTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    PolicyTest::SetUpOnMainThread();
+    ExtensionPolicyTestBase::SetUpOnMainThread();
     if (extension_service()->updater()) {
       extension_service()->updater()->SetExtensionCacheForTesting(
           test_extension_cache_.get());
@@ -231,7 +232,7 @@ class ExtensionPolicyTest : public PolicyTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PolicyTest::SetUpCommandLine(command_line);
+    ExtensionPolicyTestBase::SetUpCommandLine(command_line);
     // Some bots are flaky due to slower loading interacting with
     // deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
