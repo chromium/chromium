@@ -392,7 +392,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocument) {
         font: 20px/20px Ahem;
       }
     </style>
-    <div>
+    <div style="width: 400px">
       <span>xx<br>
         <span id="target">yy
           <div style="width:111px;height:222px;background:yellow"></div>
@@ -403,9 +403,11 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocument) {
   )HTML");
 
   auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
+  const int width =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 111;
+  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
             target->VisualRectInDocument());
-  EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
+  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
             target->VisualRectInDocument(kUseGeometryMapper));
 }
 
@@ -429,7 +431,9 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocumentVerticalRL) {
   )HTML");
 
   auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, 222);
+  const int height =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 222;
+  PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, height);
   EXPECT_EQ(expected, target->VisualRectInDocument());
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
