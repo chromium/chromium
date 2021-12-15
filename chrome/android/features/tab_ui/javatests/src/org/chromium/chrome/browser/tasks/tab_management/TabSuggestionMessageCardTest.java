@@ -182,6 +182,7 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_CLOSE_SUGGESTION_PARAM})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1280257")
     public void closeTabSuggestionReviewedAndDismissed() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
@@ -195,6 +196,7 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1273142")
     public void groupTabSuggestionReviewedAndAccepted() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
