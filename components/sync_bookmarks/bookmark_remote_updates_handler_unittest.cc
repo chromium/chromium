@@ -174,10 +174,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
       CreateTombstoneResponseData(guid, version);
 
   response_data.entity.originator_client_item_id = guid.AsLowercaseString();
-  response_data.entity.parent_id = GetFakeServerIdFromGUID(parent_guid);
 
-  // Note that proto field |parent_guid| is currently only used to consider
-  // specifics valid.
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       response_data.entity.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(guid.AsLowercaseString());
@@ -931,7 +928,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseDataList updates;
   syncer::EntityData data;
   data.id = GetFakeServerIdFromGUID(kParentGuid);
-  data.parent_id = kBookmarkBarId;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kParentGuid.AsLowercaseString());
@@ -983,7 +979,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseDataList updates;
   syncer::EntityData data;
   data.id = "server_id";
-  data.parent_id = kBookmarkBarId;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
@@ -1028,7 +1023,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseDataList updates;
   syncer::EntityData data;
   data.id = "server_id";
-  data.parent_id = kBookmarkBarId;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
