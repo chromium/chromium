@@ -42,10 +42,6 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 }  // namespace
 
 DesksTemplatesNameView::DesksTemplatesNameView() {
-  views::Builder<DesksTemplatesNameView>(this)
-      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .BuildChildren();
-
   SetFontList(GetFontList().Derive(kNameFontSizeDeltaDp, gfx::Font::NORMAL,
                                    gfx::Font::Weight::BOLD));
 }

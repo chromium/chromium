@@ -409,7 +409,7 @@ views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
   // we needed to make `this` a `ViewTargeterDelegate` for the view event
   // targeter in order to allow the `name_view_` to be specifically targeted and
   // focused.
-  if (root == this && name_view_->bounds().Contains(rect))
+  if (root == this && name_view_->GetMirroredBounds().Contains(rect))
     return name_view_;
   return views::ViewTargeterDelegate::TargetForRect(root, rect);
 }

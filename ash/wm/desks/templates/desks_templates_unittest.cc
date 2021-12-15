@@ -51,11 +51,13 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
@@ -1812,6 +1814,36 @@ TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
 
   // Verify that there is no crash after we tab again.
   SendKey(ui::VKEY_TAB);
+}
+
+// Tests that the hovering over the templates name shows the expected cursor.
+TEST_F(DesksTemplatesTest, TemplatesNameHitTest) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  for (bool is_rtl : {true, false}) {
+    SCOPED_TRACE(is_rtl ? "rtl" : "ltr");
+    base::i18n::SetRTLForTesting(is_rtl);
+
+    AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+
+    OpenOverviewAndShowTemplatesGrid();
+    DesksTemplatesNameView* name_view =
+        GetItemViewFromTemplatesGrid(0)->name_view();
+    const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
+    // Hover to a point just inside main edge. This will cover the case where
+    // the hit test logic is inverted.
+    const gfx::Point hover_point =
+        is_rtl ? name_view_bounds.right_center() + gfx::Vector2d(-2, 0)
+               : name_view_bounds.left_center() + gfx::Vector2d(2, 0);
+
+    // Tests that the hover cursor is an IBeam.
+    GetEventGenerator()->MoveMouseTo(hover_point);
+    EXPECT_EQ(ui::mojom::CursorType::kIBeam,
+              cursor_manager->GetCursor().type());
+
+    // Exit overview for the next run.
+    ToggleOverview();
+  }
 }
 
 }  // namespace ash

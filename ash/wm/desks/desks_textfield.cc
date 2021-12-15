@@ -34,7 +34,6 @@ DesksTextfield::DesksTextfield() {
   views::Builder<DesksTextfield>(this)
       .SetBorder(nullptr)
       .SetCursorEnabled(true)
-      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       // TODO(crbug.com/1218186): Remove this, this is in place temporarily to
       // be able to submit accessibility checks, but this focusable View needs
       // to add a name so that the screen reader knows what to announce.

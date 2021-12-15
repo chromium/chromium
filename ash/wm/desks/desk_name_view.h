@@ -38,6 +38,11 @@ class ASH_EXPORT DeskNameView : public DesksTextfield {
   DeskMiniView* const mini_view_;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */, DeskNameView, DesksTextfield)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::DeskNameView)
 
 #endif  // ASH_WM_DESKS_DESK_NAME_VIEW_H_
