@@ -617,7 +617,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onAddPasswordTap_() {
     chrome.metricsPrivate.recordEnumerationValue(
-        'AddCredentialFromSettingsUserInteractions',
+        'PasswordManager.AddCredentialFromSettings.UserAction',
         AddCredentialFromSettingsUserInteractions.Add_Dialog_Opened,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = true;
@@ -627,7 +627,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onAddPasswordDialogClosed_() {
     chrome.metricsPrivate.recordEnumerationValue(
-        'AddCredentialFromSettingsUserInteractions',
+        'PasswordManager.AddCredentialFromSettings.UserAction',
         AddCredentialFromSettingsUserInteractions.Add_Dialog_Closed,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = false;
