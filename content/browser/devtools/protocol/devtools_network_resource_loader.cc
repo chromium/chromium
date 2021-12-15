@@ -45,7 +45,6 @@ DevToolsNetworkResourceLoader::Create(
     Caching caching,
     Credentials include_credentials,
     CompletionCallback completion_callback) {
-  DCHECK(gurl.SchemeIsHTTPOrHTTPS());
   network::ResourceRequest resource_request;
   resource_request.url = std::move(gurl);
   resource_request.request_initiator = origin;

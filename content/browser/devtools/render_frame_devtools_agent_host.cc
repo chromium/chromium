@@ -326,7 +326,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       GetIOContext(),
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      session->GetClient()->MayReadLocalFiles()));
   session->AddHandler(std::make_unique<protocol::FetchHandler>(
       GetIOContext(), base::BindRepeating(
                           [](RenderFrameDevToolsAgentHost* self,

@@ -2,7 +2,7 @@ Tests basic error validation for Network.loadNetworkResource
 Response for invalid target and invalid url: {
     error : {
         code : -32602
-        message : The url must be valid and have scheme http or https
+        message : The url must be valid
     }
     id : <number>
     sessionId : <string>
@@ -26,7 +26,7 @@ Response for omitted frameId: {
 Response for valid target and invalid url: {
     error : {
         code : -32602
-        message : The url must be valid and have scheme http or https
+        message : The url must be valid
     }
     id : <number>
     sessionId : <string>
