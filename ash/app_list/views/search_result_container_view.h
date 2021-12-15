@@ -55,6 +55,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   int num_results() const { return num_results_; }
 
   virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
+  virtual int ScheduleResultAnimations(int preceeding_results) = 0;
 
   bool horizontally_traversable() const { return horizontally_traversable_; }
 

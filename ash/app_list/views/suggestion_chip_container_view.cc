@@ -178,6 +178,12 @@ const char* SuggestionChipContainerView::GetClassName() const {
   return "SuggestionChipContainerView";
 }
 
+int SuggestionChipContainerView::ScheduleResultAnimations(
+    int preceeding_results) {
+  NOTREACHED();
+  return -1;
+}
+
 void SuggestionChipContainerView::Layout() {
   // Only show the chips that fit in this view's contents bounds.
   int total_width = 0;

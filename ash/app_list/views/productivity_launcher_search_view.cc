@@ -15,6 +15,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -143,6 +144,14 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
     if (view->UpdateScheduled())
       return;
     result_count += view->num_results();
+  }
+
+  if (features::IsProductivityLauncherAnimationEnabled()) {
+    int scheduled_result_animations = 0;
+    for (SearchResultContainerView* view : result_container_views_) {
+      scheduled_result_animations +=
+          view->ScheduleResultAnimations(scheduled_result_animations);
+    }
   }
 
   last_search_result_count_ = result_count;

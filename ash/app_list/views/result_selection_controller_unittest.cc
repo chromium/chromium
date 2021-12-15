@@ -136,6 +136,10 @@ class TestContainer : public SearchResultContainerView {
     DCHECK_LT(index, search_result_views_.size());
     return search_result_views_[index].get();
   }
+  int ScheduleResultAnimations(int preceeding_results) override {
+    NOTREACHED();
+    return -1;
+  }
 
  private:
   int DoUpdate() override { return search_result_views_.size(); }

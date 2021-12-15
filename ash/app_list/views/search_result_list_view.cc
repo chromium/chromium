@@ -267,6 +267,43 @@ SearchResultListView::GetAllListTypesForCategoricalSearch() {
   return categorical_search_types;
 }
 
+int SearchResultListView::ScheduleResultAnimations(
+    int preceeding_result_count) {
+  DCHECK(features::IsProductivityLauncherAnimationEnabled());
+
+  if (num_results_ < 1 || !enabled_) {
+    SetVisible(false);
+    for (auto* result_view : search_result_views_) {
+      result_view->SetResult(nullptr);
+      result_view->SetVisible(false);
+    }
+    return 0;
+  }
+
+  // Tracks the number of animations scheduled so far.
+  int animated_view_count = 0;
+
+  SetVisible(true);
+  if (title_label_->GetVisible()) {
+    // TODO(crbug/1216097) Add animation for title label.
+    animated_view_count += 1;
+  }
+
+  for (size_t i = 0; i < search_result_views_.size(); ++i) {
+    SearchResultView* result_view = GetResultViewAt(i);
+    if (result_view->result() != nullptr) {
+      result_view->SizeToPreferredSize();
+      // TODO(crbug/1216097) Add animation for search result view.
+      result_view->SetVisible(true);
+      animated_view_count += 1;
+    } else {
+      result_view->SetVisible(false);
+    }
+  }
+
+  return animated_view_count;
+}
+
 int SearchResultListView::DoUpdate() {
   if (productivity_launcher_index_.has_value()) {
     std::vector<ash::AppListSearchResultCategory>* ordered_categories =
@@ -281,8 +318,8 @@ int SearchResultListView::DoUpdate() {
     }
   }
 
-  SetVisible(enabled_);
   if (!enabled_ || !GetWidget() || !GetWidget()->IsVisible()) {
+    SetVisible(false);
     for (auto* result_view : search_result_views_) {
       result_view->SetResult(nullptr);
       result_view->SetVisible(false);
@@ -517,19 +554,30 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
 std::vector<SearchResult*> SearchResultListView::UpdateResultViews() {
   std::vector<SearchResult*> display_results = GetCategorizedSearchResults();
   size_t num_results = display_results.size();
+  num_results_ = num_results;
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < num_results) {
       result_view->SetResult(display_results[i]);
       result_view->SizeToPreferredSize();
-      result_view->SetVisible(true);
+      // Show animations for productivity launcher will be scheduled once all
+      // search result list views are updated.
+      if (!features::IsProductivityLauncherAnimationEnabled())
+        result_view->SetVisible(true);
     } else {
       result_view->SetResult(nullptr);
       result_view->SetVisible(false);
     }
   }
-  // the search_result_list_view should be hidden if there are no results.
-  SetVisible(num_results > 0);
+
+  if (features::IsProductivityLauncherAnimationEnabled()) {
+    // Show animations for productivity launcher will be scheduled once all
+    // search result list views are updated.
+    SetVisible(false);
+  } else {
+    // the search_result_list_view should be hidden if there are no results.
+    SetVisible(num_results > 0);
+  }
   return display_results;
 }
 

@@ -116,6 +116,12 @@ SearchResultTileItemView* SearchResultTileItemListView::GetResultViewAt(
   return tile_views_[index];
 }
 
+int SearchResultTileItemListView::ScheduleResultAnimations(
+    int preceeding_results) {
+  NOTREACHED();
+  return -1;
+}
+
 int SearchResultTileItemListView::DoUpdate() {
   if (!GetWidget() || !GetWidget()->IsVisible() || !GetWidget()->IsActive()) {
     for (size_t i = 0; i < max_search_result_tiles_; ++i) {

@@ -64,6 +64,7 @@ class ProductivityLauncherSearchViewTest
     for (int i = 0; i < new_result_count; ++i) {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
+      result->set_result_id(base::NumberToString(init_id + i));
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_title(
           base::UTF8ToUTF16(base::StringPrintf("Result %d", init_id + i)));
@@ -82,6 +83,7 @@ class ProductivityLauncherSearchViewTest
                              int new_result_count) {
     std::unique_ptr<TestSearchResult> result =
         std::make_unique<TestSearchResult>();
+    result->set_result_id(base::NumberToString(init_id));
     result->set_display_type(ash::SearchResultDisplayType::kAnswerCard);
     result->set_title(base::UTF8ToUTF16(base::StringPrintf("Answer Card")));
     result->set_display_score(1000);
@@ -155,6 +157,11 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
+  // Populate answer card result.
+  auto* test_helper = GetAppListTestHelper();
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+  SetUpAnswerCardResult(results, 1, 1);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
@@ -539,7 +546,6 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchPageA11y) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   // Delete all results and verify the bubble search page's A11yNodeData.
-
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
   auto* search_view = GetProductivityLauncherSearchView();
   search_view->OnSearchResultContainerResultsChanged();
@@ -548,7 +554,8 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchPageA11y) {
   std::vector<SearchResultContainerView*> result_containers =
       search_view->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  EXPECT_TRUE(result_containers[0]->GetVisible());
+  // Container view should not be shown if no result is present.
+  EXPECT_FALSE(result_containers[0]->GetVisible());
   EXPECT_TRUE(search_view->GetVisible());
 
   ui::AXNodeData data;

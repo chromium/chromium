@@ -102,6 +102,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
+  int ScheduleResultAnimations(int preceeding_result_count) override;
 
   AppListMainView* app_list_main_view() const { return main_view_; }
 
@@ -198,6 +199,9 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // search result actions. Used to filter those results out from the list of
   // shown results until results in the search model get refreshed.
   std::set<std::string> removed_results_;
+
+  // The number of results shown by the list view.
+  int num_results_ = 0;
 };
 
 }  // namespace ash
