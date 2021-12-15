@@ -128,6 +128,8 @@ static_library("safe_browsing") {
       "safe_browsing_service.h",
       "services_delegate.cc",
       "services_delegate.h",
+      "tailored_security/chrome_tailored_security_service.cc",
+      "tailored_security/chrome_tailored_security_service.h",
       "tailored_security/tailored_security_outcome.h",
       "tailored_security/tailored_security_service_factory.cc",
       "tailored_security/tailored_security_service_factory.h",
