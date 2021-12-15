@@ -142,14 +142,18 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, ArcVmNotRunning) {
 
 // Tests that IsEligibleForReclaim() returns false when ARCVM is focused.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
+  // Create container window as the parent for other windows.
+  aura::Window container_window(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  container_window.Init(ui::LAYER_NOT_DRAWN);
+
   // Create two fake windows.
-  aura::Window* arc_window =
-      aura::test::CreateTestWindow(SK_ColorGREEN, 0, gfx::Rect(), nullptr);
+  aura::Window* arc_window = aura::test::CreateTestWindow(
+      SK_ColorGREEN, 0, gfx::Rect(), &container_window);
   arc_window->SetProperty(aura::client::kAppType,
                           static_cast<int>(ash::AppType::ARC_APP));
   ASSERT_TRUE(ash::IsArcWindow(arc_window));
-  aura::Window* chrome_window =
-      aura::test::CreateTestWindow(SK_ColorRED, 0, gfx::Rect(), nullptr);
+  aura::Window* chrome_window = aura::test::CreateTestWindow(
+      SK_ColorRED, 0, gfx::Rect(), &container_window);
   ASSERT_FALSE(ash::IsArcWindow(chrome_window));
 
   // Initially, Chrome window is focused.
