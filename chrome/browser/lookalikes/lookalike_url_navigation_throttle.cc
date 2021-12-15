@@ -369,7 +369,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
       match_type == LookalikeUrlMatchType::kCharacterSwapTop500) {
     GURL lookalike_url = first_is_lookalike ? first_url : last_url;
 
-    navigation_handle()->GetWebContents()->GetMainFrame()->AddMessageToConsole(
+    navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
             "Chrome has determined that %s could be fake or fraudulent.\n\n"
