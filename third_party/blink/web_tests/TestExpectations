@@ -7323,7 +7323,6 @@ crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/share
 
 # Sheriff 2021-07-23
 crbug.com/1232388 [ Mac10.12 ] external/wpt/html/rendering/non-replaced-elements/hidden-elements.html [ Failure Pass ]
-crbug.com/1232417 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-26
 crbug.com/1232867 [ Mac10.12 ] fast/inline-block/contenteditable-baseline.html [ Failure Pass ]

@@ -270,6 +270,17 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 
     // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames, so we
     // must manually copy over properties relevant to the encoder.
+    // TODO(https://crbug.com/1272852): Consider bailing out of this path if
+    // visible_rect or natural_size is much smaller than coded_size, or copying
+    // only the necessary part.
+    if (dst_frame->visible_rect() != source_frame->visible_rect() ||
+        dst_frame->natural_size() != source_frame->natural_size()) {
+      const auto format = dst_frame->format();
+      dst_frame = media::VideoFrame::WrapVideoFrame(
+          std::move(dst_frame), format, source_frame->visible_rect(),
+          source_frame->natural_size());
+      DCHECK(dst_frame);
+    }
     dst_frame->set_timestamp(source_frame->timestamp());
     dst_frame->set_metadata(source_frame->metadata());
 
