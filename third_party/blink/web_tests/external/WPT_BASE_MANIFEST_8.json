@@ -152163,6 +152163,19 @@
        {}
       ]
      ],
+     "table-child-percentage-height-with-border-box.html": [
+      "7700b00dc3239245e38f90c72df944ef04a36998",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/table-child-percentage-height-with-border-box-expected.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "thin-element-render.html": [
       "fa587360a6d2625c8f02cd7f0eba54b3bb09a1f1",
       [
@@ -334359,7 +334372,7 @@
      ]
     ],
     "AmbientLightSensor.https.html": [
-     "7d23896a6488f3fdfef6809f552a06f03fe427a3",
+     "0ccb899ec237a0de885622a66c26677193f749c5",
      [
       null,
       {
@@ -356502,7 +356515,7 @@
      ],
      "parsing": {
       "color-computed.html": [
-       "d78e92b81e106f52026aeeedbc2b104e987e5639",
+       "6d0a7074f76c086117c5b3a964003aa94f49e814",
        [
         null,
         {}
@@ -356729,15 +356742,15 @@
         null,
         {}
        ]
+      ],
+      "conditional-CSSGroupingRule.html": [
+       "bde92d7091bd0ace1320acb5d0d8f56c33def22e",
+       [
+        null,
+        {}
+       ]
       ]
-     },
-     "test_group_insertRule.html": [
-      "e9e8cce8ffaeb983eed7a84e33da04cc4c3a5242",
-      [
-       null,
-       {}
-      ]
-     ]
+     }
     },
     "css-contain": {
      "contain-chrome-thcrash-001.html": [
@@ -462836,6 +462849,13 @@
       {}
      ]
     ],
+    "intersection-ratio-with-fractional-bounds-2.html": [
+     "1e250accd8e43e84050f735cdd42f30d1ef7f931",
+     [
+      null,
+      {}
+     ]
+    ],
     "intersection-ratio-with-fractional-bounds.html": [
      "9f54bef976782ad7ebb28b17b6e151a059840f49",
      [
@@ -558580,6 +558600,13 @@
      ],
      "replaced-fractional-height-from-aspect-ratio.html": [
       "d97c3f133ebec02ce5569e95826ab3237b7559c7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "table-child-percentage-height-with-border-box-expected.html": [
+      "2b0a2f451c59b21471d5b2984c2c01aae2cfa5ce",
       [
        null,
        {}
