@@ -590,8 +590,8 @@
   'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '94.0.4606.124',
-      'cros_img': 'atlas-release/R94-14150.87.0',
+      'cros_chrome_version': '96.0.4664.111',
+      'cros_img': 'atlas-release/R96-14268.67.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_STABLE',
@@ -626,8 +626,8 @@
   'CROS_EVE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '94.0.4606.124',
-      'cros_img': 'eve-release/R94-14150.87.0',
+      'cros_chrome_version': '96.0.4664.111',
+      'cros_img': 'eve-release/R96-14268.67.0',
     },
     'enabled': True,
     'identifier': 'EVE_STABLE',
@@ -671,8 +671,8 @@
   'CROS_OCTOPUS_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '94.0.4606.124',
-      'cros_img': 'octopus-release/R94-14150.87.0',
+      'cros_chrome_version': '96.0.4664.111',
+      'cros_img': 'octopus-release/R96-14268.67.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_STABLE',
