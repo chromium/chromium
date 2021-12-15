@@ -24,9 +24,13 @@ import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,6 +45,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     private final Activity mActivity;
     private final LightweightReactionsMediator mMediator;
     private final Set<ReactionLayout> mReactionLayouts;
+    private final Map<ReactionLayout, Integer> mInitialPositionByReaction;
+    private final List<Integer> mNumReactionsInPosition;
 
     private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
@@ -62,6 +68,8 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         mActivity = activity;
         mMediator = mediator;
         mReactionLayouts = new HashSet<>();
+        mInitialPositionByReaction = new HashMap<>();
+        mNumReactionsInPosition = new ArrayList<>();
 
         mNbReactionsAdded = 0;
         mNbTypeChange = 0;
@@ -97,13 +105,24 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             Resources res = mActivity.getResources();
             int screenWidth = res.getDisplayMetrics().widthPixels;
             int screenHeight = res.getDisplayMetrics().heightPixels;
-            int leftPx = screenWidth / 2 - reactionSizePx / 2;
+            int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
+            int maxOffsetNum = Math.min((screenWidth - reactionSizePx) / 2 / offsetPx,
+                    (screenHeight - reactionSizePx) / 2 / offsetPx);
+            int offsetNum = Math.min(getFreePosition(), maxOffsetNum);
+            int leftPx = screenWidth / 2 - reactionSizePx / 2 + offsetNum * offsetPx;
             int topPx = screenHeight / 2 - reactionSizePx / 2
-                    - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
+                    - res.getDimensionPixelSize(R.dimen.toolbar_total_height)
+                    + offsetNum * offsetPx;
             int rightPx = screenWidth - (leftPx - reactionSizePx);
             int bottomPx = screenHeight - (topPx - reactionSizePx);
             lp.setMargins(leftPx, topPx, rightPx, bottomPx);
 
+            mInitialPositionByReaction.put(reactionLayout, offsetNum);
+            if (offsetNum < mNumReactionsInPosition.size()) {
+                mNumReactionsInPosition.set(offsetNum, mNumReactionsInPosition.get(offsetNum) + 1);
+            } else {
+                mNumReactionsInPosition.add(1);
+            }
             addReactionLayoutToScene(reactionLayout, lp);
         });
     }
@@ -291,6 +310,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         ++mNbDelete;
         markActiveStatus(reactionLayout, false);
         mSceneBackground.removeView(reactionLayout);
+        removeReactionLayoutFromInitialPosition(reactionLayout);
         mReactionLayouts.remove(reactionLayout);
     }
 
@@ -310,8 +330,9 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     @Override
-    public void reactionWasMoved() {
+    public void reactionWasMoved(ReactionLayout reactionLayout) {
         ++mNbMove;
+        removeReactionLayoutFromInitialPosition(reactionLayout);
     }
 
     @Override
@@ -364,6 +385,22 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             rl.getReaction().setSteppingEnabled(false);
             rl.getReaction().start();
         }
+    }
+
+    private void removeReactionLayoutFromInitialPosition(ReactionLayout reactionLayout) {
+        Integer index = mInitialPositionByReaction.remove(reactionLayout);
+        if (index != null) {
+            mNumReactionsInPosition.set(index, mNumReactionsInPosition.get(index) - 1);
+        }
+    }
+
+    private int getFreePosition() {
+        for (int i = 0; i < mNumReactionsInPosition.size(); i++) {
+            if (mNumReactionsInPosition.get(i) == 0) {
+                return i;
+            }
+        }
+        return mNumReactionsInPosition.size();
     }
 
     private boolean isOutOfBoundsToTheBottomRight(

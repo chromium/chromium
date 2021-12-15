@@ -120,7 +120,7 @@ public class ReactionLayout extends RelativeLayout {
                 int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mSceneEditorDelegate.reactionWasMoved();
+                        mSceneEditorDelegate.reactionWasMoved(ReactionLayout.this);
                         mBaseX = motionEvent.getRawX() - layoutParams.leftMargin;
                         mBaseY = motionEvent.getRawY() - layoutParams.topMargin;
                         mHeight = layoutParams.height;

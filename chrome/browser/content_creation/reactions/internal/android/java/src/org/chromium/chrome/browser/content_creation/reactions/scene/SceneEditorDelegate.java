@@ -31,7 +31,7 @@ interface SceneEditorDelegate {
     /**
      * Invoked when a reaction is dragged across the editing surface.
      */
-    void reactionWasMoved();
+    void reactionWasMoved(ReactionLayout reactionLayout);
 
     /**
      * Invoked when the scale / rotate editing control of a reaction is interacted with.
