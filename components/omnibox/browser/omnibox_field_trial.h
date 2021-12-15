@@ -554,7 +554,11 @@ extern const base::FeatureParam<int>
 // Zero Suggest
 // Specifies the HTTP cache duration for the zero prefix suggest responses. If
 // the provided value is a positive number, the cache duration will be sent as a
-// query string parameter in the zero suggest requests.
+// query string parameter in the zero suggest requests and relayed back in the
+// response cache control headers.
+// This param is tied to omnibox::kZeroSuggestPrefetching which controls
+// prefetching and theoretically works with any caching mechanism. If no valid
+// HTTP cache duration is provided the existing caching mechanism is used.
 extern const base::FeatureParam<int> kZeroSuggestCacheDurationSec;
 
 // New params should be inserted above this comment and formatted as:

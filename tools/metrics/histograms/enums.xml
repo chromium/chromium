@@ -64677,9 +64677,17 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OmniboxZeroSuggestRequests">
-  <int value="1" label="requests sent"/>
-  <int value="2" label="requests invalidated"/>
-  <int value="3" label="(non-invalidated) replies received"/>
+  <int value="1" label="requests sent">Suggest requests that were sent.</int>
+  <int value="2" label="requests invalidated">
+    Suggest requests that were invalidated, e.g., due to user starting to type.
+  </int>
+  <int value="3" label="responses received">
+    Suggest responses that were received. Includes both those received directly
+    from the server and those loaded from the HTTP cache.
+  </int>
+  <int value="4" label="responses loaded from HTTP cache">
+    Subset of Suggest responses that were loaded from the HTTP cache.
+  </int>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">
