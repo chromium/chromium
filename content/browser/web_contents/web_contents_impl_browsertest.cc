@@ -2532,6 +2532,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   NoEntryUserAgentInjector injector(shell()->web_contents(),
                                     user_agent_override);
 
+  // This tests executes two JS statements. The second statement (reload())
+  // results in a particular NavigationEntry being created. This only works
+  // if there is an IPC to the renderer, which was historically always called,
+  // but now only called if a before-unload handler is present. Force the extra
+  // IPC by making RenderFrameHost believe there is a before-unload handler.
+  static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+      ->SuddenTerminationDisablerChanged(
+          true,
+          blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+
   // This triggers creating a NavigationRequest without a NavigationEntry. More
   // specifically back() triggers creating a pending entry, and because back()
   // does not complete, the reload() call results in a NavigationRequest with no
