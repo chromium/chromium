@@ -86,8 +86,6 @@
       # TODO(ynovikov) Investigate why the test breaks on older devices.
       'Android FYI Release (Nexus 5)',
       'Android FYI Release (Nexus 9)',
-      # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
-      'Linux FYI Debug (NVIDIA)',
     ],
     'modifications': {
       # anglebug.com/5328 suspecting blue screen caused by multiprocess
