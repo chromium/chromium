@@ -75,6 +75,13 @@ TEST_F(AudioEncoderTest, CodecReclamation) {
   auto* encoder = CreateEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
+  // Simulate backgrounding to enable reclamation.
+  if (!encoder->is_backgrounded_for_testing()) {
+    encoder->SimulateLifecycleStateForTesting(
+        scheduler::SchedulingLifecycleState::kHidden);
+    DCHECK(encoder->is_backgrounded_for_testing());
+  }
+
   auto* config = CreateConfig();
   encoder->configure(config, es);
   ASSERT_FALSE(es.HadException());
