@@ -161,8 +161,9 @@ class HistoryClustersService : public KeyedService {
   // Converts the vector of history::Cluster types to history_clusters::Cluster
   // by collapsing all the duplicate visits into the canonical visits, thereby
   // "unflattening" the output of the backend. Public for testing purposes.
+  // `raw_clusters` will be cannibalized and should not be used again.
   static std::vector<Cluster> CollapseDuplicateVisits(
-      const std::vector<history::Cluster>& raw_clusters);
+      std::vector<history::Cluster>&& raw_clusters);
 
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();

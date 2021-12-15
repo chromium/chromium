@@ -20,6 +20,9 @@ struct Visit {
   Visit();
   ~Visit();
   Visit(const Visit&);
+  Visit(Visit&&);
+  Visit& operator=(const Visit&);
+  Visit& operator=(Visit&&);
 
   history::AnnotatedVisit annotated_visit;
 
@@ -41,6 +44,9 @@ struct Cluster {
   Cluster();
   ~Cluster();
   Cluster(const Cluster&);
+  Cluster(Cluster&&);
+  Cluster& operator=(const Cluster&);
+  Cluster& operator=(Cluster&&);
 
   // An unique but opaque cluster ID.
   int64_t cluster_id;

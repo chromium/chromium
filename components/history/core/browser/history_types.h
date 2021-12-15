@@ -758,7 +758,9 @@ struct AnnotatedVisit {
                  VisitID opener_visit_of_redirect_chain_start,
                  VisitSource visit);
   AnnotatedVisit(const AnnotatedVisit&);
+  AnnotatedVisit(AnnotatedVisit&&);
   AnnotatedVisit& operator=(const AnnotatedVisit&);
+  AnnotatedVisit& operator=(AnnotatedVisit&&);
   ~AnnotatedVisit();
 
   URLRow url_row;
@@ -838,7 +840,9 @@ struct Cluster {
           const std::vector<std::u16string>& keywords,
           bool should_show_on_prominent_ui_surfaces = true);
   Cluster(const Cluster&);
+  Cluster(Cluster&&);
   Cluster& operator=(const Cluster&);
+  Cluster& operator=(Cluster&&);
   ~Cluster();
 
   int64_t cluster_id = 0;

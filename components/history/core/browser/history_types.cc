@@ -405,7 +405,9 @@ AnnotatedVisit::AnnotatedVisit(URLRow url_row,
           opener_visit_of_redirect_chain_start),
       source(source) {}
 AnnotatedVisit::AnnotatedVisit(const AnnotatedVisit&) = default;
+AnnotatedVisit::AnnotatedVisit(AnnotatedVisit&&) = default;
 AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;
+AnnotatedVisit& AnnotatedVisit::operator=(AnnotatedVisit&&) = default;
 AnnotatedVisit::~AnnotatedVisit() = default;
 
 ClusterVisit::ClusterVisit() = default;
@@ -423,7 +425,9 @@ Cluster::Cluster(int64_t cluster_id,
       should_show_on_prominent_ui_surfaces(
           should_show_on_prominent_ui_surfaces) {}
 Cluster::Cluster(const Cluster&) = default;
+Cluster::Cluster(Cluster&&) = default;
 Cluster& Cluster::operator=(const Cluster&) = default;
+Cluster& Cluster::operator=(Cluster&&) = default;
 Cluster::~Cluster() = default;
 
 ClusterRow::ClusterRow() = default;
