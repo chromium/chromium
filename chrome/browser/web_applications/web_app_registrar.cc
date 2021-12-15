@@ -352,6 +352,11 @@ bool WebAppRegistrar::IsShortcutApp(const AppId& app_id) const {
   return !GetAppScopeInternal(app_id).has_value();
 }
 
+bool WebAppRegistrar::IsSystemApp(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->IsSystemApp();
+}
+
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     const AppId& app_id) const {
   if (!IsLocallyInstalled(app_id))

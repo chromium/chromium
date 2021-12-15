@@ -234,6 +234,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // complete installation via the ExternallyManagedAppManager.
   bool IsPlaceholderApp(const AppId& app_id) const;
 
+  bool IsSystemApp(const AppId& app_id) const;
+
   // Computes and returns the DisplayMode, accounting for user preference
   // to launch in a browser window and entries in the web app manifest.
   DisplayMode GetAppEffectiveDisplayMode(const AppId& app_id) const;

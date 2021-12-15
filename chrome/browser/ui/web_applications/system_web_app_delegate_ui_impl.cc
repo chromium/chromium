@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -77,12 +77,11 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   // Send launch files.
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
-    GURL app_scope = provider->registrar().GetAppScope(params.app_id);
     base::FilePath launch_dir = GetLaunchDirectory(params);
 
     if (!launch_dir.empty() || !params.launch_files.empty()) {
-      web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
-          web_contents, app_scope,
+      WebLaunchParamsHelper::EnqueueLaunchParams(
+          web_contents, provider->registrar(), params.app_id,
           /*await_navigation=*/navigating,
           /*launch_url=*/web_contents->GetURL(), launch_dir,
           params.launch_files);

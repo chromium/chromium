@@ -160,6 +160,8 @@ source_set("web_applications") {
     "web_app_utils.h",
     "web_application_info.cc",
     "web_application_info.h",
+    "web_launch_params_helper.cc",
+    "web_launch_params_helper.h",
   ]
 
   if (is_chromeos_ash || is_chromeos_lacros) {

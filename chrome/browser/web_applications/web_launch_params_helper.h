@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_LAUNCH_WEB_LAUNCH_FILES_HELPER_H_
-#define CHROME_BROWSER_WEB_LAUNCH_WEB_LAUNCH_FILES_HELPER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_LAUNCH_PARAMS_HELPER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_LAUNCH_PARAMS_HELPER_H_
 
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/file_system_access_entry_factory.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -22,45 +21,42 @@ class NavigationHandle;
 
 }  // namespace content
 
-namespace web_launch {
+namespace web_app {
+
+class WebAppRegistrar;
 
 // A helper for sending launch paths to the renderer process.
-// Launch files cannot be sent immediately because the data is stored on a
-// document for `launch_url_`, which is not created until `launch_url_` is
-// committed.
 //
-// If `await_navigation` is set it waits for the first DidFinishNavigation
-// before enqueuing launch params otherwise enqueues them immediately.
+// If `await_navigation` is set, it waits for the first DidFinishNavigation
+// before enqueuing launch params, and otherwise enqueues them immediately.
 // DidFinishNavigation takes into account server redirects. Will re-enqueue if
 // the page reloads without navigating away.
 //
 // Note: The lifetime of this class is tied to the WebContents it is attached
-// to. However, in general it will be destroyed before the WebContents, when the
-// helper sends the FileSystemAccessEntries to the renderer.
-//
-// TODO(crbug.com/1250225): Rename this to WebLaunchParamsHelper.
-class WebLaunchFilesHelper
+// to. However, it will often destroy itself before the WebContents, such as
+// when the WebContents navigates away from the initial URL.
+class WebLaunchParamsHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<WebLaunchFilesHelper> {
+      public content::WebContentsUserData<WebLaunchParamsHelper> {
  public:
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  WebLaunchFilesHelper(const WebLaunchFilesHelper&) = delete;
-  WebLaunchFilesHelper& operator=(const WebLaunchFilesHelper&) = delete;
+  WebLaunchParamsHelper(const WebLaunchParamsHelper&) = delete;
+  WebLaunchParamsHelper& operator=(const WebLaunchParamsHelper&) = delete;
 
-  ~WebLaunchFilesHelper() override;
+  ~WebLaunchParamsHelper() override;
 
-  static WebLaunchFilesHelper* GetForWebContents(
+  static WebLaunchParamsHelper* GetForWebContents(
       content::WebContents* web_contents);
 
   // Enqueues a LaunchParams into the `web_contents` with the provided launch_*
   // params. Only enqueues into pages inside `app_scope`. Will enqueue
   // immediately unless `await_navigation` is set in which case it waits for the
-  // next DidFinishNavigation event.
-  // Only system web apps may provide a |launch_dir|.
-  // TODO(crbug.com/1250225): DCHECK that only system web apps use launch_dir.
+  // next DidFinishNavigation event. Only system web apps may provide a
+  // |launch_dir|.
   static void EnqueueLaunchParams(content::WebContents* web_contents,
-                                  const GURL& app_scope,
+                                  const WebAppRegistrar& web_app_registrar,
+                                  AppId app_id,
                                   bool await_navigation,
                                   GURL launch_url,
                                   base::FilePath launch_dir,
@@ -69,16 +65,14 @@ class WebLaunchFilesHelper
   const std::vector<base::FilePath>& launch_paths() { return launch_paths_; }
 
  private:
-  WebLaunchFilesHelper(content::WebContents* web_contents,
-                       const GURL& app_scope,
-                       GURL launch_url,
-                       base::FilePath launch_dir,
-                       std::vector<base::FilePath> launch_paths);
+  WebLaunchParamsHelper(content::WebContents* web_contents,
+                        const WebAppRegistrar& web_app_registrar,
+                        AppId app_id,
+                        GURL launch_url,
+                        base::FilePath launch_dir,
+                        std::vector<base::FilePath> launch_paths);
 
   void Start(bool await_navigation);
-
-  // Whether `url` is within `app_scope_`.
-  bool InAppScope(const GURL& url) const;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -98,8 +92,8 @@ class WebLaunchFilesHelper
   // immediately after calling.
   void DestroySelf();
 
-  // The scope in which launch params may be enqueued.
-  std::string app_scope_;
+  const WebAppRegistrar& web_app_registrar_;
+  const AppId app_id_;
 
   // The URL the launch entries are for. Note that redirects may cause us to
   // enqueue in a different URL, we still report the original launch target URL
@@ -115,9 +109,9 @@ class WebLaunchFilesHelper
   // Which URL we first enqueued launch params in.
   GURL url_params_enqueued_in_;
 
-  base::WeakPtrFactory<WebLaunchFilesHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebLaunchParamsHelper> weak_ptr_factory_{this};
 };
 
-}  // namespace web_launch
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_LAUNCH_WEB_LAUNCH_FILES_HELPER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_LAUNCH_PARAMS_HELPER_H_

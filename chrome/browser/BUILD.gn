@@ -4422,8 +4422,6 @@ static_library("browser") {
       "usb/web_usb_chooser_desktop.h",
       "usb/web_usb_detector.cc",
       "usb/web_usb_detector.h",
-      "web_launch/web_launch_files_helper.cc",
-      "web_launch/web_launch_files_helper.h",
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",

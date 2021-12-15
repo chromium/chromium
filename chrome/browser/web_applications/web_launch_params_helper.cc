@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -28,9 +25,9 @@
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/origin.h"
 
-namespace web_launch {
+namespace web_app {
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchFilesHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchParamsHelper);
 
 namespace {
 
@@ -100,48 +97,52 @@ class EntriesBuilder {
 
 }  // namespace
 
-WebLaunchFilesHelper::~WebLaunchFilesHelper() = default;
+WebLaunchParamsHelper::~WebLaunchParamsHelper() = default;
 
 // static
-WebLaunchFilesHelper* WebLaunchFilesHelper::GetForWebContents(
+WebLaunchParamsHelper* WebLaunchParamsHelper::GetForWebContents(
     content::WebContents* web_contents) {
-  return static_cast<WebLaunchFilesHelper*>(
+  return static_cast<WebLaunchParamsHelper*>(
       web_contents->GetUserData(UserDataKey()));
 }
 
 // static
-void WebLaunchFilesHelper::EnqueueLaunchParams(
+void WebLaunchParamsHelper::EnqueueLaunchParams(
     content::WebContents* web_contents,
-    const GURL& app_scope,
+    const WebAppRegistrar& web_app_registrar,
+    AppId app_id,
     bool await_navigation,
     GURL launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths) {
-  auto helper = base::WrapUnique(
-      new WebLaunchFilesHelper(web_contents, app_scope, std::move(launch_url),
-                               std::move(launch_dir), std::move(launch_paths)));
+  auto helper = base::WrapUnique(new WebLaunchParamsHelper(
+      web_contents, web_app_registrar, std::move(app_id), std::move(launch_url),
+      std::move(launch_dir), std::move(launch_paths)));
 
   auto* helper_ptr = helper.get();
   web_contents->SetUserData(UserDataKey(), std::move(helper));
   helper_ptr->Start(await_navigation);
 }
 
-WebLaunchFilesHelper::WebLaunchFilesHelper(
+WebLaunchParamsHelper::WebLaunchParamsHelper(
     content::WebContents* web_contents,
-    const GURL& app_scope,
+    const WebAppRegistrar& web_app_registrar,
+    AppId app_id,
     GURL launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WebLaunchFilesHelper>(*web_contents),
-      app_scope_(app_scope.spec()),
+      content::WebContentsUserData<WebLaunchParamsHelper>(*web_contents),
+      web_app_registrar_(web_app_registrar),
+      app_id_(std::move(app_id)),
       launch_url_(std::move(launch_url)),
       launch_dir_(std::move(launch_dir)),
       launch_paths_(std::move(launch_paths)) {
-  DCHECK(InAppScope(launch_url_));
+  DCHECK(web_app_registrar_.IsUrlInAppScope(launch_url_, app_id_));
+  DCHECK(launch_dir_.empty() || web_app_registrar.IsSystemApp(app_id_));
 }
 
-void WebLaunchFilesHelper::Start(bool await_navigation) {
+void WebLaunchParamsHelper::Start(bool await_navigation) {
   // Wait for DidFinishNavigation before enqueuing.
   if (await_navigation)
     return;
@@ -150,13 +151,7 @@ void WebLaunchFilesHelper::Start(bool await_navigation) {
   SendLaunchEntries();
 }
 
-// TODO(crbug.com/1250225): Move this class into chrome/browser/web_applications
-// and use WebAppRegistrar::IsUrlInAppScope().
-bool WebLaunchFilesHelper::InAppScope(const GURL& url) const {
-  return base::StartsWith(url.spec(), app_scope_, base::CompareCase::SENSITIVE);
-}
-
-void WebLaunchFilesHelper::DidFinishNavigation(
+void WebLaunchParamsHelper::DidFinishNavigation(
     content::NavigationHandle* handle) {
   // Currently, launch data is only sent for the main frame.
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
@@ -167,7 +162,7 @@ void WebLaunchFilesHelper::DidFinishNavigation(
 
   // Launch params still haven't been enqueued.
   if (!url_params_enqueued_in_.is_valid()) {
-    if (!InAppScope(handle->GetURL())) {
+    if (!web_app_registrar_.IsUrlInAppScope(handle->GetURL(), app_id_)) {
       DestroySelf();
       return;
     }
@@ -190,9 +185,9 @@ void WebLaunchFilesHelper::DidFinishNavigation(
   return;
 }
 
-void WebLaunchFilesHelper::SendLaunchEntries() {
+void WebLaunchParamsHelper::SendLaunchEntries() {
   DCHECK(url_params_enqueued_in_.is_valid());
-  DCHECK(InAppScope(url_params_enqueued_in_));
+  DCHECK(web_app_registrar_.IsUrlInAppScope(url_params_enqueued_in_, app_id_));
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &launch_service);
@@ -213,14 +208,14 @@ void WebLaunchFilesHelper::SendLaunchEntries() {
   }
 }
 
-void WebLaunchFilesHelper::CloseApp() {
+void WebLaunchParamsHelper::CloseApp() {
   web_contents()->Close();
   // `this` is deleted.
 }
 
-void WebLaunchFilesHelper::DestroySelf() {
+void WebLaunchParamsHelper::DestroySelf() {
   web_contents()->RemoveUserData(UserDataKey());
   // `this` is deleted.
 }
 
-}  // namespace web_launch
+}  // namespace web_app
