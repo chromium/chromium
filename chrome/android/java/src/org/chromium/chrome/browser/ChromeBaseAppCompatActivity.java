@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.color.DynamicColors;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -34,7 +36,6 @@ import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -211,7 +212,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
 
         if (supportsDynamicColors()) {
-            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
+            DynamicColors.applyIfAvailable(this);
         }
 
         // Try to enable browser overscroll when content overscroll is enabled for consistency. This

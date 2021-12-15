@@ -6,6 +6,8 @@
 <resources>
     <!-- Colors should be mirrored by Base.Theme.BrowserUI.DialogWhenLarge. -->
     <style name="Base.V21.Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_600</item>
         <item name="colorPrimaryDark">@android:color/black</item>
@@ -67,6 +69,8 @@
 
     <!-- Colors should be mirrored by Base.V21.Theme.BrowserUI. -->
     <style name="Base.Theme.BrowserUI.DialogWhenLarge" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
          <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_600</item>
         <item name="colorPrimaryDark">@android:color/black</item>
@@ -221,6 +225,11 @@
     <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
         <item name="elevationOverlayEnabled">true</item>
     </style>
+    <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+        <item name="elevationOverlayColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
+    </style>
+    <!-- TODO(skym): Move this into ThemeOverlay.BrowserUI.DynamicColors instead. -->
     <!-- Applied after the dynamic colors to override the undesired overrides done by the dynamic
          color overlay, e.g. android:textColorHighlight. -->
     <style name="ThemeOverlay.DynamicColorOverrides" parent="">
