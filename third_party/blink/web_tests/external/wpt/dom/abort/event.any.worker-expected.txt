@@ -13,5 +13,7 @@ PASS static aborting signal with reason should set signal.reason
 FAIL throwIfAborted() should throw abort.reason if signal aborted assert_throws_exactly: function "() => signal.throwIfAborted()" threw object "TypeError: signal.throwIfAborted is not a function" but we expected it to throw object "Error: boom"
 FAIL throwIfAborted() should throw primitive abort.reason if signal aborted assert_throws_exactly: function "() => signal.throwIfAborted()" threw object "TypeError: signal.throwIfAborted is not a function" but we expected it to throw "hello"
 FAIL throwIfAborted() should not throw if signal not aborted controller.signal.throwIfAborted is not a function
+PASS AbortSignal.reason returns the same DOMException
+PASS AbortController.signal.reason returns the same DOMException
 Harness: the test ran to completion.
 
