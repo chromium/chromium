@@ -5,7 +5,9 @@
 #include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
 
 #include <dlfcn.h>
+#include <sys/stat.h>
 
+#include "base/strings/stringprintf.h"
 #include "media/gpu/buildflags.h"
 
 #if BUILDFLAG(USE_VAAPI)
@@ -51,6 +53,38 @@ bool HardwareVideoDecodingPreSandboxHook(
   // platforms that need it.
   static const char kDevImageProc0Path[] = "/dev/image-proc0";
   permissions.push_back(BrokerFilePermission::ReadWrite(kDevImageProc0Path));
+#elif BUILDFLAG(USE_VAAPI)
+  command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
+
+  if (options.use_amd_specific_policies) {
+    command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
+    command_set.set(sandbox::syscall_broker::COMMAND_STAT);
+    command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
+
+    permissions.push_back(BrokerFilePermission::ReadOnly("/dev/dri"));
+
+    static const char* kDevices[] = {"/sys/dev/char", "/sys/devices"};
+    for (const char* item : kDevices) {
+      std::string path(item);
+      permissions.push_back(
+          BrokerFilePermission::StatOnlyWithIntermediateDirs(path));
+      permissions.push_back(
+          BrokerFilePermission::ReadOnlyRecursive(path + "/"));
+    }
+  }
+
+  // TODO(b/195769334): for now, this is only needed for two use cases: the
+  // legacy VaapiVideoDecodeAccelerator and AMD. However, we'll likely need this
+  // unconditionally so that we can allocate dma-bufs.
+  for (int i = 128; i <= 137; ++i) {
+    const std::string path = base::StringPrintf("/dev/dri/renderD%d", i);
+    struct stat st;
+    if (stat(path.c_str(), &st) == 0) {
+      permissions.push_back(options.use_amd_specific_policies
+                                ? BrokerFilePermission::ReadWrite(path)
+                                : BrokerFilePermission::ReadOnly(path));
+    }
+  }
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
@@ -68,7 +102,19 @@ bool HardwareVideoDecodingPreSandboxHook(
   // that bots like linux-chromeos-rel end up reaching this presandbox hook.
 #if BUILDFLAG(USE_VAAPI)
   VaapiWrapper::PreSandboxInitialization();
-#elif BUILDFLAG(USE_V4L2_CODEC)
+
+  if (options.use_amd_specific_policies) {
+    const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
+#if defined(DRI_DRIVER_DIR)
+    radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
+#endif
+    if (nullptr ==
+        dlopen(radeonsi_lib, RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE)) {
+      LOG(ERROR) << "dlopen(radeonsi_dri.so) failed with error: " << dlerror();
+      return false;
+    }
+  }
+#elif BUILDFLAG(USE_LIBV4L2)
   dlopen("/usr/lib/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
 #endif  // BUILDFLAG(USE_VAAPI)
 
