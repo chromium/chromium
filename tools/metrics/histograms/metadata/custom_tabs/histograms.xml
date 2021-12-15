@@ -230,6 +230,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="CustomTabs.ResourcePrefetch.Duration" units="ms"
     expires_after="M73">
+  <obsolete>
+    No longer recorded since M73.
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <summary>
     Time between the start of a detached resource request for resource prefetch
@@ -239,6 +242,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CustomTabs.ResourcePrefetch.FinalStatus" enum="NetErrorCodes"
     expires_after="M73">
+  <obsolete>
+    No longer recorded since M73.
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <summary>
     Reports the final status of the detached request for resource prefetch,

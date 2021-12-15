@@ -3524,7 +3524,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Success" label="Successful detached request"/>
   <affected-histogram name="CustomTabs.DetachedResourceRequest.Duration"/>
   <affected-histogram name="CustomTabs.DetachedResourceRequest.RedirectsCount"/>
-  <affected-histogram name="CustomTabs.ResourcePrefetch.Duration"/>
+  <affected-histogram name="CustomTabs.ResourcePrefetch.Duration">
+    <obsolete>
+      No longer recorded since M73.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataReductionProxy" separator="_">
