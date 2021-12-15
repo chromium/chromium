@@ -72,7 +72,7 @@ public class InCctTriggeringFromGsaTest {
                         .putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA));
 
         // Enable MSBB.
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     AutofillAssistantUiController.getProfile(), true);
@@ -135,7 +135,7 @@ public class InCctTriggeringFromGsaTest {
                 withText("TriggerScript"), isDisplayed(), 2 * DEFAULT_MAX_TIME_TO_POLL);
 
         // Disabling the proactive help setting should stop the trigger script.
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(false);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(false);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> AutofillAssistantTabHelper
@@ -149,7 +149,7 @@ public class InCctTriggeringFromGsaTest {
         // still on a supported URL.
         testServiceRequestSender.setNextResponse(
                 /* httpStatus = */ 200, createDefaultTriggerScriptResponse("TriggerScript"));
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> AutofillAssistantTabHelper

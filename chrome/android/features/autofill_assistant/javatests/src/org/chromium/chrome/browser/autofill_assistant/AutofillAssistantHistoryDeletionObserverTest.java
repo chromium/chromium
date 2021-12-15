@@ -40,7 +40,7 @@ public class AutofillAssistantHistoryDeletionObserverTest {
     @Test
     @SmallTest
     public void clearFirstTimeUserFlagOnAllTimeHistoryDeletion() {
-        AutofillAssistantPreferencesUtil.setAutofillAssistantFirstTimeTriggerScriptUser(false);
+        AutofillAssistantPreferencesUtil.setFirstTimeTriggerScriptUserPreference(false);
         when(mHistoryDeletionInfo.isTimeRangeForAllTime()).thenReturn(true);
 
         mHistoryDeletionObserver.onURLsDeleted(mHistoryDeletionInfo);
@@ -51,7 +51,7 @@ public class AutofillAssistantHistoryDeletionObserverTest {
     @Test
     @SmallTest
     public void doesNotClearFirstTimeUserFlagOnPartialHistoryDeletion() {
-        AutofillAssistantPreferencesUtil.setAutofillAssistantFirstTimeTriggerScriptUser(false);
+        AutofillAssistantPreferencesUtil.setFirstTimeTriggerScriptUserPreference(false);
         when(mHistoryDeletionInfo.isTimeRangeForAllTime()).thenReturn(false);
 
         mHistoryDeletionObserver.onURLsDeleted(mHistoryDeletionInfo);

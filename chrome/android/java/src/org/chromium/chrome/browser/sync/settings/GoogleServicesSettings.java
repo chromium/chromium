@@ -18,14 +18,13 @@ import androidx.preference.PreferenceGroup;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -71,8 +70,6 @@ public class GoogleServicesSettings
             PrivacyPreferencesManagerImpl.getInstance();
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate =
             createManagedPreferenceDelegate();
-    private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
 
     private ChromeSwitchPreference mAllowSignin;
     private ChromeSwitchPreference mSearchSuggestions;
@@ -267,18 +264,16 @@ public class GoogleServicesSettings
      */
     private boolean shouldShowAutofillAssistantPreference() {
         return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
-                && mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED);
+                && AutofillAssistantPreferencesUtil.containsAssistantEnabledPreference();
     }
 
     public boolean isAutofillAssistantSwitchOn() {
-        return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
+        return AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(
+                /* defaultValue= */ false);
     }
 
     public void setAutofillAssistantSwitchValue(boolean newValue) {
-        mSharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     // SignOutDialogListener implementation:

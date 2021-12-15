@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /** History deletion observer that clears autofill-assistant flags when necessary. */
 public class AutofillAssistantHistoryDeletionObserver implements HistoryDeletionBridge.Observer {
@@ -16,7 +14,6 @@ public class AutofillAssistantHistoryDeletionObserver implements HistoryDeletion
         if (!historyDeletionInfo.isTimeRangeForAllTime()) {
             return;
         }
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER);
+        AutofillAssistantPreferencesUtil.onClearBrowserHistory();
     }
 }

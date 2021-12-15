@@ -117,11 +117,9 @@ public class AutofillAssistantPreferenceFragmentTest {
             assertTrue(autofillAssistantSwitch.isChecked());
 
             autofillAssistantSwitch.performClick();
-            assertFalse(mSharedPreferencesManager.readBoolean(
-                    ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true));
+            assertFalse(AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(true));
             autofillAssistantSwitch.performClick();
-            assertTrue(mSharedPreferencesManager.readBoolean(
-                    ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false));
+            assertTrue(AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(false));
         });
     }
 
@@ -288,8 +286,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     }
 
     private void setAutofillAssistantSwitchValue(boolean newValue) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     private AutofillAssistantPreferenceFragment startAutofillAssistantPreferenceFragment() {
@@ -298,7 +295,6 @@ public class AutofillAssistantPreferenceFragmentTest {
     }
 
     public boolean isAutofillAssistantSwitchOn() {
-        return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
+        return AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(false);
     }
 }

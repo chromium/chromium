@@ -51,7 +51,7 @@ public class InCctTriggeringFromNonGsaTest {
     }
 
     private void enableMsbb() {
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     AutofillAssistantUiController.getProfile(), true);

@@ -25,9 +25,6 @@ public class LegacyChromePreferenceKeys {
         return Arrays.asList(
                 ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER,
                 ChromePreferenceKeys.APP_LOCALE,
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED,
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED,
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN,
                 ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE,
                 ChromePreferenceKeys.BOOKMARKS_LAST_MODIFIED_FOLDER_ID,
                 ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL,

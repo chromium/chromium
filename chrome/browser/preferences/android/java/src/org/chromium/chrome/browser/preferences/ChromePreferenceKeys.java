@@ -95,27 +95,6 @@ public final class ChromePreferenceKeys {
     public static final String ATTRIBUTION_PROVIDER_LAST_BROWSER_START =
             "Chrome.Attribution.LastBrowserStart";
 
-    /** Whether Autofill Assistant is enabled */
-    public static final String AUTOFILL_ASSISTANT_ENABLED = "autofill_assistant_switch";
-    /** Whether the Autofill Assistant onboarding has been accepted. */
-    public static final String AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED =
-            "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
-    /** Whether the user has seen a lite-script before or is a first-time user. */
-    public static final String AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER =
-            "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
-    /** The number of times a user has explicitly canceled a lite script. */
-    public static final String AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED =
-            "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled";
-    /** Whether proactive help is enabled. */
-    public static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP =
-            "Chrome.AutofillAssistant.ProactiveHelp";
-    /**
-     * LEGACY preference indicating whether "do not show again" was checked in the autofill
-     * assistant onboarding
-     */
-    public static final String AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN =
-            "AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN";
-
     public static final String BACKUP_FIRST_BACKUP_DONE = "first_backup_done";
 
     public static final String BOOKMARKS_LAST_MODIFIED_FOLDER_ID = "last_bookmark_folder_id";
@@ -1044,9 +1023,6 @@ public final class ChromePreferenceKeys {
                 ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
                 ATTRIBUTION_PROVIDER_LAST_BROWSER_START,
-                AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
-                AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
-                AUTOFILL_ASSISTANT_PROACTIVE_HELP,
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,

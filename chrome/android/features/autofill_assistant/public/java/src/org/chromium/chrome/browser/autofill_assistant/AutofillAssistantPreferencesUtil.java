@@ -4,25 +4,35 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import android.content.SharedPreferences;
+
+import org.chromium.base.ContextUtils;
 
 /** Autofill Assistant related preferences util class. */
+// TODO(crbug.com/1069897): Use SharedPreferencesManager again.
 public class AutofillAssistantPreferencesUtil {
+    /** Whether Autofill Assistant is enabled */
+    private static final String ENABLED_PREFERENCE_KEY = "autofill_assistant_switch";
+    /** Whether the Autofill Assistant onboarding has been accepted. */
+    private static final String ONBOARDING_ACCEPTED_PREFERENCE_KEY =
+            "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
+    /** Whether the user has seen a lite-script before or is a first-time user. */
+    private static final String FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY =
+            "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
+    /** Whether proactive help is enabled. */
+    private static final String PROACTIVE_HELP_PREFERENCE_KEY =
+            "Chrome.AutofillAssistant.ProactiveHelp";
     /**
-     * If a user explicitly cancels a lite script >= this number, they will implicitly opt-out of
-     * this experience and never see a lite script again. Note: this is only temporarily in place
-     * until we have a better and more user-friendly solution, see crbug.com/1110887.
+     * @Deprecated preference indicating whether "do not show again" was checked in the autofill
+     * assistant onboarding
      */
-    private static final int LITE_SCRIPT_MAX_NUM_CANCELED_TO_OPT_OUT = 2;
-
-    // Avoid instantiation by accident.
-    private AutofillAssistantPreferencesUtil() {}
+    @Deprecated
+    private static final String SKIP_INIT_SCREEN_PREFERENCE_KEY =
+            "AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN";
 
     /** Checks whether the Autofill Assistant switch preference in settings is on. */
     static boolean isAutofillAssistantSwitchOn() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true);
+        return getAssistantEnabledPreference(true);
     }
 
     /** Checks whether proactive help is enabled. */
@@ -40,70 +50,15 @@ public class AutofillAssistantPreferencesUtil {
             return false;
         }
 
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
-    }
-
-    /** Enables or disables the proactive help setting. */
-    public static void setProactiveHelpSwitch(boolean enabled) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, enabled);
-    }
-
-    /** Returns whether the user has seen a trigger script before or not. */
-    public static boolean isAutofillAssistantFirstTimeTriggerScriptUser() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
-    }
-
-    /** Marks a user as having seen a trigger script at least once before. */
-    public static void setAutofillAssistantFirstTimeTriggerScriptUser(boolean firstTimeUser) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, firstTimeUser);
-    }
-
-    /** Returns the number of times a user has explicitly canceled a lite script. */
-    private static int getAutofillAssistantNumberOfLiteScriptsCanceled() {
-        return SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED, 0);
-    }
-
-    /**
-     * Returns whether the user has explicitly canceled the lite script at least {@code
-     * LITE_SCRIPT_MAX_NUM_CANCELED_TO_OPT_OUT} times.
-     */
-    public static boolean isAutofillAssistantLiteScriptCancelThresholdReached() {
-        return getAutofillAssistantNumberOfLiteScriptsCanceled()
-                >= LITE_SCRIPT_MAX_NUM_CANCELED_TO_OPT_OUT;
-    }
-
-    /** Increments the number of times a user has explicitly canceled a lite script. */
-    public static void incrementAutofillAssistantNumberOfLiteScriptsCanceled() {
-        int numCanceled = getAutofillAssistantNumberOfLiteScriptsCanceled() + 1;
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-        sharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
-                numCanceled);
-        if (isAutofillAssistantLiteScriptCancelThresholdReached()
-                && !sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED)) {
-            // Disable the flag, such that users will not see the lite script again. This will also
-            // create the setting in the Chrome settings, if it was not present before, which will
-            // allow users to opt back in.
-            sharedPreferencesManager.writeBoolean(
-                    ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
-        }
+        return getProactiveHelpPreference(true);
     }
 
     /** Checks whether the Autofill Assistant onboarding has been accepted. */
     public static boolean isAutofillOnboardingAccepted() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                       ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false)
-                ||
+        return getOnboardingAcceptedPreference(false) ||
                 /* Legacy treatment: users of earlier versions should not have to see the onboarding
                 again if they checked the `do not show again' checkbox*/
-                SharedPreferencesManager.getInstance().readBoolean(
-                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN, false);
+                getSkipInitScreenPreference(false);
     }
 
     /** Checks whether the Autofill Assistant onboarding screen should be shown. */
@@ -121,10 +76,86 @@ public class AutofillAssistantPreferencesUtil {
      */
     public static void setInitialPreferences(boolean accept) {
         if (accept) {
-            SharedPreferencesManager.getInstance().writeBoolean(
-                    ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, accept);
+            setAssistantEnabledPreference(accept);
         }
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, accept);
+        setOnboardingAcceptedPreference(accept);
     }
+
+    public static boolean getAssistantEnabledPreference(boolean defaultValue) {
+        return readBoolean(ENABLED_PREFERENCE_KEY, defaultValue);
+    }
+
+    public static void setAssistantEnabledPreference(boolean value) {
+        writeBoolean(ENABLED_PREFERENCE_KEY, value);
+    }
+
+    public static boolean containsAssistantEnabledPreference() {
+        return contains(ENABLED_PREFERENCE_KEY);
+    }
+
+    /* package */ static boolean getOnboardingAcceptedPreference(boolean defaultValue) {
+        return readBoolean(ONBOARDING_ACCEPTED_PREFERENCE_KEY, defaultValue);
+    }
+
+    /* package */ static void setOnboardingAcceptedPreference(boolean value) {
+        writeBoolean(ONBOARDING_ACCEPTED_PREFERENCE_KEY, value);
+    }
+
+    /* package */ static void removeOnboardingAcceptedPreference() {
+        remove(ONBOARDING_ACCEPTED_PREFERENCE_KEY);
+    }
+
+    /** Returns whether the user has seen a trigger script before or not. */
+    /* package */ static boolean isAutofillAssistantFirstTimeTriggerScriptUser() {
+        return readBoolean(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY, true);
+    }
+
+    /** Marks a user as having seen a trigger script at least once before. */
+    /* package */ static void setFirstTimeTriggerScriptUserPreference(boolean firstTimeUser) {
+        writeBoolean(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY, firstTimeUser);
+    }
+
+    /* package */ static void onClearBrowserHistory() {
+        remove(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY);
+    }
+
+    /* package */ static boolean getProactiveHelpPreference(boolean defaultValue) {
+        return readBoolean(PROACTIVE_HELP_PREFERENCE_KEY, defaultValue);
+    }
+
+    /** Enables or disables the proactive help setting. */
+    /* package */ static void setProactiveHelpPreference(boolean enabled) {
+        writeBoolean(PROACTIVE_HELP_PREFERENCE_KEY, enabled);
+    }
+
+    /* package */ static boolean getSkipInitScreenPreference(boolean defaultValue) {
+        return readBoolean(SKIP_INIT_SCREEN_PREFERENCE_KEY, defaultValue);
+    }
+
+    /* package */ static void removeSkipInitScreenPreference() {
+        remove(SKIP_INIT_SCREEN_PREFERENCE_KEY);
+    }
+
+    private static boolean readBoolean(String key, boolean defaultValue) {
+        return ContextUtils.getAppSharedPreferences().getBoolean(key, defaultValue);
+    }
+
+    private static void writeBoolean(String key, boolean value) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        ed.putBoolean(key, value);
+        ed.apply();
+    }
+
+    private static boolean contains(String key) {
+        return ContextUtils.getAppSharedPreferences().contains(key);
+    }
+
+    private static void remove(String key) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        ed.remove(key);
+        ed.apply();
+    }
+
+    // Avoid instantiation by accident.
+    private AutofillAssistantPreferencesUtil() {}
 }

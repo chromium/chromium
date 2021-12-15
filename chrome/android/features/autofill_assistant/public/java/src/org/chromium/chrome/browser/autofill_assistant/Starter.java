@@ -218,8 +218,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     @CalledByNative
     private static void setIsFirstTimeUser(boolean firstTimeUser) {
-        AutofillAssistantPreferencesUtil.setAutofillAssistantFirstTimeTriggerScriptUser(
-                firstTimeUser);
+        AutofillAssistantPreferencesUtil.setFirstTimeTriggerScriptUserPreference(firstTimeUser);
     }
 
     @CalledByNative
@@ -270,7 +269,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     @CalledByNative
     private static void setProactiveHelpSettingEnabled(boolean enabled) {
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(enabled);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(enabled);
     }
 
     @CalledByNative

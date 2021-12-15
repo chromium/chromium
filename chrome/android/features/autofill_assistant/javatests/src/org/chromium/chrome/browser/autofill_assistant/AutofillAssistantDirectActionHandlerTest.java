@@ -39,8 +39,6 @@ import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -57,8 +55,6 @@ public class AutofillAssistantDirectActionHandlerTest {
     private BottomSheetController mBottomSheetController;
     private DirectActionHandler mHandler;
     private TestingAutofillAssistantModuleEntryProvider mModuleEntryProvider;
-    private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -75,10 +71,8 @@ public class AutofillAssistantDirectActionHandlerTest {
                 mActivity.getCompositorViewHolderForTesting(), mActivity.getActivityTabProvider(),
                 mModuleEntryProvider);
 
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED);
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN);
+        AutofillAssistantPreferencesUtil.removeOnboardingAcceptedPreference();
+        AutofillAssistantPreferencesUtil.removeSkipInitScreenPreference();
     }
 
     @Test

@@ -18,8 +18,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Function;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -67,20 +65,16 @@ public class AutofillAssistantFacadeTest {
     public void proactiveHelpConditions() {
         Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
 
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(false);
 
         Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
 
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, false);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(false);
 
         Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
 
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
 
         Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
     }

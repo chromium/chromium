@@ -24,11 +24,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -331,8 +330,7 @@ public class GoogleServicesSettingsTest {
     }
 
     private void setAutofillAssistantSwitchValue(boolean newValue) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {
