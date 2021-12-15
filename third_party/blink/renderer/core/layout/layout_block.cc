@@ -1147,7 +1147,7 @@ static void ProcessPositionedObjectRemoval(
 }
 
 void LayoutBlock::RemovePositionedObjects(
-    LayoutObject* o,
+    LayoutObject* stay_within,
     ContainingBlockState containing_block_state) {
   NOT_DESTROYED();
   TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
@@ -1156,8 +1156,8 @@ void LayoutBlock::RemovePositionedObjects(
 
   HeapVector<Member<LayoutBox>, 16> dead_objects;
   for (LayoutBox* positioned_object : *positioned_descendants) {
-    if (!o ||
-        (positioned_object->IsDescendantOf(o) && o != positioned_object)) {
+    if (!stay_within || (positioned_object->IsDescendantOf(stay_within) &&
+                         stay_within != positioned_object)) {
       ProcessPositionedObjectRemoval(containing_block_state, positioned_object);
       dead_objects.push_back(positioned_object);
     }
