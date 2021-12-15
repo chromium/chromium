@@ -345,9 +345,9 @@ const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
 const char*
     PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount =
         "WebApp.Preinstalled.AppToReplaceStillInstalledCount";
-const char*
-    PreinstalledWebAppManager::kHistogramAppToReplaceStillSyncInstalledCount =
-        "WebApp.Preinstalled.AppToReplaceStillSyncInstalledCount";
+const char* PreinstalledWebAppManager::
+    kHistogramAppToReplaceStillDefaultInstalledCount =
+        "WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount";
 const char* PreinstalledWebAppManager::
     kHistogramAppToReplaceStillInstalledInShelfCount =
         "WebApp.Preinstalled.AppToReplaceStillInstalledInShelfCount";
@@ -632,7 +632,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
   size_t uninstall_and_replace_count = 0;
   size_t app_to_replace_still_installed_count = 0;
-  size_t app_to_replace_still_sync_installed_count = 0;
+  size_t app_to_replace_still_default_installed_count = 0;
   size_t app_to_replace_still_installed_in_shelf_count = 0;
 
   for (const auto& url_and_result : install_results) {
@@ -675,7 +675,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
         ++app_to_replace_still_installed_count;
 
         if (!extensions::IsExtensionDefaultInstalled(profile_, replace_id))
-          ++app_to_replace_still_sync_installed_count;
+          ++app_to_replace_still_default_installed_count;
 
         if (ui_manager_->CanAddAppToQuickLaunchBar()) {
           if (ui_manager_->IsAppInQuickLaunchBar(result.app_id.value()))
@@ -689,8 +689,8 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
   base::UmaHistogramCounts100(kHistogramAppToReplaceStillInstalledCount,
                               app_to_replace_still_installed_count);
-  base::UmaHistogramCounts100(kHistogramAppToReplaceStillSyncInstalledCount,
-                              app_to_replace_still_sync_installed_count);
+  base::UmaHistogramCounts100(kHistogramAppToReplaceStillDefaultInstalledCount,
+                              app_to_replace_still_default_installed_count);
   base::UmaHistogramCounts100(kHistogramAppToReplaceStillInstalledInShelfCount,
                               app_to_replace_still_installed_in_shelf_count);
 
