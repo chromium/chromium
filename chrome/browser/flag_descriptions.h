@@ -2153,6 +2153,9 @@ extern const char kNtpRealboxSuggestionAnswersDescription[];
 extern const char kNtpRealboxTailSuggestName[];
 extern const char kNtpRealboxTailSuggestDescription[];
 
+extern const char kNtpRealboxUseGoogleGIconName[];
+extern const char kNtpRealboxUseGoogleGIconDescription[];
+
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 

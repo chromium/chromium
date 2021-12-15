@@ -4034,6 +4034,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "ntp-realbox-use-google-g-icon",
+    "owners": [ "mahmadi", "mfacey" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 100

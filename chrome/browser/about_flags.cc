@@ -4985,6 +4985,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-realbox-tail-suggest", flag_descriptions::kNtpRealboxTailSuggestName,
      flag_descriptions::kNtpRealboxTailSuggestDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxTailSuggest)},
+
+    {"ntp-realbox-use-google-g-icon",
+     flag_descriptions::kNtpRealboxUseGoogleGIconName,
+     flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxUseGoogleGIcon)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)

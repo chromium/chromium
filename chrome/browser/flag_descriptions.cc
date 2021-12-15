@@ -3729,6 +3729,11 @@ const char kNtpRealboxTailSuggestName[] = "NTP Realbox Tail Suggest";
 const char kNtpRealboxTailSuggestDescription[] =
     "Properly formats the tail suggestions to match the Omnibox";
 
+const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
+const char kNtpRealboxUseGoogleGIconDescription[] =
+    "Shows Google G icon "
+    "instead of Search Loupe in realbox when enabled";
+
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
     "Allows viewing of simplified web pages by selecting 'Customize and "
