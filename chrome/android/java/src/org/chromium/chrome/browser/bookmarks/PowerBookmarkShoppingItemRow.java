@@ -105,7 +105,12 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         mImageFetcher.fetchImage(
                 ImageFetcher.Params.create(leadImageUrl, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
                         mDesiredImageSize, mDesiredImageSize),
-                (image) -> { setStartIconDrawable(new BitmapDrawable(getResources(), image)); });
+                (image) -> {
+                    // We've successfully fetched an image. Cancel any pending requests for the
+                    // favicon.
+                    cancelFavicon();
+                    setStartIconDrawable(new BitmapDrawable(getResources(), image));
+                });
 
         setPriceInfoChip(originalPrice, currentPrice);
         setPriceTrackingButton(priceTrackingEnabled);
