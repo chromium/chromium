@@ -18,6 +18,7 @@
   item.email = self.email;
   item.avatar = self.avatar;
   item.selected = self.selected;
+  item.useCustomSeparator = NO;
 }
 
 - (NSString*)description {
