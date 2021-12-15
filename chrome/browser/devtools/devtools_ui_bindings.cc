@@ -1509,6 +1509,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     return;
 
   base::ListValue results;
+  bool have_user_installed_devtools_extensions = false;
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
     if (extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
@@ -1537,6 +1538,18 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
         extension->permissions_data()->HasAPIPermission(
             extensions::mojom::APIPermissionID::kExperimental));
     results.Append(std::move(extension_info));
+
+    if (!(extensions::Manifest::IsPolicyLocation(extension->location()) ||
+          extensions::Manifest::IsComponentLocation(extension->location()))) {
+      have_user_installed_devtools_extensions = true;
+    }
+  }
+
+  if (have_user_installed_devtools_extensions) {
+    bool is_developer_mode =
+        profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    base::UmaHistogramBoolean("Extensions.DevTools.UserIsInDeveloperMode",
+                              is_developer_mode);
   }
 
   CallClientMethod("DevToolsAPI", "addExtensions", std::move(results));
