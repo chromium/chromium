@@ -300,12 +300,6 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
   params->native_theme_info = NativeThemeServiceAsh::GetNativeThemeInfo();
 
-  params->is_incognito_deprecated =
-      initial_browser_action.action ==
-      crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
-  params->restore_last_session_deprecated =
-      initial_browser_action.action ==
-      crosapi::mojom::InitialBrowserAction::kRestoreLastSession;
   params->initial_browser_action = initial_browser_action.action;
   if (initial_browser_action.action ==
       crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {

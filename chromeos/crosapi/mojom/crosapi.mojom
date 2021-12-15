@@ -695,17 +695,10 @@ struct BrowserInitParams {
   [MinVersion=12]
   IdleInfo? idle_info@12;
 
-  // Launches an incognito window.
-  // Added in M91.
-  // TODO(https://crbug.com/1194304): Remove in M93.
   [MinVersion=13]
-  bool is_incognito_deprecated@13;
-
-  // Restores tabs from the last session.
-  // Added in M91.
-  // TODO(https://crbug.com/1194304): Remove in M93.
+  bool REMOVED_13@13;
   [MinVersion=14]
-  bool restore_last_session_deprecated@14;
+  bool REMOVED_14@14;
 
   // Defines which windows or tabs to restore on launch.
   [MinVersion=15]

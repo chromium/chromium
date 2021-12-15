@@ -516,8 +516,6 @@ Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
     bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     auto* init_params = chromeos::LacrosService::Get()->init_params();
-    // TODO(https://crbug.com/1194304): Remove in M93.
-    expect_incognito |= init_params->is_incognito_deprecated;
     expect_incognito |=
         init_params->initial_browser_action ==
         crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
@@ -707,8 +705,6 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
     pref.type = SessionStartupPref::DEFAULT;
     return pref;
   }
-  // TODO(https://crbug.com/1194304): Remove in M93.
-  restore_last_session |= init_params->restore_last_session_deprecated;
   restore_last_session |=
       init_params->initial_browser_action ==
       crosapi::mojom::InitialBrowserAction::kRestoreLastSession;
