@@ -26,6 +26,9 @@ void FakeDlpClient::SetDlpFilesPolicy(
 void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
                             AddFileCallback callback) {}
 
+void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
+                                    GetFilesSourcesCallback callback) const {}
+
 bool FakeDlpClient::IsAlive() const {
   return false;
 }

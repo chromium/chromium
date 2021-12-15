@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
       base::OnceCallback<void(const dlp::SetDlpFilesPolicyResponse response)>;
   using AddFileCallback =
       base::OnceCallback<void(const dlp::AddFileResponse response)>;
+  using GetFilesSourcesCallback =
+      base::OnceCallback<void(const dlp::GetFilesSourcesResponse response)>;
 
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
@@ -52,10 +54,16 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   // Returns the global instance which may be null if not initialized.
   static DlpClient* Get();
 
+  // Dlp daemon D-Bus method calls. See org.chromium.Dlp.xml and
+  // dlp_service.proto in Chromium OS code for the documentation of the methods
+  // and request/response messages.
   virtual void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                                  SetDlpFilesPolicyCallback callback) = 0;
   virtual void AddFile(const dlp::AddFileRequest request,
                        AddFileCallback callback) = 0;
+  virtual void GetFilesSources(const dlp::GetFilesSourcesRequest request,
+                               GetFilesSourcesCallback callback) const = 0;
+
   virtual bool IsAlive() const = 0;
 
   // Returns an interface for testing (fake only), or returns nullptr.

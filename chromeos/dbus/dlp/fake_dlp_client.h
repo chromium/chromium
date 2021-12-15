@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
                          SetDlpFilesPolicyCallback callback) override;
   void AddFile(const dlp::AddFileRequest request,
                AddFileCallback callback) override;
+  void GetFilesSources(const dlp::GetFilesSourcesRequest request,
+                       GetFilesSourcesCallback callback) const override;
   bool IsAlive() const override;
   DlpClient::TestInterface* GetTestInterface() override;
 
