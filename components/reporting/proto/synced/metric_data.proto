@@ -112,13 +112,13 @@ message WirelessInterfaceTelemetry {
   // Receiving bit rate measured in Mbps.
   optional uint32 rx_bit_rate_mbps = 4;
   // Transmission power measured in dBm.
-  optional int32 tx_power_dBm = 5;
+  optional int32 tx_power_dbm = 5;
   // Is wifi encryption key on or not.
-  optional bool encyption_on = 6;
+  optional bool encryption_on = 6;
   // Wifi link quality.
   optional uint32 link_quality = 7;
   // Wifi signal level in dBm.
-  optional int32 signal_level_dBm = 8;
+  optional int32 signal_level_dbm = 8;
 }
 
 // Configured networks telemetry data.
