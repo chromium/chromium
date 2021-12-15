@@ -95,7 +95,7 @@ class BigQueryQuerier(object):
     """
     logging.info('Filling test expectation map with try results')
     return self._FillExpectationMapForBuilders(expectation_map, builders,
-                                               constants.BuilderTypes.CI)
+                                               constants.BuilderTypes.TRY)
 
   def _FillExpectationMapForBuilders(self, expectation_map, builders,
                                      builder_type):
