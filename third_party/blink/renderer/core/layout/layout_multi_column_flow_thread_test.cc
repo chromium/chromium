@@ -1206,6 +1206,19 @@ LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
               ToSimpleLayoutTree(container));
+  } else if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "x"
+  |  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  |  +--LayoutNGBlockFlow DIV id="inner"
+  |  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
   } else {
     EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="mc"
@@ -1238,6 +1251,17 @@ LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
               ToSimpleLayoutTree(container));
+  } else if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "x"
+  |  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
   } else {
     EXPECT_FALSE(flow_thread.ChildrenInline());
     EXPECT_EQ(R"DUMP(
@@ -1264,6 +1288,17 @@ LayoutBlockFlow DIV id="mc"
   |  +--LayoutInline SPAN
   |  |  +--LayoutText #text "xy"
   |  +--LayoutInline SPAN
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "xy"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
               ToSimpleLayoutTree(container));
