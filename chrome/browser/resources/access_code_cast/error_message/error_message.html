@@ -1,0 +1,40 @@
+<style include="cr-shared-style">
+  .error {
+    color: var(--google-red-600);
+    padding-top: 16px;
+  }
+
+  .error > iron-icon {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+  }
+</style>
+<div class="error">
+  <template is="dom-if"
+    if="[[isNotEqual(messageCode, errorMessageEnum.NO_ERROR)]]"
+  >
+    <iron-icon class="button-image" icon="cr:error-outline" size="16">
+    </iron-icon>
+    <template is="dom-if" if="[[isEqual(messageCode, errorMessageEnum.GENERIC)]]">
+      $i18n{errorUnknown}
+    </template>
+    <template is="dom-if"
+      if="[[isEqual(messageCode, errorMessageEnum.ACCESS_CODE)]]"
+    >
+      $i18n{errorAccessCode}
+    </template>
+    <template is="dom-if" if="[[isEqual(messageCode, errorMessageEnum.NETWORK)]]">
+      $i18n{errorNetwork}
+    </template>
+    <template is="dom-if"
+      if="[[isEqual(messageCode, errorMessageEnum.PERMISSION)]]"
+    >
+      $i18n{errorPermission}
+    </template>
+    <template is="dom-if"
+      if="[[isEqual(messageCode, errorMessageEnum.TOO_MANY_REQUESTS)]]"
+    >
+      $i18n{errorTooManyRequests}
+    </template>
+  </template>
+</div>

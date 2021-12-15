@@ -15,6 +15,7 @@ html_to_js("web_components") {
   js_files = [
     "access_code_cast.ts",
     "code_input/code_input.ts",
+    "error_message/error_message.ts",
   ]
 }
 
@@ -57,6 +58,7 @@ ts_library("build_ts") {
     "access_code_cast.ts",
     "browser_proxy.ts",
     "code_input/code_input.ts",
+    "error_message/error_message.ts",
     "route_request_result_code.mojom-webui.js",
   ]
 }

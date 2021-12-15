@@ -118,6 +118,11 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       {"cast", IDS_ACCESS_CODE_CAST_CAST},
       {"close", IDS_CLOSE},
       {"dialogTitle", IDS_ACCESS_CODE_CAST_DIALOG_TITLE},
+      {"errorAccessCode", IDS_ACCESS_CODE_CAST_ERROR_ACCESS_CODE},
+      {"errorNetwork", IDS_ACCESS_CODE_CAST_ERROR_NETWORK},
+      {"errorPermission", IDS_ACCESS_CODE_CAST_ERROR_PERMISSION},
+      {"errorTooManyRequests", IDS_ACCESS_CODE_CAST_ERROR_TOO_MANY_REQUESTS},
+      {"errorUnknown", IDS_ACCESS_CODE_CAST_ERROR_UNKNOWN},
       {"useCamera", IDS_ACCESS_CODE_CAST_USE_CAMERA},
   };
 

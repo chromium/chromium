@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './code_input/code_input.js';
+import './error_message/error_message.js';
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -16,6 +17,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {CodeInputElement} from './code_input/code_input.js';
+import {ErrorMessageElement} from './error_message/error_message.js';
 import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
 
 declare const chrome: any;
@@ -31,6 +33,7 @@ interface AccessCodeCastElement {
     castButton: CrButtonElement;
     codeInputView: HTMLDivElement;
     codeInput: CodeInputElement;
+    errorMessage: ErrorMessageElement;
     qrInputView: HTMLDivElement;
   }
 }
@@ -62,6 +65,7 @@ class AccessCodeCastElement extends PolymerElement {
   ready() {
     super.ready();
     this.setState(PageState.CODE_INPUT);
+    this.$.errorMessage.setNoError();
     this.$.codeInput.addEventListener('access-code-input', (e: any) => {
       this.handleCodeInput(e);
     });
@@ -101,7 +105,7 @@ class AccessCodeCastElement extends PolymerElement {
     });
 
     if (addResult !== AddSinkResultCode.OK) {
-      this.showAddSinkError(addResult);
+      this.$.errorMessage.setAddSinkError(addResult);
       return;
     }
 
@@ -110,7 +114,7 @@ class AccessCodeCastElement extends PolymerElement {
     });
 
     if (castResult !== RouteRequestResultCode.OK) {
-      this.showCastError(castResult);
+      this.$.errorMessage.setCastError(castResult);
       return;
     }
 
@@ -129,6 +133,7 @@ class AccessCodeCastElement extends PolymerElement {
 
   private setState(state: PageState) {
     this.state = state;
+    this.$.errorMessage.setNoError();
 
     this.$.codeInputView.hidden = state !== PageState.CODE_INPUT;
     this.$.castButton.hidden = state !== PageState.CODE_INPUT;
@@ -156,25 +161,6 @@ class AccessCodeCastElement extends PolymerElement {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
     return castResult.resultCode as RouteRequestResultCode;
   }
-
-  // TODO:(b/209720173): Implement this functions to handle errors
-  private showAddSinkError(resultCode: AddSinkResultCode) {
-    if (resultCode === AddSinkResultCode.INVALID_ACCESS_CODE) {
-      console.log('Incorrect access code');
-    } else {
-      console.log('Add sink error: ' + resultCode);
-    }
-  }
-
-  // TODO:(b/209720173): Implement this functions to handle errors
-  private showCastError(resultCode: RouteRequestResultCode) {
-    if (resultCode === RouteRequestResultCode.ROUTE_NOT_FOUND) {
-      console.log('Route not found');
-    } else {
-      console.log('Cast error: ' + resultCode);
-    }
-  }
-
 }
 
 customElements.define(AccessCodeCastElement.is, AccessCodeCastElement);
