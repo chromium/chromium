@@ -6463,13 +6463,6 @@ crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-
 crbug.com/1126709 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
 crbug.com/1126709 [ Win ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
 
-# Sheriff 2020-09-17
-### virtual/scroll-unification/fast/scrolling/scrollbars/
-virtual/scroll-unification/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar.html [ Failure ]
-virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-occluded-by-div.html [ Failure ]
-virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure ]
-virtual/scroll-unification/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure ]
-
 # Sheriff 2020-09-21
 crbug.com/1130500 [ Debug Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Failure Pass ]
 

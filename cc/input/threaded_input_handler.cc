@@ -1237,6 +1237,13 @@ bool ThreadedInputHandler::IsMainThreadScrolling(
   return false;
 }
 
+float ThreadedInputHandler::LineStep() const {
+  return kPixelsPerLineStep;
+}
+
+// TODO(mehdika): There is some redundancy between this function and
+// ScrollbarController::GetScrollDistanceForScrollbarPart, these two need to be
+// kept in sync.
 gfx::Vector2dF ThreadedInputHandler::ResolveScrollGranularityToPixels(
     const ScrollNode& scroll_node,
     const gfx::Vector2dF& scroll_delta,
@@ -1264,6 +1271,10 @@ gfx::Vector2dF ThreadedInputHandler::ResolveScrollGranularityToPixels(
 
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
         pixel_delta, scroller_size, viewport_size);
+  }
+
+  if (granularity == ui::ScrollGranularity::kScrollByLine) {
+    pixel_delta.Scale(LineStep(), LineStep());
   }
 
   return pixel_delta;

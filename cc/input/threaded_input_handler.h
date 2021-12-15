@@ -138,6 +138,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
                                   const gfx::Point& viewport_point,
                                   bool is_direct_manipulation);
 
+  float LineStep() const;
+
   // Resolves a delta in the given granularity for the |scroll_node| into
   // physical pixels to scroll.
   gfx::Vector2dF ResolveScrollGranularityToPixels(
