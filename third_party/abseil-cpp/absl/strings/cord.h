@@ -763,9 +763,8 @@ class Cord {
     bool empty() const;
     size_t size() const;
     const char* data() const;  // Returns nullptr if holding pointer
-    void set_data(const char* data, size_t n,
-                  bool nullify_tail);  // Discards pointer, if any
-    char* set_data(size_t n);          // Write data to the result
+    void set_data(const char* data, size_t n);  // Discards pointer, if any
+    char* set_data(size_t n);                   // Write data to the result
     // Returns nullptr if holding bytes
     absl::cord_internal::CordRep* tree() const;
     absl::cord_internal::CordRep* as_tree() const;
@@ -857,7 +856,7 @@ class Cord {
     bool is_profiled() const { return data_.is_tree() && data_.is_profiled(); }
 
     // Returns the available inlined capacity, or 0 if is_tree() == true.
-    size_t inline_capacity() const {
+    size_t remaining_inline_capacity() const {
       return data_.is_tree() ? 0 : kMaxInline - data_.inline_size();
     }
 
@@ -968,8 +967,8 @@ namespace cord_internal {
 // Fast implementation of memmove for up to 15 bytes. This implementation is
 // safe for overlapping regions. If nullify_tail is true, the destination is
 // padded with '\0' up to 16 bytes.
-inline void SmallMemmove(char* dst, const char* src, size_t n,
-                         bool nullify_tail = false) {
+template <bool nullify_tail = false>
+inline void SmallMemmove(char* dst, const char* src, size_t n) {
   if (n >= 8) {
     assert(n <= 16);
     uint64_t buf1;
@@ -1006,22 +1005,16 @@ inline void SmallMemmove(char* dst, const char* src, size_t n,
 }
 
 // Does non-template-specific `CordRepExternal` initialization.
-// Expects `data` to be non-empty.
+// Requires `data` to be non-empty.
 void InitializeCordRepExternal(absl::string_view data, CordRepExternal* rep);
 
 // Creates a new `CordRep` that owns `data` and `releaser` and returns a pointer
-// to it, or `nullptr` if `data` was empty.
+// to it. Requires `data` to be non-empty.
 template <typename Releaser>
 // NOLINTNEXTLINE - suppress clang-tidy raw pointer return.
 CordRep* NewExternalRep(absl::string_view data, Releaser&& releaser) {
+  assert(!data.empty());
   using ReleaserType = absl::decay_t<Releaser>;
-  if (data.empty()) {
-    // Never create empty external nodes.
-    InvokeReleaser(Rank0{}, ReleaserType(std::forward<Releaser>(releaser)),
-                   data);
-    return nullptr;
-  }
-
   CordRepExternal* rep = new CordRepExternalImpl<ReleaserType>(
       std::forward<Releaser>(releaser), 0);
   InitializeCordRepExternal(data, rep);
@@ -1041,10 +1034,15 @@ inline CordRep* NewExternalRep(absl::string_view data,
 template <typename Releaser>
 Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
   Cord cord;
-  if (auto* rep = ::absl::cord_internal::NewExternalRep(
-          data, std::forward<Releaser>(releaser))) {
-    cord.contents_.EmplaceTree(rep,
+  if (ABSL_PREDICT_TRUE(!data.empty())) {
+    cord.contents_.EmplaceTree(::absl::cord_internal::NewExternalRep(
+                                   data, std::forward<Releaser>(releaser)),
                                Cord::MethodIdentifier::kMakeCordFromExternal);
+  } else {
+    using ReleaserType = absl::decay_t<Releaser>;
+    cord_internal::InvokeReleaser(
+        cord_internal::Rank0{}, ReleaserType(std::forward<Releaser>(releaser)),
+        data);
   }
   return cord;
 }

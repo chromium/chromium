@@ -311,11 +311,10 @@ static CordRep* CordRepFromString(std::string&& src) {
 
 constexpr unsigned char Cord::InlineRep::kMaxInline;
 
-inline void Cord::InlineRep::set_data(const char* data, size_t n,
-                                      bool nullify_tail) {
+inline void Cord::InlineRep::set_data(const char* data, size_t n) {
   static_assert(kMaxInline == 15, "set_data is hard-coded for a length of 15");
 
-  cord_internal::SmallMemmove(data_.as_chars(), data, n, nullify_tail);
+  cord_internal::SmallMemmove<true>(data_.as_chars(), data, n);
   set_inline_size(n);
 }
 
@@ -375,7 +374,8 @@ void Cord::InlineRep::AppendTreeToTree(CordRep* tree, MethodIdentifier method) {
 }
 
 void Cord::InlineRep::AppendTree(CordRep* tree, MethodIdentifier method) {
-  if (tree == nullptr) return;
+  assert(tree != nullptr);
+  assert(tree->length != 0);
   assert(!tree->IsCrc());
   if (data_.is_tree()) {
     AppendTreeToTree(tree, method);
@@ -412,6 +412,7 @@ void Cord::InlineRep::PrependTreeToTree(CordRep* tree,
 
 void Cord::InlineRep::PrependTree(CordRep* tree, MethodIdentifier method) {
   assert(tree != nullptr);
+  assert(tree->length != 0);
   assert(!tree->IsCrc());
   if (data_.is_tree()) {
     PrependTreeToTree(tree, method);
@@ -549,7 +550,7 @@ Cord::Cord(absl::string_view src, MethodIdentifier method)
     : contents_(InlineData::kDefaultInit) {
   const size_t n = src.size();
   if (n <= InlineRep::kMaxInline) {
-    contents_.set_data(src.data(), n, true);
+    contents_.set_data(src.data(), n);
   } else {
     CordRep* rep = NewTree(src.data(), n, 0);
     contents_.EmplaceTree(rep, method);
@@ -559,7 +560,7 @@ Cord::Cord(absl::string_view src, MethodIdentifier method)
 template <typename T, Cord::EnableIfString<T>>
 Cord::Cord(T&& src) : contents_(InlineData::kDefaultInit) {
   if (src.size() <= InlineRep::kMaxInline) {
-    contents_.set_data(src.data(), src.size(), true);
+    contents_.set_data(src.data(), src.size());
   } else {
     CordRep* rep = CordRepFromString(std::forward<T>(src));
     contents_.EmplaceTree(rep, CordzUpdateTracker::kConstructorString);
@@ -610,7 +611,7 @@ Cord& Cord::operator=(absl::string_view src) {
     // - MaybeUntrackCord must be called before set_data() clobbers cordz_info.
     // - set_data() must be called before Unref(tree) as it may reference tree.
     if (tree != nullptr) CordzInfo::MaybeUntrackCord(contents_.cordz_info());
-    contents_.set_data(data, length, true);
+    contents_.set_data(data, length);
     if (tree != nullptr) CordRep::Unref(tree);
     return *this;
   }
@@ -1014,9 +1015,7 @@ Cord Cord::Subcord(size_t pos, size_t new_size) const {
 
   CordRep* tree = contents_.tree();
   if (tree == nullptr) {
-    // sub_cord is newly constructed, no need to re-zero-out the tail of
-    // contents_ memory.
-    sub_cord.contents_.set_data(contents_.data() + pos, new_size, false);
+    sub_cord.contents_.set_data(contents_.data() + pos, new_size);
     return sub_cord;
   }
 

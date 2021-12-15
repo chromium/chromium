@@ -437,6 +437,8 @@ EXPORTS
     ??$SetEdge@$0A@@CordRepBtree@cord_internal@absl@@QEAA?AUOpResult@012@_NPEAUCordRep@12@_K@Z
     ??$SharedCompareImpl@VCord@absl@@@absl@@YAHAEBVCord@0@0@Z
     ??$SharedCompareImpl@Vstring_view@absl@@@absl@@YAHAEBVCord@0@AEBVstring_view@0@@Z
+    ??$SmallMemmove@$00@cord_internal@absl@@YAXPEADPEBD_K@Z
+    ??$SmallMemmove@$0A@@cord_internal@absl@@YAXPEADPEBD_K@Z
     ??$StrAppend@$$V@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@AEBVAlphaNum@0@1111@Z
     ??$StrReplaceAll@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@0@AEBV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@3@@Z
     ??$StrReplaceAll@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@@absl@@YAHAEBV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@PEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@2@@Z
@@ -2487,7 +2489,6 @@ EXPORTS
     ?SleepFor@absl@@YAXVDuration@1@@Z
     ?SlowLock@SpinLock@base_internal@absl@@AEAAXXZ
     ?SlowUnlock@SpinLock@base_internal@absl@@AEAAXI@Z
-    ?SmallMemmove@cord_internal@absl@@YAXPEADPEBD_K_N@Z
     ?SnprintF@str_format_internal@absl@@YAHPEAD_KVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ?SpinLockDelay@base_internal@absl@@YAXPEAU?$atomic@I@__1@std@@IHW4SchedulingMode@12@@Z
     ?SpinLockSuggestedDelayNS@base_internal@absl@@YAHH@Z
@@ -3613,7 +3614,7 @@ EXPORTS
     ?set_cordz_info@InlineData@cord_internal@absl@@QEAAXPEAVCordzInfo@23@@Z
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
     ?set_data@InlineRep@Cord@absl@@QEAAPEAD_K@Z
-    ?set_data@InlineRep@Cord@absl@@QEAAXPEBD_K_N@Z
+    ?set_data@InlineRep@Cord@absl@@QEAAXPEBD_K@Z
     ?set_depth@CordRepConcat@cord_internal@absl@@QEAAXE@Z
     ?set_end@CordRepBtree@cord_internal@absl@@AEAAX_K@Z
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z

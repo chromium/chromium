@@ -201,7 +201,7 @@ constexpr bool IsNoThrowSwappable(std::false_type /* is_swappable */) {
 template <typename T>
 uint32_t TrailingZeros(T x) {
   ABSL_INTERNAL_ASSUME(x != 0);
-  return countr_zero(x);
+  return static_cast<uint32_t>(countr_zero(x));
 }
 
 // An abstraction over a bitmask. It provides an easy way to iterate through the
@@ -230,7 +230,7 @@ class BitMask {
     return *this;
   }
   explicit operator bool() const { return mask_ != 0; }
-  int operator*() const { return LowestBitSet(); }
+  uint32_t operator*() const { return LowestBitSet(); }
   uint32_t LowestBitSet() const {
     return container_internal::TrailingZeros(mask_) >> Shift;
   }
@@ -248,7 +248,7 @@ class BitMask {
   uint32_t LeadingZeros() const {
     constexpr int total_significant_bits = SignificantBits << Shift;
     constexpr int extra_bits = sizeof(T) * 8 - total_significant_bits;
-    return countl_zero(mask_ << extra_bits) >> Shift;
+    return static_cast<uint32_t>(countl_zero(mask_ << extra_bits)) >> Shift;
   }
 
  private:
@@ -360,7 +360,7 @@ struct GroupSse2Impl {
   BitMask<uint32_t, kWidth> Match(h2_t hash) const {
     auto match = _mm_set1_epi8(hash);
     return BitMask<uint32_t, kWidth>(
-        _mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl)));
+        static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
   }
 
   // Returns a bitmask representing the positions of empty slots.
@@ -368,7 +368,7 @@ struct GroupSse2Impl {
 #if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSSE3
     // This only works because ctrl_t::kEmpty is -128.
     return BitMask<uint32_t, kWidth>(
-        _mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl)));
+        static_cast<uint32_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
 #else
     return Match(static_cast<h2_t>(ctrl_t::kEmpty));
 #endif
@@ -376,14 +376,15 @@ struct GroupSse2Impl {
 
   // Returns a bitmask representing the positions of empty or deleted slots.
   BitMask<uint32_t, kWidth> MatchEmptyOrDeleted() const {
-    auto special = _mm_set1_epi8(static_cast<int8_t>(ctrl_t::kSentinel));
+    auto special = _mm_set1_epi8(static_cast<uint8_t>(ctrl_t::kSentinel));
     return BitMask<uint32_t, kWidth>(
-        _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl)));
+        static_cast<uint32_t>(
+            _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl))));
   }
 
   // Returns the number of trailing empty or deleted elements in the group.
   uint32_t CountLeadingEmptyOrDeleted() const {
-    auto special = _mm_set1_epi8(static_cast<int8_t>(ctrl_t::kSentinel));
+    auto special = _mm_set1_epi8(static_cast<uint8_t>(ctrl_t::kSentinel));
     return TrailingZeros(static_cast<uint32_t>(
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl)) + 1));
   }
@@ -1465,7 +1466,7 @@ class raw_hash_set {
     auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
-      for (int i : g.Match(H2(hash))) {
+      for (uint32_t i : g.Match(H2(hash))) {
         if (ABSL_PREDICT_TRUE(PolicyTraits::apply(
                 EqualElement<K>{key, eq_ref()},
                 PolicyTraits::element(slots_ + seq.offset(i)))))
@@ -1610,7 +1611,7 @@ class raw_hash_set {
   void erase_meta_only(const_iterator it) {
     assert(IsFull(*it.inner_.ctrl_) && "erasing a dangling iterator");
     --size_;
-    const size_t index = it.inner_.ctrl_ - ctrl_;
+    const size_t index = static_cast<size_t>(it.inner_.ctrl_ - ctrl_);
     const size_t index_before = (index - Group::kWidth) & capacity_;
     const auto empty_after = Group(it.inner_.ctrl_).MatchEmpty();
     const auto empty_before = Group(ctrl_ + index_before).MatchEmpty();
@@ -1832,7 +1833,7 @@ class raw_hash_set {
     auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
-      for (int i : g.Match(H2(hash))) {
+      for (uint32_t i : g.Match(H2(hash))) {
         if (ABSL_PREDICT_TRUE(PolicyTraits::element(slots_ + seq.offset(i)) ==
                               elem))
           return true;
@@ -1864,7 +1865,7 @@ class raw_hash_set {
     auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
-      for (int i : g.Match(H2(hash))) {
+      for (uint32_t i : g.Match(H2(hash))) {
         if (ABSL_PREDICT_TRUE(PolicyTraits::apply(
                 EqualElement<K>{key, eq_ref()},
                 PolicyTraits::element(slots_ + seq.offset(i)))))
@@ -1984,7 +1985,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
     auto seq = probe(set.ctrl_, hash, set.capacity_);
     while (true) {
       container_internal::Group g{set.ctrl_ + seq.offset()};
-      for (int i : g.Match(container_internal::H2(hash))) {
+      for (uint32_t i : g.Match(container_internal::H2(hash))) {
         if (Traits::apply(
                 typename Set::template EqualElement<typename Set::key_type>{
                     key, set.eq_ref()},

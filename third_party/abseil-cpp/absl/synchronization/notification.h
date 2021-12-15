@@ -22,7 +22,7 @@
 // The `Notification` object maintains a private boolean "notified" state that
 // transitions to `true` at most once. The `Notification` class provides the
 // following primary member functions:
-//   * `HasBeenNotified() `to query its state
+//   * `HasBeenNotified()` to query its state
 //   * `WaitForNotification*()` to have threads wait until the "notified" state
 //      is `true`.
 //   * `Notify()` to set the notification's "notified" state to `true` and

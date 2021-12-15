@@ -435,6 +435,8 @@ EXPORTS
     ??$SetEdge@$0A@@CordRepBtree@cord_internal@absl@@QAE?AUOpResult@012@_NPAUCordRep@12@I@Z
     ??$SharedCompareImpl@VCord@absl@@@absl@@YAHABVCord@0@0@Z
     ??$SharedCompareImpl@Vstring_view@absl@@@absl@@YAHABVCord@0@ABVstring_view@0@@Z
+    ??$SmallMemmove@$00@cord_internal@absl@@YAXPADPBDI@Z
+    ??$SmallMemmove@$0A@@cord_internal@absl@@YAXPADPBDI@Z
     ??$StrAppend@$$V@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@ABVAlphaNum@0@1111@Z
     ??$StrReplaceAll@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@0@ABV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@3@@Z
     ??$StrReplaceAll@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@@absl@@YAHABV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@2@@Z
@@ -2481,7 +2483,6 @@ EXPORTS
     ?SleepFor@absl@@YAXVDuration@1@@Z
     ?SlowLock@SpinLock@base_internal@absl@@AAEXXZ
     ?SlowUnlock@SpinLock@base_internal@absl@@AAEXI@Z
-    ?SmallMemmove@cord_internal@absl@@YAXPADPBDI_N@Z
     ?SnprintF@str_format_internal@absl@@YAHPADIVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ?SpinLockDelay@base_internal@absl@@YAXPAU?$atomic@I@__1@std@@IHW4SchedulingMode@12@@Z
     ?SpinLockSuggestedDelayNS@base_internal@absl@@YAHH@Z
@@ -3607,7 +3608,7 @@ EXPORTS
     ?set_cordz_info@InlineData@cord_internal@absl@@QAEXPAVCordzInfo@23@@Z
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
     ?set_data@InlineRep@Cord@absl@@QAEPADI@Z
-    ?set_data@InlineRep@Cord@absl@@QAEXPBDI_N@Z
+    ?set_data@InlineRep@Cord@absl@@QAEXPBDI@Z
     ?set_depth@CordRepConcat@cord_internal@absl@@QAEXE@Z
     ?set_end@CordRepBtree@cord_internal@absl@@AAEXI@Z
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QAEXH@Z

@@ -46,10 +46,6 @@ if (POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif (POLICY CMP0091)
 
-# Set BUILD_TESTING to OFF by default.
-# This must come before the project() and include(CTest) lines.
-OPTION(BUILD_TESTING "Build tests" OFF)
-
 project(absl LANGUAGES CXX)
 include(CTest)
 
@@ -111,6 +107,9 @@ find_package(Threads REQUIRED)
 
 include(CMakeDependentOption)
 
+option(ABSL_BUILD_TESTING
+  "If ON, Abseil will build all of Abseil's own tests." OFF)
+
 option(ABSL_USE_EXTERNAL_GOOGLETEST
   "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subproject." OFF)
 
@@ -130,7 +129,7 @@ set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
   "If ABSL_USE_GOOGLETEST_HEAD is OFF and ABSL_GOOGLETEST_URL is not set, specifies the directory of a local GoogleTest checkout."
   )
 
-if(BUILD_TESTING)
+if(BUILD_TESTING AND ABSL_BUILD_TESTING)
   ## check targets
   if (ABSL_USE_EXTERNAL_GOOGLETEST)
     if (ABSL_FIND_GOOGLETEST)

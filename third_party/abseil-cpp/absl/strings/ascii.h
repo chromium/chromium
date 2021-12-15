@@ -133,7 +133,7 @@ inline bool ascii_isdigit(unsigned char c) { return c >= '0' && c <= '9'; }
 
 // ascii_isprint()
 //
-// Determines whether the given character is printable, including whitespace.
+// Determines whether the given character is printable, including spaces.
 inline bool ascii_isprint(unsigned char c) { return c >= 32 && c < 127; }
 
 // ascii_isgraph()

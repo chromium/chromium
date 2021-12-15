@@ -1370,31 +1370,64 @@ TEST_P(CordTest, ConstructFromExternalNonTrivialReleaserDestructor) {
 }
 
 TEST_P(CordTest, ConstructFromExternalReferenceQualifierOverloads) {
-  struct Releaser {
-    void operator()(absl::string_view) & { *lvalue_invoked = true; }
-    void operator()(absl::string_view) && { *rvalue_invoked = true; }
+  enum InvokedAs { kMissing, kLValue, kRValue };
+  enum CopiedAs { kNone, kMove, kCopy };
+  struct Tracker {
+    CopiedAs copied_as = kNone;
+    InvokedAs invoked_as = kMissing;
 
-    bool* lvalue_invoked;
-    bool* rvalue_invoked;
+    void Record(InvokedAs rhs) {
+      ASSERT_EQ(invoked_as, kMissing);
+      invoked_as = rhs;
+    }
+
+    void Record(CopiedAs rhs) {
+      if (copied_as == kNone || rhs == kCopy) copied_as = rhs;
+    }
+  } tracker;
+
+  class Releaser {
+   public:
+    explicit Releaser(Tracker* tracker) : tr_(tracker) { *tracker = Tracker(); }
+    Releaser(Releaser&& rhs) : tr_(rhs.tr_) { tr_->Record(kMove); }
+    Releaser(const Releaser& rhs) : tr_(rhs.tr_) { tr_->Record(kCopy); }
+
+    void operator()(absl::string_view) & { tr_->Record(kLValue); }
+    void operator()(absl::string_view) && { tr_->Record(kRValue); }
+
+   private:
+    Tracker* tr_;
   };
 
-  bool lvalue_invoked = false;
-  bool rvalue_invoked = false;
-  Releaser releaser = {&lvalue_invoked, &rvalue_invoked};
-  (void)MaybeHardened(absl::MakeCordFromExternal("", releaser));
-  EXPECT_FALSE(lvalue_invoked);
-  EXPECT_TRUE(rvalue_invoked);
-  rvalue_invoked = false;
+  const Releaser releaser1(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("", releaser1));
+  EXPECT_EQ(tracker.copied_as, kCopy);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
 
-  (void)MaybeHardened(absl::MakeCordFromExternal("dummy", releaser));
-  EXPECT_FALSE(lvalue_invoked);
-  EXPECT_TRUE(rvalue_invoked);
-  rvalue_invoked = false;
+  const Releaser releaser2(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("", releaser2));
+  EXPECT_EQ(tracker.copied_as, kCopy);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
 
-  // NOLINTNEXTLINE: suppress clang-tidy std::move on trivially copyable type.
-  (void)MaybeHardened(absl::MakeCordFromExternal("dummy", std::move(releaser)));
-  EXPECT_FALSE(lvalue_invoked);
-  EXPECT_TRUE(rvalue_invoked);
+  Releaser releaser3(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("", std::move(releaser3)));
+  EXPECT_EQ(tracker.copied_as, kMove);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
+
+  Releaser releaser4(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("dummy", releaser4));
+  EXPECT_EQ(tracker.copied_as, kCopy);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
+
+  const Releaser releaser5(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("dummy", releaser5));
+  EXPECT_EQ(tracker.copied_as, kCopy);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
+
+  Releaser releaser6(&tracker);
+  (void)MaybeHardened(absl::MakeCordFromExternal("foo", std::move(releaser6)));
+  EXPECT_EQ(tracker.copied_as, kMove);
+  EXPECT_EQ(tracker.invoked_as, kRValue);
 }
 
 TEST_P(CordTest, ExternalMemoryBasicUsage) {

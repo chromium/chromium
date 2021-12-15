@@ -20,8 +20,10 @@ googletest framework
 ### Step-by-Step Instructions
 
 1. If you want to build the Abseil tests, integrate the Abseil dependency
-[Google Test](https://github.com/google/googletest) into your CMake project. To disable Abseil tests, you have to pass
-`-DBUILD_TESTING=OFF` when configuring your project with CMake.
+[Google Test](https://github.com/google/googletest) into your CMake
+project. To disable Abseil tests, you have to pass either
+`-DBUILD_TESTING=OFF` or `-DABSL_BUILD_TESTING=OFF` when configuring your
+project with CMake.
 
 2. Download Abseil and copy it into a subdirectory in your CMake project or add
 Abseil as a [git submodule](https://git-scm.com/docs/git-submodule) in your
@@ -91,7 +93,8 @@ setting a consistent `CMAKE_CXX_STANDARD` that is sufficiently high.
 
 ### Running Abseil Tests with CMake
 
-Use the `-DBUILD_TESTING=ON` flag to run Abseil tests.
+Use the `-DABSL_BUILD_TESTING=ON` flag to run Abseil tests.  Note that
+BUILD_TESTING must also be on (the default).
 
 You will need to provide Abseil with a Googletest dependency.  There are two
 options for how to do this:
@@ -109,7 +112,7 @@ For example, to run just the Abseil tests, you could use this script:
 cd path/to/abseil-cpp
 mkdir build
 cd build
-cmake -DBUILD_TESTING=ON -DABSL_USE_GOOGLETEST_HEAD=ON ..
+cmake -DABSL_BUILD_TESTING=ON -DABSL_USE_GOOGLETEST_HEAD=ON ..
 make -j
 ctest
 ```
@@ -175,7 +178,7 @@ cmake --build /temporary/build/abseil-cpp --target install
 
 ## Google Test Options
 
-`-DBUILD_TESTING=ON` must be set to enable testing
+`-DABSL_BUILD_TESTING=ON` must be set to enable testing
 
 - Have Abseil download and build Google Test for you: `-DABSL_USE_EXTERNAL_GOOGLETEST=OFF` (default)
   - Download and build latest Google Test: `-DABSL_USE_GOOGLETEST_HEAD=ON`

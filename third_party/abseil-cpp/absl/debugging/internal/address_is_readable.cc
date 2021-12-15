@@ -30,15 +30,11 @@ bool AddressIsReadable(const void* /* addr */) { return true; }
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#else
+#else  // __linux__ && !__ANDROID__
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
+#include <stdint.h>
+#include <syscall.h>
 #include <unistd.h>
-
-#include <cerrno>
 
 #include "absl/base/internal/errno_saver.h"
 #include "absl/base/internal/raw_logging.h"
@@ -47,60 +43,54 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
+// NOTE: be extra careful about adding any interposable function calls here
+// (such as open(), read(), etc.). These symbols may be interposed and will get
+// invoked in contexts they don't expect.
+//
+// NOTE: any new system calls here may also require sandbox reconfiguration.
+//
 bool AddressIsReadable(const void *addr) {
-  int fd = 0;
+  // Align address on 8-byte boundary. On aarch64, checking last
+  // byte before inaccessible page returned unexpected EFAULT.
+  const uintptr_t u_addr = reinterpret_cast<uintptr_t>(addr) & ~7;
+  addr = reinterpret_cast<const void *>(u_addr);
+
+  // rt_sigprocmask below will succeed for this input.
+  if (addr == nullptr) return false;
+
   absl::base_internal::ErrnoSaver errno_saver;
-  for (int j = 0; j < 2; j++) {
-    // Here we probe with some syscall which
-    // - accepts a one-byte region of user memory as input
-    // - tests for EFAULT before other validation
-    // - has no problematic side-effects
-    //
-    // connect(2) works for this.  It copies the address into kernel
-    // memory before any validation beyond requiring an open fd.
-    // But a one byte address is never valid (sa_family is two bytes),
-    // so the call cannot succeed and change any state.
-    //
-    // This strategy depends on Linux implementation details,
-    // so we rely on the test to alert us if it stops working.
-    //
-    // Some discarded past approaches:
-    // - msync() doesn't reject PROT_NONE regions
-    // - write() on /dev/null doesn't return EFAULT
-    // - write() on a pipe requires creating it and draining the writes
-    //
-    // Use syscall(SYS_connect, ...) instead of connect() to prevent ASAN
-    // and other checkers from complaining about accesses to arbitrary memory.
-    do {
-      ABSL_RAW_CHECK(syscall(SYS_connect, fd, addr, 1) == -1,
-                     "should never succeed");
-    } while (errno == EINTR);
-    if (errno == EFAULT) return false;
-    if (errno == EBADF) {
-      if (j != 0) {
-        // Unclear what happened.
-        ABSL_RAW_LOG(ERROR, "unexpected EBADF on fd %d", fd);
-        return false;
-      }
-      // fd 0 must have been closed. Try opening it again.
-      // Note: we shouldn't leak too many file descriptors here, since we expect
-      // to get fd==0 reopened.
-      fd = open("/dev/null", O_RDONLY);
-      if (fd == -1) {
-        ABSL_RAW_LOG(ERROR, "can't open /dev/null");
-        return false;
-      }
-    } else {
-      // probably EINVAL or ENOTSOCK; we got past EFAULT validation.
-      return true;
-    }
-  }
-  ABSL_RAW_CHECK(false, "unreachable");
-  return false;
+
+  // Here we probe with some syscall which
+  // - accepts an 8-byte region of user memory as input
+  // - tests for EFAULT before other validation
+  // - has no problematic side-effects
+  //
+  // rt_sigprocmask(2) works for this.  It copies sizeof(kernel_sigset_t)==8
+  // bytes from the address into the kernel memory before any validation.
+  //
+  // The call can never succeed, since the `how` parameter is not one of
+  // SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK.
+  //
+  // This strategy depends on Linux implementation details,
+  // so we rely on the test to alert us if it stops working.
+  //
+  // Some discarded past approaches:
+  // - msync() doesn't reject PROT_NONE regions
+  // - write() on /dev/null doesn't return EFAULT
+  // - write() on a pipe requires creating it and draining the writes
+  // - connect() works but is problematic for sandboxes and needs a valid
+  //   file descriptor
+  //
+  // This can never succeed (invalid first argument to sigprocmask).
+  ABSL_RAW_CHECK(syscall(SYS_rt_sigprocmask, ~0, addr, nullptr,
+                         /*sizeof(kernel_sigset_t)*/ 8) == -1,
+                 "unexpected success");
+  ABSL_RAW_CHECK(errno == EFAULT || errno == EINVAL, "unexpected errno");
+  return errno != EFAULT;
 }
 
 }  // namespace debugging_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif
+#endif  // __linux__ && !__ANDROID__

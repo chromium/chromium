@@ -751,8 +751,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // a compiler instrumentation module and a run-time library.
 #ifdef ABSL_HAVE_MEMORY_SANITIZER
 #error "ABSL_HAVE_MEMORY_SANITIZER cannot be directly set."
-#elif defined(__SANITIZE_MEMORY__)
-#define ABSL_HAVE_MEMORY_SANITIZER 1
 #elif !defined(__native_client__) && ABSL_HAVE_FEATURE(memory_sanitizer)
 #define ABSL_HAVE_MEMORY_SANITIZER 1
 #endif
@@ -777,6 +775,28 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_ADDRESS_SANITIZER 1
 #elif ABSL_HAVE_FEATURE(address_sanitizer)
 #define ABSL_HAVE_ADDRESS_SANITIZER 1
+#endif
+
+// ABSL_HAVE_HWADDRESS_SANITIZER
+//
+// Hardware-Assisted AddressSanitizer (or HWASAN) is even faster than asan
+// memory error detector which can use CPU features like ARM TBI, Intel LAM or
+// AMD UAI.
+#ifdef ABSL_HAVE_HWADDRESS_SANITIZER
+#error "ABSL_HAVE_HWADDRESS_SANITIZER cannot be directly set."
+#elif defined(__SANITIZE_HWADDRESS__)
+#define ABSL_HAVE_HWADDRESS_SANITIZER 1
+#elif ABSL_HAVE_FEATURE(hwaddress_sanitizer)
+#define ABSL_HAVE_HWADDRESS_SANITIZER 1
+#endif
+
+// ABSL_HAVE_LEAK_SANITIZER
+//
+// LeakSanitizer (or lsan) is a detector of memory leaks.
+#ifdef ABSL_HAVE_LEAK_SANITIZER
+#error "ABSL_HAVE_LEAK_SANITIZER cannot be directly set."
+#elif ABSL_HAVE_FEATURE(leak_sanitizer)
+#define ABSL_HAVE_LEAK_SANITIZER 1
 #endif
 
 // ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION

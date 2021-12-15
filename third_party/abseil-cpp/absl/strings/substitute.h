@@ -159,8 +159,8 @@ class Arg {
   Arg(Hex hex);  // NOLINT(runtime/explicit)
   Arg(Dec dec);  // NOLINT(runtime/explicit)
 
-  // vector<bool>::reference and const_reference require special help to
-  // convert to `AlphaNum` because it requires two user defined conversions.
+  // vector<bool>::reference and const_reference require special help to convert
+  // to `Arg` because it requires two user defined conversions.
   template <typename T,
             absl::enable_if_t<
                 std::is_class<T>::value &&
