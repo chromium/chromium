@@ -1560,9 +1560,6 @@ crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Fail
 # Incorrect native scrollbar repaint
 crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-width-paint-001.html [ Failure ]
 
-# css-variables
-crbug.com/1220149 external/wpt/css/css-variables/variable-supports-57.html [ Failure ]
-
 # css-nesting
 crbug.com/1095675 external/wpt/css/selectors/nesting.html [ Failure ]
 

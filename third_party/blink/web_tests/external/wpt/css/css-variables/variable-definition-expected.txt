@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 73 tests; 47 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 73 tests; 50 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS no variable
 PASS variable
 PASS single char variable
@@ -8,7 +8,7 @@ PASS no char variable
 FAIL white space value (single space) assert_equals: Expected Value should match actual value expected "" but got " "
 FAIL white space value (double space) assert_equals: Expected Value should match actual value expected "" but got " "
 PASS overwrite
-FAIL can't overwrite with no value assert_equals: Expected Value should match actual value expected "" but got "value"
+PASS can overwrite with no value
 FAIL can overwrite with space value assert_equals: Expected Value should match actual value expected "" but got " "
 PASS case sensetivity
 PASS case sensetivity2
@@ -31,7 +31,7 @@ PASS no char variable (Computed Style)
 FAIL white space value (single space) (Computed Style) assert_equals: Expected Value should match actual value expected "" but got " "
 FAIL white space value (double space) (Computed Style) assert_equals: Expected Value should match actual value expected "" but got " "
 PASS overwrite (Computed Style)
-FAIL can't overwrite with no value (Computed Style) assert_equals: Expected Value should match actual value expected "" but got "value"
+PASS can overwrite with no value (Computed Style)
 FAIL can overwrite with space value (Computed Style) assert_equals: Expected Value should match actual value expected "" but got " "
 PASS case sensetivity (Computed Style)
 PASS case sensetivity2 (Computed Style)
@@ -54,7 +54,7 @@ PASS no char variable (Cascading)
 FAIL white space value (single space) (Cascading) assert_equals: Expected Value should match actual value expected "" but got " "
 FAIL white space value (double space) (Cascading) assert_equals: Expected Value should match actual value expected "" but got " "
 PASS overwrite (Cascading)
-FAIL can't overwrite with no value (Cascading) assert_equals: Expected Value should match actual value expected "" but got "value"
+PASS can overwrite with no value (Cascading)
 FAIL can overwrite with space value (Cascading) assert_equals: Expected Value should match actual value expected "" but got " "
 PASS case sensetivity (Cascading)
 PASS case sensetivity2 (Cascading)
