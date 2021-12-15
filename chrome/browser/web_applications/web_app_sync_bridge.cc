@@ -425,10 +425,11 @@ void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
 
 void WebAppSyncBridge::SetAppFileHandlerApprovalState(const AppId& app_id,
                                                       ApiApprovalState state) {
-  ScopedRegistryUpdate(this)->UpdateApp(app_id)->SetFileHandlerApprovalState(
-      state);
-  // TODO(estade): when needed for updating UIs, call
-  // NotifyWebAppFileHandlerApprovalStateChanged() here.
+  {
+    ScopedRegistryUpdate(this)->UpdateApp(app_id)->SetFileHandlerApprovalState(
+        state);
+  }
+  registrar_->NotifyWebAppFileHandlerApprovalStateChanged(app_id);
 }
 
 void WebAppSyncBridge::CheckRegistryUpdateData(

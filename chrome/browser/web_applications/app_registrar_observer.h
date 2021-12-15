@@ -55,6 +55,10 @@ class AppRegistrarObserver : public base::CheckedObserver {
   // a given protocol.
   virtual void OnWebAppProtocolSettingsChanged() {}
 
+  // Called after the app's access to the File Handling API has changed, e.g. by
+  // a user selecting "always allow" in the prompt or after a policy update.
+  virtual void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) {}
+
   virtual void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                                     bool is_locally_installed) {
   }

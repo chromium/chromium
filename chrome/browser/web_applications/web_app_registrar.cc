@@ -77,6 +77,12 @@ void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
     observer.OnWebAppProtocolSettingsChanged();
 }
 
+void WebAppRegistrar::NotifyWebAppFileHandlerApprovalStateChanged(
+    const AppId& app_id) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppFileHandlerApprovalStateChanged(app_id);
+}
+
 void WebAppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppInstalled(app_id);

@@ -252,6 +252,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void NotifyWebAppManifestUpdated(const AppId& app_id,
                                    base::StringPiece old_name);
   void NotifyWebAppProtocolSettingsChanged();
+  void NotifyWebAppFileHandlerApprovalStateChanged(const AppId& app_id);
   void NotifyWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state);
   void NotifyWebAppUninstalled(const AppId& app_id);
