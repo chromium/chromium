@@ -27,6 +27,7 @@ android_library("java") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/util:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/device_reauth:device_reauth_java_enums",
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",

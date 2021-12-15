@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Dropd
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
@@ -674,8 +675,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                 builder.append(editMessage);
                 int endIndex = builder.length();
 
-                Object foregroundSpanner = new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.default_text_color_link));
+                Object foregroundSpanner = new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorLink(mContext));
                 builder.setSpan(foregroundSpanner, startIndex, endIndex, 0);
 
                 // The text size in the dropdown is 14dp.

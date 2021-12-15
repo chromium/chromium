@@ -25,7 +25,6 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -46,6 +45,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -588,8 +588,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
             getPreferenceScreen().addPreference(mLinkPref);
             return;
         }
-        ForegroundColorSpan colorSpan = new ForegroundColorSpan(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_text_color_link));
+        ForegroundColorSpan colorSpan =
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(getContext()));
         SpannableString title = SpanApplier.applySpans(getString(R.string.manage_passwords_text),
                 new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));
         mLinkPref = new ChromeBasePreference(getStyledContext());

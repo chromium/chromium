@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /** Tests for {@link OmniboxResourceProvider}. */
@@ -219,7 +220,7 @@ public class OmniboxResourceProviderTest {
     public void getSuggestionUrlTextColor() {
         final Resources resources = mActivity.getResources();
         final int incognitoColor = resources.getColor(R.color.suggestion_url_color_incognito);
-        final int defaultColor = resources.getColor(R.color.suggestion_url_color);
+        final int defaultColor = SemanticColorUtils.getDefaultTextColorLink(mActivity);
 
         assertEquals("Wrong suggestion url text color for LIGHT_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionUrlTextColor(

@@ -16,9 +16,9 @@ import android.text.style.ForegroundColorSpan;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.incognito.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -77,8 +77,7 @@ public class IncognitoReauthSettingUtils {
     // click behaviour is dependent on {@link IncognitoReauthSettingSwitchPreference} so
     // need to refactor that as well.
     private static SpannableString buildLinkToAndroidScreenLockSettings(Activity activity) {
-        int color = ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.default_text_color_link);
+        int color = SemanticColorUtils.getDefaultTextColorLink(activity);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
         return SpanApplier.applySpans(

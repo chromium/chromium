@@ -122,7 +122,7 @@
         parent="Theme.BrowserUI.DialogWhenLarge">
         <item name="android:windowBackground">@drawable/bg_white_dialog</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
-        <item name="android:textColorLink">@color/default_text_color_link</item>
+        <item name="android:textColorLink">@macro/default_text_color_link</item>
         <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
@@ -345,7 +345,7 @@
 
     <!-- Misc text appearance styles -->
     <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
-        <item name="android:textColor">@color/default_text_color_link</item>
+        <item name="android:textColor">@macro/default_text_color_link</item>
     </style>
     <!-- TODO(crbug.com/1081933): Replace with a standard text appearance. -->
     <style name="TextAppearance.ClearBrowsingDataText">

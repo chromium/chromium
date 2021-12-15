@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Provides resources specific to Omnibox. */
@@ -217,10 +218,10 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int brandedColorScheme) {
         // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
         // are ignored as they don't change the result.
-        final @ColorRes int colorId = brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? R.color.suggestion_url_color_incognito
-                : R.color.suggestion_url_color;
-        return ApiCompatibilityUtils.getColor(context.getResources(), colorId);
+        final @ColorInt int color = brandedColorScheme == BrandedColorScheme.INCOGNITO
+                ? context.getColor(R.color.suggestion_url_color_incognito)
+                : SemanticColorUtils.getDefaultTextColorLink(context);
+        return color;
     }
 
     /**

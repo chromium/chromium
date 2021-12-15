@@ -87,7 +87,7 @@ android_library("java") {
     "//base:base_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
-    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",

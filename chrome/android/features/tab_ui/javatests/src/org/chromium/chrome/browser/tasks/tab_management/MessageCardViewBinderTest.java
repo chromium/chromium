@@ -24,6 +24,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -180,8 +181,7 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
                                         mItemView.getContext(), R.color.default_text_color_list)
                                 .getDefaultColor()));
         assertThat(actionButton.getCurrentTextColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mItemView.getResources(), R.color.default_text_color_link)));
+                equalTo(SemanticColorUtils.getDefaultTextColorLink(mItemView.getContext())));
         assertThat(closeButton.getImageTintList(),
                 equalTo(AppCompatResources.getColorStateList(
                         getActivity(), R.color.default_icon_color_tint_list)));
