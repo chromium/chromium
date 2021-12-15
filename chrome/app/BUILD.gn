@@ -280,9 +280,8 @@ if (is_fuchsia) {
     executable = rebase_path("//build/fuchsia/run_ffx_command.py")
     executable_args = [
       "--command",
-      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx",
-
-      # TODO(bugs.fuchsia.dev/85949): Pass runtime arguments using %args%.
+      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx -- " +
+          "%args%",
     ]
     include_fuchsia_build_dir = true
   }
