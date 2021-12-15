@@ -5,6 +5,7 @@ include_rules = [
   "+ash/constants",
   "+base",
   "+build",
+  "+chromeos/constants",
   "+third_party/abseil-cpp/absl/types/optional.h",
 ]
 

@@ -61,6 +61,7 @@ include_rules = [
   "+chromeos/components/multidevice",
   "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
+  "+chromeos/constants",
   # crosapi is an API to support lacros.
   "+chromeos/crosapi",
   # //ash can access all D-Bus client libraries. The mustash project previously

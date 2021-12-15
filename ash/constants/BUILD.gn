@@ -26,6 +26,7 @@ component("constants") {
   ]
   public_deps = [
     "//base",
+    "//chromeos/constants",
     "//skia",
     "//third_party/abseil-cpp:absl",
   ]

@@ -7,7 +7,6 @@
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -15,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -32,10 +32,11 @@ constexpr char kResponseText[] = "Response";
 using UiElementContainerViewTest = AssistantAshTestBase;
 
 TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   ASSERT_FALSE(AshColorProvider::Get()->IsDarkModeEnabled());
 
   ShowAssistantUi();
@@ -58,7 +59,7 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(UiElementContainerViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 

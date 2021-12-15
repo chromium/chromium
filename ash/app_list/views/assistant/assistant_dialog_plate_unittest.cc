@@ -8,13 +8,13 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -23,10 +23,11 @@ namespace ash {
 using AssistantDialogPlateTest = AssistantAshTestBase;
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   ShowAssistantUi();
@@ -50,7 +51,7 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
 }
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 

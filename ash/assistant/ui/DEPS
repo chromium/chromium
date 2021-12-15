@@ -15,6 +15,7 @@ include_rules = [
   "+cc/base",
   "+cc/paint",
   "+chromeos/assistant",
+  "+chromeos/constants",
   "+chromeos/services/assistant/public",
   "+chromeos/services/libassistant/public/cpp",
   "+mojo/public/cpp",

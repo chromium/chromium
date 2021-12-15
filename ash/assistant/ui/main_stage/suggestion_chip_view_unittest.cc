@@ -8,7 +8,6 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/pixel_comparator.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -124,10 +124,11 @@ TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
 }
 
 TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   auto widget = CreateFramelessTestWidget();
@@ -199,7 +200,7 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =

@@ -23,6 +23,10 @@ const base::Feature kBluetoothAdvertisementMonitoring{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables dark/light mode feature.
+const base::Feature kDarkLightMode{"DarkLightMode",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Disables translation services of the Quick Answers V2.
 const base::Feature kDisableQuickAnswersV2Translation{
     "DisableQuickAnswersV2Translation", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -33,6 +37,10 @@ const base::Feature kQuickAnswersV2SettingsSubToggle{
 
 bool IsBluetoothAdvertisementMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
+}
+
+bool IsDarkLightModeEnabled() {
+  return base::FeatureList::IsEnabled(kDarkLightMode);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

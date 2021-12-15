@@ -48,6 +48,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -3250,7 +3251,7 @@ class WallpaperControllerWallpaperWebUiTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kWallpaperWebUI, features::kWallpaperFullScreenPreview,
-         features::kDarkLightMode},
+         chromeos::features::kDarkLightMode},
         {});
     WallpaperControllerTestBase::SetUp();
   }

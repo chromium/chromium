@@ -3005,9 +3005,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseHDRTransferFunctionName,
      flag_descriptions::kUseHDRTransferFunctionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kUseHDRTransferFunction)},
-    {"dark-light-mode", flag_descriptions::kDarkLightTestName,
-     flag_descriptions::kDarkLightTestDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDarkLightMode)},
     {"vertical-snap", flag_descriptions::kVerticalSnapName,
      flag_descriptions::kVerticalSnapDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::wm::features::kVerticalSnap)},
@@ -3229,6 +3226,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)
+    {"dark-light-mode", flag_descriptions::kDarkLightTestName,
+     flag_descriptions::kDarkLightTestDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kDarkLightMode)},
     // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
     // kOsCrOS.
     {"deprecate-low-usage-codecs",

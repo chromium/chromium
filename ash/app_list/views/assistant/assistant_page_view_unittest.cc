@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -932,7 +933,7 @@ TEST_F(AssistantPageNonBubbleTest, Theme) {
 
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
-      features::kDarkLightMode);
+      chromeos::features::kDarkLightMode);
   base::test::ScopedFeatureList scoped_feature_list_disable_blur;
   scoped_feature_list_disable_blur.InitAndDisableFeature(
       features::kEnableBackgroundBlur);
@@ -974,7 +975,8 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
 }
 
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsBackgroundBlurEnabled());
@@ -1036,7 +1038,8 @@ TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
 TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
   ASSERT_TRUE(features::IsProductivityLauncherEnabled());
 
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());

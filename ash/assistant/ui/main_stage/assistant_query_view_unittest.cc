@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/compositor/layer.h"
@@ -28,7 +29,8 @@ namespace {
 using AssistantQueryViewUnittest = AssistantAshTestBase;
 
 TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
@@ -69,7 +71,7 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
 }
 
 TEST_F(AssistantQueryViewUnittest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 

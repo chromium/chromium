@@ -8,12 +8,12 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/colors/assistant_colors.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/controls/label.h"
@@ -24,7 +24,7 @@ namespace {
 using AssistantZeroStateViewUnittest = AssistantAshTestBase;
 
 TEST_F(AssistantZeroStateViewUnittest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 
@@ -36,7 +36,8 @@ TEST_F(AssistantZeroStateViewUnittest, Theme) {
 }
 
 TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 

@@ -26,6 +26,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBluetoothAdvertisementMonitoring;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBluetoothPhoneFilter;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kDarkLightMode;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -35,6 +36,7 @@ extern const base::Feature kQuickAnswersV2SettingsSubToggle;
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBluetoothAdvertisementMonitoringEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersV2SettingsSubToggleEnabled();
