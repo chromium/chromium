@@ -62,7 +62,6 @@ NaClLaunchParams::NaClLaunchParams(
         resource_prefetch_request_list,
     int render_frame_id,
     uint32_t permission_bits,
-    bool uses_nonsfi_mode,
     NaClAppProcessType process_type)
     : manifest_url(manifest_url),
       nexe_file(nexe_file),
@@ -71,7 +70,6 @@ NaClLaunchParams::NaClLaunchParams(
       resource_prefetch_request_list(resource_prefetch_request_list),
       render_frame_id(render_frame_id),
       permission_bits(permission_bits),
-      uses_nonsfi_mode(uses_nonsfi_mode),
       process_type(process_type) {}
 
 NaClLaunchParams::NaClLaunchParams(const NaClLaunchParams& other) = default;

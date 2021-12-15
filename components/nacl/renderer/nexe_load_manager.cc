@@ -87,8 +87,7 @@ NexeLoadManager::NexeLoadManager(PP_Instance pp_instance)
       is_installed_(false),
       exit_status_(-1),
       nexe_size_(0),
-      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)),
-      nonsfi_(false) {
+      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)) {
   set_exit_status(-1);
   SetLastError("");
   HistogramEnumerateOsArch(GetSandboxArch());

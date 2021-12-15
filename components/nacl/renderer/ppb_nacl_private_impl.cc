@@ -465,8 +465,7 @@ void PPBNaClPrivate::LaunchSelLdr(
                            nexe_file_info->token_lo, nexe_file_info->token_hi,
                            resource_prefetch_request_list,
                            GetFrameRoutingID(instance), perm_bits,
-                           // TODO(b/200965779): Remove nonsfi parameter.
-                           /*uses_nonsfi_mode=*/PP_FALSE, process_type),
+                           process_type),
           &launch_result, &error_message_string))) {
     ppapi::PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE, base::BindOnce(callback.func, callback.user_data,

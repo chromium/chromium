@@ -36,7 +36,6 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClLaunchParams)
   IPC_STRUCT_TRAITS_MEMBER(resource_prefetch_request_list)
   IPC_STRUCT_TRAITS_MEMBER(render_frame_id)
   IPC_STRUCT_TRAITS_MEMBER(permission_bits)
-  IPC_STRUCT_TRAITS_MEMBER(uses_nonsfi_mode)
   IPC_STRUCT_TRAITS_MEMBER(process_type)
 IPC_STRUCT_TRAITS_END()
 

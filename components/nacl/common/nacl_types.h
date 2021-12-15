@@ -130,7 +130,6 @@ struct NaClLaunchParams {
                        resource_prefetch_request_list,
                    int render_frame_id,
                    uint32_t permission_bits,
-                   bool uses_nonsfi_mode,
                    NaClAppProcessType process_type);
   NaClLaunchParams(const NaClLaunchParams& other);
   ~NaClLaunchParams();
@@ -146,7 +145,6 @@ struct NaClLaunchParams {
 
   int render_frame_id = 0;
   uint32_t permission_bits = 0;
-  bool uses_nonsfi_mode = false;
 
   NaClAppProcessType process_type = kUnknownNaClProcessType;
 };

@@ -29,7 +29,7 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClStartParams)
 #if defined(OS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(debug_stub_server_bound_socket)
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_browser_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_renderer_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(trusted_service_channel_handle)
