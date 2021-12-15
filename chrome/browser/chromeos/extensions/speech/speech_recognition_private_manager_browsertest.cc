@@ -165,9 +165,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
 // and received and processed in an extension.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
                        DispatchOnStopEvent) {
-  ASSERT_TRUE(
-      RunExtensionTest("speech/speech_recognition_private/onstop_event"))
-      << message_;
+  ASSERT_TRUE(RunSpeechRecognitionPrivateTest("onstop_event")) << message_;
 
   const char* kExtensionIdAndIncorrectClientId =
       "egfdjlfmgnehecnclamagfafdccgfndp.0";
@@ -196,9 +194,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
 // and received and processed in an extension.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
                        DispatchOnResultEvent) {
-  ASSERT_TRUE(
-      RunExtensionTest("speech/speech_recognition_private/onresult_event"))
-      << message_;
+  ASSERT_TRUE(RunSpeechRecognitionPrivateTest("onresult_event")) << message_;
 
   const char* kFirstClient = "egfdjlfmgnehecnclamagfafdccgfndp.1";
   const char* kSecondClient = "egfdjlfmgnehecnclamagfafdccgfndp.2";
@@ -237,8 +233,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
   ResultCatcher result_catcher;
   ExtensionTestMessageListener listener("Proceed", false);
 
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
-      "speech/speech_recognition_private/onerror_event"));
+  const Extension* extension = LoadExtensionAsComponent("onerror_event");
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 

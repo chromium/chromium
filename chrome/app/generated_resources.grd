@@ -4347,6 +4347,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_SOCKET_SPECIFIC_HOSTS" desc="Permission string for access to multiple specific devices on the local network or internet.">
           Exchange data with the devices named: <ph name="HOSTNAMES">$1<ex>foo.example.com bar.example.com</ex></ph>
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_SPEECH_RECOGNITION" desc="Permission string for speech recognition.">
+          Access your microphone and analyze your speech
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_START_PAGE_SETTING_OVERRIDE" desc="Permission string for start page override.">
           Change your start page to: <ph name="START_PAGE">$1<ex>start.page.com/start.html</ex></ph>
         </message>

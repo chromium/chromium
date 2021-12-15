@@ -4,13 +4,16 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
 
-#include "components/version_info/channel.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+
+namespace {
+const char kBasePath[] = "speech/speech_recognition_private/";
+}  // namespace
 
 namespace extensions {
 
 SpeechRecognitionPrivateBaseTest::SpeechRecognitionPrivateBaseTest()
-    : test_helper_(GetParam()), current_channel_(version_info::Channel::DEV) {}
+    : test_helper_(GetParam()) {}
 
 SpeechRecognitionPrivateBaseTest::~SpeechRecognitionPrivateBaseTest() = default;
 
@@ -35,6 +38,19 @@ void SpeechRecognitionPrivateBaseTest::TearDownOnMainThread() {
     content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
   ExtensionApiTest::TearDownOnMainThread();
+}
+
+bool SpeechRecognitionPrivateBaseTest::RunSpeechRecognitionPrivateTest(
+    const std::string& dir_name) {
+  const std::string path = kBasePath + dir_name;
+  return RunExtensionTest(path.c_str(), {}, {.load_as_component = true});
+}
+
+const Extension* SpeechRecognitionPrivateBaseTest::LoadExtensionAsComponent(
+    const std::string& dir_name) {
+  const std::string path = kBasePath + dir_name;
+  return LoadExtension(test_data_dir_.AppendASCII(path.c_str()),
+                       {.load_as_component = true});
 }
 
 void SpeechRecognitionPrivateBaseTest::WaitForRecognitionStarted() {

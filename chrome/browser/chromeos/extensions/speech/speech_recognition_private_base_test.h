@@ -12,7 +12,6 @@
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
 
@@ -42,6 +41,13 @@ class SpeechRecognitionPrivateBaseTest
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
+  // Runs a speech recognition private test.
+  bool RunSpeechRecognitionPrivateTest(const std::string& dir_name);
+  // Loads a test extension from the speech recognition private directory as a
+  // component extension, which is required to use the speech recognition
+  // private API.
+  const Extension* LoadExtensionAsComponent(const std::string& dir_name);
+
   // Routers to SpeechRecognitionTestHelper methods.
   void WaitForRecognitionStarted();
   void WaitForRecognitionStopped();
@@ -52,10 +58,6 @@ class SpeechRecognitionPrivateBaseTest
 
  private:
   SpeechRecognitionTestHelper test_helper_;
-  // Needed because the speechRecognitionPrivate API is restricted to the dev
-  // channel during development.
-  // TODO(crbug.com/1220107): Remove this when it's launched to stable.
-  extensions::ScopedCurrentChannel current_channel_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

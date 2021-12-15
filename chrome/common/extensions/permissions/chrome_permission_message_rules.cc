@@ -430,6 +430,10 @@ ChromePermissionMessageRule::GetAllRules() {
        {APIPermissionID::kVideoCapture},
        {}},
 
+      {IDS_EXTENSION_PROMPT_WARNING_SPEECH_RECOGNITION,
+       {APIPermissionID::kSpeechRecognitionPrivate},
+       {}},
+
       {IDS_EXTENSION_PROMPT_WARNING_GEOLOCATION,
        {APIPermissionID::kGeolocation},
        {}},

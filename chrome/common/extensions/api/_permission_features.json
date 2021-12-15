@@ -801,8 +801,9 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
   "speechRecognitionPrivate": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
+    "location": "component",
     "platforms": ["chromeos"],
     "allowlist": [
       "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107

@@ -39,8 +39,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Simple) {
-  ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/simple"))
-      << message_;
+  ASSERT_TRUE(RunSpeechRecognitionPrivateTest("simple")) << message_;
 }
 
 // An end-to-end test that starts speech recognition and ensures that the
@@ -49,8 +48,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Simple) {
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, OnStart) {
   SetCustomArg(api::speech_recognition_private::ToString(
       speech::SpeechRecognitionTypeToApiType(GetParam())));
-  ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/on_start"))
-      << message_;
+  ASSERT_TRUE(RunSpeechRecognitionPrivateTest("on_start")) << message_;
 }
 
 // An end-to-end test that starts speech recognition, waits for results, then
@@ -66,8 +64,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartResultStop) {
 
   // Load the extension and wait for speech recognition to start.
   ResultCatcher result_catcher;
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
-      "speech/speech_recognition_private/start_result_stop"));
+  const Extension* extension = LoadExtensionAsComponent("start_result_stop");
   ASSERT_TRUE(extension);
   ASSERT_TRUE(start_listener.WaitUntilSatisfied());
 
@@ -93,8 +90,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartErrorStop) {
   ExtensionTestMessageListener start_listener("Started", false);
 
   ResultCatcher result_catcher;
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
-      "speech/speech_recognition_private/start_error_stop"));
+  const Extension* extension = LoadExtensionAsComponent("start_error_stop");
   ASSERT_TRUE(extension);
   ASSERT_TRUE(start_listener.WaitUntilSatisfied());
 
