@@ -11,7 +11,9 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -57,7 +59,7 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability),
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
-      kWidevineCdmType, version, cdm_library_path, kWidevineCdmFileSystemId);
+      kWidevineCdmType, version, cdm_library_path);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -282,14 +284,9 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.session_types.insert(media::CdmSessionType::kTemporary);
   capability.session_types.insert(media::CdmSessionType::kPersistentLicense);
 
-  // TODO(crbug.com/1231162): This corresponds to `kChromeOsCdmFileSystemId` in
-  // content/browser/media/media_interface_proxy.cc. Consolidate these once an
-  // enum of CDM types is created.
-  const base::Token kChromeOsCdmType{0xa6ecd3fc63b3ded2ull,
-                                     0x9306d3270227ce5full};
-  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
-                                   Robustness::kHardwareSecure,
-                                   std::move(capability), kChromeOsCdmType));
+  cdms->push_back(
+      content::CdmInfo(kWidevineKeySystem, Robustness::kHardwareSecure,
+                       std::move(capability), content::kChromeOsCdmType));
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 
@@ -331,13 +328,12 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
       Robustness::kSoftwareSecure, capability,
       /*supports_sub_key_systems=*/false, media::kClearKeyCdmDisplayName,
       media::kClearKeyCdmDifferentCdmType, base::Version("0.1.0.0"),
-      clear_key_cdm_path, media::kClearKeyCdmFileSystemId));
+      clear_key_cdm_path));
 
   cdms->push_back(content::CdmInfo(
       kExternalClearKeyKeySystem, Robustness::kSoftwareSecure, capability,
       /*supports_sub_key_systems=*/true, media::kClearKeyCdmDisplayName,
-      media::kClearKeyCdmType, base::Version("0.1.0.0"), clear_key_cdm_path,
-      media::kClearKeyCdmFileSystemId));
+      media::kClearKeyCdmType, base::Version("0.1.0.0"), clear_key_cdm_path));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

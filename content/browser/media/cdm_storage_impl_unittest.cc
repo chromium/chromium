@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -30,7 +31,7 @@ namespace content {
 
 namespace {
 
-const char kTestFileSystemId[] = "test_file_system";
+const media::CdmType kTestCdmType{base::Token{1234, 5678}, "test_file_system"};
 const char kTestOrigin[] = "http://www.test.com";
 
 // Helper functions to manipulate RenderFrameHosts.
@@ -86,16 +87,9 @@ class CdmStorageTest : public RenderViewHostTestHarness {
     rfh_ = web_contents()->GetMainFrame();
     RenderFrameHostTester::For(rfh_)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&rfh_, GURL(kTestOrigin));
-  }
-
-  // Creates and initializes the CdmStorage object using |file_system_id|.
-  // Returns true if successful, false otherwise.
-  void Initialize(const std::string& file_system_id) {
-    DVLOG(3) << __func__;
-
     // Create the CdmStorageImpl object. |cdm_storage_| will own the resulting
     // object.
-    CdmStorageImpl::Create(rfh_, file_system_id,
+    CdmStorageImpl::Create(rfh_, kTestCdmType,
                            cdm_storage_.BindNewPipeAndPassReceiver());
   }
 
@@ -217,36 +211,7 @@ class CdmStorageTest : public RenderViewHostTestHarness {
   std::unique_ptr<RunLoopWithExpectedCount> run_loop_with_count_;
 };
 
-TEST_F(CdmStorageTest, InvalidFileSystemIdWithSlash) {
-  Initialize("name/");
-
-  const char kFileName[] = "valid_file_name";
-  mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
-  EXPECT_FALSE(cdm_file.is_bound());
-}
-
-TEST_F(CdmStorageTest, InvalidFileSystemIdWithBackSlash) {
-  Initialize("name\\");
-
-  const char kFileName[] = "valid_file_name";
-  mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
-  EXPECT_FALSE(cdm_file.is_bound());
-}
-
-TEST_F(CdmStorageTest, InvalidFileSystemIdEmpty) {
-  Initialize("");
-
-  const char kFileName[] = "valid_file_name";
-  mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
-  EXPECT_FALSE(cdm_file.is_bound());
-}
-
 TEST_F(CdmStorageTest, InvalidFileName) {
-  Initialize(kTestFileSystemId);
-
   // Anything other than ASCII letter, digits, and -._ will fail. Add a
   // Unicode character to the name.
   const char kFileName[] = "openfile\u1234";
@@ -256,8 +221,6 @@ TEST_F(CdmStorageTest, InvalidFileName) {
 }
 
 TEST_F(CdmStorageTest, InvalidFileNameEmpty) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, &cdm_file));
@@ -265,8 +228,6 @@ TEST_F(CdmStorageTest, InvalidFileNameEmpty) {
 }
 
 TEST_F(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "_invalid";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, &cdm_file));
@@ -274,8 +235,6 @@ TEST_F(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
 }
 
 TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
-  Initialize(kTestFileSystemId);
-
   // Limit is 256 characters, so try a file name with 257.
   const std::string kFileName(257, 'a');
   mojo::AssociatedRemote<CdmFile> cdm_file;
@@ -284,8 +243,6 @@ TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
 }
 
 TEST_F(CdmStorageTest, OpenFile) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, &cdm_file));
@@ -293,8 +250,6 @@ TEST_F(CdmStorageTest, OpenFile) {
 }
 
 TEST_F(CdmStorageTest, OpenFileLocked) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName, &cdm_file1));
@@ -314,8 +269,6 @@ TEST_F(CdmStorageTest, OpenFileLocked) {
 }
 
 TEST_F(CdmStorageTest, MultipleFiles) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName1[] = "file1";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName1, &cdm_file1));
@@ -333,8 +286,6 @@ TEST_F(CdmStorageTest, MultipleFiles) {
 }
 
 TEST_F(CdmStorageTest, WriteThenReadFile) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, &cdm_file));
@@ -350,8 +301,6 @@ TEST_F(CdmStorageTest, WriteThenReadFile) {
 }
 
 TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "empty_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, &cdm_file));
@@ -371,8 +320,6 @@ TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
 }
 
 TEST_F(CdmStorageTest, ParallelRead) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "duplicate_read_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, &cdm_file));
@@ -390,8 +337,6 @@ TEST_F(CdmStorageTest, ParallelRead) {
 }
 
 TEST_F(CdmStorageTest, ParallelWrite) {
-  Initialize(kTestFileSystemId);
-
   const char kFileName[] = "duplicate_write_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, &cdm_file));

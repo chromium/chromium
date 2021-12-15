@@ -94,6 +94,8 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   const std::string file_name_;
   const std::string temp_file_name_;
 
+  // TODO(crbug.com/1231162): Remove some of these fields and update this
+  // comment when we migrate off of the PluginPrivateFileSystem.
   // Files are stored in the PluginPrivateFileSystem. The following are needed
   // to access files.
   const url::Origin origin_;

@@ -19,6 +19,7 @@
 #include "content/public/common/cdm_info.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,12 +34,11 @@ using CdmSessionType = media::CdmSessionType;
 
 const char kTestCdmName[] = "Test CDM";
 const char kAlternateCdmName[] = "Alternate CDM";
-const base::Token kTestCdmType{1234, 5678};
+const media::CdmType kTestCdmType{base::Token{1234, 5678}, "file_system_id"};
 const char kTestPath[] = "/aa/bb";
 const char kVersion1[] = "1.1.1.1";
 const char kVersion2[] = "1.1.1.2";
 const char kTestKeySystem[] = "com.example.somesystem";
-const char kTestFileSystemId[] = "file_system_id";
 
 // Helper function to convert a VideoCodecMap to a list of VideoCodec values
 // so that they can be compared. VideoCodecProfiles are ignored.
@@ -91,8 +91,7 @@ class CdmRegistryImplTest : public testing::Test {
                    GetTestCdmCapability(),
                    /*supports_sub_key_systems=*/true, kTestCdmName,
                    kTestCdmType, base::Version(kVersion1),
-                   base::FilePath::FromUTF8Unsafe(kTestPath),
-                   kTestFileSystemId);
+                   base::FilePath::FromUTF8Unsafe(kTestPath));
   }
 
   void Register(CdmInfo cdm_info) {
@@ -117,10 +116,10 @@ class CdmRegistryImplTest : public testing::Test {
     return false;
   }
 
-  std::vector<std::string> GetVersions(const base::Token& cdm_type) {
+  std::vector<std::string> GetVersions(const media::CdmType& cdm_type) {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.type == cdm_type)
+      if (cdm.type.id == cdm_type.id)
         versions.push_back(cdm.version.GetString());
     }
     return versions;
@@ -139,7 +138,7 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_EQ(kTestCdmName, cdm.name);
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
-  EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_AUDIO_CODECS(AudioCodec::kVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
@@ -222,7 +221,7 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Success) {
   EXPECT_EQ(kTestCdmName, cdm.name);
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
-  EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,

@@ -123,8 +123,7 @@ void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
-      kWidevineCdmDisplayName, kWidevineCdmType, cdm_version, cdm_path,
-      kWidevineCdmFileSystemId);
+      kWidevineCdmDisplayName, kWidevineCdmType, cdm_version, cdm_path);
   CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 #endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)

@@ -18,6 +18,7 @@
 #include "content/browser/media/media_interface_factory_holder.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/common/cdm_info.h"
+#include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
@@ -93,29 +94,25 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   DOCUMENT_USER_DATA_KEY_DECL();
 
   // Gets services provided by the browser (at RenderFrameHost level) to the
-  // mojo media (or CDM) service running remotely. |cdm_file_system_id| is
-  // used to register the appropriate CdmStorage interface needed by the CDM.
-  // If |cdm_file_system_id| is empty, CdmStorage interface won't be available.
+  // mojo media (or CDM) service running remotely. |cdm_type| is used to
+  // register the appropriate CdmStorage interface needed by the CDM. If
+  // |cdm_type| is empty, CdmStorage interface won't be available.
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> GetFrameServices(
-      const std::string& cdm_file_system_id = "");
+      const media::CdmType& cdm_type);
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Gets a CdmFactory pointer for |key_system|. Returns null if unexpected
   // error happened.
   media::mojom::CdmFactory* GetCdmFactory(const std::string& key_system);
 
-  // Connects to the CDM service associated with |cdm_type|, adds the new
+  // Connects to the CDM service associated with |cdm_info|, adds the new
   // CdmFactoryPtr to the |cdm_factory_map_|, and returns the newly created
   // CdmFactory pointer. Returns nullptr if unexpected error happened.
-  // |cdm_path| will be used to preload the CDM, if necessary.
-  // |cdm_file_system_id| is used when creating the matching storage interface.
-  // |cdm_name| is used as the display name of the CDM (utility) process.
-  media::mojom::CdmFactory* ConnectToCdmService(const base::Token& cdm_type,
-                                                const CdmInfo& cdm_info);
+  media::mojom::CdmFactory* ConnectToCdmService(const CdmInfo& cdm_info);
 
   // Callback for connection error from the CdmFactoryPtr in the
   // |cdm_factory_map_| associated with |cdm_type|.
-  void OnCdmServiceConnectionError(const base::Token& cdm_type);
+  void OnCdmServiceConnectionError(const media::CdmType& cdm_type);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_CHROMEOS)
@@ -160,9 +157,9 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   // CDM type to CDM InterfaceFactory Remotes mapping, where the
   // InterfaceFactory instances live in the standalone CdmService instances.
   // These map entries effectively own the corresponding CDM processes.
-  // Only using the GUID to identify the CdmFactory is sufficient because the
-  // BrowserContext and Site URL should never change.
-  std::map<base::Token, mojo::Remote<media::mojom::CdmFactory>>
+  // Only using the CDM type to identify the CdmFactory is sufficient because
+  // the BrowserContext and Site URL should never change.
+  std::map<media::CdmType, mojo::Remote<media::mojom::CdmFactory>>
       cdm_factory_map_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

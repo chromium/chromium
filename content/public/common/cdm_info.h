@@ -11,14 +11,25 @@
 #include "base/files/file_path.h"
 #include "base/token.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+#if defined(OS_CHROMEOS) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+// TODO(crbug.com/1231162): Remove the string identifier once we've migrated off
+// of the PluginPrivateFileSystem.
+// CdmType for Chrome OS.
+const CONTENT_EXPORT media::CdmType kChromeOsCdmType{
+    base::Token{0xa6ecd3fc63b3ded2ull, 0x9306d3270227ce5full},
+    "application_chromeos-cdm-factory-daemon"};
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 // Represents a Content Decryption Module implementation and its capabilities.
 struct CONTENT_EXPORT CdmInfo {
@@ -32,14 +43,13 @@ struct CONTENT_EXPORT CdmInfo {
           absl::optional<media::CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
-          const base::Token& type,
+          const media::CdmType& type,
           const base::Version& version,
-          const base::FilePath& path,
-          const std::string& file_system_id);
+          const base::FilePath& path);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
           absl::optional<media::CdmCapability> capability,
-          const base::Token& type);
+          const media::CdmType& type);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
@@ -67,10 +77,10 @@ struct CONTENT_EXPORT CdmInfo {
   // Display name of the CDM (e.g. Widevine Content Decryption Module).
   std::string name;
 
-  // A token to uniquely identify the type of the CDM. Used for per-CDM-type
+  // An object to uniquely identify the type of the CDM. Used for per-CDM-type
   // isolation, e.g. for running different CDMs in different child processes,
   // and per-CDM-type storage.
-  base::Token type;
+  media::CdmType type;
 
   // Version of the CDM. May be empty if the version is not known.
   base::Version version;
@@ -78,11 +88,6 @@ struct CONTENT_EXPORT CdmInfo {
   // Path to the library implementing the CDM. May be empty if the
   // CDM is not a separate library (e.g. Widevine on Android).
   base::FilePath path;
-
-  // Identifier used by the PluginPrivateFileSystem to identify the files
-  // stored by this CDM. Valid identifiers only contain letters (A-Za-z),
-  // digits(0-9), or "._-".
-  std::string file_system_id;
 };
 
 }  // namespace content

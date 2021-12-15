@@ -70,8 +70,7 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
-      kWidevineCdmDisplayName, kWidevineCdmType, version, cdm_library_path,
-      kWidevineCdmFileSystemId);
+      kWidevineCdmDisplayName, kWidevineCdmType, version, cdm_library_path);
 }
 
 // On desktop Linux, given |cdm_base_path| that points to a folder containing

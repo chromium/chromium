@@ -26,6 +26,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,10 +44,9 @@ using base::test::RunOnceCallback;
 using testing::_;
 
 const char kTestCdmName[] = "Test Content Decryption Module";
-const base::Token kTestCdmType{1234, 5678};
+const media::CdmType kTestCdmType{base::Token{1234, 5678}, "file_system_id"};
 const char kVersion[] = "1.1.1.1";
 const char kTestPath[] = "/aa/bb";
-const char kTestFileSystemId[] = "file_system_id";
 
 // Helper function to convert a VideoCodecMap to a list of VideoCodec values
 // so that they can be compared. VideoCodecProfiles are ignored.
@@ -127,11 +127,10 @@ class KeySystemSupportImplTest : public testing::Test {
                 Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 
-    CdmRegistry::GetInstance()->RegisterCdm(
-        CdmInfo(key_system, robustness, std::move(capability),
-                /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmType,
-                base::Version(kVersion),
-                base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId));
+    CdmRegistry::GetInstance()->RegisterCdm(CdmInfo(
+        key_system, robustness, std::move(capability),
+        /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmType,
+        base::Version(kVersion), base::FilePath::FromUTF8Unsafe(kTestPath)));
   }
 
   // Determines if |key_system| is registered. If it is, updates |codecs_|
