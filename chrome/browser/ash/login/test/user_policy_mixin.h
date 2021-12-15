@@ -16,10 +16,11 @@
 
 namespace ash {
 class LocalPolicyTestServerMixin;
+class EmbeddedPolicyTestServerMixin;
 
 // Mixin for setting up user policy for a test user.
 // Currently supports setting cached user policy and optionally user policy
-// served by local policy test server..
+// served by local or embedded policy test server..
 // NOTE: This mixin will set up in-memory FakeSessionManagerClient during setup.
 class UserPolicyMixin : public InProcessBrowserTestMixin {
  public:
@@ -28,6 +29,9 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id,
                   LocalPolicyTestServerMixin* policy_server);
+  UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
+                  const AccountId& account_id,
+                  EmbeddedPolicyTestServerMixin* policy_server);
 
   UserPolicyMixin(const UserPolicyMixin&) = delete;
   UserPolicyMixin& operator=(const UserPolicyMixin&) = delete;
@@ -69,7 +73,8 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   // Policy server that can optionally be passed into UserPolicyMixin. If set
   // user policy changes done by RequestPolicyUpdate() will also be forwarded
   // to the policy server.
-  LocalPolicyTestServerMixin* policy_server_ = nullptr;
+  LocalPolicyTestServerMixin* local_policy_server_ = nullptr;
+  EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
 
   policy::UserPolicyBuilder user_policy_builder_;
 

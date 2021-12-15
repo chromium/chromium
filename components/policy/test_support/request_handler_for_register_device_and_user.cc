@@ -107,7 +107,8 @@ RequestHandlerForRegisterDeviceAndUser::HandleRequest(
   client_info.device_id = device_id;
   client_info.device_token = device_token;
   client_info.machine_name = machine_name;
-  client_info.username = policy_user;
+  if (!policy_user.empty())
+    client_info.username = policy_user;
   AddAllowedPolicyTypes(register_request.type(),
                         &client_info.allowed_policy_types);
   client_storage()->RegisterClient(std::move(client_info));

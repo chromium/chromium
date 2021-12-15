@@ -417,9 +417,8 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
     auto registry_observer =
         GetTestExtensionRegistryObserver(kInSessionExtensionId);
 
-    ASSERT_TRUE(
-        logged_in_user_mixin_.GetLocalPolicyTestServerMixin()->UpdateUserPolicy(
-            user_policy_builder->payload(), account_id.GetUserEmail()));
+    logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()->UpdateUserPolicy(
+        user_policy_builder->payload(), account_id.GetUserEmail());
     session_manager_client()->set_user_policy(
         cryptohome::CreateAccountIdentifierFromAccountId(account_id),
         user_policy_builder->GetBlob());

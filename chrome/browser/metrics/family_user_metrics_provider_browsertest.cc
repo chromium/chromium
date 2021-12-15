@@ -110,10 +110,10 @@ class FamilyUserMetricsProviderTest
       /*should_launch_browser=*/true,
       GetPrimaryAccountId(GetFamilyUserLogSegment()),
       /*include_initial_user=*/true,
-      // Don't use LocalPolicyTestServer because it does not support customizing
-      // PolicyData.
-      // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
-      /*use_local_policy_server=*/false};
+      // Don't use EmbeddedPolicyTestServer because it does not support
+      // customizing PolicyData.
+      // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
+      /*use_embedded_policy_server=*/false};
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
