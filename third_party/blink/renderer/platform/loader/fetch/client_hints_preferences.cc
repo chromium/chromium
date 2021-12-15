@@ -71,7 +71,7 @@ bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
     }
   } else if (is_preload_or_sync_parser) {
     // Note: .Ascii() would convert tab to ?, which is undesirable.
-    absl::optional<network::ClientHintToDelegatedThirdPartiesMap> parsed_ch =
+    absl::optional<network::ClientHintToDelegatedThirdPartiesHeader> parsed_ch =
         network::ParseClientHintToDelegatedThirdPartiesHeader(
             header_value.Latin1());
 
@@ -79,7 +79,7 @@ bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
       return false;
 
     // Update first-party permissions for each client hint.
-    for (const auto& pair : parsed_ch.value()) {
+    for (const auto& pair : parsed_ch.value().map) {
       enabled_hints_.SetIsEnabled(pair.first, true);
     }
   }

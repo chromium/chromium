@@ -62,24 +62,26 @@ TEST(ClientHintsTest, ParseClientHintsHeader) {
 }
 
 TEST(ClientHintsTest, ParseClientHintToDelegatedThirdPartiesHeader) {
-  absl::optional<ClientHintToDelegatedThirdPartiesMap> result;
+  absl::optional<ClientHintToDelegatedThirdPartiesHeader> result;
 
   // Empty is OK.
   result = ParseClientHintToDelegatedThirdPartiesHeader(" ");
-  ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result.value().empty());
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value().map.empty());
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Normal case.
   result = ParseClientHintToDelegatedThirdPartiesHeader("device-memory,  rtt ");
-  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
               (std::vector<url::Origin>){}),
           std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
                          (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Must be a list of tokens, not other things.
   result = ParseClientHintToDelegatedThirdPartiesHeader(
@@ -90,48 +92,51 @@ TEST(ClientHintsTest, ParseClientHintToDelegatedThirdPartiesHeader) {
   // spec.
   result = ParseClientHintToDelegatedThirdPartiesHeader(
       "device-memory;resolution=GIB, rtt");
-  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
               (std::vector<url::Origin>){}),
           std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
                          (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Unknown tokens are fine, since this meant to be extensible.
   result = ParseClientHintToDelegatedThirdPartiesHeader(
       "device-memory,  rtt , nosuchtokenwhywhywhy");
-  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
               (std::vector<url::Origin>){}),
           std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
                          (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Matching is case-insensitive.
   result = ParseClientHintToDelegatedThirdPartiesHeader("Device-meMory,  Rtt ");
-  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
               (std::vector<url::Origin>){}),
           std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
                          (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Matching can find a one or more origins.
   result = ParseClientHintToDelegatedThirdPartiesHeader(
       "device-memory=https://foo.bar,  rtt=( https://foo.bar "
       "https://baz.qux) ");
-  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
@@ -141,13 +146,14 @@ TEST(ClientHintsTest, ParseClientHintToDelegatedThirdPartiesHeader) {
                          (std::vector<url::Origin>){
                              url::Origin::Create(GURL("https://foo.bar")),
                              url::Origin::Create(GURL("https://baz.qux"))})));
+  EXPECT_FALSE(result.value().had_invalid_origins);
 
   // Matching ignores invalid domains
   result = ParseClientHintToDelegatedThirdPartiesHeader(
-      "device-memory=6,  rtt=( https://foo.bar/wasd self ) ");
-  ASSERT_TRUE(result.has_value());
+      "device-memory=6,  rtt=( https://foo.bar/wasd self about:blank ) ");
+  EXPECT_TRUE(result.has_value());
   EXPECT_THAT(
-      result.value(),
+      result.value().map,
       UnorderedElementsAre(
           std::make_pair(
               network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
@@ -155,6 +161,7 @@ TEST(ClientHintsTest, ParseClientHintToDelegatedThirdPartiesHeader) {
           std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
                          (std::vector<url::Origin>){
                              url::Origin::Create(GURL("https://foo.bar"))})));
+  EXPECT_TRUE(result.value().had_invalid_origins);
 }
 
 }  // namespace network

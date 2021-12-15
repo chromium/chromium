@@ -25,6 +25,7 @@ class Element;
 class ExecutionContext;
 class LocalFrame;
 class ResourceError;
+class LocalDOMWindow;
 class LocalFrame;
 class SecurityPolicyViolationEventInit;
 class SourceLocation;
@@ -63,6 +64,11 @@ enum class MixedContentResolutionStatus {
   kMixedContentBlocked,
   kMixedContentAutomaticallyUpgraded,
   kMixedContentWarning,
+};
+
+enum class ClientHintIssueReason {
+  kMetaTagAllowListInvalidOrigin,
+  kMetaTagModifiedHTML,
 };
 
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
@@ -139,6 +145,9 @@ class CORE_EXPORT AuditsIssue {
 
   static void ReportDeprecationIssue(ExecutionContext* execution_context,
                                      const String& message);
+
+  static void ReportClientHintIssue(LocalDOMWindow* local_dom_window,
+                                    ClientHintIssueReason reason);
 
   static AuditsIssue CreateBlockedByResponseIssue(
       network::mojom::BlockedByResponseReason reason,

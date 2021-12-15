@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -22,6 +23,14 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsPreferences::Context* context,
     bool is_http_equiv,
     bool is_preload_or_sync_parser) {
+  // If it's not http-equiv and it's not a preload-or-sync-parser visible
+  // meta tag, then we need to warn the dev that javascript injected the tag.
+  if (!is_http_equiv && !is_preload_or_sync_parser && local_dom_window &&
+      RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
+    AuditsIssue::ReportClientHintIssue(
+        local_dom_window, ClientHintIssueReason::kMetaTagModifiedHTML);
+  }
+
   // If no hints were set, this is an http-equiv tag, this tag was added by
   // javascript, the `local_dom_window` is missing, or the feature is disabled,
   // there's nothing more to do.
@@ -34,15 +43,22 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   }
 
   // Note: .Ascii() would convert tab to ?, which is undesirable.
-  absl::optional<network::ClientHintToDelegatedThirdPartiesMap> parsed_ch =
+  absl::optional<network::ClientHintToDelegatedThirdPartiesHeader> parsed_ch =
       network::ParseClientHintToDelegatedThirdPartiesHeader(
           header_value.Latin1());
+
+  // If invalid origins were seen in the allow list we need to warn the dev.
+  if (parsed_ch.value().had_invalid_origins) {
+    AuditsIssue::ReportClientHintIssue(
+        local_dom_window,
+        ClientHintIssueReason::kMetaTagAllowListInvalidOrigin);
+  }
 
   // Build vector of client hint permission policies to update.
   auto* const current_policy =
       local_dom_window->GetSecurityContext().GetPermissionsPolicy();
   ParsedPermissionsPolicy container_policy;
-  for (const auto& pair : parsed_ch.value()) {
+  for (const auto& pair : parsed_ch.value().map) {
     const auto& policy_name = GetClientHintToPolicyFeatureMap().at(pair.first);
 
     // We need to retain any preexisting settings, just adding new origins.

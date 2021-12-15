@@ -20980,6 +20980,8 @@ Called by update_debug_scenarios.py.-->
   <int value="58" label="QuirksModeIssue::QuirksMode"/>
   <int value="59" label="QuirksModeIssue::LimitedQuirksMode"/>
   <int value="60" label="DeprecationIssue"/>
+  <int value="61" label="ClientHintIssue::MetaTagAllowListInvalidOrigin"/>
+  <int value="62" label="ClientHintIssue::MetaTagModifiedHTML"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

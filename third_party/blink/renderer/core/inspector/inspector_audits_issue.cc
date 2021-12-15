@@ -480,6 +480,42 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
+namespace {
+
+protocol::Audits::ClientHintIssueReason ClientHintIssueReasonToProtocol(
+    ClientHintIssueReason reason) {
+  switch (reason) {
+    case ClientHintIssueReason::kMetaTagAllowListInvalidOrigin:
+      return protocol::Audits::ClientHintIssueReasonEnum::
+          MetaTagAllowListInvalidOrigin;
+    case ClientHintIssueReason::kMetaTagModifiedHTML:
+      return protocol::Audits::ClientHintIssueReasonEnum::MetaTagModifiedHTML;
+  }
+}
+
+}  // namespace
+
+// static
+void AuditsIssue::ReportClientHintIssue(LocalDOMWindow* local_dom_window,
+                                        ClientHintIssueReason reason) {
+  auto source_location = SourceLocation::Capture(local_dom_window);
+  auto client_hint_issue_details =
+      protocol::Audits::ClientHintIssueDetails::create()
+          .setSourceCodeLocation(CreateProtocolLocation(*source_location))
+          .setClientHintIssueReason(ClientHintIssueReasonToProtocol(reason))
+          .build();
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setClientHintIssueDetails(std::move(client_hint_issue_details))
+          .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::ClientHintIssue)
+          .setDetails(std::move(issue_details))
+          .build();
+  local_dom_window->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
 AuditsIssue AuditsIssue::CreateBlockedByResponseIssue(
     network::mojom::BlockedByResponseReason reason,
     uint64_t identifier,

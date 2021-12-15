@@ -36,15 +36,22 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>>
     COMPONENT_EXPORT(NETWORK_CPP)
         ParseClientHintsHeader(const std::string& header);
 
-using ClientHintToDelegatedThirdPartiesMap =
-    base::flat_map<network::mojom::WebClientHintsType,
-                   std::vector<url::Origin>>;
+struct COMPONENT_EXPORT(NETWORK_CPP) ClientHintToDelegatedThirdPartiesHeader {
+  ClientHintToDelegatedThirdPartiesHeader();
+  ~ClientHintToDelegatedThirdPartiesHeader();
+  ClientHintToDelegatedThirdPartiesHeader(
+      const ClientHintToDelegatedThirdPartiesHeader&);
+
+  base::flat_map<network::mojom::WebClientHintsType, std::vector<url::Origin>>
+      map;
+  bool had_invalid_origins{false};
+};
 
 // Tries to parse an Accept-CH header w/ third-party delegation ability (i.e. a
 // named meta tag). Returns absl::nullopt if parsing failed and the header
 // should be ignored; otherwise returns a (possibly empty) map of hints to
 // delegated third-parties.
-absl::optional<ClientHintToDelegatedThirdPartiesMap> COMPONENT_EXPORT(
+absl::optional<const ClientHintToDelegatedThirdPartiesHeader> COMPONENT_EXPORT(
     NETWORK_CPP)
     ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header);
 
