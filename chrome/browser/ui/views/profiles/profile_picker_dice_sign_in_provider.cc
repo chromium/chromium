@@ -59,13 +59,13 @@ ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     : host_(host), toolbar_(toolbar) {}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
-  // Record unfinished signed-in profile creation (i.e. when callback was not
+  // Handle unfinished signed-in profile creation (i.e. when callback was not
   // called yet).
   if (callback_) {
-    contents()->SetDelegate(nullptr);
-
-    // Schedule the profile for deletion, it's not needed any more.
     if (IsInitialized()) {
+      contents()->SetDelegate(nullptr);
+
+      // Schedule the profile for deletion, it's not needed any more.
       g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
           profile_->GetPath());
     }
