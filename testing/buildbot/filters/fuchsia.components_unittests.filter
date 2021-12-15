@@ -6,7 +6,6 @@
 -BaseFileTest.RenameWithError*
 -BaseFileTest.Uninitialized*
 -BaseFileTest.WriteWith*
--Crash*
 -DownloadFile/DownloadFileTestWithRename.RenameError*
 -DownloadFile/DownloadFileTestWithRename.RenameWith*
 -DownloadPathReservationTrackerTest.UnwriteableDirectory
@@ -23,4 +22,3 @@
 -RealtimeReportingJobConfigurationTest.ValidatePayload
 -SslCastSocketTest.TestConnectEndToEndWithRealSSL
 -UIDevToolsServerTest.ConnectionToViewsServer
--VariationsCrashKeysTest.BasicFunctionality
