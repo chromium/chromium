@@ -18,7 +18,7 @@
 
 namespace aura {
 class Window;
-}  // namesapce aura
+}  // namespace aura
 
 namespace ui {
 class LayerTreeOwner;

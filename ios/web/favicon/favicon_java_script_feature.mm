@@ -73,4 +73,4 @@ void FaviconJavaScriptFeature::ScriptMessageReceived(
     static_cast<WebStateImpl*>(web_state)->OnFaviconUrlUpdated(urls);
 }
 
-}  // namspace web
+}  // namespace web

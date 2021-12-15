@@ -81,6 +81,6 @@ class ResponseProvider {
   virtual ~ResponseProvider() {}
 };
 
-}  // namspace web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_TEST_HTTP_SERVER_RESPONSE_PROVIDER_H_

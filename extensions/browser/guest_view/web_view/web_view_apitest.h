@@ -15,10 +15,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace guestview {
-class TestGuestViewManager;
-}  // namesapce guestview
-
 namespace extensions {
 
 // Base class for WebView tests in app_shell.

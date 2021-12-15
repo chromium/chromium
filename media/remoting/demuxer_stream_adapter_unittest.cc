@@ -314,5 +314,5 @@ TEST_F(DemuxerStreamAdapterTest, ClosingPipeCausesFatalError) {
   EXPECT_EQ(MOJO_PIPE_ERROR, errors[0]);
 }
 
-}  // namesapce remoting
+}  // namespace remoting
 }  // namespace media

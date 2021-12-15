@@ -148,6 +148,6 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
 };
 
 }  // namespace test
-}  // namspace web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_TEST_HTTP_SERVER_HTTP_SERVER_H_
