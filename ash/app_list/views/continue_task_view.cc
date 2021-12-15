@@ -152,6 +152,8 @@ gfx::Size ContinueTaskView::CalculatePreferredSize() const {
 }
 
 void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::ACTION_TRIGGERED);
   OpenResult(event.flags());
 }
 
@@ -173,12 +175,15 @@ void ContinueTaskView::OnMetadataChanged() {
 
 void ContinueTaskView::UpdateResult() {
   SetVisible(!!result());
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::HIDDEN);
+  CloseContextMenu();
+
   if (!result()) {
     SetIcon(gfx::ImageSkia());
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
     GetViewAccessibility().OverrideName(std::u16string());
-    CloseContextMenu();
     return;
   }
 
@@ -195,6 +200,9 @@ void ContinueTaskView::OnResultDestroying() {
 }
 
 void ContinueTaskView::SetResult(SearchResult* result) {
+  if (result_ == result)
+    return;
+
   search_result_observation_.Reset();
 
   result_ = result;
@@ -222,6 +230,8 @@ void ContinueTaskView::ShowContextMenuForViewImpl(
       source->GetWidget(), nullptr /*button_controller*/,
       source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleTopRight,
       source_type);
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::ACTIVATED);
 }
 
 void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
@@ -252,6 +262,11 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
       ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon));
 
   return context_menu_model_.get();
+}
+
+void ContinueTaskView::MenuClosed(ui::SimpleMenuModel* menu) {
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::HIDDEN);
 }
 
 void ContinueTaskView::OpenResult(int event_flags) {

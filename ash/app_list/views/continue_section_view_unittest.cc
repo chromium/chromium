@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -724,6 +725,58 @@ TEST_P(ContinueSectionViewTest, ShowContinueSectionWhithMinimumFiles) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
+}
+
+TEST_P(ContinueSectionViewTest, TaskViewHasRippleWithMenuOpen) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressAt(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+
+  EXPECT_EQ(views::InkDropState::ACTIVATED,
+            views::InkDrop::Get(continue_task_view)
+                ->GetInkDrop()
+                ->GetTargetInkDropState());
+}
+
+TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressAt(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+
+  // Click on other task view to hide context menu.
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressAt(
+      GetResultViewAt(2)->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(continue_task_view->IsMenuShowing());
+
+  // Wait for the view to update the ink drop.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(views::InkDropState::HIDDEN, views::InkDrop::Get(continue_task_view)
+                                             ->GetInkDrop()
+                                             ->GetTargetInkDropState());
 }
 
 }  // namespace
