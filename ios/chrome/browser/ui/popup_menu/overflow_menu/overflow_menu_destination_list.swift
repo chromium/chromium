@@ -32,6 +32,9 @@ struct OverflowMenuDestinationList: View {
     /// When the dynamic text size is large, the width of each item is the
     /// screen width minus a fixed space.
     static let largeTextSizeSpace: CGFloat = 120
+
+    /// Space above the list pushing them down from the grabber.
+    static let topMargin: CGFloat = 20
   }
 
   /// The current dynamic type size.
@@ -50,11 +53,15 @@ struct OverflowMenuDestinationList: View {
           : .vertical(
             iconSpacing: spacing.iconSpacing,
             iconPadding: spacing.iconPadding)
+        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
 
-        LazyHStack(spacing: 0) {
-          ForEach(destinations) { destination in
-            OverflowMenuDestinationView(
-              destination: destination, layoutParameters: layoutParameters)
+        VStack {
+          Spacer(minLength: Constants.topMargin)
+          LazyHStack(alignment: alignment, spacing: 0) {
+            ForEach(destinations) { destination in
+              OverflowMenuDestinationView(
+                destination: destination, layoutParameters: layoutParameters)
+            }
           }
         }
         // Make sure the space to the first icon is constant, so add extra

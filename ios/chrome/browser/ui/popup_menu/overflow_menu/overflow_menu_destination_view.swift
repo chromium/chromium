@@ -24,6 +24,9 @@ struct OverflowMenuDestinationButton: ButtonStyle {
 
     /// The spacing between the icon and the text in horizontal layout.
     static let horizontalLayoutIconSpacing: CGFloat = 14
+
+    /// The image width, which controls the width of the overall view.
+    static let imageWidth: CGFloat = 54
   }
 
   /// The destination for this view.
@@ -35,11 +38,12 @@ struct OverflowMenuDestinationButton: ButtonStyle {
   func makeBody(configuration: Configuration) -> some View {
     Group {
       switch layoutParameters {
-      case .vertical:
+      case .vertical(let iconSpacing, let iconPadding):
         VStack {
           icon(configuration: configuration)
           text
         }
+        .frame(width: Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding)
       case .horizontal(let itemWidth):
         HStack {
           icon(configuration: configuration)
@@ -87,15 +91,20 @@ struct OverflowMenuDestinationButton: ButtonStyle {
   var text: some View {
     // Only the vertical layout has extra spacing around the text
     let textSpacing: CGFloat
+    let maximumLines: Int?
     switch layoutParameters {
     case .vertical:
       textSpacing = Dimensions.verticalLayoutTextPadding
+      maximumLines = nil
     case .horizontal:
       textSpacing = 0
+      maximumLines = 1
     }
     return Text(destination.name)
       .font(.caption2)
       .padding([.leading, .trailing], textSpacing)
+      .multilineTextAlignment(.center)
+      .lineLimit(maximumLines)
   }
 }
 
