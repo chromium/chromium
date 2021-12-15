@@ -61,8 +61,8 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
   std::string GetExtensionAppId() const override;
-  bool ProfileIsSupervised() const override;
-  void set_is_supervised(bool is_supervised);
+  bool ProfileHasChildAccount() const override;
+  void set_has_child_account(bool has_child_account);
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool IsPlaceholderTab() const override;
@@ -77,7 +77,7 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   const base::RepeatingCallback<void(SyncedTabDelegate*)> notify_cb_;
 
   int current_entry_index_ = -1;
-  bool is_supervised_ = false;
+  bool has_child_account_ = false;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
@@ -115,7 +115,7 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const override;
-  bool ProfileIsSupervised() const override;
+  bool ProfileHasChildAccount() const override;
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool ShouldSync(SyncSessionsClient* sessions_client) override;

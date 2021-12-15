@@ -275,8 +275,8 @@ TEST_F(LocalSessionEventHandlerImplTest,
   ASSERT_EQ(3, session_tab.navigation_size());
 }
 
-// Tests that for supervised users blocked navigations are recorded and marked
-// as such, while regular navigations are marked as allowed.
+// Tests that for child account users blocked navigations are recorded and
+// marked as such, while regular navigations are marked as allowed.
 TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
   AddWindow(kWindowId1);
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime1);
@@ -296,7 +296,7 @@ TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
   blocked_navigations.push_back(std::move(entry2));
   blocked_navigations.push_back(std::move(entry3));
 
-  tab->set_is_supervised(true);
+  tab->set_has_child_account(true);
   tab->set_blocked_navigations(blocked_navigations);
 
   InitHandler();

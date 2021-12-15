@@ -371,7 +371,7 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   const int min_index = std::max(0, current_index - kMaxSyncNavigationCount);
   const int max_index = std::min(current_index + kMaxSyncNavigationCount,
                                  tab_delegate.GetEntryCount());
-  bool is_supervised = tab_delegate.ProfileIsSupervised();
+  bool has_child_account = tab_delegate.ProfileHasChildAccount();
 
   for (int i = min_index; i < max_index; ++i) {
     if (!tab_delegate.GetVirtualURLAtIndex(i).is_valid()) {
@@ -391,7 +391,7 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
     if (!page_language.empty())
       navigation->set_page_language(page_language);
 
-    if (is_supervised) {
+    if (has_child_account) {
       navigation->set_blocked_state(
           sync_pb::TabNavigation_BlockedState_STATE_ALLOWED);
     }
@@ -403,7 +403,7 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
     specifics.set_current_navigation_index(specifics.navigation_size() - 1);
   }
 
-  if (is_supervised) {
+  if (has_child_account) {
     const std::vector<std::unique_ptr<const SerializedNavigationEntry>>*
         blocked_navigations = tab_delegate.GetBlockedNavigations();
     DCHECK(blocked_navigations);

@@ -50,8 +50,8 @@ class SyncedTabDelegate {
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const = 0;
 
-  // Supervised user related methods.
-  virtual bool ProfileIsSupervised() const = 0;
+  // Methods to restrict navigation for child account users.
+  virtual bool ProfileHasChildAccount() const = 0;
   virtual const std::vector<
       std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const = 0;

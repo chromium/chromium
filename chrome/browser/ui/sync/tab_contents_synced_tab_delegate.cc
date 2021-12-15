@@ -120,7 +120,7 @@ void TabContentsSyncedTabDelegate::GetSerializedNavigationAtIndex(
   }
 }
 
-bool TabContentsSyncedTabDelegate::ProfileIsSupervised() const {
+bool TabContentsSyncedTabDelegate::ProfileHasChildAccount() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext())
       ->IsChild();
 }
@@ -145,7 +145,7 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
           GetWindowId()) == nullptr)
     return false;
 
-  if (ProfileIsSupervised() && !GetBlockedNavigations()->empty())
+  if (ProfileHasChildAccount() && !GetBlockedNavigations()->empty())
     return true;
 
   if (IsInitialBlankNavigation())

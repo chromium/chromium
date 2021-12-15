@@ -159,7 +159,7 @@ void IOSChromeSyncedTabDelegate::GetSerializedNavigationAtIndex(
   }
 }
 
-bool IOSChromeSyncedTabDelegate::ProfileIsSupervised() const {
+bool IOSChromeSyncedTabDelegate::ProfileHasChildAccount() const {
   return false;
 }
 
