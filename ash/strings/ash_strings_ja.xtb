@@ -818,6 +818,7 @@
 <translation id="6528179044667508675">サイレント</translation>
 <translation id="65320610082834431">絵文字</translation>
 <translation id="6537924328260219877">信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">ダウンロードする <ph name="FILENAME" /> をスキャンしています</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新たなインストール</translation>

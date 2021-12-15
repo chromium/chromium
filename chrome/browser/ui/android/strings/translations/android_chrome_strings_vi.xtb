@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1592864538817356322">Chế độ bảo vệ thông thường:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
+<translation id="1633659023549081553">Khám phá nội dung mới trên trang chủ của Chrome</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
@@ -220,6 +221,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
+<translation id="2342601525305963189">Mẹo khi dùng Chrome:</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
 <translation id="2345671828921229300">Để tìm kiếm, hãy chạm và giữ một từ</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
@@ -263,6 +265,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2534582914273493287">Những URL bạn truy cập được gửi cho Google</translation>
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
+<translation id="2558692642259318568">Để duyệt web mà không lưu hoạt động vào thiết bị, hãy thử chế độ Ẩn danh</translation>
 <translation id="2561519700418191927">Bản xem trước video</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
 <translation id="2567545343356994513">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm</translation>
@@ -274,6 +277,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="2625189173221582860">Đã sao chép mật khẩu</translation>
 <translation id="2631006050119455616">Đã tiết kiệm</translation>
+<translation id="2634905176438867146">Tìm hiểu cách đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="2645657967708199252">Kết nối <ph name="CONNECTION_TYPE" /> của bạn có thể làm chậm quá trình tải xuống</translation>
 <translation id="2647434099613338025">Thêm ngôn ngữ</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> quản lý trình duyệt của bạn</translation>
@@ -358,6 +362,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037517125981011456">Hiển thị lời nhắc đăng nhập vào Chrome</translation>
 <translation id="3046945242843292318">Truy cập trang web này nhanh hơn vào lần tới</translation>
+<translation id="3055259925215945098">Đã di chuyển dấu trang</translation>
 <translation id="305593374596241526">Đã tắt vị trí; hãy bật vị trí trong mục <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
@@ -386,6 +391,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3234978181857588512">Lưu vào thiết bị</translation>
 <translation id="3236059992281584593">Còn 1 phút</translation>
 <translation id="3237087289225714896">Chế độ tải trước tiêu chuẩn:</translation>
+<translation id="3237433641417325993">Di chuyển xuống để xem các bài viết được đề xuất</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chrome, các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
 <translation id="3250563604907490871">Nội dung mô tả hình ảnh sẽ tiếp tục hiển thị khi bạn kết nối Wi-Fi</translation>
@@ -651,6 +657,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4835385943915508971">Chrome không có quyền truy cập vào tài nguyên đã yêu cầu.</translation>
 <translation id="4837753911714442426">Mở tùy chọn để in trang</translation>
 <translation id="4842092870884894799">Hiển thị cửa sổ bật lên tạo mật khẩu</translation>
+<translation id="4842515939542199281">Để tìm kiếm bằng giọng nói, hãy nhấn vào micrô</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
@@ -697,6 +704,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5091249083535528968">Dữ liệu sử dụng mở rộng</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="510275257476243843">Còn 1 giờ</translation>
+<translation id="5115811374190515607">đến <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Sở thích</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5126510351761255129">Xác minh thẻ của bạn</translation>
@@ -801,6 +809,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5749068826913805084">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống.</translation>
 <translation id="5749237766298580851">Tắt <ph name="SEPARATOR" /> Không khuyến nghị</translation>
 <translation id="5752232708629533680">Chỉ chia sẻ ảnh GIF</translation>
+<translation id="5753139477036638699">Bạn có thể dùng giọng nói để tìm kiếm trên Chrome</translation>
 <translation id="5754350196967618083">Không thể làm mới tính năng Khám phá</translation>
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
@@ -1012,6 +1021,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6813446258015311409">Đã mở trang Đăng nhập vào Chrome.</translation>
 <translation id="6814033694018386318">Những gì bạn chia sẻ với Google</translation>
 <translation id="6817747507826986771">Chia sẻ nhanh trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
+<translation id="6819199143469632133">Để nhận dữ liệu của bạn trên Google trên nhiều thiết bị, hãy đăng nhập</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, thẻ, đã chọn</translation>
 <translation id="6828070228333235514">Dừng theo dõi giá</translation>
@@ -1050,6 +1060,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7027549951530753705">Đã khôi phục <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Đặt mã QR hoặc mã vạch vào khung này.</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
+<translation id="7037830628447527439">Đăng nhập vào Chrome bằng Tài khoản Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7055152154916055070">Liên kết chuyển hướng đã chặn:</translation>
@@ -1404,6 +1415,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8945143127965743188"><ph name="LANG" /> – Không thể tải ngôn ngữ này xuống. Hãy thử lại sau.</translation>
 <translation id="8951232171465285730">Chrome đã tiết kiệm <ph name="MEGABYTES" /> MB cho bạn</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
+<translation id="8964479563882643397">Để mở một thẻ Ẩn danh mới, hãy mở trình đơn</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>
 <translation id="8967427617812342790">Thêm vào danh sách đọc</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>

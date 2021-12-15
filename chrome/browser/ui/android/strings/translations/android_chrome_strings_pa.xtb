@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">ਵਰਤੋਂਕਾਰ ਨਾਮ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1592864538817356322">ਮਿਆਰੀ ਸੁਰੱਖਿਆ:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ ਆਈਟਮ ਹਟਾਓ}one{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ}other{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ}}</translation>
+<translation id="1633659023549081553">Chrome ਦੇ ਹੋਮਪੇਜ 'ਤੇ ਨਵੀਂ ਸਮੱਗਰੀ ਲੱਭੋ</translation>
 <translation id="1641113438599504367">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
 <translation id="164269334534774161">ਤੁਸੀਂ <ph name="CREATION_TIME" /> ਤੋਂ ਇਸ ਪੰਨੇ ਦੀ ਇੱਕ ਆਫ਼ਲਾਈਨ ਕਾਪੀ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="1644574205037202324">ਇਤਿਹਾਸ</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">ਸਲਾਈਡਰ ਨੂੰ ਡ੍ਰੈਗ ਕਰੋ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਇਸਨੂੰ ਆਸਾਨੀ ਨਾਲ ਪੜ੍ਹ ਨਾ ਲਓ। ਲਿਖਤ ਇੱਕ ਪੈਰਾਗ੍ਰਾਫ 'ਤੇ ਡਬਲ-ਟੈਪ ਕਰਨ ਤੋਂ ਬਾਅਦ ਘੱਟੋ-ਘੱਟ ਇੰਨਾ ਵੱਡਾ ਦਿਖਾਈ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2328985652426384049">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="2342601525305963189">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ:</translation>
 <translation id="234265804618409743">ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਕੋਈ ਗੜਬੜ ਹੋਈ।</translation>
 <translation id="2345671828921229300">ਖੋਜਣ ਲਈ, ਕਿਸੇ ਸ਼ਬਦ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="2349710944427398404">Chrome ਵੱਲੋਂ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਕੁੱਲ ਡਾਟਾ, ਜਿਸ ਵਿੱਚ ਖਾਤੇ, ਬੁੱਕਮਾਰਕ, ਅਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਸੈਟਿੰਗਾਂ ਸ਼ਾਮਲ ਹਨ</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="2536728043171574184">ਇਸ ਪੰਨੇ ਦੀ ਇੱਕ ਆਫ਼ਲਾਈਨ ਕਾਪੀ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="2546283357679194313">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
+<translation id="2558692642259318568">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਸਰਗਰਮੀ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤੇ ਬਿਨਾਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ, ਇਨਕੋਗਨਿਟੋ ਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="2561519700418191927">ਵੀਡੀਓ ਦੀਆਂ ਪੂਰਵ-ਝਲਕਾਂ</translation>
 <translation id="2567385386134582609">ਇਮੇਜ</translation>
 <translation id="2567545343356994513">ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਜ਼ਿਆਦਾ ਤੇਜ਼ ਅਤੇ ਚੁਸਤ ਸੁਰੱਖਿਆ</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="2625189173221582860">ਪਾਸਵਰਡ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2631006050119455616">ਬਚਾਇਆ ਗਿਆ</translation>
+<translation id="2634905176438867146">Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="2645657967708199252">ਤੁਹਾਡਾ <ph name="CONNECTION_TYPE" /> ਕਨੈਕਸ਼ਨ ਤੁਹਾਡੇ ਡਾਊਨਲੋਡ ਨੂੰ ਹੌਲੀ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="2647434099613338025">ਭਾਸ਼ਾ ਜੋੜੋ</translation>
 <translation id="2649068648233607930">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3037517125981011456">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਦਿਖਾਉਂਦਾ ਹੈ</translation>
 <translation id="3046945242843292318">ਅਗਲੀ ਵਾਰ ਇਸ ਸਾਈਟ 'ਤੇ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚੋ</translation>
+<translation id="3055259925215945098">ਬੁੱਕਮਾਰਕ ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="305593374596241526">ਟਿਕਾਣਾ ਸੇਵਾ ਬੰਦ ਹੈ; ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ਬੁੱਕਮਾਰਕ}one{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}}</translation>
 <translation id="3062802207422175757">Chrome 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਲੇਖ</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="3236059992281584593">1 ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3237087289225714896">ਮਿਆਰੀ ਪ੍ਰੀਲੋਡਿੰਗ:</translation>
+<translation id="3237433641417325993">ਸੁਝਾਏ ਗਏ ਲੇਖਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਹੇਠਾਂ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">ਜੇ ਤੁਸੀਂ Chrome ਵਰਤੋਂ ਸੰਬੰਧੀ ਰਿਪੋਰਟਾਂ ਨੂੰ ਵੀ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL ਵੀ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="3250563604907490871">ਜਦੋਂ ਤੁਸੀਂ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰੋਗੇ ਤਾਂ ਚਿੱਤਰ ਵਰਣਨ ਮੁੜ-ਚਾਲੂ ਹੋਵੇਗਾ</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4837753911714442426">ਪੰਨਾ ਪ੍ਰਿੰਟ ਕਰਨ ਲਈ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="4842092870884894799">ਪਾਸਵਰਡ ਜੈਨਰੇਸ਼ਨ ਪੌਪਅੱਪ  ਦਿਖਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="4842515939542199281">ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜ ਕਰਨ ਲਈ, ਮਾਈਕ੍ਰੋਫ਼ੋਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="4860895144060829044">ਕਾਲ ਕਰੋ</translation>
 <translation id="4864369630010738180">ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">ਵਿਸਤ੍ਰਿਤ ਵਰਤੋਂ ਡਾਟਾ</translation>
 <translation id="509429900233858213">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="510275257476243843">1 ਘੰਟਾ ਬਾਕੀ</translation>
+<translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> ਵੱਲ</translation>
 <translation id="5118713593561876160">ਦਿਲਚਸਪੀਆਂ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5126510351761255129">ਆਪਣੇ ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">ਫ਼ਾਈਲਾਂ ਡਾਉਨਲੋਡ ਕਰਨ ਲਈ Chrome ਨੂੰ ਸਟੋਰੋਜ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5749237766298580851">ਬੰਦ ਹੈ <ph name="SEPARATOR" /> ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="5752232708629533680">ਸਿਰਫ਼ GIF ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="5753139477036638699">ਤੁਸੀਂ Chrome ਵਿੱਚ ਖੋਜ ਕਰਨ ਲਈ ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5754350196967618083">Discover ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5763382633136178763">ਗੁਮਨਾਮ ਟੈਬਸ</translation>
 <translation id="5763514718066511291">ਇਸ ਐਪ ਲਈ URL ਕਾਪੀ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ, ਖੋਲ੍ਹਿਆ ਗਿਆ।</translation>
 <translation id="6814033694018386318">ਤੁਸੀਂ Google ਨਾਲ ਕੀ ਸਾਂਝਾ ਕਰਦੇ ਹੋ</translation>
 <translation id="6817747507826986771">ਇਸ ਪੰਨੇ ਨੂੰ ਤੁਰੰਤ ਸਾਂਝਾ ਕਰੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
+<translation id="6819199143469632133">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ Google ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> ਟੈਬ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6828070228333235514">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7029390216614421513">QR ਕੋਡ/ਬਾਰ ਕੋਡ ਨੂੰ ਇਸ ਫ੍ਰੇਮ ਵਿੱਚ ਰੱਖੋ।</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
+<translation id="7037830628447527439">ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - ਇਹ ਭਾਸ਼ਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8951232171465285730">Chrome ਨੇ ਤੁਹਾਡੀ <ph name="MEGABYTES" /> MB ਦੀ ਬਚਤ ਕੀਤੀ ਹੈ</translation>
 <translation id="8955719471735800169">ਸਿਖਰ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
+<translation id="8964479563882643397">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹਣ ਲਈ, ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8965591936373831584">ਵਿਚਾਰ-ਅਧੀਨ</translation>
 <translation id="8967427617812342790">ਵਾਚਣ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_ONE" /> ਹੋਰ ਟੈਬ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}one{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}other{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ}}</translation>

@@ -192,6 +192,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2222841058024245321">Escriptori 7</translation>
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
+<translation id="2257486738914982088">S'ha produït un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
 <translation id="2269016722240250274">Una aplicació està utilitzant el micròfon</translation>
@@ -587,6 +588,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
+<translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">La baixada s'intentarà més tard. Fins que es completi, s'enviarà la parla a Google perquè la processi.</translation>
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
@@ -804,6 +806,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6452181791372256707">Rebutja</translation>
 <translation id="6453179446719226835">S'ha canviat l'idioma</translation>
 <translation id="6459472438155181876">S'està ampliant la pantalla a <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">No es pot baixar el fitxer</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requereix que actualitzis el dispositiu <ph name="DEVICE_TYPE" /> abans del termini establert</translation>
@@ -816,6 +819,8 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="6542521951477560771">S'està emetent a <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Instal·lació nova</translation>
 <translation id="6559976592393364813">Pregunta a l'administrador</translation>
 <translation id="6565007273808762236">La connexió eSIM no està disponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualitza el dispositiu en 1 hora}other{Actualitza el dispositiu en # hores}}</translation>
@@ -847,6 +852,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6739144137573853180">VES A CONFIGURACIÓ</translation>
 <translation id="6751052314767925245">Funció aplicada per l'administrador</translation>
 <translation id="6751826523481687655">La traça del rendiment està activada</translation>
 <translation id="6752912906630585008">L'escriptori <ph name="REMOVED_DESK" /> s'ha suprimit i s'ha fusionat amb l'escriptori <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +988,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
+<translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
@@ -1168,6 +1175,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
+<translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1221,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="938963181863597773">Què tinc programat al calendari?</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="951991426597076286">Rebutja</translation>
+<translation id="954052413789300507">No hi ha prou espai per a <ph name="FILENAME" />. Allibera espai.</translation>
 <translation id="974545358917229949">S'estan mostrant <ph name="RESULT_COUNT" /> resultats per a "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horitzontal</translation>
 <translation id="990277280839877440">La finestra <ph name="WINDOW_TITILE" /> s'ha tancat.</translation>

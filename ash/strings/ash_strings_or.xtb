@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ଡେସ୍କ 7</translation>
 <translation id="2224075387478458881">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହେଲେ ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ</translation>
 <translation id="225680501294068881">ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ପାଇଁ ସ୍କାନ୍ ହେଉଛି…</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="2268130516524549846">ବ୍ଲୁ-ଟୁଥ୍ ଅକ୍ଷମ କରାଗଲା</translation>
 <translation id="2268813581635650749">ସବୁ ସାଇନ୍ ଆଉଟ୍ କର</translation>
 <translation id="2269016722240250274">ଏକ ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">ଆପଣ ସ୍ୱଚାଳିତ କ୍ଲିକ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
 <translation id="4849058404725798627">କୀ'ବୋର୍ଡ ଫୋକସ୍ ମାଧ୍ୟମରେ ବସ୍ତୁକୁ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="485592688953820832">କୌଣସି ପଦକ୍ଷେପ ନାହିଁ (ବିରତ କରନ୍ତୁ)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ପାଇଁ ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="486056901304535126">ଡାଉନଲୋଡ କରିବା ପାଇଁ ପରେ ଚେଷ୍ଟା କରାଯିବ। ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ Googleକୁ ସ୍ପିଚ ପଠାଯିବ।</translation>
 <translation id="4868492592575313542">ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="4872237917498892622">Alt+Search କିମ୍ବା Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>
 <translation id="6453179446719226835">ଭାଷା ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="6459472438155181876">ସ୍କ୍ରିନ୍ <ph name="DISPLAY_NAME" />କୁ ପ୍ରସାରିତ ହୋଇଛି</translation>
+<translation id="6477681113376365978">ଫାଇଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6482559668224714696">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="6490471652906364588">USB-C ଡିଭାଇସ୍‍ (ଡାହାଣ ପୋର୍ଟ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ସମୟସୀମା ପୂର୍ବରୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
@@ -815,7 +818,9 @@
 <translation id="6528179044667508675">ବିରକ୍ତ କରନାହିଁ</translation>
 <translation id="65320610082834431">ଇମୋଜିଗୁଡ଼ିକ</translation>
 <translation id="6537924328260219877">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">ଡାଉନଲୋଡ ପାଇଁ <ph name="FILENAME" /> ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />କୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="6559976592393364813">ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="6565007273808762236">eSIM ସଂଯୋଗ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6570831796530454248">{0,plural, =1{ଏକ ଘଣ୍ଟା ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ଘଣ୍ଟା ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6727969043791803658">ସଂଯୋଗ କରାଯାଇଛି, <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6751052314767925245">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି</translation>
 <translation id="6751826523481687655">କାର୍ଯ୍ୟ-ସମ୍ପାଦନ ଟ୍ରେସିଂ ଚାଲୁ କରାଯାଇଛି</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ଡେସ୍କ କାଢ଼ି ଦିଆଯାଇଛି ଏବଂ <ph name="RECEIVE_DESK" /> ଡେସ୍କ ସହ ମିଶାଇ ଦିଆଯାଇଛି</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ନୂଆ ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7720410380936703141">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7745560842763881396">ସେଲ୍ଫରେ ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ବ୍ୟବହାର କରି</translation>
 <translation id="899350903320462459">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ <ph name="LOGIN_ID" /> ଭାବେ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
+<translation id="9000771174482730261">ଷ୍ଟୋରେଜ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9017320285115481645">Family Linkର ପ୍ୟାରେଣ୍ଟ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="9024331582947483881">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">ମୋ କ୍ୟାଲେଣ୍ଡରରେ କ’ଣ ଅଛି?</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="951991426597076286">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> ପାଇଁ ଯଥେଷ୍ଟ ସ୍ପେସ ନାହିଁ। ସ୍ପେସ ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ପାଇଁ <ph name="RESULT_COUNT" />ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="98515147261107953">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> ବନ୍ଦ କରାଯାଇଛି।</translation>

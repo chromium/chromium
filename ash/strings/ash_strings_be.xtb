@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Працоўны стол 7</translation>
 <translation id="2224075387478458881">Запіс экрана забаронены, калі на ім ёсць абароненае змесціва</translation>
 <translation id="225680501294068881">Ідзе пошук прылад…</translation>
+<translation id="2257486738914982088">Не ўдалося спампаваць файл "<ph name="FILENAME" />"</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
 <translation id="2269016722240250274">Мікрафон выкарыстоўваецца адной з праграм</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
 <translation id="4849058404725798627">Вылучаць аб'ект з дапамогай клавіятурнага фокуса</translation>
 <translation id="485592688953820832">Нічога не рабіць (паўза)</translation>
+<translation id="4860284199500934869">Каб спампаваць файл "<ph name="FILENAME" />", праверце падключэнне да сеткі.</translation>
 <translation id="486056901304535126">Спроба спампаваць будзе зроблена пазней. Да завяршэння спампоўвання аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="4868492592575313542">уключыла</translation>
 <translation id="4872237917498892622">Alt + Search або Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">Адхіліць</translation>
 <translation id="6453179446719226835">Мова была зменена</translation>
 <translation id="6459472438155181876">Экран пашыраны на дысплэй <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Не ўдаецца спампаваць файл</translation>
 <translation id="6482559668224714696">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="6490471652906364588">Прылада USB-C (правы порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> патрабуе, каб вы абнавілі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">Эмодзі</translation>
 <translation id="6537924328260219877">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Вядзецца трансляцыя на прыладу "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Усталявана нядаўна</translation>
 <translation id="6559976592393364813">Спытайце адміністратара</translation>
 <translation id="6565007273808762236">Падключэнне праз eSIM-карты недаступнае</translation>
 <translation id="6570831796530454248">{0,plural, =1{Абнавіце прыладу на працягу гадзіны}one{Абнавіце прыладу на працягу # гадзіны}few{Абнавіце прыладу на працягу # гадзін}many{Абнавіце прыладу на працягу # гадзін}other{Абнавіце прыладу на працягу # гадзіны}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ПЕРАЙСЦІ Ў НАЛАДЫ</translation>
 <translation id="6751052314767925245">Гэтай функцыяй кіруе адміністратар</translation>
 <translation id="6751826523481687655">Трасіроўка прадукцыйнасці ўключана</translation>
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб'яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">Дакраніцеся, каб сканфігураваць</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Дадаць новую сотавую сетку</translation>
+<translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 апавяшчэнне}one{# апавяшчэнне}few{# апавяшчэнні}many{# апавяшчэнняў}other{# апавяшчэння}}</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7745560842763881396">Паказаць праграмы на паліцы</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
+<translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="9024331582947483881">увесь экран</translation>
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">Што ў маім календары?</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="951991426597076286">Адхіліць</translation>
+<translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>

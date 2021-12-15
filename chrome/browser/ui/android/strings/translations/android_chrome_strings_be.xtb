@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
 <translation id="1592864538817356322">Стандартная абарона:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Выдаліць 1 выбраны элемент}one{Выдаліць # выбраны элемент}few{Выдаліць # выбраныя элементы}many{Выдаліць # выбраных элементаў}other{Выдаліць # выбранага элемента}}</translation>
+<translation id="1633659023549081553">Праглядайце рэкамендацыі новага змесціва на галоўнай старонцы Chrome</translation>
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="164269334534774161">Вы праглядаеце пазасеткавую копію гэтай старонкі ад <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Гісторыя</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">Перацягвайце паўзунок, пакуль гэты тэкст не будзе зручна чытаць. Пасля падвойнага націскання на абзац тэкст павінен быць як мінімум такім вялікім.</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
 <translation id="2328985652426384049">Не ўдалося ўвайсці ў сістэму</translation>
+<translation id="2342601525305963189">Парады адносна Chrome:</translation>
 <translation id="234265804618409743">Не ўдалося адкрыць камеру. Нешта пайшло не так.</translation>
 <translation id="2345671828921229300">Каб выканаць пошук, дакраніцеся да слова і ўтрымлівайце яго</translation>
 <translation id="2349710944427398404">Агульны аб'ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google.</translation>
 <translation id="2536728043171574184">Вы праглядаеце пазасеткавую копію гэтай старонкі</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
+<translation id="2558692642259318568">Каб звесткі пра вашы дзеянні не захоўваліся на прыладзе пры праглядзе старонак, уключыце рэжым інкогніта</translation>
 <translation id="2561519700418191927">Перадпрагляд відэа</translation>
 <translation id="2567385386134582609">ВІДАРЫС</translation>
 <translation id="2567545343356994513">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2625189173221582860">Пароль скапіраваны</translation>
 <translation id="2631006050119455616">Сэканомлена</translation>
+<translation id="2634905176438867146">Даведайцеся, як зрабіць Chrome стандартным браўзерам</translation>
 <translation id="2645657967708199252">Спампоўванне праз падключэнне <ph name="CONNECTION_TYPE" /> можа быць маруднейшым</translation>
 <translation id="2647434099613338025">Дадаць мову</translation>
 <translation id="2649068648233607930">Браўзерам кіруе <ph name="DOMAIN" />.</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037517125981011456">Будуць паказвацца запыты ўваходу ў Chrome</translation>
 <translation id="3046945242843292318">У наступны раз вы зможаце перайсці на гэты сайт хутчэй</translation>
+<translation id="3055259925215945098">Закладка перамешчана</translation>
 <translation id="305593374596241526">Вызначэнне месцазнаходжання выключана. Уключыце яго ў <ph name="BEGIN_LINK" />наладах Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">Захаваць на прыладзе</translation>
 <translation id="3236059992281584593">Засталася 1 хвіліна</translation>
 <translation id="3237087289225714896">Стандартная перадзагрузка:</translation>
+<translation id="3237433641417325993">Каб паглядзець прапанаваныя артыкулы, прагартайце ўніз</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Калі вы абагульваеце справаздачы пра выкарыстанне браўзера Chrome, у іх уключаюцца URL-адрасы наведаных вамі старонак.</translation>
 <translation id="3250563604907490871">Апісанні відарысаў стануць даступнымі пры падключэнні да Wi-Fi</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
 <translation id="4837753911714442426">Адкрыць параметры друку старонкі</translation>
 <translation id="4842092870884894799">Паказана выплыўное акно для стварэння пароля</translation>
+<translation id="4842515939542199281">Каб выканаць галасавы пошук, націсніце значок мікрафона</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="4860895144060829044">Выклік</translation>
 <translation id="4864369630010738180">Уваход...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
+<translation id="5115811374190515607">куды: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5126510351761255129">Спраўджанне карткі</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">Для спампоўвання файлаў Chrome патрабуецца доступ да сховішча.</translation>
 <translation id="5749237766298580851">Выключана <ph name="SEPARATOR" /> Не рэкамендуецца</translation>
 <translation id="5752232708629533680">Абагуліць толькі файл GIF</translation>
+<translation id="5753139477036638699">Вы можаце выкарыстоўваць галасавыя каманды для пошуку ў Chrome</translation>
 <translation id="5754350196967618083">Не ўдаецца абнавіць рэкамендацыі</translation>
 <translation id="5763382633136178763">Укладкі інкогніта</translation>
 <translation id="5763514718066511291">Дакраніцеся, каб скапіраваць URL-адрас гэтай праграмы</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
 <translation id="6814033694018386318">Даныя, якія абагульваюцца з Google</translation>
 <translation id="6817747507826986771">Хуткае абагульванне гэтай старонкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
+<translation id="6819199143469632133">Увайдзіце ва ўліковы запіс, каб карыстацца прадуктамі Google на некалькіх прыладах</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, укладка, выбрана</translation>
 <translation id="6828070228333235514">Спыніць адсочванне цаны</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705">Адноўлена: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Змясціце QR-код або штрыхкод у гэтай рамцы.</translation>
 <translation id="7029809446516969842">Паролі</translation>
+<translation id="7037830628447527439">Увайдзіце ў Chrome праз свой Уліковы запіс Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> – не ўдалося спампаваць гэты моўны пакет. Паўтарыце спробу пазней.</translation>
 <translation id="8951232171465285730">Chrome сэканоміў вам <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8955719471735800169">Наверх</translation>
+<translation id="8964479563882643397">Каб адкрыць новую ўкладку ў рэжыме інкогніта, адкрыйце меню</translation>
 <translation id="8965591936373831584">у стане чакання</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>

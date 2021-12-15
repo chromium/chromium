@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">데스크 7</translation>
 <translation id="2224075387478458881">보호된 콘텐츠가 보일 때는 화면 녹화를 할 수 없습니다.</translation>
 <translation id="225680501294068881">기기 검색 중...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> 파일을 다운로드하는 중에 문제가 발생했습니다.</translation>
 <translation id="2268130516524549846">블루투스를 사용 안 함</translation>
 <translation id="2268813581635650749">모두 로그아웃</translation>
 <translation id="2269016722240250274">다른 애플리케이션에서 마이크를 사용 중입니다.</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
 <translation id="4849058404725798627">키보드 포커스로 개체 강조표시</translation>
 <translation id="485592688953820832">작업 없음(일시중지)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> 파일을 다운로드하려면 네트워크 연결 상태를 확인하세요.</translation>
 <translation id="486056901304535126">다운로드가 나중에 시도됩니다. 다운로드가 완료될 때까지는 음성이 Google로 전송되어 처리됩니다.</translation>
 <translation id="4868492592575313542">활성화됨</translation>
 <translation id="4872237917498892622">Alt+검색 또는 Shift 키</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">거부</translation>
 <translation id="6453179446719226835">언어가 변경됨</translation>
 <translation id="6459472438155181876">화면을 <ph name="DISPLAY_NAME" />(으)로 확장</translation>
+<translation id="6477681113376365978">파일을 다운로드할 수 없음</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" />에서 기한 전에 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요구합니다.</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">그림 이모티콘</translation>
 <translation id="6537924328260219877">신호 강도 <ph name="SIGNAL_STRENGTH" />, 휴대전화 배터리 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+새로 설치됨</translation>
 <translation id="6559976592393364813">관리자에게 요청</translation>
 <translation id="6565007273808762236">eSIM 연결을 사용할 수 없음</translation>
 <translation id="6570831796530454248">{0,plural, =1{1시간 이내에 기기 업데이트}other{#시간 이내에 기기 업데이트}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">전원</translation>
 <translation id="6727969043791803658">연결됨, 배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">설정으로 이동</translation>
 <translation id="6751052314767925245">관리자가 시행함</translation>
 <translation id="6751826523481687655">성능 추적이 사용 설정되어 있습니다.</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> 데스크가 삭제되고 <ph name="RECEIVE_DESK" /> 데스크와 병합되었습니다.</translation>
@@ -982,6 +988,7 @@
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
+<translation id="7720410380936703141">다시 시도</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7745560842763881396">실행기에 앱 표시</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> 사용 중</translation>
 <translation id="899350903320462459">알림 작업을 실행하려면 <ph name="LOGIN_ID" />(으)로 기기의 잠금을 해제하세요.</translation>
+<translation id="9000771174482730261">저장용량 관리</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
 <translation id="9024331582947483881">전체화면</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
@@ -1213,6 +1221,7 @@
 <translation id="938963181863597773">오늘 내 일정이 어떻게 돼?</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="951991426597076286">거부</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> 파일을 저장할 공간이 부족합니다. 기기 여유 공간을 확보하세요.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="98515147261107953">가로 방향</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> 창이 닫혔습니다.</translation>

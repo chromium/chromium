@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">現在、Linux の復元が進行中です</translation>
 <translation id="1244303850296295656">拡張機能のエラー</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
+<translation id="1247071602516579380">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、タブレット <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータとインストールされたアプリが削除されます</translation>
 <translation id="1251578593170406502">モバイルデータ ネットワークをスキャンしています...</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
 <translation id="1444628761356461360">この設定はデバイスの所有者 <ph name="OWNER_EMAIL" /> が管理しています。</translation>
+<translation id="1445005312224723356">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、スマートフォン <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">テーマの「<ph name="IMAGE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
@@ -858,6 +860,7 @@
 <translation id="1855079636134697549">カメラがオンになりました</translation>
 <translation id="1856715684130786728">位置情報を追加...</translation>
 <translation id="1858585891038687145">ソフトウェア作成元の識別でこの証明書を信頼します</translation>
+<translation id="1859787252990099899">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、種類が不明なデバイス <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1862311223300693744">特殊な VPN、プロキシ、ファイアウォール、NAS ソフトウェアをインストールしていますか？</translation>
 <translation id="1863182668524159459">シリアルポートが見つかりません</translation>
@@ -1232,6 +1235,7 @@
 <translation id="2242687258748107519">ファイル情報</translation>
 <translation id="2246549592927364792">Google から画像の説明を取得しますか？</translation>
 <translation id="2247738527273549923">このデバイスは組織によって管理されています</translation>
+<translation id="2249061317998743208">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、ゲーム コントローラ <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">タブ付きウィンドウとして開く</translation>
 <translation id="2249605167705922988">例 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">システム ビューアで開く</translation>
@@ -1990,6 +1994,7 @@
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
+<translation id="3008396025115884998">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、オーディオ デバイス <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
@@ -2296,6 +2301,7 @@
 <translation id="3348038390189153836">リムーバブル デバイスが検出されました</translation>
 <translation id="3348131053948466246">絵文字の候補です。上または下矢印キーで移動し、Enter キーで挿入します。</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
+<translation id="3354972872297836698">デバイス <ph name="DEVICE_NAME" />　とペア設定できませんでした。デバイスを選択してもう一度お試しください</translation>
 <translation id="3355936511340229503">接続エラー</translation>
 <translation id="3356580349448036450">完了</translation>
 <translation id="3359256513598016054">証明書ポリシーの制約</translation>
@@ -3124,6 +3130,7 @@
 <translation id="4200689466366162458">カスタムの単語</translation>
 <translation id="4200983522494130825">新しいタブ(&amp;T)</translation>
 <translation id="4201546031411513170">同期する項目はいつでも [設定] で選択できます。</translation>
+<translation id="4202417625268941299">セーフ ブラウジング保護強化機能では、Chrome の最高水準のセキュリティで保護されます</translation>
 <translation id="420283545744377356">スクリーン セーバーをオフにする</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
@@ -3629,6 +3636,7 @@
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4762718786438001384">デバイスのディスク空き領域が非常に少なくなっています</translation>
+<translation id="4762898026821161650">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、パソコン <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
 <translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
@@ -3811,6 +3819,7 @@
 <translation id="4943691134276646401">「<ph name="CHROME_EXTENSION_NAME" />」がシリアルポートへの接続を要求しています</translation>
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4945439665401275950">指紋を設定するには、お子様に電源ボタンをタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="4946459324029651239">標準保護機能が適用されます</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
@@ -4391,6 +4400,7 @@
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
 <translation id="557722062034137776">デバイスをリセットしても、お使いの Google アカウントや、これらのアカウントに同期されているデータには影響しません。ただし、デバイス上でローカルに保存されているすべてのファイルは削除されます。</translation>
 <translation id="5578059481725149024">自動ログイン</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> への翻訳が完了しました</translation>
 <translation id="558170650521898289">Microsoft Windows ハードウェア ドライバの確認</translation>
 <translation id="5581972110672966454">デバイスをドメインに追加できません。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5582839680698949063">メインメニュー</translation>
@@ -5797,6 +5807,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{安全確認を 1 分前に実行しました}other{安全確認を {NUM_MINS} 分前に実行しました}}</translation>
 <translation id="7057767408836081338">アプリのデータを取得できませんでした。引き続きアプリの実行を試みています...</translation>
 <translation id="7058024590501568315">非公開ネットワーク</translation>
+<translation id="70582545822664495">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、マウス <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">自動起動に設定する</translation>
 <translation id="7062222374113411376">最近閉じたサイトがデータの送受信を完了できるようにする（推奨）</translation>
 <translation id="7063129466199351735">ショートカットを処理しています...</translation>
@@ -5960,6 +5971,7 @@
 <translation id="7257173066616499747">Wi-Fi ネットワーク</translation>
 <translation id="725758059478686223">印刷サービス</translation>
 <translation id="7257666756905341374">コピー＆ペーストするデータの読み取り</translation>
+<translation id="7258006747130724016">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、ビデオカメラ <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">変換</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
@@ -6754,6 +6766,7 @@
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
+<translation id="8038399858950372766">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、キーボード <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8042142357103597104">テキストの透明度</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> から応答がありません。</translation>
@@ -6894,6 +6907,7 @@
 <translation id="8168071266284693455">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定が同期されます</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
+<translation id="8169849063724750395">再度オンにする</translation>
 <translation id="8171334254070436367">カードをすべて非表示にする</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8174876712881364124">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
@@ -6967,6 +6981,7 @@
 <translation id="8249615410597138718">お使いのデバイスに送信</translation>
 <translation id="8249672078237421304">母国語以外のページで翻訳ツールを表示する</translation>
 <translation id="8251441930213048644">今すぐ更新</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> とペア設定</translation>
 <translation id="8251578425305135684">サムネイルを削除しました。</translation>
 <translation id="825238165904109940">URL 全体を常に表示</translation>
 <translation id="8252569384384439529">アップロードしています...</translation>
@@ -7204,9 +7219,11 @@
 <translation id="8528074251912154910">言語を追加</translation>
 <translation id="8528962588711550376">ログインしています。</translation>
 <translation id="8529925957403338845">インスタント テザリングの接続に失敗しました</translation>
+<translation id="8531701051932785007">セーフ ブラウジング保護強化機能はオフになっています</translation>
 <translation id="8534656636775144800">ドメインへの追加中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
 <translation id="8536956381488731905">キー操作音</translation>
+<translation id="8538718737588735385">再度オンにする</translation>
 <translation id="8539727552378197395">いいえ（HTTP のみ）</translation>
 <translation id="8539766201049804895">アップグレード</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>

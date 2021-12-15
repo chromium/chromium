@@ -35,6 +35,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="118437560755358292">Entrez le mot de passe ou le NIP pour plus de sécurité</translation>
 <translation id="118532027333893379">Touchez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1190678134285018527">L'appareil doit revenir à la version antérieure</translation>
@@ -338,6 +339,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> peut toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
+<translation id="3339826665088060472">Captures d'écran, outils pour réaliser des captures d'écran et des enregistrements d'écran</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Prendre une capture d'écran</translation>
 <translation id="3351879221545518001">Vous diffusez actuellement l'écran.</translation>
@@ -394,6 +396,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3606978283550408104">L'afficheur braille est connecté.</translation>
 <translation id="3615926715408477684">L'activation des données cellulaires activera le Bluetooth</translation>
 <translation id="3616883743181209306">Le menu a été déplacé vers le coin supérieur droit de l'écran.</translation>
+<translation id="3619536907358025872">Paramètres de capture d'écran</translation>
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3621712662352432595">Paramètres audio</translation>
 <translation id="3626281679859535460">Luminosité</translation>
@@ -492,6 +495,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
+<translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="429402653707266969">Basculer l'emplacement de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
@@ -761,6 +765,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="607652042414456612">Votre ordinateur est visible pour les appareils Bluetooth situés à proximité sous le nom « <ph name="NAME" /> » et a comme adresse <ph name="ADDRESS" />.</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
 <translation id="6134259848159370930">Recherchez dans votre appareil, dans vos applications, dans vos paramètres et sur le Web.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>

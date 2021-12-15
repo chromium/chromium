@@ -826,6 +826,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5854512288214985237">Aucune statistique ni aucun rapport de plantage ne sont envoyés à Google</translation>
 <translation id="5855546874025048181">Affiner : <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Un problème est survenu. Impossible de mettre à jour le prix suivi.</translation>
+<translation id="5859968346865909126">Vous pouvez activer ou désactiver cette fonctionnalité dans les paramètres</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862731021271217234">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation</translation>
@@ -1100,6 +1101,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7359002509206457351">Accéder aux modes de paiement</translation>
 <translation id="7375125077091615385">Type :</translation>
 <translation id="7376560087009844242">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats lorsque vous utilisez la fonctionnalité Toucher pour rechercher. Vous pouvez toujours accéder aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" /> pour modifier cette option.</translation>
+<translation id="7379900596734708416">Le thème sombre pour les sites est accessible</translation>
 <translation id="7386842512861524348">La connexion du site est sécuritaire, à moins que Chrome vous indique le contraire.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>

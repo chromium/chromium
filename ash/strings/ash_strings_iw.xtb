@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">שולחן עבודה וירטואלי 7</translation>
 <translation id="2224075387478458881">הקלטת המסך אסורה כשמוצג תוכן מוגן</translation>
 <translation id="225680501294068881">מתבצעת סריקה לאיתור מכשירים...</translation>
+<translation id="2257486738914982088">משהו השתבש במהלך ההורדה של <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">‏Bluetooth מושבת</translation>
 <translation id="2268813581635650749">הוצאת כולם</translation>
 <translation id="2269016722240250274">אפליקציה כלשהי משתמשת במיקרופון</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
 <translation id="4849058404725798627">הדגשה של האובייקט במיקוד המקלדת</translation>
 <translation id="485592688953820832">ללא פעולה (השהיה)</translation>
+<translation id="4860284199500934869">צריך לבדוק את החיבור לרשת כדי להוריד את <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">‏יתבצע ניסיון הורדה מאוחר יותר. הדיבור יישלח אל Google לעיבוד עד שההורדה תושלם.</translation>
 <translation id="4868492592575313542">מופעלת</translation>
 <translation id="4872237917498892622">‏Alt + חיפוש או Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">דחייה</translation>
 <translation id="6453179446719226835">שינוי השפה הסתיים</translation>
 <translation id="6459472438155181876">הרחבת המסך אל <ph name="DISPLAY_NAME" /> מתבצעת</translation>
+<translation id="6477681113376365978">לא ניתן להוריד את הקובץ</translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
 <translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
 <translation id="6491071886865974820">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון</translation>
@@ -816,6 +819,8 @@
 <translation id="65320610082834431">אמוג'י</translation>
 <translation id="6537924328260219877">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, סוללת הטלפון: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">ההעברה אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+התקנה חדשה</translation>
 <translation id="6559976592393364813">יש לבקש ממנהל המערכת</translation>
 <translation id="6565007273808762236">‏החיבור ל-eSIM לא זמין</translation>
 <translation id="6570831796530454248">{0,plural, =1{עליך לעדכן את המכשיר בתוך שעה אחת}two{עליך לעדכן את המכשיר בתוך שעתיים}many{עליך לעדכן את המכשיר בתוך # שעות}other{עליך לעדכן את המכשיר בתוך # שעות}}</translation>
@@ -847,6 +852,7 @@
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6727969043791803658">‏מחובר, ‎<ph name="BATTERY_PERCENTAGE" />%‎ סוללה</translation>
 <translation id="6732800389263199929">‎+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">מעבר להגדרות</translation>
 <translation id="6751052314767925245">התכונה הזו נאכפת על ידי מנהל המערכת</translation>
 <translation id="6751826523481687655">מעקב הביצועים פועל</translation>
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>
@@ -984,6 +990,7 @@
 <translation id="7662283695561029522">יש להקיש כדי להגדיר</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
+<translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
@@ -1170,6 +1177,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
+<translation id="9000771174482730261">ניהול האחסון</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>
 <translation id="9024331582947483881">מסך מלא</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
@@ -1217,6 +1225,7 @@
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="951991426597076286">דחייה</translation>
+<translation id="954052413789300507">אין מספיק נפח אחסון פנוי בשביל <ph name="FILENAME" />. עליך לפנות מקום.</translation>
 <translation id="974545358917229949">מוצגות <ph name="RESULT_COUNT" /> תוצאות עבור השאילתה: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">לרוחב</translation>
 <translation id="990277280839877440">החלון <ph name="WINDOW_TITILE" /> נסגר.</translation>

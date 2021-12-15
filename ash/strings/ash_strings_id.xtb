@@ -192,6 +192,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2224075387478458881">Perekaman layar tidak diizinkan saat konten yang dilindungi terlihat</translation>
 <translation id="225680501294068881">Memindai perangkat...</translation>
+<translation id="2257486738914982088">Terjadi masalah saat mendownload <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
 <translation id="2269016722240250274">Aplikasi sedang menggunakan mikrofon Anda</translation>
@@ -587,6 +588,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
 <translation id="4849058404725798627">Sorot objek dengan fokus keyboard</translation>
 <translation id="485592688953820832">Tidak ada tindakan (jeda)</translation>
+<translation id="4860284199500934869">Periksa koneksi jaringan Anda untuk mendownload <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Download akan dicoba nanti. Ucapan akan dikirim ke Google untuk diproses hingga download selesai.</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
 <translation id="4872237917498892622">Alt+Telusuri atau Shift</translation>
@@ -804,6 +806,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6452181791372256707">Tolak</translation>
 <translation id="6453179446719226835">Bahasa telah diubah</translation>
 <translation id="6459472438155181876">Memperpanjang layar ke <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Tidak dapat mendownload file</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> mengharuskan Anda mengupdate <ph name="DEVICE_TYPE" /> sebelum tiba batas waktu</translation>
@@ -815,7 +818,10 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6528179044667508675">Jangan ganggu</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537924328260219877">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Baterai Ponsel <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Download <ph name="FILENAME" /> yang sedang dipindai</translation>
 <translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Baru diinstal</translation>
 <translation id="6559976592393364813">Tanyakan kepada Administrator</translation>
 <translation id="6565007273808762236">Koneksi eSIM tidak tersedia</translation>
 <translation id="6570831796530454248">{0,plural, =1{Update perangkat dalam 1 jam}other{Update perangkat dalam # jam}}</translation>
@@ -847,6 +853,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6727969043791803658">Terhubung, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">BUKA SETELAN</translation>
 <translation id="6751052314767925245">Diterapkan oleh administrator Anda</translation>
 <translation id="6751826523481687655">Pelacakan performa diaktifkan</translation>
 <translation id="6752912906630585008">Desktop <ph name="REMOVED_DESK" /> dihapus dan digabung dengan Desktop <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tambahkan jaringan seluler baru</translation>
+<translation id="7720410380936703141">COBA LAGI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi}other{# notifikasi}}</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7745560842763881396">Tampilkan aplikasi di rak</translation>
@@ -1168,6 +1176,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Buka kunci perangkat sebagai <ph name="LOGIN_ID" /> untuk melakukan tindakan notifikasi</translation>
+<translation id="9000771174482730261">KELOLA PENYIMPANAN</translation>
 <translation id="9017320285115481645">Masukkan kode akses orang tua Family Link.</translation>
 <translation id="9024331582947483881">layar penuh</translation>
 <translation id="9047624247355796468">Buka setelan untuk <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1222,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="938963181863597773">Apa saja daftar acara di kalender saya?</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="951991426597076286">Tolak</translation>
+<translation id="954052413789300507">Ruang penyimpanan tidak cukup untuk <ph name="FILENAME" />. Kosongkan ruang penyimpanan.</translation>
 <translation id="974545358917229949">Menampilkan <ph name="RESULT_COUNT" /> hasil untuk <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Lanskap</translation>
 <translation id="990277280839877440">Jendela <ph name="WINDOW_TITILE" /> menutup.</translation>

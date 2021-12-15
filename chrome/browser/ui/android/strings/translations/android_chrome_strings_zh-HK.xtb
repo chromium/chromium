@@ -265,7 +265,7 @@
 <translation id="2534582914273493287">系統會將您瀏覽的網址傳送至 Google</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2558692642259318568">如果不要將瀏覽活動儲存到裝置上，請使用無痕模式</translation>
+<translation id="2558692642259318568">如果不要將瀏覽活動儲存至裝置上，請使用無痕模式</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
@@ -391,7 +391,7 @@
 <translation id="3234978181857588512">儲存至裝置</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
 <translation id="3237087289225714896">標準預先載入模式：</translation>
-<translation id="3237433641417325993">向下捲動以查看推薦文章</translation>
+<translation id="3237433641417325993">向下捲動以查看建議的文章</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3250563604907490871">圖片描述功能將會在連線至 Wi-Fi 時恢復運作</translation>
@@ -657,7 +657,7 @@
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
 <translation id="4837753911714442426">開啟列印網頁選項</translation>
 <translation id="4842092870884894799">正在顯示密碼產生彈出式視窗</translation>
-<translation id="4842515939542199281">如要透過語音進行搜尋，請輕觸「麥克風」圖示</translation>
+<translation id="4842515939542199281">如要透過語音進行搜尋，請輕按「麥克風」圖示</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4864369630010738180">正在登入…</translation>
@@ -809,7 +809,7 @@
 <translation id="5749068826913805084">Chrome 需要儲存空間的存取權才能下載檔案。</translation>
 <translation id="5749237766298580851">關閉 <ph name="SEPARATOR" /> 不建議</translation>
 <translation id="5752232708629533680">只分享 GIF</translation>
-<translation id="5753139477036638699">你可以使用語音在 Chrome 中搜尋</translation>
+<translation id="5753139477036638699">您可使用語音在 Chrome 中搜尋</translation>
 <translation id="5754350196967618083">無法重新整理「探索」</translation>
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
@@ -1021,7 +1021,7 @@
 <translation id="6813446258015311409">登入 Chrome，開咗。</translation>
 <translation id="6814033694018386318">您與 Google 分享的資料</translation>
 <translation id="6817747507826986771">快速分享此頁面。如要編輯此捷徑，請按住捷徑按鈕。</translation>
-<translation id="6819199143469632133">如要在所有裝置上取得你的 Google 設定，請登入帳戶</translation>
+<translation id="6819199143469632133">如要在所有裝置上取得您的 Google 設定，請登入帳戶</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />，分頁，已選取</translation>
 <translation id="6828070228333235514">停止追蹤價格</translation>
@@ -1415,7 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8951232171465285730">Chrome 已為您節省 <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">返回頁首</translation>
-<translation id="8964479563882643397">如要開啟新的無痕分頁，請按一下「選單」圖示</translation>
+<translation id="8964479563882643397">如要開啟新的無痕式分頁，請按一下「選單」圖示</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>

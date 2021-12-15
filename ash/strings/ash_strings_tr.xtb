@@ -192,6 +192,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2222841058024245321">Masa 7</translation>
 <translation id="2224075387478458881">Ekranda korunan içerik varken ekran kaydı almaya izin verilmez</translation>
 <translation id="225680501294068881">Cihazlar taranıyor...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> indirilirken bir sorun oluştu</translation>
 <translation id="2268130516524549846">Bluetooth devre dışı</translation>
 <translation id="2268813581635650749">Tüm oturumları kapat</translation>
 <translation id="2269016722240250274">Bir uygulama mikrofonunuzu kullanıyor</translation>
@@ -587,6 +588,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4831034276697007977">Otomatik tıklamaları kapatmak istediğinizden emin misiniz?</translation>
 <translation id="4849058404725798627">Klavye odağının olduğu nesneyi vurgula</translation>
 <translation id="485592688953820832">İşlem yok (duraklat)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> dosyasını indirmek için ağ bağlantınızı kontrol edin</translation>
 <translation id="486056901304535126">İndirme işlemi daha sonra tekrar denenecek. Konuşma, indirme işlemi tamamlanana kadar işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="4868492592575313542">etkin</translation>
 <translation id="4872237917498892622">Alt+Arama veya Üst Karakter</translation>
@@ -805,6 +807,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6452181791372256707">Reddet</translation>
 <translation id="6453179446719226835">Dil değiştirildi</translation>
 <translation id="6459472438155181876">Ekran şuraya genişletiliyor: <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> son tarihten önce bu <ph name="DEVICE_TYPE" /> cihazı güncellemenizi gerektiriyor</translation>
@@ -816,7 +819,10 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6528179044667508675">Rahatsız etme</translation>
 <translation id="65320610082834431">Emoji'ler</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
+<translation id="6539852571005954999">İndirilen dosya taranıyor: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> alıcısına gönderiliyor</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Yeni yüklenmiş</translation>
 <translation id="6559976592393364813">Yöneticiye sorun</translation>
 <translation id="6565007273808762236">eSIM bağlantısı kullanılamıyor</translation>
 <translation id="6570831796530454248">{0,plural, =1{Cihazı bir saat içinde güncelleyin}other{Cihazı # saat içinde güncelleyin}}</translation>
@@ -848,6 +854,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6727969043791803658">Bağlandı, %<ph name="BATTERY_PERCENTAGE" /> pil</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">AYARLARA GİT</translation>
 <translation id="6751052314767925245">Yöneticiniz tarafınızdan zorunlu tutuldu</translation>
 <translation id="6751826523481687655">Performans izleme açık</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> kaldırılarak Masa <ph name="RECEIVE_DESK" /> ile birleştirildi</translation>
@@ -983,6 +990,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7662283695561029522">Yapılandırmak için dokunun</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yeni hücresel ağ ekle</translation>
+<translation id="7720410380936703141">TEKRAR DENE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildirim}other{# bildirim}}</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7745560842763881396">Raftaki uygulamaları göster</translation>
@@ -1169,6 +1177,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
+<translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
 <translation id="9024331582947483881">tam ekran</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
@@ -1214,6 +1223,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="951991426597076286">Reddet</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> için yeterli alan yok. Yer açın.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="98515147261107953">Yatay</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> penceresi kapandı.</translation>
