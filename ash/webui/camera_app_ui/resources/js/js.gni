@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 compile_js_files = [
-  "animation.js",
+  "animation.ts",
   "app_window.ts",
   "assert.ts",
   "async_job_queue.ts",
