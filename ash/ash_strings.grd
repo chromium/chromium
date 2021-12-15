@@ -406,6 +406,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP" desc="The label used in the tray popup to tell the user we are casting the desktop.">
         Casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_ACCESS_CAST_ADD" desc="Menu item label that, when clicked on, opens the access code casting dialog. MANAGER can be a domain or an email address.">
+        Cast to a <ph name="MANAGER">$1<ex>yourdomain.com</ex></ph> device
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME" desc="The label used as the header in the dark theme popup. [CHAR_LIMIT=19">
         Dark theme
       </message>
