@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/history/history_transitioning_delegate.h"
 #include "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
+#include "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate_bridge.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -37,6 +38,9 @@
 @interface HistoryCoordinator () <BrowserObserving,
                                   HistoryMenuProvider,
                                   HistoryUIDelegate> {
+  // Provides delegate bridge instance for |_browsingHistoryDriver|.
+  std::unique_ptr<IOSBrowsingHistoryDriverDelegateBridge>
+      _browsingHistoryDriverDelegate;
   // Provides dependencies and funnels callbacks from BrowsingHistoryService.
   std::unique_ptr<IOSBrowsingHistoryDriver> _browsingHistoryDriver;
   // Abstraction to communicate with HistoryService and WebHistoryService.
@@ -87,8 +91,11 @@
   self.historyTableViewController.imageDataSource = self.mediator;
 
   // Initialize and configure HistoryServices.
+  _browsingHistoryDriverDelegate =
+      std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
+          self.historyTableViewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      self.browser->GetBrowserState(), self.historyTableViewController);
+      self.browser->GetBrowserState(), _browsingHistoryDriverDelegate.get());
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
       ios::HistoryServiceFactory::GetForBrowserState(
@@ -163,6 +170,7 @@
   self.historyClearBrowsingDataCoordinator = nil;
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
+  _browsingHistoryDriverDelegate = nullptr;
 }
 
 #pragma mark - HistoryUIDelegate

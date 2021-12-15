@@ -13,18 +13,14 @@
 #include "url/gurl.h"
 
 class ChromeBrowserState;
-namespace history {
-class HistoryService;
-}
-
-@protocol HistoryConsumer;
+class IOSBrowsingHistoryDriverDelegate;
 
 // A simple implementation of BrowsingHistoryServiceHandler that delegates to
-// objective-c object HistoryConsumer for most actions.
+// IOSBrowsingHistoryDriverDelegate for most actions.
 class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
   IOSBrowsingHistoryDriver(ChromeBrowserState* browser_state,
-                           id<HistoryConsumer> consumer);
+                           IOSBrowsingHistoryDriverDelegate* delegate);
 
   IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
   IOSBrowsingHistoryDriver& operator=(const IOSBrowsingHistoryDriver&) = delete;
@@ -56,8 +52,7 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
   // The current browser state.
   ChromeBrowserState* browser_state_;  // weak
 
-  // Consumer for IOSBrowsingHistoryDriver. Serves as client for HistoryService.
-  __weak id<HistoryConsumer> consumer_;
+  IOSBrowsingHistoryDriverDelegate* delegate_ = nullptr;  // weak
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_IOS_BROWSING_HISTORY_DRIVER_H_

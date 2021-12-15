@@ -9,15 +9,13 @@ source_set("history") {
     "history_coordinator.mm",
     "history_mediator.h",
     "history_mediator.mm",
-    "ios_browsing_history_driver.h",
-    "ios_browsing_history_driver.mm",
   ]
   deps = [
     ":clear_browsing_data",
+    ":history_driver",
     ":history_ui",
     "//base",
     "//components/browser_sync",
-    "//components/browsing_data/core",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//ios/chrome/browser/browser_state",
@@ -79,7 +77,6 @@ source_set("history_ui") {
     "resources:history_empty",
     "//base",
     "//base:i18n",
-    "//components/browsing_data/core",
     "//components/history/core/browser",
     "//components/strings",
     "//components/url_formatter",
@@ -112,6 +109,25 @@ source_set("history_ui") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("history_driver") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_browsing_history_driver.h",
+    "ios_browsing_history_driver.mm",
+    "ios_browsing_history_driver_delegate.h",
+    "ios_browsing_history_driver_delegate_bridge.h",
+    "ios_browsing_history_driver_delegate_bridge.mm",
+  ]
+  deps = [
+    ":history_ui",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/history/core/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history",
   ]
 }
 
