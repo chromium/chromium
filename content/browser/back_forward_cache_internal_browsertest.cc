@@ -82,14 +82,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BackForwardCacheFlush) {
 // Tests that |RenderFrameHost::ForEachRenderFrameHost| and
 // |WebContents::ForEachRenderFrameHost| behave correctly with bfcached
 // RenderFrameHosts.
-#if defined(OS_MAC)
-// Flaky: https://crbug.com/1263536
-#define MAYBE_ForEachRenderFrameHost DISABLED_ForEachRenderFrameHost
-#else
-#define MAYBE_ForEachRenderFrameHost ForEachRenderFrameHost
-#endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_ForEachRenderFrameHost) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
+  // There are sometimes unexpected messages from a renderer to the browser,
+  // which caused test flakiness on macOS.
+  // TODO(crbug.com/1263536): Fix the test flakiness.
+  DoNotFailForUnexpectedMessagesWhileCached();
+
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
