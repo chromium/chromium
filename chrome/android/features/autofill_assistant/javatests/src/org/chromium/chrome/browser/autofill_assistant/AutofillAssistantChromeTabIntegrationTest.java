@@ -66,6 +66,7 @@ import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
@@ -84,8 +85,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
     private final AutofillAssistantChromeTabTestRule mTabTestRule =
             new AutofillAssistantChromeTabTestRule(mTestRule, TEST_PAGE_A);
 
+    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
+    //  again.
     @Rule
-    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mTabTestRule);
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule)
+                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
+                    .around(mTabTestRule);
 
     private ScrimCoordinator mScrimCoordinator;
 

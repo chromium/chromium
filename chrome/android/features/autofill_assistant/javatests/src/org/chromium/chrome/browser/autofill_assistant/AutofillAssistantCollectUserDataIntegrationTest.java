@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -130,9 +131,14 @@ import java.util.Locale;
 public class AutofillAssistantCollectUserDataIntegrationTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
+    // TODO(crbug/1272997): Find out why the DisableAnimationsTestRule is necessary and remove it
+    //  again.
     @Rule
-    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
-            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule)
+                    .around(new DisableAnimationsTestRule(/* enableAnimation= */ true))
+                    .around(new AutofillAssistantCustomTabTestRule(
+                            mTestRule, "form_target_website.html"));
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
 
