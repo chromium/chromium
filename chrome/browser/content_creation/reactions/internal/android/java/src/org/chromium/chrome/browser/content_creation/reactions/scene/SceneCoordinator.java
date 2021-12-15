@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarRea
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +52,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
     private ImageView mScreenshotView;
+    private Toast mToast;
 
     private int mNbReactionsAdded;
     private int mNbTypeChange;
@@ -306,6 +308,18 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     @Override
+    public void showMaxReactionsReachedToast() {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(mActivity,
+                mActivity.getString(R.string.lightweight_reactions_error_max_reactions_reached,
+                        MAX_REACTION_COUNT),
+                Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
+    @Override
     public void removeReaction(ReactionLayout reactionLayout) {
         ++mNbDelete;
         markActiveStatus(reactionLayout, false);
@@ -346,7 +360,11 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         if (mActiveReaction != null) {
             replaceActiveReaction(reaction);
         } else {
-            addReactionInDefaultLocation(reaction);
+            if (canAddReaction()) {
+                addReactionInDefaultLocation(reaction);
+            } else {
+                showMaxReactionsReachedToast();
+            }
         }
     }
 

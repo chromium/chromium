@@ -215,6 +215,8 @@ public class ReactionLayout extends RelativeLayout {
         mCopyButton.setOnClickListener(view -> {
             if (mSceneEditorDelegate.canAddReaction()) {
                 mSceneEditorDelegate.duplicateReaction(ReactionLayout.this);
+            } else {
+                mSceneEditorDelegate.showMaxReactionsReachedToast();
             }
         });
     }
