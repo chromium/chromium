@@ -4,7 +4,9 @@
 
 import {FittingType, PAGE_SHADOW, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-import {createMockUnseasonedPdfPluginForTest, getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
+import {createMockUnseasonedPdfPluginForTest, getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockUnseasonedPdfPluginElement, MockViewportChangedCallback} from './test_util.js';
+
+const SCROLLBAR_WIDTH = 15;
 
 class ScrollEventCounter {
   constructor() {
@@ -12,6 +14,20 @@ class ScrollEventCounter {
     this.count = 0;
 
     window.addEventListener('scroll', () => ++this.count);
+  }
+}
+
+/**
+ * Simulates acknowledgements to all "syncScrollToRemote" messages.
+ * @param {!Viewport} viewport
+ * @param {!MockUnseasonedPdfPluginElement} plugin
+ */
+function ackAllScrollToRemoteMessages(viewport, plugin) {
+  for (const message of plugin.messages) {
+    if (message.type === 'syncScrollToRemote') {
+      viewport.ackScrollToRemote(
+          /** @type {{x: number, y: number}} */ (message));
+    }
   }
 }
 
@@ -339,7 +355,7 @@ const tests = [
     // Test fitting works with scrollbars. The page will need to be zoomed to
     // fit to width, which will cause the page height to span outside of the
     // viewport, triggering 15px scrollbars to be shown.
-    viewport = getZoomableViewport(mockWindow, mockSizer, 15, 1);
+    viewport = getZoomableViewport(mockWindow, mockSizer, SCROLLBAR_WIDTH, 1);
     viewport.setViewportChangedCallback(mockCallback.callback);
     documentDimensions.reset();
     documentDimensions.addPage(50, 100);
@@ -1249,6 +1265,8 @@ const tests = [
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
     viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
     viewport.setPosition({x: 20, y: 30});
     chrome.test.assertEq(0, mockWindow.scrollLeft);
     chrome.test.assertEq(0, mockWindow.scrollTop);
@@ -1301,6 +1319,8 @@ const tests = [
   function testSetRemoteContent_scrollToRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
     viewport.setPosition({x: 20, y: 30});
 
     const mockPlugin = createMockUnseasonedPdfPluginForTest();
@@ -1334,6 +1354,8 @@ const tests = [
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockUnseasonedPdfPluginForTest();
     viewport.setRemoteContent(mockPlugin);
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
     mockPlugin.clearMessages();
 
     viewport.setPosition({x: 20, y: 30});
@@ -1346,34 +1368,193 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_NaN() {
+  function testSetPosition_remote_modifiedByAck() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockUnseasonedPdfPluginForTest();
     viewport.setRemoteContent(mockPlugin);
-    mockPlugin.clearMessages();
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
+    ackAllScrollToRemoteMessages(viewport, mockPlugin);
+
+    const scrollCounter = new ScrollEventCounter();
+    viewport.setPosition({x: 20, y: 30});
+    viewport.ackScrollToRemote({x: 10, y: 50});
+
+    chrome.test.assertEq(1, scrollCounter.count);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(50, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_modifiedByAck_ignoreOverlapping() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 0, 1);
+    const mockPlugin = createMockUnseasonedPdfPluginForTest();
+    viewport.setRemoteContent(mockPlugin);
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
+    ackAllScrollToRemoteMessages(viewport, mockPlugin);
+
+    const scrollCounter = new ScrollEventCounter();
+    viewport.setPosition({x: 20, y: 30});
+    viewport.setPosition({x: 30, y: 40});
+    viewport.ackScrollToRemote({x: 10, y: 50});
+
+    chrome.test.assertEq(1, scrollCounter.count);
+    chrome.test.assertEq(30, viewport.position.x);
+    chrome.test.assertEq(40, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_modifiedByAck_multiple() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 0, 1);
+    const mockPlugin = createMockUnseasonedPdfPluginForTest();
+    viewport.setRemoteContent(mockPlugin);
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
+    ackAllScrollToRemoteMessages(viewport, mockPlugin);
+
+    const scrollCounter = new ScrollEventCounter();
+    viewport.setPosition({x: 20, y: 30});
+    viewport.setPosition({x: 30, y: 40});
+    viewport.ackScrollToRemote({x: 10, y: 50});
+    viewport.ackScrollToRemote({x: 10, y: 60});
+
+    chrome.test.assertEq(2, scrollCounter.count);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(60, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_NaN() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 0, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
 
     viewport.setPosition({x: NaN, y: NaN});
 
-    const {x, y} = mockPlugin.findMessage('syncScrollToRemote');
-    chrome.test.assertEq(0, x);
     chrome.test.assertEq(0, viewport.position.x);
-    chrome.test.assertEq(0, y);
     chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_underflow_leftAndTop() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: -1, y: -1});
+
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_underflow_rightAndTop() {
+    const mockWindow = new MockElement(100, 100, null);
+    mockWindow.dir = 'rtl';
+    const viewport =
+        getZoomableViewport(mockWindow, new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: 1, y: -1});
+
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_overflow_rightAndBottom() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 300));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: 116, y: 216});
+
+    chrome.test.assertEq(115, viewport.position.x);
+    chrome.test.assertEq(215, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_overflow_leftAndBottom() {
+    const mockWindow = new MockElement(100, 100, null);
+    mockWindow.dir = 'rtl';
+    const viewport =
+        getZoomableViewport(mockWindow, new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 300));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: -116, y: 216});
+
+    chrome.test.assertEq(-115, viewport.position.x);
+    chrome.test.assertEq(215, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_overflowWithoutVerticalScrollbar_right() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 85));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: 101, y: 1});
+
+    chrome.test.assertEq(100, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_overflowWithoutVerticalScrollbar_left() {
+    const mockWindow = new MockElement(100, 100, null);
+    mockWindow.dir = 'rtl';
+    const viewport =
+        getZoomableViewport(mockWindow, new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(200, 85));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: -101, y: 1});
+
+    chrome.test.assertEq(-100, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testSetPosition_remote_overflowWithoutHorizontalScrollbar_bottom() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    viewport.setDocumentDimensions(new MockDocumentDimensions(85, 300));
+    viewport.setZoom(1);
+
+    viewport.setPosition({x: 1, y: 201});
+
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(200, viewport.position.y);
     chrome.test.succeed();
   },
 
   function testSyncScrollFromRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
-    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    const mockPlugin = createMockUnseasonedPdfPluginForTest();
+    viewport.setRemoteContent(mockPlugin);
+    ackAllScrollToRemoteMessages(viewport, mockPlugin);
 
     const scrollCounter = new ScrollEventCounter();
-    viewport.ackScrollToRemote();
-    chrome.test.assertEq(1, scrollCounter.count);
     viewport.syncScrollFromRemote({x: 30, y: 20});
 
-    chrome.test.assertEq(2, scrollCounter.count);
+    chrome.test.assertEq(1, scrollCounter.count);
     chrome.test.assertEq(30, viewport.position.x);
     chrome.test.assertEq(20, viewport.position.y);
     chrome.test.succeed();
@@ -1382,8 +1563,9 @@ const tests = [
   function testSyncScrollFromRemote_duplicateScroll() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
-    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
-    viewport.ackScrollToRemote();
+    const mockPlugin = createMockUnseasonedPdfPluginForTest();
+    viewport.setRemoteContent(mockPlugin);
+    ackAllScrollToRemoteMessages(viewport, mockPlugin);
     viewport.syncScrollFromRemote({x: 30, y: 20});
 
     const scrollCounter = new ScrollEventCounter();
@@ -1398,7 +1580,9 @@ const tests = [
   function testSyncScrollFromRemote_scrollToRemoteUnacked() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
-    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+    const mockPlugin = createMockUnseasonedPdfPluginForTest();
+    viewport.setRemoteContent(mockPlugin);
+    chrome.test.assertTrue(!!mockPlugin.findMessage('syncScrollToRemote'));
 
     const scrollCounter = new ScrollEventCounter();
     viewport.syncScrollFromRemote({x: 30, y: 20});

@@ -14,6 +14,9 @@ export class MockElement {
    * @param {?MockSizer} sizer
    */
   constructor(width, height, sizer) {
+    /** @type {string} */
+    this.dir = '';
+
     /** @type {number} */
     this.offsetWidth = width;
 
@@ -39,6 +42,16 @@ export class MockElement {
 
     /** @type {?Function} */
     this.resizeCallback = null;
+  }
+
+  /** @return {number} */
+  get clientWidth() {
+    return this.offsetWidth;
+  }
+
+  /** @return {number} */
+  get clientHeight() {
+    return this.offsetHeight;
   }
 
   /**
@@ -185,6 +198,11 @@ export class MockUnseasonedPdfPluginElement extends UnseasonedPdfPluginElement {
 
     /** @private {!Array<*>} */
     this.messages_ = [];
+  }
+
+  /** @return {!Array<*>} */
+  get messages() {
+    return this.messages_;
   }
 
   clearMessages() {
