@@ -638,6 +638,7 @@ TEST_P(ParameterizedLayoutInlineTest,
       body {
         margin: 30px 50px;
         font: 20px/20px Ahem;
+        width: 400px;
       }
     </style>
     <br><br>
@@ -670,7 +671,9 @@ TEST_P(ParameterizedLayoutInlineTest,
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
   // This rect covers the overflowing images and continuations.
   // 168 = (30 + 4) * 2 + 100. 4 is the descent of the font.
-  EXPECT_EQ(PhysicalRect(50, 170, 100, 168),
+  const int width =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 100;
+  EXPECT_EQ(PhysicalRect(50, 170, width, 168),
             GetLayoutObjectByElementId("target6")
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
 }
