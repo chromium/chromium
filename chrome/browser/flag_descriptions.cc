@@ -3711,6 +3711,11 @@ const char kNtpModulesRedesignedLayoutName[] = "Ntp Modules Redesigned Layout";
 const char kNtpModulesRedesignedLayoutDescription[] =
     "Changes the layout of modules on New Tab Page";
 
+const char kNtpRealboxMatchOmniboxThemeName[] =
+    "NTP Realbox Matches Omnibox Theme";
+const char kNtpRealboxMatchOmniboxThemeDescription[] =
+    "NTP Realbox matches the Omnibox theme when enabled.";
+
 const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";

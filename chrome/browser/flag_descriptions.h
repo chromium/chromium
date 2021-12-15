@@ -2141,6 +2141,9 @@ extern const char kNtpModulesRedesignedDescription[];
 extern const char kNtpModulesRedesignedLayoutName[];
 extern const char kNtpModulesRedesignedLayoutDescription[];
 
+extern const char kNtpRealboxMatchOmniboxThemeName[];
+extern const char kNtpRealboxMatchOmniboxThemeDescription[];
+
 extern const char kNtpRealboxPedalsName[];
 extern const char kNtpRealboxPedalsDescription[];
 
