@@ -7705,6 +7705,7 @@ test("unit_tests") {
       "../browser/ui/views/extensions/extensions_menu_item_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_tabbed_menu_view_unittest.cc",
+      "../browser/ui/views/extensions/extensions_toolbar_container_unittest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_controls_unittest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_unittest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_unittest.h",

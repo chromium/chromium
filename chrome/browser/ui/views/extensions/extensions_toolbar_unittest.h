@@ -64,6 +64,14 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   // Triggers the press and release event of the given `button`.
   void ClickButton(views::Button* button) const;
 
+  // Returns a list of the views of the currently pinned extensions, in order
+  // from left to right.
+  std::vector<ToolbarActionView*> GetPinnedExtensionViews();
+
+  // Returns a list of the names of the currently pinned extensions, in order
+  // from left to right.
+  std::vector<std::string> GetPinnedExtensionNames();
+
   // Waits for the extensions container to animate (on pin, unpin, pop-out,
   // etc.)
   void WaitForAnimation();

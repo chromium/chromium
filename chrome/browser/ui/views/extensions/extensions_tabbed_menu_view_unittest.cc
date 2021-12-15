@@ -7,12 +7,15 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/test/test_extension_dir.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -85,14 +88,6 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   // Asserts there is exactly 1 menu item and then returns it.
   ExtensionsMenuItemView* GetOnlyInstalledMenuItem();
 
-  // Returns a list of the views of the currently pinned extensions, in order
-  // from left to right.
-  std::vector<ToolbarActionView*> GetPinnedExtensionViews();
-
-  // Returns a list of the names of the currently pinned extensions, in order
-  // from left to right.
-  std::vector<std::string> GetPinnedExtensionNames();
-
   void ShowTabbedMenu();
 
   void ClickSiteAccessButton();
@@ -121,41 +116,6 @@ ExtensionsTabbedMenuViewUnitTest::GetOnlyInstalledMenuItem() {
     return nullptr;
   }
   return *items.begin();
-}
-
-std::vector<ToolbarActionView*>
-ExtensionsTabbedMenuViewUnitTest::GetPinnedExtensionViews() {
-  std::vector<ToolbarActionView*> result;
-  for (views::View* child : extensions_container()->children()) {
-    // Ensure we don't downcast the ExtensionsToolbarButton.
-    if (views::IsViewClass<ToolbarActionView>(child)) {
-      ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
-#if defined(OS_MAC)
-      // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
-      // queries the underlying model and not GetVisible(), as that relies on an
-      // animation running, which is not reliable in unit tests on Mac.
-      const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
-          action->view_controller());
-#else
-      const bool is_visible = action->GetVisible();
-#endif
-      if (is_visible)
-        result.push_back(action);
-    }
-  }
-  return result;
-}
-
-std::vector<std::string>
-ExtensionsTabbedMenuViewUnitTest::GetPinnedExtensionNames() {
-  std::vector<ToolbarActionView*> views = GetPinnedExtensionViews();
-  std::vector<std::string> result;
-  result.resize(views.size());
-  std::transform(
-      views.begin(), views.end(), result.begin(), [](ToolbarActionView* view) {
-        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-      });
-  return result;
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ShowTabbedMenu() {
@@ -264,7 +224,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, TogglingButtonsClosesMenu) {
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
-       InstalledExtensionsAreShownInInstalledTab) {
+       InstalledTab_InstalledExtensionsAreShownInInstalledTab) {
   // To start, there should be no extensions in the menu.
   EXPECT_EQ(installed_items().size(), 0u);
 
@@ -298,9 +258,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   ASSERT_EQ(items.size(), 4u);
 
   // Basic std::sort would do A,C,Z,b however we want A,b,C,Z
-  EXPECT_THAT(GetNamesFromInstalledItems(items),
-              testing::ElementsAre(kExtensionAName, kExtensionBName,
-                                   kExtensionCName, kExtensionZName));
+  std::vector<std::string> expected_items{kExtensionAName, kExtensionBName,
+                                          kExtensionCName, kExtensionZName};
+  EXPECT_EQ(GetNamesFromInstalledItems(items), expected_items);
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -314,18 +274,18 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   ASSERT_TRUE(installed_item);
   ToolbarActionViewController* controller = installed_item->view_controller();
   EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(controller));
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{});
 
   ClickPinButton(installed_item);
 
   EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(controller));
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName));
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{kName});
 
   ClickPinButton(installed_item);  // Unpin.
 
   EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(
       installed_item->view_controller()));
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{});
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -338,40 +298,57 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   InstallExtension(kExtensionC);
 
   ShowTabbedMenu();
-
   std::vector<ExtensionsMenuItemView*> items = installed_items();
-  EXPECT_EQ(items.size(), 3u);
 
   // Verify the order of the extensions is A,B,C.
-  ASSERT_THAT(GetNamesFromInstalledItems(items),
-              testing::ElementsAre(kExtensionA, kExtensionB, kExtensionC));
+  {
+    EXPECT_EQ(items.size(), 3u);
+    std::vector<std::string> expected_items{kExtensionA, kExtensionB,
+                                            kExtensionC};
+    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_items);
+  }
 
-  ClickPinButton(items.at(0));
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kExtensionA));
+  // Pinning an extension should add it to the toolbar.
+  {
+    ClickPinButton(items.at(0));
+    std::vector<std::string> expected_names{kExtensionA};
+    EXPECT_EQ(GetPinnedExtensionNames(), expected_names);
+  }
 
   // Pinning a second extension should add it to the right of the current pinned
   // extensions.
-  ClickPinButton(items.at(1));
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kExtensionA, kExtensionB));
+
+  {
+    ClickPinButton(items.at(1));
+    std::vector<std::string> expected_names{kExtensionA, kExtensionB};
+    EXPECT_EQ(GetPinnedExtensionNames(), expected_names);
+  }
 
   // Pinning a third extension should add it to the right of the current pinned
   // extensions.
-  ClickPinButton(items.at(2));
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kExtensionA, kExtensionB, kExtensionC));
+  {
+    ClickPinButton(items.at(2));
+    std::vector<std::string> expected_names{kExtensionA, kExtensionB,
+                                            kExtensionC};
+    EXPECT_EQ(GetPinnedExtensionNames(), expected_names);
+  }
 
   // Unpinning the middle extension should remove it from the toolbar without
   // affecting the order of the other pinned extensions.
-  ClickPinButton(items.at(1));
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kExtensionA, kExtensionC));
+  {
+    ClickPinButton(items.at(1));
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetPinnedExtensionNames(), expected_names);
+  }
 
   // Pinning an extension should add it to the right of the current pinned
   // extensions, even if it was pinned and unpinned previously.
-  ClickPinButton(items.at(1));
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kExtensionA, kExtensionC, kExtensionB));
+  {
+    ClickPinButton(items.at(1));
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC,
+                                            kExtensionB};
+    EXPECT_EQ(GetPinnedExtensionNames(), expected_names);
+  }
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -411,10 +388,12 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   ShowTabbedMenu();
 
   // Verify the order of the extensions is A,C.
-  std::vector<ExtensionsMenuItemView*> items = installed_items();
-  ASSERT_EQ(items.size(), 2u);
-  EXPECT_THAT(GetNamesFromInstalledItems(items),
-              testing::ElementsAre(kExtensionA, kExtensionC));
+  {
+    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    ASSERT_EQ(items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+  }
 
   // Add a new extension while the menu is open.
   constexpr char kExtensionB[] = "B Extension";
@@ -423,20 +402,133 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Extension should be added in the correct place.
   // Verify the new order is A,B,C.
-  items = installed_items();
-  ASSERT_EQ(items.size(), 3u);
-  EXPECT_THAT(GetNamesFromInstalledItems(items),
-              testing::ElementsAre(kExtensionA, kExtensionB, kExtensionC));
+  {
+    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    ASSERT_EQ(items.size(), 3u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionB,
+                                            kExtensionC};
+    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+  }
 
   // Remove a extension while the menu is open
   UninstallExtension(extensionB->id());
   LayoutMenuIfNecessary();
 
   // Verify the new order is A,C.
-  items = installed_items();
-  ASSERT_EQ(items.size(), 2u);
-  EXPECT_THAT(GetNamesFromInstalledItems(items),
-              testing::ElementsAre(kExtensionA, kExtensionC));
+  {
+    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    ASSERT_EQ(items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+  }
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       InstalledTab_DisableAndEnableExtension) {
+  constexpr char kName[] = "Test Extension";
+  auto extension_id = InstallExtension(kName)->id();
+
+  ShowTabbedMenu();
+
+  ExtensionsMenuItemView* menu_item = GetOnlyInstalledMenuItem();
+  EXPECT_EQ(installed_items().size(), 1u);
+  ClickPinButton(menu_item);
+
+  DisableExtension(extension_id);
+  LayoutMenuIfNecessary();
+  WaitForAnimation();
+
+  EXPECT_EQ(installed_items().size(), 0u);
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{});
+
+  EnableExtension(extension_id);
+  LayoutMenuIfNecessary();
+  WaitForAnimation();
+
+  EXPECT_EQ(installed_items().size(), 1u);
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{kName});
+}
+
+// Tests that when an extension is reloaded it remains visible in the toolbar
+// and extensions menu.
+TEST_F(ExtensionsTabbedMenuViewUnitTest, InstalledTab_ReloadExtension) {
+  // The extension must have a manifest to be reloaded.
+  extensions::TestExtensionDir extension_directory;
+  constexpr char kManifest[] = R"({
+        "name": "Test Extension",
+        "version": "1",
+        "manifest_version": 3
+      })";
+  extension_directory.WriteManifest(kManifest);
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_directory.UnpackedPath());
+
+  ShowTabbedMenu();
+
+  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  EXPECT_EQ(installed_items().size(), 1u);
+
+  ClickPinButton(installed_item);
+  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
+      installed_item->view_controller()));
+
+  // Reload the extension.
+  extensions::TestExtensionRegistryObserver registry_observer(
+      extensions::ExtensionRegistry::Get(profile()));
+  ReloadExtension(extension->id());
+  ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
+  LayoutMenuIfNecessary();
+
+  // Verify the extension is visible in the menu and on the toolbar.
+  installed_item = GetOnlyInstalledMenuItem();
+  EXPECT_EQ(installed_items().size(), 1u);
+  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
+      installed_item->view_controller()));
+}
+
+// Tests that a when an extension is reloaded with manifest errors, and
+// therefore fails to be loaded into Chrome, it's removed from the toolbar and
+// extensions menu.
+TEST_F(ExtensionsTabbedMenuViewUnitTest, InstalledTab_ReloadExtensionFailed) {
+  extensions::TestExtensionDir extension_directory;
+  constexpr char kManifest[] = R"({
+        "name": "Test Extension",
+        "version": "1",
+        "manifest_version": 3
+      })";
+  extension_directory.WriteManifest(kManifest);
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_directory.UnpackedPath());
+
+  ShowTabbedMenu();
+
+  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  EXPECT_EQ(installed_items().size(), 1u);
+
+  ClickPinButton(installed_item);
+  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
+      installed_item->view_controller()));
+
+  // Replace the extension's valid manifest with one containing errors. In this
+  // case, 'version' keys is missing.
+  constexpr char kManifestWithErrors[] = R"({
+        "name": "Test",
+        "manifest_version": 3,
+      })";
+  extension_directory.WriteManifest(kManifestWithErrors);
+
+  // Reload the extension. It should fail due to the manifest errors.
+  extension_service()->ReloadExtensionWithQuietFailure(extension->id());
+  base::RunLoop().RunUntilIdle();
+  LayoutMenuIfNecessary();
+
+  // Verify the extension is no longer visible in the menu or on the toolbar
+  // since it was removed.
+  EXPECT_EQ(installed_items().size(), 0u);
+  for (views::View* child : extensions_container()->children())
+    EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {

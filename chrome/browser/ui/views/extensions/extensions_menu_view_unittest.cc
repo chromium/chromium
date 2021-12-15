@@ -33,7 +33,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -97,8 +96,6 @@ class ExtensionsMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   void ClickContextMenuButton(ExtensionsMenuItemView* menu_item) const;
 
   std::vector<ToolbarActionView*> GetPinnedExtensionViews();
-
-  ToolbarActionView* GetPinnedExtensionView(const std::string& name);
 
   ExtensionsMenuItemView* GetExtensionsMenuItemView(const std::string& name);
 
@@ -169,19 +166,6 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
     }
   }
   return result;
-}
-
-ToolbarActionView* ExtensionsMenuViewUnitTest::GetPinnedExtensionView(
-    const std::string& name) {
-  std::vector<ToolbarActionView*> actions = GetPinnedExtensionViews();
-  auto it = std::find_if(
-      actions.begin(), actions.end(), [name](ToolbarActionView* action) {
-        return base::UTF16ToUTF8(action->view_controller()->GetActionName()) ==
-               name;
-      });
-  if (it == actions.end())
-    return nullptr;
-  return *it;
 }
 
 ExtensionsMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionsMenuItemView(
@@ -327,240 +311,6 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
 
   ASSERT_EQ(1u, extensions_menu()->extensions_menu_items_for_testing().size());
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName));
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, ReorderPinnedExtensions) {
-  constexpr char kName1[] = "Test 1";
-  InstallExtension(kName1);
-  constexpr char kName2[] = "Test 2";
-  InstallExtension(kName2);
-  constexpr char kName3[] = "Test 3";
-  InstallExtensionAndLayout(kName3);
-
-  EXPECT_EQ(3u, extensions_menu()->extensions_menu_items_for_testing().size());
-
-  for (const char* name : {kName1, kName2, kName3}) {
-    ExtensionsMenuItemView* item = GetExtensionsMenuItemView(name);
-    ASSERT_TRUE(item) << name;
-    ClickPinButton(item);
-    EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
-        item->view_controller()));
-  }
-
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-
-  // Simulate dragging "Test 3" to the first slot.
-  ToolbarActionView* drag_view = GetPinnedExtensionView(kName3);
-  ui::OSExchangeData drag_data;
-  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
-                                               &drag_data);
-  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
-  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
-                                 ui::DragDropTypes::DRAG_MOVE);
-  extensions_container()->OnDragUpdated(drop_event);
-  extensions_container()->OnPerformDrop(drop_event);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName3, kName1, kName2));
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, RunDropCallback) {
-  constexpr char kName1[] = "Test 1";
-  auto ext1 = InstallExtension(kName1);
-  constexpr char kName2[] = "Test 2";
-  auto ext2 = InstallExtension(kName2);
-  constexpr char kName3[] = "Test 3";
-  auto ext3 = InstallExtensionAndLayout(kName3);
-
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(toolbar_model);
-
-  toolbar_model->SetActionVisibility(ext1->id(), true);
-  toolbar_model->SetActionVisibility(ext2->id(), true);
-  toolbar_model->SetActionVisibility(ext3->id(), true);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-
-  // Simulate dragging "Test 3" to the first slot.
-  ToolbarActionView* drag_view = GetPinnedExtensionView(kName3);
-  ui::OSExchangeData drag_data;
-  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
-                                               &drag_data);
-  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
-  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
-                                 ui::DragDropTypes::DRAG_MOVE);
-  extensions_container()->OnDragUpdated(drop_event);
-  auto cb = extensions_container()->GetDropCallback(drop_event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName3, kName1, kName2));
-  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, ResetDropCallback) {
-  constexpr char kName1[] = "Test 1";
-  auto ext1 = InstallExtension(kName1);
-  constexpr char kName2[] = "Test 2";
-  auto ext2 = InstallExtension(kName2);
-  constexpr char kName3[] = "Test 3";
-  auto ext3 = InstallExtensionAndLayout(kName3);
-
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(toolbar_model);
-
-  toolbar_model->SetActionVisibility(ext1->id(), true);
-  toolbar_model->SetActionVisibility(ext2->id(), true);
-  toolbar_model->SetActionVisibility(ext3->id(), true);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-
-  // Simulate dragging "Test 3" to the first slot.
-  ToolbarActionView* drag_view = GetPinnedExtensionView(kName3);
-  ui::OSExchangeData drag_data;
-  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
-                                               &drag_data);
-  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
-  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
-                                 ui::DragDropTypes::DRAG_MOVE);
-  extensions_container()->OnDragUpdated(drop_event);
-  auto cb = extensions_container()->GetDropCallback(drop_event);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName3, kName1, kName2));
-
-  // If the drop callback is reset (and never invoked), the drag should be
-  // aborted, and items should be back in their original order.
-  cb.Reset();
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnActionAdded) {
-  constexpr char kName1[] = "Test 1";
-  auto ext1 = InstallExtension(kName1);
-  constexpr char kName2[] = "Test 2";
-  auto ext2 = InstallExtensionAndLayout(kName2);
-
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(toolbar_model);
-
-  toolbar_model->SetActionVisibility(ext1->id(), true);
-  toolbar_model->SetActionVisibility(ext2->id(), true);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName1, kName2));
-
-  // Simulate dragging "Test 2" to the first slot.
-  ToolbarActionView* drag_view = GetPinnedExtensionView(kName2);
-  ui::OSExchangeData drag_data;
-  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
-                                               &drag_data);
-  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
-  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
-                                 ui::DragDropTypes::DRAG_MOVE);
-  extensions_container()->OnDragUpdated(drop_event);
-  auto cb = extensions_container()->GetDropCallback(drop_event);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName2, kName1));
-
-  constexpr char kName3[] = "Test 3";
-  auto ext3 = InstallExtensionAndLayout(kName3);
-  toolbar_model->SetActionVisibility(ext3->id(), true);
-  WaitForAnimation();
-
-  // The drop callback should be invalidated, and items should be back in their
-  // original order.
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-}
-
-// ToolbarActionsModel::MovePinnedAction crashes if pinned extensions changes
-// while the drop callback isn't invalidated. This test makes sure this doesn't
-// happen anymore. https://crbug.com/1268239.
-TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnPrefChange) {
-  constexpr char kName1[] = "Test 1";
-  auto ext1 = InstallExtension(kName1);
-  constexpr char kName2[] = "Test 2";
-  auto ext2 = InstallExtensionAndLayout(kName2);
-
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(toolbar_model);
-
-  toolbar_model->SetActionVisibility(ext1->id(), true);
-  toolbar_model->SetActionVisibility(ext2->id(), true);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName1, kName2));
-
-  // Simulate dragging "Test 2" to the first slot.
-  ToolbarActionView* drag_view = GetPinnedExtensionView(kName2);
-  ui::OSExchangeData drag_data;
-  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
-                                               &drag_data);
-  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
-  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
-                                 ui::DragDropTypes::DRAG_MOVE);
-  extensions_container()->OnDragUpdated(drop_event);
-  auto cb = extensions_container()->GetDropCallback(drop_event);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName2, kName1));
-
-  extensions::ExtensionPrefs::Get(profile())->SetPinnedExtensions({});
-  WaitForAnimation();
-
-  // The drop callback should be invalidated, and items should be back in their
-  // original order.
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre());
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
-  constexpr char kName1[] = "Test 1";
-  const extensions::ExtensionId id1 = InstallExtension(kName1)->id();
-  constexpr char kName2[] = "Test 2";
-  const extensions::ExtensionId id2 = InstallExtension(kName2)->id();
-  constexpr char kName3[] = "Test 3";
-  const extensions::ExtensionId id3 = InstallExtensionAndLayout(kName3)->id();
-
-  for (const char* name : {kName1, kName2, kName3}) {
-    ExtensionsMenuItemView* item = GetExtensionsMenuItemView(name);
-    ASSERT_TRUE(item) << name;
-    ClickPinButton(item);
-  }
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName1, kName2, kName3));
-
-  extensions::ExtensionPrefs::Get(profile())->SetPinnedExtensions(
-      {id2, id3, id1});
-  WaitForAnimation();
-
-  EXPECT_THAT(GetPinnedExtensionNames(),
-              testing::ElementsAre(kName2, kName3, kName1));
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
