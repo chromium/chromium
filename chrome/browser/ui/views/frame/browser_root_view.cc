@@ -168,10 +168,14 @@ void BrowserRootView::OnDragEntered(const ui::DropTargetEvent& event) {
 
     // Check if the file is supported.
     if (url.SchemeIsFile()) {
-      content::RenderFrameHost* rfh = browser_view_->browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetMainFrame();
+      // Avoid crashing while the tab strip is being initialized or is empty.
+      content::WebContents* web_contents =
+          browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
+      if (!web_contents) {
+        return;
+      }
+
+      content::RenderFrameHost* rfh = web_contents->GetMainFrame();
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&FindURLMimeType, url),

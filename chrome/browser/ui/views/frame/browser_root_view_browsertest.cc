@@ -100,4 +100,21 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, RunDropCallback) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
   EXPECT_EQ(tab_strip_model->count(), 2);
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, OnDragEnteredNoTabs) {
+  auto* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 1);
+  EXPECT_EQ(tab_strip_model->active_index(), 0);
+  tab_strip_model->CloseAllTabs();
+  EXPECT_EQ(tab_strip_model->count(), 0);
+  EXPECT_EQ(tab_strip_model->active_index(), -1);
+
+  ui::OSExchangeData data;
+  data.SetURL(GURL("file:///test.txt"), std::u16string());
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+
+  // Ensure OnDragEntered() doesn't crash when there are no active tabs.
+  browser_root_view()->OnDragEntered(event);
+}
 #endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)
