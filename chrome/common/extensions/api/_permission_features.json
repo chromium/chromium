@@ -430,11 +430,22 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component"
   }],
-  "languageSettingsPrivate": {
-    "channel": "trunk",
-    "extension_types": ["extension", "platform_app"],
-    "location": "component"
-  },
+  "languageSettingsPrivate": [
+    {
+      "channel": "trunk",
+      "extension_types": ["extension", "platform_app"],
+      "location": "component"
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "location": "component",
+      "platforms": ["chromeos"],
+      "allowlist": [
+        "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
+      ]
+    }
+  ],
   "lockWindowFullscreenPrivate": {
     "channel": "stable",
     "component_extensions_auto_granted": false,
