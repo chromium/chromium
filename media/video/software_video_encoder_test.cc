@@ -515,6 +515,107 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
     }
   }
 }
+
+TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
+  VideoEncoder::Options options;
+  gfx::Size size1(320, 200), size2(400, 240);
+  options.frame_size = size1;
+  options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
+  options.framerate = 25;
+  if (codec_ == VideoCodec::kH264)
+    options.avc.produce_annexb = true;
+  struct ChunkWithConfig {
+    VideoEncoderOutput output;
+    gfx::Size size;
+  };
+  std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
+  std::vector<scoped_refptr<VideoFrame>> decoded_frames;
+  std::vector<ChunkWithConfig> chunks;
+  size_t total_frames_count = 8;
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription> desc) {
+        chunks.push_back({std::move(output), options.frame_size});
+      });
+
+  encoder_->Initialize(profile_, options, std::move(encoder_output_cb),
+                       ValidatingStatusCB());
+  RunUntilIdle();
+
+  uint32_t color = 0x0080FF;
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    const auto timestamp = frame_index * frame_duration;
+    const bool reconfigure = (frame_index == total_frames_count / 2);
+
+    if (reconfigure) {
+      encoder_->Flush(ValidatingStatusCB());
+      RunUntilIdle();
+
+      // Ask encoder to change encoded resolution, empty output callback
+      // means the encoder should keep the old one.
+      options.frame_size = size2;
+      encoder_->ChangeOptions(options, VideoEncoder::OutputCB(),
+                              ValidatingStatusCB());
+      RunUntilIdle();
+    }
+
+    auto frame =
+        CreateFrame(options.frame_size, pixel_format_, timestamp, color);
+    frames_to_encode.push_back(frame);
+    encoder_->Encode(frame, false, ValidatingStatusCB());
+    RunUntilIdle();
+  }
+  encoder_->Flush(ValidatingStatusCB());
+  RunUntilIdle();
+
+  EXPECT_EQ(chunks.size(), total_frames_count);
+  gfx::Size current_size;
+  for (auto& chunk : chunks) {
+    VideoDecoder::OutputCB decoder_output_cb =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          decoded_frames.push_back(frame);
+        });
+
+    if (chunk.size != current_size) {
+      if (decoder_)
+        DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+      PrepareDecoder(chunk.size, std::move(decoder_output_cb));
+      current_size = chunk.size;
+    }
+    auto& output = chunk.output;
+    auto buffer = DecoderBuffer::FromArray(std::move(output.data), output.size);
+    buffer->set_timestamp(output.timestamp);
+    buffer->set_is_key_frame(output.key_frame);
+    DecodeAndWaitForStatus(std::move(buffer));
+  }
+  DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+
+  EXPECT_EQ(decoded_frames.size(), frames_to_encode.size());
+  std::vector<uint8_t> conversion_buffer;
+  for (auto i = 0u; i < decoded_frames.size(); i++) {
+    auto original_frame = frames_to_encode[i];
+    auto decoded_frame = decoded_frames[i];
+    EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
+    EXPECT_EQ(decoded_frame->visible_rect(), original_frame->visible_rect());
+    if (decoded_frame->format() != original_frame->format()) {
+      // The frame was converted from RGB to YUV, we can't easily compare to
+      // the original frame, so we're going to compare with a new white frame.
+      EXPECT_EQ(decoded_frame->format(), PIXEL_FORMAT_I420);
+      auto size = decoded_frame->visible_rect().size();
+      auto i420_frame =
+          VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size, gfx::Rect(size),
+                                  size, decoded_frame->timestamp());
+      EXPECT_TRUE(
+          ConvertAndScaleFrame(*original_frame, *i420_frame, conversion_buffer)
+              .is_ok());
+      original_frame = i420_frame;
+    }
+    EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+              original_frame->visible_rect().width());
+  }
+}
 #endif  // ENABLE_FFMPEG_VIDEO_DECODERS
 
 TEST_P(H264VideoEncoderTest, AvcExtraData) {
