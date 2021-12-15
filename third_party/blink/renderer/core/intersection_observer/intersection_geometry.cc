@@ -90,10 +90,10 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
     result = layout_view->OverflowClipRect(PhysicalOffset());
   } else if (root->IsBox() && root->IsScrollContainer()) {
     result = To<LayoutBox>(root)->PhysicalContentBoxRect();
+  } else if (root->IsBox()) {
+    result = To<LayoutBox>(root)->PhysicalBorderBoxRect();
   } else {
-    // TODO(pdr, crbug.com/1020466): BorderBoundingBox is snapped. Should this
-    // use an unsnapped value such as PhysicalBorderBoxRect?
-    result = PhysicalRect(To<LayoutBoxModelObject>(root)->BorderBoundingBox());
+    result = To<LayoutInline>(root)->PhysicalLinesBoundingBox();
   }
   ApplyMargin(result, margin, root->StyleRef().EffectiveZoom());
   return result;
