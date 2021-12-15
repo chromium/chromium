@@ -1632,6 +1632,9 @@ extern const char kShareContextMenuDescription[];
 extern const char kForceMajorVersion100InUserAgentName[];
 extern const char kForceMajorVersion100InUserAgentDescription[];
 
+extern const char kForceMinorVersion100InUserAgentName[];
+extern const char kForceMinorVersion100InUserAgentDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

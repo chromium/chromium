@@ -2828,6 +2828,17 @@ const char kForceMajorVersion100InUserAgentDescription[] =
     "allows testing the 3-digit major version number before the actual M100 "
     "release. This flag is only available from M96-M99.";
 
+const char kForceMinorVersion100InUserAgentName[] =
+    "Force the minor version to 100 in the User-Agent string";
+const char kForceMinorVersion100InUserAgentDescription[] =
+    "Force the Chrome minor version in the User-Agent string to 100, which "
+    "allows testing a 3-digit minor version number. Currently, the minor "
+    "version is always reported as 0, but due to potential breakage with the "
+    "upcoming major version 100, this flag allows us to test whether setting "
+    "the major version in the minor version part of the User-Agent string "
+    "would be an acceptable alternative. If force-major-version-to-100 is set, "
+    "then this flag has no effect. See crbug.com/1278459 for details.";
+
 // Android ---------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

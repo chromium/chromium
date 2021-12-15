@@ -3237,6 +3237,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "force-minor-version-to-100",
+    "owners": [ "abeyad", "potassium-katabolism@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "force-show-continue-section",
     "owners":["anasalazar@chromium.org", "gzadina@google.com"],
     "expiry_milestone": 101

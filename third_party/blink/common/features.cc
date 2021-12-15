@@ -1073,6 +1073,9 @@ const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
 const base::Feature kForceMajorVersion100InUserAgent{
     "ForceMajorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kForceMinorVersion100InUserAgent{
+    "ForceMinorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable `sec-ch-device-memory` client hint.
 const base::Feature kClientHintsDeviceMemory{"ClientHintsDeviceMemory",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

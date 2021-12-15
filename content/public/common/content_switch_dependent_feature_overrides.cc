@@ -130,6 +130,12 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     {switches::kForceMajorVersionTo100,
      std::cref(blink::features::kForceMajorVersion100InUserAgent),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+    // Override for --force-minor-version-to-100.
+    {switches::kForceMinorVersionTo100,
+     std::cref(blink::features::kForceMinorVersion100InUserAgent),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;

@@ -779,4 +779,38 @@ TEST_P(UserAgentUtilsTest, GetUserAgent) {
   EXPECT_NE(minor_version, "0.0.0");
 }
 
+class UserAgentUtilsMinorVersionTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (ForceMinorVersionTo100())
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kForceMinorVersion100InUserAgent);
+  }
+
+  bool ForceMinorVersionTo100() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_CASE_P(All,
+                        UserAgentUtilsMinorVersionTest,
+                        /*force_minor_version_to_M100*/ testing::Bool());
+
+TEST_P(UserAgentUtilsMinorVersionTest, GetUserAgent) {
+  const std::string ua = GetUserAgent();
+  std::string major_version;
+  std::string minor_version;
+  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
+                                     &major_version, &minor_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  if (ForceMinorVersionTo100()) {
+    EXPECT_NE(minor_version, "100.0.0");
+  } else {
+    EXPECT_NE(minor_version, "0.0.0");
+  }
+}
+
 }  // namespace embedder_support
