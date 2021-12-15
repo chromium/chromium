@@ -19,7 +19,11 @@ namespace policy {
 
 MockConfigurationPolicyProvider::MockConfigurationPolicyProvider() {}
 
-MockConfigurationPolicyProvider::~MockConfigurationPolicyProvider() {}
+MockConfigurationPolicyProvider::~MockConfigurationPolicyProvider() {
+#if defined(OS_ANDROID)
+  ShutdownForTesting();
+#endif  // defined(OS_ANDROID)
+}
 
 void MockConfigurationPolicyProvider::UpdateChromePolicy(
     const PolicyMap& policy) {

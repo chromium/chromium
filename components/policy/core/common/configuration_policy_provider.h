@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -83,6 +84,10 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   // SchemaRegistry::Observer:
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
   void OnSchemaRegistryReady() override;
+
+#if defined(OS_ANDROID)
+  void ShutdownForTesting();
+#endif  // defined(OS_ANDROID)
 
  protected:
   // Subclasses must invoke this to update the policies currently served by

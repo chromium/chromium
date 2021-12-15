@@ -79,4 +79,11 @@ void ConfigurationPolicyProvider::OnSchemaRegistryUpdated(
 
 void ConfigurationPolicyProvider::OnSchemaRegistryReady() {}
 
+#if defined(OS_ANDROID)
+void ConfigurationPolicyProvider::ShutdownForTesting() {
+  observer_list_.Clear();
+  Shutdown();
+}
+#endif  // defined(OS_ANDROID)
+
 }  // namespace policy
