@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-'use strict';
+import {SAMPLE_RATE} from './constants.js';
 
 /**
  * Collect the data points to show on the line chart.
  * @const
  */
-LineChart.DataSeries = class {
+export class DataSeries {
   constructor(/** string */ title, /** string */ color) {
     /** @const {string} - The name of this data series. */
     this.title_ = title;
@@ -154,7 +153,7 @@ LineChart.DataSeries = class {
 
     const /** Array<null|number> */ values = [];
     values.length = count;
-    const /** number */ sampleRate = LineChart.SAMPLE_RATE;
+    const /** number */ sampleRate = SAMPLE_RATE;
     let /** number */ endTime = startTime;
     const /** number */ firstIndex = this.findLowerBoundPointIndex_(startTime);
     let /** number */ nextIndex = firstIndex;
@@ -294,6 +293,4 @@ LineChart.DataSeries = class {
     const /** number */ ratio = (x - x1) / (x2 - x1);
     return (y2 - y1) * ratio + y1;
   }
-};
-
-})();
+}

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-'use strict';
+import {MAX_VERTICAL_LABEL_NUM, MIN_LABEL_VERTICAL_SPACING} from './constants.js';
 
 /**
  * Create by |LineChart.LineChart|.
@@ -11,7 +10,7 @@
  * labels.
  * @const
  */
-LineChart.UnitLabel = class {
+export class UnitLabel {
   constructor(/** Array<string> */ units, /** number */ unitBase) {
     /** @const {Array<string>} - See |getSuitableUnit()|. */
     this.units_ = units;
@@ -227,13 +226,13 @@ LineChart.UnitLabel = class {
    */
   getMaxNumberOfLabel_() {
     const /** number */ minLabelSpacing =
-        2 * this.fontHeight_ + LineChart.MIN_LABEL_VERTICAL_SPACING;
+        2 * this.fontHeight_ + MIN_LABEL_VERTICAL_SPACING;
     let /** number */ maxLabelNum =
         1 + Math.floor(this.height_ / minLabelSpacing);
     if (maxLabelNum < 2) {
       maxLabelNum = 2;
-    } else if (maxLabelNum > LineChart.MAX_VERTICAL_LABEL_NUM) {
-      maxLabelNum = LineChart.MAX_VERTICAL_LABEL_NUM;
+    } else if (maxLabelNum > MAX_VERTICAL_LABEL_NUM) {
+      maxLabelNum = MAX_VERTICAL_LABEL_NUM;
     }
 
     return maxLabelNum;
@@ -269,12 +268,4 @@ LineChart.UnitLabel = class {
   getRealValueWithCurrentUnit_(value) {
     return value * Math.pow(this.unitBase_, this.currentUnitIdx_);
   }
-};
-
-/**
- * Export the function getSuitableUnit.
- * @const
- */
-LineChart.getSuitableUnit = LineChart.UnitLabel.getSuitableUnit;
-
-})();
+}

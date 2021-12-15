@@ -326,9 +326,17 @@
         <include name="IDR_SYS_INTERNALS_HTML" file="resources\chromeos\sys_internals\index.html" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CSS" file="resources\chromeos\sys_internals\index.css" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_JS" file="resources\chromeos\sys_internals\index.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_MAIN_JS" file="resources\chromeos\sys_internals\main.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CONSTANT_JS" file="resources\chromeos\sys_internals\constants.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_TYPES_JS" file="resources\chromeos\sys_internals\types.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_CONSTANTS_JS" file="resources\chromeos\sys_internals\line_chart\constants.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_LINE_CHART_CSS" file="resources\chromeos\sys_internals\line_chart\line_chart.css" type="BINDATA" />
-        <include name="IDR_SYS_INTERNALS_LINE_CHART_JS" file="resources\chromeos\sys_internals\line_chart\index.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_DATA_SERIES_JS" file="resources\chromeos\sys_internals\line_chart\data_series.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_LINE_CHART_JS" file="resources\chromeos\sys_internals\line_chart\line_chart.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_MENU_JS" file="resources\chromeos\sys_internals\line_chart\menu.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_SCROLLBAR_JS" file="resources\chromeos\sys_internals\line_chart\scrollbar.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_SUB_CHART_JS" file="resources\chromeos\sys_internals\line_chart\sub_chart.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_UNIT_LABEL_JS" file="resources\chromeos\sys_internals\line_chart\unit_label.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_MENU_SVG" file="resources\chromeos\sys_internals\img\menu.svg" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_INFO_SVG" file="resources\chromeos\sys_internals\img\info.svg" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_CPU_SVG" file="resources\chromeos\sys_internals\img\cpu.svg" type="BINDATA" />

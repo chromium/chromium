@@ -13,6 +13,8 @@
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 
 SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -20,14 +22,35 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUISysInternalsHost);
-  html_source->SetDefaultResource(IDR_SYS_INTERNALS_HTML);
+  html_source->DisableTrustedTypesCSP();
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
+
+  html_source->AddResourcePath("", IDR_SYS_INTERNALS_HTML);
+  html_source->AddResourcePath("index.html", IDR_SYS_INTERNALS_HTML);
   html_source->AddResourcePath("index.css", IDR_SYS_INTERNALS_CSS);
   html_source->AddResourcePath("index.js", IDR_SYS_INTERNALS_JS);
+  html_source->AddResourcePath("main.js", IDR_SYS_INTERNALS_MAIN_JS);
   html_source->AddResourcePath("constants.js", IDR_SYS_INTERNALS_CONSTANT_JS);
+  html_source->AddResourcePath("types.js", IDR_SYS_INTERNALS_TYPES_JS);
   html_source->AddResourcePath("line_chart.css",
                                IDR_SYS_INTERNALS_LINE_CHART_CSS);
-  html_source->AddResourcePath("line_chart.js",
-                               IDR_SYS_INTERNALS_LINE_CHART_JS);
+
+  html_source->AddResourcePath("line_chart/constants.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_CONSTANTS_JS);
+  html_source->AddResourcePath("line_chart/data_series.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_DATA_SERIES_JS);
+  html_source->AddResourcePath("line_chart/unit_label.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_UNIT_LABEL_JS);
+  html_source->AddResourcePath("line_chart/line_chart.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_LINE_CHART_JS);
+  html_source->AddResourcePath("line_chart/menu.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_MENU_JS);
+  html_source->AddResourcePath("line_chart/scrollbar.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_SCROLLBAR_JS);
+  html_source->AddResourcePath("line_chart/sub_chart.js",
+                               IDR_SYS_INTERNALS_LINE_CHART_SUB_CHART_JS);
 
   html_source->AddResourcePath("images/menu.svg",
                                IDR_SYS_INTERNALS_IMAGE_MENU_SVG);
@@ -39,6 +62,9 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
                                IDR_SYS_INTERNALS_IMAGE_MEMORY_SVG);
   html_source->AddResourcePath("images/zram.svg",
                                IDR_SYS_INTERNALS_IMAGE_ZRAM_SVG);
+
+  html_source->AddResourcePath("test_loader_util.js",
+                               IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);

@@ -5,7 +5,6 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  uses_legacy_modules = true
   deps = [
     ":constants",
     ":index",
@@ -18,14 +17,16 @@ js_library("index") {
     ":constants",
     ":types",
     "line_chart:line_chart",
-    "//ui/webui/resources/js:cr",
+    "line_chart:unit_label",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:util.m",
   ]
 
   externs_list = [ "externs.js" ]
 }
 
 js_library("constants") {
-  deps = [ "//ui/webui/resources/js:cr" ]
 }
 
 js_library("types") {

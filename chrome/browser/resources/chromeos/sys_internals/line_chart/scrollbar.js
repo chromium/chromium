@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-(function() {
-'use strict';
+import {createElementWithClassName} from 'chrome://resources/js/util.m.js';
 
 /**
  * Create by |LineChart.LineChart|.
@@ -13,7 +11,7 @@
  * instead of drawing the whole chart.
  * @const
  */
-LineChart.Scrollbar = class {
+export class Scrollbar {
   constructor(/** function(): undefined */ callback) {
     /** @const {function(): undefined} - Handle the scrolling event. */
     this.callback_ = callback;
@@ -161,6 +159,4 @@ LineChart.Scrollbar = class {
   scrollToRightEdge() {
     this.setPosition(this.range_);
   }
-};
-
-})();
+}

@@ -6,56 +6,42 @@
  * @fileoverview Constants use by chrome://sys-internals.
  */
 
-cr.define('SysInternals', function() {
   /**
    * The page update period, in milliseconds.
    * @type {number}
    */
-  const UPDATE_PERIOD = 1000;
+export const UPDATE_PERIOD = 1000;
 
-  const /** !Array<string> */ UNITS_NUMBER_PER_SECOND = ['/s', 'K/s', 'M/s'];
+export const /** !Array<string> */ UNITS_NUMBER_PER_SECOND =
+    ['/s', 'K/s', 'M/s'];
 
-  /** @const {number} */
-  const /** number */ UNITBASE_NUMBER_PER_SECOND = 1000;
+/** @export const {number} */
+export const /** number */ UNITBASE_NUMBER_PER_SECOND = 1000;
 
-  const /** !Array<string> */ UNITS_MEMORY =
-      ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+export const /** !Array<string> */ UNITS_MEMORY =
+    ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
-  const /** number */ UNITBASE_MEMORY = 1024;
+export const /** number */ UNITBASE_MEMORY = 1024;
 
-  /** @type {number} - The precision of the number on the info page. */
-  const INFO_PAGE_PRECISION = 2;
+/** @type {number} - The precision of the number on the info page. */
+export const INFO_PAGE_PRECISION = 2;
 
-  const /** !Array<string> */ CPU_COLOR_SET = [
-    '#2fa2ff', '#ff93e2', '#a170d0', '#fe6c6c', '#2561a4', '#15b979', '#fda941',
-    '#79dbcd'
-  ];
+export const /** !Array<string> */ CPU_COLOR_SET = [
+  '#2fa2ff', '#ff93e2', '#a170d0', '#fe6c6c', '#2561a4', '#15b979', '#fda941',
+  '#79dbcd'
+];
 
-  const /** !Array<string> */ MEMORY_COLOR_SET =
-      ['#fa4e30', '#8d6668', '#73418c', '#41205e'];
+export const /** !Array<string> */ MEMORY_COLOR_SET =
+    ['#fa4e30', '#8d6668', '#73418c', '#41205e'];
 
-  /** @type {!Array<string>} - Note: 4th and 5th colors use black menu text. */
-  const ZRAM_COLOR_SET =
-      ['#9cabd4', '#4a4392', '#dcfaff', '#fff9c9', '#ffa3ab'];
+/** @type {!Array<string>} - Note: 4th and 5th colors use black menu text. */
+export const ZRAM_COLOR_SET =
+    ['#9cabd4', '#4a4392', '#dcfaff', '#fff9c9', '#ffa3ab'];
 
-  /** @enum {string} */
-  const PAGE_HASH = {
-    INFO: '',
-    CPU: '#CPU',
-    MEMORY: '#Memory',
-    ZRAM: '#Zram',
-  };
-
-  return {
-    CPU_COLOR_SET: CPU_COLOR_SET,
-    INFO_PAGE_PRECISION: INFO_PAGE_PRECISION,
-    MEMORY_COLOR_SET: MEMORY_COLOR_SET,
-    PAGE_HASH: PAGE_HASH,
-    UNITBASE_MEMORY: UNITBASE_MEMORY,
-    UNITBASE_NUMBER_PER_SECOND: UNITBASE_NUMBER_PER_SECOND,
-    UNITS_MEMORY: UNITS_MEMORY,
-    UNITS_NUMBER_PER_SECOND: UNITS_NUMBER_PER_SECOND,
-    UPDATE_PERIOD: UPDATE_PERIOD,
-    ZRAM_COLOR_SET: ZRAM_COLOR_SET,
-  };
-});
+/** @enum {string} */
+export const PAGE_HASH = {
+  INFO: '',
+  CPU: '#CPU',
+  MEMORY: '#Memory',
+  ZRAM: '#Zram',
+};
