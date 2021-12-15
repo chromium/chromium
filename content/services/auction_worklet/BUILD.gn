@@ -59,6 +59,8 @@ source_set("auction_worklet") {
     "seller_worklet.h",
     "trusted_signals.cc",
     "trusted_signals.h",
+    "trusted_signals_request_manager.cc",
+    "trusted_signals_request_manager.h",
     "worklet_loader.cc",
     "worklet_loader.h",
   ]
@@ -96,6 +98,7 @@ source_set("tests") {
     "bidder_worklet_unittest.cc",
     "debug_command_queue_unittest.cc",
     "seller_worklet_unittest.cc",
+    "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",
     "worklet_devtools_debug_test_util.cc",
     "worklet_devtools_debug_test_util.h",

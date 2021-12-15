@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -191,8 +192,10 @@ void SellerWorklet::ScoreAd(
     score_ad_task->trusted_scoring_signals = TrustedSignals::LoadScoringSignals(
         url_loader_factory_.get(),
         /*render_urls=*/
-        std::vector<std::string>{browser_signal_render_url.spec()},
-        score_ad_task->browser_signal_ad_components,
+        std::set<std::string>{browser_signal_render_url.spec()},
+        /*ad_component_render_urls=*/
+        {score_ad_task->browser_signal_ad_components.begin(),
+         score_ad_task->browser_signal_ad_components.end()},
         browser_signal_top_window_origin.host(),
         *score_ad_task->auction_config->trusted_scoring_signals_url, v8_helper_,
         base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
@@ -260,7 +263,7 @@ void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    std::unique_ptr<TrustedSignals::Result> trusted_scoring_signals,
+    scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -530,7 +533,7 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     ScoreAdTaskList::iterator task,
-    std::unique_ptr<TrustedSignals::Result> result,
+    scoped_refptr<TrustedSignals::Result> result,
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 

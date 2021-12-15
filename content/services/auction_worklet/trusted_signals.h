@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,7 +44,7 @@ class TrustedSignals {
   //
   // This can be created and destroyed on any thread, but GetSignals() can only
   // be used on the V8 thread.
-  class Result {
+  class Result : public base::RefCountedThreadSafe<Result> {
    public:
     // Constructor for bidding signals.
     explicit Result(std::map<std::string, std::string> bidder_json_data);
@@ -53,9 +54,6 @@ class TrustedSignals {
            std::map<std::string, std::string> ad_component_json_data);
 
     explicit Result(const Result&) = delete;
-
-    ~Result();
-
     Result& operator=(const Result&) = delete;
 
     // Retrieves the trusted bidding signals associated with the passed in keys,
@@ -84,16 +82,22 @@ class TrustedSignals {
         const std::vector<std::string>& ad_component_render_urls) const;
 
    private:
+    friend class base::RefCountedThreadSafe<Result>;
+
+    ~Result();
+
     // Map of keys to the associated JSON data for trusted bidding signals.
-    absl::optional<std::map<std::string, std::string>> bidder_json_data_;
+    const absl::optional<std::map<std::string, std::string>> bidder_json_data_;
 
     // Map of keys to the associated JSON data for trusted scoring signals.
-    absl::optional<std::map<std::string, std::string>> render_url_json_data_;
-    absl::optional<std::map<std::string, std::string>> ad_component_json_data_;
+    const absl::optional<std::map<std::string, std::string>>
+        render_url_json_data_;
+    const absl::optional<std::map<std::string, std::string>>
+        ad_component_json_data_;
   };
 
   using LoadSignalsCallback =
-      base::OnceCallback<void(std::unique_ptr<Result> result,
+      base::OnceCallback<void(scoped_refptr<Result> result,
                               absl::optional<std::string> error_msg)>;
 
   explicit TrustedSignals(const TrustedSignals&) = delete;
@@ -112,7 +116,7 @@ class TrustedSignals {
   // There are no lifetime constraints of `url_loader_factory`.
   static std::unique_ptr<TrustedSignals> LoadBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const std::vector<std::string>& bidding_signals_keys,
+      std::set<std::string> bidding_signals_keys,
       const std::string& hostname,
       const GURL& trusted_bidding_signals_url,
       scoped_refptr<AuctionV8Helper> v8_helper,
@@ -121,8 +125,8 @@ class TrustedSignals {
   // Just like LoadBiddingSignals() above, but for fetching seller signals.
   static std::unique_ptr<TrustedSignals> LoadScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const std::vector<std::string>& render_urls,
-      const std::vector<std::string>& ad_component_render_urls,
+      std::set<std::string> render_urls,
+      std::set<std::string> ad_component_render_urls,
       const std::string& hostname,
       const GURL& trusted_scoring_signals_url,
       scoped_refptr<AuctionV8Helper> v8_helper,
@@ -161,11 +165,11 @@ class TrustedSignals {
   static void PostCallbackToUserThread(
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
       base::WeakPtr<TrustedSignals> weak_instance,
-      std::unique_ptr<Result> result,
+      scoped_refptr<Result> result,
       absl::optional<std::string> error_msg);
 
   // Called on user thread.
-  void DeliverCallbackOnUserThread(std::unique_ptr<Result>,
+  void DeliverCallbackOnUserThread(scoped_refptr<Result>,
                                    absl::optional<std::string> error_msg);
 
   // Keys being fetched. For bidding signals, only `bidding_signals_keys_` is

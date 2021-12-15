@@ -4,11 +4,14 @@
 
 #include "content/services/auction_worklet/trusted_signals.h"
 
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -69,26 +72,27 @@ class TrustedSignalsTest : public testing::Test {
 
   // Sets the HTTP response and then fetches bidding signals and waits for
   // completion. Returns nullptr on failure.
-  std::unique_ptr<TrustedSignals::Result> FetchBiddingSignalsWithResponse(
+  scoped_refptr<TrustedSignals::Result> FetchBiddingSignalsWithResponse(
       const GURL& url,
       const std::string& response,
-      std::vector<std::string> trusted_bidding_signals_keys,
+      std::set<std::string> trusted_bidding_signals_keys,
       const std::string& hostname) {
     AddJsonResponse(&url_loader_factory_, url, response);
-    return FetchBiddingSignals(trusted_bidding_signals_keys, hostname);
+    return FetchBiddingSignals(std::move(trusted_bidding_signals_keys),
+                               hostname);
   }
 
   // Fetches bidding signals and waits for completion. Returns nullptr on
   // failure.
-  std::unique_ptr<TrustedSignals::Result> FetchBiddingSignals(
-      std::vector<std::string> trusted_bidding_signals_keys,
+  scoped_refptr<TrustedSignals::Result> FetchBiddingSignals(
+      std::set<std::string> trusted_bidding_signals_keys,
       const std::string& hostname) {
     CHECK(!load_signals_run_loop_);
 
     DCHECK(!load_signals_result_);
     auto bidding_signals = TrustedSignals::LoadBiddingSignals(
-        &url_loader_factory_, std::move(trusted_bidding_signals_keys),
-        std::move(hostname), base_url_, v8_helper_,
+        &url_loader_factory_, std::move(trusted_bidding_signals_keys), hostname,
+        base_url_, v8_helper_,
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
@@ -97,29 +101,29 @@ class TrustedSignalsTest : public testing::Test {
 
   // Sets the HTTP response and then fetches scoring signals and waits for
   // completion. Returns nullptr on failure.
-  std::unique_ptr<TrustedSignals::Result> FetchScoringSignalsWithResponse(
+  scoped_refptr<TrustedSignals::Result> FetchScoringSignalsWithResponse(
       const GURL& url,
       const std::string& response,
-      std::vector<std::string> render_urls,
-      std::vector<std::string> ad_component_render_urls,
+      std::set<std::string> render_urls,
+      std::set<std::string> ad_component_render_urls,
       const std::string& hostname) {
     AddJsonResponse(&url_loader_factory_, url, response);
-    return FetchScoringSignals(render_urls, ad_component_render_urls, hostname);
+    return FetchScoringSignals(std::move(render_urls),
+                               std::move(ad_component_render_urls), hostname);
   }
 
   // Fetches scoring signals and waits for completion. Returns nullptr on
   // failure.
-  std::unique_ptr<TrustedSignals::Result> FetchScoringSignals(
-      std::vector<std::string> render_urls,
-      std::vector<std::string> ad_component_render_urls,
+  scoped_refptr<TrustedSignals::Result> FetchScoringSignals(
+      std::set<std::string> render_urls,
+      std::set<std::string> ad_component_render_urls,
       const std::string& hostname) {
     CHECK(!load_signals_run_loop_);
 
     DCHECK(!load_signals_result_);
     auto scoring_signals = TrustedSignals::LoadScoringSignals(
         &url_loader_factory_, std::move(render_urls),
-        std::move(ad_component_render_urls), std::move(hostname), base_url_,
-        v8_helper_,
+        std::move(ad_component_render_urls), hostname, base_url_, v8_helper_,
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
@@ -198,11 +202,11 @@ class TrustedSignalsTest : public testing::Test {
   }
 
  protected:
-  void LoadSignalsCallback(std::unique_ptr<TrustedSignals::Result> result,
+  void LoadSignalsCallback(scoped_refptr<TrustedSignals::Result> result,
                            absl::optional<std::string> error_msg) {
     load_signals_result_ = std::move(result);
     error_msg_ = std::move(error_msg);
-    EXPECT_EQ(load_signals_result_ == nullptr, error_msg_.has_value());
+    EXPECT_EQ(load_signals_result_.get() == nullptr, error_msg_.has_value());
     load_signals_run_loop_->Quit();
   }
 
@@ -215,7 +219,7 @@ class TrustedSignalsTest : public testing::Test {
   // creating the worklet, to cause a crash if the callback is invoked
   // synchronously.
   std::unique_ptr<base::RunLoop> load_signals_run_loop_;
-  std::unique_ptr<TrustedSignals::Result> load_signals_result_;
+  scoped_refptr<TrustedSignals::Result> load_signals_result_;
   absl::optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -293,7 +297,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotObject) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Ffoo.test%2F"
@@ -311,7 +315,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Ffoo.test%2F"
@@ -329,7 +333,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key4"),
           kBaseBiddingJson, {"key4"}, kHostname);
@@ -338,7 +342,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Ffoo.test%2F"
@@ -357,7 +361,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key1"),
           kBaseBiddingJson, {"key1"}, kHostname);
@@ -366,7 +370,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/"
                "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
@@ -382,7 +386,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key1,key2,key3,key5"),
           kBaseBiddingJson, {"key3", "key1", "key5", "key2"}, kHostname);
@@ -399,7 +403,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
 
 TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
   // URLs are currently added in lexical order.
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Fbar.test%2F,"
@@ -426,22 +430,25 @@ TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsDuplicateKeys) {
-  std::vector<std::string> bidder_signals{"key1", "key2", "key2", "key1",
-                                          "key2"};
-  std::unique_ptr<TrustedSignals::Result> signals =
+  std::vector<std::string> bidder_signals_vector{"key1", "key2", "key2", "key1",
+                                                 "key2"};
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key1,key2"),
-          kBaseBiddingJson, bidder_signals, kHostname);
+          kBaseBiddingJson,
+          std::set<std::string>{bidder_signals_vector.begin(),
+                                bidder_signals_vector.end()},
+          kHostname);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1,"key2":[2]})",
-            ExtractBiddingSignals(signals.get(), bidder_signals));
+            ExtractBiddingSignals(signals.get(), bidder_signals_vector));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsDuplicateKeys) {
-  std::vector<std::string> ad_component_render_urls{
+  std::vector<std::string> ad_component_render_urls_vector{
       "https://barsub.test/", "https://foosub.test/", "https://foosub.test/",
       "https://barsub.test/"};
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%2Ffoo.test%2F"
@@ -451,7 +458,9 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDuplicateKeys) {
           /*render_urls=*/
           {"https://foo.test/", "https://foo.test/", "https://bar.test/",
            "https://bar.test/", "https://foo.test/"},
-          ad_component_render_urls, kHostname);
+          std::set<std::string>{ad_component_render_urls_vector.begin(),
+                                ad_component_render_urls_vector.end()},
+          kHostname);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"renderUrl":{"https://bar.test/":[2]},")"
@@ -459,14 +468,14 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDuplicateKeys) {
             R"("https://barsub.test/":[3],"https://foosub.test/":2}})",
             ExtractScoringSignals(signals.get(),
                                   /*render_url=*/GURL("https://bar.test/"),
-                                  ad_component_render_urls));
+                                  ad_component_render_urls_vector));
 }
 
 // Test when a single URL is used as both a `renderUrl` and
 // `adComponentRenderUrl`.
 TEST_F(TrustedSignalsTest, ScoringSignalsSharedUrl) {
   // URLs are currently added in lexical order.
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Fshared.test%2F"
@@ -488,7 +497,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsSharedUrl) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/"
                "?hostname=pub+li%26sher&keys=key+6,key%2C8,key%3D7"),
@@ -500,7 +509,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsEscapeQueryParams) {
-  std::unique_ptr<TrustedSignals::Result> signals =
+  scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           GURL("https://url.test/?hostname=pub+li%26sher"
                "&renderUrls=https%3A%2F%2Ffoo.test%2F%3F%26%3D"
@@ -540,7 +549,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsDeleteBeforeCallback) {
 
   auto bidding_signals = TrustedSignals::LoadBiddingSignals(
       &url_loader_factory_, {"key1"}, "publisher", base_url_, v8_helper_,
-      base::BindOnce([](std::unique_ptr<TrustedSignals::Result> result,
+      base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
       }));
@@ -564,7 +573,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
       &url_loader_factory_,
       /*render_urls=*/{"http://foo.test/"},
       /*ad_component_render_urls=*/{}, "publisher", base_url_, v8_helper_,
-      base::BindOnce([](std::unique_ptr<TrustedSignals::Result> result,
+      base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
       }));

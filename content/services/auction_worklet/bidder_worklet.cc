@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -224,7 +225,9 @@ void BidderWorklet::GenerateBid(
       !trusted_bidding_signals_keys_->empty()) {
     generate_bid_task->trusted_bidding_signals =
         TrustedSignals::LoadBiddingSignals(
-            url_loader_factory_.get(), *trusted_bidding_signals_keys_,
+            url_loader_factory_.get(),
+            std::set<std::string>(trusted_bidding_signals_keys_->begin(),
+                                  trusted_bidding_signals_keys_->end()),
             top_window_origin.host(), *trusted_bidding_signals_url_, v8_helper_,
             base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                            base::Unretained(this), generate_bid_task));
@@ -386,7 +389,7 @@ void BidderWorklet::V8State::GenerateBid(
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_seller_origin,
     base::Time auction_start_time,
-    std::unique_ptr<TrustedSignals::Result> trusted_bidding_signals_result,
+    scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
     GenerateBidCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 
@@ -717,7 +720,7 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
 
 void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     GenerateBidTaskList::iterator task,
-    std::unique_ptr<TrustedSignals::Result> result,
+    scoped_refptr<TrustedSignals::Result> result,
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 

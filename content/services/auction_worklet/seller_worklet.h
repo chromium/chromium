@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -128,17 +129,16 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
 
-    void ScoreAd(
-        const std::string& ad_metadata_json,
-        double bid,
-        blink::mojom::AuctionAdConfigPtr auction_config,
-        std::unique_ptr<TrustedSignals::Result> trusted_scoring_signals,
-        const url::Origin& browser_signal_top_window_origin,
-        const url::Origin& browser_signal_interest_group_owner,
-        const GURL& browser_signal_render_url,
-        const std::vector<std::string>& browser_signal_ad_components,
-        uint32_t browser_signal_bidding_duration_msecs,
-        ScoreAdCallbackInternal callback);
+    void ScoreAd(const std::string& ad_metadata_json,
+                 double bid,
+                 blink::mojom::AuctionAdConfigPtr auction_config,
+                 scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
+                 const url::Origin& browser_signal_top_window_origin,
+                 const url::Origin& browser_signal_interest_group_owner,
+                 const GURL& browser_signal_render_url,
+                 const std::vector<std::string>& browser_signal_ad_components,
+                 uint32_t browser_signal_bidding_duration_msecs,
+                 ScoreAdCallbackInternal callback);
 
     void ReportResult(blink::mojom::AuctionAdConfigPtr auction_config,
                       const url::Origin& browser_signal_top_window_origin,
@@ -196,7 +196,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   // V8 thread.
   void OnTrustedScoringSignalsDownloaded(
       ScoreAdTaskList::iterator task,
-      std::unique_ptr<TrustedSignals::Result> result,
+      scoped_refptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
 
   void DeliverScoreAdCallbackOnUserThread(ScoreAdTaskList::iterator task,
