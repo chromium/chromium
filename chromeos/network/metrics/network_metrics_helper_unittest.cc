@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,8 +45,18 @@ const char kWifiOpenConnectResultAllHistogram[] =
 const char kWifiPasswordProtectedConnectResultAllHistogram[] =
     "Network.WiFi.SecurityPasswordProtected.ConnectionResult.All";
 
+// LogAllConnectionResult() Ethernet histograms.
+const char kEthernetConnectResultAllHistogram[] =
+    "Network.Ethernet.ConnectionResult.All";
+const char kEthernetEapConnectResultAllHistogram[] =
+    "Network.Ethernet.Eap.ConnectionResult.All";
+const char kEthernetNoEapConnectResultAllHistogram[] =
+    "Network.Ethernet.NoEap.ConnectionResult.All";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
+const char kTestServicePath1[] = "/service/network1";
+const char kTestDevicePath[] = "/device/network";
 const char kTestName[] = "network_name";
 const char kTestVpnHost[] = "test host";
 
@@ -199,6 +210,55 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiPasswordProtected) {
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultAllHistogram, 1);
+}
+
+TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetNoEap) {
+  shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                    shill::kTypeEthernet, shill::kStateIdle,
+                                    /*visible=*/true);
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kSecurityClassProperty,
+                                            base::Value(shill::kSecurityNone));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                               shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kEthernetConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
+                                      1);
+}
+
+TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetEap) {
+  ShillDeviceClient::TestInterface* device_test =
+      network_handler_test_helper_->device_test();
+  device_test->ClearDevices();
+  device_test->AddDevice(kTestDevicePath, shill::kTypeEthernet, kTestName);
+  shill_service_client_->AddService(kTestServicePath1, kTestGuid, kTestName,
+                                    shill::kTypeEthernetEap, shill::kStateIdle,
+                                    /*visible=*/true);
+  shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                    shill::kTypeEthernet, shill::kStateIdle,
+                                    /*visible=*/true);
+
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kStateProperty, base::Value(shill::kStateReady));
+
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kSecurityClassProperty,
+                                            base::Value(shill::kSecurity8021x));
+
+  device_test->SetDeviceProperty(kTestDevicePath,
+                                 shill::kEapAuthenticationCompletedProperty,
+                                 base::Value(true), /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                               shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kEthernetConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
+                                      0);
 }
 
 }  // namespace chromeos

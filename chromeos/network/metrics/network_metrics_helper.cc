@@ -44,8 +44,19 @@ const std::vector<std::string> GetCellularNetworkTypeHistogams(
 
 const std::vector<std::string> GetEthernetNetworkTypeHistograms(
     const NetworkState* network_state) {
-  // TODO(b/207589664): Determine histogram variant names for Ethernet.
-  return {};
+  const std::string kEthernetPrefix = "Ethernet";
+  const std::string kEapInfix = ".Eap";
+  const std::string kNoEapInfix = ".NoEap";
+
+  std::vector<std::string> ethernet_histograms{kEthernetPrefix};
+  if (GetNetworkStateHandler()->GetEAPForEthernet(network_state->path(),
+                                                  /*connected_only=*/true)) {
+    ethernet_histograms.emplace_back(kEthernetPrefix + kEapInfix);
+  } else {
+    ethernet_histograms.emplace_back(kEthernetPrefix + kNoEapInfix);
+  }
+
+  return ethernet_histograms;
 }
 
 const std::vector<std::string> GetWifiNetworkTypeHistograms(
