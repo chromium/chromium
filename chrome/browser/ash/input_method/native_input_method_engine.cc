@@ -49,7 +49,6 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }
 
-// TODO(https://crbug/1166082): Use a separate InputMethodEngine for rule-based.
 bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
