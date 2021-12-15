@@ -149,10 +149,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // Returns the type of the frame. Refer to frame_type.h for the details.
   FrameType GetFrameType() const;
 
-  // Gets the total number of descendants to this FrameTreeNode in addition to
-  // this node.
-  size_t GetFrameTreeSize() const;
-
   // Assigns a new opener for this node and, if |opener| is non-null, registers
   // an observer that will clear this node's opener if |opener| is ever
   // destroyed.

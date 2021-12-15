@@ -309,20 +309,6 @@ FrameType FrameTreeNode::GetFrameType() const {
   }
 }
 
-size_t FrameTreeNode::GetFrameTreeSize() const {
-  if (is_collapsed())
-    return 0;
-
-  size_t size = 0;
-  for (size_t i = 0; i < child_count(); i++) {
-    size += child_at(i)->GetFrameTreeSize();
-  }
-
-  // Account for this node.
-  size++;
-  return size;
-}
-
 void FrameTreeNode::SetOpener(FrameTreeNode* opener) {
   if (opener_) {
     opener_->RemoveObserver(opener_observer_.get());

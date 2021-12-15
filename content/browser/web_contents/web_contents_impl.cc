@@ -530,6 +530,22 @@ class DefaultColorProviderSource : public ui::ColorProviderSource,
       native_theme_observation_{this};
 };
 
+size_t GetFrameTreeSize(FrameTree* frame_tree) {
+  size_t tree_size = 0;
+  FrameTree::NodeRange node_range = frame_tree->NodesIncludingInnerTreeNodes();
+  FrameTree::NodeIterator node_iter = node_range.begin();
+  while (node_iter != node_range.end()) {
+    // Skip over collapsed frame trees.
+    if ((*node_iter)->is_collapsed()) {
+      node_iter.AdvanceSkippingChildren();
+    } else {
+      ++tree_size;
+      ++node_iter;
+    }
+  }
+  return tree_size;
+}
+
 }  // namespace
 
 CreatedWindow::CreatedWindow() = default;
@@ -5550,8 +5566,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // Navigation has completed in main frame. Reset |max_loaded_frame_count_|.
     // |max_loaded_frame_count_| is not necessarily 1 if the navigation was
     // served from BackForwardCache.
-    max_loaded_frame_count_ =
-        GetMainFrame()->frame_tree_node()->GetFrameTreeSize();
+    max_loaded_frame_count_ = GetFrameTreeSize(&primary_frame_tree_);
   }
 
   if (web_preferences_) {
@@ -6046,11 +6061,11 @@ void WebContentsImpl::OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
     observers_.NotifyObservers(&WebContentsObserver::DidFinishLoad,
                                render_frame_host, validated_url);
   }
-  size_t tree_size = primary_frame_tree_.root()->GetFrameTreeSize();
+  size_t tree_size = GetFrameTreeSize(&primary_frame_tree_);
   if (max_loaded_frame_count_ < tree_size)
     max_loaded_frame_count_ = tree_size;
 
-  if (!render_frame_host->GetParent())
+  if (!render_frame_host->GetParentOrOuterDocument())
     UMA_HISTOGRAM_COUNTS_1000("Navigation.MainFrame.FrameCount", tree_size);
 }
 
