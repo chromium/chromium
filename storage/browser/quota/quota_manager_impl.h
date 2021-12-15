@@ -395,6 +395,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   static constexpr int kEvictionIntervalInMilliSeconds =
       30 * kMinutesInMilliSeconds;
   static constexpr int kThresholdOfErrorsToBeDenylisted = 3;
+  static constexpr int kThresholdOfErrorsToDisableDatabase = 3;
   static constexpr int kThresholdRandomizationPercent = 5;
 
   static constexpr char kDatabaseName[] = "QuotaManager";
@@ -632,6 +633,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // points to never changes), and the underlying object is thread-safe.
   const scoped_refptr<QuotaManagerProxy> proxy_;
 
+  int db_error_count_ = 0;
   bool db_disabled_ = false;
   bool eviction_disabled_ = false;
   absl::optional<blink::StorageKey>

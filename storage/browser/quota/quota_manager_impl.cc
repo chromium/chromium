@@ -283,6 +283,7 @@ constexpr int64_t QuotaManagerImpl::kNoLimit;
 constexpr int64_t QuotaManagerImpl::kPerHostPersistentQuotaLimit;
 constexpr int QuotaManagerImpl::kEvictionIntervalInMilliSeconds;
 constexpr int QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted;
+constexpr int QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase;
 constexpr int QuotaManagerImpl::kThresholdRandomizationPercent;
 constexpr char QuotaManagerImpl::kDatabaseName[];
 constexpr char QuotaManagerImpl::kEvictedBucketAccessedCountHistogram[];
@@ -1098,6 +1099,10 @@ void QuotaManagerImpl::GetOrCreateBucket(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetOrCreateBucketOnDBThread, storage_key, bucket_name),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
@@ -1112,6 +1117,10 @@ void QuotaManagerImpl::CreateBucketForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&CreateBucketOnDBThread, storage_key, bucket_name,
                      storage_type),
@@ -1127,6 +1136,10 @@ void QuotaManagerImpl::GetBucket(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetBucketOnDBThread, storage_key, bucket_name, type),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
@@ -1138,6 +1151,10 @@ void QuotaManagerImpl::GetStorageKeysForType(blink::mojom::StorageType type,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(std::set<StorageKey>());
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetStorageKeysForTypeOnDBThread, type),
       base::BindOnce(&QuotaManagerImpl::DidGetStorageKeys,
@@ -1150,6 +1167,10 @@ void QuotaManagerImpl::GetBucketsForType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetBucketsForTypeOnDBThread, type),
       base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
@@ -1163,6 +1184,10 @@ void QuotaManagerImpl::GetBucketsForHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetBucketsForHostOnDBThread, host, type),
       base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
@@ -1176,6 +1201,10 @@ void QuotaManagerImpl::GetBucketsForStorageKey(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetBucketsForStorageKeyOnDBThread, storage_key, type),
       base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
@@ -1322,6 +1351,10 @@ void QuotaManagerImpl::FindAndDeleteBucketData(const StorageKey& storage_key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kErrorInvalidAccess);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetBucketOnDBThread, storage_key, bucket_name,
                      StorageType::kTemporary),
@@ -1421,7 +1454,6 @@ void QuotaManagerImpl::SetPersistentHostQuota(const std::string& host,
                             -1);
     return;
   }
-
   int64_t* new_quota_ptr = new int64_t(new_quota);
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&SetPersistentHostQuotaOnDBThread, host,
@@ -1483,6 +1515,11 @@ void QuotaManagerImpl::GetBucketsModifiedBetween(StorageType type,
                                                  GetBucketsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
+
+  if (db_disabled_) {
+    std::move(callback).Run(std::set<BucketLocator>(), type);
+    return;
+  }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetModifiedBetweenOnDBThread, type, begin, end),
       base::BindOnce(&QuotaManagerImpl::DidGetModifiedBetween,
@@ -1719,6 +1756,10 @@ void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
 
 void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaTableEntries());
+    return;
+  }
   DumpQuotaTableHelper* helper = new DumpQuotaTableHelper;
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&DumpQuotaTableHelper::DumpQuotaTableOnDBThread,
@@ -1730,6 +1771,10 @@ void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
 
 void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_disabled_) {
+    std::move(callback).Run(BucketTableEntries());
+    return;
+  }
   DumpBucketTableHelper* helper = new DumpBucketTableHelper;
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&DumpBucketTableHelper::DumpBucketTableOnDBThread,
@@ -1799,6 +1844,10 @@ void QuotaManagerImpl::DeleteBucketDataInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
+  if (db_disabled_) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kErrorInvalidAccess);
+    return;
+  }
   BucketDataDeleter* deleter =
       new BucketDataDeleter(this, bucket, std::move(quota_client_types),
                             is_eviction, std::move(callback));
@@ -2240,7 +2289,12 @@ void QuotaManagerImpl::DidGetStorageCapacity(
 
 void QuotaManagerImpl::DidDatabaseWork(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  db_disabled_ = !success;
+  if (success)
+    return;
+
+  db_error_count_++;
+  if (db_error_count_ >= QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase)
+    db_disabled_ = true;
 }
 
 void QuotaManagerImpl::OnComplete(QuotaError result) {

@@ -746,6 +746,31 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                                 UsageInfo("example.com", kPerm, 40)));
 }
 
+TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
+  OpenDatabase();
+
+  // Disable quota database for database error behavior.
+  disable_quota_database(true);
+
+  ASSERT_FALSE(is_db_disabled());
+
+  StorageKey storage_key = ToStorageKey("http://a.com/");
+  std::string bucket_name = "bucket_a";
+
+  GetOrCreateBucket(storage_key, bucket_name);
+  ASSERT_FALSE(bucket_.ok());
+  ASSERT_FALSE(is_db_disabled());
+
+  GetOrCreateBucket(storage_key, bucket_name);
+  ASSERT_FALSE(bucket_.ok());
+  ASSERT_FALSE(is_db_disabled());
+
+  // Disables access to QuotaDatabase after error counts passes threshold.
+  GetBucket(storage_key, bucket_name, kTemp);
+  ASSERT_FALSE(bucket_.ok());
+  ASSERT_TRUE(is_db_disabled());
+}
+
 TEST_F(QuotaManagerImplTest, GetOrCreateBucket) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
