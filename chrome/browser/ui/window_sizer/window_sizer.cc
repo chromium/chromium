@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -146,6 +146,13 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
   // If set, is used as the reference browser for GetLastActiveWindowState.
   raw_ptr<const Browser> browser_;
 };
+
+// This function, unlike base::clamp(), does not check if `min` is greater than
+// `max`, and returns a bogus answer if it is. TODO(crbug.com/1235666) migrate
+// all code that calls this function to use base::clamp() instead.
+constexpr int BrokenClampThatShouldNotBeUsed(int value, int min, int max) {
+  return std::min(std::max(value, min), max);
+}
 
 }  // namespace
 
@@ -324,9 +331,9 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
     bounds->set_height(std::min(bounds->height(), work_area.height()));
     // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
     // and migrate to base::clamp().
-    bounds->set_x(base::BrokenClampThatShouldNotBeUsed(
+    bounds->set_x(BrokenClampThatShouldNotBeUsed(
         bounds->x(), work_area.x(), work_area.right() - bounds->width()));
-    bounds->set_y(base::BrokenClampThatShouldNotBeUsed(
+    bounds->set_y(BrokenClampThatShouldNotBeUsed(
         bounds->y(), work_area.y(), work_area.bottom() - bounds->height()));
   }
 
@@ -357,10 +364,8 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   const int max_x = work_area.right() - kMinVisibleWidth;
   // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
   // and migrate to base::clamp().
-  bounds->set_y(
-      base::BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));
-  bounds->set_x(
-      base::BrokenClampThatShouldNotBeUsed(bounds->x(), min_x, max_x));
+  bounds->set_y(BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));
+  bounds->set_x(BrokenClampThatShouldNotBeUsed(bounds->x(), min_x, max_x));
 #endif  // defined(OS_MAC)
 }
 

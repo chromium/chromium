@@ -33,7 +33,6 @@ include_rules = [
     "+base/memory/scoped_refptr.h",
     "+base/memory/tagging.h",
     "+base/no_destructor.h",
-    "+base/numerics/ranges.h",
     "+base/posix/eintr_wrapper.h",
     "+base/process/memory.h",
     "+base/rand_util.h",
