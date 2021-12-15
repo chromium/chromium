@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 
+#include "base/no_destructor.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 #include "chromeos/services/secure_channel/secure_channel_base.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"

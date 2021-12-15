@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 
 namespace chromeos {

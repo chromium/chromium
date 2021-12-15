@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/native_theme_android.h"
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "ui/gfx/geometry/size.h"
 

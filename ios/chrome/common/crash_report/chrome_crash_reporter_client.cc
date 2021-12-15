@@ -5,6 +5,7 @@
 #include "ios/chrome/common/crash_report/chrome_crash_reporter_client.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "ios/chrome/common/crash_report/crash_helper.h"
 
 void ChromeCrashReporterClient::Create() {

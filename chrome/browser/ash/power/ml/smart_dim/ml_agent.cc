@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"

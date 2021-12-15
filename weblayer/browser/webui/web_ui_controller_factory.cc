@@ -5,6 +5,7 @@
 #include "weblayer/browser/webui/web_ui_controller_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 #include "weblayer/browser/webui/net_export_ui.h"

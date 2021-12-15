@@ -5,6 +5,7 @@
 #include "ios/web/browser_url_rewriter_impl.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"

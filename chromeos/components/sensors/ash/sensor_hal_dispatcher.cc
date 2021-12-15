@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
 
 namespace chromeos {
 namespace sensors {

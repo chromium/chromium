@@ -14,6 +14,7 @@
 #include "base/ios/device_util.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

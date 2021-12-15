@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/animation/animation.h"

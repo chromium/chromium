@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"

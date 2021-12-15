@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/client_hints_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/client_hints/browser/client_hints.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

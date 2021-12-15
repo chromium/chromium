@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/profiles/profile.h"

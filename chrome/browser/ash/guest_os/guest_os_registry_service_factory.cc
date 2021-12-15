@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

@@ -18,6 +18,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/string_resources.h"

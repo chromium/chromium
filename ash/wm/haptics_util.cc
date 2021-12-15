@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/haptics_util.h"
-#include "base/no_destructor.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"

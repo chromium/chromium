@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"

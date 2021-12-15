@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 
 namespace mojo_bootstrap {
 

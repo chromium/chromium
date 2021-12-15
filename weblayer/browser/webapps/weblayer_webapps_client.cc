@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

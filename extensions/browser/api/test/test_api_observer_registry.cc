@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 
 namespace extensions {
 

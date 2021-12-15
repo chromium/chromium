@@ -12,7 +12,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"

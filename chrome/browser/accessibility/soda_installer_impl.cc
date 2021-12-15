@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"

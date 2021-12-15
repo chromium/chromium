@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/commerce/merchant_viewer/android/jni_headers/MerchantTrustSignalsEventStorage_jni.h"
 #include "chrome/browser/commerce/merchant_viewer/android/jni_headers/MerchantTrustSignalsEvent_jni.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"

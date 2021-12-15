@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"

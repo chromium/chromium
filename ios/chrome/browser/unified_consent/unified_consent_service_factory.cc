@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"

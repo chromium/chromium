@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/BrowserAccessibilityState_jni.h"
 #include "content/public/browser/browser_thread.h"

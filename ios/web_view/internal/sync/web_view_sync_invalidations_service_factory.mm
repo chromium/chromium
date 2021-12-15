@@ -4,6 +4,7 @@
 
 #include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"

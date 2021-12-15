@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

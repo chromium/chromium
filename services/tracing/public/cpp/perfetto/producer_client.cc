@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/task/post_task.h"
 #include "base/tracing/tracing_tls.h"

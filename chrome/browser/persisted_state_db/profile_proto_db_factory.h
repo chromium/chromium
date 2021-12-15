@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_FACTORY_H_
 #define CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

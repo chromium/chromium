@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 
 namespace optimization_guide {
 

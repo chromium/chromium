@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"

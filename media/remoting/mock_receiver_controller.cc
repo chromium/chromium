@@ -5,6 +5,7 @@
 #include "media/remoting/mock_receiver_controller.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/remoting/test_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"

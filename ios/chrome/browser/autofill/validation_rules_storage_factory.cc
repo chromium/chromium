@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/autofill/validation_rules_storage_factory.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "components/prefs/json_pref_store.h"
 #include "ios/chrome/browser/chrome_paths.h"

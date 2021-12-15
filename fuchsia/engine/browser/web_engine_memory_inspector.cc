@@ -8,6 +8,7 @@
 #include <lib/inspect/cpp/inspector.h>
 #include <sstream>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "fuchsia/base/config_reader.h"

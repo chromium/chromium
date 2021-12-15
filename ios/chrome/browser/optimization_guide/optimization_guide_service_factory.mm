@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 
 #import "base/feature_list.h"
+#import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"

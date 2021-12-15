@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"

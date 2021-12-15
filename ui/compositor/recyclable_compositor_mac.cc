@@ -5,6 +5,7 @@
 #include "ui/compositor/recyclable_compositor_mac.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/features.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"

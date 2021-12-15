@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"

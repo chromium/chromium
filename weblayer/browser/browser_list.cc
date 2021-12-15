@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 
+#include "base/no_destructor.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/browser_list_observer.h"
 

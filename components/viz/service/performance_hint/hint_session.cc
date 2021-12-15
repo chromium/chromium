@@ -17,7 +17,6 @@
 #include "base/android/build_info.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 
 static_assert(sizeof(base::PlatformThreadId) == sizeof(int32_t),

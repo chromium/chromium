@@ -5,6 +5,7 @@
 #include "ui/gl/shader_tracking.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "ui/gl/gl_switches.h"
 
 namespace gl {

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/cpu_affinity_posix.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process_metrics.h"
 #include "base/task/task_observer.h"
 #include "components/power_scheduler/power_mode_arbiter.h"

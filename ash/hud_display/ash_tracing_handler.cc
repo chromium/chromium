@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"

@@ -16,7 +16,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"

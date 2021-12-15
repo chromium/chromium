@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"

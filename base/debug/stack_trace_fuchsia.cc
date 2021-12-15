@@ -24,7 +24,6 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/elf_reader.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 
 namespace base {
 namespace debug {

@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/permissions/weblayer_permissions_client.h"
 
+#include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"

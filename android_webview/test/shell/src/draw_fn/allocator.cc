@@ -6,6 +6,7 @@
 
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 
 namespace draw_fn {

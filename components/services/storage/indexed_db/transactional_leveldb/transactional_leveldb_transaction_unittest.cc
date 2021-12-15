@@ -15,7 +15,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"

@@ -4,7 +4,6 @@
 
 #include "remoting/host/remote_open_url/remote_open_url_constants.h"
 
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 
 namespace remoting {

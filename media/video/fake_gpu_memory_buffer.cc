@@ -5,7 +5,6 @@
 #include "media/video/fake_gpu_memory_buffer.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"

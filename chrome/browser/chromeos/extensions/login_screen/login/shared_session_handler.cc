@@ -8,6 +8,7 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"

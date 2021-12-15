@@ -15,7 +15,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "chromeos/components/string_matching/sequence_matcher.h"

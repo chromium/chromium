@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/common/password_form_fill_data.h"

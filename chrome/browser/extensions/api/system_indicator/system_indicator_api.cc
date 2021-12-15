@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_api.h"
 
-#include "base/no_destructor.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
 
+#include "base/no_destructor.h"
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

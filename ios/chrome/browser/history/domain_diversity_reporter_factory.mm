@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/history/domain_diversity_reporter_factory.h"
 
 #import "base/bind.h"
+#import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "build/build_config.h"
 #import "components/history/metrics/domain_diversity_reporter.h"

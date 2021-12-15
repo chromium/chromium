@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.h"

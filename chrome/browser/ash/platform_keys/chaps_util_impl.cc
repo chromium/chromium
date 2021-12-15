@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
 #include "crypto/chaps_support.h"

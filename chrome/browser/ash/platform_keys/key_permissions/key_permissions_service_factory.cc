@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"

@@ -9,6 +9,7 @@
 #include <atspi/atspi.h>
 
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"

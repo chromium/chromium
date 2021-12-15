@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/disable_reason.h"

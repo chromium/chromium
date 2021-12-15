@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/com_classes.h"

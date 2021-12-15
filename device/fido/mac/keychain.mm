@@ -4,6 +4,8 @@
 
 #include "device/fido/mac/keychain.h"
 
+#include "base/no_destructor.h"
+
 namespace device {
 namespace fido {
 namespace mac {

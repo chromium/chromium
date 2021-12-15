@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/crosh_loader_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/web_applications/crosh_loader.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"

@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
-#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"

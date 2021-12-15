@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chromecast/browser/extensions/cast_extension_system_factory.h"
 #include "chromecast/common/cast_redirect_manifest_handler.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_registry_simple.h"

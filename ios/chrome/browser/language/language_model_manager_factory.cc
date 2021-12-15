@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/language_model.h"

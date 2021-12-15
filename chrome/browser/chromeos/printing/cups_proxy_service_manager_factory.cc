@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/cups_proxy_service_manager_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/cups_proxy_service_manager.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

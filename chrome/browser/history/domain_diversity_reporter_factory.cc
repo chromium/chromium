@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"

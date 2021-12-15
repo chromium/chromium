@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {

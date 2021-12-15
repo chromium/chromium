@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"

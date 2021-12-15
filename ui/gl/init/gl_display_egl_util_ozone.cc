@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
 
+#include "base/no_destructor.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 

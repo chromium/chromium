@@ -5,7 +5,6 @@
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"

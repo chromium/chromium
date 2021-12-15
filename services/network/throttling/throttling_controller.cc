@@ -4,6 +4,7 @@
 
 #include "services/network/throttling/throttling_controller.h"
 
+#include "base/no_destructor.h"
 #include "net/http/http_request_info.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/scoped_throttling_token.h"

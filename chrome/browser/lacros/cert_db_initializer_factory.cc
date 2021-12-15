@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/profile.h"

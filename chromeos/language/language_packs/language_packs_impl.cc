@@ -5,6 +5,8 @@
 #include <string>
 
 #include "chromeos/language/language_packs/language_packs_impl.h"
+
+#include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

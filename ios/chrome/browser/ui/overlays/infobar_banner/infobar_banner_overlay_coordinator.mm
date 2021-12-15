@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
-#include "base/no_destructor.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"

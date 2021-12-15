@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"

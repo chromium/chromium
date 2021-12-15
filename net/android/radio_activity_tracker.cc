@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "net/base/features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

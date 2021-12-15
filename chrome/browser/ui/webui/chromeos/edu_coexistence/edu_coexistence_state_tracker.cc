@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/web/navigation/navigation_java_script_feature.h"
+
+#import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"

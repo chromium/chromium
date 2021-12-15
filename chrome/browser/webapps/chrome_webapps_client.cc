@@ -5,6 +5,7 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

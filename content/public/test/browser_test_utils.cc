@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "base/process/kill.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"

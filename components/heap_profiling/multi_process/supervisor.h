@@ -6,6 +6,7 @@
 #define COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"

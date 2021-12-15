@@ -7,6 +7,8 @@
 
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 
+#include "base/no_destructor.h"
+
 namespace performance_manager {
 namespace mechanism {
 

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

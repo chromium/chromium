@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"

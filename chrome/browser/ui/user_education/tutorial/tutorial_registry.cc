@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/android/signin/signin_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

@@ -15,7 +15,6 @@
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"

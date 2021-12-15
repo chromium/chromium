@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 

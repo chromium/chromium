@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"

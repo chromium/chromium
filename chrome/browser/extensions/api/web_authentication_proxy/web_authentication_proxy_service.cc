@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

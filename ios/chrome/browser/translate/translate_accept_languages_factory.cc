@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"

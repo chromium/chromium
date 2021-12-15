@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/tts_lacros.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"

@@ -19,7 +19,6 @@
 
 #if defined(OS_ANDROID)
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"

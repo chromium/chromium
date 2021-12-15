@@ -5,6 +5,7 @@
 #include "ui/gfx/win/crash_id_helper.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 
 namespace gfx {

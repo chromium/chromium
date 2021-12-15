@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/script_message.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"

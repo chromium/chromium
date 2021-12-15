@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
