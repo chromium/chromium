@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -63,6 +64,7 @@ public class TabObserverRegistrarTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1269017")
     public void testObserveActiveTab() throws Throwable {
         EmbeddedTestServer testServer = mCustomTabActivityTestRule.getTestServer();
         final String windowOpenUrl =
