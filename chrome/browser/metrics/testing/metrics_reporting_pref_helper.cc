@@ -22,9 +22,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
-void SetMetricsReportingEnabledChromeOS(
-    bool is_enabled,
-    base::DictionaryValue* local_state_dict) {
+void SetMetricsReportingEnabledChromeOS(bool is_enabled,
+                                        base::Value& local_state_dict) {
   namespace em = enterprise_management;
   em::ChromeDeviceSettingsProto device_settings_proto;
   device_settings_proto.mutable_metrics_enabled()->set_metrics_enabled(
@@ -32,7 +31,7 @@ void SetMetricsReportingEnabledChromeOS(
   em::PolicyData policy_data;
   policy_data.set_policy_type("google/chromeos/device");
   policy_data.set_policy_value(device_settings_proto.SerializeAsString());
-  local_state_dict->SetString(
+  local_state_dict.SetStringKey(
       prefs::kDeviceSettingsCache,
       ash::device_settings_cache::PolicyDataToString(policy_data));
 }
@@ -43,9 +42,9 @@ void SetMetricsReportingEnabledChromeOS(
 namespace metrics {
 
 base::FilePath SetUpUserDataDirectoryForTesting(bool is_enabled) {
-  base::DictionaryValue local_state_dict;
-  local_state_dict.SetBoolean(metrics::prefs::kMetricsReportingEnabled,
-                              is_enabled);
+  base::Value local_state_dict(base::Value::Type::DICTIONARY);
+  local_state_dict.SetBoolPath(metrics::prefs::kMetricsReportingEnabled,
+                               is_enabled);
 
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
@@ -53,7 +52,7 @@ base::FilePath SetUpUserDataDirectoryForTesting(bool is_enabled) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS checks a separate place for reporting enabled.
-  SetMetricsReportingEnabledChromeOS(is_enabled, &local_state_dict);
+  SetMetricsReportingEnabledChromeOS(is_enabled, local_state_dict);
 #endif
 
   base::FilePath local_state_path =
