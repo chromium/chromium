@@ -669,8 +669,14 @@ static void Write(WTF::TextStream& ts,
               layer.GetLayoutObject().StyleRef().GetBlendMode());
   }
 
-  if ((behavior & kLayoutAsTextShowPaintProperties) && layer.SelfNeedsRepaint())
-    ts << " needsRepaint";
+  if (behavior & kLayoutAsTextShowPaintProperties) {
+    if (layer.SelfOrDescendantNeedsRepaint())
+      ts << " needsRepaint";
+    if (layer.NeedsCullRectUpdate())
+      ts << " needsCullRectUpdate";
+    if (layer.DescendantNeedsCullRectUpdate())
+      ts << " descendantNeedsCullRectUpdate";
+  }
 
   ts << "\n";
 
