@@ -9569,6 +9569,7 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
+          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },

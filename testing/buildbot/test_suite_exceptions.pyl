@@ -30,6 +30,11 @@
           'shards': 2,
         },
       },
+      'android-marshmallow-arm64-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
       'android-marshmallow-arm64-rel-rts': {
         'swarming': {
           'shards': 2,
@@ -38,6 +43,7 @@
       'android-marshmallow-x86-rel': {
         'swarming': {
           'shards': 2,
+          'quickrun_shards': 4,
         },
       },
       'android-pie-arm64-rel': {
@@ -53,6 +59,7 @@
             },
           ],
           'shards': 2,
+          'quickrun_shards': 4,
         },
       },
       'android-pie-x86-rel': {
@@ -565,6 +572,7 @@
         # crbug.com/794372
         'swarming': {
           'shards': 40,
+          'quickrun_shards': 80
         },
       },
       'Linux ASan Tests (sandboxed)': {
@@ -594,6 +602,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
+        'swarming': {
+          'quickrun_shards': 24,
+        },
       },
       'Linux Tests (dbg)(1)': {
         # crbug.com/1066161
@@ -714,6 +725,7 @@
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 20,
+          'quickrun_shards': 40,
           'dimension_sets': [
             {
               'kvm': '1',
@@ -743,6 +755,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
         ],
+        'swarming': {
+          'quickrun_shards': 20,
+        },
       },
       'linux-trusty-rel': {
        'args': [
@@ -1194,6 +1209,7 @@
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 12,
+          'quickrun_shards': 24,
         },
       },
       'Linux ASan Tests (sandboxed)': {
@@ -1285,6 +1301,11 @@
         'swarming': {
           'shards': 20,
         },
+      },
+      'android-pie-arm64-rel': {
+        'swarming': {
+          'quickrun_shards': 30
+        }
       },
       'android-pie-x86-rel': {
         'args': [
@@ -1815,6 +1836,7 @@
         # These are slow on the ASan trybot for some reason, crbug.com/794372
         'swarming': {
           'shards': 6,
+          'quickrun_shards': 12,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -1838,6 +1860,11 @@
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
+      },
+      'Mac11 Tests': {
+        'swarming': {
+          'quickrun_shards': 6,
+        },
       },
       'Mac11 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
@@ -2469,6 +2496,11 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
+      'Mac Retina Release (AMD)': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
       'Optional Android Release (Pixel 4)': {
         'args': [
           # See above.
@@ -2657,6 +2689,11 @@
       },
     },
     'modifications': {
+      'Linux ASan LSan Tests (1)': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1264654): Fix the failed tests
