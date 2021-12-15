@@ -172,6 +172,7 @@
 #endif
 
 #if defined(OS_MAC)
+#include "base/mac/scoped_nsautorelease_pool.h"
 #include "content/browser/renderer_host/browser_compositor_view_mac.h"
 #include "content/browser/theme_helper_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -1034,6 +1035,15 @@ void BrowserMainLoop::RunMainMessageLoop() {
   auto main_run_loop = std::make_unique<base::RunLoop>();
   if (parts_)
     parts_->WillRunMainMessageLoop(main_run_loop);
+
+#if defined(OS_MAC)
+  // Call Recycle() here as late as possible, before going into the loop because
+  // previous steps may have added things to it (e.g. while creating the main
+  // window).
+  if (parameters_.autorelease_pool)
+    parameters_.autorelease_pool->Recycle();
+#endif  // defined(OS_MAC)
+
   DCHECK(main_run_loop);
   main_run_loop->Run();
 #endif  // defined(OS_ANDROID)
