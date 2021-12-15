@@ -12,21 +12,12 @@ const char kDisablePnaclCrashThrottling[]   = "disable-pnacl-crash-throttling";
 // Enables debugging via RSP over a socket.
 const char kEnableNaClDebug[]               = "enable-nacl-debug";
 
-// Enables Non-SFI mode, in which programs can be run without NaCl's SFI
-// sandbox.
-const char kEnableNaClNonSfiMode[]          = "enable-nacl-nonsfi-mode";
-
 // Force use of the Subzero as the PNaCl translator instead of LLC.
 const char kForcePNaClSubzero[] = "force-pnacl-subzero";
 
 // Value for --type that causes the process to run as a NativeClient broker
 // (used for launching NaCl loader processes on 64-bit Windows).
 const char kNaClBrokerProcess[]             = "nacl-broker";
-
-// Disable sandbox even for non SFI mode. This is particularly unsafe
-// as non SFI NaCl heavily relies on the seccomp sandbox.
-const char kNaClDangerousNoSandboxNonSfi[]  =
-    "nacl-dangerous-no-sandbox-nonsfi";
 
 // Uses NaCl manifest URL to choose whether NaCl program will be debugged by
 // debug stub.
@@ -43,10 +34,6 @@ const char kNaClGdbScript[]                 = "nacl-gdb-script";
 
 // Native Client GDB debugger that will be launched automatically when needed.
 const char kNaClGdb[]                       = "nacl-gdb";
-
-// Value for --type that causes the process to run as a NativeClient loader
-// for non SFI mode.
-const char kNaClLoaderNonSfiProcess[]       = "nacl-loader-nonsfi";
 
 // Value for --type that causes the process to run as a NativeClient loader
 // for SFI mode.

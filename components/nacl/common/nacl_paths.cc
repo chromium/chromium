@@ -16,8 +16,6 @@ namespace {
 // File name of the nacl_helper and nacl_helper_bootstrap, Linux only.
 const base::FilePath::CharType kInternalNaClHelperFileName[] =
     FILE_PATH_LITERAL("nacl_helper");
-const base::FilePath::CharType kInternalNaClHelperNonSfiFileName[] =
-    FILE_PATH_LITERAL("nacl_helper_nonsfi");
 const base::FilePath::CharType kInternalNaClHelperBootstrapFileName[] =
     FILE_PATH_LITERAL("nacl_helper_bootstrap");
 
@@ -40,8 +38,6 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     case FILE_NACL_HELPER:
       return GetNaClHelperPath(kInternalNaClHelperFileName, result);
-    case FILE_NACL_HELPER_NONSFI:
-      return GetNaClHelperPath(kInternalNaClHelperNonSfiFileName, result);
     case FILE_NACL_HELPER_BOOTSTRAP:
       return GetNaClHelperPath(kInternalNaClHelperBootstrapFileName, result);
 #endif
