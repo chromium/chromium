@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -174,6 +175,8 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 
   std::string device_address_;
   bool is_initialized_ = false;
+
+  base::TimeTicks gatt_connection_start_time_;
 
   device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
       nullptr;

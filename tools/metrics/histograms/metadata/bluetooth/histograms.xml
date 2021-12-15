@@ -248,6 +248,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to create a successful GATT connection to
+    the device. Time is calculated as the difference between when the GATT
+    connection is beginning to connect, and when it reaches the connection
+    state. If the connection attempt fails or takes longer than 5 seconds, no
+    value is logged to this metric,
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.TotalUxPairTime.{FastPairPairingProtocol}"
     units="ms" expires_after="2022-09-20">

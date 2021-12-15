@@ -73,6 +73,9 @@ void RecordPairingMethod(PairingMethod method);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordRetroactivePairingResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time);
+
 }  // namespace quick_pair
 }  // namespace ash
 

@@ -25,6 +25,8 @@ const char kRetroactiveEngagementFlowMetric[] =
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
 const char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
+const char kTotalGattConnectionTimeMetric[] =
+    "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
 
 }  // namespace
 
@@ -82,6 +84,11 @@ void RecordPairingMethod(PairingMethod method) {
 
 void RecordRetroactivePairingResult(bool success) {
   base::UmaHistogramBoolean(kRetroactivePairingResultMetric, success);
+}
+
+void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time) {
+  base::UmaHistogramTimes(kTotalGattConnectionTimeMetric,
+                          total_gatt_connection_time);
 }
 
 }  // namespace quick_pair

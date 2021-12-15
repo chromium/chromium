@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -36,6 +37,9 @@ using NotifySessionCallback = base::OnceCallback<void(
     std::unique_ptr<device::BluetoothGattNotifySession>)>;
 using ErrorCallback =
     base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>;
+
+const char kTotalGattConnectionTime[] =
+    "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
 
@@ -490,9 +494,12 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void SetWritePasskeyTimeout() { passkey_write_timeout_ = true; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
@@ -529,18 +536,29 @@ class FastPairGattServiceClientTest : public testing::Test {
 };
 
 TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   SuccessfulGattConnectionSetUp();
   FastForwardTimeByConnetingTimeout();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kGattServiceDiscoveryTimeout);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   FailedGattConnectionSetUp();
   EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+}
+
+TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, IgnoreNonFastPairServices) {
