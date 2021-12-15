@@ -127,6 +127,7 @@ class ProfilePolicyConnectorTest : public testing::Test {
   }
 
   void TearDown() override {
+    task_environment_.RunUntilIdle();
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
     cloud_policy_manager_->Shutdown();
   }
