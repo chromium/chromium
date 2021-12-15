@@ -5,6 +5,7 @@
 import("//build/config/c++/c++.gni")
 
 config("libunwind_config") {
+  defines = [ "_LIBUNWIND_IS_NATIVE_ONLY" ]
   cflags = [
     "-fstrict-aliasing",
     "-fPIC",
