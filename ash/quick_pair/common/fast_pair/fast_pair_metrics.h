@@ -21,10 +21,12 @@ enum COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairEngagementFlowEvent {
   kDiscoveryUiShown = 1,
   kDiscoveryUiDismissed = 11,
   kDiscoveryUiConnectPressed = 12,
+  kDiscoveryUiDismissedByUser = 13,
   kPairingFailed = 121,
   kPairingSucceeded = 122,
   kErrorUiDismissed = 1211,
   kErrorUiSettingsPressed = 1212,
+  kErrorUiDismissedByUser = 1213,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

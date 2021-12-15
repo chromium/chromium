@@ -67,7 +67,6 @@ void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   base::TimeDelta total_pair_time =
       base::TimeTicks::Now() - device_pairing_start_timestamps_[device];
   AttemptRecordingTotalUxPairTime(*device, total_pair_time);
-
   RecordPairingMethod(PairingMethod::kFastPair);
 
   // The classic address is assigned to the Device during the
@@ -101,6 +100,10 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
       device_pairing_start_timestamps_[device] = base::TimeTicks::Now();
       break;
     case DiscoveryAction::kDismissedByUser:
+      AttemptRecordingFastPairEngagementFlow(
+          *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser);
+      feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
+      break;
     case DiscoveryAction::kDismissed:
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissed);
@@ -118,6 +121,9 @@ void QuickPairMetricsLogger::OnPairingFailureAction(
           *device, FastPairEngagementFlowEvent::kErrorUiSettingsPressed);
       break;
     case PairingFailedAction::kDismissedByUser:
+      AttemptRecordingFastPairEngagementFlow(
+          *device, FastPairEngagementFlowEvent::kErrorUiDismissedByUser);
+      break;
     case PairingFailedAction::kDismissed:
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kErrorUiDismissed);

@@ -139,6 +139,21 @@ class QuickPairMetricsLoggerTest : public testing::Test {
   void SimulateDiscoveryUiDismissed(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
+        mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                               DiscoveryAction::kDismissed);
+        break;
+      case Protocol::kFastPairSubsequent:
+        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                               DiscoveryAction::kDismissed);
+        break;
+      case Protocol::kFastPairRetroactive:
+        break;
+    }
+  }
+
+  void SimulateDiscoveryUiDismissedByUser(Protocol protocol) {
+    switch (protocol) {
+      case Protocol::kFastPairInitial:
         mock_ui_broker_->NotifyDiscoveryAction(
             initial_device_, DiscoveryAction::kDismissedByUser);
         break;
@@ -198,7 +213,7 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     }
   }
 
-  void SimulateErrorUiDismissed(Protocol protocol) {
+  void SimulateErrorUiDismissedByUser(Protocol protocol) {
     switch (protocol) {
       case Protocol::kFastPairInitial:
         mock_ui_broker_->NotifyPairingFailedAction(
@@ -207,6 +222,21 @@ class QuickPairMetricsLoggerTest : public testing::Test {
       case Protocol::kFastPairSubsequent:
         mock_ui_broker_->NotifyPairingFailedAction(
             subsequent_device_, PairingFailedAction::kDismissedByUser);
+        break;
+      case Protocol::kFastPairRetroactive:
+        break;
+    }
+  }
+
+  void SimulateErrorUiDismissed(Protocol protocol) {
+    switch (protocol) {
+      case Protocol::kFastPairInitial:
+        mock_ui_broker_->NotifyPairingFailedAction(
+            initial_device_, PairingFailedAction::kDismissed);
+        break;
+      case Protocol::kFastPairSubsequent:
+        mock_ui_broker_->NotifyPairingFailedAction(
+            subsequent_device_, PairingFailedAction::kDismissed);
         break;
       case Protocol::kFastPairRetroactive:
         break;
@@ -354,6 +384,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShown_Initial) {
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShown_Subsequent) {
@@ -386,6 +424,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShown_Subsequent) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
 }
 
@@ -420,6 +466,55 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissed_Initial) {
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUser_Initial) {
+  SimulateDiscoveryUiDismissedByUser(Protocol::kFastPairInitial);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiShown),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kPairingFailed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kPairingSucceeded),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            1);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissed_Subsequent) {
@@ -453,6 +548,55 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUser_Subsequent) {
+  SimulateDiscoveryUiDismissedByUser(Protocol::kFastPairSubsequent);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiShown),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kPairingFailed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kPairingSucceeded),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            1);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
@@ -485,6 +629,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
 }
 
@@ -519,6 +671,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Initial) {
@@ -551,6 +711,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Initial) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
 }
 
@@ -585,6 +753,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Initial) {
@@ -617,6 +793,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Initial) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
 }
 
@@ -651,6 +835,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Initial) {
@@ -683,6 +875,55 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Initial) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUser_Initial) {
+  SimulateErrorUiDismissedByUser(Protocol::kFastPairInitial);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiShown),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kPairingFailed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kPairingSucceeded),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
 }
 
@@ -717,6 +958,55 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUser_Subsequent) {
+  SimulateErrorUiDismissedByUser(Protocol::kFastPairSubsequent);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiShown),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kPairingFailed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kPairingSucceeded),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Initial) {
@@ -750,6 +1040,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Initial) {
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricInitial,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Subsequent) {
@@ -783,6 +1081,14 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kErrorUiDismissedByUser),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairEngagementFlowMetricSubsequent,
+                FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
+            0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Initial) {
