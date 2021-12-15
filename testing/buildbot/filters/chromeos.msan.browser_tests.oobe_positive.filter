@@ -139,7 +139,6 @@ SecurityTokenSamlTest.*
 SigninToUserProfileSwitchTest.*
 SiteIsolationFlagHandlingTest.*
 StartupBrowserWindowLaunchSuppressedTest.*
-SyncConsentOptionalTest.*
 SyncConsentRecorderTest.*
 SyncConsentTest.*
 SyncConsentTimezoneOverride.*

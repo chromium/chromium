@@ -17,8 +17,8 @@ class ModelTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
-// Controls sync of Chrome OS ModelTypes that can run in transport-mode and
-// depend on the system-wide kOsSyncFeatureEnabled preference.
+// Controls sync of Chrome OS ModelTypes that can run in transport-mode.
+// TODO(https://crbug.com/1274802): Remove this.
 class OsSyncModelTypeController : public syncer::ModelTypeController {
  public:
   OsSyncModelTypeController(syncer::ModelType type,
@@ -34,17 +34,12 @@ class OsSyncModelTypeController : public syncer::ModelTypeController {
   OsSyncModelTypeController& operator=(const OsSyncModelTypeController&) =
       delete;
 
-  // DataTypeController:
-  PreconditionState GetPreconditionState() const override;
-
  private:
   // Callback for changes to the OS sync feature enabled pref.
   void OnUserPrefChanged();
 
   PrefService* const pref_service_;
   syncer::SyncService* const sync_service_;
-
-  PrefChangeRegistrar pref_registrar_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYNC_OS_SYNC_MODEL_TYPE_CONTROLLER_H_

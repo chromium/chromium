@@ -39,27 +39,7 @@ OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
          type == syncer::OS_PRIORITY_PREFERENCES);
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-
-  pref_registrar_.Init(pref_service_);
-  pref_registrar_.Add(
-      syncer::prefs::kOsSyncFeatureEnabled,
-      base::BindRepeating(
-          &OsSyncableServiceModelTypeController::OnUserPrefChanged,
-          base::Unretained(this)));
 }
 
 OsSyncableServiceModelTypeController::~OsSyncableServiceModelTypeController() =
     default;
-
-syncer::DataTypeController::PreconditionState
-OsSyncableServiceModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return pref_service_->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void OsSyncableServiceModelTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
-}

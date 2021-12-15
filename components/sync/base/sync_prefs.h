@@ -90,8 +90,6 @@ class SyncPrefs {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
-  bool IsOsSyncFeatureEnabled() const;
-  void SetOsSyncFeatureEnabled(bool enabled);
 
   // Maps |type| to its corresponding preference name. Returns nullptr if |type|
   // isn't an OS type.

@@ -8,9 +8,9 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/workspace_desk_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -42,12 +42,9 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(int templateIndex,
   return specifics;
 }
 
-// Desk Sync is a Chrome OS sync type.
-// Therefore this class should subclass from SyncConsentOptionalSyncTest.
-class SingleClientWorkspaceDeskSyncTest : public SyncConsentOptionalSyncTest {
+class SingleClientWorkspaceDeskSyncTest : public SyncTest {
  public:
-  SingleClientWorkspaceDeskSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {
+  SingleClientWorkspaceDeskSyncTest() : SyncTest(SINGLE_CLIENT) {
     kTestUuid1_ =
         base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
   }
@@ -86,22 +83,6 @@ class SingleClientWorkspaceDeskSyncTest : public SyncConsentOptionalSyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
-                       DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  syncer::SyncService* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
-
-  settings->SetOsSyncFeatureEnabled(false);
-
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
                        DownloadDeskTemplateWhenSyncEnabled) {
   // Inject a test desk template to Sync.
   sync_pb::EntitySpecifics specifics;
@@ -117,9 +98,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   syncer::SyncService* sync_service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = sync_service->GetUserSettings();
-
-  ASSERT_TRUE(settings->IsOsSyncFeatureEnabled());
   ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
 
   // Check the test desk template is downloaded.

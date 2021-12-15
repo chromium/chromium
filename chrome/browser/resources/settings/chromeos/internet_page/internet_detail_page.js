@@ -555,9 +555,9 @@ Polymer({
    * Handler for when os sync preferences are updated.
    * @private
    */
-  handleOsSyncPrefsChanged_(osSyncFeatureEnabled, osSyncPrefs) {
-    this.isWifiSyncEnabled_ = osSyncFeatureEnabled && !!osSyncPrefs &&
-        osSyncPrefs.osWifiConfigurationsSynced;
+  handleOsSyncPrefsChanged_(osSyncPrefs) {
+    this.isWifiSyncEnabled_ =
+        !!osSyncPrefs && osSyncPrefs.osWifiConfigurationsSynced;
   },
 
   /**

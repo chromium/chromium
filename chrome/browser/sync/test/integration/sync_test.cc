@@ -668,14 +668,6 @@ bool SyncTest::SetupClients() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // SyncSettingsCategorization makes several types (e.g. APPS, APP_LIST,
-  // PRINTERS) into OS sync types. OS sync is on-by-default, so enable it here.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    for (int i = 0; i < num_clients(); ++i) {
-      GetSyncService(i)->GetUserSettings()->SetOsSyncFeatureEnabled(true);
-    }
-  }
-
   if (ArcAppListPrefsFactory::IsFactorySetForSyncTest()) {
     // Init SyncArcPackageHelper to ensure that the arc services are initialized
     // for each Profile, only can be called after test profiles are created.

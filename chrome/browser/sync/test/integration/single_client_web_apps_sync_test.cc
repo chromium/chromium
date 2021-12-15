@@ -21,11 +21,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
-#endif
-
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
@@ -37,36 +32,6 @@ const int64_t kDefaultTime = 1234L;
 
 // Default version used when creating extension entities.
 const char kVersion[] = "1.0.0.1";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// These tests test the new Web Apps system with next generation sync.
-//
-// Chrome OS syncs Web apps as a browser type, so it shouldn't be affected by
-// the OS sync feature.
-class SingleClientWebAppsOsSyncTest : public SyncConsentOptionalSyncTest {
- public:
-  SingleClientWebAppsOsSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-  ~SingleClientWebAppsOsSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
-                       DisablingOsSyncFeatureKeepsWebAppsEnabled) {
-  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
-  ASSERT_TRUE(SetupSync());
-  syncer::SyncServiceImpl* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-
-  settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  // WEB_APPS is a browser type, so they shouldn't be affected by the OS sync.
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
  public:

@@ -694,6 +694,9 @@ const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
 
 // Deprecated 12/2021.
 const char kArcAppReinstallState[] = "arc_app_reinstall_state";
+
+// Deprecated 12/2021.
+const char kOsSyncFeatureEnabled[] = "sync.os_sync_feature_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -902,6 +905,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
 
   registry->RegisterDictionaryPref(kArcAppReinstallState);
+
+  registry->RegisterBooleanPref(kOsSyncFeatureEnabled, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1773,6 +1778,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2021.
   profile_prefs->ClearPref(kArcAppReinstallState);
+
+  profile_prefs->ClearPref(kOsSyncFeatureEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

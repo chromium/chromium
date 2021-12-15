@@ -144,7 +144,6 @@ js_modulizer("modulize") {
     "os_settings_menu_test.js",
     "os_settings_ui_test.js",
     "os_settings_ui_test_2.js",
-    "os_sync_controls_optional_disabled_test.js",
     "os_sync_controls_test.js",
     "parental_controls_page_test.js",
     "people_page_account_manager_test.js",

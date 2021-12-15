@@ -40,9 +40,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
-
-  bool IsOsSyncFeatureEnabled() const override;
-  void SetOsSyncFeatureEnabled(bool enabled) override;
 #endif
 
   bool IsCustomPassphraseAllowed() const override;
@@ -79,7 +76,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool os_sync_feature_enabled_ = true;
   bool sync_all_os_types_enabled_ = true;
 #endif
 

@@ -2,18 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
-#endif
 
 using apps_helper::AllProfilesHaveSameApps;
 using apps_helper::InstallHostedApp;
@@ -114,36 +107,3 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Tests for SyncConsentOptional.
-class SingleClientExtensionAppsOsSyncTest : public SyncConsentOptionalSyncTest {
- public:
-  SingleClientExtensionAppsOsSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-
-  SingleClientExtensionAppsOsSyncTest(
-      const SingleClientExtensionAppsOsSyncTest&) = delete;
-  SingleClientExtensionAppsOsSyncTest& operator=(
-      const SingleClientExtensionAppsOsSyncTest&) = delete;
-
-  ~SingleClientExtensionAppsOsSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsOsSyncTest,
-                       DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
-  ASSERT_TRUE(SetupSync());
-  syncer::SyncService* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APPS));
-
-  settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::APPS));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

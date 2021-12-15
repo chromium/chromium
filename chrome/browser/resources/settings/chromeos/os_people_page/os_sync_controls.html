@@ -103,7 +103,7 @@
     <div class="settings-box first two-line">
       <div id="avatarContainer">
         <img id="avatarIcon" alt="" src="[[profileIconUrl]]">
-        <div id="syncIconContainer" hidden="[[!osSyncFeatureEnabled]]"
+        <div id="syncIconContainer"
             class$="[[getSyncIconStyle_(
                 syncStatus.hasError, syncStatus.statusAction,
                 syncStatus.disabled)]]">
@@ -118,22 +118,10 @@
             [[getAccountTitle_(profileName, syncStatus.hasError)]]
           </span>
           <div id="accountSubtitle" class="secondary" aria-hidden="true">
-            [[getAccountSubtitle_(profileEmail, syncStatus.hasError,
-                osSyncFeatureEnabled)]]
+            [[getAccountSubtitle_(profileEmail, syncStatus.hasError)]]
           </div>
         </div>
       </div>
-
-      <template is="dom-if" if="[[syncConsentOptionalEnabled_]]" restamp>
-        <cr-button id="syncOnOffButton"
-            class="action-button"
-            on-click="onSyncOnOffButtonClick_"
-            aria-labelledby="syncOnOffButton accountTitle accountSubtitle"
-            aria-describedby="featureLabel"
-            deep-link-focus-id$="[[Setting.kSplitSyncOnOff]]">
-          [[getSyncOnOffButtonLabel_(osSyncFeatureEnabled)]]
-        </cr-button>
-      </template>
     </div>
 
     <div id="featureLabel" class="settings-box">
@@ -145,14 +133,12 @@
 
     <div class="settings-box">
       <div id="syncEverythingCheckboxLabel"
-          class="start"
-          label-disabled$="[[!osSyncFeatureEnabled]]">
+          class="start">
         $i18n{syncEverythingCheckboxLabel}
       </div>
       <cr-toggle id="syncAllOsTypesControl"
           checked="{{osSyncPrefs.syncAllOsTypes}}"
           on-change="onSyncAllOsTypesChanged_"
-          disabled="[[!osSyncFeatureEnabled]]"
           aria-labelledby="syncEverythingCheckboxLabel">
       </cr-toggle>
     </div>

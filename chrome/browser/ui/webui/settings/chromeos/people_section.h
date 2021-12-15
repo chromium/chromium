@@ -44,8 +44,7 @@ class SearchTagRegistry;
 // allowed by policy/flags. Different sets of Sync tags are shown depending on
 // whether the feature is enabed or disabled.
 class PeopleSection : public OsSettingsSection,
-                      public account_manager::AccountManagerFacade::Observer,
-                      public syncer::SyncServiceObserver {
+                      public account_manager::AccountManagerFacade::Observer {
  public:
   PeopleSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
@@ -70,9 +69,6 @@ class PeopleSection : public OsSettingsSection,
   void OnAccountUpserted(const ::account_manager::Account& account) override;
   void OnAccountRemoved(const ::account_manager::Account& account) override;
 
-  // syncer::SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync_service) override;
-
   bool AreFingerprintSettingsAllowed();
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
@@ -80,7 +76,6 @@ class PeopleSection : public OsSettingsSection,
 
   account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
-  syncer::SyncService* sync_service_;
   SupervisedUserService* supervised_user_service_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;

@@ -102,10 +102,8 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get featureList() {
     return {
-      enabled: super.featureList.enabled.concat([
-        'chromeos::features::kSyncConsentOptional',
-        'chromeos::features::kSyncSettingsCategorization'
-      ])
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kSyncSettingsCategorization'])
     };
   }
 };
@@ -113,29 +111,6 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
 TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
   mocha.run();
 });
-
-var OSSettingsPeoplePageOsSyncOptionalDisabledV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/' +
-      'os_sync_controls_optional_disabled_test.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kSyncSettingsCategorization']),
-      disabled: ['chromeos::features::kSyncConsentOptional']
-    };
-  }
-};
-
-TEST_F('OSSettingsPeoplePageOsSyncOptionalDisabledV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.

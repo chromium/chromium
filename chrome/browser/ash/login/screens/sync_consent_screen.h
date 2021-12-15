@@ -107,14 +107,6 @@ class SyncConsentScreen : public BaseScreen,
                                   const std::vector<int>& consent_description,
                                   const int consent_confirmation);
 
-  // Reacts to "Yes, I'm in" and "No, thanks".
-  void OnContinue(const std::vector<int>& consent_description,
-                  int consent_confirmation,
-                  SyncConsentScreenHandler::UserChoice choice);
-
-  // Configures OS sync and browser sync.
-  void UpdateSyncSettings(bool enable_sync);
-
   // Enables sync if required when skipping the dialog.
   void MaybeEnableSyncForSkip();
 

@@ -290,8 +290,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "syncSettingsCategorizationEnabled",
       chromeos::features::IsSyncSettingsCategorizationEnabled());
-  html_source->AddBoolean("syncConsentOptionalEnabled",
-                          chromeos::features::IsSyncConsentOptionalEnabled());
 
   html_source->AddBoolean(
       "userCannotManuallyEnterPassword",

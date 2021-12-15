@@ -33,11 +33,6 @@ AppSettingsModelTypeController::AppSettingsModelTypeController(
   DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(profile_);
   DCHECK(sync_service_);
-  pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      syncer::prefs::kOsSyncFeatureEnabled,
-      base::BindRepeating(&AppSettingsModelTypeController::OnUserPrefChanged,
-                          base::Unretained(this)));
 }
 
 AppSettingsModelTypeController::~AppSettingsModelTypeController() = default;
@@ -50,17 +45,4 @@ void AppSettingsModelTypeController::LoadModels(
       /*extensions_enabled=*/true);
   NonUiSyncableServiceBasedModelTypeController::LoadModels(configure_context,
                                                            model_load_callback);
-}
-
-syncer::DataTypeController::PreconditionState
-AppSettingsModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return profile_->GetPrefs()->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void AppSettingsModelTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
 }

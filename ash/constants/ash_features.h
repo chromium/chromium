@@ -438,7 +438,6 @@ extern const base::Feature kSmartLockUIRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSnoopingProtection;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kStylusBatteryStatus;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kSyncConsentOptional;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSyncSettingsCategorization;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -629,7 +628,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncSettingsCategorizationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncConsentOptionalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStylusBatteryStatusEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemChinesePhysicalTypingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemJapanesePhysicalTypingEnabled();

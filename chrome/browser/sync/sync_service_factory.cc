@@ -147,10 +147,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // need to take care that SyncServiceImpl doesn't get tripped up between
     // those two cases. Bug 88109.
     bool is_auto_start = browser_defaults::kSyncAutoStarts;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (chromeos::features::IsSyncConsentOptionalEnabled())
-      is_auto_start = false;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1194983): Figure out how split sync settings will
     // work here. For now, we will mimic Ash's behaviour of having sync turned
     // on by default.

@@ -67,16 +67,6 @@ ArcPackageSyncModelTypeController::ArcPackageSyncModelTypeController(
   }
 
   arc_prefs_->AddObserver(this);
-
-  // See GetPreconditionState().
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    pref_registrar_.Init(profile_->GetPrefs());
-    pref_registrar_.Add(
-        syncer::prefs::kOsSyncFeatureEnabled,
-        base::BindRepeating(
-            &ArcPackageSyncModelTypeController::OnOsSyncFeaturePrefChanged,
-            base::Unretained(this)));
-  }
 }
 
 ArcPackageSyncModelTypeController::~ArcPackageSyncModelTypeController() {
@@ -91,12 +81,6 @@ syncer::DataTypeController::PreconditionState
 ArcPackageSyncModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   if (!arc::IsArcPlayStoreEnabledForProfile(profile_)) {
-    return PreconditionState::kMustStopAndClearData;
-  }
-  // Use OS sync feature consent for this ModelType because it can sync in
-  // transport-only mode (and hence isn't tied to browser sync consent).
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled() &&
-      !profile_->GetPrefs()->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)) {
     return PreconditionState::kMustStopAndClearData;
   }
   // Implementing a wait here in the controller, instead of the regular wait in

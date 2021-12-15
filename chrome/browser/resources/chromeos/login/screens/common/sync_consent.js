@@ -51,9 +51,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
        */
       isChildAccount_: Boolean,
 
-      /** @private */
-      syncConsentOptionalEnabled_: Boolean,
-
       /**
        * Indicates whether user is minor mode user (e.g. under age of 18).
        * @private
@@ -77,7 +74,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.UI_STEPS = SyncUIState;
 
     this.isChildAccount_ = false;
-    this.syncConsentOptionalEnabled_ = false;
     this.isMinorMode_ = false;
   }
 
@@ -96,7 +92,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
-    this.syncConsentOptionalEnabled_ = data['syncConsentOptionalEnabled'];
   }
 
   /**
@@ -160,8 +155,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   getDefaultUIStep_() {
-    return this.syncConsentOptionalEnabled_ ? SyncUIState.SPLIT :
-                                              SyncUIState.NO_SPLIT;
+    return SyncUIState.NO_SPLIT;
   }
 
   /**
@@ -170,7 +164,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
-    assert(!this.syncConsentOptionalEnabled_);
     chrome.send('login.SyncConsentScreen.nonSplitSettingsContinue', [
       opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
       this.getConsentConfirmation_(e.path)
@@ -191,11 +184,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   onAcceptTap_(event) {
-    assert(this.syncConsentOptionalEnabled_);
-    assert(event.path);
-    chrome.send('login.SyncConsentScreen.acceptAndContinue', [
-      this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
-    ]);
+    // TODO(https://crbug.com/1278325): Remove this.
   }
 
   /**
@@ -204,11 +193,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   onDeclineTap_(event) {
-    assert(this.syncConsentOptionalEnabled_);
-    assert(event.path);
-    chrome.send('login.SyncConsentScreen.declineAndContinue', [
-      this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
-    ]);
+    // TODO(https://crbug.com/1278325): Remove this.
   }
 
   /**

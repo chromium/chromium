@@ -173,9 +173,8 @@ void RunSyncConsentScreenChecks() {
   screen->SetProfileSyncEngineInitializedForTesting(true);
   screen->OnStateChanged(nullptr);
 
-  const std::string button_name = features::IsSyncConsentOptionalEnabled()
-                                      ? "acceptButton"
-                                      : "nonSplitSettingsAcceptButton";
+  // TODO(TBD): Rename the button to remove SplitSettings from its name.
+  const std::string button_name = "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
 

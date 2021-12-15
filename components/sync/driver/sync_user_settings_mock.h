@@ -49,8 +49,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
               GetRegisteredSelectableOsTypes,
               (),
               (const override));
-  MOCK_METHOD(bool, IsOsSyncFeatureEnabled, (), (const override));
-  MOCK_METHOD(void, SetOsSyncFeatureEnabled, (bool), (override));
 #endif
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));

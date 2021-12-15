@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -47,29 +46,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),
               Eq(ash::kShelfAlignmentRight));
-}
-
-class SingleClientOsPreferencesOptionalConsentSyncTest
-    : public SyncConsentOptionalSyncTest {
- public:
-  SingleClientOsPreferencesOptionalConsentSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-  ~SingleClientOsPreferencesOptionalConsentSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesOptionalConsentSyncTest,
-                       DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
-  ASSERT_TRUE(SetupSync());
-  syncer::SyncService* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::OS_PREFERENCES));
-
-  settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::OS_PREFERENCES));
 }
 
 class SyncCategorizationBaseTest : public SyncTest {

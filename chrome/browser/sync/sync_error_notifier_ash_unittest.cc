@@ -101,14 +101,6 @@ TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
   ExpectNotificationShown(false);
 }
 
-TEST_F(SyncErrorNotifierTest, NoNotificationWhenSyncDisabled) {
-  service_.SetPassphraseRequiredForPreferredDataTypes(true);
-  service_.SetFirstSetupComplete(false);
-  service_.GetUserSettings()->SetOsSyncFeatureEnabled(false);
-  error_notifier_->OnStateChanged(&service_);
-  ExpectNotificationShown(false);
-}
-
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
   service_.SetPassphraseRequiredForPreferredDataTypes(true);
   service_.SetFirstSetupComplete(true);
@@ -116,23 +108,8 @@ TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
   ExpectNotificationShown(true);
 }
 
-TEST_F(SyncErrorNotifierTest, NotificationShownWhenOsSyncEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  // SyncConsentOptional requires SyncSettingsCategorization.
-  feature_list.InitWithFeatures(
-      {chromeos::features::kSyncSettingsCategorization,
-       chromeos::features::kSyncConsentOptional},
-      {});
-  service_.SetPassphraseRequiredForPreferredDataTypes(true);
-  service_.GetUserSettings()->SetOsSyncFeatureEnabled(true);
-  service_.SetFirstSetupComplete(false);
-  error_notifier_->OnStateChanged(&service_);
-  ExpectNotificationShown(true);
-}
-
 TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
   service_.SetPassphraseRequiredForPreferredDataTypes(true);
-  service_.GetUserSettings()->SetOsSyncFeatureEnabled(true);
   service_.SetFirstSetupComplete(true);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(true);

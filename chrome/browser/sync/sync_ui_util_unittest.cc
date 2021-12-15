@@ -369,9 +369,6 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
   syncer::TestSyncService service;
   service.SetFirstSetupComplete(false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  service.GetUserSettings()->SetOsSyncFeatureEnabled(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   service.SetPassphraseRequiredForPreferredDataTypes(true);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
@@ -382,21 +379,5 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
   service.SetPassphraseRequiredForPreferredDataTypes(false);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_OsSyncEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  // SyncConsentOptional requires SyncSettingsCategorization.
-  feature_list.InitWithFeatures(
-      {chromeos::features::kSyncSettingsCategorization,
-       chromeos::features::kSyncConsentOptional},
-      {});
-  syncer::TestSyncService service;
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
-  service.SetFirstSetupComplete(false);
-  service.GetUserSettings()->SetOsSyncFeatureEnabled(true);
-  EXPECT_TRUE(ShouldShowSyncPassphraseError(&service));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

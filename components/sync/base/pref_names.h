@@ -17,7 +17,6 @@ extern const char kSyncKeepEverythingSynced[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kOsSyncPrefsMigrated[];
-extern const char kOsSyncFeatureEnabled[];
 extern const char kSyncAllOsTypes[];
 extern const char kSyncOsApps[];
 extern const char kSyncOsPreferences[];
