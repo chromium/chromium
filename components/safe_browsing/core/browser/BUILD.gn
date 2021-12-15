@@ -151,7 +151,6 @@ source_set("safe_browsing_metrics_collector") {
   ]
   deps = [
     "//base",
-    "//components/crash/core/common:crash_key",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
