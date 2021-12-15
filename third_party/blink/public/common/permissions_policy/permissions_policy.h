@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
@@ -200,6 +201,11 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // to replace this method. This method uses legacy |default_allowlist|
   // calculation method.
   const Allowlist GetAllowlistForFeature(
+      mojom::PermissionsPolicyFeature feature) const;
+
+  // Returns the allowlist of a given feature if it already exists. Doesn't
+  // build a default allow list based on the policy if not.
+  absl::optional<const Allowlist> GetAllowlistForFeatureIfExists(
       mojom::PermissionsPolicyFeature feature) const;
 
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.

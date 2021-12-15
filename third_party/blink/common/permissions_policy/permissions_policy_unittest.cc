@@ -5,10 +5,12 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -1739,6 +1741,57 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
          {origin_a_},
          false,
          false}}}));
+}
+
+TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
+  // If we set a policy, then we can extract it.
+  auto policy1 = CreateFromParentPolicy(nullptr, origin_a_);
+  const std::vector<url::Origin> origins1({origin_b_});
+  policy1->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::kClientHintDPR,
+                              origins1, false, false}}});
+  const auto& maybe_allow_list1 = policy1->GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature::kClientHintDPR);
+  EXPECT_TRUE(maybe_allow_list1.has_value());
+  EXPECT_FALSE(maybe_allow_list1.value().MatchesAll());
+  EXPECT_FALSE(maybe_allow_list1.value().MatchesOpaqueSrc());
+  EXPECT_THAT(maybe_allow_list1.value().AllowedOrigins(),
+              testing::ContainerEq(origins1));
+
+  // If we don't set a policy, then we can't extract it.
+  auto policy2 = CreateFromParentPolicy(nullptr, origin_a_);
+  const auto& maybe_allow_list2 = policy2->GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature::kClientHintDPR);
+  EXPECT_FALSE(maybe_allow_list2.has_value());
+
+  // If we set a policy, then overwrite it, we can extract it.
+  auto policy3 = CreateFromParentPolicy(nullptr, origin_a_);
+  const std::vector<url::Origin> origins3({origin_a_});
+  policy3->SetHeaderPolicy(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR, {}, false, false}}});
+  policy3->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR, origins3, false,
+         false}}});
+  const auto& maybe_allow_list3 = policy3->GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature::kClientHintDPR);
+  EXPECT_TRUE(maybe_allow_list3.has_value());
+  EXPECT_FALSE(maybe_allow_list3.value().MatchesAll());
+  EXPECT_FALSE(maybe_allow_list3.value().MatchesOpaqueSrc());
+  EXPECT_THAT(maybe_allow_list3.value().AllowedOrigins(),
+              testing::ContainerEq(origins3));
+
+  // If we don't set a policy, then overwrite it, we can extract it.
+  auto policy4 = CreateFromParentPolicy(nullptr, origin_a_);
+  const std::vector<url::Origin> origins4({origin_a_, origin_b_});
+  policy4->OverwriteHeaderPolicyForClientHints(
+      {{{mojom::PermissionsPolicyFeature::kClientHintDPR, origins4, false,
+         false}}});
+  const auto& maybe_allow_list4 = policy4->GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature::kClientHintDPR);
+  EXPECT_TRUE(maybe_allow_list4.has_value());
+  EXPECT_FALSE(maybe_allow_list4.value().MatchesAll());
+  EXPECT_FALSE(maybe_allow_list4.value().MatchesOpaqueSrc());
+  EXPECT_THAT(maybe_allow_list4.value().AllowedOrigins(),
+              testing::ContainerEq(origins4));
 }
 
 }  // namespace blink

@@ -185,10 +185,9 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
     return PermissionsPolicy::Allowlist();
 
   // Return defined policy if exists; otherwise return default policy.
-  allowlists_checked_ = true;
-  auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end())
-    return allowlist->second;
+  const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
+  if (maybe_allow_list.has_value())
+    return maybe_allow_list.value();
 
   // Note: |allowlists_| purely comes from HTTP header. If a feature is not
   // declared in HTTP header, all origins are implicitly allowed.
@@ -204,16 +203,14 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(feature_list_, feature));
-  DCHECK(base::Contains(inherited_policies_, feature));
   // Return an empty allowlist when disabled through inheritance.
-  if (!inherited_policies_.at(feature))
+  if (!IsFeatureEnabledByInheritedPolicy(feature))
     return PermissionsPolicy::Allowlist();
 
   // Return defined policy if exists; otherwise return default policy.
-  allowlists_checked_ = true;
-  auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end())
-    return allowlist->second;
+  const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
+  if (maybe_allow_list.has_value())
+    return maybe_allow_list.value();
 
   const PermissionsPolicyFeatureDefault default_policy =
       feature_list_.at(feature);
@@ -226,6 +223,21 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
   }
 
   return default_allowlist;
+}
+
+absl::optional<const PermissionsPolicy::Allowlist>
+PermissionsPolicy::GetAllowlistForFeatureIfExists(
+    mojom::PermissionsPolicyFeature feature) const {
+  // Return an empty allowlist when disabled through inheritance.
+  if (!IsFeatureEnabledByInheritedPolicy(feature))
+    return absl::nullopt;
+
+  // Only return allowlist if actually in `allowlists_`.
+  allowlists_checked_ = true;
+  auto allowlist = allowlists_.find(feature);
+  if (allowlist != allowlists_.end())
+    return allowlist->second;
+  return absl::nullopt;
 }
 
 void PermissionsPolicy::SetHeaderPolicy(
