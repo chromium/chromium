@@ -255,10 +255,12 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     SurfaceDamageRectList* surface_damage_rect_list,
     const QuadList* quad_list,
     gfx::Rect* damage_rect) {
-  // TODO(petermcneeley): This code only supports one overlay candidate. To
-  // support multiple overlays one would need to track the difference set of
+  // TODO(khaslett): This code only supports one overlay candidate, but we'll
+  // check against `max_overlays_considered_` so we can still try the
+  // UseMultipleOverlays feature without hitting DCHECKS.
+  // To support multiple overlays one would need to track the difference set of
   // overlays between frames.
-  DCHECK_LE(candidates->size(), 1U);
+  DCHECK_LE(candidates->size(), static_cast<size_t>(max_overlays_considered_));
 
   gfx::Rect this_frame_overlay_rect;
   bool has_mask_filter = false;
