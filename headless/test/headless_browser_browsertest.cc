@@ -32,7 +32,6 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
-#include "headless/lib/headless_macros.h"
 #include "headless/public/devtools/domains/inspector.h"
 #include "headless/public/devtools/domains/network.h"
 #include "headless/public/devtools/domains/page.h"
@@ -53,7 +52,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_MAC)
+#if !defined(OS_FUCHSIA)
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
 #endif
 
@@ -474,15 +473,8 @@ class CrashReporterTest : public HeadlessBrowserTest,
   base::FilePath crash_dumps_dir_;
 };
 
-// TODO(skyostil): Minidump generation currently is only supported on Linux and
-// Mac.
-#if (defined(HEADLESS_USE_BREAKPAD) || defined(OS_MAC)) && \
-    !defined(ADDRESS_SANITIZER)
-#define MAYBE_GenerateMinidump GenerateMinidump
-#else
-#define MAYBE_GenerateMinidump DISABLED_GenerateMinidump
-#endif  // defined(HEADLESS_USE_BREAKPAD) || defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(CrashReporterTest, MAYBE_GenerateMinidump) {
+#if !defined(OS_FUCHSIA) && !defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
   // Navigates a tab to chrome://crash and checks that a minidump is generated.
@@ -507,20 +499,11 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, MAYBE_GenerateMinidump) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
-#if defined(OS_MAC)
     auto database = crashpad::CrashReportDatabase::Initialize(crash_dumps_dir_);
     std::vector<crashpad::CrashReportDatabase::Report> reports;
     ASSERT_EQ(database->GetPendingReports(&reports),
               crashpad::CrashReportDatabase::kNoError);
     EXPECT_EQ(reports.size(), 1u);
-#else
-    base::FileEnumerator it(crash_dumps_dir_, /* recursive */ false,
-                            base::FileEnumerator::FILES);
-    base::FilePath minidump = it.Next();
-    EXPECT_FALSE(minidump.empty());
-    EXPECT_EQ(FILE_PATH_LITERAL(".dmp"), minidump.Extension());
-    EXPECT_TRUE(it.Next().empty());
-#endif
   }
 
   web_contents_->RemoveObserver(this);
@@ -530,6 +513,7 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, MAYBE_GenerateMinidump) {
   browser_context_->Close();
   browser_context_ = nullptr;
 }
+#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, PermissionManagerAlwaysASK) {
   GURL url("https://example.com");

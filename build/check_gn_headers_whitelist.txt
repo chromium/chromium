@@ -117,7 +117,6 @@ gpu/command_buffer/service/memory_tracking.h
 gpu/config/gpu_lists_version.h
 gpu/gles2_conform_support/gtf/gtf_stubs.h
 gpu/gpu_export.h
-headless/lib/headless_macros.h
 ipc/ipc_channel_proxy_unittest_messages.h
 ipc/ipc_message_null_macros.h
 media/audio/audio_logging.h

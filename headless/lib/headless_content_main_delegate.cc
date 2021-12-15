@@ -32,7 +32,6 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_content_browser_client.h"
 #include "headless/lib/headless_crash_reporter_client.h"
-#include "headless/lib/headless_macros.h"
 #include "headless/lib/renderer/headless_content_renderer_client.h"
 #include "headless/lib/utility/headless_content_utility_client.h"
 #include "sandbox/policy/switches.h"
@@ -48,13 +47,13 @@
 #include "headless/embedded_resource_pak.h"
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "components/crash/core/app/crashpad.h"
-#endif
+#endif  // defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "components/crash/core/app/breakpad_linux.h"
-#endif
+#include "components/crash/core/app/crash_switches.h"
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_POSIX)
 #include <signal.h>
@@ -311,15 +310,14 @@ void HeadlessContentMainDelegate::InitLogging(
 
 void HeadlessContentMainDelegate::InitCrashReporter(
     const base::CommandLine& command_line) {
-  if (command_line.HasSwitch(::switches::kDisableBreakpad))
+  if (!options()->enable_crash_reporter)
     return;
+
 #if defined(OS_FUCHSIA)
-  // TODO(crbug.com/1226159): Implement this when crash reporting/Breakpad are
-  // available in Fuchsia.
+  // TODO(crbug.com/1226159): Implement this when crash reporting is available
+  // for Fuchsia.
   NOTIMPLEMENTED();
 #else
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
   crash_reporter::SetCrashReporterClient(g_headless_crash_client.Pointer());
   g_headless_crash_client.Pointer()->set_crash_dumps_dir(
       options()->crash_dumps_dir);
@@ -327,29 +325,18 @@ void HeadlessContentMainDelegate::InitCrashReporter(
   crash_reporter::InitializeCrashKeys();
   crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
 
-#if defined(HEADLESS_USE_BREAKPAD)
-  if (!options()->enable_crash_reporter) {
-    DCHECK(!breakpad::IsCrashReporterEnabled());
-    return;
-  }
+#if !defined(OS_WIN)
+  const std::string process_type =
+      command_line.GetSwitchValueASCII(::switches::kProcessType);
   if (process_type != switches::kZygoteProcess)
-    breakpad::InitCrashReporter(process_type);
-#elif defined(OS_MAC)
-  crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
-// Avoid adding this dependency in Windows Chrome non component builds, since
-// crashpad is already enabled.
-// TODO(dvallet): Ideally we would also want to avoid this for component builds.
-#elif defined(OS_WIN)
-  // InitializeCrashpad is already called from main() on Windows, no need to
-  // call it from here.
-#endif  // defined(HEADLESS_USE_BREAKPAD)
+    crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
+#endif  // !defined(OS_WIN)
 #endif  // defined(OS_FUCHSIA)
 
   // Mark any bug reports from headless mode as such.
   static crash_reporter::CrashKeyString<32> headless_key(kHeadlessCrashKey);
   headless_key.Set("true");
 }
-
 
 void HeadlessContentMainDelegate::PreSandboxStartup() {
   const base::CommandLine& command_line(
@@ -426,14 +413,11 @@ void HeadlessContentMainDelegate::ZygoteForked() {
   }
   const base::CommandLine& command_line(
       *base::CommandLine::ForCurrentProcess());
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-  // Unconditionally try to turn on crash reporting since we do not have access
-  // to the latest browser options at this point when testing. Breakpad will
-  // bail out gracefully if the browser process hasn't enabled crash reporting.
-#if defined(HEADLESS_USE_BREAKPAD)
-  breakpad::InitCrashReporter(process_type);
-#endif
+  if (command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid)) {
+    const std::string process_type =
+        command_line.GetSwitchValueASCII(::switches::kProcessType);
+    crash_reporter::InitializeCrashpad(false, process_type);
+  }
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 

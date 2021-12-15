@@ -29,16 +29,9 @@ class HeadlessCrashReporterClient : public crash_reporter::CrashReporterClient {
   const base::FilePath& crash_dumps_dir() const { return crash_dumps_dir_; }
 
 #if defined(OS_POSIX) && !defined(OS_MAC)
-  // Returns a textual description of the product type and version to include
-  // in the crash report.
-  void GetProductNameAndVersion(const char** product_name,
-                                const char** version) override;
-
   void GetProductNameAndVersion(std::string* product_name,
                                 std::string* version,
                                 std::string* channel) override;
-
-  base::FilePath GetReporterLogFilename() override;
 #endif  // defined(OS_POSIX) && !defined(OS_MAC)
 
 #if defined(OS_WIN)
@@ -47,7 +40,9 @@ class HeadlessCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif
 
-  bool EnableBreakpadForProcess(const std::string& process_type) override;
+  bool IsRunningUnattended() override;
+
+  bool GetCollectStatsConsent() override;
 
  private:
   base::FilePath crash_dumps_dir_;

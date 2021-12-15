@@ -546,6 +546,10 @@ component("headless_non_renderer") {
     }
   }
 
+  if (is_linux || is_chromeos) {
+    data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+  }
+
   # Normally set to false (see build/args/headless.gn), but we can optionally
   # use external v8 startup data too.
   if ((!is_win || is_component_build) && v8_use_external_startup_data) {
@@ -811,10 +815,11 @@ test("headless_browsertests") {
   ]
 
   if (is_mac) {
-    deps += [
-      "//services/device/public/cpp:test_support",
-      "//third_party/crashpad/crashpad/client",
-    ]
+    deps += [ "//services/device/public/cpp:test_support" ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//third_party/crashpad/crashpad/client" ]
   }
 
   if (enable_basic_printing) {
