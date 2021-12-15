@@ -24,6 +24,9 @@ extern const base::Feature kSharedHighlightingV2;
 // Enables shared highlighting for AMP viewers pages.
 extern const base::Feature kSharedHighlightingAmp;
 
+// Feature flag that enable Shared Highlighting V2 in iOS.
+extern const base::Feature kIOSSharedHighlightingV2;
+
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 
