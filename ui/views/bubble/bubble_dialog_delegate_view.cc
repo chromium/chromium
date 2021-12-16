@@ -628,6 +628,11 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   return anchor_rect_.value();
 }
 
+SkColor BubbleDialogDelegate::GetBackgroundColor() {
+  UpdateColorsFromTheme();
+  return color();
+}
+
 ui::LayerType BubbleDialogDelegate::GetLayerType() const {
   return ui::LAYER_TEXTURED;
 }

@@ -36,6 +36,7 @@ class CredentialLeakDialogControllerImpl
   void OnCancelDialog() override;
   void OnAcceptDialog() override;
   void OnCloseDialog() override;
+  void ResetDialog() override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetDescription() const override;
@@ -44,9 +45,6 @@ class CredentialLeakDialogControllerImpl
   bool ShouldShowCancelButton() const override;
 
  private:
-  // Release |credential_leak_dialog_| and close the open dialog.
-  void ResetDialog();
-
   raw_ptr<CredentialLeakPrompt> credential_leak_dialog_ = nullptr;
   raw_ptr<PasswordsLeakDialogDelegate> delegate_;
   const password_manager::CredentialLeakType leak_type_;

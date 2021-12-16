@@ -130,8 +130,8 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   auto header_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_LIGHT),
       *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                          base::Unretained(GetBubbleFrameView())));
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
   set_fixed_width(header_view->GetPreferredSize().width());
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 

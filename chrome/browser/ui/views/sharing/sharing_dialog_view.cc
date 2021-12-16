@@ -148,8 +148,8 @@ void SharingDialogView::AddedToWidget() {
                               gfx::kPlaceholderColor),
         gfx::CreateVectorIcon(*data_.header_icons->dark,
                               gfx::kPlaceholderColor),
-        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                            base::Unretained(frame_view)));
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
     constexpr gfx::Size kHeaderImageSize(320, 100);
     image_view->SetPreferredSize(kHeaderImageSize);
     image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);

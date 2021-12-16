@@ -24,6 +24,10 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
   // e.g. by pressing the Esc key.
   virtual void OnCloseDialog() = 0;
 
+  // Called when the controller and dialog should drop references to each other
+  // because one of the two is going away.
+  virtual void ResetDialog() = 0;
+
   // Returns the label for the accept button.
   virtual std::u16string GetAcceptButtonLabel() const = 0;
 

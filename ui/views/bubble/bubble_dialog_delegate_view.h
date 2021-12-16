@@ -200,11 +200,16 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   //////////////////////////////////////////////////////////////////////////////
   // Layout & colors:
   //
-  // In general you shouldn't need to call any of these. If the default bubble
+  // In general you shouldn't need to call any setters. If the default bubble
   // look and feel does not work for your use case, BubbleDialogDelegate may not
   // be a good fit for the UI you are building.
 
-  // The bubble's background color:
+  // Ensures the bubble's background color is up-to-date, then returns it.
+  SkColor GetBackgroundColor();
+
+  // Direct access to the background color. Only use the getter when you know
+  // you don't need to worry about the color being out-of-date due to a recent
+  // theme update.
   SkColor color() const { return color_; }
   void set_color(SkColor color) {
     color_ = color;

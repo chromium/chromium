@@ -77,8 +77,8 @@ void OfferNotificationBubbleViews::AddedToWidget() {
         bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS);
     auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
         *autofill_offers_banner, *autofill_offers_banner,
-        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                            base::Unretained(GetBubbleFrameView())));
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
 }
