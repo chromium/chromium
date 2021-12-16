@@ -125,8 +125,8 @@ Polymer({
    */
   reloadContent(data) {
     this.voiceMatchEnforcedOff = data['voiceMatchEnforcedOff'];
+    this.shouldSkipVoiceMatch = data['shouldSkipVoiceMatch'];
     this.voiceMatchDisabled = loadTimeData.getBoolean('voiceMatchDisabled');
-    this.shouldSkipVoiceMatch = loadTimeData.getBoolean('shouldSkipVoiceMatch');
     data['flowType'] = this.flowType;
     this.$.valueProp.reloadContent(data);
     this.$.relatedInfo.reloadContent(data);
