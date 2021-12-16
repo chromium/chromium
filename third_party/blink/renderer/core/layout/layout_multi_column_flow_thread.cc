@@ -752,7 +752,15 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
 
 void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
   NOT_DESTROYED();
-  DCHECK(last_set_worked_on_);
+  if (!last_set_worked_on_) {
+    // There may be no column sets at all (when there's no content inside the
+    // multicol container). Still the multicol container itself may take up
+    // space and become fragmented, due to its specified block-size, padding,
+    // etc. The NG code doesn't care about this when calling this method. Just
+    // bail.
+    DCHECK(!FirstMultiColumnSet());
+    return;
+  }
   last_set_worked_on_->AppendNewFragmentainerGroup();
 }
 
