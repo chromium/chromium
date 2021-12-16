@@ -56,15 +56,15 @@ void AddNewReadingAndExpectReadingChangedEvent(
 
 }  // namespace
 
-class PlatformSensorProviderTest : public testing::Test {
+class PlatformSensorAndProviderTest : public testing::Test {
  public:
-  PlatformSensorProviderTest() {
+  PlatformSensorAndProviderTest() {
     provider_ = std::make_unique<FakePlatformSensorProvider>();
   }
 
-  PlatformSensorProviderTest(const PlatformSensorProviderTest&) = delete;
-  PlatformSensorProviderTest& operator=(const PlatformSensorProviderTest&) =
-      delete;
+  PlatformSensorAndProviderTest(const PlatformSensorAndProviderTest&) = delete;
+  PlatformSensorAndProviderTest& operator=(
+      const PlatformSensorAndProviderTest&) = delete;
 
  protected:
   std::unique_ptr<FakePlatformSensorProvider> provider_;
@@ -73,7 +73,7 @@ class PlatformSensorProviderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PlatformSensorProviderTest, ResourcesAreFreed) {
+TEST_F(PlatformSensorAndProviderTest, ResourcesAreFreed) {
   EXPECT_CALL(*provider_, FreeResources()).Times(2);
   provider_->CreateSensor(
       mojom::SensorType::AMBIENT_LIGHT,
@@ -91,7 +91,7 @@ TEST_F(PlatformSensorProviderTest, ResourcesAreFreed) {
       base::BindOnce([](scoped_refptr<PlatformSensor> s) { EXPECT_FALSE(s); }));
 }
 
-TEST_F(PlatformSensorProviderTest, ResourcesAreNotFreedOnPendingRequest) {
+TEST_F(PlatformSensorAndProviderTest, ResourcesAreNotFreedOnPendingRequest) {
   EXPECT_CALL(*provider_, FreeResources()).Times(0);
   // Suspend.
   EXPECT_CALL(*provider_, DoCreateSensorInternal(_, _, _))
@@ -108,7 +108,7 @@ TEST_F(PlatformSensorProviderTest, ResourcesAreNotFreedOnPendingRequest) {
 }
 
 // This test verifies that the shared buffer's default values are 0.
-TEST_F(PlatformSensorProviderTest, SharedBufferDefaultValue) {
+TEST_F(PlatformSensorAndProviderTest, SharedBufferDefaultValue) {
   mojo::ScopedSharedBufferHandle handle = provider_->CloneSharedBufferHandle();
   mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
       sizeof(SensorReadingSharedBuffer),
@@ -121,7 +121,7 @@ TEST_F(PlatformSensorProviderTest, SharedBufferDefaultValue) {
 
 // This test verifies that when sensor is stopped, shared buffer contents are
 // filled with default values.
-TEST_F(PlatformSensorProviderTest, SharedBufferCleared) {
+TEST_F(PlatformSensorAndProviderTest, SharedBufferCleared) {
   provider_->CreateSensor(
       mojom::SensorType::AMBIENT_LIGHT,
       base::BindOnce([](scoped_refptr<PlatformSensor> sensor) {
@@ -140,7 +140,7 @@ TEST_F(PlatformSensorProviderTest, SharedBufferCleared) {
       }));
 }
 
-TEST_F(PlatformSensorProviderTest, PlatformSensorSignificanceChecks) {
+TEST_F(PlatformSensorAndProviderTest, PlatformSensorSignificanceChecks) {
   base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
   provider_->CreateSensor(SensorType::AMBIENT_LIGHT, future.GetCallback());
   scoped_refptr<FakePlatformSensor> fake_sensor =
