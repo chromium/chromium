@@ -21,21 +21,18 @@ const CHIP_DURATION = 8000;
 
 /**
  * The detected string that is being shown currently.
- * @type {?string}
  */
-let currentCode = null;
+let currentCode: string|null = null;
 
 /**
  * The barcode chip container that is being shown currently.
- * @type {?HTMLElement}
  */
-let currentChip = null;
+let currentChip: HTMLElement|null = null;
 
 /**
  * The countdown timer for dismissing the chip.
- * @type {?OneShotTimer}
  */
-let currentTimer = null;
+let currentTimer: OneShotTimer|null = null;
 
 /**
  * Resets the variables of the current state and dismisses the chip.
@@ -51,9 +48,9 @@ function deactivate() {
 
 /**
  * Activates the chip on container and starts the timer.
- * @param {!HTMLElement} container The container of the chip.
+ * @param container The container of the chip.
  */
-function activate(container) {
+function activate(container: HTMLElement) {
   container.classList.remove('invisible');
   currentChip = container;
 
@@ -67,10 +64,8 @@ function activate(container) {
 
 /**
  * Checks whether a string is a regular url link with http or https protocol.
- * @param {string} s
- * @return {boolean}
  */
-function isSafeUrl(s) {
+function isSafeUrl(s: string): boolean {
   try {
     const url = new URL(s);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
@@ -87,13 +82,15 @@ function isSafeUrl(s) {
 
 /**
  * Setups the copy button.
- * @param {!HTMLElement} container The container for the button.
- * @param {string} content The content to be copied.
- * @param {!I18nString} snackbarLabel The label to be displayed on snackbar when
- *     the content is copied.
- * @return {!HTMLElement} The copy button element.
+ * @param container The container for the button.
+ * @param content The content to be copied.
+ * @param snackbarLabel The label to be displayed on snackbar when the content
+ *     is copied.
+ * @return The copy button element.
  */
-function setupCopyButton(container, content, snackbarLabel) {
+function setupCopyButton(
+    container: HTMLElement, content: string,
+    snackbarLabel: I18nString): HTMLElement {
   const copyButton =
       dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
   copyButton.onclick = async () => {
@@ -105,9 +102,8 @@ function setupCopyButton(container, content, snackbarLabel) {
 
 /**
  * Shows an actionable url chip.
- * @param {string} url
  */
-function showUrl(url) {
+function showUrl(url: string) {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
   activate(container);
 
@@ -128,9 +124,8 @@ function showUrl(url) {
 
 /**
  * Shows an actionable text chip.
- * @param {string} text
  */
-function showText(text) {
+function showText(text: string) {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
   activate(container);
   container.classList.remove('expanded');
@@ -161,9 +156,8 @@ function showText(text) {
 
 /**
  * Shows an actionable chip for the string detected from a barcode.
- * @param {string} code
  */
-export async function show(code) {
+export async function show(code: string): Promise<void> {
   if (code === currentCode) {
     if (currentTimer !== null) {
       // Extend the duration by resetting the timeout.
@@ -192,7 +186,7 @@ export async function show(code) {
 /**
  * Dismisses the current barcode chip if it's being shown.
  */
-export function dismiss() {
+export function dismiss(): void {
   if (currentTimer === null) {
     return;
   }
