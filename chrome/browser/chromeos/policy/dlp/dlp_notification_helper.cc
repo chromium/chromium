@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 
-#include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +16,14 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/new_window_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/browser_service_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -36,8 +42,13 @@ constexpr char kVideoCaptureStoppedNotificationId[] =
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void OnNotificationClicked(const std::string id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kDlpLearnMoreUrl), /*from_user_interaction=*/true);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto browser_service = std::make_unique<BrowserServiceLacros>();
+  browser_service->OpenUrl(GURL(kDlpLearnMoreUrl), base::DoNothing());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NotificationDisplayService::GetForProfile(
       ProfileManager::GetActiveUserProfile())
@@ -47,22 +58,26 @@ void OnNotificationClicked(const std::string id) {
 void ShowDlpNotification(const std::string& id,
                          const std::u16string& title,
                          const std::u16string& message) {
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
-          /*display_source=*/std::u16string(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kDlpPolicyNotifierId),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&OnNotificationClicked, id)),
-          vector_icons::kBusinessIcon,
-          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-  notification->set_renotify(true);
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
+      /*icon=*/gfx::Image(), /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kDlpPolicyNotifierId),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&OnNotificationClicked, id)));
+  // Set critical warning color.
+  notification.set_accent_color(gfx::kGoogleRed700);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  notification.set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+#endif
+  notification.set_vector_small_image(vector_icons::kBusinessIcon);
+  notification.set_renotify(true);
   NotificationDisplayService::GetForProfile(
       ProfileManager::GetActiveUserProfile())
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
+      ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
 }
 

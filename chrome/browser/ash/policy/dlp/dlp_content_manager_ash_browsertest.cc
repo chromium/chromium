@@ -87,6 +87,7 @@ constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kSrcPattern[] = "example.com";
 }  // namespace
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentManagerAshBrowserTest() = default;

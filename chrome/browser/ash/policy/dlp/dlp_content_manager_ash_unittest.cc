@@ -90,6 +90,7 @@ auto on_dlp_restriction_checked_callback = [](absl::optional<bool>* out_result,
 
 }  // namespace
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 class DlpContentManagerAshTest : public testing::Test {
  public:
   DlpContentManagerAshTest(const DlpContentManagerAshTest&) = delete;

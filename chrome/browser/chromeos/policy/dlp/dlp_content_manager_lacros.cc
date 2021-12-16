@@ -64,6 +64,7 @@ crosapi::mojom::DlpRestrictionSetPtr ConvertRestrictionSetToMojo(
 DlpContentManagerLacros* DlpContentManagerLacros::Get() {
   if (!g_dlp_content_manager) {
     g_dlp_content_manager = new DlpContentManagerLacros();
+    g_dlp_content_manager->Init();
   }
   return g_dlp_content_manager;
 }
@@ -74,7 +75,7 @@ DlpContentManagerLacros::~DlpContentManagerLacros() = default;
 void DlpContentManagerLacros::OnConfidentialityChanged(
     content::WebContents* web_contents,
     const DlpContentRestrictionSet& restriction_set) {
-  confidential_web_contents_[web_contents] = restriction_set;
+  DlpContentManager::OnConfidentialityChanged(web_contents, restriction_set);
   aura::Window* window = web_contents->GetNativeView();
   if (!window_webcontents_.contains(window)) {
     window_webcontents_[window] = {};
@@ -86,7 +87,7 @@ void DlpContentManagerLacros::OnConfidentialityChanged(
 
 void DlpContentManagerLacros::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
-  confidential_web_contents_.erase(web_contents);
+  DlpContentManager::OnWebContentsDestroyed(web_contents);
   aura::Window* window = web_contents->GetNativeView();
   if (window_webcontents_.contains(window)) {
     window_webcontents_[window].erase(web_contents);

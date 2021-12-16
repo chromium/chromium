@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "ui/aura/window_observer.h"
 
@@ -23,7 +23,7 @@ namespace policy {
 
 // LaCros-wide class that tracks the set of currently known confidential
 // WebContents and whether any of them are currently visible.
-class DlpContentManagerLacros : public DlpContentObserver,
+class DlpContentManagerLacros : public DlpContentManager,
                                 public aura::WindowObserver {
  public:
   // Creates the instance if not yet created.
@@ -51,10 +51,6 @@ class DlpContentManagerLacros : public DlpContentObserver,
   // Tracks set of known confidential WebContents* for each Window*.
   base::flat_map<aura::Window*, base::flat_set<content::WebContents*>>
       window_webcontents_;
-
-  // Tracks current restrictions applied to WebContents*.
-  base::flat_map<content::WebContents*, DlpContentRestrictionSet>
-      confidential_web_contents_;
 
   // Tracks current restrictions applied to Window* based on visible
   // WebContents* belonging to Window*.
