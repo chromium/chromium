@@ -1281,6 +1281,15 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
+TEST_F(AppListControllerImplAppListBubbleTest,
+       WallpaperColorChangeDoesNotCrash) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+  // Simulate synced wallpaper update while bubble is open.
+  controller->OnWallpaperColorsChanged();
+  // No crash.
+}
+
 class AppListControllerWithAssistantTest : public AppListControllerImplTest {
  public:
   AppListControllerWithAssistantTest()

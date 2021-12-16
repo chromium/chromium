@@ -859,8 +859,12 @@ void AppListControllerImpl::OnTabletModeEnded() {
 }
 
 void AppListControllerImpl::OnWallpaperColorsChanged() {
-  if (IsVisible(last_visible_display_id_))
-    fullscreen_presenter_->GetView()->OnWallpaperColorsChanged();
+  // Clamshell ProductivityLauncher doesn't use wallpaper prominent color.
+  if (IsVisible(last_visible_display_id_) && !ShouldShowAppListBubble()) {
+    AppListView* app_list_view = fullscreen_presenter_->GetView();
+    DCHECK(app_list_view);
+    app_list_view->OnWallpaperColorsChanged();
+  }
 }
 
 void AppListControllerImpl::OnWallpaperPreviewStarted() {
