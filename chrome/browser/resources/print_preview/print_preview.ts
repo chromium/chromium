@@ -29,6 +29,7 @@ export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity}
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
+export {PrintPreviewUserManagerElement} from './data/user_manager.js';
 export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl} from './native_layer.js';
 // <if expr="chromeos or lacros">
 export {PinModeRestriction} from './native_layer.js';
