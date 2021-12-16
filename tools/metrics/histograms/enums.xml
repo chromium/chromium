@@ -37731,6 +37731,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Not found"/>
 </enum>
 
+<enum name="FingerprintError">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Hardware unavailable"/>
+  <int value="2" label="Unable to process"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="No space available for a template"/>
+  <int value="5" label="Canceled"/>
+  <int value="6" label="Unable to remove record"/>
+  <int value="7" label="Hardware is locked"/>
+  <int value="8" label="No templates"/>
+</enum>
+
 <enum name="FingerprintRecordFormatVersion">
   <int value="0" label="None"/>
   <int value="1" label="Record format version without validation value"/>

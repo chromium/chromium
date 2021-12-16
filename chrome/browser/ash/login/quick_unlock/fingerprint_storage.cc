@@ -125,7 +125,8 @@ void FingerprintStorage::OnAuthScanDone(
                                     msg->get_scan_result());
       return;
     case device::mojom::FingerprintMessage::Tag::kFingerprintError:
-      // TODO(issuetracker.google.com/184843581): Add metrics for errors.
+      base::UmaHistogramEnumeration("Fingerprint.Auth.Error",
+                                    msg->get_fingerprint_error());
       return;
   }
   NOTREACHED();
