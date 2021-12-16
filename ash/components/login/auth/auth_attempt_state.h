@@ -15,7 +15,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Tracks the state associated with a single attempt to log in to chromium OS.
 // Enforces that methods are only called on the UI thread.
@@ -86,6 +86,6 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthAttemptState
   bool username_hash_valid_ = true;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTH_ATTEMPT_STATE_H_

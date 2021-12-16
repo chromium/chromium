@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 AuthAttemptState::AuthAttemptState(std::unique_ptr<UserContext> user_context)
     : user_context(std::move(user_context)) {
@@ -65,4 +65,4 @@ bool AuthAttemptState::username_hash_valid() {
   return username_hash_obtained_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

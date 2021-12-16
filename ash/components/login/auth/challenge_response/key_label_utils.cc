@@ -8,7 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -37,4 +37,4 @@ std::string GenerateChallengeResponseKeyLabel(
              challenge_response_keys[0].public_key_spki_der());
 }
 
-}  // namespace chromeos
+}  // namespace ash

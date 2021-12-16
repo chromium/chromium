@@ -380,7 +380,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginFailure) {
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(
           AccountId::FromUserEmail(std::string(user_email))));
-  reporter->OnLoginFailure(chromeos::AuthFailure(AuthFailure::OWNER_REQUIRED));
+  reporter->OnLoginFailure(AuthFailure(AuthFailure::OWNER_REQUIRED));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -424,7 +424,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginAuthenticationFailure) {
       std::make_unique<LoginLogoutReporterTestDelegate>(
           AccountId::FromUserEmail(std::string(user_email))));
   reporter->OnLoginFailure(
-      chromeos::AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
+      AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -467,7 +467,7 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLoginFailure) {
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(
           AccountId::FromUserEmail(std::string(user_email))));
-  reporter->OnLoginFailure(chromeos::AuthFailure(AuthFailure::TPM_ERROR));
+  reporter->OnLoginFailure(AuthFailure(AuthFailure::TPM_ERROR));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -508,8 +508,7 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLoginFailure) {
       std::make_unique<LoginLogoutReporterTestDelegate>(
           AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
               "guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION))));
-  reporter->OnLoginFailure(
-      chromeos::AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
+  reporter->OnLoginFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp_sec());

@@ -4,7 +4,7 @@
 
 #include "ash/components/login/auth/challenge_response_key.h"
 
-namespace chromeos {
+namespace ash {
 
 ChallengeResponseKey::ChallengeResponseKey() = default;
 
@@ -22,4 +22,4 @@ bool ChallengeResponseKey::operator!=(const ChallengeResponseKey& other) const {
   return !(*this == other);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,9 +9,9 @@
 
 namespace cryptohome {
 struct KeyDefinition;
-}
+}  // namespace cryptohome
 
-namespace chromeos {
+namespace ash {
 
 class UserContext;
 
@@ -33,6 +33,6 @@ cryptohome::KeyDefinition CreateAuthorizationKeyDefFromUserContext(
     const UserContext& user_context);
 
 }  // namespace cryptohome_parameter_utils
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CRYPTOHOME_PARAMETER_UTILS_H_

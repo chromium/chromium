@@ -9,10 +9,6 @@
 #include <string>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/login/auth/cryptohome_authenticator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -26,6 +22,9 @@ class User;
 }
 
 namespace ash {
+
+class CryptohomeAuthenticator;
+class UserContext;
 
 // There is at most one instance of this task, which is part of the
 // InSessionPasswordChangeManager singleton. Having a separate class means that

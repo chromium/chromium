@@ -518,8 +518,7 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
   DCHECK(user);
   UserContext user_context(*user);
   user_context.SetIsUsingPin(authenticated_by_pin);
-  user_context.SetKey(
-      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, "" /*salt*/, password));
+  user_context.SetKey(Key(Key::KEY_TYPE_PASSWORD_PLAIN, "" /*salt*/, password));
   user_context.SetPasswordKey(Key(password));
   user_context.SetLoginInputMethodIdUsed(input_method::InputMethodManager::Get()
                                              ->GetActiveIMEState()

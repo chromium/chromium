@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeExtendedAuthenticator::FakeExtendedAuthenticator(
     AuthStatusConsumer* consumer,
@@ -87,4 +87,4 @@ void FakeExtendedAuthenticator::OnAuthFailure(AuthState state,
     consumer_->OnAuthFailure(error);
 }
 
-}  // namespace chromeos
+}  // namespace ash

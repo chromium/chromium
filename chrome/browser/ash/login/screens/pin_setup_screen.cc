@@ -185,8 +185,8 @@ void PinSetupScreen::ShowImpl() {
       std::move(context()->extra_factors_auth_session);
 
   // Due to crbug.com/1203420 we need to mark the key as a wildcard (no label).
-  if (user_context->GetKey()->GetLabel() == chromeos::kCryptohomeGaiaKeyLabel) {
-    user_context->GetKey()->SetLabel(chromeos::kCryptohomeWildcardLabel);
+  if (user_context->GetKey()->GetLabel() == kCryptohomeGaiaKeyLabel) {
+    user_context->GetKey()->SetLabel(kCryptohomeWildcardLabel);
   }
 
   const std::string token =

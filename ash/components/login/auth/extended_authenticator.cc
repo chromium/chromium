@@ -6,7 +6,7 @@
 
 #include "ash/components/login/auth/extended_authenticator_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 scoped_refptr<ExtendedAuthenticator> ExtendedAuthenticator::Create(
@@ -18,4 +18,4 @@ ExtendedAuthenticator::ExtendedAuthenticator() = default;
 
 ExtendedAuthenticator::~ExtendedAuthenticator() = default;
 
-}  // namespace chromeos
+}  // namespace ash

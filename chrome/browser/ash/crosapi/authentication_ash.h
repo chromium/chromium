@@ -13,9 +13,9 @@
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
+namespace ash {
 class ExtendedAuthenticator;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace extensions {
 namespace api {
@@ -53,7 +53,7 @@ class AuthenticationAsh : public mojom::Authentication {
   // extensions::QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
   void OnCreateQuickUnlockPrivateTokenInfoResults(
       CreateQuickUnlockPrivateTokenInfoCallback callback,
-      scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator,
+      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator,
       bool success,
       std::unique_ptr<TokenInfo> token_info,
       const std::string& error_message);

@@ -9,8 +9,6 @@
 #include <string>
 
 #include "ash/components/login/auth/login_performer.h"
-// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
-#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -22,6 +20,7 @@ class Profile;
 namespace ash {
 
 enum class KioskAppType;
+class UserContext;
 
 // KioskProfileLoader loads a special profile for a given app. It first
 // attempts to login for the app's generated user id. If the login is

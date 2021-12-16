@@ -233,8 +233,7 @@ void InSessionPasswordSyncManager::UpdateUserPassword(
 
 // TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
 // re-authentication.
-void InSessionPasswordSyncManager::OnAuthFailure(
-    const chromeos::AuthFailure& error) {
+void InSessionPasswordSyncManager::OnAuthFailure(const AuthFailure& error) {
   password_changed_callback_.Run();
 }
 

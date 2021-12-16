@@ -114,7 +114,7 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
   DCHECK(user);
   UserContext user_context(*user);
   user_context.SetKey(
-      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
+      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
   user_context.SetIsUsingPin(authenticated_by_pin);
   user_context.SetSyncPasswordData(password_manager::PasswordHashData(
       account_id.GetUserEmail(), base::UTF8ToUTF16(password),

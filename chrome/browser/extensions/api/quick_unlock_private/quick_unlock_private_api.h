@@ -14,18 +14,18 @@
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "extensions/browser/extension_function.h"
 
-namespace chromeos {
+namespace ash {
 class AuthStatusConsumer;
 class ExtendedAuthenticator;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace extensions {
 
 class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
  public:
   using AuthenticatorAllocator =
-      base::RepeatingCallback<chromeos::ExtendedAuthenticator*(
-          chromeos::AuthStatusConsumer* auth_status_consumer)>;
+      base::RepeatingCallback<ash::ExtendedAuthenticator*(
+          ash::AuthStatusConsumer* auth_status_consumer)>;
 
   QuickUnlockPrivateGetAuthTokenFunction();
   QuickUnlockPrivateGetAuthTokenFunction(
@@ -56,7 +56,7 @@ class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
 
  private:
   ChromeExtensionFunctionDetails chrome_details_;
-  scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator_;
+  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
   AuthenticatorAllocator authenticator_allocator_;
 };
 

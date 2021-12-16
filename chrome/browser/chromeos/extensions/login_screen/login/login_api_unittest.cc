@@ -71,7 +71,7 @@ class MockExistingUserController : public ash::ExistingUserController {
   ~MockExistingUserController() override = default;
 
   MOCK_METHOD2(Login,
-               void(const chromeos::UserContext&, const ash::SigninSpecifics&));
+               void(const ash::UserContext&, const ash::SigninSpecifics&));
   MOCK_CONST_METHOD0(IsSigninInProgress, bool());
 };
 
@@ -91,7 +91,7 @@ class MockLoginApiLockHandler : public chromeos::LoginApiLockHandler {
 
   MOCK_METHOD0(RequestLockScreen, void());
   MOCK_METHOD2(Authenticate,
-               void(const chromeos::UserContext& user_context,
+               void(const ash::UserContext& user_context,
                     base::OnceCallback<void(bool auth_success)> callback));
   MOCK_CONST_METHOD0(IsUnlockInProgress, bool());
 };
@@ -118,9 +118,9 @@ class ScopedTestingProfile {
   TestingProfileManager* const profile_manager_;
 };
 
-chromeos::UserContext GetPublicUserContext(const std::string& email) {
-  return chromeos::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                               AccountId::FromUserEmail(email));
+ash::UserContext GetPublicUserContext(const std::string& email) {
+  return ash::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                          AccountId::FromUserEmail(email));
 }
 
 void SetLoginExtensionApiLaunchExtensionIdPref(
@@ -239,8 +239,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
 // `ExistingUserController`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
-  chromeos::UserContext user_context = GetPublicUserContext(kEmail);
-  user_context.SetKey(chromeos::Key("password"));
+  ash::UserContext user_context = GetPublicUserContext(kEmail);
+  user_context.SetKey(ash::Key("password"));
   EXPECT_CALL(*mock_existing_user_controller_,
               Login(user_context, MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
@@ -412,7 +412,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
-      .WillOnce([](chromeos::UserContext user_context,
+      .WillOnce([](ash::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
         std::move(callback).Run(/*auth_success=*/true);
       });
@@ -502,7 +502,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
-      .WillOnce([](chromeos::UserContext user_context,
+      .WillOnce([](ash::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
         std::move(callback).Run(/*auth_success=*/false);
       });
@@ -609,7 +609,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     EXPECT_CALL(*mock_lock_handler_,
                 Authenticate(MatchUserContextSecret(session_secret), _))
         .WillOnce([auth_success](
-                      chromeos::UserContext user_context,
+                      ash::UserContext user_context,
                       base::OnceCallback<void(bool auth_success)> callback) {
           std::move(callback).Run(/*auth_success=*/auth_success);
         });
@@ -626,7 +626,7 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
   ui::UserActivityDetector::Get()->set_now_for_test(now_);
   SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
-  chromeos::UserContext user_context;
+  ash::UserContext user_context;
   EXPECT_CALL(*mock_existing_user_controller_,
               Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
       .WillOnce(SaveArg<0>(&user_context));

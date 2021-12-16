@@ -659,8 +659,8 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                       account_id_1_);
+    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                  account_id_1_);
     user_context.SetPublicSessionLocale(locale);
     user_context.SetPublicSessionInputMethod(input_method);
     controller->Login(user_context, ash::SigninSpecifics());

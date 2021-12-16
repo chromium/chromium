@@ -27,7 +27,7 @@ namespace policy {
 class ManagedSessionService : public session_manager::SessionManagerObserver,
                               public ProfileObserver,
                               public chromeos::PowerManagerClient::Observer,
-                              public chromeos::AuthStatusConsumer,
+                              public ash::AuthStatusConsumer,
                               public ash::UserAuthenticatorObserver,
                               public ash::SessionTerminationManager::Observer,
                               public user_manager::UserManager::Observer {
@@ -35,7 +35,7 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
   class Observer : public base::CheckedObserver {
    public:
     // Occurs when a user's login attempt fails.
-    virtual void OnLoginFailure(const chromeos::AuthFailure& error) {}
+    virtual void OnLoginFailure(const ash::AuthFailure& error) {}
 
     // Occurs when a user has logged in.
     virtual void OnLogin(Profile* profile) {}
@@ -94,7 +94,7 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
 
   void OnAuthSuccess(const ash::UserContext& user_context) override {}
 
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const ash::AuthFailure& error) override;
 
   void OnAuthAttemptStarted() override;
 

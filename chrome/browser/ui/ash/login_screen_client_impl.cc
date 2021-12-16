@@ -298,8 +298,8 @@ void LoginScreenClientImpl::LoginAsGuest() {
   DCHECK(!ash::ScreenLocker::default_screen_locker());
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-        chromeos::UserContext(user_manager::USER_TYPE_GUEST,
-                              user_manager::GuestAccountId()),
+        ash::UserContext(user_manager::USER_TYPE_GUEST,
+                         user_manager::GuestAccountId()),
         ash::SigninSpecifics());
   }
 }
