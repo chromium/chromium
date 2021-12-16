@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -26,14 +27,37 @@
 namespace ash {
 namespace diagnostics {
 
+// Wrapper for tracking several pieces of information about an evdev-backed
+// device.
+class InputDeviceInformation {
+ public:
+  InputDeviceInformation();
+  InputDeviceInformation(const InputDeviceInformation& other) = delete;
+  InputDeviceInformation& operator=(const InputDeviceInformation& other) =
+      delete;
+  ~InputDeviceInformation();
+
+  int evdev_id;
+  ui::EventDeviceInfo event_device_info;
+  ui::InputDevice input_device;
+  mojom::ConnectionType connection_type;
+  base::FilePath path;
+};
+
+// Class for running GetDeviceInfo in its own sequence that can block.
 class InputDeviceInfoHelper {
  public:
+  InputDeviceInfoHelper() {}
   virtual ~InputDeviceInfoHelper() {}
 
-  virtual std::unique_ptr<ui::EventDeviceInfo> GetDeviceInfo(
+  virtual std::unique_ptr<InputDeviceInformation> GetDeviceInfo(
+      int evdev_id,
       base::FilePath path);
 };
 
+// Provides information about input devices connected to the system. Implemented
+// in the browser process and called by the Diagnostics SWA (a renderer
+// process).
 class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver {
  public:
@@ -48,6 +72,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Handler for when remote attached to |receiver_| disconnects.
   void OnBoundInterfaceDisconnect();
   bool ReceiverIsBound();
+  static mojom::ConnectionType ConnectionTypeFromInputDeviceType(
+      ui::InputDeviceType type);
 
   // mojom::InputDataProvider:
   void GetConnectedDevices(GetConnectedDevicesCallback callback) override;
@@ -69,15 +95,15 @@ class InputDataProvider : public mojom::InputDataProvider,
  private:
   void Initialize();
 
-  void ProcessDeviceInfo(int id,
-                         std::unique_ptr<ui::EventDeviceInfo> device_info);
+  void ProcessDeviceInfo(std::unique_ptr<InputDeviceInformation> device_info);
 
-  void AddTouchDevice(int id, const ui::EventDeviceInfo* device_info);
-  void AddKeyboard(int id, const ui::EventDeviceInfo* device_info);
+  void AddTouchDevice(const InputDeviceInformation* device_info);
+  void AddKeyboard(const InputDeviceInformation* device_info);
 
   InputDataProviderKeyboard keyboard_helper_;
   InputDataProviderTouch touch_helper_;
 
+  // Map by evdev ids to information blocks
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, mojom::TouchDeviceInfoPtr> touch_devices_;
 

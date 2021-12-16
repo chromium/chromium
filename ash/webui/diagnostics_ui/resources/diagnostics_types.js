@@ -465,6 +465,12 @@ export const MechanicalLayout = ash.diagnostics.mojom.MechanicalLayout;
 export const NumberPadPresence = ash.diagnostics.mojom.NumberPadPresence;
 
 /**
+ * Type alias for TopRowKey.
+ * @typedef {ash.diagnostics.mojom.TopRowKey}
+ */
+export const TopRowKey = ash.diagnostics.mojom.TopRowKey;
+
+/**
  * Type alias for KeyboardInfo.
  * @typedef {ash.diagnostics.mojom.KeyboardInfo}
  */
