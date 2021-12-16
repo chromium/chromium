@@ -4807,7 +4807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.PermissionDeniedFailures"
-    enum="DirectSocketPermissionFailureType" expires_after="2022-1-20">
+    enum="DirectSocketPermissionFailureType" expires_after="2022-06-07">
   <owner>ericwilligers@chromium.org</owner>
   <owner>glenrob@chromium.org</owner>
   <summary>
