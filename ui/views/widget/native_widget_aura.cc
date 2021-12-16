@@ -710,7 +710,7 @@ bool NativeWidgetAura::IsMinimized() const {
 
 void NativeWidgetAura::Restore() {
   if (window_)
-    window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+    wm::Restore(window_);
 }
 
 void NativeWidgetAura::SetFullscreen(bool fullscreen,

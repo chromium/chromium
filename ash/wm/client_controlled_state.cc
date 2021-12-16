@@ -68,7 +68,8 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
         Shell::Get()->screen_pinning_controller()->IsPinned()) {
       return;
     }
-    WindowStateType next_state_type = GetStateForTransitionEvent(event);
+    WindowStateType next_state_type =
+        GetStateForTransitionEvent(window_state, event);
     delegate_->HandleWindowStateRequest(window_state, next_state_type);
     WindowStateType old_state_type = state_type_;
 
@@ -319,7 +320,7 @@ WindowStateType ClientControlledState::GetResolvedNextWindowStateType(
     const WMEvent* event) {
   DCHECK(event->IsTransitionEvent());
 
-  const WindowStateType next = GetStateForTransitionEvent(event);
+  const WindowStateType next = GetStateForTransitionEvent(window_state, event);
 
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       next == WindowStateType::kNormal && window_state->CanMaximize())

@@ -160,6 +160,15 @@ AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
     kShowStateKey;
 
+// A property key to indicate if a window is currently being restored. Normally
+// restoring a window equals to changing window's state to normal window state.
+// This property will be used in ash to decide if we should use window state
+// restore stack to decide which window state the window should restore back to,
+// and it's not unnecessarily always the normal window state. As an example,
+// unminimizing a window will restore the window back to its pre-minimized
+// window state.
+AURA_EXPORT extern const WindowProperty<bool>* const kIsRestoringKey;
+
 // A property key to store key event dispatch policy. The default value is
 // false, which means IME receives a key event in PREDISPATCH phace before a
 // window receives it. If it's true, a window receives a key event before IME.

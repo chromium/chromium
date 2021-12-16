@@ -377,9 +377,10 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   generator.DoubleClickLeftButton();
   EXPECT_TRUE(window_state->IsMaximized());
 
+  // Double click on the maximized window should restore back to snapped window
+  // state.
   generator.DoubleClickLeftButton();
-  EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_EQ(restore_bounds.ToString(), window->bounds().ToString());
+  EXPECT_TRUE(window_state->IsSnapped());
 }
 
 // Test that double clicking on window side edge horizontally and vertically

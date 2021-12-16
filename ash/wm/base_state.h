@@ -31,6 +31,7 @@ class BaseState : public WindowState::State {
  protected:
   // Returns the chromeos::WindowStateType corresponds to the WMEvent type.
   static chromeos::WindowStateType GetStateForTransitionEvent(
+      WindowState* window_state,
       const WMEvent* event);
 
   static void CenterWindow(WindowState* window_state);

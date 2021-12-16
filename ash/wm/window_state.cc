@@ -32,6 +32,8 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -64,6 +66,28 @@ using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
 using ::chromeos::kWindowManagerManagesOpacityKey;
 using ::chromeos::WindowStateType;
+
+// This defines the map from different window states to their restore layers.
+// The assumption is that a window state with higher restore layer number can
+// restore back to a window state with lower restore layer number, but not the
+// other way around. For example, a window whose window state is kMinimized can
+// restore to kMaximized window state, but kMaximized window state can not
+// restore back to kMinimized window state. Please see
+// go/window-state-restore-history for details.
+// Note the map does not contain all WindowStateTypes, for the ones that's not
+// in the map, they can't be put into the window state restore history stack,
+// and restore from those state will simply go back to kNormal window state.
+constexpr auto kWindowStateRestoreHistoryLayerMap =
+    base::MakeFixedFlatMap<WindowStateType, int>({
+        {WindowStateType::kNormal, 0},
+        {WindowStateType::kDefault, 0},
+        {WindowStateType::kPrimarySnapped, 1},
+        {WindowStateType::kSecondarySnapped, 1},
+        {WindowStateType::kMaximized, 2},
+        {WindowStateType::kFullscreen, 3},
+        {WindowStateType::kPip, 4},
+        {WindowStateType::kMinimized, 4},
+    });
 
 bool IsTabletModeEnabled() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
@@ -134,6 +158,36 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
     case ui::SHOW_STATE_END:
       NOTREACHED() << "No WMEvent defined for the show state:"
                    << requested_show_state;
+  }
+  return WM_EVENT_NORMAL;
+}
+
+WMEventType WMEventTypeFromWindowStateType(WindowStateType window_state_type) {
+  switch (window_state_type) {
+    case WindowStateType::kDefault:
+    case WindowStateType::kNormal:
+      return WM_EVENT_NORMAL;
+    case WindowStateType::kMinimized:
+      return WM_EVENT_MINIMIZE;
+    case WindowStateType::kMaximized:
+      return WM_EVENT_MAXIMIZE;
+    case WindowStateType::kInactive:
+      return WM_EVENT_SHOW_INACTIVE;
+    case WindowStateType::kFullscreen:
+      return WM_EVENT_FULLSCREEN;
+    case WindowStateType::kPrimarySnapped:
+      return WM_EVENT_SNAP_PRIMARY;
+    case WindowStateType::kSecondarySnapped:
+      return WM_EVENT_SNAP_SECONDARY;
+    case WindowStateType::kPinned:
+      return WM_EVENT_PIN;
+    case WindowStateType::kTrustedPinned:
+      return WM_EVENT_TRUSTED_PIN;
+    case WindowStateType::kPip:
+      return WM_EVENT_PIP;
+    case WindowStateType::kAutoPositioned:
+      NOTREACHED() << "No WMEvent defined for the window state type: "
+                   << window_state_type;
   }
   return WM_EVENT_NORMAL;
 }
@@ -360,10 +414,8 @@ void WindowState::Deactivate() {
 }
 
 void WindowState::Restore() {
-  if (!IsNormalStateType()) {
-    const WMEvent event(WM_EVENT_NORMAL);
-    OnWMEvent(&event);
-  }
+  const WMEvent event(WMEventTypeFromWindowStateType(GetRestoreWindowState()));
+  OnWMEvent(&event);
 }
 
 void WindowState::DisableZOrdering(aura::Window* window_on_top) {
@@ -614,8 +666,16 @@ void WindowState::OnActivationLost() {
   }
 }
 
-display::Display WindowState::GetDisplay() {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+display::Display WindowState::GetDisplay() const {
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+}
+
+WindowStateType WindowState::GetRestoreWindowState() const {
+  return window_state_restore_history_.empty() ||
+                 window_state_restore_history_.back() ==
+                     WindowStateType::kDefault
+             ? WindowStateType::kNormal
+             : window_state_restore_history_.back();
 }
 
 void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
@@ -751,6 +811,7 @@ void WindowState::NotifyPostStateTypeChange(
   for (auto& observer : observer_list_)
     observer.OnPostWindowStateTypeChange(this, old_window_state_type);
   OnPostPipStateChange(old_window_state_type);
+  UpdateWindowStateRestoreHistoryStack(old_window_state_type);
   SaveWindowForWindowRestore(this);
 }
 
@@ -931,6 +992,41 @@ void WindowState::CollectPipEnterExitMetrics(bool enter) {
   }
 }
 
+void WindowState::UpdateWindowStateRestoreHistoryStack(
+    chromeos::WindowStateType previous_state_type) {
+  WindowStateType current_state_type = GetStateType();
+
+  const bool is_state_type_supported =
+      kWindowStateRestoreHistoryLayerMap.find(current_state_type) !=
+      kWindowStateRestoreHistoryLayerMap.end();
+  if (!is_state_type_supported) {
+    window_state_restore_history_.clear();
+    return;
+  }
+
+  // We'll need to pop out any window state that the `current_state_type` can
+  // not restore back to (i.e., whose restore order is equal or higher than
+  // `current_state_type`).
+  for (auto state : base::Reversed(window_state_restore_history_)) {
+    if (kWindowStateRestoreHistoryLayerMap.at(state) <
+        kWindowStateRestoreHistoryLayerMap.at(current_state_type)) {
+      break;
+    }
+    window_state_restore_history_.pop_back();
+  }
+
+  // If `current_state_type` can restore to `previous_state_type`, push
+  // `previous_state_type` into the stack.
+  const bool is_previous_state_type_supported =
+      kWindowStateRestoreHistoryLayerMap.find(previous_state_type) !=
+      kWindowStateRestoreHistoryLayerMap.end();
+  if (is_previous_state_type_supported &&
+      (kWindowStateRestoreHistoryLayerMap.at(current_state_type) >
+       kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) {
+    window_state_restore_history_.push_back(previous_state_type);
+  }
+}
+
 // static
 WindowState* WindowState::Get(aura::Window* window) {
   if (!window)
@@ -1049,7 +1145,6 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
   current_state_->OnWindowDestroying(this);
   delegate_.reset();
 }
-
 
 void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& old_bounds,

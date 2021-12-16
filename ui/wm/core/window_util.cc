@@ -110,6 +110,9 @@ void SetWindowFullscreen(aura::Window* window, bool fullscreen) {
     }
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
   } else {
+    // TODO: change to call into Restore() function and remove
+    // kPreFullscreenShowStateKey key.
+
     ui::WindowShowState pre_fullscreen_show_state =
         window->GetProperty(aura::client::kPreFullscreenShowStateKey);
     DCHECK_NE(pre_fullscreen_show_state, ui::SHOW_STATE_MINIMIZED);
@@ -126,7 +129,15 @@ void SetWindowState(aura::Window* window, ui::WindowShowState state) {
   window->SetProperty(aura::client::kShowStateKey, state);
 }
 
+void Restore(aura::Window* window) {
+  window->SetProperty(aura::client::kIsRestoringKey, true);
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->ClearProperty(aura::client::kIsRestoringKey);
+}
+
 void Unminimize(aura::Window* window) {
+  // TODO: change to call into Restore() function and remove
+  // kPreMinimizedShowStateKey key.
   DCHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
             ui::SHOW_STATE_MINIMIZED);
   window->SetProperty(

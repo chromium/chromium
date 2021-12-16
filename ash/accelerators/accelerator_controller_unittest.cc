@@ -67,6 +67,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
@@ -606,9 +607,13 @@ TEST_F(AcceleratorControllerTest, WindowSnap) {
 
     controller_->PerformActionIfEnabled(TOGGLE_MAXIMIZED, {});
     EXPECT_FALSE(window_state->IsMaximized());
-    // Window gets restored to its restore bounds since side-maximized state
-    // is treated as a "maximized" state.
-    EXPECT_EQ(normal_bounds.ToString(), window->bounds().ToString());
+
+    // Window gets restored to its right snapped window bounds and its window
+    // state should also restore to the right snapped window state.
+    gfx::Rect expected_bounds = GetDefaultSnappedWindowBoundsInParent(
+        window.get(), SnapViewType::kSecondary);
+    EXPECT_EQ(expected_bounds.ToString(), window->bounds().ToString());
+    EXPECT_EQ(window_state->GetStateType(), WindowStateType::kSecondarySnapped);
 
     controller_->PerformActionIfEnabled(TOGGLE_MAXIMIZED, {});
     controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
