@@ -23,6 +23,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   };
 
   constructor() {
+    // clang-format off
     super([
       'didNavigateAwayFromSyncPage',
       'didNavigateToSyncPage',
@@ -34,7 +35,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'setEncryptionPassphrase',
       'setDecryptionPassphrase',
       'sendSyncPrefsChanged',
-      'sendOfferTrustedVaultOptInChanged',
+      'sendTrustedVaultBannerStateChanged',
       'startSyncingWithEmail',
 
       // <if expr="not chromeos">
@@ -48,6 +49,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'turnOffSync',
       // </if>
     ]);
+    // clang-format on
   }
 
   getSyncStatus() {
@@ -118,8 +120,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('sendSyncPrefsChanged');
   }
 
-  sendOfferTrustedVaultOptInChanged() {
-    this.methodCalled('sendOfferTrustedVaultOptInChanged');
+  sendTrustedVaultBannerStateChanged() {
+    this.methodCalled('sendTrustedVaultBannerStateChanged');
   }
 
   openActivityControlsUrl() {}

@@ -118,6 +118,13 @@ export enum PageStatus {
   PASSPHRASE_FAILED = 'passphraseFailed',  // Error in the passphrase.
 }
 
+// WARNING: Keep synced with chrome/browser/ui/webui/settings/people_handler.cc.
+export enum TrustedVaultBannerState {
+  NOT_SHOWN = 0,
+  OFFER_OPT_IN = 1,
+  OPTED_IN = 2,
+}
+
 /**
  * Key to be used with localStorage.
  */
@@ -237,9 +244,9 @@ export interface SyncBrowserProxy {
   sendSyncPrefsChanged(): void;
 
   /**
-   * Forces an offer-trusted-vault-opt-in-changed event to be fired.
+   * Forces a trusted-vault-banner-state-changed event to be fired.
    */
-  sendOfferTrustedVaultOptInChanged(): void;
+  sendTrustedVaultBannerStateChanged(): void;
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
@@ -329,8 +336,8 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
     chrome.send('SyncPrefsDispatch');
   }
 
-  sendOfferTrustedVaultOptInChanged() {
-    chrome.send('SyncOfferTrustedVaultOptInDispatch');
+  sendTrustedVaultBannerStateChanged() {
+    chrome.send('SyncTrustedVaultBannerStateDispatch');
   }
 
   static getInstance(): SyncBrowserProxy {

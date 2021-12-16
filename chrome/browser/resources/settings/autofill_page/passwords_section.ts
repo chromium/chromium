@@ -31,7 +31,7 @@ import './passwords_shared_css.js';
 import './avatar_icon.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -43,7 +43,7 @@ import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
-import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
@@ -206,13 +206,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'isOptedInForAccountStorage_, numberOfDevicePasswords_)',
       },
 
-      /**
-       * Whether the entry point leading to enroll in trusted vault encryption
-       * should be shown.
-       */
-      shouldOfferTrustedVaultOptIn_: {
-        type: Boolean,
-        value: false,
+      /** The visibility state of the trusted vault banner. */
+      trustedVaultBannerState_: {
+        type: Object,
+        value: TrustedVaultBannerState.NOT_SHOWN,
       },
 
       hasLeakedCredentials_: {
@@ -284,7 +281,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
-  private shouldOfferTrustedVaultOptIn_: boolean;
+  private trustedVaultBannerState_: TrustedVaultBannerState;
   private hasLeakedCredentials_: boolean;
   private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
@@ -393,10 +390,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
     // </if>
 
-    syncBrowserProxy.sendOfferTrustedVaultOptInChanged();
+    syncBrowserProxy.sendTrustedVaultBannerStateChanged();
     this.addWebUIListener(
-        'offer-trusted-vault-opt-in-changed', (offerOptIn: boolean) => {
-          this.shouldOfferTrustedVaultOptIn_ = offerOptIn;
+        'trusted-vault-banner-state-changed',
+        (state: TrustedVaultBannerState) => {
+          this.trustedVaultBannerState_ = state;
         });
 
     afterNextRender(this, function() {
@@ -493,12 +491,21 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         PasswordCheckReferrer.PASSWORD_SETTINGS);
   }
 
-  /**
-   * Shows the page to opt in to trusted vault encryption.
-   */
-  private onTrustedVaultOptInClick_() {
-    OpenWindowProxyImpl.getInstance().openURL(
-        loadTimeData.getString('trustedVaultOptInUrl'));
+  private onTrustedVaultBannerClick_() {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        // TODO(crbug.com/1202088): Use correct help center URL here.
+        OpenWindowProxyImpl.getInstance().openURL(
+            loadTimeData.getString('passwordManagerLearnMoreURL'));
+        break;
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        OpenWindowProxyImpl.getInstance().openURL(
+            loadTimeData.getString('trustedVaultOptInUrl'));
+        break;
+      case TrustedVaultBannerState.NOT_SHOWN:
+      default:
+        assertNotReached();
+    }
   }
 
   /**
@@ -698,6 +705,24 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         }
       }));
     }, 0);
+  }
+
+  private getTrustedVaultBannerSubLabel_(): string {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        return this.i18n('trustedVaultBannerSubLabelOptedIn');
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        return this.i18n('trustedVaultBannerSubLabelOfferOptIn');
+      case TrustedVaultBannerState.NOT_SHOWN:
+        return '';
+      default:
+        assertNotReached();
+        return '';
+    }
+  }
+
+  private shouldHideTrustedVaultBanner_(): boolean {
+    return this.trustedVaultBannerState_ === TrustedVaultBannerState.NOT_SHOWN;
   }
 }
 

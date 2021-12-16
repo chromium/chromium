@@ -160,7 +160,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSetDecryptionPassphrase(const base::ListValue* args);
   void HandleShowSyncSetupUI(const base::ListValue* args);
   void HandleSyncPrefsDispatch(const base::ListValue* args);
-  void HandleOfferTrustedVaultOptInDispatch(const base::ListValue* args);
+  void HandleTrustedVaultBannerStateDispatch(const base::ListValue* args);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleAttemptUserExit(const base::ListValue* args);
   void HandleTurnOnSync(const base::ListValue* args);
@@ -191,6 +191,8 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // Pushes the updated sync prefs to JavaScript.
   void PushSyncPrefs();
+
+  void PushTrustedVaultBannerState();
 
   // Sends the current sync status to the JavaScript WebUI code.
   void UpdateSyncStatus();

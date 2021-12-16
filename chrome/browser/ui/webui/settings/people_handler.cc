@@ -78,8 +78,16 @@ using signin::ConsentLevel;
 
 namespace {
 
-const char kOfferTrustedVaultOptInChangedEvent[] =
-    "offer-trusted-vault-opt-in-changed";
+const char kTrustedVaultBannerStateChangedEvent[] =
+    "trusted-vault-banner-state-changed";
+
+// WARNING: Keep synced with
+// chrome/browser/resources/settings/people_page/sync_browser_proxy.ts.
+enum class TrustedVaultBannerState {
+  kNotShown = 0,
+  kOfferOptIn = 1,
+  kOptedIn = 2,
+};
 
 // A structure which contains all the configuration information for sync.
 struct SyncConfigInfo {
@@ -247,8 +255,8 @@ void PeopleHandler::RegisterMessages() {
       base::BindRepeating(&PeopleHandler::HandleSyncPrefsDispatch,
                           base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
-      "SyncOfferTrustedVaultOptInDispatch",
-      base::BindRepeating(&PeopleHandler::HandleOfferTrustedVaultOptInDispatch,
+      "SyncTrustedVaultBannerStateDispatch",
+      base::BindRepeating(&PeopleHandler::HandleTrustedVaultBannerStateDispatch,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterDeprecatedMessageCallback(
@@ -702,12 +710,10 @@ void PeopleHandler::HandleSyncPrefsDispatch(const base::ListValue* args) {
   PushSyncPrefs();
 }
 
-void PeopleHandler::HandleOfferTrustedVaultOptInDispatch(
+void PeopleHandler::HandleTrustedVaultBannerStateDispatch(
     const base::ListValue* args) {
   AllowJavascript();
-  FireWebUIListener(
-      kOfferTrustedVaultOptInChangedEvent,
-      base::Value(syncer::ShouldOfferTrustedVaultOptIn(GetSyncService())));
+  PushTrustedVaultBannerState();
 }
 
 void PeopleHandler::CloseSyncSetup() {
@@ -822,8 +828,7 @@ void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   // MaybeMarkSyncConfiguring() then.
   MaybeMarkSyncConfiguring();
   PushSyncPrefs();
-  FireWebUIListener(kOfferTrustedVaultOptInChangedEvent,
-                    base::Value(ShouldOfferTrustedVaultOptIn(sync_service)));
+  PushTrustedVaultBannerState();
 }
 
 void PeopleHandler::BeforeUnloadDialogCancelled() {
@@ -978,6 +983,20 @@ void PeopleHandler::PushSyncPrefs() {
   }
 
   FireWebUIListener("sync-prefs-changed", args);
+}
+
+void PeopleHandler::PushTrustedVaultBannerState() {
+  syncer::SyncService* sync_service = GetSyncService();
+  auto state = TrustedVaultBannerState::kNotShown;
+  if (sync_service && sync_service->GetUserSettings()->GetPassphraseType() ==
+                          syncer::PassphraseType::kTrustedVaultPassphrase) {
+    state = TrustedVaultBannerState::kOptedIn;
+  } else if (syncer::ShouldOfferTrustedVaultOptIn(sync_service)) {
+    state = TrustedVaultBannerState::kOfferOptIn;
+  }
+
+  FireWebUIListener(kTrustedVaultBannerStateChangedEvent,
+                    base::Value(static_cast<int>(state)));
 }
 
 LoginUIService* PeopleHandler::GetLoginUIService() const {
