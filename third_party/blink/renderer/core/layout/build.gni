@@ -756,6 +756,8 @@ if (is_win) {
     "layout_theme_win.cc",
     "layout_theme_win.h",
     "web_font_rendering_win.cc",
+    "layout_font_accessor_win.h",
+    "layout_font_accessor_win.cc",
   ]
 } else {  # Not Windows.
   blink_core_sources_layout += [ "layout_theme_font_provider_default.cc" ]

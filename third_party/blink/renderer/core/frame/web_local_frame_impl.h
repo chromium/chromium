@@ -328,6 +328,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool HasTransientUserActivation() override;
   bool ConsumeTransientUserActivation(UserActivationUpdateSource) override;
   bool LastActivationWasRestricted() const override;
+#if defined(OS_WIN)
+  WebFontFamilyNames GetWebFontFamilyNames() const override;
+#endif
   void SetTargetToCurrentHistoryItem(const WebString& target) override;
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;

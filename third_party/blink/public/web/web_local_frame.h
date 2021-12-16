@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -96,6 +97,10 @@ struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
 struct WebScriptSource;
+
+#if defined(OS_WIN)
+struct WebFontFamilyNames;
+#endif
 
 namespace mojom {
 enum class TreeScopeType;
@@ -820,6 +825,13 @@ class WebLocalFrame : public WebFrame {
 
   // See |blink::Frame::LastActivationWasRestricted()|.
   virtual bool LastActivationWasRestricted() const = 0;
+
+  // Fonts --------------------------------------------------------------------
+
+#if defined(OS_WIN)
+  // Returns the font family names currently used.
+  virtual WebFontFamilyNames GetWebFontFamilyNames() const = 0;
+#endif
 
   // Testing ------------------------------------------------------------------
 
