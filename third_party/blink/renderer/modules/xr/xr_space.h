@@ -38,12 +38,12 @@ class XRSpace : public EventTargetWithInlineData {
   // Unless noted otherwise, all data returned over vr_service.mojom interfaces
   // is expressed in mojo space coordinates.
   // Returns nullopt if computing a transform is not possible.
-  virtual absl::optional<TransformationMatrix> MojoFromNative() = 0;
+  virtual absl::optional<TransformationMatrix> MojoFromNative() const = 0;
 
   // Convenience method to try to get the inverse of the above. This will return
   // the pose of the mojo origin in this space's native origin.
   // Returns nullopt if computing a transform is not possible.
-  absl::optional<TransformationMatrix> NativeFromMojo();
+  absl::optional<TransformationMatrix> NativeFromMojo() const;
 
   // Gets the viewer pose in the native coordinates of this space, corresponding
   // to a transform from viewer coordinates to this space's native coordinates.
@@ -54,22 +54,22 @@ class XRSpace : public EventTargetWithInlineData {
   // instead of something near to, but not quite, identity.
   // Returns nullopt if computing a transform is not possible.
   virtual absl::optional<TransformationMatrix> NativeFromViewer(
-      const absl::optional<TransformationMatrix>& mojo_from_viewer);
+      const absl::optional<TransformationMatrix>& mojo_from_viewer) const;
 
   // Convenience method for calling NativeFromViewer with the current
   // MojoFromViewer of the session associated with this space. This also handles
   // the multiplication of OffsetFromNative onto the result of NativeFromViewer.
   // Returns nullopt if computing a transform is not possible.
-  absl::optional<TransformationMatrix> OffsetFromViewer();
+  absl::optional<TransformationMatrix> OffsetFromViewer() const;
 
   // Return origin offset matrix, aka native_origin_from_offset_space.
-  virtual TransformationMatrix NativeFromOffsetMatrix();
-  virtual TransformationMatrix OffsetFromNativeMatrix();
+  virtual TransformationMatrix NativeFromOffsetMatrix() const;
+  virtual TransformationMatrix OffsetFromNativeMatrix() const;
 
   // Returns transformation from offset space to mojo space. Convenience method,
   // returns MojoFromNative() * NativeFromOffsetMatrix() or nullopt if computing
   // a transform is not possible.
-  absl::optional<TransformationMatrix> MojoFromOffsetMatrix();
+  absl::optional<TransformationMatrix> MojoFromOffsetMatrix() const;
 
   // Returns true when invoked on a space that is deemed stationary, false
   // otherwise (this means that the space is considered dynamic). Stationary
@@ -87,7 +87,7 @@ class XRSpace : public EventTargetWithInlineData {
   // Gets the pose of this space's origin in |other_space|. This is a transform
   // that maps from this space to the other's space, or in other words:
   // other_from_this.
-  virtual XRPose* getPose(XRSpace* other_space);
+  virtual XRPose* getPose(const XRSpace* other_space) const;
 
   XRSession* session() const { return session_; }
 

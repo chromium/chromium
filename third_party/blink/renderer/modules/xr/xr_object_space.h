@@ -36,7 +36,7 @@ class XRObjectSpace final : public XRSpace {
         object_(object),
         is_stationary_(object->IsStationary()) {}
 
-  absl::optional<TransformationMatrix> MojoFromNative() override {
+  absl::optional<TransformationMatrix> MojoFromNative() const override {
     return object_->MojoFromObject();
   }
 

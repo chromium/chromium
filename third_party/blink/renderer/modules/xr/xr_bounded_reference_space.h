@@ -22,7 +22,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   XRBoundedReferenceSpace(XRSession*, XRRigidTransform*);
   ~XRBoundedReferenceSpace() override;
 
-  absl::optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() const override;
 
   HeapVector<Member<DOMPointReadOnly>> boundsGeometry();
 
@@ -32,13 +32,13 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
 
  private:
   XRBoundedReferenceSpace* cloneWithOriginOffset(
-      XRRigidTransform* origin_offset) override;
+      XRRigidTransform* origin_offset) const override;
 
-  void EnsureUpdated();
+  void EnsureUpdated() const;
 
-  HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
-  std::unique_ptr<TransformationMatrix> mojo_from_bounded_native_;
-  uint32_t stage_parameters_id_ = 0;
+  mutable HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
+  mutable std::unique_ptr<TransformationMatrix> mojo_from_bounded_native_;
+  mutable uint32_t stage_parameters_id_ = 0;
 };
 
 }  // namespace blink

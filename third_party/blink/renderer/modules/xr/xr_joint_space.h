@@ -34,11 +34,11 @@ class XRJointSpace : public XRSpace {
   const String jointName() const;
   device::mojom::XRHandedness handedness() const { return handedness_; }
 
-  absl::optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() const override;
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
   bool EmulatedPosition() const override;
-  XRPose* getPose(XRSpace* other_space) override;
+  XRPose* getPose(const XRSpace* other_space) const override;
 
   void UpdateTracking(std::unique_ptr<TransformationMatrix> mojo_from_joint,
                       float radius);

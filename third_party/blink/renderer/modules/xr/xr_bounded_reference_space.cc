@@ -47,7 +47,7 @@ XRBoundedReferenceSpace::XRBoundedReferenceSpace(
 
 XRBoundedReferenceSpace::~XRBoundedReferenceSpace() = default;
 
-void XRBoundedReferenceSpace::EnsureUpdated() {
+void XRBoundedReferenceSpace::EnsureUpdated() const {
   // Check first to see if the stage parameters have updated since the last
   // call. We only need to update the transform and bounds if it has.
   if (stage_parameters_id_ == session()->StageParametersId())
@@ -89,10 +89,15 @@ void XRBoundedReferenceSpace::EnsureUpdated() {
     offset_bounds_geometry_.clear();
   }
 
-  DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
+  // DispatchEvent inherited from core/dom/events/event_target.h isn't const.
+  XRBoundedReferenceSpace* mutable_this =
+      const_cast<XRBoundedReferenceSpace*>(this);
+  mutable_this->DispatchEvent(
+      *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this));
 }
 
-absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative()
+    const {
   EnsureUpdated();
 
   if (!mojo_from_bounded_native_)
@@ -118,7 +123,7 @@ void XRBoundedReferenceSpace::OnReset() {
 }
 
 XRBoundedReferenceSpace* XRBoundedReferenceSpace::cloneWithOriginOffset(
-    XRRigidTransform* origin_offset) {
+    XRRigidTransform* origin_offset) const {
   return MakeGarbageCollected<XRBoundedReferenceSpace>(this->session(),
                                                        origin_offset);
 }

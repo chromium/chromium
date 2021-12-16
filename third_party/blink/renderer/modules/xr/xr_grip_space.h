@@ -16,7 +16,7 @@ class XRGripSpace : public XRSpace {
  public:
   XRGripSpace(XRSession* session, XRInputSource* input_source);
 
-  absl::optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() const override;
   bool EmulatedPosition() const override;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
