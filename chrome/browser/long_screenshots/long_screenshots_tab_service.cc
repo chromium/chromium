@@ -41,6 +41,9 @@ const char kGoogleAmpCachePathPattern[] = "/[a-z]/(s/)?(.*)";
 // Regex pattern for the path of Google AMP Viewer URLs.
 const char kGoogleAmpViewerPathPattern[] = "/amp/(s/)?(.*)";
 
+const char kGoogleNewsHost[] = "news.google.com";
+const char kGoogleNewsPathPattern[] = "/articles/(.*)";
+
 }  // namespace
 
 // Used to free a CaptureResult if it is passed up to Java and cannot be used by
@@ -60,9 +63,11 @@ LongScreenshotsTabService::LongScreenshotsTabService(
                               std::move(policy),
                               is_off_the_record),
       google_amp_cache_path_regex_(kGoogleAmpCachePathPattern),
-      google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern) {
+      google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern),
+      google_news_path_regex_(kGoogleNewsPathPattern) {
   DCHECK(google_amp_cache_path_regex_.ok());
   DCHECK(google_amp_viewer_path_regex_.ok());
+  DCHECK(google_news_path_regex_.ok());
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -237,6 +242,12 @@ bool LongScreenshotsTabService::IsAmpUrl(const GURL& url) {
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) &&
       re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_)) {
+    return true;
+  }
+
+  // Check for "news.google.com/articles/*".
+  if (url.DomainIs(kGoogleNewsHost) &&
+      re2::RE2::FullMatch(url.path(), google_news_path_regex_)) {
     return true;
   }
 
