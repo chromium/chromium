@@ -22,6 +22,25 @@ public interface PasswordStoreAndroidBackend {
             errorCode = error;
         }
     }
+
+    /**
+     * Subscribes to notifications from the downstream implementation.
+     *
+     * @param successCallback Callback that is called on success.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     * TODO(crbug.com/1278767): Remove default keyword after downstream implementation.
+     */
+    default void subscribe(Runnable successCallback, Callback<Exception> failureCallback){};
+
+    /**
+     * Unsubscribes from notifications from the downstream implementation.
+     *
+     * @param successCallback Callback that is called on success.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     * TODO(crbug.com/1278767): Remove default keyword after downstream implementation.
+     */
+    default void unsubscribe(Runnable successCallback, Callback<Exception> failureCallback){};
+
     /**
      * Triggers an async list call to retrieve all logins.
      *
