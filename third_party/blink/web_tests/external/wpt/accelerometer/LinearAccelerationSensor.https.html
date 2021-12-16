@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Accelerometer Test</title>
+<title>Linear Acceleration Sensor Test</title>
 <meta name="timeout" content="long">
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://www.w3.org/TR/accelerometer/">
@@ -25,7 +25,7 @@ const kReadings = {
 };
 
 runGenericSensorTests(
-    'Accelerometer',
+    'LinearAccelerationSensor',
     kReadings,
     verifyXyzSensorReading,
     ['accelerometer']);
