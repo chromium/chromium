@@ -93,6 +93,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
+  void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
   void OpenFileInGallery(const std::string& name) override;

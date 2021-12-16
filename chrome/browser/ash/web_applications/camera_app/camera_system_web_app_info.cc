@@ -8,7 +8,6 @@
 #include "ash/grit/ash_camera_app_resources.h"
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -76,11 +75,6 @@ std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
 
 bool CameraSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
-}
-
-base::FilePath CameraSystemAppDelegate::GetLaunchDirectory(
-    const apps::AppLaunchParams& params) const {
-  return file_manager::util::GetMyFilesFolderForProfile(profile());
 }
 
 gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
