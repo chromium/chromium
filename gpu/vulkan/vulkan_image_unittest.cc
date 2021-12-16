@@ -45,7 +45,6 @@ TEST_F(VulkanImageTest, Create) {
     EXPECT_EQ(image->format(), format);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));
@@ -74,7 +73,6 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
     EXPECT_EQ(image->format(), format);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));
@@ -180,7 +178,6 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
     EXPECT_EQ(image->format(), format.vk);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));

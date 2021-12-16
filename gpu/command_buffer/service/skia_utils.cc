@@ -262,7 +262,7 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   image_info.fImage = image->image();
   image_info.fAlloc = alloc;
   image_info.fImageTiling = image->image_tiling();
-  image_info.fImageLayout = image->image_layout();
+  image_info.fImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   image_info.fFormat = image->format();
   image_info.fImageUsageFlags = image->usage();
   image_info.fSampleCount = 1;

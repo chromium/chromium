@@ -124,8 +124,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkDeviceSize device_size() const { return device_size_; }
   uint32_t memory_type_index() const { return memory_type_index_; }
   VkImageTiling image_tiling() const { return create_info_.tiling; }
-  VkImageLayout image_layout() const { return image_layout_; }
-  void set_image_layout(VkImageLayout layout) { image_layout_ = layout; }
   uint32_t queue_family_index() const { return queue_family_index_; }
   void set_queue_family_index(uint32_t index) { queue_family_index_ = index; }
   const absl::optional<VulkanYCbCrInfo>& ycbcr_info() const {
@@ -185,7 +183,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkImageCreateInfo create_info_{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceSize device_size_ = 0;
   uint32_t memory_type_index_ = 0;
-  VkImageLayout image_layout_ = VK_IMAGE_LAYOUT_UNDEFINED;
   uint32_t queue_family_index_ = VK_QUEUE_FAMILY_IGNORED;
   absl::optional<VulkanYCbCrInfo> ycbcr_info_;
   VkImage image_ = VK_NULL_HANDLE;
