@@ -232,6 +232,11 @@ class OmniboxPedal : public OmniboxAction {
   size_t EstimateMemoryUsage() const override;
   int32_t GetID() const override;
 
+#if defined(OS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
+  void CreateOrUpdateJavaObject();
+#endif
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupsDriveConceptMatches);
@@ -249,6 +254,10 @@ class OmniboxPedal : public OmniboxAction {
   SynonymGroup verbatim_synonym_group_;
 
   std::vector<SynonymGroup> synonym_groups_;
+
+#if defined(OS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+#endif
 };
 
 // This is a simple pedal suitable only for use by tests.

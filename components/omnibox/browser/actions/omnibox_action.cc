@@ -103,6 +103,13 @@ int32_t OmniboxAction::GetID() const {
   return 0;
 }
 
+#if defined(OS_ANDROID)
+base::android::ScopedJavaGlobalRef<jobject> OmniboxAction::GetJavaObject()
+    const {
+  return base::android::ScopedJavaGlobalRef<jobject>();
+}
+#endif
+
 void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
                             const GURL& url) const {
   // Set `match_type` as if the user just typed |url| verbatim.

@@ -26,6 +26,10 @@ struct VectorIcon;
 }
 #endif
 
+#if defined(OS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 class AutocompleteInput;
 class AutocompleteProviderClient;
 
@@ -119,6 +123,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
 
+  // Returns the destination URL for navigation Actions, Otherwise, returns an
+  // empty URL.
+  const GURL& getUrl() const { return url_; }
+
   // Records that the action was shown at index `position` in the popup.
   virtual void RecordActionShown(size_t position) const {}
 
@@ -149,6 +157,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
   // Returns an ID used to identify some actions. Not defined for all Actions.
   virtual int32_t GetID() const;
+
+#if defined(OS_ANDROID)
+  virtual base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
+#endif
 
  protected:
   friend class base::RefCounted<OmniboxAction>;

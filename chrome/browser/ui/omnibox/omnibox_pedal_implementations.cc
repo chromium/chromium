@@ -85,7 +85,6 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalManagePasswords : public OmniboxPedal {
  public:
   OmniboxPedalManagePasswords()
@@ -123,11 +122,9 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
  protected:
   ~OmniboxPedalManagePasswords() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
  public:
   OmniboxPedalUpdateCreditCard()
@@ -166,11 +163,9 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
  protected:
   ~OmniboxPedalUpdateCreditCard() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalLaunchIncognito : public OmniboxPedal {
  public:
   OmniboxPedalLaunchIncognito()
@@ -218,7 +213,6 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
  protected:
   ~OmniboxPedalLaunchIncognito() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -318,7 +312,6 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
  public:
   OmniboxPedalRunChromeSafetyCheck()
@@ -362,7 +355,6 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
  protected:
   ~OmniboxPedalRunChromeSafetyCheck() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -530,7 +522,6 @@ class OmniboxPedalManageSync : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalManageSiteSettings : public OmniboxPedal {
  public:
   OmniboxPedalManageSiteSettings()
@@ -564,7 +555,6 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
  protected:
   ~OmniboxPedalManageSiteSettings() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -1115,7 +1105,6 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
  public:
   OmniboxPedalPlayChromeDinoGame()
@@ -1183,7 +1172,6 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
  protected:
   ~OmniboxPedalPlayChromeDinoGame() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -1268,7 +1256,6 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalManageChromeSettings : public OmniboxPedal {
  public:
   OmniboxPedalManageChromeSettings()
@@ -1300,7 +1287,6 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
  protected:
   ~OmniboxPedalManageChromeSettings() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -1340,7 +1326,6 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalViewChromeHistory : public OmniboxPedal {
  public:
   OmniboxPedalViewChromeHistory()
@@ -1372,7 +1357,6 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
  protected:
   ~OmniboxPedalViewChromeHistory() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -1425,7 +1409,6 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
 
 // =============================================================================
 
-#if !defined(OS_ANDROID)
 class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
  public:
   OmniboxPedalManageChromeAccessibility()
@@ -1457,7 +1440,6 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
  protected:
   ~OmniboxPedalManageChromeAccessibility() override = default;
 };
-#endif  // !defined(OS_ANDROID)
 
 // =============================================================================
 
@@ -1631,6 +1613,15 @@ GetPedalImplementations(bool incognito, bool testing) {
 #if defined(OS_ANDROID)
   if (OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled()) {
     add(new OmniboxPedalClearBrowsingData(incognito));
+    add(new OmniboxPedalManagePasswords());
+    add(new OmniboxPedalUpdateCreditCard());
+    add(new OmniboxPedalLaunchIncognito());
+    add(new OmniboxPedalRunChromeSafetyCheck());
+    add(new OmniboxPedalPlayChromeDinoGame());
+    add(new OmniboxPedalManageSiteSettings());
+    add(new OmniboxPedalManageChromeSettings());
+    add(new OmniboxPedalViewChromeHistory());
+    add(new OmniboxPedalManageChromeAccessibility());
   }
 #else  // defined(OS_ANDROID)
 

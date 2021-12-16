@@ -86,6 +86,11 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
+  ScopedJavaLocalRef<jobject> j_action_obj;
+  if (action) {
+    j_action_obj = action->GetJavaObject();
+  }
+
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
@@ -106,7 +111,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
           has_tab_match.value_or(false),
           ToJavaArrayOfStrings(env, navsuggest_titles),
-          url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls)));
+          url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls),
+          j_action_obj));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

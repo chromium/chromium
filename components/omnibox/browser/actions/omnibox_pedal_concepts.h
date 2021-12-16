@@ -16,6 +16,10 @@ constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16163558;
 // Also used in the Omnibox.SuggestionUsed.Pedal histogram. Do not remove or
 // reuse values. If any pedal types are removed from Chrome, the associated ID
 // will remain and be marked as obsolete.
+//
+// Automatically generate a corresponding Java enum:
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.omnibox.action
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxPedalType
 enum class OmniboxPedalId {
   NONE = 0,
 

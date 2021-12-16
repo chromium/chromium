@@ -399,6 +399,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
 
     resources_package = "org.chromium.components.omnibox"
@@ -423,6 +424,7 @@ if (is_android) {
 
   java_cpp_enum("browser_java_enums_srcjar") {
     sources = [
+      "actions/omnibox_pedal_concepts.h",
       "autocomplete_match.h",
       "autocomplete_match_type.h",
       "suggestion_answer.h",
@@ -436,6 +438,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
   }
 }

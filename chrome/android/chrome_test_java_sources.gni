@@ -346,6 +346,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/CachedZeroSuggestionsManagerUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListBuilderUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListManagerUnitTest.java",
+  "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxPedalsTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/SwitchToTabTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerSuggestionProcessorUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionProcessorTest.java",
