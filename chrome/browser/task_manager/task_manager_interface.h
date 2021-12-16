@@ -19,6 +19,7 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/global_routing_id.h"
 
 class PrefRegistrySimple;
 
@@ -47,12 +48,12 @@ class TaskManagerInterface {
   static TaskManagerInterface* GetTaskManager();
 
   // Update the accumulated network stats with additional data sent/received
-  // for a route described by |process_id| and |route_id|. If the associated
+  // for a route described by |render_frame_host_id|. If the associated
   // task cannot be found it will be attributed to the browser process task.
-  static void UpdateAccumulatedStatsNetworkForRoute(int process_id,
-                                                    int route_id,
-                                                    int64_t recv_bytes,
-                                                    int64_t sent_bytes);
+  static void UpdateAccumulatedStatsNetworkForRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int64_t recv_bytes,
+      int64_t sent_bytes);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);

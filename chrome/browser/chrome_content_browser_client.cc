@@ -5738,8 +5738,7 @@ bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 }
 
 void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
-    int process_id,
-    int routing_id,
+    content::GlobalRenderFrameHostId render_frame_host_id,
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
@@ -5750,7 +5749,7 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
   }
 #if !defined(OS_ANDROID)
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
-      process_id, routing_id, recv_bytes, sent_bytes);
+      render_frame_host_id, recv_bytes, sent_bytes);
 #endif
 }
 

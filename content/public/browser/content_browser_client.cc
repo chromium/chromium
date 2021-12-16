@@ -1036,8 +1036,7 @@ bool ContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 }
 
 void ContentBrowserClient::OnNetworkServiceDataUseUpdate(
-    int process_id,
-    int route_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {}

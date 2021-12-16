@@ -22,6 +22,7 @@
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "content/public/browser/global_routing_id.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
@@ -104,10 +105,10 @@ class TaskManagerImpl : public TaskManagerInterface,
   void TaskIdsListToBeInvalidated() override;
 #endif
 
-  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
-                                             int route_id,
-                                             int64_t recv_bytes,
-                                             int64_t sent_bytes);
+  void UpdateAccumulatedStatsNetworkForRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int64_t recv_bytes,
+      int64_t sent_bytes);
 
  private:
   using PidToTaskGroupMap =
@@ -128,8 +129,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   void StartUpdating() override;
   void StopUpdating() override;
 
-  // Lookup a task by child_id and possibly route_id.
-  Task* GetTaskByRoute(int child_id, int route_id) const;
+  // Lookup a task by the global render frame host id. The empty
+  // GlobalRenderFrameHostId works as well, which would lead to the task
+  // being attributed to the browser process.
+  Task* GetTaskByRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id) const;
 
   PidToTaskGroupMap* GetVmPidToTaskGroupMap(Task::Type type);
   TaskGroup* GetTaskGroupByTaskId(TaskId task_id) const;

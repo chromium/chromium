@@ -21,6 +21,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -218,8 +219,8 @@ void NetworkServiceClient::OnDataUseUpdate(
     int64_t recv_bytes,
     int64_t sent_bytes) {
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
-      network::mojom::kBrowserProcessId, MSG_ROUTING_NONE,
-      network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
+      GlobalRenderFrameHostId(), network_traffic_annotation_id_hash, recv_bytes,
+      sent_bytes);
 }
 
 void NetworkServiceClient::Clone(

@@ -1946,9 +1946,8 @@ void StoragePartitionImpl::OnDataUseUpdate(
   // It can pass empty GlobalRenderFrameHostId() when the context type is
   // `kNavigationRequestContext`.
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
-      context.render_frame_host_id().child_id,
-      context.render_frame_host_id().frame_routing_id,
-      network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
+      context.render_frame_host_id(), network_traffic_annotation_id_hash,
+      recv_bytes, sent_bytes);
 }
 
 void StoragePartitionImpl::Clone(

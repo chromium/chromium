@@ -51,14 +51,13 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
 
 // static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
-    int process_id,
-    int route_id,
+    content::GlobalRenderFrameHostId render_frame_host_id,
     int64_t recv_bytes,
     int64_t sent_bytes) {
   // Don't create a task manager if it hasn't already been created.
   if (TaskManagerImpl::IsCreated()) {
     TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(
-        process_id, route_id, recv_bytes, sent_bytes);
+        render_frame_host_id, recv_bytes, sent_bytes);
   }
 }
 

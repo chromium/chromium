@@ -469,7 +469,7 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
   if (!web_contents)
     return -1;
   content::RenderFrameHost* rfh = web_contents->GetMainFrame();
-  Task* task = GetTaskByRoute(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+  Task* task = GetTaskByRoute(rfh->GetGlobalId());
   if (!task)
     return -1;
   return task->task_id();
@@ -553,18 +553,16 @@ void TaskManagerImpl::TaskIdsListToBeInvalidated() {
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
-    int process_id,
-    int route_id,
+    content::GlobalRenderFrameHostId render_frame_host_id,
     int64_t recv_bytes,
     int64_t sent_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_running_)
     return;
-  Task* task = GetTaskByRoute(process_id, route_id);
+  Task* task = GetTaskByRoute(render_frame_host_id);
   if (!task) {
     // Orphaned/unaccounted activity is credited to the Browser process.
-    task = GetTaskByRoute(content::ChildProcessHost::kInvalidUniqueID,
-                          MSG_ROUTING_NONE);
+    task = GetTaskByRoute(content::GlobalRenderFrameHostId());
   }
   if (!task)
     return;
@@ -670,9 +668,11 @@ void TaskManagerImpl::StopUpdating() {
   sorted_task_ids_.clear();
 }
 
-Task* TaskManagerImpl::GetTaskByRoute(int child_id, int route_id) const {
+Task* TaskManagerImpl::GetTaskByRoute(
+    content::GlobalRenderFrameHostId render_frame_host_id) const {
   for (const auto& task_provider : task_providers_) {
-    Task* task = task_provider->GetTaskOfUrlRequest(child_id, route_id);
+    Task* task = task_provider->GetTaskOfUrlRequest(
+        render_frame_host_id.child_id, render_frame_host_id.frame_routing_id);
     if (task)
       return task;
   }
