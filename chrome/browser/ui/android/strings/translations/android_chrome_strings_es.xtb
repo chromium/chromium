@@ -1160,7 +1160,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7859988229622350291">No traducir nunca</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> necesita el permiso de detección de dispositivos cercanos para conectarse a tu dispositivo</translation>
 <translation id="7875915731392087153">Crear correo electrónico</translation>
-<translation id="7876243839304621966">Eliminar todo</translation>
+<translation id="7876243839304621966">Quitar todo</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Te queda <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página sin leer.}other{Te quedan <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas sin leer.}}</translation>
 <translation id="7882131421121961860">No se ha encontrado el elemento buscado en el historial</translation>
 <translation id="7886917304091689118">Se está ejecutando en Chrome</translation>
