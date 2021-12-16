@@ -388,6 +388,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR or credit card scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Chromium can't use your camera in Split View mode
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SECOND_SUBTITLE" desc="The additional subtitle of the view that teaches users they can autofill passwords with Google password manager [iOS only]">
+        To autofill your passwords with Password Manager, turn on Chromium in your iOS AutoFill settings:
+      </message>
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name.">
         Chromium
       </message>

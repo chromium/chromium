@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
 #include "base/ios/ios_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+//#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+//#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
@@ -35,6 +38,11 @@ CGFloat const kTitleHorizontalMargin = 18;
 CGFloat const kDefaultBannerMultiplier = 0.25;
 CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kButtonHorizontalMargin = 4;
+
+BOOL isPasswordManagerBrandingUpdateEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+}
 }  // namespace
 
 @interface PasswordsInOtherAppsViewController ()
@@ -42,6 +50,7 @@ CGFloat const kButtonHorizontalMargin = 4;
 // Properties set on initialization.
 @property(nonatomic, copy, readonly) NSString* titleText;
 @property(nonatomic, copy, readonly) NSString* subtitleText;
+@property(nonatomic, copy, readonly) NSString* secondSubtitleText;
 @property(nonatomic, strong, readonly) UIImage* bannerImage;
 @property(nonatomic, copy, readonly) NSString* actionString;
 
@@ -49,11 +58,14 @@ CGFloat const kButtonHorizontalMargin = 4;
 @property(nonatomic, strong) UIImageView* imageView;
 @property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subtitleLabel;
+// NOTE: This label will only be displayed if
+// isPasswordManagerBrandingUpdateEnabled() returns true
+@property(nonatomic, strong) UILabel* secondSubtitleLabel;
 @property(nonatomic, strong) UIView* turnOnInstructionView;
 @property(nonatomic, strong) UIView* turnOffInstructionView;
 @property(nonatomic, strong) UIButton* actionButton;
-@property(nonatomic, strong) UIActivityIndicatorView* spinner;
 
+@property(nonatomic, strong) UIActivityIndicatorView* spinner;
 // Views that are used to format the layout of visible UI components.
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) UIView* scrollContentView;
@@ -78,16 +90,39 @@ CGFloat const kButtonHorizontalMargin = 4;
 
 @implementation PasswordsInOtherAppsViewController
 
-- (instancetype)init {
+- (instancetype)initWithSyncingPasswords:(BOOL)isSyncingPasswords {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleText =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
-    _subtitleText = l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE);
-    _bannerImage =
-        [UIImage imageNamed:@"settings_passwords_in_other_apps_banner"];
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
+    if (isPasswordManagerBrandingUpdateEnabled()) {
+      UIUserInterfaceIdiom idiom =
+          [[UIDevice currentDevice] userInterfaceIdiom];
+      if (idiom == UIUserInterfaceIdiomPad) {
+        _subtitleText = l10n_util::GetNSString(
+            IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
+      } else {
+        _subtitleText = l10n_util::GetNSString(
+            IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
+      }
+      if (isSyncingPasswords) {
+        _subtitleText = [NSString
+            stringWithFormat:
+                @"%@ %@", _subtitleText,
+                l10n_util::GetNSString(
+                    IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_SYNCING_ENABLED)];
+      }
+      _secondSubtitleText = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SECOND_SUBTITLE);
+      _bannerImage =
+          [UIImage imageNamed:@"settings_passwords_in_other_apps_banner"];
+    } else {
+      _subtitleText = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE);
+      _bannerImage = [UIImage
+          imageNamed:@"legacy_settings_passwords_in_other_apps_banner"];
+    }
   }
   return self;
 }
@@ -115,6 +150,9 @@ CGFloat const kButtonHorizontalMargin = 4;
   // Add the labels.
   [self.scrollContentView addSubview:self.titleLabel];
   [self.scrollContentView addSubview:self.subtitleLabel];
+  if (isPasswordManagerBrandingUpdateEnabled()) {
+    [self.scrollContentView addSubview:self.secondSubtitleLabel];
+  }
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
 
@@ -198,11 +236,6 @@ CGFloat const kButtonHorizontalMargin = 4;
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
-
-    // Constraints for the screen-specific content view. It should take the
-    // remaining scroll view area, with some margins on the top and sides.
-    [subtitleMarginLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
         constraintEqualToConstant:kDefaultMargin],
     [self.specificContentView.topAnchor
@@ -214,6 +247,24 @@ CGFloat const kButtonHorizontalMargin = 4;
     [self.specificContentView.bottomAnchor
         constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
   ]];
+
+  if (isPasswordManagerBrandingUpdateEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.secondSubtitleLabel.topAnchor
+          constraintEqualToAnchor:self.subtitleLabel.bottomAnchor
+                         constant:kDefaultMargin],
+      [self.secondSubtitleLabel.centerXAnchor
+          constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
+      [self.secondSubtitleLabel.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+      [subtitleMarginLayoutGuide.topAnchor
+          constraintEqualToAnchor:self.secondSubtitleLabel.bottomAnchor],
+    ]];
+  } else {
+    [subtitleMarginLayoutGuide.topAnchor
+        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor]
+        .active = YES;
+  }
 
   // In iPhone landscape mode, the top image is removed. In that case, we should
   // make sure there is enough distance between the title label and the top edge
@@ -355,20 +406,21 @@ CGFloat const kButtonHorizontalMargin = 4;
 }
 
 - (UILabel*)subtitleLabel {
-  if (!_subtitleLabel) {
-    _subtitleLabel = [[UILabel alloc] init];
-    _subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _subtitleLabel.numberOfLines = 0;
-    _subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
-    _subtitleLabel.text = self.subtitleText;
-    _subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _subtitleLabel.adjustsFontForContentSizeCategory = YES;
-    _subtitleLabel.accessibilityIdentifier =
-        kPasswordsInOtherAppsSubtitleAccessibilityIdentifier;
-  }
-  return _subtitleLabel;
+    if(!_subtitleLabel){
+      _subtitleLabel = [self createSubtitle];
+      _subtitleLabel.text = self.subtitleText;
+      _subtitleLabel.accessibilityIdentifier = kPasswordsInOtherAppsSubtitleAccessibilityIdentifier;
+    }
+    return _subtitleLabel;
+}
+
+- (UILabel*)secondSubtitleLabel {
+    if(!_secondSubtitleLabel){
+      _secondSubtitleLabel = [self createSubtitle];
+      _secondSubtitleLabel.text = self.secondSubtitleText;
+      _secondSubtitleLabel.accessibilityIdentifier = kPasswordsInOtherAppsSecondSubtitleAccessibilityIdentifier;
+    }
+    return _secondSubtitleLabel;
 }
 
 - (UIActivityIndicatorView*)spinner {
@@ -576,6 +628,7 @@ CGFloat const kButtonHorizontalMargin = 4;
   [self.specificContentView addSubview:shouldShowTurnOffInstructions
                                            ? self.turnOffInstructionView
                                            : self.turnOnInstructionView];
+
   [NSLayoutConstraint
       activateConstraints:shouldShowTurnOffInstructions
                               ? self.turnOffInstructionViewConstraints
@@ -631,6 +684,19 @@ CGFloat const kButtonHorizontalMargin = 4;
 }
 
 #pragma mark - Private
+
+// Creates a label with reasonable defaults
+- (UILabel*)createSubtitle {
+  UILabel* label = [[UILabel alloc] init];
+  label.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  label.numberOfLines = 0;
+  label.textColor = [UIColor colorNamed:kGrey800Color];
+  label.textAlignment = NSTextAlignmentCenter;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.adjustsFontForContentSizeCategory = YES;
+  return label;
+}
 
 // Returns caption text that shows below the subtitle in turnOffInstructions.
 - (UITextView*)drawCaptionTextView {
