@@ -213,8 +213,8 @@ int UpdaterMain(int argc, const char* const* argv) {
   VLOG(1) << "Version " << kUpdaterVersion
           << ", command line: " << command_line->GetCommandLineString();
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
-  DVLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
-           << " returned " << retval << ".";
+  VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
+          << " returned " << retval << ".";
   return retval;
 }
 
