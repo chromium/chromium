@@ -355,7 +355,7 @@ crbug.com/1050754 external/wpt/bluetooth/requestDevice/acceptAllDevices/device-w
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/acceptAllDevices/optional-services-missing.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/acceptAllDevices/optional-services-present.https.window.html [ Failure ]
-crbug.com/1050754 external/wpt/bluetooth/requestDevice/blocklisted-service-in-filter.https.html [ Failure ]
+crbug.com/1050754 external/wpt/bluetooth/requestDevice/blocklisted-service-in-filter.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/blocklisted-service-in-optionalServices.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/canonicalizeFilter/device-name-longer-than-29-bytes.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/requestDevice/canonicalizeFilter/empty-filter.https.window.html [ Failure ]
