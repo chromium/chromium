@@ -23,7 +23,14 @@
 namespace {
 const char kPerformanceMetricsScript[] = "web_performance_metrics_js";
 const char kWebPerformanceMetricsScriptName[] = "WebPerformanceMetricsHandler";
-}
+
+// The time range's expected min and max values for custom histograms.
+constexpr base::TimeDelta kTimeRangeHistogramMin = base::Milliseconds(10);
+constexpr base::TimeDelta kTimeRangeHistogramMax = base::Minutes(10);
+
+// Number of buckets for the time range histograms.
+constexpr int kTimeRangeHistogramBucketCount = 100;
+}  // namespace
 
 WebPerformanceMetricsJavaScriptFeature::WebPerformanceMetricsJavaScriptFeature()
     : JavaScriptFeature(ContentWorld::kAnyContentWorld,
@@ -95,11 +102,15 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstContentfulPaint(
     double value,
     bool is_main_frame) {
   if (is_main_frame) {
-    UmaHistogramTimes("IOS.Frame.FirstContentfulPaint.MainFrame",
-                      base::Milliseconds(value));
+    UmaHistogramCustomTimes("IOS.Frame.FirstContentfulPaint.MainFrame",
+                            base::Milliseconds(value), kTimeRangeHistogramMin,
+                            kTimeRangeHistogramMax,
+                            kTimeRangeHistogramBucketCount);
   } else {
-    UmaHistogramTimes("IOS.Frame.FirstContentfulPaint.SubFrame",
-                      base::Milliseconds(value));
+    UmaHistogramCustomTimes("IOS.Frame.FirstContentfulPaint.SubFrame",
+                            base::Milliseconds(value), kTimeRangeHistogramMin,
+                            kTimeRangeHistogramMax,
+                            kTimeRangeHistogramBucketCount);
   }
 }
 
@@ -129,8 +140,10 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
         web_performance_metrics::CalculateAggregateFirstContentfulPaint(
             aggregate, frame);
 
-    UmaHistogramTimes("PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
-                      aggregate_first_contentful_paint);
+    UmaHistogramCustomTimes(
+        "PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
+        aggregate_first_contentful_paint, kTimeRangeHistogramMin,
+        kTimeRangeHistogramMax, kTimeRangeHistogramBucketCount);
   } else if (aggregate == std::numeric_limits<double>::max()) {
     tab_helper->SetAggregateAbsoluteFirstContentfulPaint(
         web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
@@ -152,19 +165,25 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
 
   if (is_main_frame) {
     if (!loaded_from_cache) {
-      UmaHistogramTimes("IOS.Frame.FirstInputDelay.MainFrame", delta);
+      UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.MainFrame", delta,
+                              kTimeRangeHistogramMin, kTimeRangeHistogramMax,
+                              kTimeRangeHistogramBucketCount);
     } else if (loaded_from_cache && page_show_reliably_supported) {
-      UmaHistogramTimes(
+      UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore",
-          delta);
+          delta, kTimeRangeHistogramMin, kTimeRangeHistogramMax,
+          kTimeRangeHistogramBucketCount);
     }
   } else {
     if (!loaded_from_cache) {
-      UmaHistogramTimes("IOS.Frame.FirstInputDelay.SubFrame", delta);
+      UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.SubFrame", delta,
+                              kTimeRangeHistogramMin, kTimeRangeHistogramMax,
+                              kTimeRangeHistogramBucketCount);
     } else if (loaded_from_cache && page_show_reliably_supported) {
-      UmaHistogramTimes(
+      UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore",
-          delta);
+          delta, kTimeRangeHistogramMin, kTimeRangeHistogramMax,
+          kTimeRangeHistogramBucketCount);
     }
   }
 }
@@ -186,11 +205,16 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
   if (!first_input_delay_has_been_logged) {
     base::TimeDelta delta = base::Milliseconds(first_input_delay);
     if (loaded_from_cache) {
-      UmaHistogramTimes("PageLoad.InteractiveTiming.FirstInputDelay."
-                        "AfterBackForwardCacheRestore",
-                        delta);
+      UmaHistogramCustomTimes("PageLoad.InteractiveTiming.FirstInputDelay."
+                              "AfterBackForwardCacheRestore",
+                              delta, kTimeRangeHistogramMin,
+                              kTimeRangeHistogramMax,
+                              kTimeRangeHistogramBucketCount);
     } else {
-      UmaHistogramTimes("PageLoad.InteractiveTiming.FirstInputDelay4", delta);
+      UmaHistogramCustomTimes("PageLoad.InteractiveTiming.FirstInputDelay4",
+                              delta, kTimeRangeHistogramMin,
+                              kTimeRangeHistogramMax,
+                              kTimeRangeHistogramBucketCount);
     }
     tab_helper->SetFirstInputDelayLoggingStatus(true);
   }
