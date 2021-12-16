@@ -35,6 +35,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.AuthScanDoneSignal.UpgradeToFingerprintMessage"
+    enum="BooleanUpgraded" expires_after="2022-06-09">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks AuthScanDone signal structure transition from ScanResult enum to
+    FingerprintMessage protobuf. The signal is upgraded when it contains the
+    protobuf and not upgraded when the enum is present. When the signal doesn't
+    contain any of these nothing is emitted.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
     expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>

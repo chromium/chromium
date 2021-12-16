@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/biod/messages.pb.h"
@@ -25,6 +26,11 @@
 namespace chromeos {
 
 namespace {
+
+// Name of UMA boolean histogram used to count signals with FingerprintMessage
+// and ScanResult.
+const char* kUmaUpgradeToFingerprintMessage =
+    "Fingerprint.AuthScanDoneSignal.UpgradeToFingerprintMessage";
 
 BiodClient* g_instance = nullptr;
 
@@ -367,12 +373,29 @@ class BiodClientImpl : public BiodClient {
   void AuthScanDoneReceived(dbus::Signal* signal) {
     dbus::MessageReader signal_reader(signal);
     dbus::MessageReader array_reader(nullptr);
-    uint32_t scan_result;
     AuthScanMatches matches;
-    if (!signal_reader.PopUint32(&scan_result) ||
-        !signal_reader.PopArray(&array_reader)) {
-      LOG(ERROR) << "Error reading signal from biometrics: "
-                 << signal->ToString();
+    biod::FingerprintMessage msg;
+
+    if (!signal_reader.PopArrayOfBytesAsProto(&msg)) {
+      LOG(WARNING) << "Signal doesn't contain protobuf with authentication "
+                   << "result. Trying to extract ScanResult enum";
+      uint32_t scan_result;
+      if (!signal_reader.PopUint32(&scan_result)) {
+        LOG(ERROR) << "Can't read ScanResult from AuthScanDone signal";
+        return;
+      }
+      // Copy obtained ScanResult to FingerprintMessage protobuf.
+      msg.set_scan_result(static_cast<biod::ScanResult>(scan_result));
+
+      // AuthScanDone signal contains ScanResult enum.
+      base::UmaHistogramBoolean(kUmaUpgradeToFingerprintMessage, false);
+    } else {
+      // AuthScanDone signal contains FingerprintMessage protobuf.
+      base::UmaHistogramBoolean(kUmaUpgradeToFingerprintMessage, true);
+    }
+
+    if (!signal_reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Can't extract matches array from AuthScanDone signal";
       return;
     }
 
@@ -383,17 +406,17 @@ class BiodClientImpl : public BiodClient {
       if (!array_reader.PopDictEntry(&entry_reader) ||
           !entry_reader.PopString(&user_id) ||
           !entry_reader.PopArrayOfObjectPaths(&paths)) {
-        LOG(ERROR) << "Error reading signal from biometrics: "
-                   << signal->ToString();
+        LOG(ERROR) << "Can't read match data from AuthScanDone signal";
         return;
       }
 
       matches[user_id] = std::move(paths);
     }
 
-    for (auto& observer : observers_) {
-      observer.BiodAuthScanDoneReceived(
-          static_cast<biod::ScanResult>(scan_result), matches);
+    if (msg.msg_case() == biod::FingerprintMessage::MsgCase::kScanResult) {
+      for (auto& observer : observers_) {
+        observer.BiodAuthScanDoneReceived(msg.scan_result(), matches);
+      }
     }
   }
 

@@ -133,15 +133,11 @@ class BiodClientTest : public testing::Test {
     EmitSignal(&signal);
   }
 
-  // Passes a auth scan done signal to |client_|.
-  void EmitAuthScanDoneSignal(biod::ScanResult scan_result,
-                              const AuthScanMatches& matches) {
-    dbus::Signal signal(kInterface, biod::kBiometricsManagerAuthScanDoneSignal);
-    dbus::MessageWriter writer(&signal);
-    writer.AppendUint32(static_cast<uint32_t>(scan_result));
-
+  // Appends AuthScanMatches to |writer| message.
+  void AppendMatchesArray(dbus::MessageWriter* writer,
+                          const AuthScanMatches& matches) {
     dbus::MessageWriter array_writer(nullptr);
-    writer.OpenArray("{sx}", &array_writer);
+    writer->OpenArray("{sx}", &array_writer);
     for (auto& match : matches) {
       dbus::MessageWriter entry_writer(nullptr);
       array_writer.OpenDictEntry(&entry_writer);
@@ -149,7 +145,28 @@ class BiodClientTest : public testing::Test {
       entry_writer.AppendArrayOfObjectPaths(match.second);
       array_writer.CloseContainer(&entry_writer);
     }
-    writer.CloseContainer(&array_writer);
+    writer->CloseContainer(&array_writer);
+  }
+
+  // Passes a auth scan done signal to |client_| (ScanResult version).
+  void EmitAuthScanDoneSignal(biod::ScanResult scan_result,
+                              const AuthScanMatches& matches) {
+    dbus::Signal signal(kInterface, biod::kBiometricsManagerAuthScanDoneSignal);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(static_cast<uint32_t>(scan_result));
+    AppendMatchesArray(&writer, matches);
+
+    EmitSignal(&signal);
+  }
+
+  // Passes a auth scan done signal to |client_| (FingerprintMessage version).
+  void EmitAuthScanDoneSignal(const biod::FingerprintMessage& msg,
+                              const AuthScanMatches& matches) {
+    dbus::Signal signal(kInterface, biod::kBiometricsManagerAuthScanDoneSignal);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendProtoAsArrayOfBytes(msg);
+    AppendMatchesArray(&writer, matches);
+
     EmitSignal(&signal);
   }
 
@@ -404,7 +421,7 @@ TEST_F(BiodClientTest, TestRequestRecordLabel) {
 
 // Verify when signals are mocked, an observer will catch the signals as
 // expected.
-TEST_F(BiodClientTest, TestNotifyObservers) {
+TEST_F(BiodClientTest, TestNotifyObserversScanResult) {
   test_utils::TestBiodObserver observer;
   client_->AddObserver(&observer);
   EXPECT_TRUE(client_->HasObserver(&observer));
@@ -432,6 +449,43 @@ TEST_F(BiodClientTest, TestNotifyObservers) {
   EmitEnrollScanDoneSignal(scan_signal, enroll_session_complete,
                            percent_complete);
   EmitAuthScanDoneSignal(scan_signal, test_attempt);
+  EXPECT_EQ(1, observer.NumEnrollScansReceived());
+  EXPECT_EQ(1, observer.NumAuthScansReceived());
+  EXPECT_EQ(1, observer.num_failures_received());
+}
+
+// Verify when signals are mocked, an observer will catch the signals as
+// expected.
+TEST_F(BiodClientTest, TestNotifyObserversFingerprintMessage) {
+  test_utils::TestBiodObserver observer;
+  client_->AddObserver(&observer);
+  EXPECT_TRUE(client_->HasObserver(&observer));
+
+  const biod::ScanResult scan_signal = biod::ScanResult::SCAN_RESULT_SUCCESS;
+  const bool enroll_session_complete = false;
+  const int percent_complete = 0;
+  const AuthScanMatches test_attempt;
+  biod::FingerprintMessage msg;
+  msg.set_scan_result(scan_signal);
+  EXPECT_EQ(0, observer.NumEnrollScansReceived());
+  EXPECT_EQ(0, observer.NumAuthScansReceived());
+  EXPECT_EQ(0, observer.num_failures_received());
+
+  EmitEnrollScanDoneSignal(scan_signal, enroll_session_complete,
+                           percent_complete);
+  EXPECT_EQ(1, observer.NumEnrollScansReceived());
+
+  EmitAuthScanDoneSignal(msg, test_attempt);
+  EXPECT_EQ(1, observer.NumAuthScansReceived());
+
+  EmitScanFailedSignal();
+  EXPECT_EQ(1, observer.num_failures_received());
+
+  client_->RemoveObserver(&observer);
+
+  EmitEnrollScanDoneSignal(scan_signal, enroll_session_complete,
+                           percent_complete);
+  EmitAuthScanDoneSignal(msg, test_attempt);
   EXPECT_EQ(1, observer.NumEnrollScansReceived());
   EXPECT_EQ(1, observer.NumAuthScansReceived());
   EXPECT_EQ(1, observer.num_failures_received());
