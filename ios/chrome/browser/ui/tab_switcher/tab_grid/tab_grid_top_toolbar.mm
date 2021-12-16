@@ -249,8 +249,7 @@ const int kSearchBarTrailingSpace = 20;
   UIBarButtonItem* trailingButton = _doneButton;
   _selectionModeFixedSpace.width = 0;
   if ([self shouldUseCompactLayout:traitCollection]) {
-    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal &&
-        _page != TabGridPageRemoteTabs) {
+    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
       _leadingButton = _searchButton;
     } else {
       _leadingButton = _spaceItem;
@@ -299,8 +298,7 @@ const int kSearchBarTrailingSpace = 20;
     _leadingButton = _selectAllButton;
   }
 
-  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal &&
-      _page != TabGridPageRemoteTabs) {
+  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
     [self setItems:@[
       _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
       centralItem, _spaceItem, trailingButton
