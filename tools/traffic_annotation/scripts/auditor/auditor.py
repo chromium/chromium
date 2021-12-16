@@ -1932,8 +1932,12 @@ class AuditorUI:
 
     # Update annotations.xml if everything else is OK and the auditor is not
     # in test-only mode.
-    if not self.test_only and not errors:
-      self.auditor.exporter.save_annotations_xml()
+    if not self.test_only:
+      if not errors:
+        self.auditor.exporter.save_annotations_xml()
+      else:
+        logger.warning("Not updating {} due to errors in annotations.".format(
+            Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
     # Postprocess errors and dump to stdout.
     if errors:
