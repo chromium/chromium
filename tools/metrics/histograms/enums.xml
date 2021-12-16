@@ -87529,6 +87529,13 @@ Full version information for the fingerprint enum values:
   <int value="16" label="Disabled by URL-keyed anonymized data collection"/>
 </enum>
 
+<enum name="ULPInitiationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not supported"/>
+  <int value="2" label="Timed out"/>
+  <int value="3" label="Failure, exception"/>
+</enum>
+
 <enum name="ULPLanguageStatus">
   <int value="0" label="Top ULP language"/>
   <int value="1" label="Non-top ULP language"/>
