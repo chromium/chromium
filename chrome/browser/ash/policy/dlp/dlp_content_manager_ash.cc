@@ -148,37 +148,7 @@ void DlpContentManagerAsh::CheckScreenShareRestriction(
     OnDlpRestrictionCheckedCallback callback) {
   ConfidentialContentsInfo info =
       GetScreenShareConfidentialContentsInfo(media_id);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenShare);
-  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  if (IsBlocked(info.restriction_info)) {
-    ShowDlpScreenShareDisabledNotification(application_title);
-    std::move(callback).Run(false);
-    return;
-  }
-  if (is_screen_share_warning_mode_enabled_ && IsWarn(info.restriction_info)) {
-    // Check which of the contents were already allowed and don't warn for
-    // those.
-    RemoveAllowedContents(info.confidential_contents,
-                          DlpRulesManager::Restriction::kScreenShare);
-    if (info.confidential_contents.IsEmpty()) {
-      // The user already allowed all the visible content.
-      std::move(callback).Run(true);
-      return;
-    }
-    // base::Unretained(this) is safe here because DlpContentManagerAsh is
-    // initialized as a singleton that's always available in the system.
-    warn_notifier_->ShowDlpScreenShareWarningDialog(
-        base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
-                       base::Unretained(this), info.confidential_contents,
-                       DlpRulesManager::Restriction::kScreenShare,
-                       std::move(callback)),
-        info.confidential_contents, application_title);
-    return;
-  }
-  // No restrictions apply.
-  std::move(callback).Run(true);
+  ProcessScreenShareRestriction(application_title, info, std::move(callback));
 }
 
 void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
@@ -640,21 +610,8 @@ DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
     return GetConfidentialContentsOnScreen(DlpContentRestriction::kScreenShare);
   }
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(
-            content::RenderFrameHost::FromID(
-                media_id.web_contents_id.render_process_id,
-                media_id.web_contents_id.main_render_frame_id));
-    ConfidentialContentsInfo info;
-    if (web_contents && !web_contents->IsBeingDestroyed()) {
-      info.restriction_info =
-          GetConfidentialRestrictions(web_contents)
-              .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
-      info.confidential_contents.Add(web_contents);
-    } else {
-      NOTREACHED();
-    }
-    return info;
+    return GetScreenShareConfidentialContentsInfoForWebContents(
+        media_id.web_contents_id);
   }
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
   ConfidentialContentsInfo info;

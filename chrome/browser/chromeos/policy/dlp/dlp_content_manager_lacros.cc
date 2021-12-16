@@ -69,6 +69,23 @@ DlpContentManagerLacros* DlpContentManagerLacros::Get() {
   return g_dlp_content_manager;
 }
 
+void DlpContentManagerLacros::CheckScreenShareRestriction(
+    const content::DesktopMediaID& media_id,
+    const std::u16string& application_title,
+    OnDlpRestrictionCheckedCallback callback) {
+  if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    ProcessScreenShareRestriction(
+        application_title,
+        GetScreenShareConfidentialContentsInfoForWebContents(
+            media_id.web_contents_id),
+        std::move(callback));
+  } else {
+    // No restrictions apply.
+    // TODO(crbug.com/1278814): Pass the check to Ash to process there.
+    std::move(callback).Run(true);
+  }
+}
+
 DlpContentManagerLacros::DlpContentManagerLacros() = default;
 DlpContentManagerLacros::~DlpContentManagerLacros() = default;
 

@@ -14,7 +14,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
@@ -36,9 +35,9 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
@@ -438,16 +437,16 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
   }
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Check Data Leak Prevention restrictions on Chrome.
-  policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
+  policy::DlpContentManager::Get()->CheckScreenShareRestriction(
       media_id, GetApplicationTitle(web_contents),
       base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents, media_id));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // defined(OS_CHROMEOS)
   FinalizeResult(web_contents, media_id,
                  blink::mojom::MediaStreamRequestResult::OK);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
 }
 
 void DisplayMediaAccessHandler::WebContentsDestroyed(
@@ -457,7 +456,7 @@ void DisplayMediaAccessHandler::WebContentsDestroyed(
   pending_requests_.erase(web_contents);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
     content::WebContents* web_contents,
     const content::DesktopMediaID& media_id,
@@ -468,7 +467,7 @@ void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
           : blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
   FinalizeResult(web_contents, media_id, result);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 void DisplayMediaAccessHandler::DeletePendingAccessRequest(
     int render_process_id,

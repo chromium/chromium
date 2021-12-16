@@ -195,6 +195,63 @@ RestrictionLevelAndUrl DlpContentManager::GetPrintingRestrictionInfo(
       .GetRestrictionLevelAndUrl(DlpContentRestriction::kPrint);
 }
 
+DlpContentManager::ConfidentialContentsInfo
+DlpContentManager::GetScreenShareConfidentialContentsInfoForWebContents(
+    const content::WebContentsMediaCaptureId& web_contents_id) const {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(
+              web_contents_id.render_process_id,
+              web_contents_id.main_render_frame_id));
+  ConfidentialContentsInfo info;
+  if (web_contents && !web_contents->IsBeingDestroyed()) {
+    info.restriction_info =
+        GetConfidentialRestrictions(web_contents)
+            .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
+    info.confidential_contents.Add(web_contents);
+  } else {
+    NOTREACHED();
+  }
+  return info;
+}
+
+void DlpContentManager::ProcessScreenShareRestriction(
+    const std::u16string& application_title,
+    ConfidentialContentsInfo info,
+    OnDlpRestrictionCheckedCallback callback) {
+  MaybeReportEvent(info.restriction_info,
+                   DlpRulesManager::Restriction::kScreenShare);
+  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA,
+                      IsBlocked(info.restriction_info));
+  if (IsBlocked(info.restriction_info)) {
+    ShowDlpScreenShareDisabledNotification(application_title);
+    std::move(callback).Run(false);
+    return;
+  }
+  if (IsWarn(info.restriction_info)) {
+    // Check which of the contents were already allowed and don't warn for
+    // those.
+    RemoveAllowedContents(info.confidential_contents,
+                          DlpRulesManager::Restriction::kScreenShare);
+    if (info.confidential_contents.IsEmpty()) {
+      // The user already allowed all the visible content.
+      std::move(callback).Run(true);
+      return;
+    }
+    // base::Unretained(this) is safe here because DlpContentManager is
+    // initialized as a singleton that's always available in the system.
+    warn_notifier_->ShowDlpScreenShareWarningDialog(
+        base::BindOnce(&DlpContentManager::OnDlpWarnDialogReply,
+                       base::Unretained(this), info.confidential_contents,
+                       DlpRulesManager::Restriction::kScreenShare,
+                       std::move(callback)),
+        info.confidential_contents, application_title);
+    return;
+  }
+  // No restrictions apply.
+  std::move(callback).Run(true);
+}
+
 void DlpContentManager::OnDlpWarnDialogReply(
     const DlpConfidentialContents& confidential_contents,
     DlpRulesManager::Restriction restriction,

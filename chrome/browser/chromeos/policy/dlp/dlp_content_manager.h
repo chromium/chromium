@@ -19,6 +19,8 @@
 #include "url/gurl.h"
 
 namespace content {
+struct DesktopMediaID;
+struct WebContentsMediaCaptureId;
 class WebContents;
 }  // namespace content
 
@@ -52,6 +54,15 @@ class DlpContentManager : public DlpContentObserver {
   void CheckPrintingRestriction(content::WebContents* web_contents,
                                 OnDlpRestrictionCheckedCallback callback);
 
+  // Checks whether screen sharing of content from the |media_id| source with
+  // application |application_name| is restricted or not advised. Depending on
+  // the result, calls |callback| and passes an indicator whether to proceed or
+  // not.
+  virtual void CheckScreenShareRestriction(
+      const content::DesktopMediaID& media_id,
+      const std::u16string& application_title,
+      OnDlpRestrictionCheckedCallback callback) = 0;
+
  protected:
   // Structure that relates a list of confidential contents to the
   // corresponding restriction level.
@@ -79,6 +90,17 @@ class DlpContentManager : public DlpContentObserver {
   // for |web_contents|.
   RestrictionLevelAndUrl GetPrintingRestrictionInfo(
       content::WebContents* web_contents) const;
+
+  // Returns confidential info for screen share of a single WebContents with
+  // |web_contents_id|.
+  ConfidentialContentsInfo GetScreenShareConfidentialContentsInfoForWebContents(
+      const content::WebContentsMediaCaptureId& web_contents_id) const;
+
+  // Applies retrieved restrictions in |info| to screens share attempt from
+  // app |application_title| and calls the |callback| with a result.
+  void ProcessScreenShareRestriction(const std::u16string& application_title,
+                                     ConfidentialContentsInfo info,
+                                     OnDlpRestrictionCheckedCallback callback);
 
   // Called back from warning dialogs. Passes along the user's response,
   // reflected in the value of |should_proceed| along to |callback| which

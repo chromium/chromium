@@ -90,11 +90,10 @@ class DlpContentManagerAsh : public DlpContentManager,
   // application |application_name| is restricted or not advised. Depending on
   // the result, calls |callback| and passes an indicator whether to proceed or
   // not.
-  // Virtual to allow tests to override.
-  virtual void CheckScreenShareRestriction(
+  void CheckScreenShareRestriction(
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,
-      OnDlpRestrictionCheckedCallback callback);
+      OnDlpRestrictionCheckedCallback callback) override;
 
   // Called when video capturing for |area| is started.
   void OnVideoCaptureStarted(const ScreenshotArea& area);

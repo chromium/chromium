@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
@@ -95,12 +94,12 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   void OnDisplaySurfaceSelected(content::WebContents* web_contents,
                                 content::DesktopMediaID media_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.
   void OnDlpRestrictionChecked(content::WebContents* web_contents,
                                const content::DesktopMediaID& media_id,
                                bool is_dlp_allowed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   void DeletePendingAccessRequest(int render_process_id,
                                   int render_frame_id,
