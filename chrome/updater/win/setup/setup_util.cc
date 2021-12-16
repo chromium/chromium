@@ -35,30 +35,7 @@
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
-// Specialization for std::hash so that IID instances can be stored in an
-// associative container. This implementation of the hash function adds
-// together four 32-bit integers which make up an IID. The function does not
-// have to be efficient or guarantee no collisions. It is used infrequently,
-// for a small number of IIDs, and the container deals with collisions.
-template <>
-struct std::hash<IID> {
-  size_t operator()(const IID& iid) const {
-    return iid.Data1 + (iid.Data2 + (iid.Data3 << 16)) + [&iid]() {
-      size_t val = 0;
-      for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 4; ++j) {
-          val += (iid.Data4[j + i * 4] << (j * 4));
-        }
-      }
-      return val;
-    }();
-  }
-};
-
 namespace updater {
-namespace {
-
-}  // namespace
 
 bool RegisterWakeTask(const base::CommandLine& run_command,
                       UpdaterScope scope) {
