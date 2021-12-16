@@ -39,21 +39,26 @@ std::unique_ptr<client_update_protocol::Ecdsa> CUPImpl::CreateQuerySigner() {
 
 CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer,
                  RpcType rpc_type)
-    : query_signer_{std::move(query_signer)} {
+    : query_signer_{std::move(query_signer)}, rpc_type_{rpc_type} {
   DCHECK(query_signer_);
-
-  // Only GET_ACTIONS calls have support for CUP at this moment.
-  DCHECK(rpc_type == RpcType::GET_ACTIONS);
 }
 
 CUPImpl::~CUPImpl() = default;
 
 std::string CUPImpl::PackAndSignRequest(const std::string& original_request) {
+  if (rpc_type_ != RpcType::GET_ACTIONS) {
+    // Failsafe in case the method is called for a non-supported |rpc_type|.
+    return original_request;
+  }
   return PackGetActionsRequest(original_request);
 }
 
 absl::optional<std::string> CUPImpl::UnpackResponse(
     const std::string& original_response) {
+  if (rpc_type_ != RpcType::GET_ACTIONS) {
+    // Failsafe in case the method is called for a non-supported |rpc_type|.
+    return original_response;
+  }
   return UnpackGetActionsResponse(original_response);
 }
 

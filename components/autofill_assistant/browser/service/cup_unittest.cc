@@ -9,7 +9,9 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace {
+namespace autofill_assistant {
+
+namespace cup {
 
 class CUPTest : public testing::Test {
  public:
@@ -24,21 +26,19 @@ class CUPTest : public testing::Test {
     std::vector<base::Feature> disabled_features;
 
     if (enableSigning) {
-      enabled_features.push_back(autofill_assistant::features::
-                                     kAutofillAssistantSignGetActionsRequests);
+      enabled_features.push_back(
+          features::kAutofillAssistantSignGetActionsRequests);
     } else {
-      disabled_features.push_back(autofill_assistant::features::
-                                      kAutofillAssistantSignGetActionsRequests);
+      disabled_features.push_back(
+          features::kAutofillAssistantSignGetActionsRequests);
     }
 
     if (enableVerifying) {
       enabled_features.push_back(
-          autofill_assistant::features::
-              kAutofillAssistantVerifyGetActionsResponses);
+          features::kAutofillAssistantVerifyGetActionsResponses);
     } else {
       disabled_features.push_back(
-          autofill_assistant::features::
-              kAutofillAssistantVerifyGetActionsResponses);
+          features::kAutofillAssistantVerifyGetActionsResponses);
     }
 
     scoped_feature_list_.Reset();
@@ -46,53 +46,44 @@ class CUPTest : public testing::Test {
   }
 };
 
-TEST_F(CUPTest, ShouldSignGetActionsRequestWhenFeatureActivated) {
-  InitCupFeatures(true, false);
+TEST_F(CUPTest, ShouldSignAndVerify) {
+  struct TestCase {
+    bool sign_requests;
+    bool verify_responses;
+    RpcType rpc_type;
+    bool expected_should_sign;
+    bool expected_should_verify;
+  };
+  std::vector<TestCase> test_cases = {
+      {true, true, RpcType::GET_ACTIONS, true, true},
+      {true, false, RpcType::GET_ACTIONS, true, false},
+      {false, true, RpcType::GET_ACTIONS, false, false},
+      {false, false, RpcType::GET_ACTIONS, false, false},
+      {false, false, RpcType::GET_TRIGGER_SCRIPTS, false, false},
+      {true, true, RpcType::GET_TRIGGER_SCRIPTS, false, false},
+  };
 
-  EXPECT_TRUE(autofill_assistant::cup::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_ACTIONS));
+  RpcType unsupported_rpc_types[] = {
+      RpcType::UNKNOWN,
+      RpcType::GET_TRIGGER_SCRIPTS,
+      RpcType::SUPPORTS_SCRIPT,
+  };
+  for (const auto& unsupported_type : unsupported_rpc_types) {
+    test_cases.push_back({true, true, unsupported_type, false, false});
+    test_cases.push_back({true, false, unsupported_type, false, false});
+    test_cases.push_back({false, true, unsupported_type, false, false});
+    test_cases.push_back({false, false, unsupported_type, false, false});
+  }
+
+  for (const auto& test_case : test_cases) {
+    InitCupFeatures(test_case.sign_requests, test_case.verify_responses);
+    EXPECT_EQ(ShouldSignRequests(test_case.rpc_type),
+              test_case.expected_should_sign);
+    EXPECT_EQ(ShouldVerifyResponses(test_case.rpc_type),
+              test_case.expected_should_verify);
+  }
 }
 
-TEST_F(CUPTest, ShouldNotSignGetActionsRequestWhenFeatureNotActivated) {
-  InitCupFeatures(false, false);
+}  // namespace cup
 
-  EXPECT_FALSE(autofill_assistant::cup::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPTest, ShouldNotSignNotGetActionsRequest) {
-  InitCupFeatures(true, false);
-
-  EXPECT_FALSE(autofill_assistant::cup::ShouldSignRequests(
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
-}
-
-TEST_F(CUPTest, ShouldVerifyGetActionsResponseWhenFeatureActivated) {
-  InitCupFeatures(true, true);
-
-  EXPECT_TRUE(autofill_assistant::cup::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPTest, ShouldNotVerifyGetActionsResponseWhenFeatureNotActivated) {
-  InitCupFeatures(true, false);
-
-  EXPECT_FALSE(autofill_assistant::cup::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPTest, ShouldNotVerifyGetActionsResponseWhenSigningNotActivated) {
-  InitCupFeatures(false, true);
-
-  EXPECT_FALSE(autofill_assistant::cup::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_ACTIONS));
-}
-
-TEST_F(CUPTest, ShouldNotVerifyNotGetActionsResponse) {
-  InitCupFeatures(true, true);
-
-  EXPECT_FALSE(autofill_assistant::cup::ShouldVerifyResponses(
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS));
-}
-
-}  // namespace
+}  // namespace autofill_assistant

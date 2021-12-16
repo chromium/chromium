@@ -54,6 +54,7 @@ class CUPImpl : public CUP {
       const std::string& original_response);
 
   std::unique_ptr<client_update_protocol::Ecdsa> query_signer_;
+  RpcType rpc_type_;
 };
 
 }  // namespace cup

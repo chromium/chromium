@@ -22,7 +22,7 @@ class CUPFactoryTest : public testing::Test {
 TEST_F(CUPFactoryTest, ShouldCreateCupImplInstance) {
   std::unique_ptr<autofill_assistant::cup::CUP> cup =
       cup_factory_->CreateInstance(autofill_assistant::RpcType::GET_ACTIONS);
-  EXPECT_NE(cup, nullptr);
+  ASSERT_NE(cup, nullptr);
 
   std::string packed_request = cup->PackAndSignRequest("request");
   EXPECT_FALSE(packed_request.empty());
