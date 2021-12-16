@@ -96,9 +96,9 @@ ProjectorAppClientImpl::GetUrlLoaderFactory() {
 }
 
 void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
-    bool can_start) {
+    const ash::NewScreencastPrecondition& precondition) {
   for (auto& observer : observers_)
-    observer.OnNewScreencastPreconditionChanged(can_start);
+    observer.OnNewScreencastPreconditionChanged(precondition);
 }
 
 const std::set<ash::PendingScreencast>&

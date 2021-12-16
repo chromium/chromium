@@ -50,7 +50,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
   bool IsEligible() const override;
-  bool CanStartNewSession() const override;
+  NewScreencastPrecondition GetNewScreencastPrecondition() const override;
   void OnToolSet(const AnnotatorTool& tool) override;
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;

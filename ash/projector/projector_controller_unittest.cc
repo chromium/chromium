@@ -14,6 +14,7 @@
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/projector/test/mock_projector_metadata_controller.h"
 #include "ash/projector/test/mock_projector_ui_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -235,7 +236,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
   EXPECT_CALL(mock_client_, OpenProjectorApp());
   EXPECT_CALL(mock_client_,
-              OnNewScreencastPreconditionChanged(/*can_start=*/false));
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kDisabled,
+                  {NewScreencastPreconditionReason::kInProjectorSession})));
 
   // Advance clock to 20:02:10 Jan 2nd, 2021.
   base::Time start_time;
@@ -248,8 +251,10 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   base::RunLoop runLoop;
   controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
       [&](const base::FilePath& screencast_file_path_no_extension) {
-        EXPECT_CALL(mock_client_,
-                    OnNewScreencastPreconditionChanged(/*can_start=*/true));
+        EXPECT_CALL(
+            mock_client_,
+            OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                NewScreencastPreconditionState::kEnabled, {})));
 
         EXPECT_CALL(mock_client_, StopSpeechRecognition());
         EXPECT_CALL(*mock_ui_controller_,

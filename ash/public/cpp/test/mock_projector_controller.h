@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CONTROLLER_H_
 
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -27,7 +28,7 @@ class MockProjectorController : public ash::ProjectorController {
   MOCK_METHOD0(OnTranscriptionError, void());
   MOCK_METHOD1(SetProjectorToolsVisible, void(bool is_visible));
   MOCK_CONST_METHOD0(IsEligible, bool());
-  MOCK_CONST_METHOD0(CanStartNewSession, bool());
+  MOCK_CONST_METHOD0(GetNewScreencastPrecondition, NewScreencastPrecondition());
   MOCK_METHOD1(OnToolSet, void(const AnnotatorTool& tool));
   MOCK_METHOD2(OnUndoRedoAvailabilityChanged,
                void(bool undo_available, bool redo_available));

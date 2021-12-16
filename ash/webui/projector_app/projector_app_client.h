@@ -26,6 +26,8 @@ class Value;
 
 namespace ash {
 
+struct NewScreencastPrecondition;
+
 // TODO(b/201468756): pendings screencasts are sorted by created time. Add
 // `created_time` field to PendingScreencast. Screencasts might fail to
 // upload. Add `failed_to_upload` field to PendingScreencast. Implement upload
@@ -52,7 +54,8 @@ class ProjectorAppClient {
    public:
     // Used to notify the Projector SWA app on whether it can start a new
     // screencast session.
-    virtual void OnNewScreencastPreconditionChanged(bool can_start) = 0;
+    virtual void OnNewScreencastPreconditionChanged(
+        const NewScreencastPrecondition& precondition) = 0;
 
     // Observes the pending screencast state change events.
     virtual void OnScreencastsPendingStatusChanged(
@@ -86,7 +89,8 @@ class ProjectorAppClient {
 
   // Used to notify the Projector SWA app on whether it can start a new
   // screencast session.
-  virtual void OnNewScreencastPreconditionChanged(bool can_start) = 0;
+  virtual void OnNewScreencastPreconditionChanged(
+      const NewScreencastPrecondition& precondition) = 0;
 
   // Returns pending screencast uploaded by primary user.
   virtual const std::set<PendingScreencast>& GetPendingScreencasts() const = 0;

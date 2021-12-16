@@ -43,7 +43,8 @@ class MockAppClient : public ProjectorAppClient {
 
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
-  MOCK_METHOD1(OnNewScreencastPreconditionChanged, void(bool));
+  MOCK_METHOD1(OnNewScreencastPreconditionChanged,
+               void(const NewScreencastPrecondition&));
   MOCK_CONST_METHOD0(GetPendingScreencasts,
                      const std::set<PendingScreencast>&());
   MOCK_METHOD0(ShouldDownloadSoda, bool());

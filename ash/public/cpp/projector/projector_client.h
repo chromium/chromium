@@ -13,6 +13,8 @@ class FilePath;
 
 namespace ash {
 
+struct NewScreencastPrecondition;
+
 // Creates interface to access Browser side functionalities for the
 // ProjectorControllerImpl.
 class ASH_PUBLIC_EXPORT ProjectorClient {
@@ -41,7 +43,8 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual bool IsSelfieCamVisible() const = 0;
 
   // Notifies the Projector SWA if it can trigger a new Projector session.
-  virtual void OnNewScreencastPreconditionChanged(bool can_start) const = 0;
+  virtual void OnNewScreencastPreconditionChanged(
+      const NewScreencastPrecondition& precondition) const = 0;
 };
 
 }  // namespace ash

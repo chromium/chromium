@@ -39,7 +39,8 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void RemoveObserver(Observer* observer) override;
   signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
-  void OnNewScreencastPreconditionChanged(bool can_start) override;
+  void OnNewScreencastPreconditionChanged(
+      const ash::NewScreencastPrecondition& precondition) override;
   const std::set<ash::PendingScreencast>& GetPendingScreencasts()
       const override;
   bool ShouldDownloadSoda() override;

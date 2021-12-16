@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -46,10 +47,6 @@ constexpr char kRejectedRequestArgsKey[] = "requestArgs";
 constexpr char kNoneStr[] = "NONE";
 constexpr char kOtherStr[] = "OTHER";
 constexpr char kTokenFetchFailureStr[] = "TOKEN_FETCH_FAILURE";
-
-// Projector NewScreencastPreconditionState keys.
-constexpr char kNewScreencastPreconditionState[] = "state";
-constexpr char kNewScreencastPreconditionReasons[] = "reasons";
 
 // Struct used to describe args to set user's preference.
 struct SetUserPrefArgs {
@@ -147,25 +144,6 @@ base::Value CreateRejectMessageForArgs(const base::Value& value) {
   return rejected_response;
 }
 
-base::Value GetNewScreencastPreconditionValue(bool can_start) {
-  // TODO(b/204233075): Provide Hidden state if device doesn't support on-device
-  // speech recognition.
-  auto state = can_start ? NewScreencastPreconditionState::kEnabled
-                         : NewScreencastPreconditionState::kDisabled;
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetIntKey(kNewScreencastPreconditionState, static_cast<int>(state));
-
-  base::Value reasons(base::Value::Type::LIST);
-
-  if (!can_start) {
-    // TODO(b/204233075): Provide more fine grained than kOthers.
-    reasons.Append(static_cast<int>(NewScreencastPreconditionReason::kOthers));
-  }
-
-  response.SetKey(kNewScreencastPreconditionReasons, std::move(reasons));
-  return response;
-}
-
 }  // namespace
 
 ProjectorMessageHandler::ProjectorMessageHandler(PrefService* pref_service)
@@ -256,10 +234,10 @@ void ProjectorMessageHandler::OnSodaInstalled() {
 }
 
 void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
-    bool can_start) {
+    const NewScreencastPrecondition& precondition) {
   AllowJavascript();
   FireWebUIListener("onNewScreencastPreconditionChanged",
-                    GetNewScreencastPreconditionValue(can_start));
+                    precondition.ToValue());
 }
 
 void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
@@ -296,9 +274,10 @@ void ProjectorMessageHandler::GetNewScreencastPrecondition(
   // Check that there is only one argument which is the callback id.
   DCHECK_EQ(args.size(), 1u);
 
-  ResolveJavascriptCallback(
-      args[0], GetNewScreencastPreconditionValue(
-                   ProjectorController::Get()->CanStartNewSession()));
+  ResolveJavascriptCallback(args[0],
+                            base::Value(ProjectorController::Get()
+                                            ->GetNewScreencastPrecondition()
+                                            .ToValue()));
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
@@ -320,7 +299,9 @@ void ProjectorMessageHandler::StartProjectorSession(
   // TODO(b/195113693): Start the projector session with the selected account
   // and folder.
   auto* controller = ProjectorController::Get();
-  if (!controller->CanStartNewSession()) {
+
+  if (controller->GetNewScreencastPrecondition().state !=
+      NewScreencastPreconditionState::kEnabled) {
     ResolveJavascriptCallback(args[0], base::Value(false));
     return;
   }

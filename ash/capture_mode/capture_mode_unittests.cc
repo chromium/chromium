@@ -41,6 +41,7 @@
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -5044,7 +5045,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
   EXPECT_FALSE(ProjectorSession::Get()->is_active());
-  EXPECT_FALSE(ProjectorController::Get()->CanStartNewSession());
+  EXPECT_NE(ProjectorController::Get()->GetNewScreencastPrecondition().state,
+            NewScreencastPreconditionState::kEnabled);
 }
 
 namespace {

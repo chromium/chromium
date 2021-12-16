@@ -7,6 +7,7 @@
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_ui_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -48,7 +49,8 @@ FeaturePodButton* ProjectorFeaturePodController::CreateButton() {
   DCHECK(projector_controller);
   button_->SetVisible(
       !Shell::Get()->session_controller()->IsUserSessionBlocked() &&
-      projector_controller->CanStartNewSession());
+      projector_controller->GetNewScreencastPrecondition().state ==
+          NewScreencastPreconditionState::kEnabled);
   button_->SetToggled(
       projector_controller->ui_controller()->model()->bar_enabled());
   return button_;

@@ -12,6 +12,7 @@
 namespace ash {
 
 struct AnnotatorTool;
+struct NewScreencastPrecondition;
 
 // File extension of Projector metadata file. It is used to identify Projector
 // screencasts at processing pending screencasts and fetching screencast list.
@@ -74,7 +75,7 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   virtual bool IsEligible() const = 0;
 
   // Returns true if we can start a new Projector session.
-  virtual bool CanStartNewSession() const = 0;
+  virtual NewScreencastPrecondition GetNewScreencastPrecondition() const = 0;
 
   // The following functions are callbacks from the annotator back to the
   // ProjectorController.

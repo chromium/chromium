@@ -235,6 +235,8 @@ component("cpp") {
     "projector/projector_client.h",
     "projector/projector_controller.cc",
     "projector/projector_controller.h",
+    "projector/projector_new_screencast_precondition.cc",
+    "projector/projector_new_screencast_precondition.h",
     "projector/projector_session.cc",
     "projector/projector_session.h",
     "resize_shadow_type.h",

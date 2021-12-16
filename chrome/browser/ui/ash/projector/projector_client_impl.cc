@@ -169,6 +169,7 @@ void ProjectorClientImpl::MinimizeProjectorApp() const {
 }
 
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
-    bool can_start) const {
-  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(can_start);
+    const ash::NewScreencastPrecondition& precondition) const {
+  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(
+      precondition);
 }

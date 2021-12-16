@@ -9,6 +9,7 @@
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -79,7 +80,8 @@ ProjectorControllerImpl* ProjectorControllerImpl::Get() {
 
 void ProjectorControllerImpl::StartProjectorSession(
     const std::string& storage_dir) {
-  DCHECK(CanStartNewSession());
+  DCHECK_EQ(GetNewScreencastPrecondition().state,
+            NewScreencastPreconditionState::kEnabled);
 
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress()) {
@@ -156,12 +158,62 @@ bool ProjectorControllerImpl::IsEligible() const {
          ProjectorController::AreExtendedProjectorFeaturesDisabled();
 }
 
-bool ProjectorControllerImpl::CanStartNewSession() const {
-  // TODO(crbug.com/1165435) Add other pre-conditions to starting a new
-  // projector session.
-  return IsEligible() && !projector_session_->is_active() &&
-         client_->IsDriveFsMounted() &&
-         !CaptureModeController::Get()->is_recording_in_progress();
+NewScreencastPrecondition
+ProjectorControllerImpl::GetNewScreencastPrecondition() const {
+  NewScreencastPrecondition result;
+
+  // For development purposes on the x11 simulator, on-device speech recognition
+  // and DriveFS are not supported.
+  if (!ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
+    switch (speech_recognition_availability_) {
+      case SpeechRecognitionAvailability::
+          kOnDeviceSpeechRecognitionNotSupported:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {NewScreencastPreconditionReason::
+                              kOnDeviceSpeechRecognitionNotSupported};
+        return result;
+      case SpeechRecognitionAvailability::kUserLanguageNotSupported:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kUserLocaleNotSupported};
+        return result;
+
+      // We will attempt to install SODA.
+      case SpeechRecognitionAvailability::kSodaNotInstalled:
+      case SpeechRecognitionAvailability::kSodaInstalling:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kSodaDownloadInProgress};
+        return result;
+      case SpeechRecognitionAvailability::kAvailable:
+        break;
+    }
+
+    if (!client_->IsDriveFsMounted()) {
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {NewScreencastPreconditionReason::kOthers};
+      return result;
+    }
+
+    // TODO(crbug.com/1165435) Disable New Screencast button when out of disk
+    // space or drive quota.
+  }
+
+  if (projector_session_->is_active()) {
+    result.state = NewScreencastPreconditionState::kDisabled;
+    result.reasons = {NewScreencastPreconditionReason::kInProjectorSession};
+    return result;
+  }
+
+  if (CaptureModeController::Get()->is_recording_in_progress()) {
+    result.state = NewScreencastPreconditionState::kDisabled;
+    result.reasons = {
+        NewScreencastPreconditionReason::kScreenRecordingInProgress};
+    return result;
+  }
+
+  result.state = NewScreencastPreconditionState::kEnabled;
+  return result;
 }
 
 void ProjectorControllerImpl::OnToolSet(const AnnotatorTool& tool) {
@@ -190,8 +242,11 @@ void ProjectorControllerImpl::MarkKeyIdea() {
 }
 
 void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
-  if (!is_in_projector_mode)
+  if (!is_in_projector_mode) {
+    OnNewScreencastPreconditionChanged();
     return;
+  }
+
   ui_controller_->ShowToolbar();
   StartSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(true /* started */);
@@ -199,8 +254,11 @@ void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
 }
 
 void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
-  if (!is_in_projector_mode)
+  if (!is_in_projector_mode) {
+    OnNewScreencastPreconditionChanged();
     return;
+  }
+
   DCHECK(projector_session_->is_active());
 
   StopSpeechRecognition();
@@ -279,7 +337,7 @@ void ProjectorControllerImpl::OnChangeMarkerColorPressed(SkColor new_color) {
 }
 
 void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {
-  client_->OnNewScreencastPreconditionChanged(CanStartNewSession());
+  client_->OnNewScreencastPreconditionChanged(GetNewScreencastPrecondition());
 }
 
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
