@@ -4041,6 +4041,31 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
+    CacheWhenMediaSessionPlaybackStateIsChanged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // 2) Update the playback state change.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(), R"(
+    navigator.mediaSession.playbackState = 'playing';
+  )"));
+
+  // 3) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 4) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // The page is restored since a MediaSession service is not used.
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
     CacheWhenMediaSessionServiceIsNotUsed) {
   // There are sometimes unexpected messages from a renderer to the browser,
   // which caused test flakiness.
