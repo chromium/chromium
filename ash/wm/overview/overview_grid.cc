@@ -1768,6 +1768,10 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 
   if (exit_overview && overview_session_->enter_exit_overview_type() !=
                            OverviewEnterExitType::kImmediateExit) {
+    // Disable the `desks_templates_grid_widget_`'s event targeting so it can't
+    // get any events during the animation.
+    desks_templates_grid_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+        aura::EventTargetingPolicy::kNone);
     FadeOutWidgetFromOverview(
         std::move(desks_templates_grid_widget_),
         OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT);

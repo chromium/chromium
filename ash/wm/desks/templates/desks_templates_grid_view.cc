@@ -240,6 +240,13 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
                                             bool is_touch) {
+  if (widget_window_ && widget_window_->event_targeting_policy() ==
+                            aura::EventTargetingPolicy::kNone) {
+    // If this is true, then we're in the process of fading out `this` and don't
+    // want to handle any events anymore so do nothing.
+    return;
+  }
+
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_ENTERED:
