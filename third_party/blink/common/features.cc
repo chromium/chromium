@@ -858,9 +858,10 @@ const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
 // Only use per-process buffer limit and not per-request limt. When this flag is
 // on network requests can continue buffering data as long as it is under per
 // process limit.
+// TODO(crbug.com/1243600): Remove this flag eventually.
 const base::Feature kNetworkRequestUsesOnlyPerProcessBufferLimit{
     "NetworkRequestUsesOnlyPerProcessBufferLimit",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for the new behavior whereby anchors with target=_blank get
 // noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.

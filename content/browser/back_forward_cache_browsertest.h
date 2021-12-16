@@ -174,7 +174,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool check_eligibility_after_pagehide_ = false;
   std::string unload_support_ = "always";
 
-  const int kMaxBufferedBytesPerRequest = 7000;
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
 

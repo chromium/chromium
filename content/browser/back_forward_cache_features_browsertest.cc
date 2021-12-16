@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // should evicted in this case.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit) {
+    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse image_response(https_server(),
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   // Start sending the image response while in the back-forward cache.
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   image_response.Send(body);
   image_response.Done();
   delete_observer_rfh_a.WaitUntilDeleted();
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
 // cached page should evicted in this case.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit_Nested) {
+    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_Nested) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse image_response(https_server(),
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   // Start sending the image response while in the back-forward cache.
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   image_response.Send(body);
   image_response.Done();
   delete_observer_rfh_a.WaitUntilDeleted();

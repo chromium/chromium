@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
   // Complete the response after navigating away.
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   response.Send(body);
   response.Done();
 
@@ -324,43 +324,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit) {
-  net::test_server::ControllableHttpResponse image_response(
-      embedded_test_server(), "/image.png");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-
-  // Wait for the image request, but don't send anything yet.
-  image_response.WaitForRequest();
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
-  // The page was still loading when we navigated away, but it's still eligible
-  // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
-
-  RenderFrameDeletedObserver delete_observer(rfh_1);
-  // Start sending the image response while in the back-forward cache.
-  image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
-  image_response.Send(body);
-  image_response.Done();
-  delete_observer.WaitUntilDeleted();
-
-  // 3) Go back to the first page. We should not restore the page from the
-  // back-forward cache.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -396,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(navigation_manager_back.GetNavigationHandle()->HasCommitted());
 
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   image_response.Send(body);
   image_response.Done();
 
@@ -455,10 +418,9 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameDeletedObserver delete_observer(rfh_1);
   // Start sending the image responses while in the back-forward cache. The
-  // body size of the responses individually is less than the per-request limit,
+  // body size of the responses individually is less than the per-process limit,
   // but together they surpass the per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -536,12 +498,11 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameDeletedObserver delete_observer_1(main_rfh);
   RenderFrameDeletedObserver delete_observer_2(subframe_rfh);
   // Start sending the image responses while in the back-forward cache. The
-  // body size of the responses individually is less than the per-request limit,
+  // body size of the responses individually is less than the per-process limit,
   // but together they surpass the per-process limit since both the main frame
   // and the subframe are put in the same renderer process (because they're
   // same-site).
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -602,7 +563,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache. The body size of the response is half of the
   // per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -751,46 +711,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerRequestBytesLimit) {
-  net::test_server::ControllableHttpResponse image_response(
-      embedded_test_server(), "/image.png");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-
-  // Start sending response before the page gets in the back-forward cache.
-  image_response.WaitForRequest();
-  image_response.Send(net::HTTP_OK, "image/png");
-  image_response.Send(" ");
-  // Run some script to ensure the renderer processed its pending tasks.
-  EXPECT_TRUE(ExecJs(rfh_1, "var foo = 42;"));
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
-  // The page was still loading when we navigated away, but it's still eligible
-  // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
-
-  // Send the image response body while in the back-forward cache.
-  RenderFrameDeletedObserver delete_observer(rfh_1);
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
-  image_response.Send(body);
-  image_response.Done();
-  delete_observer.WaitUntilDeleted();
-
-  // 3) Go back to the first page. We should not restore the page from the
-  // back-forward cache.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
@@ -846,10 +766,9 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameDeletedObserver delete_observer(rfh_1);
   // Send the image response body while in the back-forward cache. The body size
-  // of the responses individually is less than the per-request limit, but
+  // of the responses individually is less than the per-process limit, but
   // together they surpass the per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(body);
   image1_response.Done();

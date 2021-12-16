@@ -163,10 +163,6 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(
       blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
       "delay_before_tracking_ms", "0");
-  // TODO(crbug.com/1243600): Remove this per-request byte limit.
-  EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
-                            "max_buffered_bytes",
-                            base::NumberToString(kMaxBufferedBytesPerRequest));
   EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
                             "max_buffered_bytes_per_process",
                             base::NumberToString(kMaxBufferedBytesPerProcess));
