@@ -237,6 +237,10 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTestBase, EarlyEndSession) {
 
   // The dialog is still open, so the result remains in its initial state.
   EXPECT_THAT(result(), Eq(TryChromeDialog::NOT_NOW));
+
+  // Spin the message loop, to allow Chrome to handle the WM_ENDSESSION
+  // gracefully.
+  RunUntilQuit();
 }
 
 // Showing the dialog then receiving a rendezvous should suppress the initial
