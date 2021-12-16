@@ -225,9 +225,6 @@
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
-  id<SnackbarCommands> dispatcher =
-      static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.contentSuggestionsEnabled =
       self.contentSuggestionsEnabled;
 

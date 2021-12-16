@@ -74,10 +74,6 @@ const CGFloat kCardBorderRadius = 11;
   self.collectionUpdater.dataSource = dataSource;
 }
 
-- (void)setDispatcher:(id<SnackbarCommands>)dispatcher {
-  self.collectionUpdater.dispatcher = dispatcher;
-}
-
 - (void)dismissEntryAtIndexPath:(NSIndexPath*)indexPath {
   if (!indexPath || ![self.collectionViewModel hasItemAtIndexPath:indexPath]) {
     return;

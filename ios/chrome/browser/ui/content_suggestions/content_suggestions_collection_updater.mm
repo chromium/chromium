@@ -11,7 +11,6 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
@@ -105,9 +104,6 @@ SectionIdentifier SectionIdentifierForInfo(
   }
 }
 
-NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
-    @"ContentSuggestionsCollectionUpdaterSnackbarCategory";
-
 }  // namespace
 
 @interface ContentSuggestionsCollectionUpdater ()<ContentSuggestionsDataSink>
@@ -134,7 +130,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
 @synthesize promoAdded = _promoAdded;
 @synthesize sectionIdentifiersFromContentSuggestions =
     _sectionIdentifiersFromContentSuggestions;
-@synthesize dispatcher = _dispatcher;
 
 - (instancetype)init {
   self = [super init];

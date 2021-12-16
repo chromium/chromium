@@ -16,7 +16,6 @@
 @protocol ContentSuggestionsHeaderControlling;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
-@protocol SnackbarCommands;
 @protocol SuggestedContent;
 
 // CollectionViewController to display the suggestions items.
@@ -53,7 +52,6 @@
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
-- (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
 
 // Removes the entry at |indexPath|, from the collection and its model.
 - (void)dismissEntryAtIndexPath:(NSIndexPath*)indexPath;
