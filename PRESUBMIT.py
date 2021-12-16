@@ -3467,6 +3467,22 @@ def _CheckAndroidXmlStyle(input_api, output_api, is_check_on_upload):
   else:
     return checkxmlstyle.CheckStyleOnCommit(input_api, output_api)
 
+def _CheckAndroidInfoBarDeprecation(input_api, output_api):
+  """Checks Android Infobar Deprecation """
+
+  import sys
+  original_sys_path = sys.path
+  try:
+    sys.path = sys.path + [input_api.os_path.join(
+        input_api.PresubmitLocalPath(), 'tools', 'android',
+        'infobar_deprecation')]
+    import infobar_deprecation
+  finally:
+    # Restore sys.path to what it was before.
+    sys.path = original_sys_path
+
+  return infobar_deprecation.CheckDeprecationOnUpload(input_api, output_api)
+
 
 class PydepsChecker(object):
   def __init__(self, input_api, pydeps_files):
@@ -4166,6 +4182,7 @@ def ChecksAndroidSpecificOnUpload(input_api, output_api):
   results.extend(_CheckAndroidXmlStyle(input_api, output_api, True))
   results.extend(_CheckNewImagesWarning(input_api, output_api))
   results.extend(_CheckAndroidNoBannedImports(input_api, output_api))
+  results.extend(_CheckAndroidInfoBarDeprecation(input_api, output_api))
   return results
 
 def ChecksAndroidSpecificOnCommit(input_api, output_api):
