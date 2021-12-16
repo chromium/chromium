@@ -501,21 +501,6 @@ bool DoesSandboxNavigationStayWithinSubtree(
   return true;
 }
 
-bool ShouldStorePolicyContainerPoliciesInFrameNavigationEntry(const GURL& url) {
-  // For local schemes we need to store the policy container in the
-  // FrameNavigationEntry, so that we can reload it in case of history
-  // navigation. Note that `url` can be empty in case this is called for the
-  // initial NavigationEntry, which should always store the
-  // PolicyContainerPolicies.
-  //
-  // TODO(https://crbug.com/1146361 and https://crbug.com/1146362): blob: and
-  // filesystem: should be removed from this list when we have properly
-  // implemented storing their policy container in the respective store.
-  return (url.is_empty() || url.SchemeIs(url::kAboutScheme) ||
-          url.SchemeIs(url::kDataScheme) || url.SchemeIsBlob() ||
-          url.SchemeIsFileSystem());
-}
-
 }  // namespace
 
 // NavigationControllerImpl::PendingEntryRef------------------------------------
@@ -3942,9 +3927,6 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     RenderFrameHostImpl* rfh,
     bool is_same_document,
     const GURL& url) {
-  if (!ShouldStorePolicyContainerPoliciesInFrameNavigationEntry(url))
-    return nullptr;
-
   if (is_same_document) {
     CHECK(GetLastCommittedEntry());
 
