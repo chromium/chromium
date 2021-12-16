@@ -66,6 +66,7 @@ enum GPUTextureFormat {
     "depth32float",
     "depth24plus",
     "depth24plus-stencil8",
+    "depth16unorm",
     /* Block Compression (BC) formats */
     "bc1-rgba-unorm",
     "bc1-rgba-unorm-srgb",
