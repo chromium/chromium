@@ -14,9 +14,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
+import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -36,11 +40,18 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
+import org.chromium.base.CommandLine;
+import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
@@ -51,11 +62,14 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -68,6 +82,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -78,18 +93,89 @@ import java.util.concurrent.atomic.AtomicReference;
  * Utility methods and classes for testing Start Surface.
  */
 public class StartSurfaceTestUtils {
+    public static final String INSTANT_START_TEST_BASE_PARAMS =
+            "force-fieldtrial-params=Study.Group:"
+            + ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
+            + "/start_surface_variation/single";
+    public static final String START_SURFACE_TEST_BASE_PARAMS =
+            "force-fieldtrial-params=Study.Group:start_surface_variation/single";
+    public static List<ParameterSet> sClassParamsForStartSurfaceTest =
+            Arrays.asList(new ParameterSet().value(false, false).name("NoInstant_NoReturn"),
+                    new ParameterSet().value(true, false).name("Instant_NoReturn"),
+                    new ParameterSet().value(false, true).name("NoInstant_Return"),
+                    new ParameterSet().value(true, true).name("Instant_Return"));
+
     private static final long MAX_TIMEOUT_MS = 30000L;
 
     /**
+     * Set up StartSurfaceTest* based on whether it's immediateReturn or not.
+     * @param immediateReturn Whether feature {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} is
+     *                        enabled as "immediately". When immediate return is enabled, the Start
+     *                        surface is showing when Chrome is launched.
+     * @param activityTestRule The test rule of activity under test.
+     */
+    public static void setUpStartSurfaceTests(boolean immediateReturn,
+            ChromeTabbedActivityTestRule activityTestRule) throws IOException {
+        int expectedTabs = 1;
+        int additionalTabs = expectedTabs - (immediateReturn ? 0 : 1);
+        if (additionalTabs > 0) {
+            int[] tabIDs = new int[additionalTabs];
+            for (int i = 0; i < additionalTabs; i++) {
+                tabIDs[i] = i;
+                createThumbnailBitmapAndWriteToFile(i);
+            }
+            createTabStateFile(tabIDs);
+        }
+        if (immediateReturn) {
+            TAB_SWITCHER_ON_RETURN_MS.setForTesting(0);
+            assertEquals(0, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+            assertTrue(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
+
+            // Need to start main activity from launcher for immediate return to be effective.
+            // However, need at least one tab for carousel to show, which starting main activity
+            // from launcher doesn't provide.
+            // Creating tabs and restart the activity would do the trick, but we cannot do that for
+            // Instant start because we cannot unload native library.
+            // Create fake TabState files to emulate having one tab in previous session.
+            TabAttributeCache.setTitleForTesting(0, "tab title");
+            startMainActivityFromLauncher(activityTestRule);
+        } else {
+            assertFalse(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
+            // Cannot use StartSurfaceTestUtils.startMainActivityFromLauncher().
+            // Otherwise tab switcher could be shown immediately if single-pane is enabled.
+            activityTestRule.startMainActivityOnBlankPage();
+            onViewWaiting(withId(R.id.home_button));
+        }
+    }
+
+    /**
      * Only launch Chrome without waiting for a current tab.
-     * This method could not use {@link ChromeActivityTestRule#startMainActivityFromLauncher()}
-     * because of its {@link org.chromium.chrome.browser.tab.Tab} dependency.
+     * This method could not use {@link
+     * ChromeTabbedActivityTestRule#startMainActivityFromLauncher()} because of its {@link
+     * org.chromium.chrome.browser.tab.Tab} dependency.
      */
     public static void startMainActivityFromLauncher(ChromeActivityTestRule activityTestRule) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         activityTestRule.prepareUrlIntent(intent, null);
         activityTestRule.launchActivity(intent);
+    }
+
+    public static void startAndWaitNativeInitialization(
+            ChromeTabbedActivityTestRule activityTestRule) {
+        Assert.assertTrue(NativeLibraryLoadedStatus.getProviderForTesting() == null
+                || !NativeLibraryLoadedStatus.getProviderForTesting()
+                            .areMainDexNativeMethodsReady());
+
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> activityTestRule.getActivity().startDelayedNativeInitializationForTests());
+        CriteriaHelper.pollUiThread(
+                activityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized, 10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
+        ChromeTabbedActivity cta = activityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
     }
 
     /**
@@ -271,6 +357,25 @@ public class StartSurfaceTestUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             cta.getToolbarManager().getToolbarTabControllerForTesting().openHomepage();
         });
+    }
+
+    /**
+     * Simulate pressing the back button.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void pressBack(ChromeTabbedActivityTestRule activityTestRule) {
+        // ChromeTabbedActivity expects the native libraries to be loaded when back is pressed.
+        activityTestRule.waitForActivityNativeInitializationComplete();
+        TestThreadUtils.runOnUiThreadBlocking(() -> activityTestRule.getActivity().onBackPressed());
+    }
+
+    /**
+     * Perform gesture navigate back action.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void gestureNavigateBack(ChromeTabbedActivityTestRule activityTestRule) {
+        GestureNavigationUtils navUtils = new GestureNavigationUtils(activityTestRule);
+        navUtils.swipeFromLeftEdge();
     }
 
     /**
