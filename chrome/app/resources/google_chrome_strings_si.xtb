@@ -249,6 +249,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7398801000654795464">ඔබ Chrome වෙත <ph name="USER_EMAIL_ADDRESS" /> ලෙස පුරා තිබුණි. කරුණාකර නැවත පිරීමට එම ගිණුමම භාවිතා කරන්න.</translation>
 <translation id="7408085963519505752">Chrome OS නියම</translation>
 <translation id="7419046106786626209">Chrome OS ඔබේ වසම සඳහා සම්මුහුර්ත ලද නොහැකි නිසා Google Chrome හට ඔබේ දත්ත සම්මුහුර්ත කළ නොහැකි විය.</translation>
+<translation id="7481213027396403996">Chrome හි ප්‍රබලම ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="7486227612705979895">ලිපින තීරුවේ යෝජනා කිරීමට Chrome ඔබගේ Drive ප්‍රවේශ කරනු ඇත</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">ඔබේ උපාංගය යාවත්කාලීනද බැලීමට <ph name="LINK_BEGIN" />Chrome OS සැකසුම්<ph name="LINK_END" /> වෙත යන්න</translation>
@@ -291,7 +292,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">මෙම කාර්යාල පැතිකඩ ඔබගේ පුද්ගලික පැතිකඩෙන් සම්පූර්ණයෙන්ම වෙන්ව ඇත.</translation>
 <translation id="8556340503434111824">Google Chrome හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
-<translation id="855774455305595697">Chrome තුළද ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="8571790202382503603">Chrome පැතිකඩවල් සමඟ ඔබට ඔබගේ සියලු Chrome දේවල් වෙන් කළ හැකිය. මෙය වැඩ සහ විනෝදය වෙන් කිරීම පහසු කරයි.</translation>
 <translation id="8614913330719544658">Google Chrome ප්‍රතිචාර නොදක්වයි. යළි දියත් කරන්නද?</translation>
 <translation id="861702415419836452">Chrome හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
@@ -308,6 +308,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8862326446509486874">ඔබට පද්ධති මට්ටමේ ස්ථානපයකට අයිතිය නැත. නැවත පරිපාලක වශයෙන් ස්ථාපකය ධාවනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chrome වෙත පුරන්න.</translation>
+<translation id="8927704157641862988">Chrome වඩාත්ම වැදගත් ලෙස සලකන පෞද්ගලිකත්ව තේරීම් අභිරුචිකරණය කරන්න. මෙම මාර්ගෝපදේශයට සෑම සැකසුමක්ම සහ විකල්පයක්ම ඇතුළත් නොවේ.</translation>
 <translation id="8986207147630327271">ඔබ මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩක් එක් කරන අතර ඔබගේ පරිපාලකට ඔබගේ පැතිකඩෙහි පාලනය ලබා දෙයි.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome යාවත්කාලීනයක් තිබේ}=1{Chrome යාවත්කාලීනයක් තිබේ}one{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}other{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}}</translation>
 <translation id="9026991721384951619">පිවිසුම් දත්ත කල් ඉකුත්වී ඇති බැවින් Chrome OS හට ඔබේ දත්ත සම්මුහු කළ නොහැකි විය.</translation>

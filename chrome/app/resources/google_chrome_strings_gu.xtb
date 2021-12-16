@@ -250,6 +250,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7398801000654795464">તમે Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું હતું. ફરીથી સાઇન ઇન કરવા માટે કૃપા કરીને એ જ એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="7408085963519505752">Chrome OS શરતો</translation>
 <translation id="7419046106786626209">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>
+<translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7486227612705979895">ઍડ્રેસ બારમાં સૂચનો કરવા માટે, Chrome તમારી ડ્રાઇવને ઍક્સેસ કરશે</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">તમારું ડિવાઇસ અપ ટૂ ડેટ છે કે નહીં, તે જાણવા માટે <ph name="LINK_BEGIN" />Chrome OS સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>
@@ -292,7 +293,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ઑફિસની આ પ્રોફાઇલ તમારી વ્યક્તિગત પ્રોફાઇલથી સાવ અલગ છે.</translation>
 <translation id="8556340503434111824">Google Chromeનું એક નવું વર્ઝન ઉપલબ્ધ છે અને તે પહેલાં કરતાંએ વધુ ઝડપી છે.</translation>
-<translation id="855774455305595697">Chromeમાં પણ ચાલુ કરીએ?</translation>
 <translation id="8571790202382503603">Chrome પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chrome પર અલગ-અલગ રાખી શકો છો. આનાથી ઑફિસ અને મનોરંજન વચ્ચે વિભાજન કરવાનું સરળ બને છે.</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
@@ -309,6 +309,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8862326446509486874">તમારી પાસે સિસ્ટમ-સ્તરનાં ઇન્સ્ટોલ માટે ઉચિત અધિકારો નથી. એડમિન તરીકે ઇન્સ્ટૉલરને ફરીથી ચલાવવનો પ્રયાસ કરો.</translation>
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />માંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
+<translation id="8927704157641862988">પ્રાઇવસીની એ પસંદગીઓને કસ્ટમાઇઝ કરો કે જેને Chrome સૌથી મહત્ત્વપૂર્ણ માને છે. આ માર્ગદર્શિકામાં દરેક સેટિંગ અને વિકલ્પ શામેલ નથી.</translation>
 <translation id="8986207147630327271">તમે આ બ્રાઉઝરમાં ઑફિસની પ્રોફાઇલ ઉમેરી રહ્યાં છો અને તમારા વ્યવસ્થાપકને માત્ર ઑફિસની પ્રોફાઇલનો નિયંત્રણ આપી રહ્યાં છો.</translation>
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="9026991721384951619">સાઇન ઇન વિગતો જૂની હોવાને કારણે Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>

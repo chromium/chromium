@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">前往 Chromium 說明頁面</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
+<translation id="4414390922528416758">自訂 Chromium 最重視的隱私權選項。這份指南並未涵蓋所有設定和選項。</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
@@ -226,7 +227,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="734373864078049451">你瀏覽的網頁、書籤和其他 Chromium 設定都在這裡。</translation>
 <translation id="7349591376906416160">你的系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="7366100504948874379">要一併在 Chromium 中開啟這項功能嗎？</translation>
 <translation id="7398989605938454041">你可以運用 Chromium 設定檔區隔各種 Chromium 資料，更輕鬆區分工作和娛樂。</translation>
 <translation id="7448255348454382571">重新啟動 Chromium 作業系統</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
@@ -296,5 +296,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9214764063801632699">Chromium 作業系統</translation>
 <translation id="93478295209880648">Chromium 已不適用於 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
+<translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -111,6 +111,7 @@
 <translation id="4271805377592243930">Пронађите помоћ за Chromium</translation>
 <translation id="4285930937574705105">Инсталација није успела због неодређене грешке. Ако је Chromium тренутно отворен, затворите га и покушајте поново.</translation>
 <translation id="4407044323746248786">Желите ли ипак да затворите Chromium?</translation>
+<translation id="4414390922528416758">Прилагодите подешавања приватности која Chromium сматра најважнијим. Овај водич не обухвата свако подешавање и опцију.</translation>
 <translation id="4415566066719264597">Нека Chromium ради у позадини</translation>
 <translation id="4423735387467980091">Прилагодите и контролишите Chromium</translation>
 <translation id="4427306783828095590">Побољшана заштита нуди више могућности за блокирање „пецања“ и малвера</translation>
@@ -298,5 +299,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9214764063801632699">Систем Chromium ОС</translation>
 <translation id="93478295209880648">Chromium можда неће исправно функционисати зато што више није подржан на Windows XP-у или Windows Vista-и</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
+<translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

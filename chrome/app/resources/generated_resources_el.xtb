@@ -252,7 +252,6 @@
 <translation id="1244265436519979884">Η επαναφορά Linux βρίσκεται σε εξέλιξη.</translation>
 <translation id="1244303850296295656">Σφάλμα επέκτασης</translation>
 <translation id="1246863218384630739">Δεν ήταν δυνατή η εγκατάσταση του <ph name="VM_NAME" />: Το URL εικόνας εμφάνισε κωδικό σφάλματος <ph name="HTTP_ERROR" />. Επικοινωνήστε με τον διαχειριστή.</translation>
-<translation id="1247071602516579380">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Tablet με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Αναμενόμενο άγκιστρο ανοίγματος: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Με αυτήν την ενέργεια θα διαγραφούν <ph name="TOTAL_USAGE" /> των δεδομένων που έχουν αποθηκευτεί από ιστοτόπους και τις εγκατεστημένες εφαρμογές τους.</translation>
 <translation id="1251578593170406502">Σάρωση για δίκτυα δεδομένων κινητής τηλεφωνίας...</translation>
@@ -439,7 +438,6 @@
 <translation id="144283815522798837">Επιλέχθηκαν <ph name="NUMBER_OF_ITEMS_SELECTED" /> στοιχεία</translation>
 <translation id="1442851588227551435">Ορισμός ενεργού εισιτηρίου Kerberos</translation>
 <translation id="1444628761356461360">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον ιδιοκτήτη της συσκευής, <ph name="OWNER_EMAIL" />.</translation>
-<translation id="1445005312224723356">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Τηλέφωνο με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Δεν ήταν δυνατή η φόρτωση του "<ph name="IMAGE_PATH" />" για το θέμα.</translation>
 <translation id="1449191289887455076">Πατήστε ξανά το πλήκτρο <ph name="CURRENTKEY" /> για επιβεβαίωση της ανάθεσης και <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Ιστοσελίδα, μεμονωμένο αρχείο</translation>
@@ -872,7 +870,6 @@
 <translation id="1855079636134697549">Η κάμερα είναι ενεργοποιημένη</translation>
 <translation id="1856715684130786728">Προσθήκη τοποθεσίας…</translation>
 <translation id="1858585891038687145">Να θεωρείται αξιόπιστο αυτό το πιστοποιητικό για τον προσδιορισμό κατασκευαστών λογισμικού</translation>
-<translation id="1859787252990099899">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Άγνωστη συσκευή με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Αυτός ο φάκελος είναι άδειος</translation>
 <translation id="1862311223300693744">Έχετε εγκαταστήσει κάποιο ιδιαίτερο λογισμικό VPN, διακομιστή μεσολάβησης, τείχους προστασίας ή
     NAS;</translation>
@@ -1248,7 +1245,6 @@
 <translation id="2242687258748107519">Πληροφορίες αρχείου</translation>
 <translation id="2246549592927364792">Να λαμβάνονται περιγραφές εικόνων από το Google;</translation>
 <translation id="2247738527273549923">Η διαχείριση της συσκευής σας γίνεται από τον οργανισμό σας</translation>
-<translation id="2249061317998743208">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Χειριστήριο παιχνιδιού με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Άνοιγμα ως παραθύρου με καρτέλες</translation>
 <translation id="2249605167705922988">π.χ. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Άνοιγμα με πρόγραμμα προβολής συστήματος</translation>
@@ -2010,7 +2006,6 @@
 <translation id="3007771295016901659">Δημιουργία διπλότυπης καρτέλας</translation>
 <translation id="3008232374986381779">Εκτελέστε εργαλεία, προγράμματα επεξεργασίας και IDE Linux στη συσκευή <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Επαναφορά αδειών</translation>
-<translation id="3008396025115884998">Συσκευή <ph name="DEVICE_INDEX" />από <ph name="DEVICE_COUNT" />, Συσκευή ήχου με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Ο τομέας <ph name="MANAGER" /> απαιτεί να συνδεθείτε σήμερα στο δίκτυο Wi-Fi και να κατεβάσετε μια ενημέρωση. Εναλλακτικά, μπορείτε να την κατεβάσετε από μια σύνδεση με ογκοχρέωση (ενδέχεται να ισχύουν χρεώσεις).}other{Ο τομέας <ph name="MANAGER" /> απαιτεί να συνδεθείτε στο δίκτυο Wi-Fi πριν από τη λήξη της προθεσμίας και να κατεβάσετε μια ενημέρωση. Εναλλακτικά, μπορείτε να την κατεβάσετε από μια σύνδεση με ογκοχρέωση (ενδέχεται να ισχύουν χρεώσεις).}}</translation>
 <translation id="3009300415590184725">Είστε βέβαιοι ότι θέλετε να ακυρώσετε τη διαδικασία ρύθμισης της υπηρεσίας δεδομένων κινητής τηλεφωνίας;</translation>
 <translation id="3009779501245596802">Ευρετηριασμένες βάσεις δεδομένων</translation>
@@ -2316,7 +2311,6 @@
 <translation id="3348038390189153836">Ανιχνεύτηκε αφαιρούμενη συσκευή</translation>
 <translation id="3348131053948466246">Προτεινόμενα emoji. Πατήστε τα πλήκτρα επάνω και κάτω για πλοήγηση και Enter για εισαγωγή.</translation>
 <translation id="3349933790966648062">Αποτύπωμα μνήμης</translation>
-<translation id="3354972872297836698">Δεν ήταν δυνατή η σύζευξη με τη συσκευή <ph name="DEVICE_NAME" />, επιλέξτε συσκευή για να δοκιμάσετε ξανά</translation>
 <translation id="3355936511340229503">Σφάλμα σύνδεσης</translation>
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
 <translation id="3359256513598016054">Περιορισμοί πολιτικής πιστοποιητικού</translation>
@@ -2749,6 +2743,7 @@
 <translation id="3788331399335602504">αυτών των αρχείων</translation>
 <translation id="3788401245189148511">Θα μπορούσε να εκτελέσει τις εξής ενέργειες:</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
+<translation id="3790417903123637354">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="379082410132524484">Η κάρτα σας έληξε</translation>
 <translation id="3792890930871100565">Αποσύνδεση εκτυπωτών</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Το Chrome δεν εντόπισε επιβλαβές λογισμικό στον υπολογιστή σας • Ο έλεγχος έγινε πριν από 1 ημέρα}other{Το Chrome δεν εντόπισε επιβλαβές λογισμικό στον υπολογιστή σας • Ο έλεγχος έγινε πριν από {NUM_DAYS} ημέρες}}</translation>
@@ -3148,7 +3143,6 @@
 <translation id="4200689466366162458">Προσαρμοσμένες λέξεις</translation>
 <translation id="4200983522494130825">Νέα &amp;καρτέλα</translation>
 <translation id="4201546031411513170">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις ρυθμίσεις.</translation>
-<translation id="4202417625268941299">Με τη Βελτιωμένη Ασφαλή περιήγηση, θα λάβετε την πιο ισχυρή ασφάλεια του Chrome.</translation>
 <translation id="420283545744377356">Απενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="4206144641569145248">Εξωγήινος</translation>
 <translation id="4206323443866416204">Αναφορά σχολίων</translation>
@@ -3655,7 +3649,6 @@
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4761104368405085019">Χρήση του μικροφώνου σας</translation>
 <translation id="4762718786438001384">Ο ελεύθερος χώρος στον δίσκο της συσκευής είναι οριακός</translation>
-<translation id="4762898026821161650">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Υπολογιστής με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Όταν είδατε αυτήν τη σελίδα, ορίστηκαν τα ακόλουθα cookie</translation>
 <translation id="4765582662863429759">Επιτρέπει στο Android Messages τη μετάδοση μηνυμάτων κειμένου από το τηλέφωνό σας στο Chromebook</translation>
 <translation id="4768332406694066911">Διαθέτετε πιστοποιητικά από αυτούς τους οργανισμούς που σας προσδιορίζουν</translation>
@@ -5838,7 +5831,6 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Ο έλεγχος ασφαλείας εκτελέστηκε πριν από 1 λεπτό.}other{Ο έλεγχος ασφαλείας εκτελέστηκε πριν από {NUM_MINS} λεπτά.}}</translation>
 <translation id="7057767408836081338">Η απόκτηση των δεδομένων της εφαρμογής απέτυχε. Παρόλα αυτά, γίνεται προσπάθεια εκτέλεσης της εφαρμογής…</translation>
 <translation id="7058024590501568315">Κρυφό δίκτυο</translation>
-<translation id="70582545822664495">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Ποντίκι με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Ορισμός σε αυτόματη εκκίνηση</translation>
 <translation id="7062222374113411376">Να επιτρέπεται στους ιστότοπους που έκλεισαν πρόσφατα να ολοκληρώνουν την αποστολή και τη λήψη δεδομένων (συνιστάται)</translation>
 <translation id="7063129466199351735">Γίνεται επεξεργασία συντομεύσεων…</translation>
@@ -6002,7 +5994,6 @@
 <translation id="7257173066616499747">Δίκτυα Wi-Fi</translation>
 <translation id="725758059478686223">Υπηρεσία εκτύπωσης</translation>
 <translation id="7257666756905341374">Ανάγνωση δεδομένων που αντιγράφετε και επικολλάτε</translation>
-<translation id="7258006747130724016">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Βιντεοκάμερα με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Μετασχηματισμοί</translation>
 <translation id="7258225044283673131">Αυτή η εφαρμογή δεν αποκρίνεται. Για να κλείσετε την εφαρμογή, επιλέξτε Αναγκαστικό κλείσιμο.</translation>
 <translation id="7262004276116528033">Η υπηρεσία σύνδεσης φιλοξενείται από τον τομέα <ph name="SAML_DOMAIN" /></translation>
@@ -6799,7 +6790,6 @@
 <translation id="8037117027592400564">Ανάγνωση όλου του κειμένου που εκφωνείται με χρήση ομιλίας σύνθεσης</translation>
 <translation id="8037357227543935929">Να γίνεται ερώτηση (προεπιλογή)</translation>
 <translation id="803771048473350947">Αρχείο</translation>
-<translation id="8038399858950372766">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, Πληκτρολόγιο με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8042142357103597104">Αδιαφάνεια κειμένου</translation>
 <translation id="8044262338717486897">Η εφαρμογή <ph name="LINUX_APP_NAME" /> δεν αποκρίνεται.</translation>
@@ -6876,6 +6866,7 @@
 <translation id="81020759409809034">Τοπική τοποθεσία</translation>
 <translation id="8102139037507939978">Αφαίρεση στοιχείων προσωπικής ταυτοποίησης από το system_logs.txt.</translation>
 <translation id="8104088837833760645">Λήψη προφίλ eSIM</translation>
+<translation id="8105368624971345109">Απενεργοποίηση</translation>
 <translation id="8107015733319732394">Εγκατάσταση του Google Play Store στη συσκευή σας <ph name="DEVICE_TYPE" />. Αυτό μπορεί να διαρκέσει μερικά λεπτά.</translation>
 <translation id="810728361871746125">Ανάλυση οθόνης</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Δεν υπάρχουν cookie τρίτου μέρους}=1{Αποκλείστηκε 1 cookie τρίτου μέρους}other{Αποκλείστηκαν # cookie τρίτου μέρους}}</translation>
@@ -6940,7 +6931,6 @@
 <translation id="8168071266284693455">Οι σελιδοδείκτες, οι κωδικοί πρόσβασης, το ιστορικό σας και άλλα δεδομένα συγχρονίζονται σε όλες τις συσκευές σας.</translation>
 <translation id="8168435359814927499">Περιεχόμενο</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Προσθήκη καρτέλας στη λίστα ανάγνωσης}other{Προσθήκη καρτελών στη λίστα ανάγνωσης}}</translation>
-<translation id="8169849063724750395">Επανενεργοποίηση</translation>
 <translation id="8171334254070436367">Απόκρυψη όλων των καρτών</translation>
 <translation id="8174047975335711832">Στοιχεία συσκευής</translation>
 <translation id="8174876712881364124">Δημιουργία αντιγράφων ασφαλείας στο Google Drive. Επαναφέρετε με ευκολία δεδομένα ή αλλάξτε συσκευή ανά πάσα στιγμή. Αυτό το αντίγραφο ασφαλείας περιλαμβάνει δεδομένα εφαρμογών. Τα δεδομένα μεταφορτώνονται στην Google και κρυπτογραφούνται χρησιμοποιώντας τον κωδικό πρόσβασης του Λογαριασμού Google του παιδιού σας. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα<ph name="END_LINK1" /></translation>
@@ -7014,7 +7004,6 @@
 <translation id="8249615410597138718">Αποστολή στις συσκευές σας</translation>
 <translation id="8249672078237421304">Να προτείνεται να μεταφράζονται οι σελίδες που δεν εμφανίζονται στη γλώσσα ανάγνωσής σας</translation>
 <translation id="8251441930213048644">Ανανέωση τώρα</translation>
-<translation id="8251509999076836464">Σύζευξη με τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Η μικρογραφία καταργήθηκε.</translation>
 <translation id="825238165904109940">Να εμφανίζονται πάντα ολόκληρα URL</translation>
 <translation id="8252569384384439529">Μεταφόρτωση…</translation>
@@ -7256,7 +7245,6 @@
 <translation id="8534656636775144800">Δυστυχώς, παρουσιάστηκε σφάλμα κατά την προσπάθεια σύνδεσης στον τομέα. Δοκιμάστε ξανά.</translation>
 <translation id="8535005006684281994">URL ανανέωσης πιστοποιητικού Netscape</translation>
 <translation id="8536956381488731905">Ήχος κατά το πάτημα πλήκτρων</translation>
-<translation id="8538718737588735385">Επανενεργοποίηση</translation>
 <translation id="8539727552378197395">Όχι (HttpOnly)</translation>
 <translation id="8539766201049804895">Αναβάθμιση</translation>
 <translation id="8540136935098276800">Εισαγάγετε ένα URL με σωστή μορφοποίηση.</translation>

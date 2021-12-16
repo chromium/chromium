@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Chromium のヘルプを見る</translation>
 <translation id="4285930937574705105">原因不明のエラーによりインストールが失敗しました。実行中の Chromium を終了してからもう一度お試しください。</translation>
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
+<translation id="4414390922528416758">Chromium の最も重要なプライバシー設定をカスタマイズできます。このガイドにすべての設定とオプションが含まれているわけではありません。</translation>
 <translation id="4415566066719264597">Chromium をバックグラウンドで実行する</translation>
 <translation id="4423735387467980091">Chromium の設定</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
@@ -295,5 +296,6 @@
 <translation id="9214764063801632699">Chromium OS システム</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>
+<translation id="967427899662692980">Chromium の最高のセキュリティ強度で保護</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
 </translationbundle>

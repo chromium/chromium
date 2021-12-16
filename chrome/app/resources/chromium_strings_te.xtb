@@ -107,6 +107,7 @@
 <translation id="4271805377592243930">Chromium గురించి సహాయాన్ని పొందండి</translation>
 <translation id="4285930937574705105">పేర్కొనబడని ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది. ప్రస్తుతం Chromium అమలు చేయబడుతుంటే, దయచేసి దీనిని మూసివేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="4407044323746248786">ఏదేమైనా Chromium నుండి నిష్క్రమించాలా?</translation>
+<translation id="4414390922528416758">Chromium అత్యంత ముఖ్యమైనవిగా పరిగణించే గోప్యతా ఎంపికలను అనుకూలంగా మార్చండి. ఈ గైడ్‌ ప్రతి సెట్టింగ్, ఆప్షన్‌ను కలిగి ఉండదు.</translation>
 <translation id="4415566066719264597">నేపథ్యంలో అమలయ్యేందుకు Chromiumని అనుమతించండి</translation>
 <translation id="4423735387467980091">Chromiumను అనుకూలీకరించండి మరియు నియంత్రించండి</translation>
 <translation id="4427306783828095590">ఫిషింగ్, అలాగే మాల్‌వేర్‌ను బ్లాక్ చేయడానికి మెరుగుపరచిన రక్షణ మరింత చేయగలదు</translation>
@@ -223,7 +224,6 @@
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="734373864078049451">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chromium అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
-<translation id="7366100504948874379">Chromiumలో కూడా ఆన్ చేయాలా?</translation>
 <translation id="7398989605938454041">మీ మొత్తం Chromium అంశాలను, మీరు Chromium ప్రొఫైల్‌లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="7448255348454382571">Chromium OSని మళ్లీ ప్రారంభించండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
@@ -293,5 +293,6 @@
 <translation id="9214764063801632699">Chromium OS సిస్టమ్</translation>
 <translation id="93478295209880648">Chromiumకి ఇప్పుడు Windows XP లేదా Windows Vistaలో మద్దతు లేనందున ఇది సరిగ్గా పని చేయకపోవచ్చు</translation>
 <translation id="965162752251293939">Chromiumను ఎవరు ఉపయోగిస్తున్నారు?</translation>
+<translation id="967427899662692980">Chromium అత్యంత సురక్షితమైన సెక్యూరిటీని పొందండి</translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
 </translationbundle>

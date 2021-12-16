@@ -2501,6 +2501,7 @@
 <translation id="3557101512409028104">Family Link मार्फत वेबसाइटका प्रतिबन्धहरू र स्क्रिन हेरेर बिताउने समयको सीमा सेट गर्नुहोस्</translation>
 <translation id="3559262020195162408">यन्त्रमा नीति स्थापना गर्न सकिएन।</translation>
 <translation id="3559533181353831840">लगभग <ph name="TIME_LEFT" /> बाँकी छ</translation>
+<translation id="3559697822483154494">स्क्रिन स्प्लिट गर्ने र डेस्क परिवर्तन गर्ने जस्ता कारबाही गर्दा ती कारबाही गरिएको जनाउने भाइब्रेसन प्राप्त गर्नुहोस्।</translation>
 <translation id="3560034655160545939">&amp;हिज्जे जाँच</translation>
 <translation id="3562423906127931518">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। Linux कन्टेनर सेटअप गर्दै।</translation>
 <translation id="3562655211539199254">आफ्नो फोनको Chrome मा हालसालै खोलिएका ट्याबहरू हेर्नुहोस्</translation>
@@ -2725,6 +2726,7 @@
 <translation id="3788331399335602504">यी फाइलहरू</translation>
 <translation id="3788401245189148511">यसले सक्छ:</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3790417903123637354">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="379082410132524484">तपाईंको कार्डको म्याद सकियो</translation>
 <translation id="3792890930871100565">प्रिन्टरहरूको जडान विच्छेद गर्नुहोस्</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ले तपाईंको कम्प्युटरमा कुनै हानिकारक सफ्टवेयर भेट्टाएन • १ दिनअघि जाँच गरिएको}other{Chrome ले तपाईंको कम्प्युटरमा कुनै हानिकारक सफ्टवेयर भेट्टाएन • {NUM_DAYS} दिनअघि जाँच गरिएको}}</translation>
@@ -3809,6 +3811,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" कुनै क्रमिक पोर्टमा जडान गर्न चाहन्छ</translation>
 <translation id="4944310289250773232">यो प्रमाणीकरण सेवा <ph name="SAML_DOMAIN" /> ले होस्ट गरेको हो</translation>
 <translation id="4945439665401275950">तपाईं आफ्ना बच्चाको फिंगरप्रिन्ट सेटअप गर्न चाहनुहुन्छ भने उनलाई पावर बटनमा छुन लगाउनुहोस्। तपाईंका बच्चाको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि यस <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
+<translation id="4946459324029651239">तपाईंले मानक सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
@@ -4392,6 +4395,7 @@
 <translation id="5575528586625653441">डेमो दर्ताको अनुरोधसम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="557722062034137776">तपाइँको यन्त्र रिसेट गर्नाले तपाइँको Google खाताहरू वा यस खाताहरूमा समक्रमण गरिएका कुनै पनि लगतलाई असर गर्नेछैन। तर पनि, तपाइँको यन्त्रमा स्थायी रूपमा बचत गरेका सबै फाइलहरू हटाइने छ।</translation>
 <translation id="5578059481725149024">स्वतः साइन-इन गर्ने</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> भाषामा अनुवाद गरियो</translation>
 <translation id="558170650521898289">Microsoft Windows हार्डवेयर ड्राइभर प्रमाणीकरण</translation>
 <translation id="5581972110672966454">यो यन्त्रलाई उक्त डोमेनसँग जोड्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="5582839680698949063">मुख्य मेनु</translation>
@@ -4895,6 +4899,7 @@
 <translation id="6112931163620622315">आफ्नो फोन जाँच गर्नुहोस्</translation>
 <translation id="6113434369102685411">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरका हकमा डिफल्ट सर्च इन्जिन तोक्नुहोस्</translation>
 <translation id="6113942107547980621">Smart Lock प्रयोग गर्न, आफ्नो फोनको प्राथमिक प्रयोगकर्ता प्रोफाइल प्रयोग गर्नुहोस्</translation>
+<translation id="611684075852771314">यी लगहरू "मेरा फाइल" को निम्न नामको फाइलमा सेभ गरिएका छन्:</translation>
 <translation id="6116921718742659598">भाषा र इनपुट सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="6119927814891883061">यो डिभाइसको नाम <ph name="DEVICE_NAME" /> राख्नुहोस्</translation>
 <translation id="6120205520491252677">यस पृष्ठलाई सुरुवात स्क्रिनमा पिन गर्नुहोस्...</translation>
@@ -5671,6 +5676,7 @@
 <translation id="6930036377490597025">बाह्य सुरक्षा साँचो वा अन्तर्निर्मित सेन्सर</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन अस्वीकार गरिएको छ}other{# वटा एक्स्टेन्सन अस्वीकार गरिएको छ}}</translation>
 <translation id="6930321203306643451">स्तरोन्नति पूरा भयो</translation>
+<translation id="6931690462168617033">क्लिकको संवेदनशीलता</translation>
 <translation id="6935286146439255109">कागज राख्ने एउटा ट्रे छैन</translation>
 <translation id="693807610556624488">लेख्ने कार्यले "<ph name="DEVICE_NAME" />" मा विशेषताको अधिकतम लम्बाइ नाघ्छ</translation>
 <translation id="6938386202199793006">तपाईंसँग १ प्रिन्टर छ।</translation>
@@ -6785,6 +6791,7 @@
 <translation id="8054563304616131773">एउटा मान्य इमेल ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="8054883179223321715">भिडियो हेर्ने सुविधा प्रदान गर्ने केही निश्चित साइटहरूका लागि उपलब्ध</translation>
 <translation id="8054921503121346576">युएसबी कुञ्जीपाट जडित</translation>
+<translation id="8057414620575339583">Side Search</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058986560951482265">चल्दै रोकिदै गर्ने</translation>
 <translation id="8059417245945632445">यन्त्रहरू &amp;निरीक्षण गर्नुहोस्</translation>
@@ -6799,6 +6806,7 @@
 <translation id="8064279191081105977">समूह <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">कनेक्सन डायलग</translation>
 <translation id="8069615408251337349">Google क्लाउड प्रिन्टिङ</translation>
+<translation id="8070662218171013510">हेप्टिक फिडब्याक</translation>
 <translation id="8071432093239591881">छविको रूपमा प्रिन्ट गर्नुहोस्</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />एपका डेटा भनेको सम्पर्क, सन्देश र तस्बिरहरू जस्ता डेटालगायत कुनै अनुप्रयोगले सुरक्षित गरेको (विकासकर्ताको सेटिङहरूका आधारमा) जुनसुकै डेटा हुन सक्छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ब्याकअपसम्बन्धी डेटालाई तपाईंका बालकको ड्राइभको भण्डारण कोटामा गणना गरिने छैन।<ph name="END_PARAGRAPH2" />
@@ -6836,6 +6844,7 @@
 <translation id="81020759409809034">डिभाइसमा फाइल डाउनलोड गरिने डिफल्ट लोकेसन</translation>
 <translation id="8102139037507939978">system_logs.txt बाट व्यक्तिगत रूपमा पहिचान गर्न मिल्ने जानकारी हटाइयोस्।</translation>
 <translation id="8104088837833760645">eSIM प्रोफाइल डाउनलोड गर्नुहोस्</translation>
+<translation id="8105368624971345109">निष्क्रिय पार्नुहोस्</translation>
 <translation id="8107015733319732394">तपाईंको <ph name="DEVICE_TYPE" /> मा उक्त Google Play स्टोर स्थापना गर्दै। यस कार्यमा केही समय लाग्नसक्छ।</translation>
 <translation id="810728361871746125">डिस्प्लेको रिजोल्युसन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{कुनै पनि तेस्रो पक्षीय कुकी छैन}=1{१ तेस्रो पक्षीय कुकीलाई रोक लगाइयो}other{# वटा तेस्रो पक्षीय कुकीलाई रोक लगाइयो}}</translation>
@@ -7210,6 +7219,7 @@
 <translation id="8528074251912154910">भाषाहरू थप्नुहोस्</translation>
 <translation id="8528962588711550376">साइन इन गर्दै।</translation>
 <translation id="8529925957403338845">तात्कालिक टेदरिङको जडान असफल भयो</translation>
+<translation id="8531701051932785007">परिष्कृत Safe Browsing अफ छ</translation>
 <translation id="8534656636775144800">हत्तेरिका! डोमेनमा सामेल हुने प्रयास गर्दा केही चिज गडबड भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8535005006684281994">नेटस्केप प्रमाणपत्र नविकरण URL</translation>
 <translation id="8536956381488731905">कुञ्जी थिच्दा आवाज आउने पारियोस्</translation>

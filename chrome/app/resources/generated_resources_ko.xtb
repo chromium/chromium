@@ -2742,6 +2742,7 @@
 <translation id="3788331399335602504">파일</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
 <translation id="3789841737615482174">설치</translation>
+<translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
 <translation id="3792890930871100565">프린터 연결 해제</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • 1일 전 확인}other{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • {NUM_DAYS}일 전 확인}}</translation>
@@ -3825,6 +3826,7 @@
 <translation id="4943691134276646401">'<ph name="CHROME_EXTENSION_NAME" />'에서 시리얼 포트에 연결하려고 합니다.</translation>
 <translation id="4944310289250773232">이 인증 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅합니다</translation>
 <translation id="4945439665401275950">지문을 설정하려면 자녀가 전원 버튼을 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다</translation>
+<translation id="4946459324029651239">표준 보호 기능이 적용됩니다.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953808748584563296">기본 주황색 아바타</translation>
@@ -4408,6 +4410,7 @@
 <translation id="5575528586625653441">데모 등록 요청에 문제가 발생했습니다.</translation>
 <translation id="557722062034137776">기기를 재설정해도 Google 계정 또는 계정에 동기화된 데이터에 영향을 주지 않습니다. 하지만 기기에 로컬로 저장된 파일은 모두 삭제됩니다.</translation>
 <translation id="5578059481725149024">자동 로그인</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" />로의 번역이 완료됨</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5581972110672966454">기기가 도메인에 가입하지 못했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5582839680698949063">기본 메뉴</translation>
@@ -6803,6 +6806,7 @@
 <translation id="8054563304616131773">올바른 이메일 주소를 입력하세요.</translation>
 <translation id="8054883179223321715">특정 동영상 사이트에서 사용 가능</translation>
 <translation id="8054921503121346576">USB 키보드 연결됨</translation>
+<translation id="8057414620575339583">사이드 검색</translation>
 <translation id="8058655154417507695">유효기간 연도</translation>
 <translation id="8058986560951482265">일정하지 않음</translation>
 <translation id="8059417245945632445">기기 검사(&amp;I)</translation>
@@ -6854,6 +6858,7 @@
 <translation id="81020759409809034">현지 위치</translation>
 <translation id="8102139037507939978">system_logs.txt에서 개인 식별 정보를 삭제합니다.</translation>
 <translation id="8104088837833760645">eSIM 프로필 다운로드</translation>
+<translation id="8105368624971345109">사용 중지</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" />에 Google Play 스토어를 설치합니다. 설치하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="810728361871746125">화면 해상도</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{타사 쿠키 없음}=1{타사 쿠키 1개가 차단됨}other{타사 쿠키 #개가 차단됨}}</translation>
@@ -7228,6 +7233,7 @@
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
 <translation id="8529925957403338845">인스턴트 테더링 연결 실패</translation>
+<translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
 <translation id="8534656636775144800">도메인에 가입하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536956381488731905">키를 누를 때 소리 발생</translation>

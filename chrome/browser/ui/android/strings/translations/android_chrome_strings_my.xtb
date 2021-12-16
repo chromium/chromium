@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
 <translation id="1592864538817356322">ပုံမှန်ကာကွယ်မှု -</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို ဖယ်ရှားရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို ဖယ်ရှားရန်}}</translation>
+<translation id="1633659023549081553">Chrome ပင်မစာမျက်နှာတွင် အကြောင်းအရာသစ်များ စူးစမ်းရှာဖွေပါ</translation>
 <translation id="1641113438599504367">လုံခြုံစွာ ရှာကြည့်မှု</translation>
 <translation id="164269334534774161">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်းမိတ္တူကို <ph name="CREATION_TIME" /> မှသင်ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">သင်က ယင်းကို ဖတ်ရအဆင်ပြေသည့် အထိ ဆွဲတန်းကို ဆွဲယူပါ။ စာသားတွင် စာပိုဒ် တစ်ခုကို နှစ်ကြိမ် ပုတ်လိုက်သည့် နောက်မှာ ဤမျှလောက် ကြီးလျက် မြင်ရသင့်သည်။</translation>
 <translation id="2323763861024343754">ဆိုက် သိုလှောင်ခန်း</translation>
 <translation id="2328985652426384049">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
+<translation id="2342601525305963189">Chrome အကြံပြုချက်များ-</translation>
 <translation id="234265804618409743">သင့်ကင်မရာကို ဖွင့်၍မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="2345671828921229300">ရှာဖွေရန် စကားလုံးကို တို့ထိ၍ဖိထားပါ</translation>
 <translation id="2349710944427398404">အကောင့်များ၊ ဝဘ်လိပ်စာများနှင့် သိမ်းဆည်းထားသည့် ဆက်တင်များအပါအဝင် Chrome မှ သိမ်းဆည်းထားသည့် စုစုပေါင်းဒေတာများ ပါဝင်ပါသည်</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">သင်ဝင်ကြည့်သော URL များကို Google သို့ ပို့သည်</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
+<translation id="2558692642259318568">သင်၏စက်တွင် လုပ်ဆောင်ချက်မသိမ်းဘဲ ကြည့်ရှုရန် ရုပ်ဖျက်မုဒ်သုံးပါ</translation>
 <translation id="2561519700418191927">ဗီဒီယို အစမ်းကြည့်ရှုခြင်းများ</translation>
 <translation id="2567385386134582609">ဓာတ်ပုံ</translation>
 <translation id="2567545343356994513">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများအတွက် ပိုမြန်ပြီး အလိုအလျောက်ဖြစ်သော ကာကွယ်မှုပေးသည်</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2625189173221582860">စကားဝှက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="2631006050119455616">ချွေတာ</translation>
+<translation id="2634905176438867146">Chrome ကို သင်၏မူရင်းအဖြစ် သတ်မှတ်နည်း လေ့လာပါ</translation>
 <translation id="2645657967708199252">သင်၏ <ph name="CONNECTION_TYPE" /> ချိတ်ဆက်မှုက ဒေါင်းလုဒ်ကို နှေးကွေးစေနိုင်သည်</translation>
 <translation id="2647434099613338025">ဘာသာစကား ထည့်ရန်</translation>
 <translation id="2649068648233607930">သင်၏ဘရောင်ဇာကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲသည်</translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
 <translation id="3046945242843292318">နောက်တစ်ကြိမ်တွင် ဤဝဘ်ဆိုက်သို့ ပိုမြန်မြန်သွားနိုင်သည်</translation>
+<translation id="3055259925215945098">လိပ်စာ ရွှေ့လိုက်သည်</translation>
 <translation id="305593374596241526">တည်နေရာကို ပိတ်ထားသည်၊ ၎င်းကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ဖွင့်ပါ။</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{လိပ်စာ <ph name="BOOKMARKS_COUNT_ONE" /> ခု}other{လိပ်စာ <ph name="BOOKMARKS_COUNT_MANY" /> ခု}}</translation>
 <translation id="3062802207422175757">Chrome ရှိ သင်စိတ်ဝင်စားသော ဆောင်းပါးများ</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">စက်တွင်သိမ်းရန်</translation>
 <translation id="3236059992281584593">၁ မိနစ် ကျန်သည်</translation>
 <translation id="3237087289225714896">ပုံမှန် ကြိုဖွင့်မှု-</translation>
+<translation id="3237433641417325993">အကြံပြုထားသောဆောင်းပါးများ ကြည့်ရန် အောက်သို့လှိမ့်ပါ</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Chrome အသုံးပြမှုအစီရင်ခံစာများ မျှဝေပါကလည်း ထိုအစီရင်ခံစာများတွင် သင်ဝင်ကြည့်သော URL များ ပါဝင်သည်</translation>
 <translation id="3250563604907490871">Wi-Fi သို့ ချိတ်ဆက်လိုက်သောအခါ ပုံအကြောင်းအရာများကို ဆက်ပြပါမည်</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">တောင်းဆိုထားသည့် အရင်းမြစ်ကို Chrome သည် အသုံးပြုခွင့်မရှိပါ။</translation>
 <translation id="4837753911714442426">စာမျက်နှာကို ပုံနှိပ်ဖို့ နည်းလမ်း အားဖွင့်ရန်</translation>
 <translation id="4842092870884894799">စကားဝှက် ထုတ်လုပ်ခြင်း ပေါ့ပ်အပ် ပြနေစဉ်</translation>
+<translation id="4842515939542199281">သင့်အသံဖြင့်ရှာရန် မိုက်ခရိုဖုန်းကို တို့ပါ</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4860895144060829044">ဖုန်းခေါ်ရန်</translation>
 <translation id="4864369630010738180">လက်မှတ်ထိုးဝင်နေသည်...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">နောက်ဆက်တွဲ သုံးစွဲမှုဒေတာ</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
 <translation id="510275257476243843">၁ နာရီ ကျန်သည်</translation>
+<translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> သို့</translation>
 <translation id="5118713593561876160">စိတ်ဝင်စားမှုများ</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5126510351761255129">သင့်ကတ်ကို အတည်ပြုပါ</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">Chrome သည် ဖိုင်များကို ဒေါင်းလုဒ် လုပ်ရန် သိုလှောင်ခန်းကို သုံးရန် လိုအပ်သည်။</translation>
 <translation id="5749237766298580851">ပိတ်ထားသည် <ph name="SEPARATOR" /> အကြံပြုမထားပါ</translation>
 <translation id="5752232708629533680">GIF သီးသန့် မျှဝေပါ</translation>
+<translation id="5753139477036638699">Chrome တွင် ရှာဖွေရန် သင့်အသံကို သုံးနိုင်သည်</translation>
 <translation id="5754350196967618083">Discover ပြန်လည် စတင်၍မရပါ</translation>
 <translation id="5763382633136178763">ရုပ်ဖျက် တဲဘ်များ</translation>
 <translation id="5763514718066511291">ဤအက်ပ်အတွက် URL ကို မိတ္တူကူးရန် တို့ပါ</translation>
@@ -1011,6 +1020,7 @@
 <translation id="6813446258015311409">Chrome သို့ လက်မှတ်ထိုးဝင်ရန်၊ ဖွင့်ထားသည်။</translation>
 <translation id="6814033694018386318">Google နှင့် သင် မျှဝေထားသည်များ</translation>
 <translation id="6817747507826986771">ဤစာမျက်နှာကို အမြန်မျှဝေပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် တို့ထိ၍ဖိထားပါ။</translation>
+<translation id="6819199143469632133">စက်အားလုံးတွင် သင်၏ Google ဝန်ဆောင်မှုများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />၊ တဘ်၊ ရွေးထားသည်</translation>
 <translation id="6828070228333235514">ဈေးနှုန်းစောင့်ကြည့်ခြင်း ရပ်ရန်</translation>
@@ -1049,6 +1059,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
 <translation id="7029390216614421513">QR ကုဒ်/ဘားကုဒ်ကို ဤဖရိမ်အတွင်း နေရာချပါ။</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
+<translation id="7037830628447527439">သင်၏ Google Account ဖြင့် Chrome တွင် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
@@ -1403,6 +1414,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - ဤဘာသာစကားကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="8951232171465285730">Chrome သည် သင့်အတွက် <ph name="MEGABYTES" /> မီဂါဘိုက် ချွေတာပေးထားပါသည်</translation>
 <translation id="8955719471735800169">ထိပ်သို့ ပြန်သွားရန်</translation>
+<translation id="8964479563882643397">ရုပ်ဖျက်တဘ်အသစ် ဖွင့်ရန် မီနူးကို ဖွင့်ပါ</translation>
 <translation id="8965591936373831584">ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8967427617812342790">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>

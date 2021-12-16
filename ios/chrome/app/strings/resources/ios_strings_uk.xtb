@@ -168,6 +168,7 @@
 <translation id="2584132361465095047">Додати обліковий запис…</translation>
 <translation id="2600682495497606169">Видалити файли cookie сайту</translation>
 <translation id="2625189173221582860">Пароль скопійовано</translation>
+<translation id="2626236249646841566">Перевірте з’єднання та спробуйте ввійти знову.</translation>
 <translation id="2637313651144986786">Шукайте вкладки…</translation>
 <translation id="2647269890314209800">Активні файли cookie</translation>
 <translation id="2648803196158606475">Видалити прочитані</translation>
@@ -364,6 +365,7 @@
 <translation id="4508750114462689118">Закрити заклик до входу</translation>
 <translation id="4526249700380860531">Переглядайте збережені паролі та керуйте ними на сторінці <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>
+<translation id="4540780316273593836">Сталася помилка</translation>
 <translation id="457386861538956877">Інші...</translation>
 <translation id="4592368184551360546">Клавіатура</translation>
 <translation id="461440297010471931">Пошук у Google</translation>
@@ -479,6 +481,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано 1 вікно Chrome}one{Показано {count} вікно Chrome}few{Показано {count} вікна Chrome}many{Показано {count} вікон Chrome}other{Показано {count} вікна Chrome}}</translation>
+<translation id="5704908597376970822">Не вдається ввійти.</translation>
 <translation id="5706552126692816153">У мережі 1 день тому</translation>
 <translation id="5711039611392265845">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Синхронізація та сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Щоб переглядати веб-сторінки конфіденційно, додайте нову вкладку</translation>
@@ -722,7 +725,6 @@
 <translation id="7741325291586284254">Сторінка нової анонімної вкладки</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
-<translation id="7778472311864276518">Вилучити обліковий запис із цього пристрою</translation>
 <translation id="7781011649027948662">Перекласти сторінку?</translation>
 <translation id="7781069478569868053">Сторінка нової вкладки</translation>
 <translation id="7781829728241885113">Учора</translation>

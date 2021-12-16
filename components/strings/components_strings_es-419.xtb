@@ -1254,6 +1254,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4968522289500246572">Esta app está diseñada para dispositivos móviles y es posible que el cambio de tamaño no funcione correctamente. Posiblemente la app se reiniciará o presentará problemas.</translation>
 <translation id="4969341057194253438">Borrar grabación</translation>
 <translation id="4973922308112707173">Perforación doble en la parte superior</translation>
+<translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="4984088539114770594">¿Permitir el uso del micrófono?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Ver todo</translation>
@@ -1339,6 +1340,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5215116848420601511">Formas de pago y direcciones con Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
+<translation id="5216942107514965959">Última visita: hoy</translation>
 <translation id="5222812217790122047">Correo electrónico (obligatorio)</translation>
 <translation id="5230733896359313003">Dirección de envío</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1524,6 +1526,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
 <translation id="5873013647450402046">El banco desea confirmar tu identidad.</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
+<translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
 <translation id="5901630391730855834">Amarillo</translation>
@@ -1717,6 +1720,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Perforación doble a la izquierda</translation>
+<translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6569060085658103619">Estás viendo la página de una extensión</translation>
 <translation id="6573200754375280815">Perforación doble a la derecha</translation>
@@ -2284,6 +2288,7 @@ Detalles adicionales:
 <translation id="8390725133630534698">Una política del administrador no permite compartir contenido de <ph name="ORIGIN_NAME" /> con <ph name="VM_NAME" /></translation>
 <translation id="8398790343843005537">Buscar teléfono</translation>
 <translation id="8405579342203358118">En la configuración de Chrome, administra qué información sincronizar</translation>
+<translation id="8405633352367164037">Corazón</translation>
 <translation id="8409413588194360210">controladores de pago</translation>
 <translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>

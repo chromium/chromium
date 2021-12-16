@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Segítség a Chromium használatával kapcsolatban</translation>
 <translation id="4285930937574705105">A telepítés váratlan hiba miatt nem sikerült. Ha a Chromium jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4407044323746248786">Biztosan kilép a Chromiumból?</translation>
+<translation id="4414390922528416758">Személyre szabhatja azokat az adatvédelmi lehetőségeket, amelyek a Chromium szerint a legfontosabbak. Ebben az útmutatóban nem szerepel az összes beállítási lehetőség.</translation>
 <translation id="4415566066719264597">A Chromium futhat a háttérben</translation>
 <translation id="4423735387467980091">A Chromium személyre szabása és beállításai</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
@@ -293,5 +294,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9214764063801632699">Chromium OS rendszer</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>
+<translation id="967427899662692980">Állítsa be a Chromium legerősebb védelmét</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
 </translationbundle>

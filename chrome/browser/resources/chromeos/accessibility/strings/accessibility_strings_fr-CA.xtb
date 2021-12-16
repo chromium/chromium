@@ -392,6 +392,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{point d'interrogation}one{# point d'interrogation}other{# points d'interrogation}}</translation>
 <translation id="3505359110822747654">Réduction des menus ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{caret}one{# caret}other{# carets}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{puce blanche}one{# puce blanche}other{# puces blanches}}</translation>
 <translation id="352577523970648069">Un champ de texte modifiable</translation>
 <translation id="3538907380453898475">listededescript</translation>
 <translation id="3549141990712742152">couper <ph name="TEXT" />.</translation>
@@ -675,6 +676,7 @@
 <translation id="5597170376237141345">Case à cocher suivante</translation>
 <translation id="5598905979683743333">Case d'option <ph name="NAME" /> non sélectionnée</translation>
 <translation id="5601172225407283979">Effectuer l'action par défaut</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{puce carrée}one{# puce carrée}other{# puces carrées}}</translation>
 <translation id="5608798115546226984">Remplissage automatique de ligne</translation>
 <translation id="5616029807486814372">Prochaine leçon</translation>
 <translation id="561939826962581046">heure</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8659501358298941449">Listes déroulantes</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />, fin</translation>
 <translation id="867187640362843212">En-tête 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{niveau d'emboîtement #}other{niveau d'emboîtement #}}</translation>
 <translation id="8693391540059827073">Ma saison préférée</translation>
 <translation id="8696284982970258155">Vert miel</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barre verticale}one{# barre verticale}other{# barres verticales}}</translation>
