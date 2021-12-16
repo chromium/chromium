@@ -18,10 +18,17 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace sharing_hub {
 
 namespace {
+
+send_tab_to_self::SendTabToSelfBubbleController* GetSendTabToSelfController(
+    content::WebContents* web_contents) {
+  return send_tab_to_self::SendTabToSelfBubbleController::
+      CreateOrGetFromWebContents(web_contents);
+}
 
 bool IsQRCodeDialogOpen(content::WebContents* web_contents) {
   qrcode_generator::QRCodeGeneratorBubbleController* controller =
@@ -31,8 +38,7 @@ bool IsQRCodeDialogOpen(content::WebContents* web_contents) {
 
 bool IsSendTabToSelfDialogOpen(content::WebContents* web_contents) {
   send_tab_to_self::SendTabToSelfBubbleController* controller =
-      send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(web_contents);
+      GetSendTabToSelfController(web_contents);
   return controller && controller->IsBubbleShown();
 }
 
@@ -47,6 +53,9 @@ SharingHubIconView::SharingHubIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate) {
   SetVisible(false);
+  SetLabel(
+      l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
+  SetUpForInOutAnimation();
 }
 
 SharingHubIconView::~SharingHubIconView() = default;
@@ -78,6 +87,10 @@ void SharingHubIconView::UpdateImpl() {
       IsSendTabToSelfDialogOpen(web_contents)) {
     SetHighlighted(true);
   }
+
+  if (enabled) {
+    MaybeAnimateSendingToast();
+  }
 }
 
 void SharingHubIconView::OnExecuting(
@@ -85,10 +98,6 @@ void SharingHubIconView::OnExecuting(
 
 const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
   return GetSharingHubVectorIcon();
-}
-
-bool SharingHubIconView::ShouldShowLabel() const {
-  return false;
 }
 
 std::u16string SharingHubIconView::GetTextForTooltipAndAccessibleName() const {
@@ -101,6 +110,20 @@ SharingHubBubbleController* SharingHubIconView::GetController() const {
     return nullptr;
   }
   return SharingHubBubbleController::CreateOrGetFromWebContents(web_contents);
+}
+
+void SharingHubIconView::MaybeAnimateSendingToast() {
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  send_tab_to_self::SendTabToSelfBubbleController* controller =
+      GetSendTabToSelfController(web_contents);
+
+  if (controller && controller->show_message()) {
+    controller->set_show_message(false);
+    AnimateIn(absl::nullopt);
+  }
 }
 
 BEGIN_METADATA(SharingHubIconView, PageActionIconView)

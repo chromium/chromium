@@ -30,7 +30,6 @@ class SharingHubIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  bool ShouldShowLabel() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
@@ -40,6 +39,9 @@ class SharingHubIconView : public PageActionIconView {
 
  private:
   SharingHubBubbleController* GetController() const;
+  // Shows a "Sending..." animation if a device was selected in the send tab to
+  // self dialog.
+  void MaybeAnimateSendingToast();
 };
 
 }  // namespace sharing_hub
