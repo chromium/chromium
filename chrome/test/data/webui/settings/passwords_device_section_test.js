@@ -86,7 +86,7 @@ suite('PasswordsDeviceSection', function() {
     // syncing) and opted-in to account storage.
     syncBrowserProxy.storedAccounts = [SIGNED_IN_ACCOUNT];
     simulateStoredAccounts(syncBrowserProxy.storedAccounts);
-    syncBrowserProxy.syncStatus = {signedIn: false};
+    syncBrowserProxy.testSyncStatus = {signedIn: false};
     simulateSyncStatus(syncBrowserProxy.syncStatus);
     passwordManager.setIsOptedInForAccountStorageAndNotify(true);
   });

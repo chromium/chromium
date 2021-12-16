@@ -6,6 +6,29 @@
     padding: 16px 24px;
   }
 
+  .managed-fragment {
+    /* Override cr-view-manager's default styling for view. */
+    bottom: initial;
+    grid-column-start: 1;
+    grid-row-start: 1;
+    left: initial;
+    position: unset;
+    right: initial;
+    top: initial;
+  }
+
+  #viewManager {
+    position: relative;
+  }
+
+  #viewManager > :not(.active) {
+    /* Restore cr-view-manager's absolute positioning for non-active elements,
+       so they overlap the active element. */
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+
   .visibility-hidden {
     visibility: hidden;
   }
@@ -18,63 +41,37 @@
     flex-flow: column;
     min-height: 432px;
   }
-
-  picture {
-    align-items: center;
-    display: flex;
-  }
 </style>
 <div class="privacy-review-card">
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
+  <cr-view-manager id="viewManager">
     <privacy-review-welcome-fragment id="[[privacyReviewStepEnum_.WELCOME]]"
-        prefs="{{prefs}}" on-start-button-click="onNextButtonClick_">
+        class="managed-fragment" prefs="{{prefs}}"
+        on-start-button-click="onNextButtonClick_" slot="view">
     </privacy-review-welcome-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(privacyReviewStepEnum_.MSBB, privacyReviewStep_)]]">
     <privacy-review-msbb-fragment id="[[privacyReviewStepEnum_.MSBB]]"
-        prefs="{{prefs}}">
+        class="managed-fragment" prefs="{{prefs}}" slot="view">
     </privacy-review-msbb-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.CLEAR_ON_EXIT, privacyReviewStep_)]]">
     <privacy-review-clear-on-exit-fragment
-        id="[[privacyReviewStepEnum_.CLEAR_ON_EXIT]]" prefs="{{prefs}}">
+        id="[[privacyReviewStepEnum_.CLEAR_ON_EXIT]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
     </privacy-review-clear-on-exit-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.HISTORY_SYNC, privacyReviewStep_)]]">
     <privacy-review-history-sync-fragment
-        id="[[privacyReviewStepEnum_.HISTORY_SYNC]]" prefs="{{prefs}}">
+        id="[[privacyReviewStepEnum_.HISTORY_SYNC]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
     </privacy-review-history-sync-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.SAFE_BROWSING, privacyReviewStep_)]]">
     <privacy-review-safe-browsing-fragment
-        id="[[privacyReviewStepEnum_.SAFE_BROWSING]]" prefs="{{prefs}}">
+        id="[[privacyReviewStepEnum_.SAFE_BROWSING]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
     </privacy-review-safe-browsing-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
-    <privacy-review-cookies-fragment
-        id="[[privacyReviewStepEnum_.COOKIES]]" prefs="{{prefs}}">
+    <privacy-review-cookies-fragment id="[[privacyReviewStepEnum_.COOKIES]]"
+        class="managed-fragment" prefs="{{prefs}}" slot="view">
     </privacy-review-cookies-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
     <privacy-review-completion-fragment
-        id="[[privacyReviewStepEnum_.COMPLETION]]"
-        on-back-button-click="onBackButtonClick_"
-        on-leave-button-click="onNextButtonClick_">
+        id="[[privacyReviewStepEnum_.COMPLETION]]" class="managed-fragment"
+        on-leave-button-click="onNextButtonClick_"
+        on-back-button-click="onBackButtonClick_" slot="view">
     </privacy-review-completion-fragment>
-  </template>
+  </cr-view-manager>
   <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
     <div id="settingFooter" class="footer hr">
       <cr-button id="backButton" role="button" on-click="onBackButtonClick_"

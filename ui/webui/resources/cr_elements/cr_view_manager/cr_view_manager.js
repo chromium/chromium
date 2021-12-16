@@ -19,9 +19,25 @@ function whenFinished(animation) {
   });
 }
 
+/**
+ * @param {!Element} element
+ * @return {!Element}
+ */
+function getEffectiveView(element) {
+  return element.matches('cr-lazy-render') ? element.get() : element;
+}
+
+/**
+ * @param {!Element} element
+ * @param {!string} eventType
+ */
+function dispatchCustomEvent(element, eventType) {
+  element.dispatchEvent(
+      new CustomEvent(eventType, {bubbles: true, composed: true}));
+}
+
 /** @type {!Map<string, function(!Element): !Promise>} */
 const viewAnimations = new Map();
-viewAnimations.set('no-animation', () => Promise.resolve());
 viewAnimations.set('fade-in', element => {
   // The call to animate can have 2 methods of passing the keyframes, however as
   // of the current closure version, only one of them is supported. See
@@ -69,16 +85,18 @@ export class CrViewManagerElement extends PolymerElement {
    */
   exit_(element, animation) {
     const animationFunction = viewAnimations.get(animation);
-    assert(animationFunction);
-
     element.classList.remove('active');
     element.classList.add('closing');
-    element.dispatchEvent(
-        new CustomEvent('view-exit-start', {bubbles: true, composed: true}));
-    return animationFunction(element).then(function() {
+    dispatchCustomEvent(element, 'view-exit-start');
+    if (!animationFunction) {
+      // Nothing to animate. Immediately resolve.
       element.classList.remove('closing');
-      element.dispatchEvent(
-          new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+      dispatchCustomEvent(element, 'view-exit-finish');
+      return Promise.resolve();
+    }
+    return animationFunction(element).then(() => {
+      element.classList.remove('closing');
+      dispatchCustomEvent(element, 'view-exit-finish');
     });
   }
 
@@ -90,16 +108,16 @@ export class CrViewManagerElement extends PolymerElement {
    */
   enter_(view, animation) {
     const animationFunction = viewAnimations.get(animation);
-    assert(animationFunction);
-
-    const effectiveView = view.matches('cr-lazy-render') ? view.get() : view;
-
+    const effectiveView = getEffectiveView(view);
     effectiveView.classList.add('active');
-    effectiveView.dispatchEvent(
-        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+    dispatchCustomEvent(effectiveView, 'view-enter-start');
+    if (!animationFunction) {
+      // Nothing to animate. Immediately resolve.
+      dispatchCustomEvent(effectiveView, 'view-enter-finish');
+      return Promise.resolve();
+    }
     return animationFunction(effectiveView).then(() => {
-      effectiveView.dispatchEvent(new CustomEvent(
-          'view-enter-finish', {bubbles: true, composed: true}));
+      dispatchCustomEvent(effectiveView, 'view-enter-finish');
     });
   }
 

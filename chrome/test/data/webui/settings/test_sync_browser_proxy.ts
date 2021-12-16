@@ -11,16 +11,17 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
   private impressionCount_: number = 0;
+  private resolveGetSyncStatus_: Function|null = null;
+  private syncStatus_: SyncStatus|null = {
+    signedIn: true,
+    signedInUsername: 'fakeUsername',
+    statusAction: StatusAction.NO_ACTION
+  };
 
   // Settable fake data.
   encryptionPassphraseSuccess: boolean = false;
   decryptionPassphraseSuccess: boolean = false;
   storedAccounts: StoredAccount[] = [];
-  syncStatus: SyncStatus = {
-    signedIn: true,
-    signedInUsername: 'fakeUsername',
-    statusAction: StatusAction.NO_ACTION
-  };
 
   constructor() {
     // clang-format off
@@ -52,9 +53,27 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     // clang-format on
   }
 
-  getSyncStatus() {
+  get testSyncStatus(): SyncStatus|null {
+    return this.syncStatus_;
+  }
+
+  set testSyncStatus(syncStatus: SyncStatus|null) {
+    this.syncStatus_ = syncStatus;
+    if (this.syncStatus_ && this.resolveGetSyncStatus_) {
+      this.resolveGetSyncStatus_(this.syncStatus_!);
+      this.resolveGetSyncStatus_ = null;
+    }
+  }
+
+  getSyncStatus(): Promise<SyncStatus> {
     this.methodCalled('getSyncStatus');
-    return Promise.resolve(this.syncStatus);
+    if (this.syncStatus_) {
+      return Promise.resolve(this.syncStatus_!);
+    } else {
+      return new Promise((resolve) => {
+        this.resolveGetSyncStatus_ = resolve;
+      });
+    }
   }
 
   getStoredAccounts() {

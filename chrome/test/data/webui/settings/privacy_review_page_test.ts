@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsCheckboxElement, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import {Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -21,13 +21,18 @@ const PRIVACY_REVIEW_STEPS = 4;
 
 suite('PrivacyReviewPage', function() {
   let page: SettingsPrivacyReviewPageElement;
-  let isSyncOn: boolean;
+  let syncBrowserProxy: TestSyncBrowserProxy;
   let shouldShowCookiesCard: boolean;
   let shouldShowSafeBrowsingCard: boolean;
 
   setup(function() {
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = null;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-review-page');
+    page.disableAnimationsForTesting();
     page.prefs = {
       privacy_review: {
         show_welcome_card: {
@@ -53,7 +58,6 @@ suite('PrivacyReviewPage', function() {
       },
     };
     document.body.appendChild(page);
-    isSyncOn = false;
     shouldShowCookiesCard = true;
     shouldShowSafeBrowsingCard = true;
 
@@ -100,18 +104,23 @@ suite('PrivacyReviewPage', function() {
     assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
   }
 
-
   /**
    * Fire a sync status changed event and flush the UI.
    */
   function setSyncEnabled(syncOn: boolean) {
-    const event = {
+    syncBrowserProxy.testSyncStatus = {
       signedIn: syncOn,
       hasError: false,
+      statusAction: StatusAction.NO_ACTION,
     };
-    webUIListenerCallback('sync-status-changed', event);
+    webUIListenerCallback(
+        'sync-status-changed', syncBrowserProxy.testSyncStatus);
     flush();
-    isSyncOn = syncOn;
+  }
+
+  function shouldShowHistorySyncCard(): boolean {
+    return !syncBrowserProxy.testSyncStatus ||
+        !!syncBrowserProxy.testSyncStatus.signedIn;
   }
 
   /**
@@ -215,7 +224,7 @@ suite('PrivacyReviewPage', function() {
    */
   function getExpectedNumberOfActiveCards() {
     let numSteps = PRIVACY_REVIEW_STEPS;
-    if (!isSyncOn) {
+    if (!shouldShowHistorySyncCard()) {
       numSteps -= 1;
     }
     if (!shouldShowCookiesCard) {
@@ -273,7 +282,7 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isSafeBrowsingFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(isSyncOn ? 2 : 1);
+    assertStepIndicatorModel(shouldShowHistorySyncCard() ? 2 : 1);
   }
 
   function assertCookiesCardVisible() {
@@ -284,7 +293,7 @@ suite('PrivacyReviewPage', function() {
       isCookiesFragmentVisibleExpected: true,
     });
     let activeIndex = 3;
-    if (!isSyncOn) {
+    if (!shouldShowHistorySyncCard()) {
       activeIndex -= 1;
     }
     if (!shouldShowSafeBrowsingCard) {
@@ -296,7 +305,6 @@ suite('PrivacyReviewPage', function() {
   test('startPrivacyReview', function() {
     // Make sure the pref to show the welcome card is on.
     page.setPrefValue('privacy_review.show_welcome_card', true);
-    flush();
 
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
@@ -321,13 +329,11 @@ suite('PrivacyReviewPage', function() {
     // Navigating this time should skip the welcome card.
     assertFalse(page.getPref('privacy_review.show_welcome_card').value);
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
-    flush();
     assertMsbbCardVisible();
   });
 
   test('welcomeForwardNavigation', function() {
     page.setPrefValue('privacy_review.show_welcome_card', true);
-    flush();
 
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
@@ -343,7 +349,6 @@ suite('PrivacyReviewPage', function() {
     assertMsbbCardVisible();
 
     setSyncEnabled(true);
-    flush();
     assertMsbbCardVisible();
   });
 
@@ -353,7 +358,6 @@ suite('PrivacyReviewPage', function() {
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
     assertHistorySyncCardVisible();
   });
 
@@ -363,7 +367,6 @@ suite('PrivacyReviewPage', function() {
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
     assertSafeBrowsingCardVisible();
   });
 
@@ -373,7 +376,6 @@ suite('PrivacyReviewPage', function() {
     assertHistorySyncCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
     assertMsbbCardVisible();
   });
 
@@ -402,7 +404,6 @@ suite('PrivacyReviewPage', function() {
         assertHistorySyncCardVisible();
 
         page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-        flush();
         assertSafeBrowsingCardVisible();
       });
 
@@ -415,7 +416,6 @@ suite('PrivacyReviewPage', function() {
         assertHistorySyncCardVisible();
 
         page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-        flush();
         assertCookiesCardVisible();
       });
 
@@ -425,7 +425,6 @@ suite('PrivacyReviewPage', function() {
     assertSafeBrowsingCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
     assertHistorySyncCardVisible();
   });
 
@@ -435,7 +434,6 @@ suite('PrivacyReviewPage', function() {
     assertSafeBrowsingCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
     assertMsbbCardVisible();
   });
 
@@ -739,7 +737,7 @@ suite('HistorySyncFragment', function() {
     });
   });
 
-  test('syncAllOffEnableHistorySync', async function() {
+  test('syncAllOffEnableHistorySync', function() {
     setSyncStatus({
       syncAllDataTypes: false,
       typedUrlsSynced: false,

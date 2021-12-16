@@ -70,8 +70,8 @@ import {isChildVisible} from '../test_util.js';
     test(assert(TestNames.EventFiring), function() {
       const viewOne = viewManager.querySelector('#viewOne');
 
-      const fired = new Set();
-      const bubbled = new Set();
+      let fired = new Set();
+      let bubbled = new Set();
 
       ['view-enter-start', 'view-enter-finish', 'view-exit-start',
        'view-exit-finish',
@@ -93,28 +93,33 @@ import {isChildVisible} from '../test_util.js';
         assertEquals(expectFired, bubbled.has(eventName));
       }
 
-      // Setup the switch promise first.
-      let enterPromise = viewManager.switchView('viewOne');
-      // view-enter-start should fire synchronously.
+      // Initial switch has no animation.
+      viewManager.switchView('viewOne');
+      // view-enter-start and view-enter-finish are fired synchronously when
+      // there's no animation.
       verifyEventFiredAndBubbled('view-enter-start', true);
-      // view-enter-finish should not fire yet.
-      verifyEventFiredAndBubbled('view-enter-finish', false);
-      return enterPromise
+      verifyEventFiredAndBubbled('view-enter-finish', true);
+
+      const exitPromises = viewManager.switchView('viewTwo');
+      verifyEventFiredAndBubbled('view-exit-start', true);
+      // view-exit-finish is waiting on the animation.
+      verifyEventFiredAndBubbled('view-exit-finish', false);
+
+      return exitPromises
           .then(() => {
-            // view-enter-finish should fire after animation.
-            verifyEventFiredAndBubbled('view-enter-finish', true);
+            verifyEventFiredAndBubbled('view-exit-finish', true);
 
-            enterPromise = viewManager.switchView('viewTwo');
-            // view-exit-start should fire synchronously.
-            verifyEventFiredAndBubbled('view-exit-start', true);
-            // view-exit-finish should not fire yet.
-            verifyEventFiredAndBubbled('view-exit-finish', false);
+            fired = new Set();
+            bubbled = new Set();
 
-            return enterPromise;
+            // Switching back has an animation this time.
+            const enterPromises = viewManager.switchView('viewOne');
+            verifyEventFiredAndBubbled('view-enter-start', true);
+            verifyEventFiredAndBubbled('view-enter-finish', false);
+            return enterPromises;
           })
           .then(() => {
-            // view-exit-finish should fire after animation.
-            verifyEventFiredAndBubbled('view-exit-finish', true);
+            verifyEventFiredAndBubbled('view-enter-finish', true);
           });
     });
   });

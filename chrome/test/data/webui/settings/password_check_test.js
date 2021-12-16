@@ -218,7 +218,7 @@ suite('PasswordsCheckSection', function() {
     // Override the SyncBrowserProxyImpl for testing.
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
-    syncBrowserProxy.syncStatus = {signedIn: false};
+    syncBrowserProxy.testSyncStatus = {signedIn: false};
   });
 
   // Test verifies that clicking 'Check again' make proper function call to
