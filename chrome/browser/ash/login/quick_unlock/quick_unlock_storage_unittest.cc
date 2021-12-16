@@ -175,7 +175,7 @@ TEST_F(QuickUnlockStorageUnitTest, AuthToken) {
       QuickUnlockFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(quick_unlock_storage->GetAuthToken());
 
-  UserContext context;
+  chromeos::UserContext context;
   std::string auth_token = quick_unlock_storage->CreateAuthToken(context);
   EXPECT_NE(std::string(), auth_token);
   EXPECT_TRUE(quick_unlock_storage->GetAuthToken());

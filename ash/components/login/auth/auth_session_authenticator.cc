@@ -20,7 +20,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_names.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -1059,4 +1059,4 @@ void AuthSessionAuthenticator::OnOwnershipCheckedForSafeMode(
   UnmountGeneric(std::move(crasher), std::move(not_owner), std::move(context));
 }
 
-}  // namespace ash
+}  // namespace chromeos

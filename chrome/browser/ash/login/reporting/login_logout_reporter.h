@@ -56,7 +56,7 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
       std::unique_ptr<Delegate> delegate);
 
   // Report user device failed login attempt.
-  void OnLoginFailure(const AuthFailure& error) override;
+  void OnLoginFailure(const chromeos::AuthFailure& error) override;
 
   // Report user device successful login.
   void OnLogin(Profile* profile) override;

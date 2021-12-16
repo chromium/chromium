@@ -13,7 +13,7 @@
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -69,4 +69,4 @@ bool ExtractChallengeResponseKeyFromCert(
   return true;
 }
 
-}  // namespace ash
+}  // namespace chromeos

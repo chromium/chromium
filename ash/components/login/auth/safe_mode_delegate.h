@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 
-namespace ash {
+namespace chromeos {
 
 // In case when DeviceSettings get corrupted, it is not possible to rely
 // on them to determine if particular user can sign in. In that case
@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) SafeModeDelegate {
                                       IsOwnerCallback callback) = 0;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::SafeModeDelegate;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_SAFE_MODE_DELEGATE_H_

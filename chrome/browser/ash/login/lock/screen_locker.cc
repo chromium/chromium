@@ -481,7 +481,8 @@ void ScreenLocker::OnPinAttemptDone(const UserContext& user_context,
   }
 }
 
-void ScreenLocker::ContinueAuthenticate(const UserContext& user_context) {
+void ScreenLocker::ContinueAuthenticate(
+    const chromeos::UserContext& user_context) {
   if (user_context.GetAccountId().GetAccountType() ==
           AccountType::ACTIVE_DIRECTORY &&
       user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
@@ -560,7 +561,8 @@ user_manager::UserList ScreenLocker::GetUsersToShow() const {
   return users_to_show;
 }
 
-void ScreenLocker::SetLoginStatusConsumer(AuthStatusConsumer* consumer) {
+void ScreenLocker::SetLoginStatusConsumer(
+    chromeos::AuthStatusConsumer* consumer) {
   auth_status_consumer_ = consumer;
 }
 

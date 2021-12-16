@@ -33,7 +33,8 @@ bool IsManagedGuestSession(const AccountId& account_id) {
          type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION;
 }
 
-LoginFailureReason GetLoginFailureReasonForReport(const AuthFailure& error) {
+LoginFailureReason GetLoginFailureReasonForReport(
+    const chromeos::AuthFailure& error) {
   switch (error.reason()) {
     case AuthFailure::OWNER_REQUIRED:
       return LoginFailureReason::OWNER_REQUIRED;
@@ -150,7 +151,7 @@ void LoginLogoutReporter::OnSessionTerminationStarted(
   MaybeReportEvent(std::move(record), user->GetAccountId());
 }
 
-void LoginLogoutReporter::OnLoginFailure(const AuthFailure& error) {
+void LoginLogoutReporter::OnLoginFailure(const chromeos::AuthFailure& error) {
   AccountId account_id = delegate_->GetLastLoginAttemptAccountId();
   if (account_id == EmptyAccountId()) {
     return;

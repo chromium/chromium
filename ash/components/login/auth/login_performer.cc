@@ -22,7 +22,7 @@
 
 using base::UserMetricsAction;
 
-namespace ash {
+namespace chromeos {
 
 LoginPerformer::LoginPerformer(Delegate* delegate)
     : delegate_(delegate),
@@ -264,4 +264,4 @@ void LoginPerformer::StartAuthentication() {
 void LoginPerformer::EnsureAuthenticator() {
   authenticator_ = CreateAuthenticator();
 }
-}  // namespace ash
+}  // namespace chromeos

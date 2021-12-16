@@ -14,7 +14,7 @@
 
 class AccountId;
 
-namespace ash {
+namespace chromeos {
 
 class UserContext;
 
@@ -93,6 +93,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) Authenticator
   friend class base::RefCountedThreadSafe<Authenticator>;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::Authenticator;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTHENTICATOR_H_

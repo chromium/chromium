@@ -8,11 +8,9 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
-namespace ash {
-class UserContext;
-}  // namespace ash
-
 namespace chromeos {
+
+class UserContext;
 
 // A thin wrapper around |SessionControllerClientImpl| and
 // |ScreenLocker| to allow easier mocking for tests. Also manages the
@@ -35,7 +33,7 @@ class LoginApiLockHandler {
 
   virtual void RequestLockScreen();
 
-  virtual void Authenticate(const ash::UserContext& user_context,
+  virtual void Authenticate(const UserContext& user_context,
                             base::OnceCallback<void(bool auth_success)>);
 
   virtual bool IsUnlockInProgress() const;

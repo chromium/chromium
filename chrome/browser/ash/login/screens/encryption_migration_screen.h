@@ -27,8 +27,6 @@
 
 namespace ash {
 
-class UserContext;
-
 class EncryptionMigrationScreen : public BaseScreen,
                                   public PowerManagerClient::Observer,
                                   public UserDataAuthClient::Observer {

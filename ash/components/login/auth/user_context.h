@@ -21,9 +21,9 @@ class AccountId;
 
 namespace user_manager {
 class User;
-}  // namespace user_manager
+}
 
-namespace ash {
+namespace chromeos {
 
 // Information that is passed around while authentication is in progress. The
 // credentials may consist of a |account_id_|, |key_| pair or a GAIA
@@ -190,11 +190,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   absl::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys_;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::UserContext;
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::UserContext;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_USER_CONTEXT_H_

@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace ash {
+namespace chromeos {
 
 void AuthStatusConsumer::OnPasswordChangeDetected(
     const UserContext& user_context) {
@@ -19,4 +19,4 @@ void AuthStatusConsumer::OnOldEncryptionDetected(
   NOTREACHED();
 }
 
-}  // namespace ash
+}  // namespace chromeos

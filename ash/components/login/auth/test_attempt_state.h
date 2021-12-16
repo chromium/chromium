@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
-namespace ash {
+namespace chromeos {
 
 class UserContext;
 
@@ -39,6 +39,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) TestAttemptState
   cryptohome::MountError cryptohome_code() override;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::TestAttemptState;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_TEST_ATTEMPT_STATE_H_

@@ -13,7 +13,11 @@
 #include <vector>
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -60,10 +64,8 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
-class AuthStatusConsumer;
 class LoginDisplayHost;
 class OnboardingUserActivityCounter;
-class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
 
 namespace test {

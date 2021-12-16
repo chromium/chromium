@@ -9,7 +9,7 @@
 
 class AccountId;
 
-namespace ash {
+namespace chromeos {
 
 namespace password_visibility {
 
@@ -20,6 +20,6 @@ bool COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 
 }  // namespace password_visibility
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_PASSWORD_VISIBILITY_UTILS_H_

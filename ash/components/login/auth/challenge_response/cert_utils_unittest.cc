@@ -16,7 +16,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 using KeySignatureAlgorithm = ChallengeResponseKey::SignatureAlgorithm;
 
@@ -59,4 +59,4 @@ TEST_F(ChallengeResponseCertUtilsTest, EmptyAlgorithmsFailure) {
       certificate(), {} /* signature_algorithms */, &challenge_response_key));
 }
 
-}  // namespace ash
+}  // namespace chromeos

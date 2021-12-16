@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_CRYPTOHOME_H_
 
 #include <string>
-#include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,10 +16,6 @@
 class AccountId;
 
 namespace ash {
-
-class Key;
-class UserContext;
-
 namespace quick_unlock {
 
 class PinStorageCryptohome {

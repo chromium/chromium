@@ -619,7 +619,7 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
       authenticator_ = injected_authenticator_builder_->Create(consumer);
     } else if (base::FeatureList::IsEnabled(
                    ash::features::kUseAuthsessionAuthentication)) {
-      authenticator_ = new AuthSessionAuthenticator(
+      authenticator_ = new chromeos::AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>());
     } else {
       authenticator_ =

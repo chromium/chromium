@@ -9,6 +9,10 @@
 #include <string>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/cryptohome_authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/callback_forward.h"
@@ -26,9 +30,6 @@ class User;
 }
 
 namespace ash {
-
-class CryptohomeAuthenticator;
-class ExtendedAuthenticator;
 
 using PasswordChangedCallback = ::base::RepeatingClosure;
 
@@ -99,7 +100,7 @@ class InSessionPasswordSyncManager
 
   // AuthStatusConsumer:
   // Shows password changed dialog.
-  void OnAuthFailure(const AuthFailure& error) override;
+  void OnAuthFailure(const chromeos::AuthFailure& error) override;
 
   // Unlocks the screen if active user successfully verified the password
   // with an IdP.

@@ -24,9 +24,9 @@ class AccountId;
 
 namespace network {
 class SharedURLLoaderFactory;
-}  // namespace network
+}
 
-namespace ash {
+namespace chromeos {
 
 // This class encapsulates sign in operations.
 // Sign in is performed in a way that offline auth is executed first.
@@ -210,6 +210,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) LoginPerformer
   base::WeakPtrFactory<LoginPerformer> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::LoginPerformer;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_LOGIN_PERFORMER_H_

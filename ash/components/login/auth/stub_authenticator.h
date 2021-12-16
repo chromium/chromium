@@ -16,7 +16,7 @@
 
 class AccountId;
 
-namespace ash {
+namespace chromeos {
 
 class AuthStatusConsumer;
 class StubAuthenticatorBuilder;
@@ -94,6 +94,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) StubAuthenticator
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::StubAuthenticator;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_STUB_AUTHENTICATOR_H_

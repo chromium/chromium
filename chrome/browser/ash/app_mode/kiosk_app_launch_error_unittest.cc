@@ -16,7 +16,7 @@
 
 namespace ash {
 
-using ::ash::AuthFailure;
+using ::chromeos::AuthFailure;
 using ::chromeos::KioskAppLaunchError;
 
 namespace {

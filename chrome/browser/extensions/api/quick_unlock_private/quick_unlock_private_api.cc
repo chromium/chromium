@@ -240,7 +240,8 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
   if (authenticator_allocator_) {
     extended_authenticator_ = authenticator_allocator_.Run(helper.get());
   } else {
-    extended_authenticator_ = ash::ExtendedAuthenticator::Create(helper.get());
+    extended_authenticator_ =
+        chromeos::ExtendedAuthenticator::Create(helper.get());
   }
 
   // The extension function needs to stay alive while the authenticator runs the
@@ -629,7 +630,7 @@ void QuickUnlockPrivateSetModesFunction::ModeChangeComplete(
   const user_manager::User* const user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           GetActiveProfile(browser_context()));
-  const ash::UserContext user_context(*user);
+  const chromeos::UserContext user_context(*user);
 
   Respond(ArgumentList(SetModes::Results::Create()));
 }

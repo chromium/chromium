@@ -15,7 +15,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace ash {
+namespace chromeos {
 
 // Builds the known_user value that contains information about the given
 // challenge-response keys that can be used by the user to authenticate.
@@ -35,6 +35,12 @@ bool COMPONENT_EXPORT(ASH_LOGIN_AUTH)
         std::vector<DeserializedChallengeResponseKey>*
             deserialized_challenge_response_keys);
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SerializeChallengeResponseKeysForKnownUser;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CHALLENGE_RESPONSE_KNOWN_USER_PREF_UTILS_H_

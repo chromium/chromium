@@ -42,7 +42,7 @@ void LoginApiLockHandler::RequestLockScreen() {
 }
 
 void LoginApiLockHandler::Authenticate(
-    const ash::UserContext& user_context,
+    const UserContext& user_context,
     base::OnceCallback<void(bool auth_success)> callback) {
   unlock_in_progress_ = true;
   callback_ = std::move(callback);

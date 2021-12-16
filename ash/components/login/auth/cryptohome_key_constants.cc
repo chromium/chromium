@@ -4,7 +4,7 @@
 
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 // The label used for the key derived from the user's GAIA credentials.
 //
@@ -23,4 +23,4 @@ const char kCryptohomePublicMountLabel[] = "publicmount";
 
 const char kCryptohomeWildcardLabel[] = "";
 
-}  // namespace ash
+}  // namespace chromeos

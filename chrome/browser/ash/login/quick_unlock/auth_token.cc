@@ -14,10 +14,10 @@ namespace quick_unlock {
 
 const int AuthToken::kTokenExpirationSeconds = 5 * 60;
 
-AuthToken::AuthToken(const UserContext& user_context)
+AuthToken::AuthToken(const chromeos::UserContext& user_context)
     : identifier_(base::UnguessableToken::Create()),
       creation_time_(base::TimeTicks::Now()),
-      user_context_(std::make_unique<UserContext>(user_context)) {
+      user_context_(std::make_unique<chromeos::UserContext>(user_context)) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AuthToken::Reset, weak_factory_.GetWeakPtr()),
       base::Seconds(kTokenExpirationSeconds));

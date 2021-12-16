@@ -8,7 +8,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -75,4 +75,4 @@ TEST(SamlPasswordAttributesTest, PrefsSerialization) {
   ExpectEmpty(loaded);
 }
 
-}  // namespace ash
+}  // namespace chromeos

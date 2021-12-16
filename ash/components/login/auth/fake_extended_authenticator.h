@@ -9,7 +9,7 @@
 #include "ash/components/login/auth/user_context.h"
 #include "base/component_export.h"
 
-namespace ash {
+namespace chromeos {
 
 class AuthFailure;
 
@@ -56,6 +56,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) FakeExtendedAuthenticator
   UserContext expected_user_context_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeExtendedAuthenticator;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_FAKE_EXTENDED_AUTHENTICATOR_H_

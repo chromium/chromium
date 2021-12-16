@@ -7,12 +7,12 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/user_context.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
 namespace ash {
-
-class UserContext;
 
 // Structure that defines data that need to be passed between screens during
 // WizardController flows.

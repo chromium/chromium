@@ -657,7 +657,7 @@ class QuickUnlockPrivateUnitTest
   QuickUnlockPrivateSetModesFunction::ModesChangedEventHandler
       modes_changed_handler_;
   bool expect_modes_changed_ = false;
-  ash::UserContext auth_token_user_context_;
+  chromeos::UserContext auth_token_user_context_;
   std::string token_;
 };
 

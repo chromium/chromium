@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 
-namespace ash {
+namespace chromeos {
 
 // Helper class for creating a StubAuthenticator with certain configuration.
 // Useful in tests for injecting StubAuthenticators to be used during user
@@ -70,6 +70,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) StubAuthenticatorBuilder {
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::StubAuthenticatorBuilder;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_STUB_AUTHENTICATOR_BUILDER_H_

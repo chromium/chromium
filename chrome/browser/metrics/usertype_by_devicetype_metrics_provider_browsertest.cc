@@ -323,8 +323,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                  account_id_1_);
+    chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                       account_id_1_);
     user_context.SetPublicSessionLocale(std::string());
     user_context.SetPublicSessionInputMethod(std::string());
     controller->Login(user_context, ash::SigninSpecifics());

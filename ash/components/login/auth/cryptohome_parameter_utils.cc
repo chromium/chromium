@@ -12,7 +12,7 @@
 
 using cryptohome::KeyDefinition;
 
-namespace ash {
+namespace chromeos {
 namespace cryptohome_parameter_utils {
 
 KeyDefinition CreateKeyDefFromUserContext(const UserContext& user_context) {
@@ -64,4 +64,4 @@ KeyDefinition CreateAuthorizationKeyDefFromUserContext(
 }
 
 }  // namespace cryptohome_parameter_utils
-}  // namespace ash
+}  // namespace chromeos

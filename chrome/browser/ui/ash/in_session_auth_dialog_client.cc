@@ -25,10 +25,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using ::ash::AuthStatusConsumer;
-using ::ash::ExtendedAuthenticator;
-using ::ash::Key;
-using ::ash::UserContext;
+using chromeos::AuthStatusConsumer;
+using chromeos::ExtendedAuthenticator;
+using chromeos::Key;
+using chromeos::UserContext;
 
 namespace {
 
@@ -109,7 +109,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   DCHECK(user);
   UserContext user_context(*user);
   user_context.SetKey(
-      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
+      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
   user_context.SetIsUsingPin(authenticated_by_pin);
   user_context.SetSyncPasswordData(password_manager::PasswordHashData(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(password),
@@ -234,7 +234,8 @@ aura::Window* InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
 }
 
 // AuthStatusConsumer:
-void InSessionAuthDialogClient::OnAuthFailure(const ash::AuthFailure& error) {
+void InSessionAuthDialogClient::OnAuthFailure(
+    const chromeos::AuthFailure& error) {
   if (pending_auth_state_) {
     std::move(pending_auth_state_->callback).Run(false);
     pending_auth_state_.reset();

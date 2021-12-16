@@ -15,7 +15,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
+namespace chromeos {
 
 class UserContext;
 
@@ -150,6 +150,13 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthStatusConsumer
                                        bool has_incomplete_migration);
 };
 
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AuthFailure;
+using ::chromeos::AuthStatusConsumer;
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTH_STATUS_CONSUMER_H_

@@ -18,9 +18,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::ash::FakeExtendedAuthenticator;
-using ::ash::Key;
-using ::ash::UserContext;
+using chromeos::FakeExtendedAuthenticator;
+using chromeos::Key;
+using chromeos::UserContext;
 
 namespace {
 
@@ -104,7 +104,7 @@ TEST_F(InSessionAuthDialogClientTest, WrongPassword) {
       user_manager::UserManager::Get()->GetActiveUser();
   UserContext expected_user_context(*user);
   expected_user_context.SetKey(
-      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword));
+      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword));
 
   SetExpectedContext(expected_user_context);
 
@@ -127,7 +127,7 @@ TEST_F(InSessionAuthDialogClientTest, PasswordAuthSuccess) {
       user_manager::UserManager::Get()->GetActiveUser();
   UserContext expected_user_context(*user);
   expected_user_context.SetKey(
-      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword));
+      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword));
 
   SetExpectedContext(expected_user_context);
 

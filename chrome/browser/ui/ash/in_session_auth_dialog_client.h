@@ -22,7 +22,7 @@ class AccountId;
 
 // Handles method calls sent from Ash to ChromeOS.
 class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
-                                  public ash::AuthStatusConsumer {
+                                  public chromeos::AuthStatusConsumer {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
@@ -53,12 +53,12 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
   aura::Window* OpenInSessionAuthHelpPage() const override;
 
   // AuthStatusConsumer:
-  void OnAuthFailure(const ash::AuthFailure& error) override;
-  void OnAuthSuccess(const ash::UserContext& user_context) override;
+  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
 
   // For testing:
   void SetExtendedAuthenticator(
-      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator) {
+      scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator) {
     extended_authenticator_ = std::move(extended_authenticator);
   }
 
@@ -76,20 +76,21 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   // Returns a pointer to the ExtendedAuthenticator instance if there is one.
   // Otherwise creates one.
-  ash::ExtendedAuthenticator* GetExtendedAuthenticator();
+  chromeos::ExtendedAuthenticator* GetExtendedAuthenticator();
 
-  void AuthenticateWithPassword(const ash::UserContext& user_context);
+  void AuthenticateWithPassword(const chromeos::UserContext& user_context);
 
-  void OnPinAttemptDone(const ash::UserContext& user_context, bool success);
+  void OnPinAttemptDone(const chromeos::UserContext& user_context,
+                        bool success);
 
-  void OnPasswordAuthSuccess(const ash::UserContext& user_context);
+  void OnPasswordAuthSuccess(const chromeos::UserContext& user_context);
 
   void OnFingerprintAuthDone(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback,
       user_data_auth::CryptohomeErrorCode error);
 
   // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
+  scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator_;
 
   // State associated with a pending authentication attempt.
   absl::optional<AuthState> pending_auth_state_;

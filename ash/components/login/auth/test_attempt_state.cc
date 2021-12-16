@@ -9,7 +9,7 @@
 #include "components/user_manager/user_type.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 TestAttemptState::TestAttemptState(std::unique_ptr<UserContext> credentials)
     : AuthAttemptState(std::move(credentials)) {}
@@ -38,4 +38,4 @@ cryptohome::MountError TestAttemptState::cryptohome_code() {
   return cryptohome_code_;
 }
 
-}  // namespace ash
+}  // namespace chromeos

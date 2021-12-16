@@ -6,7 +6,7 @@
 
 #include "components/user_manager/known_user.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace password_visibility {
 
@@ -19,4 +19,4 @@ bool AccountHasUserFacingPassword(const AccountId& account_id) {
 
 }  // namespace password_visibility
 
-}  // namespace ash
+}  // namespace chromeos

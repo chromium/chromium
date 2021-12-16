@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/key.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -19,8 +21,6 @@ class ActiveDirectoryAccountInfo;
 }
 
 namespace ash {
-
-class Key;
 
 // Controller for the active directory password change screen.
 class ActiveDirectoryPasswordChangeScreen : public BaseScreen {

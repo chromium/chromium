@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 class AuthStatusConsumer;
 class UserContext;
@@ -93,6 +93,6 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticatorImpl
   AuthStatusConsumer* consumer_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_EXTENDED_AUTHENTICATOR_IMPL_H_

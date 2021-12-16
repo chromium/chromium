@@ -7,9 +7,11 @@
 
 #include <string>
 
-namespace ash {
+// TODO(https://crbug.com/1164001): forward declare AuthFailure when migrated
+// to ash/components/.
+#include "ash/components/login/auth/auth_status_consumer.h"
 
-class AuthFailure;
+namespace ash {
 
 class KioskAppLaunchError {
  public:

@@ -4,7 +4,7 @@
 
 #include "ash/components/login/auth/authenticator.h"
 
-namespace ash {
+namespace chromeos {
 
 class AuthStatusConsumer;
 
@@ -17,4 +17,4 @@ void Authenticator::SetConsumer(AuthStatusConsumer* consumer) {
   consumer_ = consumer;
 }
 
-}  // namespace ash
+}  // namespace chromeos

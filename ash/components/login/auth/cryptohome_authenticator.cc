@@ -36,7 +36,7 @@
 #include "components/user_manager/user_type.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -1023,4 +1023,4 @@ void CryptohomeAuthenticator::SetOwnerState(bool owner_check_finished,
   user_can_login_ = check_result;
 }
 
-}  // namespace ash
+}  // namespace chromeos

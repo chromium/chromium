@@ -41,7 +41,7 @@ base::TimeDelta GetAuthTokenLifetimeForPurpose(
 bool IsOsReauthAllowedAsh(Profile* profile,
                           base::TimeDelta auth_token_lifetime) {
   const bool user_cannot_manually_enter_password =
-      !ash::password_visibility::AccountHasUserFacingPassword(
+      !chromeos::password_visibility::AccountHasUserFacingPassword(
           chromeos::ProfileHelper::Get()
               ->GetUserByProfile(profile)
               ->GetAccountId());

@@ -16,7 +16,7 @@
 
 class AuthFailure;
 
-namespace ash {
+namespace chromeos {
 
 class AuthStatusConsumer;
 
@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
           const UserContext& context,
           user_data_auth::MountRequest request)>;
 
-  // Transforms ash::Key in UserContext to cryptohome::KeyDefinition
+  // Transforms chromeos::Key in UserContext to cryptohome::KeyDefinition
   // used in cryptohome requests.
   using TransformCryotohomeKeyCallback =
       base::OnceCallback<void(const UserContext& context,
@@ -277,6 +277,6 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   base::WeakPtrFactory<AuthSessionAuthenticator> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTH_SESSION_AUTHENTICATOR_H_

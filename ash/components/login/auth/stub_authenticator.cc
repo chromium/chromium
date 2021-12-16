@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -189,4 +189,4 @@ void StubAuthenticator::OnOldEncryptionDetected() {
                                      has_incomplete_encryption_migration_);
 }
 
-}  // namespace ash
+}  // namespace chromeos

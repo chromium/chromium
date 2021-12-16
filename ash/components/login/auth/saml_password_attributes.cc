@@ -28,7 +28,7 @@ base::Time ReadJsTime(const std::string& input) {
 
 }  // namespace
 
-namespace ash {
+namespace chromeos {
 
 SamlPasswordAttributes::SamlPasswordAttributes() {}
 
@@ -111,4 +111,4 @@ void SamlPasswordAttributes::DeleteFromPrefs(PrefService* prefs) {
   empty.SaveToPrefs(prefs);
 }
 
-}  // namespace ash
+}  // namespace chromeos

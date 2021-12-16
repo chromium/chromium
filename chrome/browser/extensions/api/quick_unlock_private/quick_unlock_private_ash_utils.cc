@@ -42,34 +42,34 @@ QuickUnlockPrivateGetAuthTokenHelper::~QuickUnlockPrivateGetAuthTokenHelper() =
     default;
 
 void QuickUnlockPrivateGetAuthTokenHelper::Run(
-    ash::ExtendedAuthenticator* extended_authenticator,
+    chromeos::ExtendedAuthenticator* extended_authenticator,
     const std::string& password,
     QuickUnlockPrivateGetAuthTokenHelper::ResultCallback callback) {
   callback_ = std::move(callback);
 
   const user_manager::User* const user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  ash::UserContext user_context(*user);
-  user_context.SetKey(ash::Key(password));
+  chromeos::UserContext user_context(*user);
+  user_context.SetKey(chromeos::Key(password));
 
   AddRef();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ash::ExtendedAuthenticator::AuthenticateToCheck,
+      base::BindOnce(&chromeos::ExtendedAuthenticator::AuthenticateToCheck,
                      extended_authenticator, user_context,
                      base::OnceClosure()));
 }
 
 void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFailure(
-    const ash::AuthFailure& error) {
+    const chromeos::AuthFailure& error) {
   std::move(callback_).Run(false, nullptr, kPasswordIncorrect);
 
   Release();  // Balanced in Run().
 }
 
 void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSuccess(
-    const ash::UserContext& user_context) {
+    const chromeos::UserContext& user_context) {
   auto token_info = std::make_unique<TokenInfo>();
 
   QuickUnlockStorage* quick_unlock_storage =

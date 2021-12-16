@@ -68,7 +68,7 @@ class ManagedSessionServiceTest
 
   base::SimpleTestClock* test_clock() { return &test_clock_; }
 
-  void OnLoginFailure(const ash::AuthFailure& error) override {
+  void OnLoginFailure(const chromeos::AuthFailure& error) override {
     auth_failure_ = error;
   }
   void OnLogin(Profile* profile) override { logged_in_ = profile; }
@@ -79,7 +79,8 @@ class ManagedSessionServiceTest
     suspend_time_ = std::make_unique<base::Time>(time);
   }
 
-  ash::AuthFailure auth_failure_ = ash::AuthFailure::AuthFailureNone();
+  chromeos::AuthFailure auth_failure_ =
+      chromeos::AuthFailure::AuthFailureNone();
   Profile* logged_in_ = nullptr;
   Profile* logged_out_ = nullptr;
   bool locked_ = false;
@@ -243,11 +244,11 @@ TEST_F(ManagedSessionServiceTest, RemoveObserver) {
 TEST_F(ManagedSessionServiceTest, LoginFailure) {
   managed_session_service()->AddObserver(this);
 
-  managed_session_service()->OnAuthFailure(
-      ash::AuthFailure(ash::AuthFailure::FailureReason::OWNER_REQUIRED));
+  managed_session_service()->OnAuthFailure(chromeos::AuthFailure(
+      chromeos::AuthFailure::FailureReason::OWNER_REQUIRED));
 
   EXPECT_EQ(auth_failure_.reason(),
-            ash::AuthFailure::FailureReason::OWNER_REQUIRED);
+            chromeos::AuthFailure::FailureReason::OWNER_REQUIRED);
 }
 
 }  // namespace policy

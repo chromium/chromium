@@ -22,7 +22,7 @@ class ProfilePreparedWaiter : public AuthStatusConsumer {
   ~ProfilePreparedWaiter() override;
 
   // AuthStatusConsumer
-  void OnAuthSuccess(const UserContext& user_context) override;
+  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
   void OnAuthFailure(const AuthFailure& error) override;
 
   void Wait();

@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace ash {
+namespace chromeos {
 
 // Key for user authentication. The class supports hashing of plain text
 // passwords to generate keys as well as the use of pre-hashed keys.
@@ -61,11 +61,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) Key {
   std::string label_;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::Key;
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::Key;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_KEY_H_

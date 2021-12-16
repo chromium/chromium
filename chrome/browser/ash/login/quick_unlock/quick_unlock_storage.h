@@ -61,7 +61,7 @@ class QuickUnlockStorage : public KeyedService {
   // Creates a new authentication token to be used by the quickSettingsPrivate
   // API for authenticating requests. Resets the expiration timer and
   // invalidates any previously issued tokens.
-  std::string CreateAuthToken(const UserContext& user_context);
+  std::string CreateAuthToken(const chromeos::UserContext& user_context);
 
   // Returns true if the current authentication token has expired.
   bool GetAuthTokenExpired();

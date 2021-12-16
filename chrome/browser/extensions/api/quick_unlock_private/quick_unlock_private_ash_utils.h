@@ -14,10 +14,10 @@
 
 class Profile;
 
-namespace ash {
+namespace chromeos {
 class ExtendedAuthenticator;
 class UserContext;
-}  // namespace ash
+}  // namespace chromeos
 
 namespace extensions {
 
@@ -28,21 +28,21 @@ struct TokenInfo;
 }  // namespace api
 
 // A single-use adaptor to make calls to
-//   ash::ExtendedAuthenticator::AuthenticateToCheck()
+//   chromeos::ExtendedAuthenticator::AuthenticateToCheck()
 // and pass result back to a single callback. Re. object lifetime, caller just
 // have to call:
 //
 //   scoped_refptr<QuickUnlockPrivateGetAuthTokenHelper> helper =
 //      base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenHelper>(...);
 //   ...
-//   // Attach |helper| to a ash::ExtendedAuthenticator.
+//   // Attach |helper| to a chromeos::ExtendedAuthenticator.
 //   ...
 //   // Bind callback and pass as argument.
 //   helper->Run(...);
 //
 // Hereafter, the caller need not worry about |helper|'s lifetime.
 class QuickUnlockPrivateGetAuthTokenHelper
-    : public ash::AuthStatusConsumer,
+    : public chromeos::AuthStatusConsumer,
       public base::RefCountedThreadSafe<
           QuickUnlockPrivateGetAuthTokenHelper,
           content::BrowserThread::DeleteOnUIThread> {
@@ -62,7 +62,7 @@ class QuickUnlockPrivateGetAuthTokenHelper
   QuickUnlockPrivateGetAuthTokenHelper& operator=(
       const QuickUnlockPrivateGetAuthTokenHelper&) = delete;
 
-  void Run(ash::ExtendedAuthenticator* extended_authenticator,
+  void Run(chromeos::ExtendedAuthenticator* extended_authenticator,
            const std::string& password,
            ResultCallback callback);
 
@@ -76,8 +76,8 @@ class QuickUnlockPrivateGetAuthTokenHelper
       content::BrowserThread::UI>;
 
   // AuthStatusConsumer overrides.
-  void OnAuthFailure(const ash::AuthFailure& error) override;
-  void OnAuthSuccess(const ash::UserContext& user_context) override;
+  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
 
   Profile* profile_;
   ResultCallback callback_;

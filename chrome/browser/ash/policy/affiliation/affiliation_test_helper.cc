@@ -190,8 +190,8 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
   const user_manager::UserType user_type =
       is_active_directory ? user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY
                           : user_manager::UserType::USER_TYPE_REGULAR;
-  ash::UserContext user_context(user_type, account_id);
-  user_context.SetKey(ash::Key("password"));
+  chromeos::UserContext user_context(user_type, account_id);
+  user_context.SetKey(chromeos::Key("password"));
   if (account_id.GetUserEmail() == kEnterpriseUserEmail) {
     user_context.SetRefreshToken(kFakeRefreshToken);
   }

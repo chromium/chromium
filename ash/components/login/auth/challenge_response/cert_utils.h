@@ -16,7 +16,7 @@ namespace net {
 class X509Certificate;
 }  // namespace net
 
-namespace ash {
+namespace chromeos {
 
 // Maps from the TLS 1.3 SignatureScheme value into the challenge-response key
 // algorithm.
@@ -33,6 +33,12 @@ bool COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtractChallengeResponseKeyFromCert(
         signature_algorithms,
     ChallengeResponseKey* challenge_response_key);
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::GetChallengeResponseKeyAlgorithmFromSsl;
+}
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CHALLENGE_RESPONSE_CERT_UTILS_H_

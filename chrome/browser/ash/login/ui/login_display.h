@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
@@ -15,8 +17,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {
-
-class UserContext;
 
 // TODO(nkostylev): Extract interface, create a BaseLoginDisplay class.
 // An abstract class that defines login UI implementation.

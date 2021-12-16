@@ -23,7 +23,7 @@
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace ash {
+namespace chromeos {
 
 // static
 scoped_refptr<ExtendedAuthenticatorImpl> ExtendedAuthenticatorImpl::Create(
@@ -257,4 +257,4 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

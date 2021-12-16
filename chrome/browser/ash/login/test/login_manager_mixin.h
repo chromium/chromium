@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -25,8 +27,6 @@ constexpr char kTestEmail[] = "test_user@gmail.com";
 constexpr char kTestGaiaId[] = "111111111";
 
 }  // namespace test
-
-class StubAuthenticatorBuilder;
 
 // Mixin browser tests can use for setting up test login manager environment.
 // It sets up command line so test starts on the login screen UI, and

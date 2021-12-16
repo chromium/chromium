@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_ENTERPRISE_USER_SESSION_METRICS_H_
 #define CHROME_BROWSER_ASH_LOGIN_ENTERPRISE_USER_SESSION_METRICS_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.h
+#include "ash/components/login/auth/user_context.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
-
-class UserContext;
-
 namespace enterprise_user_session_metrics {
 
 // Enum for logins metrics on an enrolled device.

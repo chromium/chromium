@@ -295,7 +295,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "userCannotManuallyEnterPassword",
-      !ash::password_visibility::AccountHasUserFacingPassword(
+      !chromeos::password_visibility::AccountHasUserFacingPassword(
           chromeos::ProfileHelper::Get()
               ->GetUserByProfile(profile)
               ->GetAccountId()));
