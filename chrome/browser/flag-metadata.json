@@ -4852,7 +4852,7 @@
   },
   {
     "name": "scan-app-searchable-pdf",
-    "owners": [ "kmoed@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 97
   },
   {
