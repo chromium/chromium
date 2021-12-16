@@ -31,6 +31,7 @@ async function encode_decode_test(codec, avc_format) {
     output(chunk, metadata) {
       let config = metadata.decoderConfig;
       if (config) {
+        config.hardwareAcceleration = acc;
         decoder.configure(config);
       }
       decoder.decode(chunk);
