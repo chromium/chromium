@@ -1128,33 +1128,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CompromisedCredentials.CountLeaked"
+<histogram name="PasswordManager.CompromisedCredentials.{Issue}"
     units="credentials" expires_after="2022-06-12">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Count of known leaked credentials in the database on start-up.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck"
-    units="credentials" expires_after="2022-06-12">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Count of known leaked credentials in the database on start-up if the
-    password bulk check was executed at least once.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.CompromisedCredentials.CountPhished"
-    units="credentials" expires_after="2022-04-17">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Count of known phished credentials in the database on start-up.
-  </summary>
+  <summary>Count of known {Issue}. Recorded on start-up.</summary>
+  <token key="Issue">
+    <variant name="CountLeaked" summary="leaked credentials in the database"/>
+    <variant name="CountLeakedAfterBulkCheck"
+        summary="leaked credentials in the database if password bulk check
+                 was executed at least once"/>
+    <variant name="CountPhished" summary="phished credentials in the database"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.CredentialEditError"
