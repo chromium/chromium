@@ -9,6 +9,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -16,6 +18,7 @@
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
@@ -24,6 +27,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -378,6 +382,54 @@ TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
   EXPECT_EQ(2, input_controller->GetSendHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
+}
+
+// Tests that haptics are sent when dragging a window/desk in overview.
+TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
+  auto input_controller = std::make_unique<InputControllerForTesting>();
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  haptics_util::SetInputControllerForTesting(input_controller.get());
+
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  // Add three desks for a total of two.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  // Drag a window in overview. Test that kTick feedback is sent.
+  EnterOverview();
+  OverviewItem* overview_item =
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          window.get());
+  const gfx::RectF bounds_f = overview_item->target_bounds();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(bounds_f.CenterPoint()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(bounds_f.right_center()));
+  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kTick,
+                   HapticTouchpadEffectStrength::kMedium));
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Drag a desk in overview. Test that kTick feedback is sent.
+  const gfx::Rect bounds = overview_controller->overview_session()
+                               ->grid_list()
+                               .front()
+                               ->desks_bar_view()
+                               ->mini_views()
+                               .front()
+                               ->bounds();
+  event_generator->set_current_screen_location(bounds.CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(bounds.right_center());
+  EXPECT_EQ(2, input_controller->GetSendHapticCount(
+                   HapticTouchpadEffect::kTick,
+                   HapticTouchpadEffectStrength::kMedium));
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ExitOverview();
 }
 
 }  // namespace ash

@@ -554,26 +554,10 @@ void OverviewWindowDragController::ContinueNormalDrag(
       // Update the mini views borders by checking if |location_in_screen|
       // intersects. Only update the borders if the dragged item is not visible
       // on all desks.
-      bool intersects_with_desks_bar = overview_grid->IntersectsWithDesksBar(
+      overview_grid->IntersectsWithDesksBar(
           gfx::ToRoundedPoint(location_in_screen),
           /*update_desks_bar_drag_details=*/
           !DraggedItemIsVisibleOnAllDesks(item_), /*for_drop=*/false);
-
-      // Fire a haptic event if necessary.
-      if (intersects_with_desks_bar && !is_touch_dragging_) {
-        const int desk_index = overview_grid->GetDeskIndexFromScreenLocation(
-            gfx::ToRoundedPoint(location_in_screen));
-        if (last_desk_index_ != desk_index) {
-          last_desk_index_ = desk_index;
-          if (desk_index != -1) {
-            haptics_util::PlayHapticTouchpadEffect(
-                ui::HapticTouchpadEffect::kTick,
-                ui::HapticTouchpadEffectStrength::kMedium);
-          }
-        }
-      } else {
-        last_desk_index_ = -1;
-      }
 
       float value = 0.f;
       if (centerpoint.y() < desks_bar_data.desks_bar_bounds.y() ||
