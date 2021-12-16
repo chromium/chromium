@@ -35,6 +35,13 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
   void HandleSignOutAndRestart(const base::ListValue* /*args*/);
   void HandleFactoryReset(const base::ListValue* /*args*/);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  void HandleGetRelaunchConfirmationDialogDescription(
+      const base::ListValue* /*args*/);
+  void HandleShouldShowRelaunchConfirmationDialog(
+      const base::ListValue* /*args*/);
+#endif
 };
 
 }  // namespace settings

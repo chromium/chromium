@@ -19,6 +19,12 @@
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif
+
 namespace settings {
 
 namespace {
@@ -73,6 +79,19 @@ void BrowserLifetimeHandler::RegisterMessages() {
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "shouldShowRelaunchConfirmationDialog",
+      base::BindRepeating(
+          &BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog,
+          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "getRelaunchConfirmationDialogDescription",
+      base::BindRepeating(&BrowserLifetimeHandler::
+                              HandleGetRelaunchConfirmationDialogDescription,
+                          base::Unretained(this)));
+#endif
 }
 
 void BrowserLifetimeHandler::HandleRestart(
@@ -121,5 +140,28 @@ void BrowserLifetimeHandler::HandleFactoryReset(
   chrome::AttemptRelaunch();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
+    const base::ListValue* args) {
+  AllowJavascript();
+  const base::Value& callback_id = args->GetList()[0];
+  size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
+  base::Value description;
+  if (incognito_count > 0) {
+    description = base::Value(l10n_util::GetPluralStringFUTF16(
+        IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY, incognito_count));
+  }
+  ResolveJavascriptCallback(callback_id, description);
+}
+
+void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
+    const base::ListValue* args) {
+  AllowJavascript();
+  const base::Value& callback_id = args->GetList()[0];
+  base::Value result = base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
+  ResolveJavascriptCallback(callback_id, result);
+}
+#endif
 
 }  // namespace settings
