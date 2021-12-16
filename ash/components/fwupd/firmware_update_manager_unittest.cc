@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/fwupd/fake_fwupd_download_client.h"
 #include "ash/constants/ash_features.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -23,6 +24,8 @@
 #include "dbus/mock_object_proxy.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,6 +108,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
     dbus_client_ = FwupdClient::Create();
     dbus_client_->InitForTesting(bus_.get());
+    fake_fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
   }
   FirmwareUpdateManagerTest(const FirmwareUpdateManagerTest&) = delete;
@@ -131,6 +135,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
         base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
                        loop.QuitClosure()));
     loop.Run();
+  }
+
+  void SetFakeUrlForTesting(const std::string& fake_url) {
+    firmware_update_manager_->SetFakeUrlForTesting(fake_url);
   }
 
   std::unique_ptr<dbus::Response> CreateEmptyDeviceResponse() {
@@ -297,8 +305,13 @@ class FirmwareUpdateManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  network::TestURLLoaderFactory& GetTestUrlLoaderFactory() {
+    return fake_fwupd_download_client_->test_url_loader_factory();
+  }
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   std::unique_ptr<FwupdClient> dbus_client_;
+  std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
 
   // Mock bus for simulating calls.
@@ -407,24 +420,26 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
 
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
 
-  base::FilePath root_dir;
-  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
-  const base::FilePath root_path =
-      root_dir.Append(FILE_PATH_LITERAL(kDownloadDir))
-          .Append(FILE_PATH_LITERAL(kCacheDir));
-
-  const std::string test_filename =
-      std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
-  base::FilePath full_path = root_path.Append(test_filename);
-  // Create a temporary file to simulate a .cab available for install.
-  base::WriteFile(full_path, "", 0);
-  EXPECT_TRUE(base::PathExists(full_path));
-  base::RunLoop().RunUntilIdle();
+  std::string fake_url = "https://faketesturl/";
+  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
+  SetFakeUrlForTesting(fake_url);
+  GetTestUrlLoaderFactory().AddResponse(fake_url, "");
 
   EXPECT_EQ(0, GetOnInstallResponseCallbackCallCountForTesting());
   StartInstall(std::string(kFakeDeviceIdForTesting), /*release=*/0);
 
   base::RunLoop().RunUntilIdle();
+
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
+  const base::FilePath root_path =
+      root_dir.Append(FILE_PATH_LITERAL(kDownloadDir))
+          .Append(FILE_PATH_LITERAL(kCacheDir));
+  const std::string test_filename =
+      std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
+  base::FilePath full_path = root_path.Append(test_filename);
+  // Check that that expected patch file was created.
+  EXPECT_TRUE(base::PathExists(full_path));
 
   EXPECT_EQ(1, GetOnInstallResponseCallbackCallCountForTesting());
 }

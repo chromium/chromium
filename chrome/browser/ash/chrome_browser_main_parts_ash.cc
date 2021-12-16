@@ -171,6 +171,7 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
+#include "chrome/browser/ui/ash/fwupd_download_client_impl.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
@@ -1245,6 +1246,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   if (features::IsFirmwareUpdaterAppEnabled()) {
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
+    fwupd_download_client_ = std::make_unique<FwupdDownloadClientImpl>();
   }
 
   if (features::IsPciguardUiEnabled()) {

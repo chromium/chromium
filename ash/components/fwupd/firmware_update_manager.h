@@ -23,6 +23,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+namespace network {
+
+class SimpleURLLoader;
+
+}  // namespace network
+
 namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
@@ -92,16 +98,30 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
                      base::OnceCallback<void()> callback,
                      base::ScopedFD file_descriptor);
 
-  void OnCacheDirectoryCreated(const base::FilePath& root_path,
-                               const std::string& device_id,
-                               int release,
-                               base::OnceCallback<void()> callback);
+  void CreateLocalPatchFile(const base::FilePath& cache_path,
+                            const std::string& device_id,
+                            int release,
+                            base::OnceCallback<void()> callback);
+
+  void DownloadFileToInternal(const base::FilePath& patch_path,
+                              const std::string& device_id,
+                              base::OnceCallback<void()> callback);
+
+  void OnUrlDownloadedToFile(
+      const std::string& device_id,
+      std::unique_ptr<network::SimpleURLLoader> simple_loader,
+      base::OnceCallback<void()> callback,
+      base::FilePath download_path);
 
   // Notifies observers registered with ObservePeripheralUpdates() the current
   // list of devices with pending updates (if any).
   void NotifyUpdateListObservers();
 
   bool HasPendingUpdates();
+
+  void SetFakeUrlForTesting(const std::string& fake_url) {
+    fake_url_for_testing_ = fake_url;
+  }
 
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
@@ -110,6 +130,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // List of all available updates. If `devices_pending_update_` is not
   // empty then this list is not yet complete.
   std::vector<firmware_update::mojom::FirmwareUpdatePtr> updates_;
+
+  // Only used for testing if StartInstall() queries to a fake URL.
+  std::string fake_url_for_testing_;
 
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.
