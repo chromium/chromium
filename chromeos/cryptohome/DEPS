@@ -1,9 +1,9 @@
 noparent = True
 
 include_rules = [
+  "+ash/components/login/auth",
   "+base",
   "+chromeos/dbus",
-  "+chromeos/login/auth",
   "+components/account_id",
   "+components/device_event_log",
   "+components/user_manager",

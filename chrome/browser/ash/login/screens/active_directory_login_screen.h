@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/key.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
@@ -16,8 +18,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/key.h"
 
 namespace ash {
 

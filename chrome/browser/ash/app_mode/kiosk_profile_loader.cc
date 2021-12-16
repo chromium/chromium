@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/ignore_result.h"
 #include "base/location.h"
@@ -22,8 +24,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"

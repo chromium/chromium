@@ -9,6 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/mock_auth_status_consumer.h"
+#include "ash/components/login/auth/test_attempt_state.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -36,11 +41,6 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/mock_auth_status_consumer.h"
-#include "chromeos/login/auth/test_attempt_state.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/user_manager/scoped_user_manager.h"

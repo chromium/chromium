@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -33,7 +34,6 @@
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"

@@ -6,11 +6,11 @@
 
 #include <string>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 

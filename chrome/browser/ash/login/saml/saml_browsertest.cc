@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "ash/components/attestation/mock_attestation_flow.h"
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/saml_password_attributes.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -77,8 +79,6 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/saml_password_attributes.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

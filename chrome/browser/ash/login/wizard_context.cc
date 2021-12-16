@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/wizard_context.h"
 
+#include "ash/components/login/auth/user_context.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
-#include "chromeos/login/auth/user_context.h"
 
 namespace ash {
 

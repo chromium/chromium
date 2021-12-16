@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -43,8 +45,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/prefs/pref_service.h"

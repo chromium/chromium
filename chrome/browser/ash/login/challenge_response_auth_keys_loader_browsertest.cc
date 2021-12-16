@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -16,8 +18,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"

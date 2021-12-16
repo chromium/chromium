@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/geometry/rect.h"

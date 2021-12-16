@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

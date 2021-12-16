@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -113,7 +114,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

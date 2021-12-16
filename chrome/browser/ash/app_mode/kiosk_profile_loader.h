@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/login_performer.h"
+// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chromeos/login/auth/login_performer.h"
-// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 
 class Profile;

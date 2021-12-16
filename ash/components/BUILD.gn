@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//ash/components/drivefs:unit_tests",
     "//ash/components/fwupd:unit_tests",
     "//ash/components/geolocation:unit_tests",
+    "//ash/components/login/auth:unit_tests",
     "//ash/components/login/session:unit_tests",
     "//ash/components/peripheral_notification:unit_tests",
     "//ash/components/phonehub:unit_tests",

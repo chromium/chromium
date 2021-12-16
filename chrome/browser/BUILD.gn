@@ -7687,12 +7687,12 @@ static_library("test_support") {
     deps += [
       "//ash/components/attestation:test_support",
       "//ash/components/disks",
+      "//ash/components/login/auth",
       "//ash/public/cpp",
       "//chrome/test:test_support_ui",
       "//chromeos:test_support",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
-      "//chromeos/login/auth",
       "//components/session_manager/core",
       "//components/soda",
       "//components/user_manager:test_support",

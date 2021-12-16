@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chromeos/login/auth/user_context.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

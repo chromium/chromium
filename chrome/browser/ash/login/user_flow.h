@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USER_FLOW_H_
 #define CHROME_BROWSER_ASH_LOGIN_USER_FLOW_H_
 
-#include "chromeos/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/auth_status_consumer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/user_context.h"
+#include "ash/components/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 

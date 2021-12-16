@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/login_performer.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -17,7 +18,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "chromeos/login/auth/login_performer.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 

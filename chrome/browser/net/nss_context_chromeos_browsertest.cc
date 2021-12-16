@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user.h"

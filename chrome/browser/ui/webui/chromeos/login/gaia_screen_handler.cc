@@ -7,6 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/challenge_response/cert_utils.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/sync_trusted_vault_keys.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/security_token_pin/constants.h"
 #include "ash/components/security_token_pin/error_generator.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -78,11 +83,6 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/saml_password_attributes.h"
-#include "chromeos/login/auth/sync_trusted_vault_keys.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"

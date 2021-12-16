@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/components/login/auth/key.h"
 #include "base/callback.h"
-#include "chromeos/login/auth/key.h"
 #include "components/prefs/pref_service.h"
 
 class AccountId;

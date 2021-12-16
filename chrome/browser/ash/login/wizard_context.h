@@ -7,10 +7,10 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/user_context.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/user_context.h"
 
 namespace ash {
 

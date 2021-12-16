@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/l10n/l10n_util.h"
 

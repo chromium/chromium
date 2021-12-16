@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 
 class AccountId;
 

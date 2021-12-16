@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"

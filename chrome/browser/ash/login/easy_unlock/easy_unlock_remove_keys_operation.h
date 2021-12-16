@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/login/auth/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

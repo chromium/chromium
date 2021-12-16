@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include "ash/components/login/auth/saml_password_attributes.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/saml_password_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 

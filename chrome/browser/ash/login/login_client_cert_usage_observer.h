@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 #include "net/cert/x509_certificate.h"
 
 namespace ash {

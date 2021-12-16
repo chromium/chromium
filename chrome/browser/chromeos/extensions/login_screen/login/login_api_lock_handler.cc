@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chromeos/login/auth/user_context.h"
 
 namespace chromeos {
 

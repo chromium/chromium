@@ -2178,7 +2178,6 @@ component("ash") {
     # on it. TODO(stevenjb): Assert on //chromeos/dbus/cryptohome_client once it
     # is extracted from //chromeos/dbus. https://crbug.com/647367.
     "//chromeos/cryptohome",
-    "//chromeos/login/auth",
     "//chromeos/tpm",
 
     # Ash should not depend upon content at all.

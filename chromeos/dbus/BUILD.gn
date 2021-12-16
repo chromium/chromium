@@ -125,6 +125,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/authpolicy",
+    "//chromeos/dbus/authpolicy:authpolicy_proto",
     "//chromeos/dbus/biod:test_support",
     "//chromeos/dbus/cec_service:unit_tests",
     "//chromeos/dbus/cros_disks:unit_tests",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
+#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 

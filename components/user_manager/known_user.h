@@ -187,7 +187,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Setter and getter for the information about challenge-response keys that
   // can be used by this user to authenticate. The getter returns a null value
   // when the property isn't present. For the format of the value, refer to
-  // chromeos/login/auth/challenge_response/known_user_pref_utils.h.
+  // ash/components/login/auth/challenge_response/known_user_pref_utils.h.
   void SetChallengeResponseKeys(const AccountId& account_id, base::Value value);
 
   base::Value GetChallengeResponseKeys(const AccountId& account_id);
@@ -493,7 +493,7 @@ bool USER_MANAGER_EXPORT FindReauthReason(const AccountId& account_id,
 // be used by this user to authenticate.
 // The getter returns a null value when the property isn't present.
 // For the format of the value, refer to
-// chromeos/login/auth/challenge_response/known_user_pref_utils.h.
+// ash/components/login/auth/challenge_response/known_user_pref_utils.h.
 // TODO(https://crbug.com/1150434): Deprecated, use
 // KnownUser::SetChallengeResponseKeys instead.
 void USER_MANAGER_EXPORT SetChallengeResponseKeys(const AccountId& account_id,

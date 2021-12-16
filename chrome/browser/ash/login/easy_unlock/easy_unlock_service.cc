@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "ash/components/proximity_auth/proximity_auth_system.h"
@@ -41,7 +42,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"

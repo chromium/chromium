@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 
+#include "ash/components/login/auth/challenge_response/cert_utils.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
@@ -18,8 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/user_manager/known_user.h"

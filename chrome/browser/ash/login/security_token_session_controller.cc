@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -29,8 +31,6 @@
 #include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"

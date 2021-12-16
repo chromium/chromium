@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "content/public/test/test_utils.h"
 

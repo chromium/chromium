@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {

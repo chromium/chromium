@@ -10,6 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/authenticator.h"
+#include "ash/components/login/auth/challenge_response_key.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -21,13 +28,6 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/authenticator.h"
-#include "chromeos/login/auth/challenge_response_key.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"

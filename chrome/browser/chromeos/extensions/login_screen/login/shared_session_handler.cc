@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"

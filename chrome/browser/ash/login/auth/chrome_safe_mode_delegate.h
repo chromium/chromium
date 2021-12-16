@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_SAFE_MODE_DELEGATE_H_
 #define CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_SAFE_MODE_DELEGATE_H_
 
-#include "chromeos/login/auth/safe_mode_delegate.h"
+#include "ash/components/login/auth/safe_mode_delegate.h"
 
 namespace ash {
 

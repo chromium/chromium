@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -20,7 +21,6 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/user_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"

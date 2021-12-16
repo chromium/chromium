@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "content/public/browser/browser_thread.h"
 
 class Profile;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
@@ -21,8 +23,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 

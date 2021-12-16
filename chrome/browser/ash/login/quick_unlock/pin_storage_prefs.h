@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/components/login/auth/key.h"
 #include "base/gtest_prod_util.h"
-#include "chromeos/login/auth/key.h"
 
 class PrefRegistrySimple;
 class PrefService;

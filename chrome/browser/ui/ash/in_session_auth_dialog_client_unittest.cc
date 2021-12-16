@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 
+#include "ash/components/login/auth/fake_extended_authenticator.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/callback.h"
@@ -12,7 +13,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chromeos/login/auth/fake_extended_authenticator.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"

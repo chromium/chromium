@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "ash/components/audio/sounds.h"
+#include "ash/components/login/auth/authenticator.h"
+#include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
@@ -54,8 +56,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/biod/constants.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/login/auth/authenticator.h"
-#include "chromeos/login/auth/extended_authenticator.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
