@@ -285,6 +285,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
                               : NAVIGATION_TYPE_UNKNOWN;
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
+  last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();
 
   // Allow extending classes to fetch data available via navigation_handle.
   NavigationOfInterestDidFinish(navigation_handle);

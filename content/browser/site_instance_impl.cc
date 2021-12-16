@@ -613,6 +613,12 @@ scoped_refptr<SiteInstance> SiteInstanceImpl::GetRelatedSiteInstance(
 
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
     const UrlInfo& url_info) {
+  if (IsGuest()) {
+    // Until guests support site isolation (https://crbug.com/1267977), there
+    // should only be one guest SiteInstance per BrowsingInstance.
+    return this;
+  }
+
   return browsing_instance_->GetSiteInstanceForURL(
       url_info, /* allow_default_instance */ true);
 }

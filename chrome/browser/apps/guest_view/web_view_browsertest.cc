@@ -1618,7 +1618,45 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
+  GURL newwindow_url("about:blank#noreferrer");
+  content::TestNavigationObserver observer(newwindow_url);
+  observer.StartWatchingNewWebContents();
+
   TestHelper("testNewWindowNoReferrerLink", "web_view/shim", NEEDS_TEST_SERVER);
+
+  // The first <webview> tag in the test will run window.open(), which the
+  // embedder will translate into an injected second <webview> tag.  Ensure
+  // that both <webview>'s are in guest SiteInstances and in the same
+  // StoragePartition.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+  std::vector<content::WebContents*> guest_contents_list;
+  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  ASSERT_EQ(2u, guest_contents_list.size());
+  content::WebContents* guest1 = guest_contents_list[0];
+  content::WebContents* guest2 = guest_contents_list[1];
+  ASSERT_NE(guest1, guest2);
+  auto* guest_instance1 = guest1->GetMainFrame()->GetSiteInstance();
+  auto* guest_instance2 = guest2->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(guest_instance1->IsGuest());
+  EXPECT_TRUE(guest_instance2->IsGuest());
+  EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
+            guest_instance2->GetStoragePartitionConfig());
+
+  // Until <webview> guests have site isolation, both guests should be in the
+  // same SiteInstance, even in this `opener_suppressed` case which typically
+  // places the new window in a new BrowsingInstance.
+  //
+  // TODO(alexmos): revisit this once <webview> guests support site isolation.
+  EXPECT_EQ(guest_instance1, guest_instance2);
+
+  // Check that the source SiteInstance used when the first guest opened the
+  // new noreferrer window is also a guest SiteInstance in the same
+  // StoragePartition.
+  observer.Wait();
+  ASSERT_TRUE(observer.last_source_site_instance());
+  EXPECT_TRUE(observer.last_source_site_instance()->IsGuest());
+  EXPECT_EQ(observer.last_source_site_instance()->GetStoragePartitionConfig(),
+            guest_instance1->GetStoragePartitionConfig());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
