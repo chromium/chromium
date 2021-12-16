@@ -4,9 +4,11 @@
 
 #include "cup_impl.h"
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -79,6 +81,33 @@ TEST(CUPImplTest, IgnoresNonGetActionsResponse) {
   absl::optional<std::string> unpacked_response =
       cup_.UnpackResponse("a response");
   EXPECT_EQ(*unpacked_response, "a response");
+}
+
+TEST(CUPImplTest, OverridesEcdsaPublicKeyWithCLIValue) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      autofill_assistant::switches::kAutofillAssistantCupPublicKeyBase64,
+      "SGVsbG8=");
+  EXPECT_EQ(autofill_assistant::cup::CUPImpl::GetPublicKey(), "Hello");
+}
+
+TEST(CUPImplTest, HasValidEcdsaPublicKeyWithNotValidCLIValue) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      autofill_assistant::switches::kAutofillAssistantCupPublicKeyBase64,
+      "Not valid base64");
+  EXPECT_FALSE(autofill_assistant::cup::CUPImpl::GetPublicKey().empty());
+}
+
+TEST(CUPImplTest, OverridesEcdsaKeyVersionithCLIValue) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      autofill_assistant::switches::kAutofillAssistantCupKeyVersion, "15");
+  EXPECT_EQ(autofill_assistant::cup::CUPImpl::GetKeyVersion(), 15);
+}
+
+TEST(CUPImplTest, HasValidEcdsaKeyVersionWithNotValidCLIValue) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      autofill_assistant::switches::kAutofillAssistantCupKeyVersion,
+      "Not a number");
+  EXPECT_GT(autofill_assistant::cup::CUPImpl::GetKeyVersion(), -1);
 }
 
 }  // namespace

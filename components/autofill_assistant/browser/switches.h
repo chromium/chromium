@@ -11,6 +11,8 @@ namespace switches {
 // All switches in alphabetical order.
 extern const char kAutofillAssistantAnnotateDom[];
 extern const char kAutofillAssistantAuth[];
+extern const char kAutofillAssistantCupPublicKeyBase64[];
+extern const char kAutofillAssistantCupKeyVersion[];
 extern const char kAutofillAssistantForceFirstTimeUser[];
 extern const char kAutofillAssistantForceOnboarding[];
 extern const char kAutofillAssistantImplicitTriggeringDebugParameters[];

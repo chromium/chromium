@@ -15,6 +15,15 @@ const char kAutofillAssistantAnnotateDom[] =
 // during development, as prod instances require authentication.
 const char kAutofillAssistantAuth[] = "autofill-assistant-auth";
 
+// Sets the ECDSA public key to be used for autofill_assistant in base64.
+const char kAutofillAssistantCupPublicKeyBase64[] =
+    "autofill-assistant-cup-public-key-base64";
+
+// Sets the key version of the ECDSA public key to be used for
+// autofill_assistant.
+const char kAutofillAssistantCupKeyVersion[] =
+    "autofill-assistant-cup-key-version";
+
 // Forces first-time user experience if set to 'true'. This will overwrite the
 // AA preference by setting first time user to 'true' before each startup.
 // Does nothing if unset or is set to false. This is only useful during testing

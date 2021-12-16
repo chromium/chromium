@@ -5,10 +5,13 @@
 #include "cup_impl.h"
 
 #include "base/base64.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/client_update_protocol/ecdsa.h"
 
 namespace {
@@ -19,11 +22,11 @@ constexpr char kKeyPubBytesBase64[] =
     "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgH30WRJf4g6I2C1FKsBQF3qHANLw"
     "thwYsNt2PWTDQBS0ufSRE83piOPoJQcePzTkMfbghjnZerDjLJhBsDkfFg==";
 
-std::string GetKey(const char* key_bytes_base64) {
+absl::optional<std::string> GetKey(const std::string& key_bytes_base64) {
   std::string result;
-  return base::Base64Decode(std::string(key_bytes_base64), &result)
-             ? result
-             : std::string();
+  return base::Base64Decode(key_bytes_base64, &result)
+             ? absl::optional<std::string>(result)
+             : absl::nullopt;
 }
 
 }  // namespace
@@ -32,9 +35,50 @@ namespace autofill_assistant {
 
 namespace cup {
 
+int CUPImpl::GetKeyVersion() {
+  int key_version = kKeyVersion;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutofillAssistantCupKeyVersion)) {
+    return key_version;
+  }
+
+  if (!base::StringToInt(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAutofillAssistantCupKeyVersion),
+          &key_version)) {
+    LOG(ERROR) << "Error parsing command line flag "
+               << switches::kAutofillAssistantCupKeyVersion << ": not a number";
+    // If CLI key version is not valid, continue with the default one.
+    return kKeyVersion;
+  }
+  return key_version;
+}
+
+std::string CUPImpl::GetPublicKey() {
+  absl::optional<std::string> pub_key = GetKey(kKeyPubBytesBase64);
+  // The default key specified in |kKeyPubBytesBase64| must be valid base64.
+  DCHECK(pub_key.has_value());
+
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutofillAssistantCupPublicKeyBase64)) {
+    return *pub_key;
+  }
+
+  absl::optional<std::string> switch_pub_key =
+      GetKey(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAutofillAssistantCupPublicKeyBase64));
+  if (!switch_pub_key.has_value()) {
+    LOG(ERROR) << "Error parsing command line flag "
+               << switches::kAutofillAssistantCupPublicKeyBase64
+               << ": not a valid base64 string";
+    // If CLI public key is not valid, continue with the default one.
+    return *pub_key;
+  }
+  return *switch_pub_key;
+}
+
 std::unique_ptr<client_update_protocol::Ecdsa> CUPImpl::CreateQuerySigner() {
-  return client_update_protocol::Ecdsa::Create(kKeyVersion,
-                                               GetKey(kKeyPubBytesBase64));
+  return client_update_protocol::Ecdsa::Create(GetKeyVersion(), GetPublicKey());
 }
 
 CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer,

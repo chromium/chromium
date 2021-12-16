@@ -22,6 +22,8 @@ namespace cup {
 // This class can only be used once per service call.
 class CUPImpl : public CUP {
  public:
+  static std::string GetPublicKey();
+  static int GetKeyVersion();
   static std::unique_ptr<client_update_protocol::Ecdsa> CreateQuerySigner();
 
   CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer,
