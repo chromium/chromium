@@ -434,6 +434,7 @@ void InspectorOverlayAgent::Restore() {
   setShowScrollBottleneckRects(show_scroll_bottleneck_rects_.Get());
   setShowHitTestBorders(show_hit_test_borders_.Get());
   setShowViewportSizeOnResize(show_size_on_resize_.Get());
+  setShowWebVitals(show_web_vitals_.Get());
   PickTheRightTool();
 }
 
