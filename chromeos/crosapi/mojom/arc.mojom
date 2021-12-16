@@ -76,8 +76,8 @@ interface ArcObserver {
 };
 
 // Interacts with ARC.
-// Next version: 1
-// Next method id: 3
+// Next version: 2
+// Next method id: 4
 [Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
 interface Arc {
   // Registers ArcObserver in Lacros-chrome to Ash-chrome
@@ -97,4 +97,8 @@ interface Arc {
   // An array of IntentHandlerInfo will be returned.
   RequestUrlHandlerList@2(string url)
       => (array<IntentHandlerInfo> handlers);
+
+  // Handles the URL by sending an ACTION_VIEW intent to the package. The
+  // most suitable activity for the URL within the package will be started.
+  [MinVersion=1] HandleUrl@3(string url, string package_name);
 };

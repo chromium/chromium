@@ -172,6 +172,21 @@ void ArcAsh::ConvertIntentHandlerInfo(
   std::move(callback).Run(std::move(converted_handlers));
 }
 
+void ArcAsh::HandleUrl(const std::string& url,
+                       const std::string& package_name) {
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder)
+    return;
+
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, HandleUrl);
+  if (!instance) {
+    LOG(WARNING) << "HandleUrl is not supported.";
+    return;
+  }
+
+  instance->HandleUrl(url, package_name);
+}
+
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {
   for (auto& observer : observers_)
     observer->OnIconInvalidated(package_name);

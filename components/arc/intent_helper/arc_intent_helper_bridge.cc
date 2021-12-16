@@ -412,6 +412,24 @@ void ArcIntentHelperBridge::OnRequestUrlHandlerList(
   std::move(callback).Run(std::move(converted_handlers));
 }
 
+bool ArcIntentHelperBridge::HandleUrl(const std::string& url,
+                                      const std::string& package_name) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for HandleUrl().";
+    return false;
+  }
+
+  instance->HandleUrl(url, package_name);
+  return true;
+}
+
 bool ArcIntentHelperBridge::ShouldChromeHandleUrl(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS()) {
     // Chrome will handle everything that is not http and https.

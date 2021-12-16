@@ -36,6 +36,9 @@ class ArcIconCache : public arc::LinkHandlerModelDelegate,
   // Calls RequestUrlHandlerList mojo API.
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
+  // Calls HandleUrl mojo API.
+  bool HandleUrl(const std::string& url,
+                 const std::string& package_name) override;
 
  private:
   THREAD_CHECKER(thread_checker_);

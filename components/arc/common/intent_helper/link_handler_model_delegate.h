@@ -56,6 +56,10 @@ class LinkHandlerModelDelegate {
   virtual bool RequestUrlHandlerList(
       const std::string& url,
       RequestUrlHandlerListCallback callback) = 0;
+
+  // Calls HandleUrl mojo API.
+  virtual bool HandleUrl(const std::string& url,
+                         const std::string& package_name) = 0;
 };
 
 }  // namespace arc

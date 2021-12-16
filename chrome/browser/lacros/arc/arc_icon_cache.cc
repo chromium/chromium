@@ -69,3 +69,21 @@ void ArcIconCache::OnRequestUrlHandlerList(
   }
   std::move(callback).Run(std::move(converted_handlers));
 }
+
+bool ArcIconCache::HandleUrl(const std::string& url,
+                             const std::string& package_name) {
+  auto* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
+    LOG(WARNING) << "ARC is not supported in Lacros.";
+    return false;
+  }
+
+  if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
+      int{crosapi::mojom::Arc::MethodMinVersions::kHandleUrlMinVersion}) {
+    LOG(WARNING) << "HandleUrl is not supported in Lacros.";
+    return false;
+  }
+
+  service->GetRemote<crosapi::mojom::Arc>()->HandleUrl(url, package_name);
+  return true;
+}

@@ -18,8 +18,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #endif
 
 namespace arc {
@@ -76,22 +74,23 @@ void LinkHandlerModel::AddObserver(Observer* observer) {
 }
 
 void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager)
-    return;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
-  if (!instance)
-    return;
   if (handler_id >= handlers_.size())
     return;
-  instance->HandleUrl(url_.spec(), handlers_[handler_id].package_name);
 
+  if (!g_link_handler_model_delegate) {
+    LOG(DFATAL) << "LinkHandlerModelDelegate is not set.";
+    return;
+  }
+
+  if (!g_link_handler_model_delegate->HandleUrl(
+          url_.spec(), handlers_[handler_id].package_name)) {
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1275075): Take metrics in Lacros as well.
   ArcMetricsService::RecordArcUserInteraction(
       context_, arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTIMPLEMENTED();
 #endif
 }
 

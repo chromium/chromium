@@ -118,6 +118,8 @@ class ArcIntentHelperBridge : public KeyedService,
                              OnIconsReadyCallback callback) override;
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
+  bool HandleUrl(const std::string& url,
+                 const std::string& package_name) override;
 
   // Returns true when |url| can only be handled by Chrome. Otherwise, which is
   // when there might be one or more ARC apps that can handle |url|, returns
