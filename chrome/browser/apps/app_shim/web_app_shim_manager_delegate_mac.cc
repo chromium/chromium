@@ -265,18 +265,18 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
   }
 
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   if (!launch_files.empty()) {
-    WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
     absl::optional<GURL> file_handler_url =
         provider->os_integration_manager().GetMatchingFileHandlerURL(
             app_id, launch_files);
-    if (!file_handler_url) {
-      CancelAppLaunch(profile, app_id);
-      return;
-    }
+    if (file_handler_url)
+      params.launch_files = launch_files;
+    // If there is no matching file handling URL (such as when the API has been
+    // disabled), fall back to a normal app launch.
+  }
 
-    params.launch_files = launch_files;
-
+  if (!params.launch_files.empty()) {
     const WebApp* web_app = provider->registrar().GetAppById(app_id);
     DCHECK(web_app);
 
