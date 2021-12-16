@@ -37,6 +37,10 @@ class DlpContentManager : public DlpContentObserver {
   DlpContentManager(const DlpContentManager&) = delete;
   DlpContentManager& operator=(const DlpContentManager&) = delete;
 
+  // Returns platform-specific implementation of the class. Never returns
+  // nullptr.
+  static DlpContentManager* Get();
+
   // Returns which restrictions are applied to the |web_contents| according to
   // the policy.
   DlpContentRestrictionSet GetConfidentialRestrictions(
@@ -45,9 +49,8 @@ class DlpContentManager : public DlpContentObserver {
   // Checks whether printing of |web_contents| is restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.
-  virtual void CheckPrintingRestriction(
-      content::WebContents* web_contents,
-      OnDlpRestrictionCheckedCallback callback);
+  void CheckPrintingRestriction(content::WebContents* web_contents,
+                                OnDlpRestrictionCheckedCallback callback);
 
  protected:
   // Structure that relates a list of confidential contents to the

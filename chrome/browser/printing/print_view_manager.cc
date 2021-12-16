@@ -25,8 +25,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #endif
 
 using content::BrowserThread;
@@ -192,9 +192,9 @@ void PrintViewManager::PrintPreviewDone() {
 
 void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
     base::OnceCallback<void(bool should_proceed)> callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Don't print DLP restricted content on Chrome OS.
-  policy::DlpContentManagerAsh::Get()->CheckPrintingRestriction(
+  policy::DlpContentManager::Get()->CheckPrintingRestriction(
       web_contents(), std::move(callback));
 #else
   std::move(callback).Run(true);

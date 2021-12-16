@@ -1161,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, RegularPrinting) {
   EXPECT_EQ(content::AreAllSitesIsolatedForTesting(), IsOopifEnabled());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // Test that if user allows printing after being shown a warning due to DLP
 // restrictions, the print preview is rendered.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlockedWithWindowDotPrint) {
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(OS_CHROMEOS)
 
 // Printing preview a webpage with isolate-origins enabled.
 // Test that we will use oopif printing for this case.
