@@ -15,7 +15,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/native_library.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
 
@@ -68,6 +70,12 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
                                   const gfx::ExtensionSet& enabled_extensions);
 
   base::NativeLibrary vulkan_loader_library = nullptr;
+
+  // This is used to allow thread safe access to a given vulkan queue when
+  // multiple gpu threads are accessing it. Note that this map will be only
+  // accessed by multiple gpu threads concurrently to read the data, so it
+  // should be thread safe to use this map by multiple threads.
+  base::flat_map<VkQueue, std::unique_ptr<base::Lock>> per_queue_lock_map;
 
   template <typename T>
   class VulkanFunction;
@@ -959,10 +967,16 @@ ALWAYS_INLINE VkResult vkQueueSubmit(VkQueue queue,
                                      uint32_t submitCount,
                                      const VkSubmitInfo* pSubmits,
                                      VkFence fence) {
+  base::AutoLockMaybe auto_lock(
+      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
+
   return gpu::GetVulkanFunctionPointers()->vkQueueSubmit(queue, submitCount,
                                                          pSubmits, fence);
 }
 ALWAYS_INLINE VkResult vkQueueWaitIdle(VkQueue queue) {
+  base::AutoLockMaybe auto_lock(
+      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
+
   return gpu::GetVulkanFunctionPointers()->vkQueueWaitIdle(queue);
 }
 ALWAYS_INLINE VkResult vkResetCommandBuffer(VkCommandBuffer commandBuffer,
@@ -1148,6 +1162,9 @@ ALWAYS_INLINE VkResult vkGetSwapchainImagesKHR(VkDevice device,
 }
 ALWAYS_INLINE VkResult vkQueuePresentKHR(VkQueue queue,
                                          const VkPresentInfoKHR* pPresentInfo) {
+  base::AutoLockMaybe auto_lock(
+      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
+
   return gpu::GetVulkanFunctionPointers()->vkQueuePresentKHR(queue,
                                                              pPresentInfo);
 }

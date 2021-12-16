@@ -345,7 +345,14 @@ def WriteMacros(out_file, functions):
       pdecl += text + tail
     n = len(params)
 
-    callstat = 'return gpu::GetVulkanFunctionPointers()->%s(' % func
+    callstat = ''
+    if (func == 'vkQueueSubmit' or func == 'vkQueueWaitIdle'
+        or func == 'vkQueuePresentKHR'):
+        callstat = '''base::AutoLockMaybe auto_lock
+        (gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
+        \n'''
+
+    callstat += 'return gpu::GetVulkanFunctionPointers()->%s(' % func
     paramdecl = '('
     if n > 0:
       paramnames = (''.join(t for t in p.itertext())
@@ -376,7 +383,9 @@ def GenerateHeaderFile(out_file):
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/native_library.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
 
@@ -430,6 +439,12 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       const gfx::ExtensionSet& enabled_extensions);
 
   base::NativeLibrary vulkan_loader_library = nullptr;
+
+  // This is used to allow thread safe access to a given vulkan queue when
+  // multiple gpu threads are accessing it. Note that this map will be only
+  // accessed by multiple gpu threads concurrently to read the data, so it
+  // should be thread safe to use this map by multiple threads.
+  base::flat_map<VkQueue, std::unique_ptr<base::Lock>> per_queue_lock_map;
 
   template<typename T>
   class VulkanFunction;

@@ -87,6 +87,23 @@ CreateGraphicsPipelinesHook(VkDevice device,
                             const VkAllocationCallbacks* pAllocator,
                             VkPipeline* pPipelines);
 
+// Below vulkanQueue*Hook methods are used to ensure that Skia calls the correct
+// version of those methods which are made thread safe by using locks. See
+// vulkan_function_pointers.h vkQueue* method references for more details.
+COMPONENT_EXPORT(VULKAN)
+VKAPI_ATTR VkResult VKAPI_CALL
+VulkanQueueSubmitHook(VkQueue queue,
+                      uint32_t submitCount,
+                      const VkSubmitInfo* pSubmits,
+                      VkFence fence);
+
+COMPONENT_EXPORT(VULKAN)
+VKAPI_ATTR VkResult VKAPI_CALL VulkanQueueWaitIdleHook(VkQueue queue);
+
+COMPONENT_EXPORT(VULKAN)
+VKAPI_ATTR VkResult VKAPI_CALL
+VulkanQueuePresentKHRHook(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
+
 COMPONENT_EXPORT(VULKAN)
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
                               const GPUInfo& gpu_info,

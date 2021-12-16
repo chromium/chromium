@@ -392,6 +392,20 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
     VkQueue vk_queue,
     uint32_t vk_queue_index,
     gfx::ExtensionSet enabled_extensions) {
+  // Currently VulkanDeviceQueue for drdc thread(aka CompositorGpuThread) uses
+  // the same vulkan queue as the gpu main thread. Now since both gpu main and
+  // drdc threads would be accessing/submitting work to the same queue, all the
+  // queue access should be made thread safe. This is done by using locks. This
+  // lock is per |vk_queue|. Note that we are intentionally overwriting a
+  // previous lock if any.
+  // Since the map itself would be accessed by multiple gpu threads, we need to
+  // ensure that the access are thread safe. Here the locks are created and
+  // written into the map only when drdc thread is initialized which happens
+  // during GpuServiceImpl init. At this point none of the gpu threads would be
+  // doing read access until GpuServiceImpl init completed. Hence its safe to
+  // access map here.
+  GetVulkanFunctionPointers()->per_queue_lock_map[vk_queue] =
+      std::make_unique<base::Lock>();
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
                     enabled_extensions);
 }
@@ -410,6 +424,15 @@ void VulkanDeviceQueue::Destroy() {
   if (VK_NULL_HANDLE != owned_vk_device_) {
     vkDestroyDevice(owned_vk_device_, nullptr);
     owned_vk_device_ = VK_NULL_HANDLE;
+
+    // Clear all the entries from this map since the device and hence all the
+    // generated queue(and their corresponding lock) from this device is
+    // destroyed.
+    // This happens when VulkanDeviceQueue is destroyed on gpu main thread
+    // during GpuServiceImpl destruction which happens after CompositorGpuThread
+    // is destroyed. Hence CompositorGpuThread would not be accessing the map at
+    // this point and its thread safe to delete map entries here.
+    GetVulkanFunctionPointers()->per_queue_lock_map.clear();
   }
   vk_device_ = VK_NULL_HANDLE;
   vk_queue_ = VK_NULL_HANDLE;

@@ -132,9 +132,24 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
                             VkDevice device) {
     if (device) {
-      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0)
+      // Using vkQueue*Hook for all vkQueue* methods here to make both chrome
+      // side access and skia side access to the same queue thread safe.
+      // vkQueue*Hook routes all skia side access to the same
+      // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
+      // lock.
+      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
+      } else if (std::strcmp("vkQueueSubmit", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueSubmitHook);
+      } else if (std::strcmp("vkQueueWaitIdle", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueWaitIdleHook);
+      } else if (std::strcmp("vkQueuePresentKHR", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueuePresentKHRHook);
+      }
       return vkGetDeviceProcAddr(device, proc_name);
     }
     return vkGetInstanceProcAddr(instance, proc_name);
