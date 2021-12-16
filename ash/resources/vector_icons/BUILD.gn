@@ -241,6 +241,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "six_files.icon",
     "small_close_button.icon",
     "sort_alphabetical.icon",
+    "sort_color.icon",
     "stylus_battery_status_unknown.icon",
     "switch_access.icon",
     "switch_access_back.icon",

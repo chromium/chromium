@@ -118,6 +118,10 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       return gfx::kNoneIcon;
     case ash::REORDER_SUBMENU:
       return ash::kReorderIcon;
+    case ash::REORDER_BY_NAME_ALPHABETICAL:
+      return ash::kSortAlphabeticalIcon;
+    case ash::REORDER_BY_COLOR:
+      return ash::kSortColorIcon;
     case ash::NOTIFICATION_CONTAINER:
       NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
                       "added to the model by NotificationMenuController.";

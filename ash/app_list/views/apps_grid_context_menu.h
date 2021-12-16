@@ -76,10 +76,6 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
   views::MenuItemView* root_menu_item_view_ = nullptr;
-
-  // The submenu model that contains name reorder options used in
-  // `context_menu_model_`.
-  std::unique_ptr<ui::SimpleMenuModel> reorder_name_submenu_;
 };
 
 }  // namespace ash

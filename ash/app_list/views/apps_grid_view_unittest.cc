@@ -4404,38 +4404,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   const gfx::Point reorder_option_point =
       reorder_option->GetBoundsInScreen().CenterPoint();
   SimulateLeftClickOrTapAt(reorder_option_point);
-  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
-
-  // Sort the apps by their name in alphabetical order.
-  const gfx::Point alphabetical_option = reorder_option->GetSubmenu()
-                                             ->GetMenuItemAt(0)
-                                             ->GetBoundsInScreen()
-                                             .CenterPoint();
-  SimulateLeftClickOrTapAt(alphabetical_option);
   EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
-            model_->requested_sort_order());
-  EXPECT_FALSE(context_menu->IsMenuShowing());
-
-  // Open the menu again to test the reverse alphabetical sort option.
-  SimulateRightClickOrLongPressAt(empty_space);
-  EXPECT_TRUE(context_menu->IsMenuShowing());
-
-  // Cache the current context menu view.
-  reorder_option =
-      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_TRUE(reorder_option->title() == u"Name");
-
-  // Open the Reorder by Name submenu.
-  SimulateLeftClickOrTapAt(reorder_option_point);
-  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
-
-  // Sort the apps by their name in reverse alphabetical order.
-  const gfx::Point reverse_option = reorder_option->GetSubmenu()
-                                        ->GetMenuItemAt(1)
-                                        ->GetBoundsInScreen()
-                                        .CenterPoint();
-  SimulateLeftClickOrTapAt(reverse_option);
-  EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
             model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
 
@@ -4489,40 +4458,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
   gfx::Point reorder_option_point =
       reorder_option->GetBoundsInScreen().CenterPoint();
   SimulateLeftClickOrTapAt(reorder_option_point);
-  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
-
-  // Sort the apps by their name in alphabetical order.
-  const gfx::Point alphabetical_option = reorder_option->GetSubmenu()
-                                             ->GetMenuItemAt(0)
-                                             ->GetBoundsInScreen()
-                                             .CenterPoint();
-  SimulateLeftClickOrTapAt(alphabetical_option);
   EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
-            model_->requested_sort_order());
-  EXPECT_FALSE(context_menu->IsMenuShowing());
-
-  // Open the menu again to test the reverse alphabetical sort option.
-  folder_item_point = folder_item->GetBoundsInScreen().CenterPoint();
-  SimulateRightClickOrLongPressAt(folder_item_point);
-  EXPECT_TRUE(context_menu->IsMenuShowing());
-
-  // Cache the current context menu view.
-  reorder_option =
-      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_TRUE(reorder_option->title() == u"Name");
-
-  // Open the Reorder by Name submenu.
-  reorder_option_point = reorder_option->GetBoundsInScreen().CenterPoint();
-  SimulateLeftClickOrTapAt(reorder_option_point);
-  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
-
-  // Sort the apps by their name in reverse alphabetical order.
-  const gfx::Point reverse_option = reorder_option->GetSubmenu()
-                                        ->GetMenuItemAt(1)
-                                        ->GetBoundsInScreen()
-                                        .CenterPoint();
-  SimulateLeftClickOrTapAt(reverse_option);
-  EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
             model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
 

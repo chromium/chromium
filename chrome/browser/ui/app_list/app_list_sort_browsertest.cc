@@ -117,7 +117,6 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     views::MenuItemView* reorder_option = nullptr;
     switch (order) {
       case ash::AppListSortOrder::kNameAlphabetical:
-      case ash::AppListSortOrder::kNameReverseAlphabetical:
         reorder_option = root_menu->GetSubmenu()->GetMenuItemAt(1);
         EXPECT_TRUE(reorder_option->title() == u"Name");
         break;
@@ -125,6 +124,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
         reorder_option = root_menu->GetSubmenu()->GetMenuItemAt(2);
         EXPECT_TRUE(reorder_option->title() == u"Color");
         break;
+      case ash::AppListSortOrder::kNameReverseAlphabetical:
       case ash::AppListSortOrder::kCustom:
         NOTREACHED();
         return nullptr;
@@ -136,32 +136,20 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   views::MenuItemView* GetReorderOptionForNonFolderItemMenu(
       const views::MenuItemView* root_menu,
       ash::AppListSortOrder order) {
-    views::MenuItemView* reorder_option = nullptr;
-    switch (order) {
-      case ash::AppListSortOrder::kNameAlphabetical:
-      case ash::AppListSortOrder::kNameReverseAlphabetical: {
-        // Get the second to last menu item index.
-        views::SubmenuView* sub_menu = root_menu->GetSubmenu();
-        int index = sub_menu->GetRowCount() - 2;
-        reorder_option = sub_menu->GetMenuItemAt(index);
-        EXPECT_TRUE(reorder_option->title() == u"Reorder by name");
-        break;
-      }
-      case ash::AppListSortOrder::kColor:
-        reorder_option = root_menu->GetSubmenu()->GetLastItem();
-        EXPECT_TRUE(reorder_option->title() == u"Color");
-        break;
-      case ash::AppListSortOrder::kCustom:
-        NOTREACHED();
-        return nullptr;
-    }
-    return reorder_option;
+    // Get the last menu item index where the reorder submenu is.
+    views::MenuItemView* reorder_item_view =
+        root_menu->GetSubmenu()->GetLastItem();
+    DCHECK_EQ(reorder_item_view->title(), u"Reorder by");
+    return reorder_item_view;
   }
 
   // Reorders the app list items through the specified context menu indicated by
   // `menu_type`.
   void ReorderByMouseClickAtContextMenu(ash::AppListSortOrder order,
                                         MenuType menu_type) {
+    // Custom order is not a menu option.
+    ASSERT_NE(order, ash::AppListSortOrder::kCustom);
+
     views::MenuItemView* root_menu = ShowRootMenuAndReturn(menu_type);
 
     // Get the "Name" or "Color" option.
@@ -172,35 +160,24 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
         reorder_option =
             GetReorderOptionForAppListOrFolderItemMenu(root_menu, order);
         break;
-      case MenuType::kAppListNonFolderItemMenu:
-        reorder_option = GetReorderOptionForNonFolderItemMenu(root_menu, order);
+      case MenuType::kAppListNonFolderItemMenu: {
+        // The `reorder_option` cached here is the submenu of the options.
+        views::MenuItemView* reorder_submenu =
+            GetReorderOptionForNonFolderItemMenu(root_menu, order);
+        event_generator_->MoveMouseTo(
+            reorder_submenu->GetBoundsInScreen().CenterPoint());
+        event_generator_->ClickLeftButton();
+        reorder_option = reorder_submenu->GetSubmenu()->GetMenuItemAt(
+            GetMenuIndexOfSortingOrder(order));
         break;
+      }
     }
 
-    gfx::Point sorting_option;
-    switch (order) {
-      case ash::AppListSortOrder::kNameAlphabetical:
-      case ash::AppListSortOrder::kNameReverseAlphabetical:
-        // Open the Reorder by mouse clicking at the Name submenu.
-        event_generator_->MoveMouseTo(
-            reorder_option->GetBoundsInScreen().CenterPoint());
-        event_generator_->ClickLeftButton();
-        ASSERT_TRUE(reorder_option->SubmenuIsShowing());
-        sorting_option = reorder_option->GetSubmenu()
-                             ->GetMenuItemAt(GetMenuIndexOfSortingOrder(order))
-                             ->GetBoundsInScreen()
-                             .CenterPoint();
-        break;
-      case ash::AppListSortOrder::kColor:
-        sorting_option = reorder_option->GetBoundsInScreen().CenterPoint();
-        break;
-      case ash::AppListSortOrder::kCustom:
-        NOTREACHED();
-        return;
-    }
+    gfx::Point point_on_option =
+        reorder_option->GetBoundsInScreen().CenterPoint();
 
     // Click at the sorting option.
-    event_generator_->MoveMouseTo(sorting_option);
+    event_generator_->MoveMouseTo(point_on_option);
     event_generator_->ClickLeftButton();
   }
 
@@ -209,9 +186,9 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     switch (order) {
       case ash::AppListSortOrder::kNameAlphabetical:
         return 0;
-      case ash::AppListSortOrder::kNameReverseAlphabetical:
-        return 1;
       case ash::AppListSortOrder::kColor:
+        return 1;
+      case ash::AppListSortOrder::kNameReverseAlphabetical:
       case ash::AppListSortOrder::kCustom:
         NOTREACHED();
         return 0;
@@ -303,7 +280,8 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 };
 
 // Verifies that the apps in the top level apps grid can be arranged in the
-// (reverse) alphabetical order using the context menu in apps grid view.
+// alphabetical order or sorted by the apps' icon colors using the context menu
+// in apps grid view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
@@ -317,20 +295,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ReorderByMouseClickAtContextMenu(
-      ash::AppListSortOrder::kNameReverseAlphabetical,
-      MenuType::kAppListPageMenu);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListPageMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
 }
 
-// Verifies that the apps in a folder can be arranged in the (reverse)
-// alphabetical order using the context menu in apps grid view.
+// Verifies that the apps in a folder can be arranged in the alphabetical order
+// or sorted by the apps' icon colors using the context menu in apps grid view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
@@ -348,12 +320,6 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ReorderByMouseClickAtContextMenu(
-      ash::AppListSortOrder::kNameReverseAlphabetical,
-      MenuType::kAppListPageMenu);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListPageMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
@@ -361,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
 }
 
 // Verifies that the apps in the top level apps grid can be arranged in the
-// (reverse) alphabetical order using the context menu in app list item view.
+// alphabetical order or sorted by the apps' icon colors using the context menu
+// in app list item view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
@@ -376,20 +343,15 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ReorderByMouseClickAtContextMenu(
-      ash::AppListSortOrder::kNameReverseAlphabetical,
-      MenuType::kAppListNonFolderItemMenu);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListNonFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
 }
 
-// Verifies that the apps in a folder can be arranged in the (reverse)
-// alphabetical order using the context menu in app list item view.
+// Verifies that the apps in a folder can be arranged in the alphabetical order
+// or sorted by the apps' icon colors using the context menu in app list item
+// view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
@@ -410,20 +372,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ReorderByMouseClickAtContextMenu(
-      ash::AppListSortOrder::kNameReverseAlphabetical,
-      MenuType::kAppListNonFolderItemMenu);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListNonFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
 }
 
-// Verifies that the apps can be arranged in the (reverse)
-// alphabetical order using the context menu on folder item view.
+// Verifies that the apps can be arranged in the alphabetical order or sorted by
+// the apps' icon colors using the context menu on folder item view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
@@ -441,12 +397,6 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
                                    MenuType::kAppListFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
-
-  ReorderByMouseClickAtContextMenu(
-      ash::AppListSortOrder::kNameReverseAlphabetical,
-      MenuType::kAppListFolderItemMenu);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListFolderItemMenu);

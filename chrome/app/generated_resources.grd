@@ -10553,6 +10553,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_APP_LIST_CONTEXT_MENU_PIN_ENFORCED_BY_POLICY" desc="Short text for the pin/unpin context menu to tell user the setting is enforced by policy of an app list item">
           Pinned by administrator
         </message>
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items in the app list. Clicking the option opens a submenu in which the user can choose how the items in the app list should be ordered (e.g. by name or the icon color).">
+          Reorder by
+        </message>
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items by their names in the app list. This option is under the 'Reorder by' submenu">
+          Name
+        </message>
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items by their icon colors in the app list. This option is under the 'Reorder by' submenu">
+          Color
+        </message>
         <message name="IDS_APP_LIST_UNINSTALL_ITEM"
                   desc="Title text for the 'uninstall' context menu item of an app list item.">
           Uninstall

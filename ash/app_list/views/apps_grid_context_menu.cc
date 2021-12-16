@@ -31,10 +31,6 @@ void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
           AppListSortOrder::kNameAlphabetical);
       break;
-    case AppsGridCommandId::kReorderByNameReverseAlphabetical:
-      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
-          AppListSortOrder::kNameReverseAlphabetical);
-      break;
     case AppsGridCommandId::kReorderByColor:
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
           AppListSortOrder::kColor);
@@ -71,31 +67,23 @@ void AppsGridContextMenu::ShowContextMenuForViewImpl(
 
 void AppsGridContextMenu::BuildMenuModel() {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-  reorder_name_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
-
-  // As both of the submenu items are not planned to be launched, the option
-  // strings are directly written as the parameters.
-  // TODO(https://crbug.com/1269386): Add i18n strings for each menu item.
-  reorder_name_submenu_->AddItem(kReorderByNameAlphabetical, u"Alphabetical");
-  reorder_name_submenu_->AddItem(kReorderByNameReverseAlphabetical,
-                                 u"Reverse alphabetical");
 
   context_menu_model_->AddTitle(l10n_util::GetStringUTF16(
       IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE));
-  context_menu_model_->AddSubMenuWithIcon(
-      AppsGridCommandId::kReorderByName,
+  context_menu_model_->AddItemWithIcon(
+      AppsGridCommandId::kReorderByNameAlphabetical,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
-      reorder_name_submenu_.get(),
       ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon));
-  // TODO(crbug.com/1276230): Add vector icon to reorder by color option.
-  // TODO(https://crbug.com/1269386): Add i18n strings for color menu item.
-  context_menu_model_->AddItem(kReorderByColor, u"Color");
+  context_menu_model_->AddItemWithIcon(
+      AppsGridCommandId::kReorderByColor,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
+      ui::ImageModel::FromVectorIcon(kSortColorIcon));
 }
 
 void AppsGridContextMenu::OnMenuClosed() {
   menu_runner_.reset();
-  reorder_name_submenu_.reset();
   context_menu_model_.reset();
   root_menu_item_view_ = nullptr;
   menu_model_adapter_.reset();
