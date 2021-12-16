@@ -534,8 +534,10 @@ std::string SafeBrowsingMetricsCollector::GetTimesDisabledSuffix() {
                                   EventType::USER_STATE_ENABLED);
 
   if (!latest_enabled_event) {
-    // this code path could be possible if ESB was enabled via policy but
-    // later disabled by the user, since policy enables/disables are not tracked
+    // This code path could be possible if ESB was enabled via policy but
+    // later disabled by the user, since policy enables/disables are not
+    // tracked. It's also possible if it's been longer than kEventMaxDurationDay
+    // days since the latest enabled event.
     return "NeverEnabled";
   }
   const auto hours_since_enabled =

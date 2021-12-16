@@ -54,7 +54,8 @@ chromium-metrics-reviews@google.com.
       summary="ESB enabled duration was between 1 hour and 24 hours"/>
   <variant name="NeverEnabled"
       summary="There is no enabled duration because ESB wasn't manually
-               enabled"/>
+               enabled, or it has been longer than kEventMaxDurationDay days
+               since the latest enabled event."/>
   <variant name="ShortEnabled"
       summary="ESB enabled duration was less than 1 hour"/>
 </variants>
