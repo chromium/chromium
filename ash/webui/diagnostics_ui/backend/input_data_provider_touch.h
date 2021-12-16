@@ -11,8 +11,6 @@
 namespace ash {
 namespace diagnostics {
 
-class InputDeviceInformation;
-
 // Helper to provide InputDataProvider diagnostic interface with touch-specific
 // logic.
 class InputDataProviderTouch {
@@ -23,7 +21,9 @@ class InputDataProviderTouch {
   ~InputDataProviderTouch();
 
   mojom::TouchDeviceInfoPtr ConstructTouchDevice(
-      const InputDeviceInformation* device_info);
+      int id,
+      const ui::EventDeviceInfo* device_info,
+      mojom::ConnectionType connection_type);
 };
 
 }  // namespace diagnostics

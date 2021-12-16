@@ -20,8 +20,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/system/statistics_provider.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/events/devices/device_util_linux.h"
-#include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -35,27 +33,27 @@ bool GetEventNodeId(base::FilePath path, int* id) {
   const std::string base_name_prefix = "event";
 
   std::string base_name = path.BaseName().value();
-  if (!base::StartsWith(base_name, base_name_prefix))
-    return false;
+  DCHECK(base::StartsWith(base_name, base_name_prefix));
   base_name.erase(0, base_name_prefix.length());
   return base::StringToInt(base_name, id);
 }
 
-// Determine if this particular evdev provides touchpad or touchscreen input;
-// we do not want stylus devices, which also claim to be touchscreens.
-bool IsTouchInputDevice(InputDeviceInformation* device_info) {
-  return (device_info->event_device_info.HasTouchpad() ||
-          (device_info->event_device_info.HasTouchscreen() &&
-           !device_info->event_device_info.HasStylus()));
+mojom::ConnectionType ConnectionTypeFromInputDeviceType(
+    ui::InputDeviceType type) {
+  switch (type) {
+    case ui::InputDeviceType::INPUT_DEVICE_INTERNAL:
+      return mojom::ConnectionType::kInternal;
+    case ui::InputDeviceType::INPUT_DEVICE_USB:
+      return mojom::ConnectionType::kUsb;
+    case ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH:
+      return mojom::ConnectionType::kBluetooth;
+    case ui::InputDeviceType::INPUT_DEVICE_UNKNOWN:
+      return mojom::ConnectionType::kUnknown;
+  }
 }
-
 }  // namespace
 
-// All blockings calls for identifying hardware need to go here: both
-// EventDeviceInfo::Initialize and ui::GetInputPathInSys can block in
-// base::MakeAbsoluteFilePath.
-std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
-    int id,
+std::unique_ptr<ui::EventDeviceInfo> InputDeviceInfoHelper::GetDeviceInfo(
     base::FilePath path) {
   base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
   if (fd.get() < 0) {
@@ -63,26 +61,12 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
     return nullptr;
   }
 
-  auto info = std::make_unique<InputDeviceInformation>();
-
-  if (!info->event_device_info.Initialize(fd.get(), path)) {
+  auto device_info = std::make_unique<ui::EventDeviceInfo>();
+  if (!device_info->Initialize(fd.get(), path)) {
     LOG(ERROR) << "Failed to get device info for " << path;
     return nullptr;
   }
-
-  const base::FilePath sys_path = ui::GetInputPathInSys(path);
-
-  info->path = path;
-  info->evdev_id = id;
-  info->connection_type = InputDataProvider::ConnectionTypeFromInputDeviceType(
-      info->event_device_info.device_type());
-  info->input_device = ui::InputDevice(
-      id, info->event_device_info.device_type(), info->event_device_info.name(),
-      info->event_device_info.phys(), sys_path,
-      info->event_device_info.vendor_id(), info->event_device_info.product_id(),
-      info->event_device_info.version());
-
-  return info;
+  return device_info;
 }
 
 InputDataProvider::InputDataProvider()
@@ -98,21 +82,6 @@ InputDataProvider::InputDataProvider(
 
 InputDataProvider::~InputDataProvider() {
   device_manager_->RemoveObserver(this);
-}
-
-// static
-mojom::ConnectionType InputDataProvider::ConnectionTypeFromInputDeviceType(
-    ui::InputDeviceType type) {
-  switch (type) {
-    case ui::InputDeviceType::INPUT_DEVICE_INTERNAL:
-      return mojom::ConnectionType::kInternal;
-    case ui::InputDeviceType::INPUT_DEVICE_USB:
-      return mojom::ConnectionType::kUsb;
-    case ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH:
-      return mojom::ConnectionType::kBluetooth;
-    case ui::InputDeviceType::INPUT_DEVICE_UNKNOWN:
-      return mojom::ConnectionType::kUnknown;
-  }
 }
 
 void InputDataProvider::Initialize() {
@@ -135,7 +104,6 @@ bool InputDataProvider::ReceiverIsBound() {
 void InputDataProvider::OnBoundInterfaceDisconnect() {
   receiver_.reset();
 }
-
 void InputDataProvider::GetConnectedDevices(
     GetConnectedDevicesCallback callback) {
   std::vector<mojom::KeyboardInfoPtr> keyboard_vector;
@@ -190,12 +158,10 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
 
   if (event.action_type() == ui::DeviceEvent::ActionType::ADD) {
     info_helper_.AsyncCall(&InputDeviceInfoHelper::GetDeviceInfo)
-        .WithArgs(id, event.path())
+        .WithArgs(event.path())
         .Then(base::BindOnce(&InputDataProvider::ProcessDeviceInfo,
-                             weak_factory_.GetWeakPtr()));
-
+                             weak_factory_.GetWeakPtr(), id));
   } else {
-    DCHECK(event.action_type() == ui::DeviceEvent::ActionType::REMOVE);
     if (keyboards_.contains(id)) {
       keyboards_.erase(id);
       for (auto& observer : connected_devices_observers_) {
@@ -210,39 +176,40 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   }
 }
 
-InputDeviceInformation::InputDeviceInformation() = default;
-InputDeviceInformation::~InputDeviceInformation() = default;
-
 void InputDataProvider::ProcessDeviceInfo(
-    std::unique_ptr<InputDeviceInformation> device_info) {
+    int id,
+    std::unique_ptr<ui::EventDeviceInfo> device_info) {
   if (device_info == nullptr) {
     return;
   }
 
-  if (IsTouchInputDevice(device_info.get())) {
-    AddTouchDevice(device_info.get());
-  } else if (device_info->event_device_info.HasKeyboard()) {
-    AddKeyboard(device_info.get());
+  if (device_info->HasTouchpad() ||
+      (device_info->HasTouchscreen() && !device_info->HasStylus())) {
+    AddTouchDevice(id, device_info.get());
+  } else if (device_info->HasKeyboard()) {
+    AddKeyboard(id, device_info.get());
   }
 }
 
-void InputDataProvider::AddTouchDevice(
-    const InputDeviceInformation* device_info) {
-  touch_devices_[device_info->evdev_id] =
-      touch_helper_.ConstructTouchDevice(device_info);
+void InputDataProvider::AddTouchDevice(int id,
+                                       const ui::EventDeviceInfo* device_info) {
+  touch_devices_[id] = touch_helper_.ConstructTouchDevice(
+      id, device_info,
+      ConnectionTypeFromInputDeviceType(device_info->device_type()));
 
   for (auto& observer : connected_devices_observers_) {
-    observer->OnTouchDeviceConnected(
-        touch_devices_[device_info->evdev_id]->Clone());
+    observer->OnTouchDeviceConnected(touch_devices_[id]->Clone());
   }
 }
 
-void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
-  keyboards_[device_info->evdev_id] =
-      keyboard_helper_.ConstructKeyboard(device_info);
+void InputDataProvider::AddKeyboard(int id,
+                                    const ui::EventDeviceInfo* device_info) {
+  keyboards_[id] = keyboard_helper_.ConstructKeyboard(
+      id, device_info,
+      ConnectionTypeFromInputDeviceType(device_info->device_type()));
 
   for (auto& observer : connected_devices_observers_) {
-    observer->OnKeyboardConnected(keyboards_[device_info->evdev_id]->Clone());
+    observer->OnKeyboardConnected(keyboards_[id]->Clone());
   }
 }
 
