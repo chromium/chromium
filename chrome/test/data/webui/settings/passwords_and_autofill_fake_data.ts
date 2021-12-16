@@ -248,6 +248,7 @@ export function createCreditCardEntry():
     cardNumber: cardNumber,
     expirationMonth: Math.ceil(Math.random() * 11).toString(),
     expirationYear: (2016 + Math.floor(Math.random() * 5)).toString(),
+    network: `${card}_network`,
     metadata: {
       isLocal: true,
       summaryLabel: card + ' ' +

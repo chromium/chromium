@@ -78,6 +78,7 @@ declare global {
         expirationMonth?: string;
         expirationYear?: string;
         nickname?: string;
+        network?: string;
         metadata?: AutofillMetadata;
       }
 

@@ -168,6 +168,9 @@ namespace autofillPrivate {
     // Credit card's nickname.
     DOMString? nickname;
 
+    // Credit card's network.
+    DOMString? network;
+
     AutofillMetadata? metadata;
   };
 

@@ -13,9 +13,13 @@ import '../i18n_setup.js';
 import '../settings_shared_css.js';
 import './passwords_shared_css.js';
 
+import {I18nMixin} from '//resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-class SettingsCreditCardListEntryElement extends PolymerElement {
+const SettingsCreditCardListEntryElementBase = I18nMixin(PolymerElement);
+
+class SettingsCreditCardListEntryElement extends
+    SettingsCreditCardListEntryElementBase {
   static get is() {
     return 'settings-credit-card-list-entry';
   }
@@ -52,6 +56,33 @@ class SettingsCreditCardListEntryElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  /**
+   * @returns the title for the More Actions button corresponding to the card
+   *     which is described by the nickname or the network name and last 4
+   *     digits or name
+   */
+  private moreActionsTitle_(creditCard: chrome.autofillPrivate.CreditCardEntry):
+      string {
+    if (creditCard.nickname) {
+      return this.i18n('moreActionsForCreditCard', creditCard.nickname);
+    }
+
+    const cardNumber = creditCard.cardNumber;
+    if (cardNumber) {
+      const lastFourDigits =
+          cardNumber.substring(Math.max(0, cardNumber.length - 4));
+      if (lastFourDigits) {
+        const network = creditCard.network || this.i18n('genericCreditCard');
+        return this.i18n(
+            'moreActionsForCreditCard',
+            this.i18n(
+                'moreActionsCreditCardDescription', network, lastFourDigits));
+      }
+    }
+
+    return this.i18n('moreActionsForCreditCard', creditCard.name!);
   }
 
   /**

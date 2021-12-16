@@ -204,6 +204,54 @@ suite('PaymentsSection', function() {
     assertFalse(!!outlinkButton);
   });
 
+  test('verifyCreditCardMoreDetailsTitle', function() {
+    let creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = true;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    assertTrue(!!menuButton);
+    const updateCreditCardCallback =
+        (creditCard: chrome.autofillPrivate.CreditCardEntry) => {
+          (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
+              .lastCallback.setPersonalDataManagerListener!([], [creditCard]);
+          flush();
+        };
+
+    // Case 1: a card with a nickname
+    creditCard = createCreditCardEntry();
+    creditCard.nickname = 'My card name';
+    updateCreditCardCallback(creditCard);
+    assertEquals(
+        'More actions for My card name', menuButton!.getAttribute('title'));
+
+    // Case 2: a card without nickname
+    creditCard = createCreditCardEntry();
+    creditCard.cardNumber = '0000000000001234';
+    creditCard.network = 'Visa';
+    updateCreditCardCallback(creditCard);
+    assertEquals(
+        'More actions for Visa ending in 1234',
+        menuButton!.getAttribute('title'));
+
+    // Case 3: a card without network
+    creditCard = createCreditCardEntry();
+    creditCard.cardNumber = '0000000000001234';
+    creditCard.network = undefined;
+    updateCreditCardCallback(creditCard);
+    assertEquals(
+        'More actions for Card ending in 1234',
+        menuButton!.getAttribute('title'));
+
+    // Case 4: a card without number
+    creditCard = createCreditCardEntry();
+    creditCard.cardNumber = undefined;
+    updateCreditCardCallback(creditCard);
+    assertEquals(
+        'More actions for Jane Doe', menuButton!.getAttribute('title'));
+  });
+
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
