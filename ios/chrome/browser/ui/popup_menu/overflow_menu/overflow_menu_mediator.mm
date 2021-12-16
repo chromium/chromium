@@ -314,14 +314,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history", ^{
         [weakSelf openHistory];
       });
-  self.passwordsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_PASSWORDS,
-      (IsPasswordManagerBrandingUpdateEnabled()
-           ? @"overflow_menu_destination_passwords_rebrand"
-           : @"overflow_menu_destination_passwords"),
-      ^{
+
+  int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
+                            ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
+                            : IDS_IOS_TOOLS_MENU_PASSWORDS;
+  NSString* passwordIconImageName =
+      IsPasswordManagerBrandingUpdateEnabled()
+          ? @"overflow_menu_destination_passwords_rebrand"
+          : @"overflow_menu_destination_passwords";
+  self.passwordsDestination =
+      CreateOverflowMenuDestination(passwordTitleID, passwordIconImageName, ^{
         [weakSelf openPasswords];
       });
+
   self.readingListDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_READING_LIST,
       @"overflow_menu_destination_reading_list", ^{

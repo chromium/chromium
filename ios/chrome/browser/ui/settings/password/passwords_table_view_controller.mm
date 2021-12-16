@@ -291,7 +291,13 @@ void RemoveFormsToBeDeleted(
         [PasswordAutoFillStatusManager sharedManager];
 
     self.exampleHeaders = [[NSMutableDictionary alloc] init];
-    self.title = l10n_util::GetNSString(IDS_IOS_PASSWORDS);
+
+    int titleStringID =
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+            ? IDS_IOS_PASSWORD_MANAGER
+            : IDS_IOS_PASSWORDS;
+    self.title = l10n_util::GetNSString(titleStringID);
     if (base::FeatureList::IsEnabled(
             password_manager::features::kSupportForAddPasswordsInSettings)) {
       self.shouldDisableDoneButtonOnEdit = YES;

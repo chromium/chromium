@@ -778,18 +778,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (TableViewItem*)passwordsDetailItem {
   BOOL passwordsEnabled = _browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
+  BOOL passwordsRebrandingEnabled = base::FeatureList::IsEnabled(
+      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+
   NSString* passwordsDetail = passwordsEnabled
                                   ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  _passwordsDetailItem =
-      [self detailItemWithType:SettingsItemTypePasswords
-                          text:l10n_util::GetNSString(IDS_IOS_PASSWORDS)
-                    detailText:passwordsDetail
-                 iconImageName:(base::FeatureList::IsEnabled(
-                                                             password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-                                    ? kSettingsPasswordsImageName
-                                    : kLegacySettingsPasswordsImageName)
-                 accessibilityIdentifier:kSettingsPasswordsCellId];
+
+  NSString* passwordsSectionTitle =
+      passwordsRebrandingEnabled
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)
+          : l10n_util::GetNSString(IDS_IOS_PASSWORDS);
+
+  NSString* passwordsIconImageName = passwordsRebrandingEnabled
+                                         ? kSettingsPasswordsImageName
+                                         : kLegacySettingsPasswordsImageName;
+
+  _passwordsDetailItem = [self detailItemWithType:SettingsItemTypePasswords
+                                             text:passwordsSectionTitle
+                                       detailText:passwordsDetail
+                                    iconImageName:passwordsIconImageName
+                          accessibilityIdentifier:kSettingsPasswordsCellId];
 
   return _passwordsDetailItem;
 }
