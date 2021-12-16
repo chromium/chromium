@@ -47,6 +47,11 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
 
 void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
     OtpUnmaskResult result) {
+  // This can be invoked when the dialog is not visible. In this case we do
+  // nothing.
+  if (!dialog_view_)
+    return;
+
   switch (result) {
     case OtpUnmaskResult::kSuccess:
       dialog_view_->Dismiss(/*show_confirmation_before_closing=*/true,

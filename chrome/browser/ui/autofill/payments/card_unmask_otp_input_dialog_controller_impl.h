@@ -65,6 +65,8 @@ class CardUnmaskOtpInputDialogControllerImpl
   explicit CardUnmaskOtpInputDialogControllerImpl(
       content::WebContents* web_contents);
 
+  raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
+
  private:
   friend class content::WebContentsUserData<
       CardUnmaskOtpInputDialogControllerImpl>;
@@ -78,8 +80,6 @@ class CardUnmaskOtpInputDialogControllerImpl
 
   // Weak reference to the delegate. Used to handle events of the dialog.
   base::WeakPtr<OtpUnmaskDelegate> delegate_;
-
-  raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
 
   // Indicates whether any temporary error has been shown on the dialog. Used
   // for logging.
