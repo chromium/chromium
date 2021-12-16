@@ -193,6 +193,39 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
+void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                                                    LaunchCallback callback) {
+  const auto* extension = MaybeGetExtension(params.app_id);
+
+  if (params.launch_files.empty() && !params.intent) {
+    LaunchImpl(std::move(params));
+    return;
+  }
+
+  bool is_quickoffice =
+      extension->id() == extension_misc::kQuickOfficeComponentExtensionId;
+  if (extension->is_app() || is_quickoffice) {
+    content::WebContents* web_contents = LaunchImpl(std::move(params));
+
+    if (params.launch_source == apps::mojom::LaunchSource::kFromArc &&
+        web_contents) {
+      // Add a flag to remember this web_contents originated in the ARC context.
+      web_contents->SetUserData(
+          &arc::ArcWebContentsData::kArcTransitionFlag,
+          std::make_unique<arc::ArcWebContentsData>(web_contents));
+    }
+  } else {
+    DCHECK(extension->is_extension());
+    // TODO(petermarshall): Set Arc flag as above?
+    auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+                                           /*prefer_container=*/false);
+    auto window_info = apps::MakeWindowInfo(params.display_id);
+    LaunchExtension(params.app_id, event_flags, std::move(params.intent),
+                    params.launch_source, std::move(window_info),
+                    base::DoNothing());
+  }
+}
+
 void ExtensionAppsChromeOs::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

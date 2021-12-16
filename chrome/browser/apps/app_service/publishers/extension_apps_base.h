@@ -96,6 +96,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
       LaunchAppWithIntentCallback callback);
 
   virtual content::WebContents* LaunchImpl(AppLaunchParams&& params);
+  virtual void LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                                       LaunchCallback callback);
 
   // Returns extensions::Extension* for the valid |app_id|. Otherwise, returns
   // nullptr.

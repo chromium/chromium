@@ -307,6 +307,14 @@ content::WebContents* ExtensionAppsBase::LaunchImpl(AppLaunchParams&& params) {
   return ::OpenApplication(profile_, std::move(params));
 }
 
+void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                                                LaunchCallback callback) {
+  LaunchImpl(std::move(params));
+
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
+}
+
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(
     const std::string& app_id) {
   DCHECK(profile_);
@@ -383,19 +391,21 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
 
 void ExtensionAppsBase::LaunchAppWithParams(AppLaunchParams&& params,
                                             LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
-                                         /*prefer_container=*/false);
-  auto window_info = apps::MakeWindowInfo(params.display_id);
-  if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source, std::move(window_info),
-                        base::DoNothing());
-  } else {
-    Launch(params.app_id, event_flags, params.launch_source,
-           std::move(window_info));
+  auto app_id = params.app_id;
+  const auto* extension = MaybeGetExtension(app_id);
+  if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
+    return;
   }
-  // TODO(crbug.com/1244506): Add launch return value.
-  std::move(callback).Run(LaunchResult());
+
+  if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
+    RunExtensionEnableFlow(
+        app_id, base::BindOnce(&ExtensionAppsBase::LaunchAppWithParams,
+                               weak_factory_.GetWeakPtr(), std::move(params),
+                               std::move(callback)));
+    return;
+  }
+
+  LaunchAppWithParamsImpl(std::move(params), std::move(callback));
 }
 
 void ExtensionAppsBase::Connect(

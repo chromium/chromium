@@ -80,6 +80,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   // ExtensionAppsBase overrides.
   void Initialize() override;
+  void LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                               LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,
