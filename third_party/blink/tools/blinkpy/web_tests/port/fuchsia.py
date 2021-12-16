@@ -66,8 +66,8 @@ def _import_fuchsia_runner():
     import aemu_target
     global ConnectPortForwardingTask
     from common import ConnectPortForwardingTask
-    global _GetPathToBuiltinTarget, _LoadTargetClass
-    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass
+    global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
+    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
     global device_target
     import device_target
     global fuchsia_target
@@ -245,24 +245,16 @@ class FuchsiaPort(base.Port):
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = Namespace(
-                out_dir=self._build_path(),
-                fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
-                target_cpu=self._target_cpu(),
-                ssh_config=self.get_option('fuchsia_ssh_config'),
-                os_check='ignore',
-                host=self.get_option('fuchsia_host'),
-                port=self.get_option('fuchsia_port'),
-                node_name=self.get_option('fuchsia_node_name'),
-                cpu_cores=self._cpu_cores(),
-                require_kvm=True,
-                ram_size_mb=8192,
-                enable_graphics=False,
-                hardware_gpu=False,
-                with_network=False,
-                logs_dir=self.results_directory(),
-                custom_image=None,
-                system_image_dir=None)
+            target_args = InitializeTargetArgs()
+            target_args.out_dir = self._build_path()
+            target_args.target_cpu = self._target_cpu()
+            target_args.fuchsia_out_dir = self.get_option('fuchsia_out_dir')
+            target_args.ssh_config = self.get_option('fuchsia_ssh_config')
+            target_args.host = self.get_option('fuchsia_host')
+            target_args.port = self.get_option('fuchsia_port')
+            target_args.node_name = self.get_option('fuchsia_node_name')
+            target_args.cpu_cores = self._cpu_cores()
+            target_args.logs_dir = self.results_directory()
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)

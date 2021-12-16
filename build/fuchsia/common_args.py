@@ -164,6 +164,15 @@ def ConfigureLogging(args):
       logging.DEBUG if args.verbose else logging.WARN)
 
 
+def InitializeTargetArgs():
+  """Set args for all targets to default values. This is used by test scripts
+     that have their own parser but still uses the target classes."""
+  parser = argparse.ArgumentParser()
+  AddCommonArgs(parser)
+  AddTargetSpecificArgs(parser)
+  return parser.parse_args([])
+
+
 def GetDeploymentTargetForArgs(args):
   """Constructs a deployment target object using command line arguments.
      If needed, an additional_args dict can be used to supplement the
