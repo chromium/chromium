@@ -2296,6 +2296,44 @@ public class ExternalNavigationHandlerTest {
                         START_OTHER_ACTIVITY);
     }
 
+    @Test
+    @SmallTest
+    public void testSuppressDisambiguationDialog() {
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+
+        checkUrl(YOUTUBE_URL)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        mDelegate.setWillResolveToDisambiguationDialog(true);
+        checkUrl(YOUTUBE_URL)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        mDelegate.setShouldAvoidDisambiguationDialog(true);
+        checkUrl(YOUTUBE_URL).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTargetPackageName() {
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+
+        checkUrl(YOUTUBE_URL)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        Assert.assertNull(mDelegate.startActivityIntent.getPackage());
+
+        mDelegate.setTargetPackageName("target.package");
+
+        checkUrl(YOUTUBE_URL)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        Assert.assertEquals("target.package", mDelegate.startActivityIntent.getPackage());
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -2468,6 +2506,10 @@ public class ExternalNavigationHandlerTest {
         }
 
         public ResolveInfo resolveActivity(Intent intent) {
+            if (mWillResolveToDisambiguationDialog) {
+                return newResolveInfo("android.disambiguation.dialog");
+            }
+
             List<ResolveInfo> list = queryIntentActivities(intent);
             return list.size() > 0 ? list.get(0) : null;
         }
@@ -2637,6 +2679,21 @@ public class ExternalNavigationHandlerTest {
             return mShouldLaunchWebApksOnInitialIntent;
         }
 
+        @Override
+        public boolean maybeSetTargetPackage(Intent intent) {
+            if (mTargetPackageName != null) {
+                intent.setSelector(null);
+                intent.setPackage(mTargetPackageName);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+            return mShouldAvoidDisambiguationDialog;
+        }
+
         public void reset() {
             startActivityIntent = null;
             startIncognitoIntentCalled = false;
@@ -2712,6 +2769,18 @@ public class ExternalNavigationHandlerTest {
             mShouldLaunchWebApksOnInitialIntent = value;
         }
 
+        public void setTargetPackageName(String targetPackageName) {
+            mTargetPackageName = targetPackageName;
+        }
+
+        public void setShouldAvoidDisambiguationDialog(boolean value) {
+            mShouldAvoidDisambiguationDialog = value;
+        }
+
+        public void setWillResolveToDisambiguationDialog(boolean value) {
+            mWillResolveToDisambiguationDialog = value;
+        }
+
         public Intent startActivityIntent;
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
@@ -2734,6 +2803,9 @@ public class ExternalNavigationHandlerTest {
         private boolean mCanLoadUrlInTab;
         private boolean mShouldPresentLeavingIncognitoDialog;
         private boolean mShouldLaunchWebApksOnInitialIntent;
+        private String mTargetPackageName;
+        private boolean mShouldAvoidDisambiguationDialog;
+        private boolean mWillResolveToDisambiguationDialog;
         private Context mContext;
     }
 
