@@ -56,6 +56,7 @@ group("resources") {
       ":bluetooth_pairing_dialog_resources",
       ":internet_config_dialog_resources",
       ":internet_detail_dialog_resources",
+      "chromeos:app_icon_resources",
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
       "chromeos/audio:resources",

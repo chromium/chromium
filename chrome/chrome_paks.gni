@@ -64,11 +64,13 @@ template("chrome_repack_percent") {
       sources += [
         "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
+        "$root_gen_dir/chrome/app_icon_resources_${percent}_percent.pak",
         "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       ]
       deps += [
         "//ash/app_list/resources",
         "//ash/login/resources",
+        "//chrome/browser/resources/chromeos:app_icon_resources",
         "//ui/chromeos/resources",
       ]
     }

@@ -9,6 +9,19 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
 
+grit("app_icon_resources") {
+  source = "app_icon/app_icon_resources.grd"
+  defines = chrome_grit_defines
+  outputs = [
+    "grit/app_icon_resources.h",
+    "grit/app_icon_resources_map.cc",
+    "grit/app_icon_resources_map.h",
+    "app_icon_resources_100_percent.pak",
+    "app_icon_resources_200_percent.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
 grit("multidevice_setup_resources") {
   multidevice_setup_gen_dir =
       "$root_gen_dir/chrome/browser/resources/chromeos/multidevice_setup"

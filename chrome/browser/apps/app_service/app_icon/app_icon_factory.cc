@@ -39,7 +39,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #endif
 

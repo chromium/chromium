@@ -185,6 +185,7 @@ source_set("chromeos") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
+    "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/resources/settings:resources_grit",
     "//chrome/browser/supervised_user/supervised_user_features",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
