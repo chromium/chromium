@@ -123,6 +123,8 @@ class AppListBubbleViewTest : public AshTestBase {
   // Shows the app list on the primary display.
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
 
+  void DismissAppList() { GetAppListTestHelper()->Dismiss(); }
+
   void AddContinueSuggestionResult(int num_suggestions) {
     GetAppListTestHelper()->AddContinueSuggestionResults(num_suggestions);
   }
@@ -426,6 +428,26 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
   ShowAppList();
 
   SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+}
+
+TEST_F(AppListBubbleViewTest, OpeningBubbleTwiceFocusesSearchBox) {
+  AddAppItems(1);
+  ShowAppList();
+
+  // Click on an item, which takes focus out of the search field.
+  AppListItemView* item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(item);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  ASSERT_FALSE(search_box_view->search_box()->HasFocus());
+
+  // The app list view and widget are cached after this close.
+  DismissAppList();
+
+  // Search box is focused on next show.
+  ShowAppList();
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_TRUE(search_box_view->is_search_box_active());
 }
@@ -841,6 +863,24 @@ TEST_F(AppListBubbleViewTest, ClickOnFolderOpensFolder) {
   // Folder opened.
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, FolderClosedOnAppListDismiss) {
+  AddFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // The bubble view and widget are cached after dismiss.
+  DismissAppList();
+
+  // The folder is closed when the app list is reopened.
+  ShowAppList();
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, LargeFolderViewFitsInsideMainBubble) {

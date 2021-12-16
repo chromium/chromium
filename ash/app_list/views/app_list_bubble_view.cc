@@ -348,9 +348,11 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
     case AppListBubblePage::kApps:
     case AppListBubblePage::kSearch:
       search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+      // Explicitly request focus in case the search box was active before.
+      search_box_view_->search_box()->RequestFocus();
       break;
     case AppListBubblePage::kAssistant:
-      // Explicitly set search box inactive so the next attempt to active it
+      // Explicitly set search box inactive so the next attempt to activate it
       // will succeed.
       search_box_view_->SetSearchBoxActive(false,
                                            /*event_type=*/ui::ET_UNKNOWN);
@@ -555,6 +557,9 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
 void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   // Restore the layer bounds. This isn't visible because opacity is 0.
   layer()->SetBounds(layer_bounds);
+
+  // Hide any open folder by showing the apps page.
+  ShowApps(/*folder_item_view=*/nullptr, /*select_folder=*/false);
 
   if (on_hide_animation_ended_)
     std::move(on_hide_animation_ended_).Run();
