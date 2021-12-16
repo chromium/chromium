@@ -116,6 +116,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void ContinueCalibration(ContinueCalibrationCallback callback) override;
   void CalibrationComplete(CalibrationCompleteCallback callback) override;
 
+  void RetryProvisioning(RetryProvisioningCallback callback) override;
   void ProvisioningComplete(ProvisioningCompleteCallback callback) override;
 
   void FinalizationComplete(FinalizationCompleteCallback callback) override;

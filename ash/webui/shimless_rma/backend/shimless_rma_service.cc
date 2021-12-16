@@ -701,6 +701,20 @@ void ShimlessRmaService::CalibrationComplete(
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::RetryProvisioning(RetryProvisioningCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kProvisionDevice) {
+    LOG(ERROR) << "RetryProvisioning called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_provision_device()->set_choice(
+      rmad::ProvisionDeviceState::RMAD_PROVISION_CHOICE_RETRY);
+  TransitionNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::ProvisioningComplete(
     ProvisioningCompleteCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kProvisionDevice) {

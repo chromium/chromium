@@ -651,6 +651,9 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kProvisionDevice state
   //
+  // Retries provisioning after a blocking failure.
+  RetryProvisioning() => (State state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   ProvisioningComplete()
       => (State state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);

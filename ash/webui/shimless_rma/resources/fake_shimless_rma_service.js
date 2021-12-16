@@ -645,6 +645,14 @@ export class FakeShimlessRmaService {
   /**
    * @return {!Promise<!StateResult>}
    */
+  retryProvisioning() {
+    return this.getNextStateForMethod_(
+        'retryProvisioning', State.kProvisionDevice);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
   provisioningComplete() {
     return this.getNextStateForMethod_(
         'provisioningComplete', State.kProvisionDevice);
@@ -1217,6 +1225,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('continueCalibration');
     this.methods_.register('calibrationComplete');
 
+    this.methods_.register('retryProvisioning');
     this.methods_.register('provisioningComplete');
 
     this.methods_.register('finalizationComplete');
