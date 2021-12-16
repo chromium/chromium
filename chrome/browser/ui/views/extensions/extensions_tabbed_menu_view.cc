@@ -5,14 +5,19 @@
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,7 +100,14 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
       browser_(browser),
       extensions_container_(extensions_container),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
-      allow_pinning_(allow_pinning) {
+      allow_pinning_(allow_pinning),
+      requests_access_{
+          nullptr, nullptr,
+          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE,
+          ToolbarActionViewController::PageInteractionStatus::kPending},
+      has_access_{nullptr, nullptr,
+                  IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE,
+                  ToolbarActionViewController::PageInteractionStatus::kActive} {
   // Ensure layer masking is used for the extensions menu to ensure buttons with
   // layer effects sitting flush with the bottom of the bubble are clipped
   // appropriately.
@@ -115,8 +127,6 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
   // Let anchor view's MenuButtonController handle the highlight.
   set_highlight_button_when_shown(false);
 
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -182,6 +192,26 @@ ExtensionsTabbedMenuView::GetInstalledItemsForTesting() const {
   return menu_item_views;
 }
 
+std::vector<ExtensionsMenuItemView*>
+ExtensionsTabbedMenuView::GetHasAccessItemsForTesting() const {
+  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  if (IsShowing()) {
+    for (views::View* view : has_access_.items->children())
+      menu_item_views.push_back(GetAsMenuItemView(view));
+  }
+  return menu_item_views;
+}
+
+std::vector<ExtensionsMenuItemView*>
+ExtensionsTabbedMenuView::GetRequestsAccessItemsForTesting() const {
+  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  if (IsShowing()) {
+    for (views::View* view : requests_access_.items->children())
+      menu_item_views.push_back(GetAsMenuItemView(view));
+  }
+  return menu_item_views;
+}
+
 size_t ExtensionsTabbedMenuView::GetSelectedTabIndex() const {
   return tabbed_pane_->GetSelectedTabIndex();
 }
@@ -203,6 +233,8 @@ void ExtensionsTabbedMenuView::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   Update();
 }
+
+// TODO(crbug.com/1263310): Update site access items for toolbar changes.
 
 void ExtensionsTabbedMenuView::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
@@ -259,9 +291,8 @@ void ExtensionsTabbedMenuView::Populate() {
   tabbed_pane_ = AddChildView(std::make_unique<views::TabbedPane>());
   tabbed_pane_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
-  // TODO(crbug.com/1263310): Populate site access tab.
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
-            std::make_unique<views::View>());
+            CreateSiteAccessContainer());
 
   auto installed_items = std::make_unique<views::View>();
   installed_items->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -280,8 +311,13 @@ void ExtensionsTabbedMenuView::Populate() {
                                       toolbar_model_->action_ids().end());
   std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
 
-  for (size_t i = 0; i < sorted_ids.size(); ++i)
+  for (size_t i = 0; i < sorted_ids.size(); ++i) {
     CreateAndInsertInstalledExtension(sorted_ids[i], i);
+    CreateAndInsertSiteAccessItem(sorted_ids[i]);
+  }
+
+  UpdateSiteAccessSectionsVisibility();
+
   ConsistencyCheck();
 }
 
@@ -290,6 +326,61 @@ void ExtensionsTabbedMenuView::Update() {
     auto* item_view = GetAsMenuItemView(view);
     UpdateMenuItemView(item_view, installed_items_);
   }
+}
+
+std::unique_ptr<views::View>
+ExtensionsTabbedMenuView::CreateSiteAccessContainer() {
+  auto site_access_container = std::make_unique<views::View>();
+  site_access_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  auto current_site = base::UTF8ToUTF16(browser_->tab_strip_model()
+                                            ->GetActiveWebContents()
+                                            ->GetLastCommittedURL()
+                                            .host());
+
+  auto create_section =
+      [current_site](ExtensionsTabbedMenuView::SiteAccessSection* section) {
+        auto section_container = std::make_unique<views::View>();
+        section->container = section_container.get();
+        section_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+
+        const int horizontal_spacing =
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+
+        // Add an emphasized short header explaining the section.
+        auto header = std::make_unique<views::Label>(
+            l10n_util::GetStringFUTF16(section->header_string_id, current_site),
+            ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+            ChromeTextStyle::STYLE_EMPHASIZED);
+        header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+        header->SetBorder(views::CreateEmptyBorder(
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_CONTROL_LIST_VERTICAL),
+            horizontal_spacing, 0, horizontal_spacing));
+        section_container->AddChildView(std::move(header));
+
+        // Add an empty section for the menu items of the section. Items will be
+        // populated later.
+        auto items = std::make_unique<views::View>();
+        items->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+        section->items = items.get();
+        section_container->AddChildView(std::move(items));
+
+        // Start off with the section invisible. We'll update it as we add items
+        // if necessary.
+        section_container->SetVisible(false);
+
+        return section_container;
+      };
+
+  site_access_container->AddChildView(create_section(&requests_access_));
+  site_access_container->AddChildView(create_section(&has_access_));
+
+  return site_access_container;
 }
 
 void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
@@ -302,6 +393,48 @@ void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
       ExtensionsMenuItemView::MenuItemType::kExtensions, browser_,
       std::move(controller), allow_pinning_);
   installed_items_->AddChildViewAt(std::move(item), index);
+}
+
+void ExtensionsTabbedMenuView::CreateAndInsertSiteAccessItem(
+    const ToolbarActionsModel::ActionId& id) {
+  std::unique_ptr<ExtensionActionViewController> controller =
+      ExtensionActionViewController::Create(id, browser_,
+                                            extensions_container_);
+  auto item = std::make_unique<ExtensionsMenuItemView>(
+      ExtensionsMenuItemView::MenuItemType::kSiteAccess, browser_,
+      std::move(controller), allow_pinning_);
+
+  const ToolbarActionViewController::PageInteractionStatus status =
+      item->view_controller()->GetPageInteractionStatus(
+          browser_->tab_strip_model()->GetActiveWebContents());
+
+  switch (status) {
+    case ToolbarActionViewController::PageInteractionStatus::kNone:
+      break;
+    case ToolbarActionViewController::PageInteractionStatus::kPending:
+      requests_access_.items->AddChildView(std::move(item));
+      break;
+    case ToolbarActionViewController::PageInteractionStatus::kActive:
+      has_access_.items->AddChildView(std::move(item));
+      break;
+  }
+}
+
+void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
+  auto update_section = [](SiteAccessSection* section) {
+    bool should_be_visible = !section->items->children().empty();
+    if (section->container->GetVisible() != should_be_visible)
+      section->container->SetVisible(should_be_visible);
+  };
+
+  update_section(&has_access_);
+  update_section(&requests_access_);
+
+  // TODO(crbug.com/1263310): If no extensions have or request access to the
+  // current site, show respective message.
+
+  // TODO(crbug.com/1263310): If user is on a chrome:-scheme page, show
+  // respective message.
 }
 
 void ExtensionsTabbedMenuView::ConsistencyCheck() {
