@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.0/kotlin-stdlib-1.6.0.jar'
-_FILE_NAME = 'kotlin-stdlib-1.6.0.jar'
-_FILE_VERSION = '1.6.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.10/kotlin-stdlib-1.6.10.jar'
+_FILE_NAME = 'kotlin-stdlib-1.6.10.jar'
+_FILE_VERSION = '1.6.10'
 
 
 def do_latest():
