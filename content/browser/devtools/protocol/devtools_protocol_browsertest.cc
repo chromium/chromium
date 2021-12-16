@@ -1022,7 +1022,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
   EXPECT_THAT(console_messages_, ElementsAre("first page", "second page"));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, NavigationPreservesMessages) {
+// TODO(crbug.com/1280531): Disabled due to flakiness. Flaky on mac and linux
+// la-cros
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       DISABLED_NavigationPreservesMessages) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
