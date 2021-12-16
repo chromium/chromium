@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+k# Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -1740,12 +1740,13 @@ ci.chromium_builder(
         short_name = "off",
     ),
     # TODO(crbug.com/1279290):
-    # builds with PGO change take long time.
+    # builds with LTO change take long time.
+    # Keep in sync with mac-official in try.star.
     execution_timeout = 30 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = False,
     os = os.MAC_ANY,
-    cores = None,
+    cores = None,  # TODO(thakis): Bump this up.
 )
 
 ci.chromium_builder(
