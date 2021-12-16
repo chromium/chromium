@@ -66,7 +66,8 @@ void HpsNotifyController::OnSessionStateChanged(
   const bool session_active =
       session_state == session_manager::SessionState::ACTIVE;
   ReconfigureHps(hps_available_, session_active, pref_enabled_);
-  UpdateIconVisibility(session_active, hps_state_, pref_enabled_);
+  UpdateIconVisibility(session_active, hps_state_ && session_active,
+                       pref_enabled_);
 }
 
 void HpsNotifyController::OnActiveUserPrefServiceChanged(
@@ -76,7 +77,8 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
   const bool pref_enabled =
       pref_service->GetBoolean(prefs::kSnoopingProtectionEnabled);
   ReconfigureHps(hps_available_, session_active_, pref_enabled);
-  UpdateIconVisibility(session_active_, hps_state_, pref_enabled);
+  UpdateIconVisibility(session_active_, hps_state_ && pref_enabled,
+                       pref_enabled);
 
   // Re-subscribe to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -92,6 +94,8 @@ void HpsNotifyController::OnHpsNotifyChanged(bool hps_state) {
 }
 
 void HpsNotifyController::OnRestart() {
+  DCHECK(!hps_state_);
+
   ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_);
 }
 
@@ -214,7 +218,8 @@ void HpsNotifyController::UpdatePrefState() {
   const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kSnoopingProtectionEnabled);
   ReconfigureHps(hps_available_, session_active_, pref_enabled);
-  UpdateIconVisibility(session_active_, hps_state_, pref_enabled);
+  UpdateIconVisibility(session_active_, hps_state_ && pref_enabled,
+                       pref_enabled);
 }
 
 }  // namespace ash

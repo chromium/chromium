@@ -315,6 +315,24 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
   EXPECT_TRUE(controller_->IsIconVisible());
 }
 
+// Check that the controller state stays consistent even when the daemon starts
+// and stops.
+TEST_F(HpsNotifyControllerTestPresent, ClearHpsState) {
+  SimulateLogin();
+  SetEnabledPref(true);
+  EXPECT_EQ(controller_->IsIconVisible(), true);
+
+  // This should internally clear the cached daemon state.
+  SetEnabledPref(false);
+  EXPECT_EQ(controller_->IsIconVisible(), false);
+
+  // Note: we don't exhaust the run loop here since we want to check the
+  // controller state _before_ it is updated by asynchronous DBus calls.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kSnoopingProtectionEnabled, true);
+  EXPECT_EQ(controller_->IsIconVisible(), false);
+}
+
 // Fixture with the DBus service initially unavailable (using a minimal set of
 // valid params).
 class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
