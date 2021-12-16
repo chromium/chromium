@@ -140,9 +140,6 @@ class FakeWebServiceWorkerFetchContext final
     return {};
   }
   void SetIsOfflineMode(bool is_offline_mode) override {}
-  mojom::SubresourceLoaderUpdater* GetSubresourceLoaderUpdater() override {
-    return nullptr;
-  }
 
  private:
   FakeWebURLLoaderFactory fake_web_url_loader_factory_;

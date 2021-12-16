@@ -55,7 +55,6 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_fetch_context.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
@@ -126,6 +125,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_thread.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
+#include "third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1595,7 +1595,7 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
                             GetTaskRunner(TaskType::kInternalDefault));
 
   if (subresource_loader_factories) {
-    static_cast<WebServiceWorkerFetchContext*>(web_worker_fetch_context())
+    static_cast<WebServiceWorkerFetchContextImpl*>(web_worker_fetch_context())
         ->GetSubresourceLoaderUpdater()
         ->UpdateSubresourceLoaderFactories(
             std::move(subresource_loader_factories));

@@ -130,8 +130,6 @@ target(link_target_type, "renderer") {
     "service_worker/embedded_worker_instance_client_impl.h",
     "service_worker/service_worker_context_client.cc",
     "service_worker/service_worker_context_client.h",
-    "service_worker/service_worker_fetch_context_impl.cc",
-    "service_worker/service_worker_fetch_context_impl.h",
     "service_worker/service_worker_network_provider_for_frame.cc",
     "service_worker/service_worker_network_provider_for_frame.h",
     "service_worker/service_worker_provider_context.cc",

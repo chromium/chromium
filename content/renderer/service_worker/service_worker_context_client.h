@@ -56,7 +56,6 @@ struct WebServiceWorkerInstalledScriptsManagerParams;
 namespace content {
 
 class EmbeddedWorkerInstanceClientImpl;
-class WebServiceWorkerFetchContext;
 
 // ServiceWorkerContextClient is a "client" of a service worker execution
 // context. It enables communication between the embedder and Blink's
