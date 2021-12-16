@@ -392,6 +392,10 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoGrammarError)
     DEFINE_STRING_MAPPING(PseudoHas)
     DEFINE_STRING_MAPPING(PseudoRelativeLeftmost)
+    DEFINE_STRING_MAPPING(PseudoTransition)
+    DEFINE_STRING_MAPPING(PseudoTransitionContainer);
+    DEFINE_STRING_MAPPING(PseudoTransitionNewContent);
+    DEFINE_STRING_MAPPING(PseudoTransitionOldContent);
 #undef DEFINE_STRING_MAPPING
   }
 

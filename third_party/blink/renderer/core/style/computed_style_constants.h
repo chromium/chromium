@@ -55,6 +55,10 @@ enum PseudoId : uint8_t {
   // The order must be NOP ID, public IDs, and then internal IDs.
   // If you add or remove a public ID, you must update the field_size of
   // "PseudoBits" in computed_style_extra_fields.json5.
+  //
+  // The above is necessary because presence of a public pseudo element style
+  // for an element is tracked on the element's ComputedStyle. This is done for
+  // all public IDs until kLastTrackedPublicPseudoId.
   kPseudoIdNone,
   kPseudoIdFirstLine,
   kPseudoIdFirstLetter,
@@ -68,6 +72,11 @@ enum PseudoId : uint8_t {
   kPseudoIdHighlight,
   kPseudoIdSpellingError,
   kPseudoIdGrammarError,
+  // The following IDs are public but not tracked.
+  kPseudoIdTransition,
+  kPseudoIdTransitionContainer,
+  kPseudoIdTransitionOldContent,
+  kPseudoIdTransitionNewContent,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
   kPseudoIdScrollbarThumb,
@@ -80,6 +89,7 @@ enum PseudoId : uint8_t {
   // Special values follow:
   kAfterLastInternalPseudoId,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
+  kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 
@@ -90,6 +100,18 @@ inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
     case kPseudoIdHighlight:
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
+      return true;
+    default:
+      return false;
+  }
+}
+
+inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdTransition:
+    case kPseudoIdTransitionContainer:
+    case kPseudoIdTransitionOldContent:
+    case kPseudoIdTransitionNewContent:
       return true;
     default:
       return false;

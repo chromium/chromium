@@ -195,7 +195,7 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
       !new_style.HasAnyPseudoElementStyles())
     return true;
   for (PseudoId pseudo_id = kFirstPublicPseudoId;
-       pseudo_id < kFirstInternalPseudoId;
+       pseudo_id <= kLastTrackedPublicPseudoId;
        pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
     if (!old_style.HasPseudoElementStyle(pseudo_id) &&
         !new_style.HasPseudoElementStyle(pseudo_id))

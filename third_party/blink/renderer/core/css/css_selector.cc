@@ -251,6 +251,14 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdSpellingError;
     case kPseudoGrammarError:
       return kPseudoIdGrammarError;
+    case kPseudoTransition:
+      return kPseudoIdTransition;
+    case kPseudoTransitionContainer:
+      return kPseudoIdTransitionContainer;
+    case kPseudoTransitionOldContent:
+      return kPseudoIdTransitionOldContent;
+    case kPseudoTransitionNewContent:
+      return kPseudoIdTransitionNewContent;
     case kPseudoUnknown:
     case kPseudoEmpty:
     case kPseudoFirstChild:
@@ -462,6 +470,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
+    {"transition", CSSSelector::kPseudoTransition},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
     {"visited", CSSSelector::kPseudoVisited},
@@ -486,6 +495,9 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
+    {"transition-container", CSSSelector::kPseudoTransitionContainer},
+    {"transition-new-content", CSSSelector::kPseudoTransitionNewContent},
+    {"transition-old-content", CSSSelector::kPseudoTransitionOldContent},
     {"where", CSSSelector::kPseudoWhere},
 };
 
@@ -655,6 +667,10 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
+    case kPseudoTransition:
+    case kPseudoTransitionContainer:
+    case kPseudoTransitionOldContent:
+    case kPseudoTransitionNewContent:
       if (match_ != kPseudoElement)
         pseudo_type_ = kPseudoUnknown;
       break;

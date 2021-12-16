@@ -117,24 +117,15 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
 
-TEST_F(ComputedStyleTest, FirstPublicPseudoStyle) {
-  static_assert(kFirstPublicPseudoId == kPseudoIdFirstLine,
-                "Make sure we are testing the first public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdFirstLine);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdFirstLine));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
-}
-
-TEST_F(ComputedStyleTest, LastPublicPseudoElementStyle) {
-  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdGrammarError,
-                "Make sure we are testing the last public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdGrammarError);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdGrammarError));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
+  for (uint8_t pseudo_id_int = kFirstPublicPseudoId;
+       pseudo_id_int <= kLastTrackedPublicPseudoId; pseudo_id_int++) {
+    PseudoId pseudo_id = static_cast<PseudoId>(pseudo_id_int);
+    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+    style->SetHasPseudoElementStyle(pseudo_id);
+    EXPECT_TRUE(style->HasPseudoElementStyle(pseudo_id));
+    EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+  }
 }
 
 TEST_F(ComputedStyleTest,

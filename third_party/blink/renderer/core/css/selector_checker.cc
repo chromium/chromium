@@ -1378,6 +1378,17 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       }
       return false;
     }
+    case CSSSelector::kPseudoTransitionContainer:
+    case CSSSelector::kPseudoTransitionOldContent:
+    case CSSSelector::kPseudoTransitionNewContent: {
+      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) !=
+          context.pseudo_id) {
+        return false;
+      }
+      result.dynamic_pseudo = context.pseudo_id;
+      return selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
+             selector.Argument() == pseudo_argument_;
+    }
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {
         UseCounter::Count(context.element->GetDocument(),

@@ -187,6 +187,10 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
+    case CSSSelector::kPseudoTransition:
+    case CSSSelector::kPseudoTransitionContainer:
+    case CSSSelector::kPseudoTransitionNewContent:
+    case CSSSelector::kPseudoTransitionOldContent:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:

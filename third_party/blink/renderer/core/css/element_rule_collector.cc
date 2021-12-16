@@ -533,7 +533,7 @@ void ElementRuleCollector::DidMatchRule(
         mode_ == SelectorChecker::kCollectingStyleRules)
       return;
     // FIXME: Matching should not modify the style directly.
-    if (!style_ || dynamic_pseudo >= kFirstInternalPseudoId)
+    if (!style_ || dynamic_pseudo > kLastTrackedPublicPseudoId)
       return;
     if ((dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter) &&

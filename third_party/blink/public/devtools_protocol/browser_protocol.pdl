@@ -2049,6 +2049,10 @@ domain DOM
       scrollbar-corner
       resizer
       input-list-button
+      transition
+      transition-container
+      transition-old-content
+      transition-new-content
 
   # Shadow root type.
   type ShadowRootType extends string

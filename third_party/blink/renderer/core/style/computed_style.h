@@ -3141,13 +3141,13 @@ inline bool ComputedStyle::HasAnyPseudoElementStyles() const {
 
 inline bool ComputedStyle::HasPseudoElementStyle(PseudoId pseudo) const {
   DCHECK(pseudo >= kFirstPublicPseudoId);
-  DCHECK(pseudo < kFirstInternalPseudoId);
+  DCHECK(pseudo <= kLastTrackedPublicPseudoId);
   return (1 << (pseudo - kFirstPublicPseudoId)) & PseudoBitsInternal();
 }
 
 inline void ComputedStyle::SetHasPseudoElementStyle(PseudoId pseudo) {
   DCHECK(pseudo >= kFirstPublicPseudoId);
-  DCHECK(pseudo < kFirstInternalPseudoId);
+  DCHECK(pseudo <= kLastTrackedPublicPseudoId);
   // TODO: Fix up this code. It is hard to understand.
   SetPseudoBitsInternal(PseudoBitsInternal() |
                         1 << (pseudo - kFirstPublicPseudoId));

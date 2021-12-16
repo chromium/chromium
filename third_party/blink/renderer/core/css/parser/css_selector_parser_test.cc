@@ -219,6 +219,57 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
   }
 }
 
+TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
+  struct TestCase {
+    const char* selector;
+    bool valid;
+    const char* argument;
+    CSSSelector::PseudoType type;
+  };
+
+  TestCase test_cases[] = {
+      {"html::transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoTransitionContainer},
+      {"html::transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoTransitionContainer},
+      {"html::transition-old-content(foo)", true, "foo",
+       CSSSelector::kPseudoTransitionOldContent},
+      {"html::transition-new-content(foo)", true, "foo",
+       CSSSelector::kPseudoTransitionNewContent},
+      {"::transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoTransitionContainer},
+      {"div::transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoTransitionContainer},
+      {"::transition-container(*)::before", false, nullptr,
+       CSSSelector::kPseudoUnknown},
+      {"::transition-container(*):hover", false, nullptr,
+       CSSSelector::kPseudoUnknown},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case.selector);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+        range,
+        MakeGarbageCollected<CSSParserContext>(
+            kHTMLStandardMode, SecureContextMode::kInsecureContext),
+        nullptr);
+    EXPECT_EQ(list.IsValid(), test_case.valid);
+    if (!test_case.valid)
+      continue;
+
+    EXPECT_TRUE(list.HasOneSelector());
+
+    auto* selector = list.First();
+    while (selector->TagHistory())
+      selector = selector->TagHistory();
+
+    EXPECT_EQ(selector->GetPseudoType(), test_case.type);
+    EXPECT_EQ(selector->Argument(), test_case.argument);
+  }
+}
+
 TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
   // See crbug.com/578131
   const char* test_cases[] = {

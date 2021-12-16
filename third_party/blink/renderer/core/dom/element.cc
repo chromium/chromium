@@ -5838,7 +5838,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
 
   const ComputedStyle* style = GetComputedStyle();
 
-  if (!style || (pseudo_id < kFirstInternalPseudoId &&
+  if (!style || (pseudo_id <= kLastTrackedPublicPseudoId &&
                  !style->HasPseudoElementStyle(pseudo_id))) {
     return nullptr;
   }

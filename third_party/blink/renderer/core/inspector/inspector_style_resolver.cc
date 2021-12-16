@@ -42,6 +42,12 @@ InspectorStyleResolver::InspectorStyleResolver(Element* element,
        pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
     if (!PseudoElement::IsWebExposed(pseudo_id, element_))
       continue;
+
+    // TODO(khushalsagar) : Support querying rules for transition pseudo
+    // elements.
+    if (IsTransitionPseudoElement(pseudo_id))
+      continue;
+
     // If the pseudo-element doesn't exist, exclude UA rules to avoid cluttering
     // all elements.
     unsigned rules_to_include = element_->GetPseudoElement(pseudo_id)

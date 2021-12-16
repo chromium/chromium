@@ -927,6 +927,25 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       selector->SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
       return selector;
     }
+    case CSSSelector::kPseudoTransitionContainer:
+    case CSSSelector::kPseudoTransitionOldContent:
+    case CSSSelector::kPseudoTransitionNewContent: {
+      const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+      if (!block.AtEnd())
+        return nullptr;
+
+      absl::optional<AtomicString> argument;
+      if (ident.GetType() == kIdentToken)
+        argument = ident.Value().ToAtomicString();
+      else if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*')
+        argument = CSSSelector::UniversalSelectorAtom();
+
+      if (!argument)
+        return nullptr;
+
+      selector->SetArgument(*argument);
+      return selector;
+    }
     case CSSSelector::kPseudoSlotted: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
