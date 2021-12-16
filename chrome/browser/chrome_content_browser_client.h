@@ -766,6 +766,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
+  bool IsFirstPartySetsEnabled() override;
 
   void FlushBackgroundAttributions(base::OnceClosure callback) override;
   bool ShouldPreconnectNavigation(

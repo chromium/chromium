@@ -345,8 +345,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
         std::move(params->default_observer));
   }
 
-  first_party_sets_ = std::make_unique<FirstPartySets>();
-  if (net::cookie_util::IsFirstPartySetsEnabled()) {
+  first_party_sets_ =
+      std::make_unique<FirstPartySets>(params->first_party_sets_enabled);
+  if (first_party_sets_->is_enabled()) {
     first_party_sets_->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }

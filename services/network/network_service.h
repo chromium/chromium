@@ -249,9 +249,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 #endif
 
-  const FirstPartySets* first_party_sets() const {
-    return first_party_sets_.get();
-  }
+  FirstPartySets* first_party_sets() const { return first_party_sets_.get(); }
 
   bool os_crypt_config_set() const { return os_crypt_config_set_; }
 

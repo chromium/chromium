@@ -78,7 +78,7 @@ std::string ReadSetsFile(base::File sets_file) {
 
 }  // namespace
 
-FirstPartySets::FirstPartySets() = default;
+FirstPartySets::FirstPartySets(bool enabled) : enabled_(enabled) {}
 
 FirstPartySets::~FirstPartySets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -86,7 +86,7 @@ FirstPartySets::~FirstPartySets() {
 
 void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!net::cookie_util::IsFirstPartySetsEnabled())
+  if (!enabled_)
     return;
 
   manually_specified_set_ = CanonicalizeSet(base::SplitString(
@@ -99,7 +99,7 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 
 void FirstPartySets::ParseAndSet(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!net::cookie_util::IsFirstPartySetsEnabled())
+  if (!enabled_)
     return;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -110,7 +110,7 @@ void FirstPartySets::ParseAndSet(base::File sets_file) {
 
 void FirstPartySets::OnReadSetsFile(const std::string& raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!net::cookie_util::IsFirstPartySetsEnabled())
+  if (!enabled_)
     return;
 
   bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
@@ -313,6 +313,11 @@ void FirstPartySets::SetOnSiteDataCleared(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_site_data_cleared_ = std::move(callback);
   ClearSiteDataOnChangedSetsIfReady();
+}
+
+void FirstPartySets::SetEnabledForTesting(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enabled_ = enabled;
 }
 
 base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(

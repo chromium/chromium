@@ -573,6 +573,9 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
           net::NetworkChangeNotifier::GetConnectionSubtype());
   network_service_params->default_observer =
       g_client->BindURLLoaderNetworkServiceObserver();
+  network_service_params->first_party_sets_enabled =
+      GetContentClient()->browser()->IsFirstPartySetsEnabled();
+
 #if defined(OS_POSIX)
   // Send Kerberos environment variables to the network service.
   if (IsOutOfProcessNetworkService()) {

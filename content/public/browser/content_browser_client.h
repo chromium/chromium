@@ -2187,6 +2187,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Whether a navigation in |browser_context| should preconnect early.
   virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
+
+  // Returns true if First-Party Sets is enabled.
+  virtual bool IsFirstPartySetsEnabled();
 };
 
 }  // namespace content

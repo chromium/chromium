@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -898,11 +899,14 @@ class NetworkServiceTestWithService : public testing::Test {
   ~NetworkServiceTestWithService() override {}
 
   void SetUp() override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     test_server_.AddDefaultHandlers(base::FilePath(kServicesTestData));
     ASSERT_TRUE(test_server_.Start());
-    scoped_features_.InitAndEnableFeature(net::features::kFirstPartySets);
     service_ = NetworkService::CreateForTesting();
     service_->Bind(network_service_.BindNewPipeAndPassReceiver());
+    service_->first_party_sets()->SetEnabledForTesting(true);
+    service_->first_party_sets()->SetManuallySpecifiedSet(
+        command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }
 
   void CreateNetworkContext() {

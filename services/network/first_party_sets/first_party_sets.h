@@ -27,11 +27,16 @@ namespace network {
 // updated by the component updater via |ParseAndSet|.
 class FirstPartySets {
  public:
-  FirstPartySets();
+  explicit FirstPartySets(bool enabled);
   ~FirstPartySets();
 
   FirstPartySets(const FirstPartySets&) = delete;
   FirstPartySets& operator=(const FirstPartySets&) = delete;
+
+  bool is_enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return enabled_;
+  }
 
   // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
   // flag/switch.
@@ -94,6 +99,8 @@ class FirstPartySets {
   // JSON-encoded string representation of a map of site -> site.
   void SetOnSiteDataCleared(
       base::OnceCallback<void(const std::string&)> callback);
+  // Sets the enabled_ attribute for testing.
+  void SetEnabledForTesting(bool enabled);
 
   // Returns nullopt if First-Party Sets are disabled or if the input is not in
   // a nontrivial set.
@@ -161,6 +168,7 @@ class FirstPartySets {
   bool persisted_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool component_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool manual_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   // The callback runs after the site state clearing is completed.
   base::OnceCallback<void(const std::string&)> on_site_data_cleared_
       GUARDED_BY_CONTEXT(sequence_checker_);

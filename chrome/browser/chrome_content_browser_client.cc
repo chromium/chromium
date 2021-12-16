@@ -55,6 +55,7 @@
 #include "chrome/browser/federated_learning/floc_eligibility_observer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/font_access/chrome_font_access_delegate.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
@@ -285,6 +286,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -6376,4 +6378,25 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
   return !Profile::FromBrowserContext(browser_context)
               ->GetPrefs()
               ->GetBoolean(prefs::kOriginAgentClusterDefaultEnabled);
+}
+
+bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
+  // TODO(https://crbug.com/1269360): move this logic into
+  // FirstPartySetsUtil::IsFirstPartySetsEnabled
+  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
+    return false;
+  }
+
+  PrefService* local_state;
+  if (g_browser_process) {
+    local_state = g_browser_process->local_state();
+  } else {
+    local_state = startup_data_.chrome_feature_list_creator()->local_state();
+  }
+
+  if (!local_state ||
+      !local_state->HasPrefPath(first_party_sets::kFirstPartySetsEnabled)) {
+    return true;
+  }
+  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
 }

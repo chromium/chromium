@@ -384,9 +384,8 @@ class RestrictedCookieManagerTest
 class SamePartyEnabledRestrictedCookieManagerTest
     : public RestrictedCookieManagerTest {
  public:
-  SamePartyEnabledRestrictedCookieManagerTest() {
+  SamePartyEnabledRestrictedCookieManagerTest() : first_party_sets_(true) {
     feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
-
     first_party_sets_.SetManuallySpecifiedSet(
         "https://example.com,https://member1.com");
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(

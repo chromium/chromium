@@ -46,6 +46,7 @@
 #include "content/public/common/url_utils.h"
 #include "media/audio/audio_manager.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "net/base/features.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -1304,6 +1305,10 @@ bool ContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 bool ContentBrowserClient::ShouldPreconnectNavigation(
     BrowserContext* browser_context) {
   return false;
+}
+
+bool ContentBrowserClient::IsFirstPartySetsEnabled() {
+  return base::FeatureList::IsEnabled(net::features::kFirstPartySets);
 }
 
 }  // namespace content

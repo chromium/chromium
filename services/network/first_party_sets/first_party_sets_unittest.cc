@@ -40,13 +40,7 @@ MATCHER_P(SerializesTo, want, "") {
 
 class FirstPartySetsTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsTest(bool enabled) {
-    if (enabled) {
-      feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
-    } else {
-      feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
-    }
-  }
+  explicit FirstPartySetsTest(bool enabled) : sets_(enabled) {}
 
   void SetComponentSetsAndWait(base::StringPiece content) {
     SetComponentSetsAndWait(sets_, content);
@@ -100,9 +94,8 @@ TEST_F(FirstPartySetsDisabledTest, ParseV2Format_IgnoresValid) {
 }
 
 TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
-  FirstPartySets sets;
-  sets.SetManuallySpecifiedSet("https://example.test,https://member.test");
-  EXPECT_THAT(sets.Sets(), IsEmpty());
+  sets().SetManuallySpecifiedSet("https://example.test,https://member.test");
+  EXPECT_THAT(sets().Sets(), IsEmpty());
 }
 
 TEST_F(FirstPartySetsDisabledTest, IsInNontrivialFirstPartySet) {
@@ -130,36 +123,34 @@ TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite wss_member(GURL("wss://member1.test"));
 
-  FirstPartySets sets;
-
   // Works if the site is provided with WSS scheme instead of HTTPS.
-  EXPECT_THAT(sets.ComputeContext(wss_member, &member, {member, example}),
+  EXPECT_THAT(sets().ComputeContext(wss_member, &member, {member, example}),
               net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                     Type::kSameParty));
 
-  EXPECT_THAT(sets.ComputeContext(example, &member, {member}),
+  EXPECT_THAT(sets().ComputeContext(example, &member, {member}),
               net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(sets.ComputeContext(member, &example, {member}),
+  EXPECT_THAT(sets().ComputeContext(member, &example, {member}),
               net::SamePartyContext(Type::kCrossParty));
 
   // Top&resource differs from Ancestors.
-  EXPECT_THAT(sets.ComputeContext(member, &member, {example}),
+  EXPECT_THAT(sets().ComputeContext(member, &member, {example}),
               net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                     Type::kSameParty));
 
   // Metrics values infer singleton sets when appropriate.
-  EXPECT_THAT(sets.ComputeContext(member, &member, {member}),
+  EXPECT_THAT(sets().ComputeContext(member, &member, {member}),
               net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
                                     Type::kSameParty));
-  EXPECT_THAT(sets.ComputeContext(member, &example, {member}),
+  EXPECT_THAT(sets().ComputeContext(member, &example, {member}),
               net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(sets.ComputeContext(example, &member, {member}),
+  EXPECT_THAT(sets().ComputeContext(example, &member, {member}),
               net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(sets.ComputeContext(member, &member, {example}),
+  EXPECT_THAT(sets().ComputeContext(member, &member, {example}),
               net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                     Type::kSameParty));
 
-  EXPECT_THAT(sets.ComputeContext(member, &member, {member, example}),
+  EXPECT_THAT(sets().ComputeContext(member, &member, {member, example}),
               net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                     Type::kSameParty));
 }
@@ -178,7 +169,7 @@ class FirstPartySetsEnabledTest : public FirstPartySetsTest {
 };
 
 TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
-  EXPECT_THAT(FirstPartySets().Sets(), IsEmpty());
+  EXPECT_THAT(sets().Sets(), IsEmpty());
 }
 
 TEST_F(FirstPartySetsEnabledTest, ParsesJSON) {
@@ -881,7 +872,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
     ]
   )"),
               old_sets);
-  EXPECT_THAT(FirstPartySets().ComputeSetsDiff(old_sets),
+  EXPECT_THAT(FirstPartySets(true).ComputeSetsDiff(old_sets),
               UnorderedElementsAre(SerializesTo("https://example.test"),
                                    SerializesTo("https://member1.test")));
 }
@@ -892,7 +883,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
       [&](const std::string& got) { callback_calls++; });
   // component sets not ready.
   {
-    FirstPartySets sets;
+    FirstPartySets sets(true);
     callback_calls = 0;
     sets.SetPersistedSets("{}");
     sets.SetManuallySpecifiedSet("");
@@ -901,7 +892,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   }
   // manual sets not ready.
   {
-    FirstPartySets sets;
+    FirstPartySets sets(true);
     callback_calls = 0;
     SetComponentSetsAndWait(sets, "[]");
     sets.SetPersistedSets("{}");
@@ -910,7 +901,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   }
   // persisted sets not ready.
   {
-    FirstPartySets sets;
+    FirstPartySets sets(true);
     callback_calls = 0;
     SetComponentSetsAndWait(sets, "[]");
     sets.SetManuallySpecifiedSet("");
@@ -919,7 +910,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   }
   // callback not set.
   {
-    FirstPartySets sets;
+    FirstPartySets sets(true);
     callback_calls = 0;
     SetComponentSetsAndWait(sets, "[]");
     sets.SetManuallySpecifiedSet("");

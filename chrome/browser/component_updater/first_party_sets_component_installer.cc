@@ -15,7 +15,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
@@ -50,14 +53,30 @@ base::FilePath& GetConfigPathInstance() {
   return *instance;
 }
 
+// Determine if First-Party Sets is enabled by checking both the feature
+// and the enterprise policy.
+bool IsFirstPartySetsEnabled() {
+  // TODO(https://crbug.com/1269360): move this logic into
+  // FirstPartySetsUtil
+  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
+    return false;
+  }
+  auto* local_state = g_browser_process->local_state();
+  if (!local_state ||
+      !local_state->HasPrefPath(first_party_sets::kFirstPartySetsEnabled)) {
+    return true;
+  }
+  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
+}
+
 // Invokes `on_sets_ready` with the contents of the component, if:
 // * the component has been installed; and
-// * the `kFirstPartySets` feature is enabled; and
+// * First-Party Sets is enabled; and
 // * the component was read successfully.
 void SetFirstPartySetsConfig(
     base::OnceCallback<void(base::File)> on_sets_ready) {
   const base::FilePath instance_path = GetConfigPathInstance();
-  if (instance_path.empty() || !net::cookie_util::IsFirstPartySetsEnabled()) {
+  if (instance_path.empty() || !IsFirstPartySetsEnabled()) {
     return;
   }
 

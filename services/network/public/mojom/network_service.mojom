@@ -137,6 +137,10 @@ struct NetworkServiceParams {
   // An URLLoaderFactory can provide its own URLLoaderNetworkServiceObserver
   // but if it does not, this default will be used.
   pending_remote<URLLoaderNetworkServiceObserver> default_observer;
+
+  // A boolean provided by the Browser Process in order to plumb into the
+  // First-Party Sets attribute during NetworkService::Initialize().
+  bool first_party_sets_enabled;
 };
 
 // Information about how logging should be configured.
