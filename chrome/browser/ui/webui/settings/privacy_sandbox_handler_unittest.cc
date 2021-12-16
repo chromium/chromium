@@ -6,8 +6,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/federated_learning/floc_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -21,30 +24,23 @@ namespace {
 
 constexpr char kCallbackId[] = "test-callback-id";
 
-class MockPrivacySandboxObserver : public PrivacySandboxSettings::Observer {
- public:
-  MOCK_METHOD1(OnFlocDataAccessibleSinceUpdated, void(bool));
-};
-
 // Confirms that the |floc_id| dictionary provided matches the current FLoC
 // information for |profile|.
 void ValidateFlocId(const base::Value* floc_id, Profile* profile) {
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  auto* floc_id_provider =
-      federated_learning::FlocIdProviderFactory::GetForProfile(profile);
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(profile);
 
   ASSERT_TRUE(floc_id->is_dict());
   EXPECT_EQ(
-      base::UTF16ToUTF8(privacy_sandbox_settings->GetFlocStatusForDisplay()),
+      base::UTF16ToUTF8(privacy_sandbox_service->GetFlocStatusForDisplay()),
       *floc_id->FindStringPath("trialStatus"));
-  EXPECT_EQ(base::UTF16ToUTF8(privacy_sandbox_settings->GetFlocIdForDisplay()),
+  EXPECT_EQ(base::UTF16ToUTF8(privacy_sandbox_service->GetFlocIdForDisplay()),
             *floc_id->FindStringPath("cohort"));
   EXPECT_EQ(
-      base::UTF16ToUTF8(PrivacySandboxSettings::GetFlocIdNextUpdateForDisplay(
-          floc_id_provider, profile->GetPrefs(), base::Time::Now())),
+      base::UTF16ToUTF8(privacy_sandbox_service->GetFlocIdNextUpdateForDisplay(
+          base::Time::Now())),
       *floc_id->FindStringPath("nextUpdate"));
-  EXPECT_EQ(privacy_sandbox_settings->IsFlocIdResettable(),
+  EXPECT_EQ(privacy_sandbox_service->IsFlocIdResettable(),
             floc_id->FindBoolPath("canReset"));
 }
 
@@ -115,7 +111,7 @@ TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
 
   // Observers of the PrivacySandboxSettings service should be informed that
   // the FLoC ID was reset.
-  MockPrivacySandboxObserver observer;
+  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
 

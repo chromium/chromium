@@ -25,7 +25,6 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -193,9 +192,7 @@ class FlocIdProviderUnitTest : public testing::Test {
                                              /*is_incognito=*/false);
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        settings_map_.get(), cookie_settings_.get(), &prefs_,
-        &mock_policy_service_,
-        /*sync_service=*/nullptr, /*identity_manager=*/nullptr);
+        settings_map_.get(), cookie_settings_.get(), &prefs_);
 
     task_environment_.RunUntilIdle();
   }
@@ -303,7 +300,6 @@ class FlocIdProviderUnitTest : public testing::Test {
 
   std::unique_ptr<history::HistoryService> history_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 

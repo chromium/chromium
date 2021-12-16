@@ -82,6 +82,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/bookmark_model_loaded_observer.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/pref_service_builder_utils.h"
@@ -820,6 +821,10 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   // The Privacy Metrics service should start alongside each profile session.
   PrivacyMetricsServiceFactory::GetForProfile(this);
+
+  // The Privacy Sandbox service must be created with the profile to ensure that
+  // preference reconciliation occurs.
+  PrivacySandboxServiceFactory::GetForProfile(this);
 
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();

@@ -7,19 +7,12 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
-#include "net/cookies/cookie_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
@@ -35,13 +28,13 @@ class Origin;
 
 // A service which acts as a intermediary between Privacy Sandbox APIs and the
 // preferences and content settings which define when they are allowed to be
-// accessed.
-// TODO (crbug.com/1154686): Move this and other Privacy Sandbox items into
-// components.
-class PrivacySandboxSettings : public KeyedService,
-                               public policy::PolicyService::Observer,
-                               public syncer::SyncServiceObserver,
-                               public signin::IdentityManager::Observer {
+// accessed. Privacy Sandbox APIs, regardless of where they live (renderer,
+// browser, network etc), must consult this service to determine when
+// they are allowed to run. While a basic on/off control is provided by this
+// service, embedders are expected to achieve fine-grained control though
+// the underlying preferences and content settings separately.
+// TODO (crbug.com/1154686): Move this service into components/
+class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
    public:
@@ -50,10 +43,7 @@ class PrivacySandboxSettings : public KeyedService,
 
   PrivacySandboxSettings(HostContentSettingsMap* host_content_settings_map,
                          content_settings::CookieSettings* cookie_settings,
-                         PrefService* pref_service,
-                         policy::PolicyService* policy_service,
-                         syncer::SyncService* sync_service,
-                         signin::IdentityManager* identity_manager);
+                         PrefService* pref_service);
   ~PrivacySandboxSettings() override;
 
   // Returns whether FLoC is allowed at all. If false, FLoC calculations should
@@ -75,55 +65,10 @@ class PrivacySandboxSettings : public KeyedService,
   // which case no history is eligible.
   base::Time FlocDataAccessibleSince() const;
 
-  // Returns a description of FLoC ready for display to the user. Correctly
-  // takes into account the FLoC feature parameters when determining the number
-  // of days between cohort calculations.
-  std::u16string GetFlocDescriptionForDisplay() const;
-
-  // Returns the current FLoC cohort identifier for the associated profile in
-  // string format suitable for direct display to the user. If the cohort is
-  // not valid, the appropriate descriptive string is returned instead.
-  std::u16string GetFlocIdForDisplay() const;
-
-  // Returns when the user's current FLoC cohort identifier will next be updated
-  // in a string format suitable for direct display to the user. If no compute
-  // is scheduled, the appropriate descriptive string is returned instead.
-  // This is static to break a circular dependency between this service, and
-  // the FlocIdProvider service. This pushes the requirement to the caller to
-  // ensure the profile is not in a shutdown state before calling.
-  // TODO(crbug.com/1210405): This is indicative of an architecture issue and
-  // should be changed or broken out into an explicit helper.
-  static std::u16string GetFlocIdNextUpdateForDisplay(
-      federated_learning::FlocIdProvider* floc_id_provider,
-      PrefService* pref_service,
-      const base::Time& current_time);
-
-  // Returns the display ready string explanaing what happens when the user
-  // resets the FLoC cohort identifier.
-  std::u16string GetFlocResetExplanationForDisplay() const;
-
-  // Returns a display ready string explaining the current status of FloC. E.g.
-  // the effective state of the Finch experiment, and the user's setting.
-  std::u16string GetFlocStatusForDisplay() const;
-
-  // Returns whether the user's current FLoC ID can be reset. This requires that
-  // the FLoC feature be enabled and FLoC be enabled in preferences. It does not
-  // require that the current ID is valid, as resetting the ID also resets the
-  // compute timer, it should be available whenever FLoC is active.
-  bool IsFlocIdResettable() const;
-
   // Sets the time when history is accessible for FLoC calculation to the
-  // current time and resets the time to the next FLoC id calculation. If
-  // |user_initiated| is true, records the associated User Metrics Action.
-  void ResetFlocId(bool user_initiated) const;
-
-  // Returns whether the FLoC preference is enabled. This should only be used
-  // for displaying the preference state to the user, and should *not* be used
-  // for determining whether FLoC is allowed or not.
-  bool IsFlocPrefEnabled() const;
-
-  // Sets the FLoC preference to |enabled|.
-  void SetFlocPrefEnabled(bool enabled) const;
+  // current time, optionally resetting the time to the next FLoC id calculation
+  // if |reset_calculate_timer| is true.
+  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
 
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
@@ -155,19 +100,12 @@ class PrivacySandboxSettings : public KeyedService,
   // Returns whether the Privacy Sandbox is "generally" available. A return
   // value of false indicates that the sandbox is completely disabled. A return
   // value of true *must* be followed up by the appropriate context specific
-  // check. If the sandbox experiment is disabled, this check is equivalent to
-  // |!cookie_settings_->ShouldBlockThirdPartyCookies()|; but if the experiment
-  // is enabled, this will check prefs::kPrivacySandboxApisEnabled instead.
+  // check.
   bool IsPrivacySandboxAllowed();
 
-  // Used by the UI to check if the API is enabled. Unlike the method above,
-  // this method only checks the pref directly.
-  bool IsPrivacySandboxEnabled();
-
-  // Returns whether the state of the API is managed.
-  bool IsPrivacySandboxManaged();
-
-  // Gets invoked by the UI when the user manually changed the state of the API.
+  // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
+  // is true, more granular checks will still be performed to determine if
+  // specific APIs are available in specific contexts.
   void SetPrivacySandboxEnabled(bool enabled);
 
   // Called when there's a broad cookies clearing action. For example, this
@@ -175,80 +113,10 @@ class PrivacySandboxSettings : public KeyedService,
   // Clear-Site-Data header, as it's restricted to a specific site.
   void OnCookiesCleared();
 
-  // Called when a preference relevant to the the Privacy Sandbox is changed.
-  void OnPrivacySandboxPrefChanged();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // KeyedService:
-  void Shutdown() override;
-
-  // policy::PolicyService::Observer:
-  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
-                       const policy::PolicyMap& previous,
-                       const policy::PolicyMap& current) override;
-
-  // syncer::SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
-
-  // signin::IdentityManager::Observer:
-  // TODO(crbug.com/1167680): This is only required to capture failure scenarios
-  // that affect sync, yet aren't reported via SyncServiceObserver.
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
-
  protected:
-  friend class PrivacySandboxSettingsTest;
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           ReconciliationOutcome);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           ImmediateReconciliationNoSync);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           ImmediateReconciliationSyncComplete);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           ImmediateReconciliationPersistentSyncError);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           ImmediateReconciliationNoDisable);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           DelayedReconciliationSyncSuccess);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           DelayedReconciliationSyncFailure);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           DelayedReconciliationIdentityFailure);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           DelayedReconciliationSyncIssueThenManaged);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           NoReconciliationAlreadyRun);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           NoReconciliationSandboxSettingsDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
-                           MetricsLoggingOccursCorrectly);
-
-  // Contains all possible privacy sandbox states, recorded on startup.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Must be kept in sync with the SettingsPrivacySandboxEnabled enum in
-  // histograms/enums.xml.
-  enum class SettingsPrivacySandboxEnabled {
-    kPSEnabledAllowAll = 0,
-    kPSEnabledBlock3P = 1,
-    kPSEnabledBlockAll = 2,
-    kPSDisabledAllowAll = 3,
-    kPSDisabledBlock3P = 4,
-    kPSDisabledBlockAll = 5,
-    kPSDisabledPolicyBlock3P = 6,
-    kPSDisabledPolicyBlockAll = 7,
-    kPSEnabledFlocDisabledAllowAll = 8,
-    kPSEnabledFlocDisabledBlock3P = 9,
-    kPSEnabledFlocDisabledBlockAll = 10,
-    // Add values above this line with a corresponding label in
-    // tools/metrics/histograms/enums.xml
-    kMaxValue = kPSEnabledFlocDisabledBlockAll,
-  };
-
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
   // |url| on |top_frame_origin|. Individual APIs may perform additional checks
@@ -259,55 +127,12 @@ class PrivacySandboxSettings : public KeyedService,
       const absl::optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;
 
-  // Inspects the current sync state and settings to determine if the Privacy
-  // Sandbox prefs should be reconciled. Calls ReconcilePrivacySandbox()
-  // immediately if appropriate, or may register sync and identity observers to
-  // call ReconcilePrivacySandbox() later as appropriate.
-  void MaybeReconcilePrivacySandboxPref();
-
-  // Selectively disable the Privacy Sandbox preference based on the local and
-  // synced state. Reconcilliation is only performed once per synced profile.
-  // As the sandbox is default enabled, reconcilliation will only ever opt a
-  // user out of the sandbox.
-  void ReconcilePrivacySandboxPref();
-
-  // Sets the time when history is accessible for FLoC calculation to the
-  // current time, optionally resetting the time to the next FLoC id calculation
-  // if |reset_calculate_timer| is true.
-  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
-
-  // Stops any observation of services being performed by this class.
-  void StopObserving();
-
-  // Helper function to actually make the metrics call for
-  // LogPrivacySandboxState.
-  void RecordPrivacySandboxHistogram(SettingsPrivacySandboxEnabled state);
-
-  // Logs the state of the privacy sandbox and cookie settings. Called once per
-  // profile startup.
-  void LogPrivacySandboxState();
-
  private:
   base::ObserverList<Observer>::Unchecked observers_;
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<policy::PolicyService> policy_service_;
-  raw_ptr<syncer::SyncService> sync_service_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_{this};
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
-
-  PrefChangeRegistrar user_prefs_registrar_;
-
-  // A manual record of whether policy_service_ is being observerd.
-  // Unfortunately PolicyService does not support scoped observers.
-  bool policy_service_observed_ = false;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

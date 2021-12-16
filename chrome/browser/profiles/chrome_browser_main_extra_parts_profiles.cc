@@ -73,6 +73,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
@@ -437,6 +438,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   prerender::NoStatePrefetchLinkManagerFactory::GetInstance();
   prerender::NoStatePrefetchManagerFactory::GetInstance();
   PrivacyMetricsServiceFactory::GetInstance();
+  PrivacySandboxServiceFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ProfileAccountManagerFactory::GetInstance();
