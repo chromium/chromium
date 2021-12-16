@@ -70,7 +70,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId SyncConsentScreenView::kScreenId;
 
-// TODO(https://crbug.com/1229582): Remove SplitSettings from names in this file
+// TODO(https://crbug.com/1229582) Break SplitSettings names into
+// SyncConsentOptional and SyncSettingsCategorization in the whole file.
 SyncConsentScreenHandler::SyncConsentScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
@@ -125,8 +126,7 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
   RememberLocalizedValue("syncConsentTurnOnSync",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC, builder);
 
-  // TODO(https://crbug.com/1278325): Remove this strings after removing
-  //                                  the corresponding UI.
+  // SplitSettingsSync strings.
   RememberLocalizedValue("syncConsentScreenSplitSettingsTitle",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE, builder);
   RememberLocalizedValue("syncConsentScreenSplitSettingsSubtitle",
@@ -168,6 +168,8 @@ void SyncConsentScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
+  data.SetBoolean("syncConsentOptionalEnabled",
+                  chromeos::features::IsSyncConsentOptionalEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -197,6 +199,7 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
     const bool review_sync,
     const login::StringList& consent_description,
     const std::string& consent_confirmation) {
+  DCHECK(!chromeos::features::IsSyncConsentOptionalEnabled());
   std::vector<int> consent_description_ids;
   int consent_confirmation_id;
   GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
@@ -214,15 +217,32 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
 void SyncConsentScreenHandler::HandleAcceptAndContinue(
     const login::StringList& consent_description,
     const std::string& consent_confirmation) {
-  NOTREACHED();
-  // TODO(https://crbug.com/1278325): Remove this.
+  Continue(consent_description, consent_confirmation, UserChoice::kAccepted);
 }
 
 void SyncConsentScreenHandler::HandleDeclineAndContinue(
     const login::StringList& consent_description,
     const std::string& consent_confirmation) {
-  NOTREACHED();
-  // TODO(https://crbug.com/1278325): Remove this.
+  Continue(consent_description, consent_confirmation, UserChoice::kDeclined);
+}
+
+void SyncConsentScreenHandler::Continue(
+    const login::StringList& consent_description,
+    const std::string& consent_confirmation,
+    UserChoice choice) {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
+  std::vector<int> consent_description_ids;
+  int consent_confirmation_id;
+  GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
+                &consent_description_ids, &consent_confirmation_id);
+  screen_->OnContinue(consent_description_ids, consent_confirmation_id, choice);
+
+  SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
+      screen_->GetDelegateForTesting();
+  if (test_delegate) {
+    test_delegate->OnConsentRecordedStrings(consent_description,
+                                            consent_confirmation);
+  }
 }
 
 }  // namespace chromeos

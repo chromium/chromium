@@ -1420,12 +1420,33 @@ void UserSessionManager::InitProfilePreferences(
         accounts_mutator->SeedAccountInfo(gaia_id, user->GetDisplayEmail());
 
     // 3. Set it as the Primary Account.
-    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        account_id, ConsentLevel::kSync);
+    if (features::IsSyncConsentOptionalEnabled()) {
+      // In theory this should only be done for new profiles. However, if user
+      // profile prefs failed to save or the prefs are corrupted by a crash then
+      // the IdentityManager will start up without a primary account. See test
+      // CrashRestoreComplexTest.RestoreSessionForThreeUsers.
+      if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
+        // Set the account without recording browser sync consent.
+        identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            account_id, ConsentLevel::kSignin);
+      }
 
-    CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-    CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
-             gaia_id);
+      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+      CHECK_EQ(
+          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,
+          gaia_id);
+    } else {
+      // Set a primary account here because the profile might have been
+      // created with the feature SyncConsentOptional enabled. Then the
+      // profile might only have an unconsented primary account.
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_id, ConsentLevel::kSync);
+
+      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+      CHECK_EQ(
+          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
+          gaia_id);
+    }
 
     DCHECK_EQ(account_id,
               identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin));
@@ -1484,7 +1505,10 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     return;
   user_profile_initialized_called_.insert(profile);
 
-  // MigrateOsSyncPreferences migrates prefs for SyncSettingsCategorization.
+  // OOBE doesn't set kOsSyncFeatureEnabled yet, call MigrateOsSyncPreferences
+  // to make sure it is correctly set.
+  // TODO(https://crbug.com/1229582): Revise when SyncConsentOptional changes
+  //                                  for OOBE are implemented.
   os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
 
   BootTimesRecorder* btl = BootTimesRecorder::Get();

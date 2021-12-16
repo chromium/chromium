@@ -77,6 +77,7 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kOsSyncPrefsMigrated, false);
+  registry->RegisterBooleanPref(prefs::kOsSyncFeatureEnabled, false);
   registry->RegisterBooleanPref(prefs::kSyncAllOsTypes, true);
   registry->RegisterBooleanPref(prefs::kSyncOsApps, false);
   registry->RegisterBooleanPref(prefs::kSyncOsPreferences, false);
@@ -228,6 +229,16 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange();
   }
+}
+
+bool SyncPrefs::IsOsSyncFeatureEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::kOsSyncFeatureEnabled);
+}
+
+void SyncPrefs::SetOsSyncFeatureEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::kOsSyncFeatureEnabled, enabled);
 }
 
 // static

@@ -1151,6 +1151,14 @@ const base::Feature kSmartLockUIRevamp{"SmartLockUIRevamp",
 const base::Feature kSyncSettingsCategorization{
     "SyncSettingsCategorization", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Updates the OOBE sync consent screen
+//
+// NOTE: The feature will be rolled out via a client-side Finch trial, so the
+// actual state will vary. TODO(https://crbug.com/1227417): Migrate config in
+// chrome/browser/ash/sync/sync_consent_optional_field_trial.cc
+const base::Feature kSyncConsentOptional{"SyncConsentOptional",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables battery indicator for styluses in the palette tray
 const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1813,6 +1821,10 @@ bool IsShimlessRMAFlowEnabled() {
 
 bool IsSyncSettingsCategorizationEnabled() {
   return base::FeatureList::IsEnabled(kSyncSettingsCategorization);
+}
+
+bool IsSyncConsentOptionalEnabled() {
+  return base::FeatureList::IsEnabled(kSyncConsentOptional);
 }
 
 bool IsStylusBatteryStatusEnabled() {

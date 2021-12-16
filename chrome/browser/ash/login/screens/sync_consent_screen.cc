@@ -215,7 +215,8 @@ void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   UpdateScreen(*context());
 }
 
-// TODO(https://crbug.com/1229582) Remove SplitSettings from names in this file.
+// TODO(https://crbug.com/1229582) Break SplitSettings names into
+// SyncConsentOptional and SyncSettingsCategorization in the whole file.
 void SyncConsentScreen::OnNonSplitSettingsContinue(
     const bool opted_in,
     const bool review_sync,
@@ -236,6 +237,64 @@ void SyncConsentScreen::OnNonSplitSettingsContinue(
   Finish(Result::NEXT);
 }
 
+void SyncConsentScreen::OnContinue(
+    const std::vector<int>& consent_description,
+    int consent_confirmation,
+    SyncConsentScreenHandler::UserChoice choice) {
+  DCHECK(features::IsSyncConsentOptionalEnabled());
+  if (is_hidden())
+    return;
+  base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.UserChoice", choice);
+  // Record that the user saw the consent text, regardless of which features
+  // they chose to enable.
+  RecordConsent(CONSENT_GIVEN, consent_description, consent_confirmation);
+  bool enable_sync = choice == SyncConsentScreenHandler::UserChoice::kAccepted;
+  UpdateSyncSettings(enable_sync);
+  Finish(Result::NEXT);
+}
+
+void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
+  DCHECK(features::IsSyncConsentOptionalEnabled());
+  DCHECK(features::IsSyncSettingsCategorizationEnabled());
+  // For historical reasons, Chrome OS always has a "sync-consented" primary
+  // account in IdentityManager and always has browser sync "enabled". If the
+  // user disables the browser sync toggle we disable all browser data types,
+  // as if the user had opened browser sync settings and turned off all the
+  // toggles.
+  // TODO(crbug.com/1046746, crbug.com/1050677): Once all Chrome OS code is
+  // converted to the "consent aware" IdentityManager API, and the browser sync
+  // settings WebUI is converted to allow browser sync to be turned on/off, then
+  // this workaround can be removed.
+  syncer::SyncService* sync_service = GetSyncService(profile_);
+  if (sync_service) {
+    syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+    sync_settings->SetOsSyncFeatureEnabled(enable_sync);
+    if (!enable_sync) {
+      syncer::UserSelectableTypeSet empty_set;
+      sync_settings->SetSelectedTypes(/*sync_everything=*/false, empty_set);
+    }
+    // TODO(crbug.com/1229582) Revisit the logic in case !enable_sync.
+    sync_settings->SetSyncRequested(true);
+    sync_settings->SetFirstSetupComplete(
+        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  }
+  // Set a "sync-consented" primary account. See comment above.
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  DCHECK(!account_id.empty());
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id, signin::ConsentLevel::kSync);
+
+  // Only enable URL-keyed metrics if the user turned on browser sync.
+  if (enable_sync) {
+    unified_consent::UnifiedConsentService* consent_service =
+        UnifiedConsentServiceFactory::GetForProfile(profile_);
+    if (consent_service)
+      consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  }
+}
+
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
   // "sync everything" toggle is disabled during SyncService creation. We need
   // to turn it on if sync service needs to be enabled.
@@ -252,9 +311,15 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
     case SyncScreenBehavior::kSkipAndEnableNonBrandedBuild:
     case SyncScreenBehavior::kSkipAndEnableEmphemeralUser:
     case SyncScreenBehavior::kSkipAndEnableScreenPolicy:
-      // Sync is autostarted during SyncService
+      // Prior to SyncConsentOptional, sync is autostarted during SyncService
       // creation with "sync everything" toggle off. We need to turn it on here.
-      SetSyncEverythingEnabled(/*enabled=*/true);
+      // For SyncConsentOptional, we also need to update other sync-related
+      // flags.
+      if (features::IsSyncConsentOptionalEnabled()) {
+        UpdateSyncSettings(/*enable_sync=*/true);
+      } else {
+        SetSyncEverythingEnabled(/*enabled=*/true);
+      }
       return;
   }
 }

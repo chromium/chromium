@@ -67,6 +67,13 @@ Polymer({
     profileEmail: String,
 
     /**
+     * Whether the OS sync feature is enabled. This object does not directly
+     * manipulate prefs so we can defer turning on OS sync until the user
+     * navigates away from the page.
+     */
+    osSyncFeatureEnabled: Boolean,
+
+    /**
      * The current OS sync preferences. Cached so we can restore individual
      * toggle state when turning "sync everything" on and off, without affecting
      * the underlying chrome prefs.
@@ -78,7 +85,8 @@ Polymer({
     areDataTypeTogglesDisabled_: {
       type: Boolean,
       value: true,
-      computed: `computeDataTypeTogglesDisabled_(osSyncPrefs.syncAllOsTypes)`,
+      computed: `computeDataTypeTogglesDisabled_(osSyncFeatureEnabled,
+          osSyncPrefs.syncAllOsTypes)`,
     },
 
     /**
@@ -88,6 +96,14 @@ Polymer({
     supportedSettingIds: {
       type: Object,
       value: () => new Set([chromeos.settings.mojom.Setting.kSplitSyncOnOff]),
+    },
+
+    /** @private */
+    syncConsentOptionalEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('syncConsentOptionalEnabled');
+      },
     },
   },
 
@@ -148,9 +164,20 @@ Polymer({
     if (!this.syncStatus) {
       return '';
     }
-    return !this.syncStatus.hasError ?
+    return this.osSyncFeatureEnabled && !this.syncStatus.hasError ?
         this.i18n('syncingTo', this.profileEmail) :
         this.profileEmail;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSyncOnOffButtonLabel_() {
+    if (!this.osSyncFeatureEnabled) {
+      return this.i18n('osSyncTurnOn');
+    }
+    return this.i18n('osSyncTurnOff');
   },
 
   /**
@@ -199,13 +226,31 @@ Polymer({
    * Handler for when the sync preferences are updated.
    * @private
    */
-  handleOsSyncPrefsChanged_(osSyncPrefs) {
+  handleOsSyncPrefsChanged_(osSyncFeatureEnabled, osSyncPrefs) {
+    assert(osSyncFeatureEnabled || this.syncConsentOptionalEnabled_);
+    this.osSyncFeatureEnabled = osSyncFeatureEnabled;
     this.osSyncPrefs = osSyncPrefs;
+
+    // If the feature is disabled the checkboxes appear toggled off, regardless
+    // of the underlying chrome pref.
+    if (!this.osSyncFeatureEnabled) {
+      this.set('osSyncPrefs.syncAllOsTypes', false);
+      for (const dataType of SyncPrefsIndividualDataTypes) {
+        this.set(['osSyncPrefs', dataType], false);
+      }
+    }
 
     // If apps are not registered or synced, force wallpaper off.
     if (!this.osSyncPrefs.osAppsRegistered || !this.osSyncPrefs.osAppsSynced) {
       this.set('osSyncPrefs.wallpaperEnabled', false);
     }
+  },
+
+  /** @private */
+  onSyncOnOffButtonClick_() {
+    assert(this.syncConsentOptionalEnabled_);
+    this.browserProxy_.setOsSyncFeatureEnabled(!this.osSyncFeatureEnabled);
+    settings.recordSettingChange();
   },
 
   /**
@@ -269,7 +314,8 @@ Polymer({
    * @private
    */
   computeDataTypeTogglesDisabled_() {
-    return this.osSyncPrefs !== undefined && this.osSyncPrefs.syncAllOsTypes;
+    return !this.osSyncFeatureEnabled ||
+        (this.osSyncPrefs !== undefined && this.osSyncPrefs.syncAllOsTypes);
   },
 
   /**

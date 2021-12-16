@@ -138,7 +138,8 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   // apps is likely override it. There is a case when App sync is disabled and
   // in last case local cache is available immediately.
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps) &&
+    if (settings->IsOsSyncFeatureEnabled() &&
+        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps) &&
         !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
              ->IsSyncing()) {
       return false;
@@ -155,7 +156,8 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   // If shelf pin layout rolls preference is not started yet then we cannot say
   // if we rolled layout or not.
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (settings->GetSelectedOsTypes().Has(
+    if (settings->IsOsSyncFeatureEnabled() &&
+        settings->GetSelectedOsTypes().Has(
             UserSelectableOsType::kOsPreferences) &&
         !PrefServiceSyncableFromProfile(profile)->AreOsPrefsSyncing()) {
       return false;

@@ -287,6 +287,7 @@ TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
 
   // OOBE screen completed with OS sync enabled.
   PrefService* prefs = profile()->GetPrefs();
+  prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, true);
   prefs->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
 
   // App sync will wait for priority sync to complete.

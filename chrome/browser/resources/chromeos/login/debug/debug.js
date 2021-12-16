@@ -907,6 +907,7 @@ cr.define('cr.ui.login.debug', function() {
       states: [{
         id: 'minor-mode',
         data: {
+          syncConsentOptionalEnabled: false,
           isMinorMode: true,
         },
       }]

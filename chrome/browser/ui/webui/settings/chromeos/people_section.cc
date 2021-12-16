@@ -158,6 +158,34 @@ const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetSyncOnSearchConcepts() {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_SYNC_TURN_OFF,
+       mojom::kSyncSubpagePath,
+       mojom::SearchResultIcon::kSync,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSplitSyncOnOff},
+       {IDS_OS_SETTINGS_TAG_SYNC_TURN_OFF_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetSyncOffSearchConcepts() {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_SYNC_TURN_ON,
+       mojom::kSyncSubpagePath,
+       mojom::SearchResultIcon::kSync,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSplitSyncOnOff},
+       {IDS_OS_SETTINGS_TAG_SYNC_TURN_ON_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetParentalSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS,
@@ -464,6 +492,8 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "syncSettingsCategorizationEnabled",
       chromeos::features::IsSyncSettingsCategorizationEnabled());
+  html_source->AddBoolean("syncConsentOptionalEnabled",
+                          chromeos::features::IsSyncConsentOptionalEnabled());
   html_source->AddString(
       "browserSettingsSyncSetupUrl",
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSyncSetupSubPage}));
@@ -550,14 +580,15 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 
 }  // namespace
 
-// TODO(https://crbug.com/1274802): Remove sync_service param.
-PeopleSection::PeopleSection(Profile* profile,
-                             SearchTagRegistry* search_tag_registry,
-                             syncer::SyncService* sync_service,
-                             SupervisedUserService* supervised_user_service,
-                             signin::IdentityManager* identity_manager,
-                             PrefService* pref_service)
+PeopleSection::PeopleSection(
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry,
+    syncer::SyncService* sync_service,
+    SupervisedUserService* supervised_user_service,
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      sync_service_(sync_service),
       supervised_user_service_(supervised_user_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
@@ -583,10 +614,19 @@ PeopleSection::PeopleSection(Profile* profile,
     FetchAccounts();
   }
 
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
-  } else {
-    updater.AddSearchTags(GetNonCategorizedSyncSearchConcepts());
+  if (sync_service_) {
+    if (chromeos::features::IsSyncConsentOptionalEnabled()) {
+      DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
+      updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
+
+      // Sync search tags are added/removed dynamically.
+      sync_service_->AddObserver(this);
+      OnStateChanged(sync_service_);
+    } else if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+      updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
+    } else {
+      updater.AddSearchTags(GetNonCategorizedSyncSearchConcepts());
+    }
   }
 
   // Parental control search tags are added if necessary and do not update
@@ -595,7 +635,10 @@ PeopleSection::PeopleSection(Profile* profile,
     updater.AddSearchTags(GetParentalSearchConcepts());
 }
 
-PeopleSection::~PeopleSection() = default;
+PeopleSection::~PeopleSection() {
+  if (chromeos::features::IsSyncConsentOptionalEnabled() && sync_service_)
+    sync_service_->RemoveObserver(this);
+}
 
 void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -822,6 +865,22 @@ void PeopleSection::UpdateAccountManagerSearchTags(
     // If a non-device account exists, add the "Remove Account" search tag.
     updater.AddSearchTags(GetRemoveAccountSearchConcepts());
     return;
+  }
+}
+
+void PeopleSection::OnStateChanged(syncer::SyncService* sync_service) {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
+  DCHECK_EQ(sync_service, sync_service_);
+
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  if (sync_service_->IsEngineInitialized() &&
+      sync_service_->GetUserSettings()->IsOsSyncFeatureEnabled()) {
+    updater.AddSearchTags(GetSyncOnSearchConcepts());
+    updater.RemoveSearchTags(GetSyncOffSearchConcepts());
+  } else {
+    updater.RemoveSearchTags(GetSyncOnSearchConcepts());
+    updater.AddSearchTags(GetSyncOffSearchConcepts());
   }
 }
 

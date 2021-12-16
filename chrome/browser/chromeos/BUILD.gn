@@ -3055,6 +3055,8 @@ source_set("chromeos") {
     "../ash/sync/os_sync_util.h",
     "../ash/sync/os_syncable_service_model_type_controller.cc",
     "../ash/sync/os_syncable_service_model_type_controller.h",
+    "../ash/sync/sync_consent_optional_field_trial.cc",
+    "../ash/sync/sync_consent_optional_field_trial.h",
     "../ash/system/automatic_reboot_manager.cc",
     "../ash/system/automatic_reboot_manager.h",
     "../ash/system/automatic_reboot_manager_observer.h",

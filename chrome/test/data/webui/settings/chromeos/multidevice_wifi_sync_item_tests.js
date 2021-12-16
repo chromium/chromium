@@ -114,10 +114,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     wifiSyncItem.remove();
   });
 
-  test('Wifi Sync off', async () => {
+  test('Chrome Sync off', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    cr.webUIListenerCallback('os-sync-prefs-changed', false, prefs);
     Polymer.dom.flush();
 
     assertTrue(
@@ -129,10 +129,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     assertFalse(toggle.checked);
   });
 
-  test('Wifi Sync on', async () => {
+  test('Chrome Sync on', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    cr.webUIListenerCallback('os-sync-prefs-changed', true, prefs);
     Polymer.dom.flush();
 
     assertFalse(

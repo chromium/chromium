@@ -357,6 +357,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_privacy_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_settings_menu_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_sync_controls_optional_disabled_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_sync_controls_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/lock_screen_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_printing_page_tests.m.js",
