@@ -26,6 +26,7 @@
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crash_report_database.h"
+#include "client/crashpad_info.h"
 #include "client/simulate_crash.h"
 #include "gtest/gtest.h"
 #include "snapshot/annotation_snapshot.h"
@@ -73,12 +74,13 @@ struct StartHandlerForSelfTestOptions {
   bool set_first_chance_handler;
   bool crash_non_main_thread;
   bool client_uses_signals;
+  bool gather_indirectly_referenced_memory;
   CrashType crash_type;
 };
 
 class StartHandlerForSelfTest
     : public testing::TestWithParam<
-          std::tuple<bool, bool, bool, bool, CrashType>> {
+          std::tuple<bool, bool, bool, bool, bool, CrashType>> {
  public:
   StartHandlerForSelfTest() = default;
 
@@ -92,6 +94,7 @@ class StartHandlerForSelfTest
              options_.set_first_chance_handler,
              options_.crash_non_main_thread,
              options_.client_uses_signals,
+             options_.gather_indirectly_referenced_memory,
              options_.crash_type) = GetParam();
   }
 
@@ -147,7 +150,8 @@ void ValidateAttachment(const CrashReportDatabase::UploadReport* report) {
             0);
 }
 
-void ValidateExtraMemory(const ProcessSnapshotMinidump& minidump) {
+void ValidateExtraMemory(const StartHandlerForSelfTestOptions& options,
+                         const ProcessSnapshotMinidump& minidump) {
   // Verify that if we have an exception, then the code around the instruction
   // pointer is included in the extra memory.
   const ExceptionSnapshot* exception = minidump.Exception();
@@ -164,10 +168,11 @@ void ValidateExtraMemory(const ProcessSnapshotMinidump& minidump) {
       break;
     }
   }
-  EXPECT_TRUE(pc_found);
+  EXPECT_EQ(pc_found, options.gather_indirectly_referenced_memory);
 }
 
-void ValidateDump(const CrashReportDatabase::UploadReport* report) {
+void ValidateDump(const StartHandlerForSelfTestOptions& options,
+                  const CrashReportDatabase::UploadReport* report) {
   ProcessSnapshotMinidump minidump_snapshot;
   ASSERT_TRUE(minidump_snapshot.Initialize(report->Reader()));
 
@@ -184,7 +189,7 @@ void ValidateDump(const CrashReportDatabase::UploadReport* report) {
 #endif
   ValidateAttachment(report);
 
-  ValidateExtraMemory(minidump_snapshot);
+  ValidateExtraMemory(options, minidump_snapshot);
 
   for (const ModuleSnapshot* module : minidump_snapshot.Modules()) {
     for (const AnnotationSnapshot& annotation : module->AnnotationObjects()) {
@@ -330,6 +335,11 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
         client_handler, SA_ONSTACK, &old_actions));
   }
 
+  if (options.gather_indirectly_referenced_memory) {
+    CrashpadInfo::GetCrashpadInfo()->set_gather_indirectly_referenced_memory(
+        TriState::kEnabled, 1024 * 1024 * 4);
+  }
+
   base::FilePath handler_path = TestPaths::Executable().DirName().Append(
       FILE_PATH_LITERAL("crashpad_handler"));
 
@@ -442,7 +452,7 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
     std::unique_ptr<const CrashReportDatabase::UploadReport> report;
     ASSERT_EQ(database->GetReportForUploading(reports[0].uuid, &report),
               CrashReportDatabase::kNoError);
-    ValidateDump(report.get());
+    ValidateDump(options_, report.get());
   }
 
   StartHandlerForSelfTestOptions options_;
@@ -468,6 +478,7 @@ INSTANTIATE_TEST_SUITE_P(
     StartHandlerForSelfTestSuite,
     StartHandlerForSelfTest,
     testing::Combine(testing::Bool(),
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),

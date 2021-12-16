@@ -59,7 +59,8 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
   bool Initialize(ProcessReaderLinux* process_reader,
                   LinuxVMAddress siginfo_address,
                   LinuxVMAddress context_address,
-                  pid_t thread_id);
+                  pid_t thread_id,
+                  uint32_t* gather_indirectly_referenced_memory_cap);
 
   // ExceptionSnapshot:
 

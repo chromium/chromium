@@ -144,7 +144,7 @@ TEST(CrashpadInfoClientOptions, OneModule) {
     EXPECT_EQ(options.crashpad_handler_behavior, TriState::kUnset);
     EXPECT_EQ(options.system_crash_reporter_forwarding, TriState::kUnset);
     EXPECT_EQ(options.gather_indirectly_referenced_memory, TriState::kEnabled);
-    EXPECT_EQ(options.indirectly_referenced_memory_cap, 1234u);
+    EXPECT_LE(options.indirectly_referenced_memory_cap, 1234u);
   }
 }
 

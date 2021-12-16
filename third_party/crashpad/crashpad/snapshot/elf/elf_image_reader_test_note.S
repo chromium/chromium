@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "util/misc/elf_note_types.h"
+#include "util/misc/arm64_bti_note.S"
 
 #define NOTE_ALIGN 4
   .section .note.crashpad.test,"a",%note

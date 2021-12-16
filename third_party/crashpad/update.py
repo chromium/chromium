@@ -76,7 +76,7 @@ def main(args):
         dest='readme_path')
     parser.add_argument(
         '--exclude',
-        default=['codereview.settings'],
+        default=['codereview.settings', 'infra'],
         action='append',
         help='Files to exclude from the imported copy',
         metavar='PATH')
@@ -137,7 +137,7 @@ def main(args):
          'filter-branch',
          '--force',
          '--index-filter',
-         'git rm --cached --ignore-unmatch ' +
+         'git rm -r --cached --ignore-unmatch ' +
              ' '.join(pipes.quote(path) for path in parsed.exclude),
          revision_old + '..UPDATE_TO'],
         cwd=toplevel,

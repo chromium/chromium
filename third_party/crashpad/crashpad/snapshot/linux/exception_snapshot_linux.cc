@@ -326,10 +326,12 @@ bool ExceptionSnapshotLinux::ReadContext<ContextTraits64>(
 
 #endif  // ARCH_CPU_X86_FAMILY
 
-bool ExceptionSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
-                                        LinuxVMAddress siginfo_address,
-                                        LinuxVMAddress context_address,
-                                        pid_t thread_id) {
+bool ExceptionSnapshotLinux::Initialize(
+    ProcessReaderLinux* process_reader,
+    LinuxVMAddress siginfo_address,
+    LinuxVMAddress context_address,
+    pid_t thread_id,
+    uint32_t* gather_indirectly_referenced_memory_cap) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   thread_id_ = thread_id;
@@ -359,7 +361,10 @@ bool ExceptionSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
   }
 
   CaptureMemoryDelegateLinux capture_memory_delegate(
-      process_reader, thread, &extra_memory_, nullptr);
+      process_reader,
+      thread,
+      &extra_memory_,
+      gather_indirectly_referenced_memory_cap);
   CaptureMemory::PointedToByContext(context_, &capture_memory_delegate);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);

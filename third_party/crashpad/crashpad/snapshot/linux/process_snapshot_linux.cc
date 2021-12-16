@@ -42,10 +42,9 @@ bool ProcessSnapshotLinux::Initialize(PtraceConnection* connection) {
   client_id_.InitializeToZero();
   system_.Initialize(&process_reader_, &snapshot_time_);
 
-  GetCrashpadOptionsInternal((&options_));
-
-  InitializeThreads();
   InitializeModules();
+  GetCrashpadOptionsInternal((&options_));
+  InitializeThreads();
   InitializeAnnotations();
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -83,11 +82,17 @@ bool ProcessSnapshotLinux::InitializeException(
     info.thread_id = exception_thread_id;
   }
 
+  uint32_t* budget_remaining_pointer =
+      options_.gather_indirectly_referenced_memory == TriState::kEnabled
+          ? &options_.indirectly_referenced_memory_cap
+          : nullptr;
+
   exception_.reset(new internal::ExceptionSnapshotLinux());
   if (!exception_->Initialize(&process_reader_,
                               info.siginfo_address,
                               info.context_address,
-                              info.thread_id)) {
+                              info.thread_id,
+                              budget_remaining_pointer)) {
     exception_.reset();
     return false;
   }
@@ -269,11 +274,11 @@ const ProcessMemory* ProcessSnapshotLinux::Memory() const {
 void ProcessSnapshotLinux::InitializeThreads() {
   const std::vector<ProcessReaderLinux::Thread>& process_reader_threads =
       process_reader_.Threads();
-  uint32_t* budget_remaining_pointer = nullptr;
-  uint32_t budget_remaining = options_.indirectly_referenced_memory_cap;
-  if (options_.gather_indirectly_referenced_memory == TriState::kEnabled) {
-    budget_remaining_pointer = &budget_remaining;
-  }
+  uint32_t* budget_remaining_pointer =
+      options_.gather_indirectly_referenced_memory == TriState::kEnabled
+          ? &options_.indirectly_referenced_memory_cap
+          : nullptr;
+
   for (const ProcessReaderLinux::Thread& process_reader_thread :
        process_reader_threads) {
     auto thread = std::make_unique<internal::ThreadSnapshotLinux>();

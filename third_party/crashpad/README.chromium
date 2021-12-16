@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: 3b8a7cf594da2e3454fb230f98a60808837da217
+Revision: 5cc0d543d0e5dadba03a6bf7dd8161fb78ab07b5
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -36,6 +36,7 @@ $ git am --3way --message-id -p4 /tmp/patchdir
 
 Local Modifications:
  - codereview.settings has been excluded.
+ - infra/ has been excluded.
  - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
    (crashpad/test/BUILD.gn, crashpad/test/multiprocess_exec_test.cc)
