@@ -2938,8 +2938,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED" desc="Text shown when fingerprint has been disabled because it has been too long since the user last used the device">
         PIN or password required for more security
       </message>
-      <message name="IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS" desc="Text shown in the user pod to tell user that fingerprint unlock has reached maximum attempt">
+      <message name="IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS_OLD" desc="Text shown in the user pod to tell user that fingerprint unlock has reached maximum attempt">
         Too many attempts
+      </message>
+      <message name="IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS" desc="Label for the Fingerprint icon on user's lock screen after too many failed attempts to authenticate a fingerprint.">
+        Too many fingerprint attempts
       </message>
       <message name="IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_ACCESSIBLE_AUTH_SUCCESS" desc="Accessibility text read by chromevox when the user successfully authenticated with fingerprint on the lock screen">
         Unlocking with fingerprint
@@ -4342,13 +4345,8 @@ Here are some things you can try to get started.
       <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click on arrow icon to unlock/use the Chromebook.">
         Tap or click to enter
       </message>
-
-      <!-- Fingerprint strings shown on the lock screen -->
       <message name="IDS_AUTH_FACTOR_LABEL_UNLOCKED" desc="Label on user's lock screen when a Chromebook is successfully unlocked.">
         Unlocked
-      </message>
-      <message name="IDS_FINGERPRINT_LABEL_NOT_AUTHENTICATED" desc="Label for the Fingerprint icon on user's lock screen after too many failed attempts to authenticate a fingerprint.">
-        Too many fingerprint attempts
       </message>
 
       <!-- Launcher: Continue Section -->

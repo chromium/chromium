@@ -259,7 +259,7 @@ class FingerprintLabel : public views::Label {
         case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
           return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_TOUCH_SENSOR;
         case FingerprintState::DISABLED_FROM_ATTEMPTS:
-          return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
+          return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS_OLD;
         case FingerprintState::DISABLED_FROM_TIMEOUT:
           if (can_use_pin)
             return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
