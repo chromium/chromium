@@ -2264,6 +2264,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when provisioning failed, but RMA can continue.">
         Failed, non blocking.
       </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry provisioning.">
+        Retry provisioning
+      </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair completed

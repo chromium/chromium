@@ -186,6 +186,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING},
       {"provisioningPageFailedNonBlockingText",
        IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING},
+      {"provisioningPageFailedRetryButtonLabel",
+       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_RETRY_BUTTON_LABEL},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       {"repairCompletedDescriptionText",

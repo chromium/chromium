@@ -6,11 +6,19 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {ProvisioningStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingProvisioningPageTest() {
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRma}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?ReimagingProvisioningPage} */
   let component = null;
 
@@ -27,6 +35,8 @@ export function reimagingProvisioningPageTest() {
   });
 
   teardown(() => {
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
     component.remove();
     component = null;
     service.reset();
@@ -37,6 +47,11 @@ export function reimagingProvisioningPageTest() {
    */
   function initializeWaitForProvisioningPage() {
     assertFalse(!!component);
+
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     component = /** @type {!ReimagingProvisioningPage} */ (
         document.createElement('reimaging-provisioning-page'));
@@ -102,5 +117,53 @@ export function reimagingProvisioningPageTest() {
     await flushTasks();
 
     assertDeepEquals(savedResult, expectedResult);
+  });
+
+  test('ProvisioningFailedBlockingRetry', async () => {
+    const resolver = new PromiseResolver();
+    await initializeWaitForProvisioningPage();
+
+    const retryButton =
+        component.shadowRoot.querySelector('#retryProvisioningButton');
+    assertTrue(retryButton.hidden);
+
+    let callCount = 0;
+    service.retryProvisioning = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    service.triggerProvisioningObserver(
+        ProvisioningStatus.kFailedBlocking, 1.0, 0);
+    await flushTasks();
+
+    assertFalse(retryButton.hidden);
+    retryButton.click();
+
+    await flushTasks();
+    assertEquals(1, callCount);
+  });
+
+  test('ProvisioningFailedNonBlockingRetry', async () => {
+    const resolver = new PromiseResolver();
+    await initializeWaitForProvisioningPage();
+
+    const retryButton =
+        component.shadowRoot.querySelector('#retryProvisioningButton');
+    assertTrue(retryButton.hidden);
+
+    let callCount = 0;
+    service.retryProvisioning = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    service.triggerProvisioningObserver(
+        ProvisioningStatus.kFailedNonBlocking, 1.0, 0);
+    await flushTasks();
+
+    assertFalse(retryButton.hidden);
+    retryButton.click();
+
+    await flushTasks();
+    assertEquals(1, callCount);
   });
 }

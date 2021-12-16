@@ -3,15 +3,27 @@
     height: 200px;
     width: 300px;
   }
+
+  paper-spinner-lite {
+    height: 300px;
+    width: 300px;
+  }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('provisioningPageTitleText')]]</h1>
     <div id="provisioningDeviceStatus">[[statusString_]]</div>
+    <div>
+      <cr-button id="retryProvisioningButton" class="cancel-button"
+          on-click="onRetryProvsioningButtonClicked_"
+          hidden$="[[!shouldShowRetryButton_]]">
+        [[i18n('provisioningPageFailedRetryButtonLabel')]]
+      </cr-button>
+    </div>
   </div>
   <div slot="body">
-    <!-- TODO(joonbug): Replace with spinner -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+    <paper-spinner-lite hidden$="[[!shouldShowSpinner_]]" active>
+    </paper-spinner-lite>
   </div>
 </base-page>
