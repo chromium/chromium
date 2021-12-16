@@ -7,22 +7,16 @@ import './toggle_row.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
-import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
-import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from '../permission_util.js';
-
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
-import {AppManagementStoreClient} from './store_client.js';
+import {PermissionType, PermissionValue, TriState} from './permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from './permission_util.js';
 import {getPermission, getPermissionValueBool, getSelectedApp, recordAppManagementUserAction} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
   is: 'app-management-permission-item',
 
-  behaviors: [
-    AppManagementStoreClient,
-  ],
 
   properties: {
     /**
@@ -81,11 +75,6 @@ Polymer({
 
 
   listeners: {click: 'onClick_', change: 'togglePermission_'},
-
-  attached() {
-    this.watch('app_', state => getSelectedApp(state));
-    this.updateFromStore();
-  },
 
   /**
    * Returns true if the permission type is available for the app.
@@ -186,7 +175,6 @@ Polymer({
     BrowserProxy.getInstance().handler.setPermission(
         this.app_.id, newPermission);
 
-    recordSettingChange();
     recordAppManagementUserAction(
         this.app_.type,
         this.getUserMetricActionForPermission_(

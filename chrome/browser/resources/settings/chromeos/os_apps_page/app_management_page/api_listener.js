@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {createInitialState} from '//resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
 import {addApp, changeApp, removeApp} from './actions.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStore} from './store.js';
-import {createInitialState} from './util.js';
 
 let initialized = false;
 

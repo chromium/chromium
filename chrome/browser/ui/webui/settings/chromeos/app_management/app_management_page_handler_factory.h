@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 class Profile;
 

@@ -4,10 +4,10 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import '/app-management/file_path.mojom-lite.js';
-import '/app-management/image.mojom-lite.js';
-import '/app-management/safe_base_name.mojom-lite.js';
-import '/app-management/types.mojom-lite.js';
+import './file_path.mojom-lite.js';
+import './image.mojom-lite.js';
+import './safe_base_name.mojom-lite.js';
+import './types.mojom-lite.js';
 
 
 export const TriState = apps.mojom.TriState;

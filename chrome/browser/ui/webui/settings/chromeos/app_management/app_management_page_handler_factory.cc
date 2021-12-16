@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 AppManagementPageHandlerFactory::AppManagementPageHandlerFactory(
     Profile* profile)

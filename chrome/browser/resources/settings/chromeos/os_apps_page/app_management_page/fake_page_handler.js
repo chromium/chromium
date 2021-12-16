@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AppType, OptionalBool} from '//resources/cr_components/app_management/constants.js';
+import {PermissionType, PermissionValue, TriState} from '//resources/cr_components/app_management/permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '//resources/cr_components/app_management/permission_util.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
-import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '../permission_util.js';
-
-import {AppType, OptionalBool} from './constants.js';
 import {AppManagementStore} from './store.js';
 
 /**

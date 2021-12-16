@@ -7,11 +7,11 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import '/app-management/file_path.mojom-lite.js';
-import '/app-management/image.mojom-lite.js';
-import '/app-management/safe_base_name.mojom-lite.js';
-import '/app-management/types.mojom-lite.js';
-import '/app-management/app_management.mojom-lite.js';
+import './file_path.mojom-lite.js';
+import './image.mojom-lite.js';
+import './safe_base_name.mojom-lite.js';
+import './types.mojom-lite.js';
+import './app_management.mojom-lite.js';
 
 /**
  * The number of apps displayed in app list in the main view before expanding.

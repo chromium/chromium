@@ -25,6 +25,8 @@ import './app_management_page/app_detail_view.js';
 import './app_management_page/uninstall_button.js';
 import '../../controls/settings_dropdown_menu.js';
 
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from '//resources/cr_components/app_management/constants.js';
+import {getAppIcon, getSelectedApp} from '//resources/cr_components/app_management/util.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -37,9 +39,7 @@ import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from './app_management_page/constants.js';
 import {AppManagementStoreClient} from './app_management_page/store_client.js';
-import {getAppIcon, getSelectedApp} from './app_management_page/util.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 
 /**

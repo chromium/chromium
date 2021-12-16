@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 import './more_permissions_item.js';
 import './pin_to_shelf_item.js';
-import './shared_style.js';
+import '//resources/cr_components/app_management/shared_style.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {getSelectedApp} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

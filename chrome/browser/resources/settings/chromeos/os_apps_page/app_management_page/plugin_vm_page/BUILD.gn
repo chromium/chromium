@@ -22,12 +22,12 @@ js_library("plugin_vm_browser_proxy") {
 js_library("plugin_vm_detail_view") {
   deps = [
     ":plugin_vm_browser_proxy",
-    "../:constants",
-    "../:permission_item",
     "../:store_client",
     "../:util",
     "../../..:os_route.m",
     "../../../..:router",
+    "//ui/webui/resources/cr_components/app_management:constants",
+    "//ui/webui/resources/cr_components/app_management:permission_item",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

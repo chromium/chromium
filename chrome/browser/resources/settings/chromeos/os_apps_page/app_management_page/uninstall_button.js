@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import '//resources/cr_components/app_management/shared_style.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 
+import {AppManagementUserAction, InstallReason} from '//resources/cr_components/app_management/constants.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, InstallReason} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {getSelectedApp, recordAppManagementUserAction} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

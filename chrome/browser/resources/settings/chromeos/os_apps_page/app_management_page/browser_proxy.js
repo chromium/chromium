@@ -12,12 +12,12 @@ import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/app-management/app_management.mojom-lite.js';
 
+import {BrowserProxy as ComponentBrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
+import {AppType, InstallReason} from '//resources/cr_components/app_management/constants.js';
+import {PermissionType, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {PermissionType, TriState} from '../permission_constants.js';
-
-import {AppType, InstallReason} from './constants.js';
 import {FakePageHandler} from './fake_page_handler.js';
 
 export class BrowserProxy {

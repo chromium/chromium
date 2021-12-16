@@ -12,6 +12,7 @@ preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_mojom_manifest = "preprocessed_mojom_manifest.json"
+preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 if (is_chromeos_ash) {
   preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
 }
@@ -20,7 +21,10 @@ preprocess_src_manifest = "preprocessed_src_manifest.json"
 generate_grd("build_grdp") {
   grd_prefix = "cr_components"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  deps = [ ":preprocess" ]
+  deps = [
+    ":preprocess",
+    ":preprocess_external_mojo",
+  ]
   if (is_chromeos_ash) {
     input_files_base_dir = rebase_path(".", "//")
     input_files = [
@@ -64,6 +68,7 @@ generate_grd("build_grdp") {
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_mojom_manifest",
     "$target_gen_dir/$preprocess_src_manifest",
+    "$target_gen_dir/$preprocess_external_mojo_manifest",
   ]
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
@@ -72,6 +77,13 @@ generate_grd("build_grdp") {
   }
 
   resource_path_prefix = "cr_components"
+
+  resource_path_rewrites = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js|app_management/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js|app_management/safe_base_name.mojom-lite.js",
+    "ui/gfx/image/mojom/image.mojom-lite.js|app_management/image.mojom-lite.js",
+    "components/services/app_service/public/mojom/types.mojom-lite.js|app_management/types.mojom-lite.js",
+  ]
 }
 
 group("preprocess") {
@@ -103,6 +115,12 @@ preprocess_if_expr("preprocess_src") {
     "most_visited/window_proxy.js",
     "color_change_listener/browser_proxy.js",
     "color_change_listener/colors_css_updater.js",
+    "app_management/permission_constants.js",
+    "app_management/permission_util.js",
+    "app_management/browser_proxy.js",
+    "app_management/constants.js",
+    "app_management/types.js",
+    "app_management/util.js",
   ]
 }
 
@@ -121,7 +139,10 @@ preprocess_if_expr("preprocess_mojom") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":polymer3_elements" ]
+  deps = [
+    ":polymer3_elements",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js__generator",
+  ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
@@ -131,6 +152,11 @@ preprocess_if_expr("preprocess_generated") {
     "managed_dialog/managed_dialog.js",
     "managed_footnote/managed_footnote.js",
     "omnibox/cr_autocomplete_match_list.js",
+    "app_management/permission_item.js",
+    "app_management/shared_style.js",
+    "app_management/shared_vars.js",
+    "app_management/toggle_row.js",
+    "app_management/app_management.mojom-lite.js",
   ]
 
   if (is_chromeos_ash) {
@@ -402,6 +428,7 @@ if (is_chromeos_ash) {
 
 group("closure_compile") {
   deps = [
+    "app_management:closure_compile",
     "color_change_listener:closure_compile",
     "managed_dialog:closure_compile",
     "managed_footnote:closure_compile",
@@ -416,6 +443,7 @@ group("closure_compile") {
 
 group("polymer3_elements") {
   public_deps = [
+    "app_management:web_components",
     "customize_themes:web_components",
     "iph_bubble:web_components",
     "managed_dialog:web_components",
@@ -427,4 +455,26 @@ group("polymer3_elements") {
   if (is_chromeos_ash) {
     public_deps += [ "chromeos:polymer3_elements" ]
   }
+}
+
+preprocess_if_expr("preprocess_external_mojo") {
+  deps = [
+    "//components/services/app_service/public/mojom:mojom_js",
+    "//mojo/public/js:bindings_lite",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/image/mojom:mojom_js",
+  ]
+  in_folder = "$root_gen_dir"
+
+  # It does not matter which preprocess folder these files are pasted into, as
+  # they are not used for bundling; the purpose of this build rule is to
+  # include them in the generated grd file.
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  in_files = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js",
+    "ui/gfx/image/mojom/image.mojom-lite.js",
+    "components/services/app_service/public/mojom/types.mojom-lite.js",
+  ]
 }

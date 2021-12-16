@@ -10,6 +10,8 @@ import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
 import '../../../settings_shared_css.js';
 
+import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
+import {getSelectedApp, recordAppManagementUserAction} from '//resources/cr_components/app_management/util.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -18,9 +20,8 @@ import {routes} from '../../os_route.m.js';
 import {RouteObserverBehavior} from '../../route_observer_behavior.js';
 
 import {updateSelectedAppId} from './actions.js';
-import {AppManagementUserAction, AppType} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {getSelectedApp, openMainPage, recordAppManagementUserAction} from './util.js';
+import {openMainPage} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

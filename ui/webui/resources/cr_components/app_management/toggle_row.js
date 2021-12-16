@@ -7,9 +7,6 @@ import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementStoreClient} from './store_client.js';
-
 Polymer({
   _template: html`{__html_template__}`,
   is: 'app-management-toggle-row',

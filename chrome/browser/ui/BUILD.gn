@@ -1705,7 +1705,6 @@ static_library("ui") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/commander:fuzzy_finder",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
-      "//chrome/browser/ui/webui/app_management:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/image_editor:mojo_bindings",
       "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
@@ -1752,6 +1751,7 @@ static_library("ui") {
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
       "//ui/events",
+      "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
     public_deps += [
@@ -2967,7 +2967,6 @@ static_library("ui") {
       "//chrome/browser/ui/app_list/search/search_result_ranker:app_launch_predictor_proto",
       "//chrome/browser/ui/app_list/search/search_result_ranker:recurrence_ranker_proto",
       "//chrome/browser/ui/app_list/search/util:proto",
-      "//chrome/browser/ui/webui/app_management:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
@@ -3083,6 +3082,7 @@ static_library("ui") {
       "//ui/events/ozone/layout:layout",
       "//ui/file_manager:file_manager",
       "//ui/ozone",
+      "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]
     public_deps += [
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",

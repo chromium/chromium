@@ -1,0 +1,97 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":browser_proxy",
+    ":constants",
+    ":permission_constants",
+    ":permission_item",
+    ":permission_util",
+    ":shared_style",
+    ":shared_vars",
+    ":toggle_row",
+    ":types",
+    ":util",
+  ]
+}
+
+js_library("permission_item") {
+  deps = [
+    ":browser_proxy",
+    ":permission_constants",
+    ":toggle_row",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shared_style") {
+  deps = []
+}
+
+js_library("shared_vars") {
+  deps = []
+}
+
+js_library("permission_constants") {
+  deps = [ ":mojo_bindings_js_library_for_compile" ]
+}
+
+js_library("permission_util") {
+  deps = [
+    ":permission_constants",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("browser_proxy") {
+  deps = [
+    ":mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("toggle_row") {
+  deps = [
+    ":types",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+  ]
+}
+
+js_library("constants") {
+  deps = [ ":mojo_bindings_js_library_for_compile" ]
+}
+
+js_library("types") {
+  deps = []
+}
+
+js_library("util") {
+  deps = [ ":permission_constants" ]
+  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "permission_item.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "toggle_row.js",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "app_management.mojom" ]
+
+  public_deps = [
+    "//components/services/app_service/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}
