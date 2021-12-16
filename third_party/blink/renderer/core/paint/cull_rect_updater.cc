@@ -178,7 +178,8 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
   // different from PaintLayerPaintOrderIterator(kAllChildren) which iterates
   // children in paint order.
   for (auto* child = layer.FirstChild(); child; child = child->NextSibling()) {
-    if (child->GetLayoutObject().IsStacked()) {
+    if (!child->IsReplacedNormalFlowStacking() &&
+        child->GetLayoutObject().IsStacked()) {
       // In the above example, during UpdateForDescendants(child), this
       // forces cull rect update of |stacked-child| which will be updated in
       // the next loop during UpdateForDescendants(layer).
@@ -191,8 +192,10 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
   // Then stacked children (which may not be direct children in PaintLayer
   // hierarchy) in paint order.
   PaintLayerPaintOrderIterator iterator(&layer, kStackedChildren);
-  while (PaintLayer* child = iterator.Next())
-    UpdateRecursively(*child, layer, force_update_children);
+  while (PaintLayer* child = iterator.Next()) {
+    if (!child->IsReplacedNormalFlowStacking())
+      UpdateRecursively(*child, layer, force_update_children);
+  }
 }
 
 bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,

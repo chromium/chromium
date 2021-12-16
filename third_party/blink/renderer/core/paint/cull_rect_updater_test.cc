@@ -142,4 +142,40 @@ TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
   EXPECT_EQ(gfx::Rect(0, 2800, 200, 4200), GetCullRect("child").Rect());
 }
 
+TEST_F(CullRectUpdaterTest, SVGForeignObject) {
+  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
+      <svg id="svg" style="width: 100px; height: 4000px">
+        <foreignObject id="foreign" style="width: 500px; height: 1000px">
+          <div id="child" style="position: relative">Child</div>
+        </foreignObject>
+      </svg>
+    </div>
+  )HTML");
+
+  auto* child = GetPaintLayerByElementId("child");
+  auto* foreign = GetPaintLayerByElementId("foreign");
+  auto* svg = GetPaintLayerByElementId("svg");
+  EXPECT_FALSE(child->NeedsCullRectUpdate());
+  EXPECT_FALSE(foreign->DescendantNeedsCullRectUpdate());
+  EXPECT_FALSE(svg->DescendantNeedsCullRectUpdate());
+
+  GetDocument().getElementById("scroller")->scrollTo(0, 500);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(child->NeedsCullRectUpdate());
+  EXPECT_FALSE(foreign->DescendantNeedsCullRectUpdate());
+  EXPECT_FALSE(svg->DescendantNeedsCullRectUpdate());
+
+  child->SetNeedsCullRectUpdate();
+  EXPECT_TRUE(child->NeedsCullRectUpdate());
+  EXPECT_TRUE(foreign->DescendantNeedsCullRectUpdate());
+  EXPECT_TRUE(svg->DescendantNeedsCullRectUpdate());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(child->NeedsCullRectUpdate());
+  EXPECT_FALSE(foreign->DescendantNeedsCullRectUpdate());
+  EXPECT_FALSE(svg->DescendantNeedsCullRectUpdate());
+}
+
 }  // namespace blink
