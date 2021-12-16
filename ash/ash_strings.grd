@@ -4339,7 +4339,7 @@ Here are some things you can try to get started.
       <message name="IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED" desc="Label on user's lock screen prompting user to enter password or PIN after other sign in authentication methods fail.">
         Enter password or PIN for more security
       </message>
-      <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click to enter Chromebook.">
+      <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click on arrow icon to unlock/use the Chromebook.">
         Tap or click to enter
       </message>
 
