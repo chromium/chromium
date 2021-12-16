@@ -6499,6 +6499,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_TAB_SEARCH" desc="The accessible name for the Tab Search bubble.">
         Search tabs
       </message>
+      <message name="IDS_ACCNAME_TAB_SCROLL_LEADING" desc="The accessible name for the TabStrip leading scroll button.">
+        Scroll towards the first tab
+      </message>
+      <message name="IDS_ACCNAME_TAB_SCROLL_TRAILING" desc="The accessible name for the TabStrip trailing scroll button.">
+        Scroll towards the last tab
+      </message>
 
       <!-- Clipboard permission -->
       <message name="IDS_ALLOWED_CLIPBOARD_TITLE" desc="Title of the info bubble shown when a site has been allowed access to read the contents of the system clipboard.">
