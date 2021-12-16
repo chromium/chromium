@@ -53,6 +53,7 @@ public class LightweightReactionsMediator {
 
     private final ImageFetcher mImageFetcher;
 
+    private boolean mAssetFetchCancelled;
     private boolean mGifGenerationCancelled;
     private int mFramesGenerated;
 
@@ -97,6 +98,8 @@ public class LightweightReactionsMediator {
             return;
         }
 
+        mAssetFetchCancelled = false;
+
         // Keep track of the number of callbacks received (two per reaction expected). Need a
         // final instance because the counter is updated from within a callback.
         final Counter counter = new Counter(reactions.size() * 2);
@@ -111,6 +114,15 @@ public class LightweightReactionsMediator {
 
             ReactionMetadata reaction = reactions.get(i);
             getBitmapForUrl(reaction.thumbnailUrl, bitmap -> {
+                if (mAssetFetchCancelled) {
+                    return;
+                }
+                if (bitmap == null) {
+                    mAssetFetchCancelled = true;
+                    callback.onResult(null);
+                    return;
+                }
+
                 thumbnails[index] = bitmap;
                 counter.increment();
 
@@ -118,7 +130,16 @@ public class LightweightReactionsMediator {
                     callback.onResult(thumbnails);
                 }
             });
-            getGifForUrl(reaction.thumbnailUrl, gif -> {
+            getGifForUrl(reaction.assetUrl, gif -> {
+                if (mAssetFetchCancelled) {
+                    return;
+                }
+                if (gif == null) {
+                    mAssetFetchCancelled = true;
+                    callback.onResult(null);
+                    return;
+                }
+
                 counter.increment();
 
                 if (counter.isDone()) {
