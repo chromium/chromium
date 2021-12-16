@@ -69,6 +69,8 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void Reset();
 
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                      size_t payload_size) override;
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
 
   bool SubmitFrameParameters(

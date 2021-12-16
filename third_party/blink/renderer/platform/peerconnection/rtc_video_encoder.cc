@@ -1020,6 +1020,10 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       (metadata.key_frame ? webrtc::VideoFrameType::kVideoFrameKey
                           : webrtc::VideoFrameType::kVideoFrameDelta);
   image.content_type_ = video_content_type_;
+  // Default invalid qp value is -1 in webrtc::EncodedImage and
+  // media::BitstreamBufferMetadata, and libwebrtc would parse bitstream to get
+  // the qp if |qp_| is less than zero.
+  image.qp_ = metadata.qp;
 
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;

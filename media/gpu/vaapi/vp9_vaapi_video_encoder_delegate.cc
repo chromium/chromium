@@ -357,6 +357,8 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
   auto picture = GetVP9Picture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
+  metadata.qp =
+      base::strict_cast<int32_t>(picture->frame_hdr->quant_params.base_q_idx);
   return metadata;
 }
 

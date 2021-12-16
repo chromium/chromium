@@ -149,6 +149,7 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   if (!data.ReadTimestamp(&metadata->timestamp)) {
     return false;
   }
+  metadata->qp = data.qp();
 
   return data.ReadCodecMetadata(metadata);
 }

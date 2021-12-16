@@ -235,6 +235,7 @@ struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
+  int32 qp;
   CodecMetadata? codec_metadata;
 };
 

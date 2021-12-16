@@ -267,6 +267,20 @@ bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   return true;
 }
 
+BitstreamBufferMetadata VP8VaapiVideoEncoderDelegate::GetMetadata(
+    const EncodeJob& encode_job,
+    size_t payload_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto metadata =
+      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  auto picture = GetVP8Picture(encode_job);
+  DCHECK(picture);
+  metadata.qp =
+      base::strict_cast<int32_t>(picture->frame_hdr->quantization_hdr.y_ac_qi);
+  return metadata;
+}
+
 void VP8VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
   if (!rate_ctrl_) {

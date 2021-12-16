@@ -140,6 +140,9 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   static base::TimeDelta timestamp(const media::BitstreamBufferMetadata& bbm) {
     return bbm.timestamp;
   }
+  static int32_t qp(const media::BitstreamBufferMetadata& bbm) {
+    return bbm.qp;
+  }
   static const media::BitstreamBufferMetadata& codec_metadata(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;

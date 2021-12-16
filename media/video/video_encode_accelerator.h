@@ -115,7 +115,8 @@ struct MEDIA_EXPORT Av1Metadata final {
 //  |payload_size| is the byte size of the used portion of the buffer.
 //  |key_frame| is true if this delivered frame is a keyframe.
 //  |timestamp| is the same timestamp as in VideoFrame passed to Encode().
-//  |vp8|, if set, contains metadata specific to VP8. See above.
+//  |qp| is the quantizer value, default invalid qp value is -1 following
+//  webrtc::EncodedImage.
 struct MEDIA_EXPORT BitstreamBufferMetadata final {
   BitstreamBufferMetadata();
   BitstreamBufferMetadata(const BitstreamBufferMetadata& other);
@@ -129,6 +130,7 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   size_t payload_size_bytes;
   bool key_frame;
   base::TimeDelta timestamp;
+  int32_t qp = -1;
 
   // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
   // it's also possible for none of them to be set.
