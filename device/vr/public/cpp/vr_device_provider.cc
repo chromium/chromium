@@ -8,4 +8,7 @@ namespace device {
 
 VRDeviceProvider::VRDeviceProvider() = default;
 VRDeviceProvider::~VRDeviceProvider() = default;
+
+VRDeviceProviderClient::VRDeviceProviderClient() = default;
+VRDeviceProviderClient::~VRDeviceProviderClient() = default;
 }  // namespace device

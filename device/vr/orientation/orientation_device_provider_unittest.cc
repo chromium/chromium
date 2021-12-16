@@ -94,58 +94,6 @@ class VROrientationDeviceProviderTest : public testing::Test {
     return init_params;
   }
 
-  base::RepeatingCallback<void(device::mojom::XRDeviceId,
-                               mojom::VRDisplayInfoPtr,
-                               mojom::XRDeviceDataPtr,
-                               mojo::PendingRemote<mojom::XRRuntime> device)>
-  DeviceAndIdCallbackFailIfCalled() {
-    return base::BindRepeating(
-        [](device::mojom::XRDeviceId id, mojom::VRDisplayInfoPtr,
-           mojom::XRDeviceDataPtr,
-           mojo::PendingRemote<mojom::XRRuntime> device) { FAIL(); });
-  }
-
-  base::RepeatingCallback<void(device::mojom::XRDeviceId)>
-  DeviceIdCallbackFailIfCalled() {
-    return base::BindRepeating([](device::mojom::XRDeviceId id) { FAIL(); });
-  }
-
-  base::RepeatingCallback<void(device::mojom::XRDeviceId,
-                               mojom::VRDisplayInfoPtr,
-                               mojom::XRDeviceDataPtr,
-                               mojo::PendingRemote<mojom::XRRuntime> device)>
-  DeviceAndIdCallbackMustBeCalled(base::RunLoop* loop) {
-    return base::BindRepeating(
-        [](base::OnceClosure quit_closure, device::mojom::XRDeviceId id,
-           mojom::VRDisplayInfoPtr info, mojom::XRDeviceDataPtr data,
-           mojo::PendingRemote<mojom::XRRuntime> device) {
-          ASSERT_TRUE(device);
-          ASSERT_TRUE(info);
-          ASSERT_TRUE(data);
-          std::move(quit_closure).Run();
-        },
-        loop->QuitClosure());
-  }
-
-  base::RepeatingCallback<void(device::mojom::XRDeviceId)>
-  DeviceIdCallbackMustBeCalled(base::RunLoop* loop) {
-    return base::BindRepeating(
-        [](base::OnceClosure quit_closure, device::mojom::XRDeviceId id) {
-          std::move(quit_closure).Run();
-        },
-        loop->QuitClosure());
-  }
-
-  base::OnceClosure ClosureFailIfCalled() {
-    return base::BindOnce([]() { FAIL(); });
-  }
-
-  base::OnceClosure ClosureMustBeCalled(base::RunLoop* loop) {
-    return base::BindOnce(
-        [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
-        loop->QuitClosure());
-  }
-
   // Needed for MakeRequest to work.
   base::test::TaskEnvironment task_environment_;
 
@@ -161,6 +109,56 @@ class VROrientationDeviceProviderTest : public testing::Test {
   mojo::Remote<mojom::SensorClient> sensor_client_;
 };
 
+class MockOrientationDeviceProviderClient : public VRDeviceProviderClient {
+ public:
+  MockOrientationDeviceProviderClient(base::RunLoop* wait_for_device,
+                                      base::RunLoop* wait_for_init)
+      : wait_for_device_(wait_for_device), wait_for_init_(wait_for_init) {}
+  ~MockOrientationDeviceProviderClient() override = default;
+  void AddRuntime(
+      device::mojom::XRDeviceId id,
+      device::mojom::VRDisplayInfoPtr info,
+      device::mojom::XRDeviceDataPtr device_data,
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime) override {
+    if (wait_for_device_) {
+      ASSERT_TRUE(info);
+      ASSERT_TRUE(device_data);
+      ASSERT_TRUE(runtime);
+      wait_for_device_->Quit();
+      return;
+    }
+
+    // If we were created without a wait_for_device runloop, then the test
+    // is not expecting us to be called.
+    FAIL();
+  }
+
+  void RemoveRuntime(device::mojom::XRDeviceId id) override {
+    // The only devices that actually create an Orientation device cannot
+    // physically remove the orientation sensors, so this should never be
+    // called.
+    FAIL();
+  }
+
+  void OnProviderInitialized() override {
+    if (!wait_for_init_) {
+      FAIL();
+    }
+
+    wait_for_init_->Quit();
+  }
+
+  device::XrFrameSinkClientFactory GetXrFrameSinkClientFactory() override {
+    ADD_FAILURE();
+
+    return base::BindRepeating(&FrameSinkClientFactory);
+  }
+
+ private:
+  base::RunLoop* wait_for_device_ = nullptr;
+  base::RunLoop* wait_for_init_ = nullptr;
+};
+
 TEST_F(VROrientationDeviceProviderTest, InitializationTest) {
   // Check that without running anything, the provider will not be initialized.
   EXPECT_FALSE(provider_->Initialized());
@@ -170,10 +168,9 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackSuccessTest) {
   base::RunLoop wait_for_device;
   base::RunLoop wait_for_init;
 
-  provider_->Initialize(DeviceAndIdCallbackMustBeCalled(&wait_for_device),
-                        DeviceIdCallbackFailIfCalled(),
-                        ClosureMustBeCalled(&wait_for_init),
-                        base::BindRepeating(&FrameSinkClientFactory));
+  MockOrientationDeviceProviderClient client(&wait_for_device, &wait_for_init);
+
+  provider_->Initialize(&client);
 
   InitializeDevice(FakeInitParams());
 
@@ -186,10 +183,8 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackSuccessTest) {
 TEST_F(VROrientationDeviceProviderTest, InitializationCallbackFailureTest) {
   base::RunLoop wait_for_init;
 
-  provider_->Initialize(DeviceAndIdCallbackFailIfCalled(),
-                        DeviceIdCallbackFailIfCalled(),
-                        ClosureMustBeCalled(&wait_for_init),
-                        base::BindRepeating(&FrameSinkClientFactory));
+  MockOrientationDeviceProviderClient client(nullptr, &wait_for_init);
+  provider_->Initialize(&client);
 
   InitializeDevice(nullptr);
 

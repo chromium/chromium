@@ -503,14 +503,10 @@ void XRRuntimeManagerImpl::InitializeProviders() {
       continue;
     }
 
-    provider->Initialize(
-        base::BindRepeating(&XRRuntimeManagerImpl::AddRuntime,
-                            base::Unretained(this)),
-        base::BindRepeating(&XRRuntimeManagerImpl::RemoveRuntime,
-                            base::Unretained(this)),
-        base::BindOnce(&XRRuntimeManagerImpl::OnProviderInitialized,
-                       base::Unretained(this)),
-        base::BindRepeating(&FrameSinkClientFactory));
+    // It is acceptable for the providers to potentially take/keep a reference
+    // to ourselves here, since we own the providers and can guarantee that they
+    // will not outlive us.
+    provider->Initialize(this);
   }
 
   providers_initialized_ = true;
@@ -571,6 +567,11 @@ void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {
 
   for (VRServiceImpl* service : services_)
     service->RuntimesChanged();
+}
+
+device::XrFrameSinkClientFactory
+XRRuntimeManagerImpl::GetXrFrameSinkClientFactory() {
+  return base::BindRepeating(&FrameSinkClientFactory);
 }
 
 void XRRuntimeManagerImpl::ForEachRuntime(

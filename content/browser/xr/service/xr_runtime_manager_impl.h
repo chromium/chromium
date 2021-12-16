@@ -23,6 +23,7 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/xr_integration_client.h"
 #include "content/public/browser/xr_runtime_manager.h"
+#include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -38,7 +39,8 @@ class XRRuntimeManagerTest;
 class CONTENT_EXPORT XRRuntimeManagerImpl
     : public XRRuntimeManager,
       public base::RefCounted<XRRuntimeManagerImpl>,
-      public content::GpuDataManagerObserver {
+      public content::GpuDataManagerObserver,
+      public device::VRDeviceProviderClient {
  public:
   friend base::RefCounted<XRRuntimeManagerImpl>;
   static constexpr auto kRefCountPreference =
@@ -92,6 +94,16 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   void ForEachRuntime(
       base::RepeatingCallback<void(BrowserXRRuntime*)> fn) override;
 
+  // VRDeviceProviderClient implementation
+  void AddRuntime(
+      device::mojom::XRDeviceId id,
+      device::mojom::VRDisplayInfoPtr info,
+      device::mojom::XRDeviceDataPtr device_data,
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime) override;
+  void RemoveRuntime(device::mojom::XRDeviceId id) override;
+  void OnProviderInitialized() override;
+  device::XrFrameSinkClientFactory GetXrFrameSinkClientFactory() override;
+
  private:
   // Constructor also used by tests to supply an arbitrary list of providers
   static scoped_refptr<XRRuntimeManagerImpl> CreateInstance(
@@ -108,14 +120,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   ~XRRuntimeManagerImpl() override;
 
   void InitializeProviders();
-  void OnProviderInitialized();
   bool AreAllProvidersInitialized();
-
-  void AddRuntime(device::mojom::XRDeviceId id,
-                  device::mojom::VRDisplayInfoPtr info,
-                  device::mojom::XRDeviceDataPtr device_data,
-                  mojo::PendingRemote<device::mojom::XRRuntime> runtime);
-  void RemoveRuntime(device::mojom::XRDeviceId id);
 
   bool IsInitializedOnCompatibleAdapter(BrowserXRRuntimeImpl* runtime);
 

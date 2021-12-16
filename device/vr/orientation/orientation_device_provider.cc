@@ -19,28 +19,19 @@ VROrientationDeviceProvider::VROrientationDeviceProvider(
 
 VROrientationDeviceProvider::~VROrientationDeviceProvider() = default;
 
-void VROrientationDeviceProvider::Initialize(
-    base::RepeatingCallback<void(mojom::XRDeviceId,
-                                 mojom::VRDisplayInfoPtr,
-                                 mojom::XRDeviceDataPtr,
-                                 mojo::PendingRemote<mojom::XRRuntime>)>
-        add_device_callback,
-    base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-    base::OnceClosure initialization_complete,
-    XrFrameSinkClientFactory xr_frame_sink_client_factory) {
+void VROrientationDeviceProvider::Initialize(VRDeviceProviderClient* client) {
   if (device_ && device_->IsAvailable()) {
-    add_device_callback.Run(device_->GetId(), device_->GetVRDisplayInfo(),
-                            device_->GetDeviceData(), device_->BindXRRuntime());
+    client->AddRuntime(device_->GetId(), device_->GetVRDisplayInfo(),
+                       device_->GetDeviceData(), device_->BindXRRuntime());
     return;
   }
 
   if (!device_) {
+    client_ = client;
     device_ = std::make_unique<VROrientationDevice>(
         sensor_provider_.get(),
         base::BindOnce(&VROrientationDeviceProvider::DeviceInitialized,
                        base::Unretained(this)));
-    add_device_callback_ = add_device_callback;
-    initialized_callback_ = std::move(initialization_complete);
   }
 }
 
@@ -56,13 +47,12 @@ void VROrientationDeviceProvider::DeviceInitialized() {
 
   // If the device successfully connected to the orientation APIs, provide it.
   if (device_->IsAvailable()) {
-    add_device_callback_.Run(device_->GetId(), device_->GetVRDisplayInfo(),
-                             device_->GetDeviceData(),
-                             device_->BindXRRuntime());
+    client_->AddRuntime(device_->GetId(), device_->GetVRDisplayInfo(),
+                        device_->GetDeviceData(), device_->BindXRRuntime());
   }
 
   initialized_ = true;
-  std::move(initialized_callback_).Run();
+  client_->OnProviderInitialized();
 }
 
 }  // namespace device
