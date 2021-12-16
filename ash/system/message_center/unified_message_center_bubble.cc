@@ -106,8 +106,8 @@ void UnifiedMessageCenterBubble::ShowBubble() {
     float radius = kBubbleCornerRadius;
     widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
     widget_layer->SetIsFastRoundedCorner(true);
+    widget_layer->Add(border_->layer());
   }
-  widget_layer->Add(border_->layer());
 
   bubble_view_->InitializeAndShowBubble();
   message_center_view_->Init();
@@ -173,8 +173,10 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
                     kUnifiedMessageCenterBubbleSpacing);
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
-  bubble_widget_->GetLayer()->StackAtTop(border_->layer());
-  border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
+  if (!features::IsNotificationsRefreshEnabled()) {
+    bubble_widget_->GetLayer()->StackAtTop(border_->layer());
+    border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
+  }
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {
@@ -227,6 +229,24 @@ void UnifiedMessageCenterBubble::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   UpdatePosition();
   bubble_view_->Layout();
+}
+
+void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // Hide the message center widget if the message center is not
+  // visible. This is to ensure we do not see an empty bubble.
+
+  if (observed_view != message_center_view_)
+    return;
+
+  if (observed_view->GetVisible()) {
+    bubble_widget_->Show();
+    return;
+  }
+
+  tray_->ActivateBubble();
+  bubble_widget_->Hide();
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
