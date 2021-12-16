@@ -678,10 +678,6 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
 }
 
 void RenderViewHostImpl::ClosePage() {
-  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-  VLOG(1) << "RenderViewHostImpl::ClosePage() IsRenderViewLive() = "
-          << IsRenderViewLive()
-          << ", SuddenTerminationAllowed() = " << SuddenTerminationAllowed();
   is_waiting_for_page_close_completion_ = true;
 
   if (IsRenderViewLive() && !SuddenTerminationAllowed()) {

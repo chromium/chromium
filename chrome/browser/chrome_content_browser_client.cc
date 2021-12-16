@@ -6163,10 +6163,8 @@ ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
 void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
     content::BrowserContext* context) {
 #if !defined(OS_ANDROID)
-  // TODO(crbug.com/1161996): Remove this entry once the investigation is
-  // done.
-  VLOG(1) << "OnKeepaliveRequestStarted: " << num_keepalive_requests_ << " ==> "
-          << num_keepalive_requests_ + 1;
+  DVLOG(1) << "OnKeepaliveRequestStarted: " << num_keepalive_requests_
+           << " ==> " << num_keepalive_requests_ + 1;
   ++num_keepalive_requests_;
   DCHECK_GT(num_keepalive_requests_, 0u);
 
@@ -6180,10 +6178,8 @@ void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
   const auto timeout = GetKeepaliveTimerTimeout(context);
   keepalive_deadline_ = std::max(keepalive_deadline_, now + timeout);
   if (keepalive_deadline_ > now && !keepalive_timer_.IsRunning()) {
-    // TODO(crbug.com/1161996): Remove this entry once the investigation is
-    // done.
-    VLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
-            << " seconds)";
+    DVLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
+             << " seconds)";
     keepalive_timer_.Start(
         FROM_HERE, keepalive_deadline_ - now,
         base::BindOnce(
@@ -6198,15 +6194,11 @@ void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
 void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 #if !defined(OS_ANDROID)
   DCHECK_GT(num_keepalive_requests_, 0u);
-  // TODO(crbug.com/1161996): Remove this entry once the investigation is
-  // done.
-  VLOG(1) << "OnKeepaliveRequestFinished: " << num_keepalive_requests_
-          << " ==> " << num_keepalive_requests_ - 1;
+  DVLOG(1) << "OnKeepaliveRequestFinished: " << num_keepalive_requests_
+           << " ==> " << num_keepalive_requests_ - 1;
   --num_keepalive_requests_;
   if (num_keepalive_requests_ == 0) {
-    // TODO(crbug.com/1161996): Remove this entry once the investigation is
-    // done.
-    VLOG(1) << "Stopping the keepalive timer";
+    DVLOG(1) << "Stopping the keepalive timer";
     keepalive_timer_.Stop();
     // This deletes the keep alive handle attached to the timer function and
     // unblock the shutdown sequence.
@@ -6313,14 +6305,9 @@ base::TimeDelta ChromeContentBrowserClient::GetKeepaliveTimerTimeout(
 
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(
     std::unique_ptr<ScopedKeepAlive> keep_alive_handle) {
-  // TODO(crbug.com/1161996): Remove this entry once the investigation is done.
-  VLOG(1) << "OnKeepaliveTimerFired";
   const auto now = base::TimeTicks::Now();
   const auto then = keepalive_deadline_;
   if (now < then) {
-    // TODO(crbug.com/1161996): Remove this entry once the investigation is
-    // done.
-    VLOG(1) << "Extending keepalive timer";
     keepalive_timer_.Start(
         FROM_HERE, then - now,
         base::BindOnce(&ChromeContentBrowserClient::OnKeepaliveTimerFired,
