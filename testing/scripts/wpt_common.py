@@ -109,10 +109,39 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             os.path.join(layout_test_results, 'results.html'))
 
         if self.wptreport:
-            self.fs.copyfile(
-                self.wptreport,
-                os.path.join(layout_test_results,
-                             os.path.basename(self.wptreport)))
+            self._process_wpt_report(self.wptreport)
+
+    def get_wpt_revision(self):
+        checkout_script = os.path.join(
+            common.SRC_DIR, "third_party", "wpt_tools", "checkout.sh")
+        with open(checkout_script) as f:
+            for line in f.readlines():
+                if line.startswith("WPT_HEAD"):
+                    rev = line.rstrip()[len("WPT_HEAD")+1:]
+                    return rev
+        return None
+
+    def _process_wpt_report(self, wptreport):
+        layout_test_results = os.path.join(os.path.dirname(self.wpt_output),
+                                           self.layout_test_results_subdir)
+        dst = os.path.join(layout_test_results,
+                           os.path.basename(wptreport))
+        with open(wptreport) as f_src, open(dst, "w") as f_dst:
+            data = json.load(f_src)
+            # update revision to use upstream revision
+            rev = self.get_wpt_revision()
+            if rev:
+                data["run_info"]["revision"] = rev
+            # dump the result to layout-test-results
+            json.dump(data, f_dst)
+
+        # upload the report to ResultDB
+        artifact = {
+            os.path.basename(wptreport): {
+                'filePath': dst
+            }
+        }
+        self.sink.report_invocation_level_artifacts(artifact)
 
     def process_wptrunner_output(self,
                                  full_results_json,
