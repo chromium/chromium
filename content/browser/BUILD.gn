@@ -33,6 +33,7 @@ source_set("browser") {
     "//content/public/browser:browser_sources",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
     "//content/test/fuzzer:indexed_db_fuzzer_support",
+    "//content/test/fuzzer:media_stream_dispatcher_host_mojolpm_fuzzer",
   ]
 
   configs += [

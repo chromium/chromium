@@ -189,7 +189,6 @@ mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
   deps = [
     "//base/test:test_support",
     "//content/browser:for_content_tests",
-    "//content/public/browser:browser_sources",
     "//content/test:test_support",
     "//services/network:test_support",
     "//storage/browser:test_support",
@@ -265,6 +264,24 @@ fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
   deps = [ ":indexed_db_fuzzer_support" ]
   seed_corpus =
       "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
+}
+
+mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
+  sources = [ "media_stream_dispatcher_host_mojolpm_fuzzer.cc" ]
+
+  proto_source = "media_stream_dispatcher_host_mojolpm_fuzzer.proto"
+
+  deps = [
+    "//base/test:test_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 }
 
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
