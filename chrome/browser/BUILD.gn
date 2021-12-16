@@ -211,6 +211,8 @@ static_library("browser") {
     "bookmarks/chrome_bookmark_client.h",
     "bookmarks/managed_bookmark_service_factory.cc",
     "bookmarks/managed_bookmark_service_factory.h",
+    "breadcrumbs/breadcrumbs_status.cc",
+    "breadcrumbs/breadcrumbs_status.h",
     "browser_about_handler.cc",
     "browser_about_handler.h",
     "browser_features.cc",

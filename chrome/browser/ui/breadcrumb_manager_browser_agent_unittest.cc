@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -19,6 +20,13 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
  protected:
   BreadcrumbManagerBrowserAgentTest() {
     scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &are_metrics_enabled_);
+  }
+
+  ~BreadcrumbManagerBrowserAgentTest() override {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
   }
 
   void SetUp() override {
@@ -43,6 +51,7 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_ = nullptr;
+  const bool are_metrics_enabled_ = true;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for

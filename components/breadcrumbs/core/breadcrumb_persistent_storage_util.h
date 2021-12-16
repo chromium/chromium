@@ -25,6 +25,9 @@ base::FilePath GetBreadcrumbPersistentStorageFilePath(
 base::FilePath GetBreadcrumbPersistentStorageTempFilePath(
     const base::FilePath& storage_dir);
 
+// Deletes the breadcrumbs file and breadcrumbs temp file in |storage_dir|.
+void DeleteBreadcrumbFiles(const base::FilePath& storage_dir);
+
 }  // namespace breadcrumbs
 
 #endif  // COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_UTIL_H_

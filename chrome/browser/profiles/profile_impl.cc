@@ -46,6 +46,7 @@
 #include "chrome/browser/background_sync/background_sync_controller_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#include "chrome/browser/breadcrumbs/breadcrumbs_status.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -128,7 +129,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
-#include "components/breadcrumbs/core/features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -829,7 +829,7 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (BreadcrumbsStatus::IsEnabled()) {
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
@@ -865,7 +865,7 @@ ProfileImpl::~ProfileImpl() {
   StopCreateSessionServiceTimer();
 #endif
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (BreadcrumbsStatus::IsEnabled()) {
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
     breadcrumb_service->StopPersisting();

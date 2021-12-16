@@ -16,6 +16,7 @@
 #include "components/metrics/metrics_service_accessor.h"
 #include "ppapi/buildflags/buildflags.h"
 
+class BreadcrumbsStatus;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
 class HttpsFirstModeService;
@@ -115,6 +116,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class autofill_assistant::ClientAndroid;
   friend class ::CrashesDOMHandler;
   friend class ::FlashDOMHandler;
+  friend class BreadcrumbsStatus;
   friend class ChromeBrowserFieldTrials;
   // For ClangPGO.
   friend class ChromeBrowserMainExtraPartsMetrics;
