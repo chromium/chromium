@@ -268,8 +268,10 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
 #else
       false;
 #endif
+  ALLOW_UNUSED_LOCAL(pcscan_enabled);
 
-  std::string brp_group_name;
+  std::string brp_group_name = "Unavailable";
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pcscan_enabled) {
     // If PCScan is enabled, just ignore the population.
     brp_group_name = "Ignore_PCScanIsOn";
@@ -320,10 +322,14 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
       brp_group_name += ("_" + process_selector);
     }
   }
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   trials.emplace("BackupRefPtr_Effective", brp_group_name);
 
-  std::string pcscan_group_name;
-  std::string pcscan_group_name_fallback;
+  // On 32-bit architectures, PCScan is not supported and permanently disabled.
+  // Don't lump it into "Disabled", so that belonging to "Enabled"/"Disabled" is
+  // fully controlled by Finch and thus have identical population sizes.
+  std::string pcscan_group_name = "Unavailable";
+  std::string pcscan_group_name_fallback = "Unavailable";
 #if defined(PA_ALLOW_PCSCAN)
   if (brp_truly_enabled) {
     // If BRP protection is enabled, just ignore the population. Check
@@ -341,12 +347,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
   } else {
     pcscan_group_name_fallback = (pcscan_enabled ? "Enabled" : "Disabled");
   }
-#else
-  // On certain platforms, PCScan is not supported and permanently disabled.
-  // Don't lump it into "Disabled", so that belonging to "Enabled"/"Disabled" is
-  // fully controlled by Finch and thus have identical population sizes.
-  pcscan_group_name = "Unavailable";
-  pcscan_group_name_fallback = "Unavailable";
 #endif  // defined(PA_ALLOW_PCSCAN)
   trials.emplace("PCScan_Effective", pcscan_group_name);
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
