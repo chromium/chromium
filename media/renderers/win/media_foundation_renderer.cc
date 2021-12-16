@@ -27,6 +27,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/win/dxgi_device_manager.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 
@@ -184,6 +185,30 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   if (dxgi_device_manager_) {
     RETURN_IF_FAILED(creation_attributes->SetUnknown(
         MF_MEDIA_ENGINE_DXGI_MANAGER, dxgi_device_manager_.Get()));
+
+    // TODO(crbug.com/1276067): We'll investigate scenarios to see if we can use
+    // the on-screen video window size and not the native video size.
+    if (in_frame_server_mode_) {
+      gfx::Size max_video_size;
+      bool has_video = false;
+      for (auto* stream : media_resource->GetAllStreams()) {
+        if (stream->type() == media::DemuxerStream::VIDEO) {
+          has_video = true;
+          gfx::Size video_size = stream->video_decoder_config().natural_size();
+          if (video_size.height() > max_video_size.height()) {
+            max_video_size.set_height(video_size.height());
+          }
+
+          if (video_size.width() > max_video_size.width()) {
+            max_video_size.set_width(video_size.width());
+          }
+        }
+      }
+
+      if (has_video) {
+        RETURN_IF_FAILED(InitializeTexturePool(max_video_size));
+      }
+    }
   }
 
   RETURN_IF_FAILED(
@@ -492,6 +517,29 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
   std::move(callback).Run(true);
 }
 
+HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
+  DXGIDeviceScopedHandle dxgi_device_handle(dxgi_device_manager_.Get());
+  ComPtr<ID3D11Device> d3d11_device = dxgi_device_handle.GetDevice();
+
+  if (d3d11_device.Get() == nullptr) {
+    return E_UNEXPECTED;
+  }
+
+  // TODO(crbug.com/1276067): change |size| to instead use the required
+  // size of the output (for example if the video is only 1280x720 instead
+  // of a source frame of 1920x1080 we'd use the 1280x720 texture size).
+  // However we also need to investigate the scenario of WebGL and 360 video
+  // where they need the original frame size instead of the window size due
+  // to later image processing.
+  auto callback = [](std::vector<MediaFoundationFrameInfo> frame_textures,
+                     const gfx::Size& texture_size) {};
+
+  RETURN_IF_FAILED(texture_pool_.Initialize(
+      d3d11_device.Get(), base::BindRepeating(callback), size));
+
+  return S_OK;
+}
+
 HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
   ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&mf_media_engine_ex));
@@ -732,6 +780,10 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
     // be presented. Otherwise, the Media Foundation video renderer will not
     // request video samples from our source.
     ignore_result(UpdateVideoStream(test_rect));
+  }
+
+  if (in_frame_server_mode_) {
+    InitializeTexturePool(native_video_size_);
   }
 
   renderer_client_->OnVideoNaturalSizeChange(native_video_size_);

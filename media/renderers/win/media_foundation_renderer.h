@@ -29,6 +29,7 @@
 #include "media/renderers/win/media_foundation_protection_manager.h"
 #include "media/renderers/win/media_foundation_renderer_extension.h"
 #include "media/renderers/win/media_foundation_source_wrapper.h"
+#include "media/renderers/win/media_foundation_texture_pool.h"
 
 namespace media {
 
@@ -119,7 +120,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT SetSourceOnMediaEngine();
   HRESULT UpdateVideoStream(const gfx::Rect& rect);
   HRESULT PauseInternal();
-
+  HRESULT InitializeTexturePool(const gfx::Size& size);
   void OnVideoNaturalSizeChange();
 
   // Renderer methods are running in the same sequence.
@@ -139,7 +140,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   Microsoft::WRL::ComPtr<MediaEngineExtension> mf_media_engine_extension_;
   Microsoft::WRL::ComPtr<MediaFoundationSourceWrapper> mf_source_;
   // This enables MFMediaEngine to use hardware acceleration for video decoding
-  // and vdieo processing.
+  // and video processing.
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
 
   // Current duration of the media.
@@ -171,6 +172,16 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>
       content_protection_manager_;
+
+  // Texture pool of ID3D11Texture2D for the media engine to draw video frames
+  // when the media engine is in frame server mode instead of Direct
+  // Composition mode.
+  MediaFoundationTexturePool texture_pool_;
+
+  // When in frame server mode we need to manage the DX textures and provide
+  // frames to the renderer.
+  // Disabled until we move
+  bool in_frame_server_mode_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRenderer> weak_factory_{this};

@@ -76,6 +76,8 @@ source_set("renderers") {
       "win/media_foundation_source_wrapper.h",
       "win/media_foundation_stream_wrapper.cc",
       "win/media_foundation_stream_wrapper.h",
+      "win/media_foundation_texture_pool.cc",
+      "win/media_foundation_texture_pool.h",
       "win/media_foundation_video_stream.cc",
       "win/media_foundation_video_stream.h",
     ]
@@ -146,6 +148,7 @@ source_set("unit_tests") {
     sources += [
       "win/media_foundation_renderer_integration_test.cc",
       "win/media_foundation_renderer_unittest.cc",
+      "win/media_foundation_texture_pool_unittest.cc",
     ]
     deps += [ "//media/test:pipeline_integration_test_base" ]
     libs = [
