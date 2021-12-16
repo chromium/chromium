@@ -94,7 +94,7 @@ non_preprocessed_files = [
   "security_keys_subpage_test.ts",
   "settings_animated_pages_test.js",
   "settings_category_default_radio_group_tests.ts",
-  "settings_main_test.js",
+  "settings_main_test.ts",
   "settings_menu_interactive_ui_test.ts",
   "settings_page_test_util.ts",
   "settings_slider_tests.ts",

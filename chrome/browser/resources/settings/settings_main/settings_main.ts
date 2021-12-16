@@ -33,6 +33,12 @@ type MainPageVisibility = {
   settings: boolean,
 };
 
+export interface SettingsMainElement {
+  $: {
+    noSearchResults: HTMLElement,
+  }
+}
+
 const SettingsMainElementBase = RouteObserverMixin(PolymerElement) as
     {new (): PolymerElement & RouteObserverMixinInterface};
 
@@ -100,6 +106,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     };
   }
 
+  prefs: {[key: string]: any};
   advancedToggleExpanded: boolean;
   private showPages_: MainPageVisibility;
   private inSearchMode_: boolean;
@@ -178,6 +185,12 @@ export class SettingsMainElement extends SettingsMainElementBase {
   private showManagedHeader_(): boolean {
     return !this.inSearchMode_ && !this.showingSubpage_ &&
         !this.showPages_.about;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-main': SettingsMainElement;
   }
 }
 

@@ -30,6 +30,7 @@ export {SettingsBasicPageElement} from './basic_page/basic_page.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
+export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 // <if expr="not chromeos and not lacros">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
@@ -77,7 +78,7 @@ export {SettingsSafetyCheckSafeBrowsingChildElement} from './safety_check_page/s
 export {SettingsSafetyCheckUpdatesChildElement} from './safety_check_page/safety_check_updates_child.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
-export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';
+export {getSearchManager, SearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';
 export {SettingsMainElement} from './settings_main/settings_main.js';
 export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SettingsUiElement} from './settings_ui/settings_ui.js';

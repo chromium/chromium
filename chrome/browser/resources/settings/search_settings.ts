@@ -482,7 +482,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
   const SANITIZE_REGEX: RegExp = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
-  interface SearchManager {
+  export interface SearchManager {
     /**
      * @param text The text to search for.
      * @param page

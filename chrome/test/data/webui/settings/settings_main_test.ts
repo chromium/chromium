@@ -5,9 +5,9 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, pageVisibility, Router, routes, SearchRequest, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, pageVisibility, Router, routes, SearchManager, SearchRequest, setSearchManagerForTesting, SettingsIdleLoadElement, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /**
@@ -15,36 +15,24 @@ import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js'
  * itself. Essentially TestBrowserProxy can act as a "proxy" for any external
  * dependency, not just "browser proxies" (and maybe should be renamed to
  * TestProxy).
- *
- * @implements {SearchManager}
  */
-class TestSearchManager extends TestBrowserProxy {
+class TestSearchManager extends TestBrowserProxy implements SearchManager {
+  private matchesFound_: boolean = true;
+  private searchRequest_: SearchRequest|null = null;
+
   constructor() {
-    super([
-      'search',
-    ]);
-
-    /** @private {boolean} */
-    this.matchesFound_ = true;
-
-    /** @private {?SearchRequest} */
-    this.searchRequest_ = null;
+    super(['search']);
   }
 
-  /**
-   * @param {boolean} matchesFound
-   */
-  setMatchesFound(matchesFound) {
+  setMatchesFound(matchesFound: boolean) {
     this.matchesFound_ = matchesFound;
   }
 
-  /** @override */
-  search(text, page) {
+  search(text: string, page: Element) {
     this.methodCalled('search', text);
 
     if (this.searchRequest_ == null || !this.searchRequest_.isSame(text)) {
-      this.searchRequest_ = new SearchRequest(text);
-      this.searchRequest_.finished = true;
+      this.searchRequest_ = new SearchRequest(text, page);
       this.searchRequest_.updateMatches(this.matchesFound_);
       this.searchRequest_.resolver.resolve(this.searchRequest_);
     }
@@ -52,27 +40,23 @@ class TestSearchManager extends TestBrowserProxy {
   }
 }
 
-let settingsPrefs = null;
-
-suiteSetup(function() {
-  settingsPrefs = document.createElement('settings-prefs');
-  return CrSettingsPrefs.initialized;
-});
-
 suite('MainPageTests', function() {
-  /** @type {?TestSearchManager} */
-  let searchManager = null;
+  let searchManager: TestSearchManager;
+  let settingsMain: SettingsMainElement;
+  let settingsPrefs: SettingsPrefsElement;
 
-  /** @type {?SettingsMainElement} */
-  let settingsMain = null;
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     Router.getInstance().navigateTo(routes.BASIC);
     searchManager = new TestSearchManager();
     setSearchManagerForTesting(searchManager);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     settingsMain = document.createElement('settings-main');
-    settingsMain.prefs = settingsPrefs.prefs;
+    settingsMain.prefs = settingsPrefs.prefs!;
     settingsMain.toolbarSpinnerActive = false;
     settingsMain.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMain);
@@ -116,72 +100,51 @@ suite('MainPageTests', function() {
         });
   });
 
-  function showManagedHeader() {
-    return settingsMain.showManagedHeader_(
-        settingsMain.inSearchMode_, settingsMain.showingSubpage_,
-        settingsMain.showPages_.about);
+  function showingManagedHeader(): boolean {
+    return !!settingsMain.shadowRoot!.querySelector('managed-footnote');
   }
 
   test('managed header hides when searching', function() {
     flush();
 
-    assertTrue(showManagedHeader());
+    assertTrue(showingManagedHeader());
 
     searchManager.setMatchesFound(false);
     return settingsMain.searchContents('Query1')
         .then(() => {
-          assertFalse(showManagedHeader());
+          assertFalse(showingManagedHeader());
 
           searchManager.setMatchesFound(true);
           return settingsMain.searchContents('Query2');
         })
         .then(() => {
-          assertFalse(showManagedHeader());
+          assertFalse(showingManagedHeader());
         });
   });
 
   test('managed header hides when showing subpage', function() {
     flush();
 
-    assertTrue(showManagedHeader());
+    assertTrue(showingManagedHeader());
 
-    const basicPage = settingsMain.$$('settings-basic-page');
-    basicPage.fire('subpage-expand', {});
+    const basicPage =
+        settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
+    basicPage.dispatchEvent(
+        new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
+    flush();
 
-    assertFalse(showManagedHeader());
+    assertFalse(showingManagedHeader());
   });
 
   test('managed header hides when showing about page', function() {
     flush();
 
-    assertTrue(showManagedHeader());
+    assertTrue(showingManagedHeader());
     Router.getInstance().navigateTo(routes.ABOUT);
+    flush();
 
-    assertFalse(showManagedHeader());
+    assertFalse(showingManagedHeader());
   });
-
-  /** @return {!HTMLElement} */
-  function getToggleContainer() {
-    const page = settingsMain.$$('settings-basic-page');
-    assertTrue(!!page);
-    const toggleContainer = page.$$('#toggleContainer');
-    assertTrue(!!toggleContainer);
-    return toggleContainer;
-  }
-
-  /**
-   * Asserts that the Advanced toggle container exists in the combined
-   * settings page and asserts whether it should be visible.
-   * @param {boolean} expectedVisible
-   */
-  function assertToggleContainerVisible(expectedVisible) {
-    const toggleContainer = getToggleContainer();
-    if (expectedVisible) {
-      assertNotEquals('none', toggleContainer.style.display);
-    } else {
-      assertEquals('none', toggleContainer.style.display);
-    }
-  }
 
   test('no results page shows and hides', function() {
     flush();
@@ -189,13 +152,10 @@ suite('MainPageTests', function() {
     assertTrue(!!noSearchResults);
     assertTrue(noSearchResults.hidden);
 
-    assertToggleContainerVisible(true);
-
     searchManager.setMatchesFound(false);
     return settingsMain.searchContents('Query1')
         .then(function() {
           assertFalse(noSearchResults.hidden);
-          assertToggleContainerVisible(false);
 
           searchManager.setMatchesFound(true);
           return settingsMain.searchContents('Query2');
@@ -213,32 +173,34 @@ suite('MainPageTests', function() {
     assertTrue(!!noSearchResults);
     assertTrue(noSearchResults.hidden);
 
-    assertToggleContainerVisible(true);
-
     searchManager.setMatchesFound(false);
     // Clearing the search box is effectively a search for the empty string.
     return settingsMain.searchContents('').then(function() {
       flush();
       assertTrue(noSearchResults.hidden);
-      assertToggleContainerVisible(true);
     });
   });
 
   /**
    * Asserts the visibility of the basic and advanced pages.
-   * @param {string} Expected 'display' value for the basic page.
-   * @param {string} Expected 'display' value for the advanced page.
-   * @return {!Promise}
+   * @param Expected 'display' value for the basic page.
+   * @param Expected 'display' value for the advanced page.
    */
-  function assertPageVisibility(expectedBasic, expectedAdvanced) {
+  function assertPageVisibility(
+      expectedBasic: string, expectedAdvanced: string): Promise<void> {
     flush();
-    const page = settingsMain.$$('settings-basic-page');
+    const page = settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
     assertEquals(
-        expectedBasic, getComputedStyle(page.$$('#basicPage')).display);
+        expectedBasic,
+        getComputedStyle(page.shadowRoot!.querySelector('#basicPage')!)
+            .display);
 
-    return page.$$('#advancedPageTemplate').get().then(function(advancedPage) {
-      assertEquals(expectedAdvanced, getComputedStyle(advancedPage).display);
-    });
+    return page.shadowRoot!
+        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get()
+        .then(function(advancedPage) {
+          assertEquals(
+              expectedAdvanced, getComputedStyle(advancedPage).display);
+        });
   }
 
   // TODO(michaelpg): It would be better not to drill into
@@ -249,10 +211,10 @@ suite('MainPageTests', function() {
   /**
    * Asserts the visibility of the basic and advanced pages after exiting
    * search mode.
-   * @param {string} Expected 'display' value for the advanced page.
-   * @return {!Promise}
+   * @param Expected 'display' value for the advanced page.
    */
-  function assertAdvancedVisibilityAfterSearch(expectedAdvanced) {
+  function assertAdvancedVisibilityAfterSearch(expectedAdvanced: string):
+      Promise<void> {
     searchManager.setMatchesFound(true);
     return settingsMain.searchContents('Query1')
         .then(function() {
@@ -299,7 +261,9 @@ suite('MainPageTests', function() {
     return settingsMain.searchContents('Query1').then(function() {
       // Simulate navigating into a subpage.
       Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
-      settingsMain.$$('settings-basic-page').fire('subpage-expand');
+      settingsMain.shadowRoot!.querySelector('settings-basic-page')!
+          .dispatchEvent(new CustomEvent(
+              'subpage-expand', {bubbles: true, composed: true}));
       flush();
 
       // Simulate clicking the left arrow to go back to the search results.
@@ -308,43 +272,9 @@ suite('MainPageTests', function() {
     });
   });
 
-  // TODO(michaelpg): Move these to a new test for settings-basic-page.
-  test('can collapse advanced on advanced section route', function() {
-    Router.getInstance().navigateTo(routes.LANGUAGES);
-    flush();
-
-    const basicPage = settingsMain.$$('settings-basic-page');
-    let advancedPage = null;
-
-    return eventToPromise('showing-section', settingsMain)
-        .then(() => {
-          return basicPage.$$('#advancedPageTemplate').get();
-        })
-        .then(function(advanced) {
-          advancedPage = advanced;
-          return assertPageVisibility('block', 'block');
-        })
-        .then(function() {
-          const whenHidden = whenAttributeIs(advancedPage, 'hidden', '');
-          eventToPromise('scroll-to-bottom', basicPage)
-              .then(event => event.detail.callback());
-
-          const advancedToggle =
-              getToggleContainer().querySelector('#advancedToggle');
-          assertTrue(!!advancedToggle);
-          advancedToggle.click();
-          return whenHidden;
-        })
-        .then(function() {
-          return assertPageVisibility('block', 'none');
-        });
-  });
-
   test('navigating to a basic page does not collapse advanced', function() {
     Router.getInstance().navigateTo(routes.LANGUAGES);
     flush();
-
-    assertToggleContainerVisible(true);
 
     Router.getInstance().navigateTo(routes.PEOPLE);
     flush();
