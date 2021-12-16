@@ -418,7 +418,7 @@ void AmbientController::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void AmbientController::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
   DismissUI();
 }

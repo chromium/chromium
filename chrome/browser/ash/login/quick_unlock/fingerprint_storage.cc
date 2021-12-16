@@ -117,9 +117,18 @@ void FingerprintStorage::OnEnrollScanDone(device::mojom::ScanResult scan_result,
 }
 
 void FingerprintStorage::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
-  base::UmaHistogramEnumeration("Fingerprint.Auth.ScanResult", scan_result);
+  switch (msg->which()) {
+    case device::mojom::FingerprintMessage::Tag::kScanResult:
+      base::UmaHistogramEnumeration("Fingerprint.Auth.ScanResult",
+                                    msg->get_scan_result());
+      return;
+    case device::mojom::FingerprintMessage::Tag::kFingerprintError:
+      // TODO(issuetracker.google.com/184843581): Add metrics for errors.
+      return;
+  }
+  NOTREACHED();
 }
 
 void FingerprintStorage::OnSessionFailed() {}

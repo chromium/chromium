@@ -183,7 +183,7 @@ class ScreenLocker
                         bool is_complete,
                         int32_t percent_complete) override;
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override;

@@ -67,7 +67,7 @@ class FingerprintSetupScreen : public BaseScreen,
                         bool enroll_session_complete,
                         int percent_complete) override;
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override;

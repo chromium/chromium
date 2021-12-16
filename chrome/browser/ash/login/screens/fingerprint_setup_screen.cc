@@ -190,7 +190,7 @@ void FingerprintSetupScreen::OnEnrollScanDone(
 }
 
 void FingerprintSetupScreen::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr ptr,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {}
 
 void FingerprintSetupScreen::OnSessionFailed() {

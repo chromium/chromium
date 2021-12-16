@@ -76,7 +76,7 @@ interface FingerprintObserver {
   // Called to indicate a bad scan of any kind, or a successful scan. If scan is
   // successful, |matches| is a map of user id keys to a vector of object path
   // values.
-  OnAuthScanDone(ScanResult scan_result, map<string, array<string>> matches);
+  OnAuthScanDone(FingerprintMessage msg, map<string, array<string>> matches);
 
   // Called during either mode to indicate a failure. Any EnrollSession record
   // that was underway is thrown away and AuthSession will no longer be

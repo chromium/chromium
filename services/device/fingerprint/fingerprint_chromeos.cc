@@ -287,15 +287,11 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
       return;
   }
 
-  if (converted_msg.which() ==
-      device::mojom::FingerprintMessage::Tag::kScanResult) {
-    for (auto& observer : observers_) {
-      observer->OnAuthScanDone(
-          converted_msg.get_scan_result(),
-          base::flat_map<std::string, std::vector<std::string>>(entries));
-    }
-  } else {
-    LOG(WARNING) << "Ignoring error code in FingerprintMessage";
+  for (auto& observer : observers_) {
+    observer->OnAuthScanDone(
+        {base::in_place, converted_msg},
+        // TODO(patrykd): Construct the map at the beginning of this function.
+        base::flat_map<std::string, std::vector<std::string>>(entries));
   }
 }
 

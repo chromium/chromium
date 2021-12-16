@@ -809,12 +809,10 @@ void ScreenLocker::OnEnrollScanDone(device::mojom::ScanResult scan_result,
                                     int percent_complete) {}
 
 void ScreenLocker::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
   RefreshPinAndFingerprintTimeout();
 
-  VLOG(1) << "Receive fingerprint auth scan result. scan_result="
-          << scan_result;
   unlock_attempt_type_ = AUTH_FINGERPRINT;
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
@@ -841,13 +839,28 @@ void ScreenLocker::OnAuthScanDone(
       primary_user->GetAccountId(),
       LoginAuthRecorder::AuthMethod::kFingerprint);
 
-  if (scan_result != device::mojom::ScanResult::SUCCESS) {
-    LOG(ERROR) << "Fingerprint unlock failed because scan_result="
-               << scan_result;
-    OnFingerprintAuthFailure(*primary_user);
-    quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
-        quick_unlock::FingerprintUnlockResult::kMatchFailed);
-    return;
+  switch (msg->which()) {
+    case device::mojom::FingerprintMessage::Tag::kScanResult:
+      VLOG(1) << "Receive fingerprint auth scan result. scan_result="
+              << msg->get_scan_result();
+      if (msg->get_scan_result() != device::mojom::ScanResult::SUCCESS) {
+        LOG(ERROR) << "Fingerprint unlock failed because scan_result="
+                   << msg->get_scan_result();
+        OnFingerprintAuthFailure(*primary_user);
+        quick_unlock_storage->fingerprint_storage()
+            ->RecordFingerprintUnlockResult(
+                quick_unlock::FingerprintUnlockResult::kMatchFailed);
+        return;
+      }
+      break;
+    case device::mojom::FingerprintMessage::Tag::kFingerprintError:
+      LOG(ERROR) << "Fingerprint unlock failed because error="
+                 << msg->get_fingerprint_error() << " occurred.";
+      OnFingerprintAuthFailure(*primary_user);
+      quick_unlock_storage->fingerprint_storage()
+          ->RecordFingerprintUnlockResult(
+              quick_unlock::FingerprintUnlockResult::kMatchFailed);
+      return;
   }
 
   UserContext user_context(*primary_user);

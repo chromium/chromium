@@ -133,10 +133,19 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
 }
 
 void FingerprintHandler::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
-  VLOG(1) << "Receive fingerprint auth scan result. scan_result="
-          << scan_result;
+  switch (msg->which()) {
+    case device::mojom::FingerprintMessage::Tag::kScanResult:
+      VLOG(1) << "Receive fingerprint auth scan result. scan_result="
+              << msg->get_scan_result();
+      return;
+    case device::mojom::FingerprintMessage::Tag::kFingerprintError:
+      VLOG(1) << "Receive fingerprint auth error. error="
+              << msg->get_fingerprint_error();
+      return;
+  }
+  NOTREACHED();
 }
 
 void FingerprintHandler::OnSessionFailed() {

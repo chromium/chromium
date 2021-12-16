@@ -37,11 +37,11 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   }
 
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override {
     auth_scan_dones_++;
-    last_scan_result_ = scan_result;
+    last_message_ = *msg;
   }
 
   void OnSessionFailed() override { session_failures_++; }
@@ -52,8 +52,8 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int restarts() { return restarts_; }
   int session_failures() { return session_failures_; }
 
-  device::mojom::ScanResult last_scan_result() const {
-    return last_scan_result_;
+  const device::mojom::FingerprintMessage& last_message() const {
+    return last_message_;
   }
 
  private:
@@ -63,7 +63,8 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int restarts_ = 0;           // Count of restart signal received.
   int session_failures_ = 0;   // Count of session failed signal received.
 
-  device::mojom::ScanResult last_scan_result_;  // Last received ScanResult.
+  device::mojom::FingerprintMessage
+      last_message_;  // Last received FingerprintMessage.
 };
 
 class FingerprintChromeOSTest : public testing::Test {
@@ -214,41 +215,66 @@ TEST_F(FingerprintChromeOSTest, FingerprintScanResultConvertTest) {
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_SUCCESS);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::SUCCESS);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::SUCCESS);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_PARTIAL);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::PARTIAL);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::PARTIAL);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_INSUFFICIENT);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(),
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
             device::mojom::ScanResult::INSUFFICIENT);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_SENSOR_DIRTY);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(),
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
             device::mojom::ScanResult::SENSOR_DIRTY);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_TOO_SLOW);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::TOO_SLOW);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::TOO_SLOW);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_TOO_FAST);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::TOO_FAST);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::TOO_FAST);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_IMMOBILE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::IMMOBILE);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::IMMOBILE);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_NO_MATCH);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::NO_MATCH);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::NO_MATCH);
 
   GenerateAuthScanDoneSignal(biod::SCAN_RESULT_MAX);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_scan_result(), device::mojom::ScanResult::kMaxValue);
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kScanResult);
+  EXPECT_EQ(observer.last_message().get_scan_result(),
+            device::mojom::ScanResult::kMaxValue);
 }
 
 // Make sure that compilation fails if a new value is added and this assert is

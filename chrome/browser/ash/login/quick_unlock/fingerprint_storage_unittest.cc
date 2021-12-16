@@ -7,17 +7,23 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::ElementsAre;
 
 namespace ash {
 namespace quick_unlock {
 namespace {
+
+const char* kUmaAuthScanResult = "Fingerprint.Auth.ScanResult";
 
 class FingerprintStorageUnitTest : public testing::Test {
  public:
@@ -113,6 +119,23 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
   EXPECT_FALSE(test_api.IsFingerprintAvailable());
   fingerprint_storage->ResetUnlockAttemptCount();
   EXPECT_TRUE(test_api.IsFingerprintAvailable());
+}
+
+TEST_F(FingerprintStorageUnitTest, TestScanResultIsSentToUma) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+  base::HistogramTester histogram_tester;
+  base::flat_map<std::string, std::vector<std::string>> empty_matches;
+  device::mojom::FingerprintMessagePtr msg =
+      device::mojom::FingerprintMessage::New();
+
+  msg->set_scan_result(device::mojom::ScanResult::SUCCESS);
+  fingerprint_storage->OnAuthScanDone(std::move(msg), empty_matches);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kUmaAuthScanResult),
+      ElementsAre(base::Bucket(
+          static_cast<int>(device::mojom::ScanResult::SUCCESS), /*count=*/1)));
 }
 
 }  // namespace quick_unlock
