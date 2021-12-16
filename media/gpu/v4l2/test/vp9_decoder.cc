@@ -418,6 +418,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
 
   // TODO(stevecho): call RefreshReferenceSlots() once decoded buffer is ready.
 
+  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
+    LOG(ERROR) << "MEDIA_REQUEST_IOC_REINIT failed.";
+
   return Vp9Decoder::kOk;
 }
 

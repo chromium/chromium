@@ -174,6 +174,10 @@ class V4L2IoctlShim {
   bool MediaRequestIocQueue(const std::unique_ptr<V4L2Queue>& queue) const
       WARN_UNUSED_RESULT;
 
+  // Re-initializes the previously allocated request for reuse.
+  bool MediaRequestIocReinit(const std::unique_ptr<V4L2Queue>& queue) const
+      WARN_UNUSED_RESULT;
+
   // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
   // and |uncompressed_format| for CAPTURE queues, respectively.
   bool VerifyCapabilities(uint32_t compressed_format,

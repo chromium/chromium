@@ -49,7 +49,8 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
-        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE)};
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE),
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_REINIT)};
 
 // Finds corresponding defined V4L2 request code name
 // for a given V4L2 request code value.
@@ -251,7 +252,8 @@ bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
 
 template <>
 bool V4L2IoctlShim::Ioctl(int request_code, int arg) const {
-  DCHECK(request_code == static_cast<int>(MEDIA_REQUEST_IOC_QUEUE));
+  DCHECK(request_code == static_cast<int>(MEDIA_REQUEST_IOC_QUEUE) ||
+         request_code == static_cast<int>(MEDIA_REQUEST_IOC_REINIT));
 
   const int ret = ioctl(arg, request_code);
 
@@ -471,8 +473,6 @@ bool V4L2IoctlShim::SetExtCtrls(
 }
 
 bool V4L2IoctlShim::MediaIocRequestAlloc(int* media_request_fd) const {
-  // TODO(stevecho): need to use the file descriptor representing the request
-  // for MEDIA_REQUEST_IOC_QUEUE() call to queue to the request.
   LOG_ASSERT(media_request_fd != nullptr)
       << "|media_request_fd| check failed.\n";
 
@@ -491,6 +491,15 @@ bool V4L2IoctlShim::MediaRequestIocQueue(
   int req_fd = queue->media_request_fd();
 
   const bool ret = Ioctl(MEDIA_REQUEST_IOC_QUEUE, req_fd);
+
+  return ret;
+}
+
+bool V4L2IoctlShim::MediaRequestIocReinit(
+    const std::unique_ptr<V4L2Queue>& queue) const {
+  int req_fd = queue->media_request_fd();
+
+  const bool ret = Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd);
 
   return ret;
 }
