@@ -205,6 +205,8 @@ class BidderWorklet : public mojom::BidderWorklet {
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
 
+  enum class LoadState { kLoading, kSuccess, kFailure };
+
   void ResumeIfPaused();
   void Start();
 
@@ -251,12 +253,8 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   const GURL script_source_url_;
 
-  // True until `worklet_loader_` has completed loading (successfully or
-  // otherwise).
-  bool is_loading_ = true;
-
   std::unique_ptr<WorkletLoader> worklet_loader_;
-  bool have_worklet_script_ = false;
+  LoadState worklet_js_load_state_ = LoadState::kLoading;
 
   // Values copied from the interest group used to create the BidderWorklet.
   const absl::optional<GURL> trusted_bidding_signals_url_;

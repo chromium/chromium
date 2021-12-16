@@ -213,7 +213,7 @@ void BidderWorklet::GenerateBid(
   generate_bid_task->callback = std::move(generate_bid_callback);
 
   // If worklet script failed to load, fail and exit early.
-  if (!is_loading_ && !have_worklet_script_) {
+  if (worklet_js_load_state_ == LoadState::kFailure) {
     DeliverBidCallbackOnUserThread(generate_bid_task,
                                    mojom::BidderWorkletBidPtr(),
                                    /*error_msgs=*/std::vector<std::string>());
@@ -258,9 +258,9 @@ void BidderWorklet::ReportWin(
   report_win_task->callback = std::move(callback);
 
   // If worklet script isn't loaded, can't run script immediately.
-  if (!have_worklet_script_) {
+  if (worklet_js_load_state_ != LoadState::kSuccess) {
     // If worklet script failed to load, fail and exit early.
-    if (!is_loading_) {
+    if (worklet_js_load_state_ == LoadState::kFailure) {
       DeliverReportWinOnUserThread(report_win_task,
                                    /*report_url=*/absl::optional<GURL>(),
                                    /*errors=*/std::vector<std::string>());
@@ -686,16 +686,15 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
 
   worklet_loader_.reset();
 
-  is_loading_ = false;
-
   // Fail all pending tasks if the script failed to load.
   if (!worklet_script.success()) {
+    worklet_js_load_state_ = LoadState::kFailure;
     load_script_error_msg_ = std::move(error_msg);
     FailAllPendingTasks();
     return;
   }
 
-  have_worklet_script_ = true;
+  worklet_js_load_state_ = LoadState::kSuccess;
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
                                       base::Unretained(v8_state_.get()),
@@ -733,8 +732,12 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (task->trusted_bidding_signals || !have_worklet_script_)
+  // Script load failure should abort all tasks before getting here.
+  DCHECK_NE(worklet_js_load_state_, LoadState::kFailure);
+  if (task->trusted_bidding_signals ||
+      worklet_js_load_state_ != LoadState::kSuccess) {
     return;
+  }
 
   v8_runner_->PostTask(
       FROM_HERE,
