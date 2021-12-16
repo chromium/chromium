@@ -794,7 +794,7 @@ void WebTestControlHost::InitiateCaptureDump(
   if (!renderer_dump_result_->layout) {
     DCHECK_EQ(0, waiting_for_layout_dumps_);
 
-    main_window_->web_contents()->ForEachRenderFrameHost(
+    main_window_->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
         base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
           if (!render_frame_host->IsRenderFrameLive())
             return;
