@@ -1275,13 +1275,10 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
   autofill_assistant_manager->AddObserver(this);
 }
 
-void ChromePasswordManagerClient::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
+void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   // Logging has no sense on WebUI sites.
   log_manager_->SetSuspended(web_contents()->GetWebUI() != nullptr);
-}
 
-void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   // Send any collected metrics by destroying the metrics recorder.
   metrics_recorder_.reset();
 
