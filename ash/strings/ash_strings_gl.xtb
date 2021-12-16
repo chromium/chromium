@@ -192,6 +192,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2224075387478458881">Non se pode gravar a pantalla cando nela se mostra contido protexido</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
+<translation id="2257486738914982088">Produciuse un erro ao descargar o ficheiro <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Pechar as sesións</translation>
 <translation id="2269016722240250274">Unha aplicación está utilizando o teu micrófono</translation>
@@ -588,6 +589,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4831034276697007977">Seguro que queres desactivar os clics automáticos?</translation>
 <translation id="4849058404725798627">Destacar obxecto co enfoque do teclado</translation>
 <translation id="485592688953820832">Ningunha acción (pausa)</translation>
+<translation id="4860284199500934869">Para descargar o ficheiro <ph name="FILENAME" />, comproba a túa conexión de rede</translation>
 <translation id="486056901304535126">Tentarase de novo máis tarde. Ata que finalice a descarga, enviaráselle a Google o que se fale para que o procese.</translation>
 <translation id="4868492592575313542">activou</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
@@ -805,6 +807,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6452181791372256707">Rexeitar</translation>
 <translation id="6453179446719226835">Cambiouse o idioma</translation>
 <translation id="6459472438155181876">Ampliando pantalla a <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Non se puido descargar o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) antes de que finalice o prazo</translation>
@@ -816,7 +819,10 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6528179044667508675">Non molestar</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Escaneando ficheiro <ph name="FILENAME" /> para descargalo</translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nova instalación</translation>
 <translation id="6559976592393364813">Pedirllo ao administrador</translation>
 <translation id="6565007273808762236">Non se puido establecer conexión coa eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
@@ -848,6 +854,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="6732800389263199929"><ph name="COUNT" /> máis</translation>
+<translation id="6739144137573853180">IR A CONFIGURACIÓN</translation>
 <translation id="6751052314767925245">Función aplicada polo teu administrador</translation>
 <translation id="6751826523481687655">O rastrexo do rendemento está activado</translation>
 <translation id="6752912906630585008">Quitouse o escritorio <ph name="REMOVED_DESK" /> e combinouse co escritorio <ph name="RECEIVE_DESK" /></translation>
@@ -983,6 +990,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Engadir nova rede de telefonía móbil</translation>
+<translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar as aplicacións do estante</translation>
@@ -1169,6 +1177,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloquea o dispositivo como <ph name="LOGIN_ID" /> para levar a cabo a acción de notificación</translation>
+<translation id="9000771174482730261">XESTIONAR ALMACENAMENTO</translation>
 <translation id="9017320285115481645">Introduce o código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir a configuración de <ph name="NETWORK_NAME" /></translation>
@@ -1214,6 +1223,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rexeitar</translation>
+<translation id="954052413789300507">Non hai espazo suficiente para o ficheiro <ph name="FILENAME" />. Libera espazo.</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Pechouse a ventá <ph name="WINDOW_TITILE" />.</translation>

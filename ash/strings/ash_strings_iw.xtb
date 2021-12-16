@@ -818,6 +818,7 @@
 <translation id="6528179044667508675">נא לא להפריע</translation>
 <translation id="65320610082834431">אמוג'י</translation>
 <translation id="6537924328260219877">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, סוללת הטלפון: <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">מתבצעת סריקה של קובץ ההורדה <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ההעברה אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 התקנה חדשה</translation>

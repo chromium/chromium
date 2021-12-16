@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">Linux रिस्टोअर सध्या प्रगतीपथावर आहे</translation>
 <translation id="1244303850296295656">एक्स्टेंशन एरर</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल करता आली नाही: इमेज URL ने <ph name="HTTP_ERROR" /> हा एरर कोड दाखवला. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा टॅबलेट</translation>
 <translation id="1251366534849411931">अपेक्षित खुला महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">हे साइट आणि इंस्टॉल केलेल्या ॲप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ करेल</translation>
 <translation id="1251578593170406502">मोबाइल डेटा नेटवर्क स्कॅन करत आहे...</translation>
@@ -438,6 +439,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> निवडले</translation>
 <translation id="1442851588227551435">अ‍ॅक्टिव्ह Kerberos तिकीट सेट करा</translation>
 <translation id="1444628761356461360">ही सेटिंग डिव्हाइस मालक, <ph name="OWNER_EMAIL" /> द्वारे व्यवस्थापित केली आहे.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा फोन</translation>
 <translation id="144518587530125858">थीमसाठी '<ph name="IMAGE_PATH" />' लोड करणे शक्य नाही.</translation>
 <translation id="1449191289887455076">असाइनमेंट कंफर्म करण्यासाठी, “<ph name="CURRENTKEY" />” दाबा आणि <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
@@ -869,6 +871,7 @@
 <translation id="1855079636134697549">कॅमेरा सुरू केला आहे</translation>
 <translation id="1856715684130786728">स्थान जोडा...</translation>
 <translation id="1858585891038687145">सॉफ्टवेअर निर्मात्यांना ओळखण्याकरिता या सर्टिफिकेटवर विश्वास ठेवा</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचे अज्ञात डिव्‍हाइस</translation>
 <translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1862311223300693744">तुमची कोणतेही विशेष VPN, प्रॉक्‍सी, फायरवॉल किंवा NAS सॉफ्‍टवेअर
     इंस्टॉल केले आहे का?</translation>
@@ -1244,6 +1247,7 @@
 <translation id="2242687258748107519">फाईल माहिती</translation>
 <translation id="2246549592927364792">Google वरून इमेज वर्णन मिळवायचे आहे का?</translation>
 <translation id="2247738527273549923">हे डिव्हाइस तुमच्या संस्थेने व्यवस्थापित केलेले आहे</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा गेम नियंत्रक</translation>
 <translation id="2249111429176737533">टॅब असलेली विंडो म्हणून उघडा</translation>
 <translation id="2249605167705922988">उदा. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">सिस्टम दर्शकासह उघडा</translation>
@@ -2007,6 +2011,7 @@
 <translation id="3007771295016901659">डुप्लिकेट टॅब</translation>
 <translation id="3008232374986381779">तुमच्या <ph name="DEVICE_TYPE" /> वर Linux टूल, संपादक, आणि IDE रन करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचे ऑडिओ डिव्हाइस</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही अपडेट डाउनलोड करण्यासाठी आजच वाय-फायशी कनेक्ट करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनपूर्वी वाय-फाय शी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}}</translation>
 <translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
@@ -2313,6 +2318,7 @@
 <translation id="3348038390189153836">काढण्यायोग्य डिव्हाइस आढळले</translation>
 <translation id="3348131053948466246">सुचवलेल्या इमोजी. नेव्हिगेट करण्यासाठी वर किंवा खाली दाबा आणि घालण्यासाठी एंटर करा.</translation>
 <translation id="3349933790966648062">मेमरी फुटप्रिंट</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> या डिव्हाइससोबत पेअर करता आले नाही; पुन्हा प्रयत्न करण्यासाठी डिव्हाइस निवडा</translation>
 <translation id="3355936511340229503">कनेक्शन एरर</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3359256513598016054">सर्टिफिकेट धोरण प्रतिबंध</translation>
@@ -3142,6 +3148,7 @@
 <translation id="4200689466366162458">कस्टम शब्द</translation>
 <translation id="4200983522494130825">नवीन &amp;टॅब</translation>
 <translation id="4201546031411513170">तुम्ही काय सिंक करायचे हे सेटिंग्जमध्ये कधीही निवडू शकता.</translation>
+<translation id="4202417625268941299">वर्धित सुरक्षित ब्राउझिंग सह, तुम्हाला Chrome ची सर्वात मजबूत सुरक्षा मिळेल</translation>
 <translation id="420283545744377356">स्क्रीन सेव्हर बंद करा</translation>
 <translation id="4206144641569145248">एलियन</translation>
 <translation id="4206323443866416204">फीडबॅक अहवाल</translation>
@@ -3650,6 +3657,7 @@
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">तुमचा मायक्रोफोन वापरा</translation>
 <translation id="4762718786438001384">डिव्हाइस डिस्क स्थान खूपच कमी आहे</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा कॉंप्युटर</translation>
 <translation id="4763408175235639573">तुम्ही हे पेज पाहिले तेव्हा पुढील कुकीज सेट केल्या गेल्या</translation>
 <translation id="4765582662863429759">Android Messages ला तुमच्या फोनवरून तुमच्या Chromebook मध्ये एसएमएस रीले करण्याची अनुमती देते</translation>
 <translation id="4768332406694066911">आपल्‍याकडे या संस्थांकडील प्रमाणपत्रे आहेत जी आपल्‍याला ओळखतात</translation>
@@ -3832,6 +3840,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ना सिरीअल पोर्टशी कनेक्ट करायचे आहे</translation>
 <translation id="4944310289250773232">ही ऑथेंटिकेशन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>
 <translation id="4945439665401275950">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला पॉवर बटणाला स्पर्श करू द्या. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला आहे आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहील.</translation>
+<translation id="4946459324029651239">तुम्हाला साधारण सुरक्षा मिळत आहे</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953808748584563296">डीफॉल्ट नारिंगी अवतार</translation>
@@ -4416,6 +4425,7 @@
 <translation id="5575528586625653441">डेमो नोंदणी विनंतीला समस्या आली.</translation>
 <translation id="557722062034137776">तुमचे डिव्हाइस रीसेट केल्याने या खात्यांवरील आपल्या Google खात्यांवर किंवा संकालित केलेल्या कोणत्याही डेटावर प्रभाव पडणार नाही. तथापि, आपल्या डिव्हाइसवर स्थानिकपणे सेव्ह केलेल्या सर्व फाइल हटविल्या जातील.</translation>
 <translation id="5578059481725149024">स्वयं साइन-इन</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> मध्ये भाषांतर करणे पूर्ण झाले</translation>
 <translation id="558170650521898289">मायक्रोसॉफ्ट विंडोज हार्डवेअर ड्रायव्हर व्हेरिफिकेशन</translation>
 <translation id="5581972110672966454">डिव्हाइसला डोमेनशी जोडता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">मुख्य मेनू</translation>
@@ -5831,6 +5841,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{सुरक्षा तपासणी एका मिनिटापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_MINS} मिनिटांपूर्वी रन केली गेली}}</translation>
 <translation id="7057767408836081338">अ‍ॅप डेटा मिळवता आला नाही, तरीही अ‍ॅप रन करण्याचा प्रयत्न करत आहे...</translation>
 <translation id="7058024590501568315">लपवलेले नेटवर्क</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा माउस</translation>
 <translation id="7059858479264779982">स्वयं-लाँच करा वर सेट करा</translation>
 <translation id="7062222374113411376">अलीकडील बंद केलेल्या साइटना डेटा पाठविणे आणि प्राप्त करणे समाप्त करण्यासाठी अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="7063129466199351735">प्रक्रिया करण्‍याचे शॉर्टकट...</translation>
@@ -5994,6 +6005,7 @@
 <translation id="7257173066616499747">वाय-फाय नेटवर्क</translation>
 <translation id="725758059478686223">प्रिंटिंग सेवा</translation>
 <translation id="7257666756905341374">तुम्ही कॉपी आणि पेस्ट करता तो डेटा वाचा</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा व्हिडिओ कॅमेरा</translation>
 <translation id="7258192266780953209">परिवर्तने</translation>
 <translation id="7258225044283673131">ॲप्लिकेशन प्रतिसाद देत नाही. अ‍ॅप बंद करण्यासाठी "सक्तीने बंद करा" निवडा.</translation>
 <translation id="7262004276116528033">ही साइन-इन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>
@@ -6788,6 +6800,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8037117027592400564">संकालित भाषण वापरून बोललेला सर्व मजकूर वाचा</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
 <translation id="803771048473350947">फाइल</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> पैकी डिव्हाइस क्रमांक <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" /> नावाचा कीबोर्ड</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
 <translation id="8042142357103597104">मजकुराची अपारदर्शकता</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> प्रतिसाद देत नाही.</translation>
@@ -6928,6 +6941,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8168071266284693455">तुमचे बुकमार्क, पासवर्ड, इतिहास आणि आणखी बरेच काही तुमच्या सर्व डिव्हाइसवर सिंक केले आहे</translation>
 <translation id="8168435359814927499">आशय</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{वाचन सूचीवर टॅब जोडा}other{वाचन सूचीवर टॅब जोडा}}</translation>
+<translation id="8169849063724750395">पुन्हा सुरू करा</translation>
 <translation id="8171334254070436367">सर्व कार्ड लपवा</translation>
 <translation id="8174047975335711832">डिव्हाइस माहिती</translation>
 <translation id="8174876712881364124">Google ड्राइव्ह मध्ये बॅकअप घ्या. डेटा कधीही सहजपणे रिस्टोअर करा किंवा डिव्हाइस बदला. या बॅकअपमध्ये ॲप डेटाचा समावेश आहे. बॅकअप Google वर अपलोड केले आहेत आणि ते तुमच्या लहान मुलाचे Google खाते पासवर्ड वापरून एंक्रिप्ट केले आहेत. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
@@ -7001,6 +7015,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8249615410597138718">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8249672078237421304">तुम्ही वाचत असलेल्या भाषेमध्ये नसलेल्या पृष्ठांचे भाषांतर करण्याचा प्रस्ताव द्या</translation>
 <translation id="8251441930213048644">आता रिफ्रेश करा</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> सोबत पेअर करत आहे</translation>
 <translation id="8251578425305135684">थंबनेल काढली.</translation>
 <translation id="825238165904109940">नेहमी पूर्ण URL दाखवा</translation>
 <translation id="8252569384384439529">अपलोड करत आहे…</translation>
@@ -7238,9 +7253,11 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8528074251912154910">भाषा जोडा</translation>
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
 <translation id="8529925957403338845">झटपट टेदरिंग कनेक्‍शन अयशस्वी झाले</translation>
+<translation id="8531701051932785007">वर्धित सुरक्षित ब्राउझिंग बंद आहे</translation>
 <translation id="8534656636775144800">अरेरे! डोमेनमध्ये सामील होण्याचा प्रयत्न करताना काहीतरी गडबड झाली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="8535005006684281994">Netscape सर्टिफिकेट रिन्यूअल URL</translation>
 <translation id="8536956381488731905">की दाबताना आवाज</translation>
+<translation id="8538718737588735385">पुन्हा सुरू करा</translation>
 <translation id="8539727552378197395">नाही (HttpOnly)</translation>
 <translation id="8539766201049804895">अपग्रेड करा</translation>
 <translation id="8540136935098276800">योग्य प्रकारे फॉरमॅट केलेली URL एंटर करा</translation>

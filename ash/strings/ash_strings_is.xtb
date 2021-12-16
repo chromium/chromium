@@ -192,6 +192,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2222841058024245321">Skrifborð 7</translation>
 <translation id="2224075387478458881">Skjáupptaka er óheimil á meðan varið efni er sýnilegt</translation>
 <translation id="225680501294068881">Leitar að tækjum...</translation>
+<translation id="2257486738914982088">Eitthvað fór úrskeiðis við að sækja <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Slökkt á Bluetooth</translation>
 <translation id="2268813581635650749">Skrá alla út</translation>
 <translation id="2269016722240250274">Forrit er að nota hljóðnemann þinn</translation>
@@ -587,6 +588,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
 <translation id="4849058404725798627">Auðkenna hlut með lyklaborðsfókus</translation>
 <translation id="485592688953820832">Engin aðgerð (hlé)</translation>
+<translation id="4860284199500934869">Athugaðu nettenginguna til að sækja <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu þar til niðurhali er lokið.</translation>
 <translation id="4868492592575313542">virkjað</translation>
 <translation id="4872237917498892622">Alt+leitarlykill eða Shift</translation>
@@ -804,6 +806,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6452181791372256707">Hafna</translation>
 <translation id="6453179446719226835">Tungumálinu hefur verið breytt</translation>
 <translation id="6459472438155181876">Stækkar skjá yfir á <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Ekki tókst að sækja skrá</translation>
 <translation id="6482559668224714696">Stækkunargler á öllum skjánum</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krefst þess að þú uppfærir <ph name="DEVICE_TYPE" /> áður en fresturinn rennur út</translation>
@@ -815,7 +818,10 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6528179044667508675">Ónáðið ekki</translation>
 <translation id="65320610082834431">Emoji-tákn</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
+<translation id="6539852571005954999">Niðurhal skannar <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Sendir út til <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Ný uppsetning</translation>
 <translation id="6559976592393364813">Spyrja kerfisstjóra</translation>
 <translation id="6565007273808762236">eSIM-tenging er ekki tiltæk</translation>
 <translation id="6570831796530454248">{0,plural, =1{Uppfærðu tækið innan klukkustundar}one{Uppfærðu tækið innan # klukkustundar}other{Uppfærðu tækið innan # klukkustunda}}</translation>
@@ -847,6 +853,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6723839937902243910">Orka</translation>
 <translation id="6727969043791803658">Tengt, <ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">OPNA STILLINGAR</translation>
 <translation id="6751052314767925245">Framfylgt af kerfisstjóra</translation>
 <translation id="6751826523481687655">Kveikt er á afkastarakningu</translation>
 <translation id="6752912906630585008">Skjáborð <ph name="REMOVED_DESK" /> fjarlægt og sameinað skjáborði <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Bæta nýju farsímakerfi við</translation>
+<translation id="7720410380936703141">REYNDU AFTUR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Ein tilkynning}one{# tilkynning}other{# tilkynningar}}</translation>
 <translation id="7724603315864178912">Klippa</translation>
 <translation id="7745560842763881396">Sýna forrit á hillu</translation>
@@ -1168,6 +1176,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Notar <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Opnaðu tækið sem <ph name="LOGIN_ID" /> til að framkvæma aðgerð tilkynningarinnar</translation>
+<translation id="9000771174482730261">STJÓRNA GEYMSLURÝMI</translation>
 <translation id="9017320285115481645">Færðu inn aðgangskóða foreldris fyrir Family Link.</translation>
 <translation id="9024331582947483881">allur skjárinn</translation>
 <translation id="9047624247355796468">Opna stillingar fyrir <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1222,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="938963181863597773">Hvað er á dagskránni hjá mér?</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="951991426597076286">Hafna</translation>
+<translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Langsnið</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>

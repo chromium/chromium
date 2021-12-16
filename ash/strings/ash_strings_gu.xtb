@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">ડેસ્ક 7</translation>
 <translation id="2224075387478458881">સંરક્ષિત કન્ટેન્ટ દેખાય ત્યારે સ્ક્રીન રેકોર્ડિંગની મંજૂરી નથી</translation>
 <translation id="225680501294068881">ઉપકરણો માટે સ્કેન કરી રહ્યું છે...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> ડાઉનલોડ કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
 <translation id="2268813581635650749">બધાને સાઇન આઉટ કરો</translation>
 <translation id="2269016722240250274">કોઈ ઍપ્લિકેશન તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">શું તમારે ખરેખર ઑટોમૅટિક ક્લિક બંધ કરવા છે?</translation>
 <translation id="4849058404725798627">કીબોર્ડ ફોકસ વડે ઑબ્જેક્ટને હાઇલાઇટ કરો</translation>
 <translation id="485592688953820832">કોઈ ક્રિયા નથી (થોભાવો)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> ડાઉનલોડ કરવા માટે, તમારું નેટવર્ક કનેક્શન ચેક કરો</translation>
 <translation id="486056901304535126">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. ડાઉનલોડ પૂર્ણ થાય ત્યાં સુધી, Googleને પ્રક્રિયા કરવા માટે સ્પીચ મોકલવામાં આવશે.</translation>
 <translation id="4868492592575313542">સક્રિય કરેલું</translation>
 <translation id="4872237917498892622">Alt+Search અથવા Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">નકારો</translation>
 <translation id="6453179446719226835">ભાષા બદલવામાં આવી છે</translation>
 <translation id="6459472438155181876">સ્ક્રીનને <ph name="DISPLAY_NAME" /> પર વિસ્તૃત કરી રહ્યાં છે</translation>
+<translation id="6477681113376365978">ફાઇલ ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
@@ -817,6 +820,8 @@
 <translation id="6537924328260219877">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ડાઉનલોડ <ph name="FILENAME" /> સ્કૅન કરી રહ્યું છે</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+નવી ઇન્સ્ટૉલ કરી છે</translation>
 <translation id="6559976592393364813">વ્યવસ્થાપકને પૂછો</translation>
 <translation id="6565007273808762236">ઇ-સિમ કનેક્શન ઉપલબ્ધ નથી</translation>
 <translation id="6570831796530454248">{0,plural, =1{એક કલાકની અંદર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
@@ -848,6 +853,7 @@
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6727969043791803658">કનેક્ટ થયેલ, બૅટરી <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">સેટિંગ પર જાઓ</translation>
 <translation id="6751052314767925245">તમારા વ્યવસ્થાપક દ્વારા લાગુ કરેલી</translation>
 <translation id="6751826523481687655">કાર્યપ્રદર્શનની નોંધ રાખવાનું ચાલુ કરેલું છે</translation>
 <translation id="6752912906630585008">ડેસ્ક <ph name="REMOVED_DESK" /> કાઢી નાખ્યું અને ડેસ્ક <ph name="RECEIVE_DESK" /> સાથે મર્જ કર્યું</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">નવું સેલ્યુલર નેટવર્ક ઉમેરો</translation>
+<translation id="7720410380936703141">ફરી પ્રયાસ કરો</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 નોટિફિકેશન}one{# નોટિફિકેશન}other{# નોટિફિકેશન}}</translation>
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7745560842763881396">શેલ્ફમાં ઍપ બતાવો</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
 <translation id="899350903320462459">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને <ph name="LOGIN_ID" /> તરીકે અનલૉક કરો</translation>
+<translation id="9000771174482730261">સ્ટોરેજ મેનેજ કરો</translation>
 <translation id="9017320285115481645">Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="9024331582947483881">પૂર્ણ સ્ક્રીન</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="951991426597076286">નકારો</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> માટે પર્યાપ્ત સ્પેસ નથી. સ્પેસ ખાલી કરો.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="98515147261107953">લેન્ડસ્કૅપ</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>

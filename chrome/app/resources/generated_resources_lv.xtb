@@ -252,6 +252,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1244265436519979884">Šobrīd notiek Linux atjaunošana</translation>
 <translation id="1244303850296295656">Paplašinājuma kļūda</translation>
 <translation id="1246863218384630739">Nevarēja instalēt <ph name="VM_NAME" />: attēla URL atgrieza <ph name="HTTP_ERROR" />. kļūdas kodu. Lūdzu, sazinieties ar administratoru.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, planšetdators ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="1251366534849411931">Jābūt figūriekavai: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tādējādi tiks notīrīti <ph name="TOTAL_USAGE" /> datu, kas tiek glabāti vietnēs un instalētajās lietotnēs.</translation>
 <translation id="1251578593170406502">Notiek mobilo datu tīklu meklēšana...</translation>
@@ -438,6 +439,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="144283815522798837">Atlasīti: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Iestatīt aktīvu Kerberos biļeti</translation>
 <translation id="1444628761356461360">Šo iestatījumu pārvalda ierīces īpašnieks <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, tālrunis ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="144518587530125858">Nevarēja ielādēt motīva ceļu “<ph name="IMAGE_PATH" />”.</translation>
 <translation id="1449191289887455076">Nospiediet “<ph name="CURRENTKEY" />” vēlreiz, lai apstiprinātu piešķiršanu un <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Tīmekļa lapa, viens fails</translation>
@@ -861,6 +863,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1855079636134697549">Kamera ir ieslēgta</translation>
 <translation id="1856715684130786728">Pievienot atrašanās vietu...</translation>
 <translation id="1858585891038687145">Uzticēties šim sertifikātam, lai identificētu programmatūras izstrādātājus</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, nezināma ierīce ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="1861262398884155592">Šī mape ir tukša</translation>
 <translation id="1862311223300693744">Vai ir instalēta īpaša VPN, starpniekservera, ugunsmūra vai NAS programmatūra?</translation>
 <translation id="1863182668524159459">Netika atrasti seriālie porti</translation>
@@ -1235,6 +1238,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2242687258748107519">Faila informācija</translation>
 <translation id="2246549592927364792">Vai vēlaties iegūt attēlu aprakstus no Google?</translation>
 <translation id="2247738527273549923">Šo ierīci pārvalda jūsu organizācija.</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, spēles vadāmierīce ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="2249111429176737533">Atvērt kā logu ar cilnēm</translation>
 <translation id="2249605167705922988">piem., 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Atvēršana, izmantojot sistēmas skatītāju</translation>
@@ -1995,6 +1999,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3007771295016901659">Dublēt cilni</translation>
 <translation id="3008232374986381779">Palaiž Linux rīkus, redaktorus un IDE jūsu <ph name="DEVICE_TYPE" /> ierīcē. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, audioierīce ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
 <translation id="3009300415590184725">Vai tiešām vēlaties atcelt mobilo datu pakalpojumu iestatīšanas procesu?</translation>
 <translation id="3009779501245596802">Rādītājā iekļautās datu bāzes</translation>
@@ -2301,6 +2306,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3348038390189153836">Konstatēta noņemama ierīce</translation>
 <translation id="3348131053948466246">Tiek ieteikta emocijzīme. Lai pārvietotos, nospiediet augšupvērsto vai lejupvērsto bultiņu. Lai ievietotu emocijzīmi, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="3349933790966648062">Atmiņas pēdas nospiedums</translation>
+<translation id="3354972872297836698">Nevarēja savienot pārī ar ierīci “<ph name="DEVICE_NAME" />”; atlasiet ierīci, lai mēģinātu vēlreiz</translation>
 <translation id="3355936511340229503">Savienojuma kļūda</translation>
 <translation id="3356580349448036450">Pabeigts</translation>
 <translation id="3359256513598016054">Sertifikātu politikas ierobežojumi</translation>
@@ -3132,6 +3138,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4200689466366162458">Pielāgotie vārdi</translation>
 <translation id="4200983522494130825">Jauna cilne</translation>
 <translation id="4201546031411513170">Jūs jebkurā laikā iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
+<translation id="4202417625268941299">Ieslēdzot drošu pārlūkošanu ar papildu aizsardzību, iegūsiet visaugstāko Chrome drošības līmeni.</translation>
 <translation id="420283545744377356">Izslēgt ekrānsaudzētāju</translation>
 <translation id="4206144641569145248">Citplanētietis</translation>
 <translation id="4206323443866416204">Atsauksmju ziņojums</translation>
@@ -3639,6 +3646,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4761104368405085019">Izmantot jūsu mikrofonu</translation>
 <translation id="4762718786438001384">Ierīces diskā gandrīz nav vietas</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, dators ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="4763408175235639573">Kamēr aplūkojāt šo lapu, tika iestatīti tālāk norādītie sīkfaili.</translation>
 <translation id="4765582662863429759">Ļauj lietotnei Android ziņojumi pārraidīt īsziņas no jūsu tālruņa uz Chromebook datoru</translation>
 <translation id="4768332406694066911">Jums ir sertifikāti no šīm organizācijām, kas jūs identificē</translation>
@@ -3821,6 +3829,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4943691134276646401">Paplašinājums “<ph name="CHROME_EXTENSION_NAME" />” vēlas izveidot savienojumu ar seriālo pieslēgvietu</translation>
 <translation id="4944310289250773232">Šo autentifikācijas pakalpojumu mitina <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Lai varētu iestatīt pirksta nospiedumu, bērnam ir jāpieskaras barošanas pogai. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="4946459324029651239">Jums ir pieejama standarta aizsardzība.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4953808748584563296">Noklusējuma iemiesojums oranžā krāsā</translation>
@@ -4405,6 +4414,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5575528586625653441">Radās problēma ar demonstrācijas reģistrācijas pieprasījumu.</translation>
 <translation id="557722062034137776">Ierīces atiestatīšana neietekmēs jūsu Google kontus un ar tiem sinhronizētos datus, taču tiks dzēsti visi faili, kuri ierīcē ir saglabāti lokāli.</translation>
 <translation id="5578059481725149024">Automātiska pierakstīšanās</translation>
+<translation id="5581134892342029705">Tulkojums tālāk norādītajā valodā ir pabeigts: <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows aparatūras dziņa verifikācija</translation>
 <translation id="5581972110672966454">Ierīci nevar saistīt ar domēnu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar ierīces īpašnieku vai administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Galvenā izvēlne</translation>
@@ -5819,6 +5829,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Drošības pārbaude tika izpildīta pirms 1 minūtes}zero{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtēm}one{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtes}other{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtēm}}</translation>
 <translation id="7057767408836081338">Neizdevās iegūt lietotnes datus, tomēr tiek mēģināts palaist lietotni...</translation>
 <translation id="7058024590501568315">Slēpts tīkls</translation>
+<translation id="70582545822664495"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, pele ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="7059858479264779982">Iestatīt automātisku palaišanu</translation>
 <translation id="7062222374113411376">Atļaut nesen aizvērtajām vietnēm pabeigt datu sūtīšanu un saņemšanu</translation>
 <translation id="7063129466199351735">Notiek saīšņu apstrāde...</translation>
@@ -5982,6 +5993,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7257173066616499747">Wi-Fi tīkli</translation>
 <translation id="725758059478686223">Drukāšanas pakalpojums</translation>
 <translation id="7257666756905341374">Lasīt datus, ko kopējat un ielīmējat</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, videokamera ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="7258192266780953209">Pārveidošana</translation>
 <translation id="7258225044283673131">Šī lietojumprogramma nereaģē. Lai aizvērtu lietotni, atlasiet vienumu “Aizvērt piespiedu kārtā”.</translation>
 <translation id="7262004276116528033">Šo pierakstīšanās pakalpojumu nodrošina <ph name="SAML_DOMAIN" /></translation>
@@ -6777,6 +6789,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8037117027592400564">Lasīt visu tekstu, kas izrunāts, izmantojot sintezēto runu</translation>
 <translation id="8037357227543935929">Vaicāt (pēc noklusējuma)</translation>
 <translation id="803771048473350947">Fails</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_INDEX" />. ierīce no <ph name="DEVICE_COUNT" />, tastatūra ar nosaukumu “<ph name="DEVICE_NAME" />”</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8042142357103597104">Teksta necaurredzamība</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> nereaģē.</translation>
@@ -6800,6 +6813,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8054563304616131773">Lūdzu, ievadiet derīgu e-pasta adresi.</translation>
 <translation id="8054883179223321715">Pieejama konkrētām videoklipu vietnēm</translation>
 <translation id="8054921503121346576">USB tastatūra ir pievienota.</translation>
+<translation id="8057414620575339583">Meklēšanas sānu josla</translation>
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
 <translation id="8058986560951482265">Raustīgs attēls</translation>
 <translation id="8059417245945632445">&amp;Pārbaudīt ierīces</translation>
@@ -6916,6 +6930,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8168071266284693455">Grāmatzīmes, paroles, vēsture un cits saturs ir sinhronizēts visās jūsu ierīcēs</translation>
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
+<translation id="8169849063724750395">Atkārtoti ieslēgt</translation>
 <translation id="8171334254070436367">Paslēpt visas kartītes</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8174876712881364124">Dublēt Google diskā. Ērti atjaunojiet datus vai nomainiet ierīci jebkurā brīdī. Dublējumā ir ietverti arī lietotņu dati. Dublējumi tiek augšupielādēti Google serveros un tiek šifrēti, izmantojot jūsu bērna Google konta paroli. <ph name="BEGIN_LINK1" />Uzziniet vairāk.<ph name="END_LINK1" /></translation>
@@ -6989,6 +7004,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8249615410597138718">Sūtīt uz jūsu ierīcēm</translation>
 <translation id="8249672078237421304">Piedāvāt tulkot lapas, kas nav manā valodā</translation>
 <translation id="8251441930213048644">Atsvaidzināt tūlīt</translation>
+<translation id="8251509999076836464">Notiek savienošana pārī ar ierīci “<ph name="DEVICE_NAME" />”</translation>
 <translation id="8251578425305135684">Sīktēls ir noņemts.</translation>
 <translation id="825238165904109940">Vienmēr rādīt visus vietrāžus URL</translation>
 <translation id="8252569384384439529">Notiek augšupielāde...</translation>
@@ -7226,9 +7242,11 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8528074251912154910">Pievienot valodas</translation>
 <translation id="8528962588711550376">Pierakstīšanās.</translation>
 <translation id="8529925957403338845">Tūlītējas piesaistes savienojuma izveide neizdevās</translation>
+<translation id="8531701051932785007">Droša pārlūkošana ar papildu aizsardzību ir izslēgta</translation>
 <translation id="8534656636775144800">Diemžēl, mēģinot saistīt domēnu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="8535005006684281994">Netscape sertifikāta atjaunošanas URL</translation>
 <translation id="8536956381488731905">Skaņa, nospiežot taustiņu</translation>
+<translation id="8538718737588735385">Atkārtoti ieslēgt</translation>
 <translation id="8539727552378197395">Nē (HttpOnly)</translation>
 <translation id="8539766201049804895">Jaunināt</translation>
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>

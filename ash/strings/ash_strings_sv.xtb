@@ -192,6 +192,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
 <translation id="2224075387478458881">Skärminspelning tillåts inte när skyddat innehåll är synligt</translation>
 <translation id="225680501294068881">Söker efter enheter ...</translation>
+<translation id="2257486738914982088">Det gick inte att ladda ned <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268813581635650749">Logga ut alla</translation>
 <translation id="2269016722240250274">Mikrofonen används av en app</translation>
@@ -587,6 +588,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
 <translation id="4849058404725798627">Markera objekt med tangentbordsfokus</translation>
 <translation id="485592688953820832">Ingen åtgärd (pausa)</translation>
+<translation id="4860284199500934869">Kontrollera nätverksanslutningen om du vill ladda ned <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Ett nytt nedladdningsförsök görs senare. Tal skickas till Google för bearbetning tills nedladdningen har slutförts.</translation>
 <translation id="4868492592575313542">aktiverad</translation>
 <translation id="4872237917498892622">Alt + Sök eller Skift</translation>
@@ -804,6 +806,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6452181791372256707">Avvisa</translation>
 <translation id="6453179446719226835">Språket har ändrats</translation>
 <translation id="6459472438155181876">Utökar skärmen till <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Det går inte att ladda ned filen</translation>
 <translation id="6482559668224714696">Helskärmsförstoring</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> före deadline</translation>
@@ -815,7 +818,10 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6528179044667508675">Stör ej</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batteri<ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Genomsökning av filen <ph name="FILENAME" /> som laddas ned</translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nyligen installerad</translation>
 <translation id="6559976592393364813">Fråga administratören</translation>
 <translation id="6565007273808762236">eSIM-anslutning tillgänglig</translation>
 <translation id="6570831796530454248">{0,plural, =1{Uppdatera enheten inom en timme}other{Uppdatera enheten inom # timmar}}</translation>
@@ -847,6 +853,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6727969043791803658">Ansluten, <ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ÖPPNA INSTÄLLNINGARNA</translation>
 <translation id="6751052314767925245">Har ställts in som obligatorisk av administratören</translation>
 <translation id="6751826523481687655">Prestandaspårning har aktiverats</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
+<translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
@@ -1168,6 +1176,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
+<translation id="9000771174482730261">HANTERA LAGRING</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9024331582947483881">helskärm</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1222,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="938963181863597773">Vad står det i min kalender?</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
+<translation id="954052413789300507">Det finns inte tillräckligt med utrymme för <ph name="FILENAME" />. Frigör utrymme.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggande</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>

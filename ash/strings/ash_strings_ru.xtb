@@ -818,6 +818,7 @@
 <translation id="6528179044667508675">Не беспокоить</translation>
 <translation id="65320610082834431">Эмодзи</translation>
 <translation id="6537924328260219877">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Выполняется проверка скачиваемого файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="655633303491376835">"<ph name="APP_NAME" />"
 Новое приложение</translation>

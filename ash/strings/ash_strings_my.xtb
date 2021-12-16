@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">မျက်နှာပြင်နေရာ ၇</translation>
 <translation id="2224075387478458881">ကာကွယ်ထားသော အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်မပြုပါ</translation>
 <translation id="225680501294068881">စက်ပစ္စည်းများ ရှာဖွေနေ...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်နေစဉ် တစ်ခုခု မှားသွားသည်</translation>
 <translation id="2268130516524549846">ဘလူးတုရှ် ပိတ်ထား</translation>
 <translation id="2268813581635650749">အားလုံးမှ ထွက်ရန်</translation>
 <translation id="2269016722240250274">အပလီကေးရှင်းတစ်ခုက သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="4849058404725798627">အရာဝတ္ထုကို ကီးဘုတ်ခလုတ်ဖြင့် မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="485592688953820832">မည်သည့်အရာမျှ လုပ်ဆောင်ရန်မလို (ခေတ္တရပ်ရန်)</translation>
+<translation id="4860284199500934869"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် သင်၏ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="486056901304535126">နောက်မှ ဒေါင်းလုဒ်လုပ်ပါမည်။ စကားသံကို စီမံလုပ်ဆောင်ရန် ဒေါင်းလုဒ်လုပ်မှု မပြီးမချင်း Google သို့ ပို့ပါမည်။</translation>
 <translation id="4868492592575313542">ဖွင့်ထားသည်</translation>
 <translation id="4872237917498892622">Alt+Search သို့မဟုတ် Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">ပယ်ချရန်</translation>
 <translation id="6453179446719226835">ဘာသာစကား ပြောင်းထားပါသည်</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />သို့ မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
+<translation id="6477681113376365978">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="6491071886865974820">နောက်ဆုံးသတ်မှတ်ချိန်မတိုင်မီ သင့် <ph name="DEVICE_TYPE" /> ကိုအပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်</translation>
@@ -817,6 +820,8 @@
 <translation id="6537924328260219877">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> ဒေါင်းလုဒ်ဖိုင်ကို စစ်ဆေးနေသည်</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> သို့ ကာစ် လုပ်နေသည်</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+အသစ်ထည့်သွင်းမှု</translation>
 <translation id="6559976592393364813">စီမံခန့်ခွဲသူကို မေးရန်</translation>
 <translation id="6565007273808762236">eSIM ချိတ်ဆက်မှု မရနိုင်ပါ</translation>
 <translation id="6570831796530454248">{0,plural, =1{စက်ကို တစ်နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
@@ -848,6 +853,7 @@
 <translation id="6723839937902243910">ပါဝါ</translation>
 <translation id="6727969043791803658">ချိတ်ဆက်ပြီးပြီ၊ ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="6751052314767925245">သင့်စီမံခန့်ခွဲသူက ထည့်သွင်းအသုံးပြုထားသည်</translation>
 <translation id="6751826523481687655">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို ဖွင့်ထားသည်</translation>
 <translation id="6752912906630585008">'မြင်ကွင်း <ph name="REMOVED_DESK" />' ကိုဖယ်ရှားပြီး 'မြင်ကွင်း <ph name="RECEIVE_DESK" />' နှင့် ပေါင်းစည်းလိုက်သည်</translation>
@@ -983,6 +989,7 @@
 <translation id="7662283695561029522">စီစဉ်သတ်မှတ်ရန် တို့ပါ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ဆယ်လူလာကွန်ရက်အသစ် ထည့်ရန်</translation>
+<translation id="7720410380936703141">ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ၁ ခု}other{အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7745560842763881396">အက်ပ်များကို စင်တွင်ပြရန်</translation>
@@ -1169,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ကို အသုံးပြုနေသည်</translation>
 <translation id="899350903320462459">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် <ph name="LOGIN_ID" /> အဖြစ် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
+<translation id="9000771174482730261">သိုလှောင်ခန်း စီမံခန့်ခွဲရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
 <translation id="9024331582947483881">မျက်နှာပြင်အပြည့်</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -1214,6 +1222,7 @@
 <translation id="938963181863597773">ကျွန်ုပ်၏ ပြက္ခဒိန်မှာ ဘာတွေရှိလဲ။</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="951991426597076286">ပယ်ချရန်</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> အတွက် နေရာမလောက်ပါ။ နေရာလွတ်ပြုလုပ်ပါ။</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခုကို ပြနေသည်</translation>
 <translation id="98515147261107953">ဘေးတိုက်</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ဝင်းဒိုးကို ပိတ်ထားသည်။</translation>

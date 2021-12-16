@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Работен кът 7</translation>
 <translation id="2224075387478458881">Записването на екрана не е разрешено, когато се вижда защитено съдържание</translation>
 <translation id="225680501294068881">Сканира се за устройства...</translation>
+<translation id="2257486738914982088">Нещо се обърка при изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth е деактивиран</translation>
 <translation id="2268813581635650749">Изход за всички</translation>
 <translation id="2269016722240250274">Приложение използва микрофона ви</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">Наистина ли искате да изключите автоматичните кликвания?</translation>
 <translation id="4849058404725798627">Открояване на обекта, върху който е фокусът от клавиатурата</translation>
 <translation id="485592688953820832">Без действие (пауза)</translation>
+<translation id="4860284199500934869">За да изтеглите <ph name="FILENAME" />, проверете връзката си с мрежата</translation>
 <translation id="486056901304535126">По-късно ще се направи опит за изтегляне. Говорът ще се изпраща до Google за обработка, докато изтеглянето завърши.</translation>
 <translation id="4868492592575313542">активирана</translation>
 <translation id="4872237917498892622">„Alt + търсене“ или „Shift“</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">Отхвърляне</translation>
 <translation id="6453179446719226835">Езикът е променен</translation>
 <translation id="6459472438155181876">Екранът се разширява на „<ph name="DISPLAY_NAME" />“</translation>
+<translation id="6477681113376365978">Файлът не може да бъде изтеглен</translation>
 <translation id="6482559668224714696">Лупа за увеличаване на целия екран</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> изисква да актуализирате устройството си <ph name="DEVICE_TYPE" /> преди крайния срок</translation>
@@ -815,7 +818,10 @@
 <translation id="6528179044667508675">Не безпокойте</translation>
 <translation id="65320610082834431">Емоджи</translation>
 <translation id="6537924328260219877">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Наскоро инсталирано</translation>
 <translation id="6559976592393364813">Попитайте администратора</translation>
 <translation id="6565007273808762236">Няма връзка с електронната SIM карта</translation>
 <translation id="6570831796530454248">{0,plural, =1{Актуализирайте устройството в рамките на 1 час}other{Актуализирайте устройството в рамките на # часа}}</translation>
@@ -847,6 +853,7 @@
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6727969043791803658">Свързано, <ph name="BATTERY_PERCENTAGE" />% батерия</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6739144137573853180">КЪМ НАСТРОЙКИТЕ</translation>
 <translation id="6751052314767925245">Наложено от администратора ви</translation>
 <translation id="6751826523481687655">Проследяването на ефективността е включено</translation>
 <translation id="6752912906630585008">Работен кът <ph name="REMOVED_DESK" /> е премахнат и е обединен с работен кът <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
+<translation id="7720410380936703141">НОВ ОПИТ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известие}other{# известия}}</translation>
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7745560842763881396">Показване на приложенията в лавицата</translation>
@@ -1168,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Използвате <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Отключете устройството като <ph name="LOGIN_ID" />, за да се изпълни действието от известието</translation>
+<translation id="9000771174482730261">УПРАВЛЕНИЕ НА ХРАНИЛИЩЕТО</translation>
 <translation id="9017320285115481645">Въведете кода за достъп на родител от Family Link.</translation>
 <translation id="9024331582947483881">цял екран</translation>
 <translation id="9047624247355796468">Отваряне на настройките за <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1222,7 @@
 <translation id="938963181863597773">„What's on my calendar?“ („Какво има в календара ми?“)</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
+<translation id="954052413789300507">Няма достатъчно място за <ph name="FILENAME" />. Освободете място.</translation>
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>

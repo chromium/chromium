@@ -227,6 +227,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="734373864078049451">웹, 북마크 및 기타 Chromium 콘텐츠가 여기에 저장됩니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>
+<translation id="7366100504948874379">Chromium에서도 사용 설정하시겠습니까?</translation>
 <translation id="7398989605938454041">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>
 <translation id="7448255348454382571">Chromium OS 다시 시작</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>

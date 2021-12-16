@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">Kopiranje uporabniškega imena</translation>
 <translation id="1592864538817356322">Standardna zaščita:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
+<translation id="1633659023549081553">Odkrijte novo vsebino na Chromovi domači strani.</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Zgodovina</translation>
@@ -220,6 +221,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2321958826496381788">Drsnik povlecite tako daleč, da boste lahko to besedilo brez težave prebrali. Besedilo bo po dvakratnem dotiku odstavka vsaj tako veliko.</translation>
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
 <translation id="2328985652426384049">Ne morem se prijaviti</translation>
+<translation id="2342601525305963189">Nasveti za Chrome:</translation>
 <translation id="234265804618409743">Kamere ni mogoče odpreti. Prišlo je do napake.</translation>
 <translation id="2345671828921229300">Če želite iskati, pridržite besedo</translation>
 <translation id="2349710944427398404">Skupna količina podatkov, ki jih uporablja Chrome, vključno z računi, zaznamki in shranjenimi nastavitvami.</translation>
@@ -263,6 +265,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2534582914273493287">URL-ji, ki jih obiščete, se pošljejo Googlu.</translation>
 <translation id="2536728043171574184">Ogled kopije te strani za način brez povezave.</translation>
 <translation id="2546283357679194313">Piškotki in podatki o spletnih mestih</translation>
+<translation id="2558692642259318568">Če želite brskati brez shranjevanja dejavnosti v napravi, poskusite anonimni način.</translation>
 <translation id="2561519700418191927">Predogledi videoposnetkov</translation>
 <translation id="2567385386134582609">SLIKA</translation>
 <translation id="2567545343356994513">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam.</translation>
@@ -274,6 +277,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2612676031748830579">Številka kartice</translation>
 <translation id="2625189173221582860">Geslo kopirano</translation>
 <translation id="2631006050119455616">Prihranjeno</translation>
+<translation id="2634905176438867146">Preberite, kako Chrome nastavite kot privzetega.</translation>
 <translation id="2645657967708199252">Zaradi povezave <ph name="CONNECTION_TYPE" /> je prenos morda nekoliko počasnejši.</translation>
 <translation id="2647434099613338025">Dodaj jezik</translation>
 <translation id="2649068648233607930">Brskalnik upravlja domena <ph name="DOMAIN" /></translation>
@@ -358,6 +362,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037517125981011456">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="3046945242843292318">Naslednjič hitreje odprite to spletno mesto.</translation>
+<translation id="3055259925215945098">Zaznamek je bil premaknjen</translation>
 <translation id="305593374596241526">Lokacija je izklopljena. Vklopite jo lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zaznamek}one{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamek}two{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamki}other{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamkov}}</translation>
 <translation id="3062802207422175757">Članki na temo vaših zanimanj v Chromu</translation>
@@ -386,6 +391,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3234978181857588512">Shrani v napravo</translation>
 <translation id="3236059992281584593">Še 1 min</translation>
 <translation id="3237087289225714896">Standardno vnaprejšnje nalaganje:</translation>
+<translation id="3237433641417325993">Pomaknite se navzdol, če si želite ogledati predlagane članke.</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3250563604907490871">Opisi slik se bodo nadaljevali, ko vzpostavite povezavo z omrežjem Wi-Fi</translation>
@@ -651,6 +657,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4835385943915508971">Chrome nima dostopa do zahtevanega vira</translation>
 <translation id="4837753911714442426">Odpiranje možnosti za tiskanje strani</translation>
 <translation id="4842092870884894799">Prikaz pojavnega okna za ustvarjanje gesel</translation>
+<translation id="4842515939542199281">Če želite iskati z glasom, se dotaknite mikrofona.</translation>
 <translation id="4850886885716139402">Pogled</translation>
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4864369630010738180">Prijavljanje ...</translation>
@@ -697,6 +704,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5091249083535528968">Razširjeni podatki o uporabi</translation>
 <translation id="509429900233858213">Napaka.</translation>
 <translation id="510275257476243843">Še 1 h</translation>
+<translation id="5115811374190515607">za <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zanimanja</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
 <translation id="5126510351761255129">Preverjanje kartice</translation>
@@ -801,6 +809,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5749068826913805084">Chrome za prenos datotek potrebuje dostop do shrambe.</translation>
 <translation id="5749237766298580851">Izklopljeno <ph name="SEPARATOR" /> Ni priporočljivo</translation>
 <translation id="5752232708629533680">Deli samo sliko GIF</translation>
+<translation id="5753139477036638699">V Chromu lahko iščete z glasom.</translation>
 <translation id="5754350196967618083">Odkrivanja ni mogoče osvežiti</translation>
 <translation id="5763382633136178763">Anonimni zavihki</translation>
 <translation id="5763514718066511291">Dotaknite se, če želite kopirati URL za to aplikacijo</translation>
@@ -1012,6 +1021,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6813446258015311409">Prijava v Chrome, odprto.</translation>
 <translation id="6814033694018386318">Kaj delite z Googlom</translation>
 <translation id="6817747507826986771">Hitro delite to stran. Če želite urediti to bližnjico, pridržite.</translation>
+<translation id="6819199143469632133">Če želite imeti Googlove stvari v svojih napravah, se prijavite.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, zavihek, izbran</translation>
 <translation id="6828070228333235514">Ustavi spremljanje cene</translation>
@@ -1050,6 +1060,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7027549951530753705">Obnovljeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Kodo QR ali črtno kodo postavite v ta okvir.</translation>
 <translation id="7029809446516969842">Gesla</translation>
+<translation id="7037830628447527439">Prijavite se v Chrome z računom Google.</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
@@ -1404,6 +1415,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8945143127965743188"><ph name="LANG" /> – tega jezika ni bilo mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="8951232171465285730">S Chromom ste prihranili <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Nazaj na vrh</translation>
+<translation id="8964479563882643397">Če želite odpreti nov anonimni zavihek, odprite meni.</translation>
 <translation id="8965591936373831584">poteka</translation>
 <translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_ONE" />.}one{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_MANY" />.}two{Zaprta bosta <ph name="INCOGNITO_TAB_COUNT" /> anonimna zavihka in še <ph name="TAB_COUNT_MANY" />.}few{Zaprti bodo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihki in še <ph name="TAB_COUNT_MANY" />.}other{Zaprtih bo <ph name="INCOGNITO_TAB_COUNT" /> anonimnih zavihkov in še <ph name="TAB_COUNT_MANY" />.}}</translation>

@@ -192,6 +192,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2224075387478458881">No se permite la grabación de pantalla cuando hay contenido protegido a la vista.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
+<translation id="2257486738914982088">Ocurrió un error al descargar <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Salir de todo</translation>
 <translation id="2269016722240250274">Una aplicación está usando tu micrófono.</translation>
@@ -588,6 +589,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4831034276697007977">¿Confirmas que quieres desactivar los clics automáticos?</translation>
 <translation id="4849058404725798627">Resaltar el objeto con el enfoque del teclado</translation>
 <translation id="485592688953820832">No es necesaria ninguna acción (pausa)</translation>
+<translation id="4860284199500934869">Comprueba la conexión de red para descargar <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Se intentará completar la descarga más tarde. La enunciación se enviará a Google para su procesamiento hasta que se complete la descarga.</translation>
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+tecla de búsqueda o Mayús</translation>
@@ -805,6 +807,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6452181791372256707">Rechazar</translation>
 <translation id="6453179446719226835">Se cambió el idioma</translation>
 <translation id="6459472438155181876">Ampliando pantalla para <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">No se puede descargar el archivo</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> antes de la fecha límite</translation>
@@ -816,7 +819,10 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6528179044667508675">No interrumpir</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Transmitiendo a <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nueva instalación</translation>
 <translation id="6559976592393364813">Pregúntale al administrador</translation>
 <translation id="6565007273808762236">No se puede establecer conexión con la tarjeta eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
@@ -848,6 +854,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">IR A CONFIGURACIÓN</translation>
 <translation id="6751052314767925245">El administrador controla la función</translation>
 <translation id="6751826523481687655">Se activó el registro del rendimiento</translation>
 <translation id="6752912906630585008">Se quitó el escritorio <ph name="REMOVED_DESK" /> y se combinó con el <ph name="RECEIVE_DESK" /></translation>
@@ -983,6 +990,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Agregar una nueva red móvil</translation>
+<translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar apps en la barra</translation>
@@ -1169,6 +1177,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en uso</translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para realizar la acción con las notificaciones</translation>
+<translation id="9000771174482730261">ADMINISTRAR EL ALMACENAMIENTO</translation>
 <translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
@@ -1214,6 +1223,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="938963181863597773">¿Qué eventos tengo en mi calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>
+<translation id="954052413789300507">No hay suficiente espacio disponible para <ph name="FILENAME" />. Libera espacio.</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Se cerró la ventana <ph name="WINDOW_TITILE" />.</translation>

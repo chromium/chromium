@@ -104,6 +104,7 @@
 <translation id="1571304935088121812">ສຳເນົາຊື່ຜູ້ໃຊ້</translation>
 <translation id="1592864538817356322">ການປົກປ້ອງມາດຕະຖານ:</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ລຶບ 1 ລາຍການທີ່ເລືອກອອກ}other{ລຶບ # ລາຍການທີ່ເລືອກອອກ}}</translation>
+<translation id="1633659023549081553">ຄົ້ນພົບເນື້ອຫາໃໝ່ຢູ່ໜ້າຫຼັກຂອງ Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">ທ່ານກຳລັງເບິ່ງສຳເນົາອອບລາຍຂອງໜ້ານີ້ຈາກ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
@@ -220,6 +221,7 @@
 <translation id="2321958826496381788">ລາກ​ບ່ອນ​ເລື່ອນ​ໄປ​ຈົນ​ກວ່າ​ທ່ານ​ຈະ​ຮູ້​ສຶກ​ວ່າ​ອ່ານ​ໄດ້​ສະບາຍ​ຕາ. ຂໍ້ຄວາມ​ໃນ​ໜ້າເວັບ​​ຈະ​ມີ​ຂະໜາດ​ໃຫຍ່​ເທົ່າ​ນີ້​ເປັນ​ຢ່າງ​ໜ້ອຍ​ເມື່ອ​ທຳການ​ແຕະ​ໃສ່​ຫຍໍ້​ໜ້າ​ຂໍ້ຄວາມ​ໃດ​ນຶ່ງ​ສອງ​ເທື່ອ.</translation>
 <translation id="2323763861024343754">ບ່ອນເກັບຂໍ້ມູນຂອງເວັບໄຊ</translation>
 <translation id="2328985652426384049">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
+<translation id="2342601525305963189">ເຄັດລັບ Chrome:</translation>
 <translation id="234265804618409743">ບໍ່ສາມາດເປີດກ້ອງຂອງທ່ານໄດ້. ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="2345671828921229300">ເພື່ອຊອກຫາ, ກະລຸນາແຕະຄຳໃດໜຶ່ງຄ້າງໄວ້</translation>
 <translation id="2349710944427398404">ຂໍ້ມູນທັງໝົດທີ່ໃຊ້ໂດຍ Chrome, ລວມທັງບັນຊີ, ບຸກມາກ ແລະ ການຕັ້ງຄ່າທີ່ບັນທຶກໄວ້</translation>
@@ -263,6 +265,7 @@
 <translation id="2534582914273493287">URL ທີ່ທ່ານເຂົ້າຈະຖືກສົ່ງໄປໃຫ້ Google</translation>
 <translation id="2536728043171574184">ກຳ​ລັງ​ເຂົ້າ​ເບິ່ງ​ສຳ​ເນົາ​ອັອບ​ລາຍ​ຂອງ​ໜ້າ​ນີ້</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
+<translation id="2558692642259318568">ເພື່ອທ່ອງເວັບໂດຍບໍ່ບັນທຶກການເຄື່ອນໄຫວໄປໃສ່ອຸປະກອນຂອງທ່ານ, ໃຫ້ລອງໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2561519700418191927">ຕົວຢ່າງວິດີໂອ</translation>
 <translation id="2567385386134582609">ຮູບ</translation>
 <translation id="2567545343356994513">ການປົກປ້ອງແບບເຊີງບຸກທີ່ໄວກວ່າຕໍ່ກັບເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ</translation>
@@ -274,6 +277,7 @@
 <translation id="2612676031748830579">ເລກບັດ</translation>
 <translation id="2625189173221582860">ສຳເນົາລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="2631006050119455616">ບັນທຶກແລ້ວ</translation>
+<translation id="2634905176438867146">ສຶກສາວິທີຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="2645657967708199252">ການເຊື່ອມຕໍ່ <ph name="CONNECTION_TYPE" /> ຂອງທ່ານອາດເຮັດໃຫ້ການດາວໂຫຼດຂອງທ່ານຊ້າລົງ</translation>
 <translation id="2647434099613338025">ເພີ່ມພາສາ</translation>
 <translation id="2649068648233607930">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍ <ph name="DOMAIN" /></translation>
@@ -358,6 +362,7 @@
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037517125981011456">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="3046945242843292318">ເຂົ້າເວັບໄຊນີ້ໄດ້ໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ</translation>
+<translation id="3055259925215945098">ຍ້າຍບຸກມາກແລ້ວ</translation>
 <translation id="305593374596241526">ສະຖານທີ່ປິດຢູ່, ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ບຸກມາກ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ບຸກມາກ}}</translation>
 <translation id="3062802207422175757">ບົດຄວາມທີ່ທ່ານສົນໃຈໃນ Chrome</translation>
@@ -386,6 +391,7 @@
 <translation id="3234978181857588512">ບັນທຶກໃສ່ອຸປະກອນ</translation>
 <translation id="3236059992281584593">ຍັງເຫຼືອ 1 ນາທີ</translation>
 <translation id="3237087289225714896">ການໂຫຼດກ່ອນລ່ວງໜ້າແບບມາດຕະຖານ:</translation>
+<translation id="3237433641417325993">ເລື່ອນລົງເພື່ອເບິ່ງບົດຄວາມທີ່ແນະນຳ</translation>
 <translation id="3244271242291266297">ດດ</translation>
 <translation id="3245429137663807393">ຫາກທ່ານແບ່ງປັນລາຍງານການນຳໃຊ້ Chrome ນຳ, ລາຍງານເຫຼົ່ານັ້ນຈະຮວມເອົາ URL ທີ່ທ່ານເຂົ້າໄວ້ພ້ອມ</translation>
 <translation id="3250563604907490871">ຄຳອະທິບາຍຮູບພາບຈະສືບຕໍ່ເມື່ອທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi</translation>
@@ -651,6 +657,7 @@
 <translation id="4835385943915508971">Chrome ບໍ່ມີການເຂົ້າເຖິງຊັບພະຍາກອນທີ່ຮ້ອງຂໍ.</translation>
 <translation id="4837753911714442426">ເປີດຕົວເລືອກຕໍ່ກັບໜ້າການພິມ</translation>
 <translation id="4842092870884894799">ກຳ​ລັງ​ສະ​ແດງ​ປັອບ​ອັບການສ້າງລະ​ຫັດ​ຜ່ານ​</translation>
+<translation id="4842515939542199281">ເພື່ອຊອກຫາດ້ວຍສຽງຂອງທ່ານ, ໃຫ້ແຕະໃສ່ໄມໂຄຣໂຟນ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="4860895144060829044">ໂທ</translation>
 <translation id="4864369630010738180">ກຳລັງເຂົ້າສູ່ລະບົບ...</translation>
@@ -697,6 +704,7 @@
 <translation id="5091249083535528968">ຂໍ້ມູນການນຳໃຊ້ເພີ່ມເຕີມ</translation>
 <translation id="509429900233858213">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="510275257476243843">ຍັງເຫຼືອ 1 ຊົ່ວໂມງ</translation>
+<translation id="5115811374190515607">ຫາ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">ຄວາມສົນໃຈ</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5126510351761255129">ຢືນຢັນບັດຂອງທ່ານ</translation>
@@ -801,6 +809,7 @@
 <translation id="5749068826913805084">Chrome ຕ້ອງ​ການ​ໃຫ້​ມີ​ການ​ເຂົ້າ​ຫາ​ບ່ອນ​ຈັດ​ເກັບ​ຂໍ້​ມູນ​ເພື່ອ​ດາວ​ໂຫຼດ​ໄຟ​ລ໌.</translation>
 <translation id="5749237766298580851">ປິດ <ph name="SEPARATOR" /> ບໍ່ແນະນຳ</translation>
 <translation id="5752232708629533680">ແບ່ງປັນ GIF ເທົ່ານັ້ນ</translation>
+<translation id="5753139477036638699">ທ່ານສາມາດໃຊ້ສຽງຂອງທ່ານເພື່ອຊອກຫາໃນ Chrome ໄດ້</translation>
 <translation id="5754350196967618083">ບໍ່ສາມາດໂຫຼດຂໍ້ມູນ Discover ຄືນໃໝ່ໄດ້</translation>
 <translation id="5763382633136178763">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="5763514718066511291">ແຕະເພື່ອສຳເນົາ URL ສຳລັບແອັບນີ້</translation>
@@ -1012,6 +1021,7 @@
 <translation id="6813446258015311409">ເຂົ້າສູ່ລະບົບ Chrome, ເປີດແລ້ວ.</translation>
 <translation id="6814033694018386318">ສິ່ງທີ່ທ່ານແບ່ງປັນກັບ Google</translation>
 <translation id="6817747507826986771">ແບ່ງປັນໜ້ານີ້ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
+<translation id="6819199143469632133">ເພື່ອໃຊ້ຂໍ້ມູນ Google ຂອງທ່ານໃນອຸປະກອນຕ່າງໆ, ກະລຸນາເຂົ້າສູ່ລະບົບ</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ແຖບ, ເລືອກແລ້ວ</translation>
 <translation id="6828070228333235514">ຢຸດການຕິດຕາມລາຄາ</translation>
@@ -1050,6 +1060,7 @@
 <translation id="7027549951530753705">ກູ້ຂໍ້ມູນເມື່ອ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">ປັບຕຳແໜ່ງລະຫັດ QR ຫຼື ບາໂຄດໃນເຟຣມນີ້.</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="7037830628447527439">ເຂົ້າສູ່ລະບົບຫາ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ຮັບຄຳອະທິບາຍຮູບບໍ?</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
@@ -1404,6 +1415,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - ບໍ່ສາມາດດາວໂຫຼດພາສານີ້ໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="8951232171465285730">Chrome ຊ່ວຍທ່ານປະຢັດໄດ້ <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">ກັບຄືນໄປດ້ານເທິງ</translation>
+<translation id="8964479563882643397">ເພື່ອເປີດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່, ໃຫ້ເປີດເມນູ</translation>
 <translation id="8965591936373831584">ຄ້າງຢູ່</translation>
 <translation id="8967427617812342790">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_ONE" /> ແຖບຈະຖືກປິດ}other{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_MANY" /> ແຖບຈະຖືກປິດ}}</translation>

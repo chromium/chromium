@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">У току је враћање Linux података</translation>
 <translation id="1244303850296295656">Грешка додатка</translation>
 <translation id="1246863218384630739">Инсталирање <ph name="VM_NAME" />-а није успело: URL слике је приказао кôд грешке <ph name="HTTP_ERROR" />. Обратите се администратору.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, таблет који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Недостаје отворена витичаста заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају сајтови и инсталиране апликације</translation>
 <translation id="1251578593170406502">Траже се мобилне мреже за пренос података...</translation>
@@ -438,6 +439,7 @@
 <translation id="144283815522798837">Изабраних ставки: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Подесите активан Kerberos тикет</translation>
 <translation id="1444628761356461360">Овим подешавањем управља власник уређаја, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, телефон који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Није могуће учитати „<ph name="IMAGE_PATH" />“ за тему.</translation>
 <translation id="1449191289887455076">Поново притисните <ph name="CURRENTKEY" /> да бисте потврдили доделу и <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-страница, једна датотека</translation>
@@ -858,6 +860,7 @@
 <translation id="1855079636134697549">Камера је укључена</translation>
 <translation id="1856715684130786728">Додај локацију...</translation>
 <translation id="1858585891038687145">Овај сертификат је поуздан за идентификацију произвођача софтвера</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, непознат уређај који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Овај директоријум је празан</translation>
 <translation id="1862311223300693744">Да ли сте инсталирали било какав посебан софтвер за VPN, прокси, заштитни зид или NAS?</translation>
 <translation id="1863182668524159459">Нисмо пронашли ниједан серијски порт</translation>
@@ -1232,6 +1235,7 @@
 <translation id="2242687258748107519">Информације о датотеци</translation>
 <translation id="2246549592927364792">Желите ли да преузимате описе слика са Google-а?</translation>
 <translation id="2247738527273549923">Овим уређајем управља организација</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, контролер за игре који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Отвори као прозор са картицама</translation>
 <translation id="2249605167705922988">нпр. 1–5, 8, 11–13</translation>
 <translation id="2251218783371366160">Отвори помоћу системског приказивача</translation>
@@ -1992,6 +1996,7 @@
 <translation id="3007771295016901659">Направи дупликат картице</translation>
 <translation id="3008232374986381779">Покрећите Linux алатке, уређиваче и IDE-ове на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, аудио уређај који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> захтева да се данас повежете на WiFi да бисте преузели ажурирање. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}one{<ph name="MANAGER" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}few{<ph name="MANAGER" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}other{<ph name="MANAGER" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}}</translation>
 <translation id="3009300415590184725">Да ли сте сигурни да желите да откажете процес подешавања услуге мобилног преноса података?</translation>
 <translation id="3009779501245596802">Индексиране базе података</translation>
@@ -2298,6 +2303,7 @@
 <translation id="3348038390189153836">Откривен је преносиви уређај</translation>
 <translation id="3348131053948466246">Емоџи је предложен. Притисните нагоре или надоле да бисте се кретали и Enter за унос.</translation>
 <translation id="3349933790966648062">Меморијски простор у употреби</translation>
+<translation id="3354972872297836698">Упаривање са уређајем <ph name="DEVICE_NAME" /> није успело; изаберите уређај да бисте пробали поново</translation>
 <translation id="3355936511340229503">Грешка при повезивању</translation>
 <translation id="3356580349448036450">Завршено</translation>
 <translation id="3359256513598016054">Ограничења смерница сертификата</translation>
@@ -3129,6 +3135,7 @@
 <translation id="4200689466366162458">Прилагођене речи</translation>
 <translation id="4200983522494130825">Нова &amp;картица</translation>
 <translation id="4201546031411513170">Увек можете да одаберете шта ћете синхронизовати у подешавањима.</translation>
+<translation id="4202417625268941299">Уз побољшано безбедно прегледање добијате најјачу Chrome заштиту</translation>
 <translation id="420283545744377356">Искључите чувар екрана</translation>
 <translation id="4206144641569145248">Ванземаљац</translation>
 <translation id="4206323443866416204">Извештај са повратним информацијама</translation>
@@ -3636,6 +3643,7 @@
 <translation id="4759238208242260848">Преузимања</translation>
 <translation id="4761104368405085019">Коришћење микрофона</translation>
 <translation id="4762718786438001384">Простор на диску уређаја је забрињавајуће мали</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, рачунар који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Следећи колачићи су постављени док сте гледали ову страницу</translation>
 <translation id="4765582662863429759">Дозвољава да Android Messages преноси SMS-ове са телефона на Chromebook</translation>
 <translation id="4768332406694066911">Имате сертификате следећих организација који вас идентификују</translation>
@@ -3818,6 +3826,7 @@
 <translation id="4943691134276646401">„<ph name="CHROME_EXTENSION_NAME" />“ жели да се повеже са серијским портом</translation>
 <translation id="4944310289250773232">Ову услугу потврде идентитета хостује <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Да бисте подесили отисак прста, нека дете додирне дугме за укључивање. Подаци о отиску прста детета се безбедно чувају искључиво на овом <ph name="DEVICE_TYPE" /> уређају.</translation>
+<translation id="4946459324029651239">Добијате стандардну заштиту</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
@@ -4401,6 +4410,7 @@
 <translation id="5575528586625653441">Дошло је до проблема са захтевом за регистрацију за режим демонстрације.</translation>
 <translation id="557722062034137776">Враћање уређаја на почетна подешавања не утиче на Google налоге нити било какве податке синхронизоване са њима. Међутим, све датотеке које су локално сачуване на уређају ће бити избрисане.</translation>
 <translation id="5578059481725149024">Аутоматско пријављивање</translation>
+<translation id="5581134892342029705">Готов је превод на <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Верификација управљачких програма за хардвер у Microsoft Windows-у</translation>
 <translation id="5581972110672966454">Придруживање уређаја домену није успело. Пробајте поново или се обратите власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Главни мени</translation>
@@ -5816,6 +5826,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Безбедносна провера је покренута пре 1 минут}one{Безбедносна провера је покренута пре {NUM_MINS} минут}few{Безбедносна провера је покренута пре {NUM_MINS} минутa}other{Безбедносна провера је покренута пре {NUM_MINS} минутa}}</translation>
 <translation id="7057767408836081338">Добијање података апликације није успело. Ипак покушавамо да покренемо апликацију...</translation>
 <translation id="7058024590501568315">Скривена мрежа</translation>
+<translation id="70582545822664495"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, миш који се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Подеси на аутоматско покретање</translation>
 <translation id="7062222374113411376">Дозволи да недавно затворени сајтови заврше слање и примање података (препоручено)</translation>
 <translation id="7063129466199351735">Обрада пречица...</translation>
@@ -5979,6 +5990,7 @@
 <translation id="7257173066616499747">WiFi мреже</translation>
 <translation id="725758059478686223">Услуга штампања</translation>
 <translation id="7257666756905341374">Читање података које прекопирате</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, видео камера која се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Трансформације</translation>
 <translation id="7258225044283673131">Апликација не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>
 <translation id="7262004276116528033">Ову услугу пријављивања хостује <ph name="SAML_DOMAIN" />.</translation>
@@ -6774,6 +6786,7 @@
 <translation id="8037117027592400564">Читање свог текста изговореног помоћу синтетизованог говора</translation>
 <translation id="8037357227543935929">Питај (подразумевано)</translation>
 <translation id="803771048473350947">Датотека</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_INDEX" />. уређај од <ph name="DEVICE_COUNT" />, тастатура која се зове <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8042142357103597104">Непрозирност текста</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагује.</translation>
@@ -6914,6 +6927,7 @@
 <translation id="8168071266284693455">Обележивачи, лозинке, историја и друго се синхронизују на свим уређајима</translation>
 <translation id="8168435359814927499">Садржај</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додај картицу на листу за читање}one{Додај картице на листу за читање}few{Додај картице на листу за читање}other{Додај картице на листу за читање}}</translation>
+<translation id="8169849063724750395">Укључите поново</translation>
 <translation id="8171334254070436367">Сакриј све картице</translation>
 <translation id="8174047975335711832">Информације о уређају</translation>
 <translation id="8174876712881364124">Правите резервне копије на Google диску. Лако враћајте податке или мењајте телефоне у било ком тренутку. Ова резервна копија обухвата податке апликација. Резервне копије се отпремају на Google и шифрују лозинком за Google налог детета. <ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
@@ -6987,6 +7001,7 @@
 <translation id="8249615410597138718">Пошаљите на своје уређаје</translation>
 <translation id="8249672078237421304">Нуди превод страница које нису на језику који читам</translation>
 <translation id="8251441930213048644">Освежи</translation>
+<translation id="8251509999076836464">Упаривање са уређајем <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Сличица је уклоњена.</translation>
 <translation id="825238165904109940">Увек приказуј URL-ове у целости</translation>
 <translation id="8252569384384439529">Отпрема се...</translation>
@@ -7224,9 +7239,11 @@
 <translation id="8528074251912154910">Додај језике</translation>
 <translation id="8528962588711550376">Пријављивање.</translation>
 <translation id="8529925957403338845">Повезивање преко тренутног привезивања није успело</translation>
+<translation id="8531701051932785007">Побољшано безбедно прегледање је искључено</translation>
 <translation id="8534656636775144800">Упс, дошло је до грешке при придруживању домену. Пробајте поново.</translation>
 <translation id="8535005006684281994">URL адреса за обнову Netscape сертификата</translation>
 <translation id="8536956381488731905">Звук при притиску на тастер</translation>
+<translation id="8538718737588735385">Укључите поново</translation>
 <translation id="8539727552378197395">Не (HttpOnly)</translation>
 <translation id="8539766201049804895">Надогради</translation>
 <translation id="8540136935098276800">Унесите исправно форматиран URL</translation>

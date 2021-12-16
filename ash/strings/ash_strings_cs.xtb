@@ -192,6 +192,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2222841058024245321">Plocha 7</translation>
 <translation id="2224075387478458881">Když je viditelný chráněný obsah, nahrávání obrazovky je zakázáno</translation>
 <translation id="225680501294068881">Vyhledávání zařízení…</translation>
+<translation id="2257486738914982088">Při stahování souboru <ph name="FILENAME" /> se něco pokazilo</translation>
 <translation id="2268130516524549846">Rozhraní Bluetooth deaktivováno</translation>
 <translation id="2268813581635650749">Odhlásit vše</translation>
 <translation id="2269016722240250274">Váš mikrofon používá nějaká aplikace</translation>
@@ -587,6 +588,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
 <translation id="4849058404725798627">Zvýraznit objekt se zaměřením pro zadávání</translation>
 <translation id="485592688953820832">Žádná akce (pozastavit)</translation>
+<translation id="4860284199500934869">Pokud chcete stáhnout soubor <ph name="FILENAME" />, zkontrolujte připojení k síti</translation>
 <translation id="486056901304535126">Zkusíme je stáhnout později. Dokud nebudou staženy, bude se řeč ke zpracování odesílat do Googlu.</translation>
 <translation id="4868492592575313542">aktivovala</translation>
 <translation id="4872237917498892622">Alt + Vyhledávání nebo Shift</translation>
@@ -804,6 +806,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6452181791372256707">Odmítnout</translation>
 <translation id="6453179446719226835">Jazyk se změnil</translation>
 <translation id="6459472438155181876">Rozšíření obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Soubor nelze stáhnout</translation>
 <translation id="6482559668224714696">Lupa celé obrazovky</translation>
 <translation id="6490471652906364588">Zařízení USB Type-C (pravý port)</translation>
 <translation id="6491071886865974820">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> do stanoveného termínu aktualizovali.</translation>
@@ -815,7 +818,10 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6528179044667508675">Nerušit</translation>
 <translation id="65320610082834431">Smajlíci</translation>
 <translation id="6537924328260219877">Síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Skenování staženého souboru <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Odesílání do zařízení <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Nová instalace</translation>
 <translation id="6559976592393364813">Zeptejte se administrátora</translation>
 <translation id="6565007273808762236">Připojení k eSIM není k dispozici</translation>
 <translation id="6570831796530454248">{0,plural, =1{Do hodiny zařízení aktualizujte}few{Do # hodin zařízení aktualizujte}many{Do # hodiny zařízení aktualizujte}other{Do # hodin zařízení aktualizujte}}</translation>
@@ -847,6 +853,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6727969043791803658">Připojeno, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">PŘEJÍT DO NASTAVENÍ</translation>
 <translation id="6751052314767925245">Vynuceno administrátorem</translation>
 <translation id="6751826523481687655">Trasování výkonu je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Přidat novou mobilní síť</translation>
+<translation id="7720410380936703141">ZKUSIT ZNOVU</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7745560842763881396">Zobrazit aplikace v poličce</translation>
@@ -1168,6 +1176,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Metoda zadávání: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Chcete-li provést akci s oznámením, odemkněte zařízení jako <ph name="LOGIN_ID" /></translation>
+<translation id="9000771174482730261">SPRAVOVAT ÚLOŽIŠTĚ</translation>
 <translation id="9017320285115481645">Zadejte svůj rodičovský přístupový kód služby Family Link.</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9047624247355796468">Otevřít nastavení sítě <ph name="NETWORK_NAME" /></translation>
@@ -1213,6 +1222,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="951991426597076286">Odmítnout</translation>
+<translation id="954052413789300507">Pro soubor <ph name="FILENAME" /> není k dispozici dostatek volného místa. Uvolněte místo.</translation>
 <translation id="974545358917229949">Zobrazuje se tento počet výsledků pro dotaz <ph name="QUERY" />: <ph name="RESULT_COUNT" /></translation>
 <translation id="98515147261107953">Na šířku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bylo zavřeno.</translation>

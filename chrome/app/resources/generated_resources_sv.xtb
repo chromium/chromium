@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">Återställning av Linux pågår</translation>
 <translation id="1244303850296295656">Fel i tillägg</translation>
 <translation id="1246863218384630739">Det gick inte att installera <ph name="VM_NAME" />: Avbildningens webbadress returnerade felkoden <ph name="HTTP_ERROR" />. Kontakta administratören.</translation>
+<translation id="1247071602516579380">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, surfplattan <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Oväntad vänster klammerparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802"><ph name="TOTAL_USAGE" /> data som har lagrats av webbplatser och installerade appar raderas</translation>
 <translation id="1251578593170406502">Söker efter mobildatanätverk …</translation>
@@ -438,6 +439,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> markerade</translation>
 <translation id="1442851588227551435">Konfigurera aktiv Kerberos-biljett</translation>
 <translation id="1444628761356461360">Den här inställningen hanteras av enhetens ägare, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, telefonen <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Det gick inte att läsa in <ph name="IMAGE_PATH" /> för temat.</translation>
 <translation id="1449191289887455076">Tryck på <ph name="CURRENTKEY" /> igen för att bekräfta tilldelningen och <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
@@ -870,6 +872,7 @@
 <translation id="1855079636134697549">Kameran har aktiverats</translation>
 <translation id="1856715684130786728">Lägg till plats ...</translation>
 <translation id="1858585891038687145">Lita på det här certifikatet för identifiering av programskapare</translation>
+<translation id="1859787252990099899">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, den okända enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1862311223300693744">Har ett VPN, en proxy, en brandvägg eller ett NAS-program av något särskilt slag
     installerats?</translation>
@@ -1245,6 +1248,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2242687258748107519">Filinformation</translation>
 <translation id="2246549592927364792">Vill du hämta bildbeskrivningar från Google?</translation>
 <translation id="2247738527273549923">Enheten hanteras av organisationen.</translation>
+<translation id="2249061317998743208">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, spelkontrollen <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Öppna som fönster med flikar</translation>
 <translation id="2249605167705922988">till exempel 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Öppna med systemvisningsprogrammet</translation>
@@ -2008,6 +2012,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3007771295016901659">Duplicera flik</translation>
 <translation id="3008232374986381779">Kör verktyg, redigerare och IDE:er för Linux på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
+<translation id="3008396025115884998">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, ljudenheten <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="3009300415590184725">Är du säker på att du vill avbryta konfigurationen av den mobila datatjänsten?</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
@@ -2314,6 +2319,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3348038390189153836">Flyttbar enhet upptäckt</translation>
 <translation id="3348131053948466246">Föreslagen emoji. Tryck upp eller ned för att navigera och retur för att infoga.</translation>
 <translation id="3349933790966648062">Minnesanvändning</translation>
+<translation id="3354972872297836698">Det gick inte att koppla till enheten <ph name="DEVICE_NAME" /> – välj enheten och försök igen</translation>
 <translation id="3355936511340229503">Anslutningsfel</translation>
 <translation id="3356580349448036450">Klart</translation>
 <translation id="3359256513598016054">Begränsningar för Certifikatpolicy</translation>
@@ -3145,6 +3151,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4200689466366162458">Anpassade ord</translation>
 <translation id="4200983522494130825">Ny &amp;flik</translation>
 <translation id="4201546031411513170">Du kan alltid välja vad som ska synkroniseras i inställningarna.</translation>
+<translation id="4202417625268941299">Få det bästa skyddet i Chrome med Förbättrad säker webbsökning</translation>
 <translation id="420283545744377356">Inaktivera skärmsläckare</translation>
 <translation id="4206144641569145248">Utomjording</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
@@ -3653,6 +3660,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4761104368405085019">Använd mikrofonen</translation>
 <translation id="4762718786438001384">Mycket ont om diskutrymme på enheten</translation>
+<translation id="4762898026821161650">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, datorn <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
 <translation id="4765582662863429759">Tillåter Android Messages att dirigera sms från mobilen till Chromebook</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
@@ -3835,6 +3843,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4943691134276646401"><ph name="CHROME_EXTENSION_NAME" /> vill ansluta till en serieport</translation>
 <translation id="4944310289250773232">Den här autentiseringstjänsten tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Låt ditt barn trycka på strömbrytaren om fingeravtryck ska användas. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946459324029651239">Du har standardskydd</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
@@ -4419,6 +4428,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5575528586625653441">Ett problem uppstod med registreringsbegäran.</translation>
 <translation id="557722062034137776">Dina Google-konton eller data som synkroniserats med dessa konton påverkas inte när du återställer enheten. Alla filer som sparas lokalt på enheten kommer dock att tas bort.</translation>
 <translation id="5578059481725149024">Autoinloggning</translation>
+<translation id="5581134892342029705">Översättningen till <ph name="LANGUAGE" /> är klar</translation>
 <translation id="558170650521898289">Microsofts Verifiera Windows-maskinvarudrivrutin</translation>
 <translation id="5581972110672966454">Det gick inte att ansluta enheten till domänen. Försök igen eller kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Huvudmeny</translation>
@@ -5833,6 +5843,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Säkerhetskontrollen kördes för 1 minut sedan}other{Säkerhetskontrollen kördes för {NUM_MINS} minuter sedan}}</translation>
 <translation id="7057767408836081338">Det gick inte att hämta appdata. Försöker fortfarande att köra appen …</translation>
 <translation id="7058024590501568315">Dolt nätverk</translation>
+<translation id="70582545822664495">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, musen <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Inställd på att starta automatiskt</translation>
 <translation id="7062222374113411376">Tillåt webbplatser som nyligen har stängts att slutföra överföringen av data (rekommenderas)</translation>
 <translation id="7063129466199351735">Genvägarna behandlas …</translation>
@@ -5996,6 +6007,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7257173066616499747">wifi-nätverk</translation>
 <translation id="725758059478686223">Utskriftstjänst</translation>
 <translation id="7257666756905341374">Läsa data som du kopierar och klistrar in</translation>
+<translation id="7258006747130724016">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, videokameran <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarar inte. Stäng appen med Tvångsavsluta.</translation>
 <translation id="7262004276116528033">Inloggningstjänsten tillhandahålls av <ph name="SAML_DOMAIN" />.</translation>
@@ -6792,6 +6804,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8037117027592400564">Läsa all text som läses upp med syntetiskt tal</translation>
 <translation id="8037357227543935929">Fråga (standard)</translation>
 <translation id="803771048473350947">Arkiv</translation>
+<translation id="8038399858950372766">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, tangentbordet <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="8042142357103597104">Textopacitet</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> svarar inte.</translation>
@@ -6815,6 +6828,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8054563304616131773">Ange en giltig e-postadress</translation>
 <translation id="8054883179223321715">Tillgänglig för vissa videowebbplatser</translation>
 <translation id="8054921503121346576">USB-tangentbord har anslutits</translation>
+<translation id="8057414620575339583">Sökning med sidofält</translation>
 <translation id="8058655154417507695">Utgångsår</translation>
 <translation id="8058986560951482265">Ryckig</translation>
 <translation id="8059417245945632445">&amp;Inspektera enheter</translation>
@@ -6931,6 +6945,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8168071266284693455">Bokmärken, lösenord, historik med mera synkroniseras på alla dina enheter</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lägg till fliken i läslistan}other{Lägg till flikarna i läslistan}}</translation>
+<translation id="8169849063724750395">Aktivera igen</translation>
 <translation id="8171334254070436367">Dölj alla kort</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8174876712881364124">Säkerhetskopiera till Google Drive. Återställ enkelt data eller byt enhet när som helst. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av lösenordet för ditt barns Google-konto och laddas upp på Google. <ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
@@ -7004,6 +7019,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8249615410597138718">Skicka till dina enheter</translation>
 <translation id="8249672078237421304">Erbjud att översätta sidor som är på ett språk som du inte kan läsa</translation>
 <translation id="8251441930213048644">Uppdatera nu</translation>
+<translation id="8251509999076836464">Parkopplar till <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatyren har tagits bort.</translation>
 <translation id="825238165904109940">Visa alltid hela webbadresser</translation>
 <translation id="8252569384384439529">Laddar upp …</translation>
@@ -7241,9 +7257,11 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8528074251912154910">Lägg till språk</translation>
 <translation id="8528962588711550376">Inloggning sker</translation>
 <translation id="8529925957403338845">Direktinternetdelning misslyckades</translation>
+<translation id="8531701051932785007">Förbättrad säker webbsökning har inaktiverats</translation>
 <translation id="8534656636775144800">Hoppsan. Något gick fel när du försökte ansluta till domänen. Försök igen.</translation>
 <translation id="8535005006684281994">Förnyelseadress för Netscape-certifikat</translation>
 <translation id="8536956381488731905">Knappljud</translation>
+<translation id="8538718737588735385">Aktivera igen</translation>
 <translation id="8539727552378197395">Nej (HttpOnly)</translation>
 <translation id="8539766201049804895">Uppgradera</translation>
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>

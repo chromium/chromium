@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">El restablecimiento de Linux está en curso</translation>
 <translation id="1244303850296295656">Error de extensión</translation>
 <translation id="1246863218384630739">No se pudo instalar <ph name="VM_NAME" />: la URL de la imagen devolvió el código de error <ph name="HTTP_ERROR" />. Comunícate con tu administrador.</translation>
+<translation id="1247071602516579380">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, tablet <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Llave de apertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por sitios y apps instaladas</translation>
 <translation id="1251578593170406502">Buscando redes de datos móviles…</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837">Cantidad seleccionada: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Activar un ticket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración es administrada por el propietario del dispositivo: <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, teléfono <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">No se pudo cargar '<ph name="IMAGE_PATH" />' para el tema.</translation>
 <translation id="1449191289887455076">Vuelve a presionar "<ph name="CURRENTKEY" />" para confirmar la asignación y presiona <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
@@ -856,6 +858,7 @@
 <translation id="1855079636134697549">La cámara está activada</translation>
 <translation id="1856715684130786728">Agregar ubicación...</translation>
 <translation id="1858585891038687145">Confiar en este certificado para identificar fabricantes de software</translation>
+<translation id="1859787252990099899">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, dispositivo desconocido <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1862311223300693744">¿Tienes instalado algún tipo especial de software NAS, firewall, proxy o red VPN?</translation>
 <translation id="1863182668524159459">No se encontraron puertos en serie</translation>
@@ -1230,6 +1233,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2242687258748107519">Información del archivo</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
 <translation id="2247738527273549923">Tu organización administra este dispositivo.</translation>
+<translation id="2249061317998743208">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, control de juegos <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Abrir como ventana con pestañas</translation>
 <translation id="2249605167705922988">p. ej. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Abrir con el lector del sistema</translation>
@@ -1990,6 +1994,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
 <translation id="3008232374986381779">Ejecuta las herramientas, los editores de código y los IDE de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
+<translation id="3008396025115884998">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, dispositivo de audio <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización hoy. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
 <translation id="3009300415590184725">¿Estás seguro de que deseas cancelar el proceso de configuración del servicio de datos para celulares?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -2296,6 +2301,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3348038390189153836">Se detectó un dispositivo removible.</translation>
 <translation id="3348131053948466246">Se sugirieron emojis. Presiona la flecha hacia arriba o abajo para seleccionar uno y, luego, Intro para insertarlo.</translation>
 <translation id="3349933790966648062">Espacio en memoria</translation>
+<translation id="3354972872297836698">No se pudo vincular con el dispositivo <ph name="DEVICE_NAME" />; selecciónalo y vuelve a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356580349448036450">Completo</translation>
 <translation id="3359256513598016054">Restricciones de directivas para certificados</translation>
@@ -3127,6 +3133,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nueva pes&amp;taña</translation>
 <translation id="4201546031411513170">En la configuración, puedes elegir los datos para sincronizar en cualquier momento.</translation>
+<translation id="4202417625268941299">Con la Navegación segura mejorada, obtendrás la seguridad más sólida de Chrome</translation>
 <translation id="420283545744377356">Desactivar el protector de pantalla</translation>
 <translation id="4206144641569145248">Alienígena</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
@@ -3634,6 +3641,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4761104368405085019">Usar tu micrófono</translation>
 <translation id="4762718786438001384">Hay muy poco espacio en el disco del dispositivo</translation>
+<translation id="4762898026821161650">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, computadora <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Se configuraron las siguientes cookies cuando visitaste esta página</translation>
 <translation id="4765582662863429759">Permite que Mensajes Android transfiera mensajes de texto del teléfono a tu Chromebook</translation>
 <translation id="4768332406694066911">Tienes certificados de esas organizaciones que te identifican</translation>
@@ -3816,6 +3824,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" quiere conectarse a un puerto en serie</translation>
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> aloja este servicio de autenticación</translation>
 <translation id="4945439665401275950">Para configurar una huella dactilar, haz que tu hijo toque el botón de encendido. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946459324029651239">Recibes protección estándar</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un archivo}other{# archivos}}</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
@@ -4400,6 +4409,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5575528586625653441">Hubo un problema con la solicitud de registro de demostración.</translation>
 <translation id="557722062034137776">Restablecer el dispositivo no afectará las cuentas de Google ni los datos sincronizados con esas cuentas. Sin embargo, se eliminarán todos los archivos guardados localmente en el dispositivo.</translation>
 <translation id="5578059481725149024">Acceso automático</translation>
+<translation id="5581134892342029705">Se completó la traducción al <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verificación de controladores de hardware de Windows, Microsoft</translation>
 <translation id="5581972110672966454">No se puede unir el dispositivo con el dominio. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menú principal</translation>
@@ -5814,6 +5824,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{La verificación de seguridad se ejecutó hace 1 minuto}other{La verificación de seguridad se ejecutó hace {NUM_MINS} minutos}}</translation>
 <translation id="7057767408836081338">No se pudieron obtener los datos de la app. Se intenta ejecutar la app de todos modos…</translation>
 <translation id="7058024590501568315">Red oculta</translation>
+<translation id="70582545822664495">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, mouse <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Permitir inicio automático</translation>
 <translation id="7062222374113411376">Permitir que los sitios cerrados recientemente terminen de enviar y recibir datos (recomendado)</translation>
 <translation id="7063129466199351735">Procesando accesos directos…</translation>
@@ -5977,6 +5988,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7257173066616499747">Redes Wi-Fi</translation>
 <translation id="725758059478686223">Servicio de impresión</translation>
 <translation id="7257666756905341374">Leer los datos que copias y pegas</translation>
+<translation id="7258006747130724016">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, videocámara <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La app no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
 <translation id="7262004276116528033">El servicio de acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
@@ -6773,6 +6785,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
+<translation id="8038399858950372766">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, teclado <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8042142357103597104">Opacidad del texto</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no responde.</translation>
@@ -6796,6 +6809,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8054563304616131773">Ingresa una dirección de correo electrónico válida.</translation>
 <translation id="8054883179223321715">Disponible para sitios de video específicos</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
+<translation id="8057414620575339583">Búsqueda lateral</translation>
 <translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8058986560951482265">Temblorosa</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
@@ -6912,6 +6926,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8168071266284693455">Tus favoritos, contraseñas, historial y más están sincronizados en todos tus dispositivos.</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Agregar la pestaña a la lista de lectura}other{Agregar las pestañas a la lista de lectura}}</translation>
+<translation id="8169849063724750395">Volver a activar</translation>
 <translation id="8171334254070436367">Ocultar todas las tarjetas</translation>
 <translation id="8174047975335711832">Información del dispositivo</translation>
 <translation id="8174876712881364124">Crea una copia de seguridad en Google Drive. Restaura datos o cambia de dispositivo fácilmente en cualquier momento. Esta copia de seguridad incluye datos de apps. Esta copia de seguridad se encripta con la contraseña de la Cuenta de Google de tu hijo y se sube a Google. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
@@ -6985,6 +7000,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8249615410597138718">Enviar a tus dispositivos</translation>
 <translation id="8249672078237421304">Preguntarme si quiero traducir páginas que no estén en un idioma que puedo leer</translation>
 <translation id="8251441930213048644">Actualizar ahora</translation>
+<translation id="8251509999076836464">Vinculando con el dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura eliminada.</translation>
 <translation id="825238165904109940">Mostrar siempre las URL completas</translation>
 <translation id="8252569384384439529">Subiendo…</translation>
@@ -7222,9 +7238,11 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8528074251912154910">Agregar idiomas</translation>
 <translation id="8528962588711550376">Accediendo.</translation>
 <translation id="8529925957403338845">Se produjo un error en la conexión instantánea mediante dispositivo móvil</translation>
+<translation id="8531701051932785007">Se desactivó la Navegación segura mejorada</translation>
 <translation id="8534656636775144800">Se produjo un error al intentar unirse al dominio. Vuelve a intentarlo.</translation>
 <translation id="8535005006684281994">URL de renovación del certificado Netscape</translation>
 <translation id="8536956381488731905">Sonar al presionar teclas</translation>
+<translation id="8538718737588735385">Volver a activar</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Actualizar</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>

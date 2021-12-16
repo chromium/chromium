@@ -253,6 +253,7 @@
 <translation id="1244265436519979884">ಪ್ರಸ್ತುತವಾಗಿ Linux ಮರುಸ್ಥಾಪನೆ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="1244303850296295656">ವಿಸ್ತರಣೆ ದೋಷ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: ಚಿತ್ರದ URL <ph name="HTTP_ERROR" /> ದೋಷದ ಕೋಡ್ ಅನ್ನು ಹಿಂತಿರುಗಿಸಿದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಟ್ಯಾಬ್ಲೆಟ್</translation>
 <translation id="1251366534849411931">ಓಪನಿಂಗ್ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ಸೈಟ್‌ಗಳು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="1251578593170406502">ಮೊಬೈಲ್ ಡೇಟಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -439,6 +440,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1442851588227551435">ಸಕ್ರಿಯ Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="1444628761356461360">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರಿಂದ ನಿರ್ವಹಿಸಿಲಾಗುತ್ತದೆ, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಫೋನ್</translation>
 <translation id="144518587530125858">'<ph name="IMAGE_PATH" />' ಅನ್ನು ಥೀಮ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1449191289887455076">ನಿಯೋಜನೆಯನ್ನು ಖಚಿತಪಡಿಸಲು “<ph name="CURRENTKEY" />” ಅನ್ನು ಪುನಃ ಒತ್ತಿರಿ ಮತ್ತು <ph name="RESPONSE" /> ಆಗಿರಿ</translation>
 <translation id="1451375123200651445">ವೆಬ್‌ಪುಟ, ಒಂದೇ ಫೈಲ್</translation>
@@ -864,6 +866,7 @@
 <translation id="1855079636134697549">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1856715684130786728">ಸ್ಥಳ ಸೇರಿಸಿ...</translation>
 <translation id="1858585891038687145">ಸಾಫ್ಟ್‌ವೇರ್ ತಯಾರಕರನ್ನು ಗುರುತಿಸುವುದಕ್ಕಾಗಿ ಈ ಪ್ರಮಾಣಪತ್ರದ ಮೇಲೆ ವಿಶ್ವಾಸವಿಡಿ</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಅಪರಿಚಿತ ಸಾಧನ</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1862311223300693744">ನಿಮ್ಮಲ್ಲಿ ಯಾವುದೇ ವಿಶೇಷವಾದ VPN, ಪ್ರಾಕ್ಸಿ, ಫೈರ್‌ವಾಲ್‌ ಅಥವಾ NAS ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆಯೇ?</translation>
 <translation id="1863182668524159459">ಯಾವುದೇ ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -1238,6 +1241,7 @@
 <translation id="2242687258748107519">ಫೈಲ್ ಮಾಹಿತಿ</translation>
 <translation id="2246549592927364792">Google ನಿಂದ ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯುವುದೇ?</translation>
 <translation id="2247738527273549923">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಗೇಮ್ ಕಂಟ್ರೋಲರ್</translation>
 <translation id="2249111429176737533">ಟ್ಯಾಬ್ ಆಗಿರುವ ವಿಂಡೋದ ಹಾಗೆ ತೆರೆಯಿರಿ</translation>
 <translation id="2249605167705922988">ಉದಾ. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">ಸಿಸ್ಟಂ ವೀಕ್ಷಕದೊಂದಿಗೆ ತೆರೆಯಿರಿ</translation>
@@ -2000,6 +2004,7 @@
 <translation id="3007771295016901659">ನಕಲಿ ಟ್ಯಾಬ್‌</translation>
 <translation id="3008232374986381779">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಪರಿಕರಗಳು, ಎಡಿಟರ್‌ಗಳು ಮತ್ತು IDE ಗಳನ್ನು ರನ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಆಡಿಯೋ ಸಾಧನ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು, ನೀವು ಇಂದೇ ವೈ-ಫೈಗೆ ಕನೆಕ್ಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. ಅಥವಾ ಮಾಪನ ಮಾಡಲಾದ ಕನೆಕ್ಷನ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ (ಶುಲ್ಕಗಳು ಅನ್ವಯವಾಗಬಹುದು).}one{ಗಡುವಿನ ಮೊದಲು ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು, ನೀವು ಇಂದೇ ವೈ-ಫೈಗೆ ಕನೆಕ್ಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. ಅಥವಾ ಮಾಪನ ಮಾಡಲಾದ ಕನೆಕ್ಷನ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ (ಶುಲ್ಕಗಳು ಅನ್ವಯವಾಗಬಹುದು).}other{ಗಡುವಿನ ಮೊದಲು ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು, ನೀವು ಇಂದೇ ವೈ-ಫೈಗೆ ಕನೆಕ್ಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. ಅಥವಾ ಮಾಪನ ಮಾಡಲಾದ ಕನೆಕ್ಷನ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ (ಶುಲ್ಕಗಳು ಅನ್ವಯವಾಗಬಹುದು).}}</translation>
 <translation id="3009300415590184725">ಮೊಬೈಲ್ ಡೇಟಾ ಸೇವೆಯ ಪ್ರಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="3009779501245596802">ಸೂಚ್ಯಂಕಗೊಳಿಸಿದ ಡೇಟಾಬೇಸ್‌ಗಳು</translation>
@@ -2306,6 +2311,7 @@
 <translation id="3348038390189153836">ತೆಗೆದುಹಾಕಬಹುದಾದ ಸಾಧನವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="3348131053948466246">ಸೂಚಿಸಲಾದ ಎಮೋಜಿಗಳು. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಮೇಲ್ಮುಖ ಅಥವಾ ಕೆಳಮುಖ ಬಾಣದ ಕೀ ಅನ್ನು ಒತ್ತಿ ಹಾಗೂ ಸೇರಿಸಲು Enter ಒತ್ತಿ.</translation>
 <translation id="3349933790966648062">ಮೆಮೊರಿ ಬಳಕೆಯ ಪ್ರಮಾಣ</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ಸಾಧನಕ್ಕೆ ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಪುನಃ ಪ್ರಯತ್ನಿಸಲು ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3355936511340229503">ಸಂಪರ್ಕ ದೋಷ</translation>
 <translation id="3356580349448036450">ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3359256513598016054">ಪ್ರಮಾಣಪತ್ರ ನೀತಿ ನಿರ್ಬಂಧಗಳು</translation>
@@ -3138,6 +3144,7 @@
 <translation id="4200689466366162458">ಕಸ್ಟಮ್ ಪದಗಳು</translation>
 <translation id="4200983522494130825">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
 <translation id="4201546031411513170">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
+<translation id="4202417625268941299">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಮೂಲಕ, Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ನೀವು ಪಡೆಯಬಹುದು</translation>
 <translation id="420283545744377356">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="4206144641569145248">ಏಲಿಯನ್</translation>
 <translation id="4206323443866416204">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ</translation>
@@ -3645,6 +3652,7 @@
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4761104368405085019">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="4762718786438001384">ಸಾಧನ ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆ ಇದೆ</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಕಂಪ್ಯೂಟರ್</translation>
 <translation id="4763408175235639573">ನೀವು ಈ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುವಾಗ ಕೆಳಗಿನ ಕುಕೀಗಳನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="4765582662863429759">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ನಿಮ್ಮ Chromebook ಗೆ ಪಠ್ಯ ಸಂದೇಶಗಳನ್ನು ರಿಲೇ ಮಾಡಲು, Android ಸಂದೇಶಗಳನ್ನು ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="4768332406694066911">ನಿಮ್ಮನ್ನು ಗುರುತಿಸುವ ಈ ಸಂಸ್ಥೆಗಳ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಹೊಂದಿರುವಿರಿ</translation>
@@ -3828,6 +3836,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ಒಂದು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="4944310289250773232">ಈ ದೃಢೀಕರಣ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4945439665401275950">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು, ನಿಮ್ಮ ಮಗುವು ಪವರ್ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಬೇಕು. ನಿಮ್ಮ ಮಗುವಿನ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಇದು ಎಂದೂ ಈ <ph name="DEVICE_TYPE" /> ನಿಂದ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ.</translation>
+<translation id="4946459324029651239">ನೀವು ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆಯನ್ನು ಪಡೆದುಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4953808748584563296">ಡಿಫಾಲ್ಟ್ ಕೇಸರಿ ಅವತಾರ್</translation>
@@ -4412,6 +4421,7 @@
 <translation id="5575528586625653441">ಡೆಮೊ ನೋಂದಣಿ ಕೋರಿಕೆಯಲ್ಲಿ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="557722062034137776">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಹೊಂದಿಸುವುದರಿಂದ, ನಿಮ್ಮ Google ಖಾತೆಗಳು ಅಥವಾ ಈ ಖಾತೆಗಳಿಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ಯಾವುದೇ ಡೇಟಾದ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5578059481725149024">ಸ್ವಯಂ ಸೈನ್-ಇನ್</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> ಗೆ ಅನುವಾದಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5581972110672966454">ಡೊಮೇನ್‌ಗೆ ಸಾಧನವನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">ಮುಖ್ಯ ಮೆನು</translation>
@@ -5828,6 +5838,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}one{{NUM_MINS} ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}other{{NUM_MINS} ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}}</translation>
 <translation id="7057767408836081338">ಆ್ಯಪ್ ಡೇಟಾವನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ, ಹೇಗಾದರೂ ಆ್ಯಪ್ ರನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7058024590501568315">ಮರೆ ಮಾಡಲಾಗಿರುವ ನೆಟ್‌ವರ್ಕ್</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಮೌಸ್</translation>
 <translation id="7059858479264779982">ಆಟೋ-ಲಾಂಚ್‌ಗೆ ಹೊಂದಿಸಿ</translation>
 <translation id="7062222374113411376">ಡೇಟಾ ಕಳುಹಿಸುವುದನ್ನು ಮತ್ತು ಸ್ವೀಕರಿಸುವುದನ್ನು ಮುಕ್ತಾಯಗೊಳಿಸಲು ಇತ್ತೀಚಿಗೆ ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಿದೆ)</translation>
 <translation id="7063129466199351735">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -5991,6 +6002,7 @@
 <translation id="7257173066616499747">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="725758059478686223">ಮುದ್ರಿಸುವ ಸೇವೆ</translation>
 <translation id="7257666756905341374">ನೀವು ನಕಲಿಸಿದ ಮತ್ತು ಅಂಟಿಸಿದ ಡೇಟಾವನ್ನು ಓದಿರಿ</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ವೀಡಿಯೊ ಕ್ಯಾಮರಾ</translation>
 <translation id="7258192266780953209">ಪರಿವರ್ತನೆಗಳು</translation>
 <translation id="7258225044283673131">ಅಪ್ಲಿಕೇಶನ್ ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ. ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು "ಬಲವಂತವಾಗಿ ಮುಚ್ಚಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7262004276116528033">ಈ ಸೈನ್ ಇನ್ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -6783,6 +6795,7 @@
 <translation id="8037117027592400564">ಸಂಯೋಜನೆ ಗೊಳಿಸಿದ ಧ್ವನಿಯನ್ನು ಬಳಸಿಕೊಂಡು ಮಾತನಾಡುವ ಎಲ್ಲಾ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8037357227543935929">ಕೇಳು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="803771048473350947">ಫೈಲ್</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ನೇ ಸಾಧನ, <ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಕೀಬೋರ್ಡ್</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8042142357103597104">ಪಠ್ಯ ಅಪಾರದರ್ಶಕತೆ</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ.</translation>
@@ -6923,6 +6936,7 @@
 <translation id="8168071266284693455">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="8168435359814927499">ವಿಷಯ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ}one{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
+<translation id="8169849063724750395">ಪುನಃ ಆನ್ ಮಾಡಿ</translation>
 <translation id="8171334254070436367">ಎಲ್ಲಾ ಕಾರ್ಡ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8174047975335711832">ಸಾಧನದ ಮಾಹಿತಿ</translation>
 <translation id="8174876712881364124">Google ಡ್ರೈವ್‌ಗೆ ಬ್ಯಾಕಪ್ ಮಾಡಿ. ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಸುಲಭವಾಗಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ ಅಥವಾ ಸಾಧನವನ್ನು ಬದಲಿಸಿ. ಈ ಬ್ಯಾಕಪ್, ಆ್ಯಪ್ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ. ಬ್ಯಾಕಪ್‌ಗಳನ್ನು Google ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಮಗುವಿನ Google ಖಾತೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಅವುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ.<ph name="BEGIN_LINK1" />ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ<ph name="END_LINK1" /></translation>
@@ -6996,6 +7010,7 @@
 <translation id="8249615410597138718">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8249672078237421304">ನೀವು ಓದುವ ಭಾಷೆಯಲ್ಲಿಲ್ಲದ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲು ನೀಡುತ್ತದೆ</translation>
 <translation id="8251441930213048644">ಈಗ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> ಗೆ ಜೋಡಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8251578425305135684">ಥಂಬ್‌ನೇಲ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ.</translation>
 <translation id="825238165904109940">ಯಾವಾಗಲೂ ಪೂರ್ಣ URL ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8252569384384439529">ಅಪ್‌ಲೋಡ್‌ ಆಗುತ್ತಿದೆ...</translation>
@@ -7233,9 +7248,11 @@
 <translation id="8528074251912154910">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸು</translation>
 <translation id="8528962588711550376">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="8529925957403338845">ತತ್‌ಕ್ಷಣ ಟೆಥರಿಂಗ್ ಸಂಪರ್ಕ ವಿಫಲಗೊಂಡಿದೆ</translation>
+<translation id="8531701051932785007">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="8534656636775144800">ಓಹ್! ಡೊಮೇನ್ ಅನ್ನು ಸೇರಿಸಲು ಪ್ರಯತ್ನಿಸುವಾಗ ಏನೋ ದೋಷ ಸಂಭವಿಸಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8535005006684281994">Netscape ಪ್ರಮಾಣಪತ್ರ ಅಪ್‌ಡೇಟ್‌‌ URL</translation>
 <translation id="8536956381488731905">ಕೀಪ್ರೆಸ್ ಶಬ್ಧ</translation>
+<translation id="8538718737588735385">ಪುನಃ ಆನ್ ಮಾಡಿ</translation>
 <translation id="8539727552378197395">ಇಲ್ಲ (Httpಮಾತ್ರ)</translation>
 <translation id="8539766201049804895">ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="8540136935098276800">ಸರಿಯಾಗಿ ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲಾದ URL ಅನ್ನು ನಮೂದಿಸಿ</translation>

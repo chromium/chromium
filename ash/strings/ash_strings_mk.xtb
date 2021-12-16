@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">Работна површина 7</translation>
 <translation id="2224075387478458881">Снимањето на екранот не е дозволено кога се видливи заштитени содржини</translation>
 <translation id="225680501294068881">Скенирање за уреди...</translation>
+<translation id="2257486738914982088">Нешто тргна наопаку при преземањето на <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2268813581635650749">Одјави се од сите</translation>
 <translation id="2269016722240250274">Една апликација го користи микрофонот</translation>
@@ -588,6 +589,7 @@
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
+<translation id="4860284199500934869">Проверете ја мрежната врска за да се преземе <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Подоцна ќе се изврши обид за преземање. Говорот ќе се испрати во Google за обработка додека да заврши преземањето.</translation>
 <translation id="4868492592575313542">активиранo</translation>
 <translation id="4872237917498892622">Alt+Search или Shift</translation>
@@ -805,6 +807,7 @@
 <translation id="6452181791372256707">Отфрли</translation>
 <translation id="6453179446719226835">Јазикот е променет</translation>
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
 <translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> бара да го ажурирате вашиот <ph name="DEVICE_TYPE" /> пред крајниот рок</translation>
@@ -818,6 +821,8 @@
 <translation id="6537924328260219877">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> се скенира за преземање</translation>
 <translation id="6542521951477560771">Емитување на <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Нова инсталација</translation>
 <translation id="6559976592393364813">Прашајте го администраторот</translation>
 <translation id="6565007273808762236">Поврзувањето со eSIM е недостапно</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ажурирајте го уредот во рок од еден час}one{Ажурирајте го уредот во рок од # час}other{Ажурирајте го уредот во рок од # часа}}</translation>
@@ -849,6 +854,7 @@
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6727969043791803658">Поврзан, <ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6739144137573853180">ОДИ ВО ПОСТАВКИ</translation>
 <translation id="6751052314767925245">Наметнато од администраторот</translation>
 <translation id="6751826523481687655">Следењето на изведбата е вклучено</translation>
 <translation id="6752912906630585008">Работниот простор <ph name="REMOVED_DESK" /> е отстранет и споен со работниот простор <ph name="RECEIVE_DESK" /></translation>
@@ -984,6 +990,7 @@
 <translation id="7662283695561029522">Допрете за конфигурирање</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додајте нова мобилна мрежа</translation>
+<translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известување}one{# известување}other{# известувања}}</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
@@ -1170,6 +1177,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Се користи <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
+<translation id="9000771174482730261">УПРАВУВАЈТЕ СО КАПАЦИТЕТОТ</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9047624247355796468">Отвори поставки за <ph name="NETWORK_NAME" /></translation>
@@ -1215,6 +1223,7 @@
 <translation id="938963181863597773">Што има во мојот календар?</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>
+<translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Пејзаж</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>

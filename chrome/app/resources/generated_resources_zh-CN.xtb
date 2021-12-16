@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">正在进行 Linux 恢复</translation>
 <translation id="1244303850296295656">扩展程序错误</translation>
 <translation id="1246863218384630739">无法安装 <ph name="VM_NAME" />：图片网址返回了 <ph name="HTTP_ERROR" /> 错误代码。请与您的管理员联系。</translation>
+<translation id="1247071602516579380">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的平板电脑</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444628761356461360">此设置由设备所有者<ph name="OWNER_EMAIL" />管理。</translation>
+<translation id="1445005312224723356">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的手机</translation>
 <translation id="144518587530125858">无法加载主题背景的路径“<ph name="IMAGE_PATH" />”。</translation>
 <translation id="1449191289887455076">再按一次“<ph name="CURRENTKEY" />”键即可确认分配并<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">网页（单个文件）</translation>
@@ -856,6 +858,7 @@
 <translation id="1855079636134697549">摄像头已开启</translation>
 <translation id="1856715684130786728">添加位置…</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
+<translation id="1859787252990099899">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的未知设备</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1862311223300693744">您安装了任何特殊的 VPN、代理、防火墙或 NAS 软件吗？</translation>
 <translation id="1863182668524159459">未发现串行端口</translation>
@@ -1230,6 +1233,7 @@
 <translation id="2242687258748107519">文件信息</translation>
 <translation id="2246549592927364792">要从 Google 获取图片说明吗？</translation>
 <translation id="2247738527273549923">您的设备由贵单位管理</translation>
+<translation id="2249061317998743208">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的游戏控制器</translation>
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
@@ -1989,6 +1993,7 @@
 <translation id="3007771295016901659">复制标签</translation>
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上运行 Linux 工具、编辑器和 IDE。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重置权限</translation>
+<translation id="3008396025115884998">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的音频设备</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}other{<ph name="MANAGER" /> 要求您在截止日期前连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}}</translation>
 <translation id="3009300415590184725">确定要取消移动数据服务安装过程吗？</translation>
 <translation id="3009779501245596802">索引型数据库</translation>
@@ -2295,6 +2300,7 @@
 <translation id="3348038390189153836">检测到可移除的设备</translation>
 <translation id="3348131053948466246">建议的表情符号。按向上或向下箭头键即可浏览，按 Enter 键即可插入。</translation>
 <translation id="3349933790966648062">内存占用空间</translation>
+<translation id="3354972872297836698">无法与设备“<ph name="DEVICE_NAME" />”配对；请选择设备以重试</translation>
 <translation id="3355936511340229503">连接出错</translation>
 <translation id="3356580349448036450">已完成</translation>
 <translation id="3359256513598016054">证书政策约束</translation>
@@ -3125,6 +3131,7 @@
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
 <translation id="4201546031411513170">您始终可在设置中选择要同步的内容。</translation>
+<translation id="4202417625268941299">启用“增强型安全浏览”功能后，您将获享 Chrome 的最强安全保护</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
@@ -3632,6 +3639,7 @@
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4761104368405085019">使用您的麦克风</translation>
 <translation id="4762718786438001384">设备磁盘空间严重不足</translation>
+<translation id="4762898026821161650">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的计算机</translation>
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
@@ -3814,6 +3822,7 @@
 <translation id="4943691134276646401">“<ph name="CHROME_EXTENSION_NAME" />”想连接到串行端口</translation>
 <translation id="4944310289250773232">此项身份验证服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="4945439665401275950">若要设置指纹，请让您的孩子轻触电源按钮。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="4946459324029651239">您将获享标准保护</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953808748584563296">默认的橙色头像</translation>
@@ -4398,6 +4407,7 @@
 <translation id="5575528586625653441">请求注册演示模式时出问题了。</translation>
 <translation id="557722062034137776">重置您的设备不会影响您的 Google 帐号或已同步到这些帐号的任何数据，但您的设备中本地保存的所有文件都将被删除。</translation>
 <translation id="5578059481725149024">自动登录</translation>
+<translation id="5581134892342029705">已将源语言翻译成<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驱动程序验证</translation>
 <translation id="5581972110672966454">无法将设备加入到网域中。请重试，或与设备所有者/管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5582839680698949063">主菜单</translation>
@@ -5812,6 +5822,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分钟前运行过安全检查}other{{NUM_MINS} 分钟前运行过安全检查}}</translation>
 <translation id="7057767408836081338">未能获取应用数据，但仍在尝试运行此应用…</translation>
 <translation id="7058024590501568315">隐藏的网络</translation>
+<translation id="70582545822664495">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的鼠标</translation>
 <translation id="7059858479264779982">设为自动启动</translation>
 <translation id="7062222374113411376">允许最近关闭的网站完成数据收发操作（推荐）</translation>
 <translation id="7063129466199351735">处理快捷方式…</translation>
@@ -5975,6 +5986,7 @@
 <translation id="7257173066616499747">Wi-Fi 网络</translation>
 <translation id="725758059478686223">打印服务</translation>
 <translation id="7257666756905341374">读取您复制和粘贴的数据</translation>
+<translation id="7258006747130724016">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的摄像机</translation>
 <translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
@@ -6770,6 +6782,7 @@
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
+<translation id="8038399858950372766">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”的键盘</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> 无响应。</translation>
@@ -6910,6 +6923,7 @@
 <translation id="8168071266284693455">您的已存书签、密码、历史记录等信息会同步到您的所有设备上</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
+<translation id="8169849063724750395">重新开启</translation>
 <translation id="8171334254070436367">隐藏所有卡片</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8174876712881364124">备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。此类备份内容会包含应用数据、会上传到 Google 并会使用您孩子的 Google 帐号密码进行加密。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
@@ -6983,6 +6997,7 @@
 <translation id="8249615410597138718">发送到您的设备</translation>
 <translation id="8249672078237421304">询问是否翻译非您所用语言的网页</translation>
 <translation id="8251441930213048644">立即刷新</translation>
+<translation id="8251509999076836464">正在与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="8251578425305135684">已删除缩略图。</translation>
 <translation id="825238165904109940">总是显示完整网址</translation>
 <translation id="8252569384384439529">正在上传…</translation>
@@ -7220,9 +7235,11 @@
 <translation id="8528074251912154910">添加语言</translation>
 <translation id="8528962588711550376">正在登录。</translation>
 <translation id="8529925957403338845">即时网络共享连接失败</translation>
+<translation id="8531701051932785007">“增强型安全浏览”功能处于关闭状态</translation>
 <translation id="8534656636775144800">糟糕！尝试加入该网域时出错了。请重试。</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
 <translation id="8536956381488731905">按键音效</translation>
+<translation id="8538718737588735385">重新开启</translation>
 <translation id="8539727552378197395">否（仅 Http）</translation>
 <translation id="8539766201049804895">升级</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>

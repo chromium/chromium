@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">Wiederherstellung für Linux wird gerade ausgeführt</translation>
 <translation id="1244303850296295656">Erweiterungsfehler</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> konnte nicht installiert werden: Die Image-URL hat einen <ph name="HTTP_ERROR" />-Fehlercode zurückgegeben. Bitte wenden Sie sich an Ihren Administrator.</translation>
+<translation id="1247071602516579380">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Tablet mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1251366534849411931">Erwartete öffnende geschweifte Klammer: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites oder installierten Apps gespeicherten Daten gelöscht</translation>
 <translation id="1251578593170406502">Mobile Datennetzwerke werden gesucht…</translation>
@@ -436,6 +437,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ausgewählt</translation>
 <translation id="1442851588227551435">Aktives Kerberos-Ticket festlegen</translation>
 <translation id="1444628761356461360">Diese Einstellung wird vom Geräteinhaber, <ph name="OWNER_EMAIL" />, verwaltet.</translation>
+<translation id="1445005312224723356">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Smartphone mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="144518587530125858">"<ph name="IMAGE_PATH" />" konnte nicht für das Design geladen werden.</translation>
 <translation id="1449191289887455076">Drücken Sie zum Bestätigen der Zuweisung und <ph name="RESPONSE" /> noch einmal „<ph name="CURRENTKEY" />“</translation>
 <translation id="1451375123200651445">Webseite, Einzeldatei</translation>
@@ -856,6 +858,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1855079636134697549">Kamera ist eingeschaltet</translation>
 <translation id="1856715684130786728">Speicherort hinzufügen...</translation>
 <translation id="1858585891038687145">Diesem Zertifikat zur Identifizierung von Softwareherstellern vertrauen</translation>
+<translation id="1859787252990099899">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, unbekanntes Gerät mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
 <translation id="1862311223300693744">Haben Sie ein spezielles VPN, einen speziellen Proxy oder eine spezielle Firewall- oder NAS-Software installiert?</translation>
 <translation id="1863182668524159459">Keine seriellen Schnittstellen gefunden</translation>
@@ -1230,6 +1233,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2242687258748107519">Dateiinformationen</translation>
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
 <translation id="2247738527273549923">Dein Gerät wird von deiner Organisation verwaltet</translation>
+<translation id="2249061317998743208">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Controller mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
 <translation id="2249605167705922988">z. B. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Mit System Viewer öffnen</translation>
@@ -1990,6 +1994,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3007771295016901659">Tab duplizieren</translation>
 <translation id="3008232374986381779">Linux-Tools, ‑Editoren und ‑IDEs auf <ph name="DEVICE_TYPE" /> ausführen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
+<translation id="3008396025115884998">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Audiogerät mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, sich heute mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}other{Gemäß <ph name="MANAGER" /> ist es notwendig, sich vor Ablauf der Frist mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}}</translation>
 <translation id="3009300415590184725">Möchten Sie die Einrichtung des mobilen Datendiensts wirklich abbrechen?</translation>
 <translation id="3009779501245596802">Indexierte Datenbanken</translation>
@@ -2296,6 +2301,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3348038390189153836">Externes Gerät erkannt</translation>
 <translation id="3348131053948466246">Emoji vorgeschlagen. Drücken Sie die Nach-oben- oder Nach-unten-Taste, um ein Emoji auszuwählen und bestätigen Sie die Auswahl mit der Eingabetaste.</translation>
 <translation id="3349933790966648062">Speicherbedarf</translation>
+<translation id="3354972872297836698">Koppeln mit Gerät „<ph name="DEVICE_NAME" />“ fehlgeschlagen; Gerät auswählen und noch einmal versuchen</translation>
 <translation id="3355936511340229503">Verbindungsfehler</translation>
 <translation id="3356580349448036450">Fertig</translation>
 <translation id="3359256513598016054">Beschränkungen für Zertifikatrichtlinien</translation>
@@ -3127,6 +3133,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4200689466366162458">Benutzerdefinierte Wörter</translation>
 <translation id="4200983522494130825">Neuer &amp;Tab</translation>
 <translation id="4201546031411513170">Sie können in den Einstellungen auswählen, was Sie synchronisieren möchten.</translation>
+<translation id="4202417625268941299">Erweitertes Safe Browsing bietet Ihnen die höchstmögliche Sicherheit in Chrome</translation>
 <translation id="420283545744377356">Bildschirmschoner deaktivieren</translation>
 <translation id="4206144641569145248">Außerirdischer</translation>
 <translation id="4206323443866416204">Feedbackbericht</translation>
@@ -3634,6 +3641,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Mikrofon verwenden</translation>
 <translation id="4762718786438001384">Speicherplatz auf Gerät äußerst niedrig</translation>
+<translation id="4762898026821161650">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Computer mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="4763408175235639573">Beim Anzeigen dieser Seite wurden die folgenden Cookies eingerichtet</translation>
 <translation id="4765582662863429759">Zulassen, dass Android Messages SMS von Ihrem Smartphone an Ihr Chromebook übermittelt</translation>
 <translation id="4768332406694066911">Ihre Zertifikate dieser Organisationen identifizieren Sie</translation>
@@ -3814,6 +3822,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" möchte eine Verbindung mit einem seriellen Port herstellen</translation>
 <translation id="4944310289250773232">Dieser Authentifizierungsdienst wird von <ph name="SAML_DOMAIN" /> gehostet</translation>
 <translation id="4945439665401275950">Bitten Sie Ihr Kind, die Ein-/Aus-Taste zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck Ihres Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
+<translation id="4946459324029651239">Sie erhalten den Standardschutz</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{eine Datei}other{# Dateien}}</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
@@ -4398,6 +4407,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5575528586625653441">Ein Problem mit der Demoregistrierungsanforderung ist aufgetreten.</translation>
 <translation id="557722062034137776">Beim Zurücksetzen Ihres Geräts bleiben Ihre Google-Konten sowie alle mit diesen Konten synchronisierten Daten unberührt. Es werden jedoch alle Dateien gelöscht, die Sie lokal auf dem Gerät gespeichert haben.</translation>
 <translation id="5578059481725149024">Automatisch anmelden</translation>
+<translation id="5581134892342029705">Übersetzung in die Sprache <ph name="LANGUAGE" /> abgeschlossen</translation>
 <translation id="558170650521898289">Verifizierung von Microsoft Windows-Hardwaretreibern</translation>
 <translation id="5581972110672966454">Das Gerät konnte der Domain nicht beitreten. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Hauptmenü</translation>
@@ -5812,6 +5822,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Der Sicherheitscheck wurde vor 1 Minute durchgeführt}other{Der Sicherheitscheck wurde vor {NUM_MINS} Minuten durchgeführt}}</translation>
 <translation id="7057767408836081338">App-Daten konnten nicht abgerufen werden. Es wird versucht, die App trotzdem auszuführen…</translation>
 <translation id="7058024590501568315">Verborgenes Netzwerk</translation>
+<translation id="70582545822664495">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Maus mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7059858479264779982">Automatisch starten</translation>
 <translation id="7062222374113411376">Fertigstellen des Datenversands und -empfangs von kürzlich geschlossenen Websites erlauben (empfohlen)</translation>
 <translation id="7063129466199351735">Verknüpfungen werden bearbeitet...</translation>
@@ -5975,6 +5986,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7257173066616499747">WLANs</translation>
 <translation id="725758059478686223">Druckdienst</translation>
 <translation id="7257666756905341374">Daten lesen, die Sie kopieren und einfügen</translation>
+<translation id="7258006747130724016">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Videokamera mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7258192266780953209">Transformationen</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wählen Sie "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
@@ -6770,6 +6782,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8037117027592400564">Alle mit künstlicher Sprachausgabe gesprochenen Texte lesen</translation>
 <translation id="8037357227543935929">Nachfragen (Standard)</translation>
 <translation id="803771048473350947">Datei</translation>
+<translation id="8038399858950372766">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, Tastatur mit der Bezeichnung „<ph name="DEVICE_NAME" />“</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8042142357103597104">Texttransparenz</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> reagiert nicht.</translation>
@@ -6910,6 +6923,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8168071266284693455">Lesezeichen, Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="8168435359814927499">Inhalte</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
+<translation id="8169849063724750395">Wieder aktivieren</translation>
 <translation id="8171334254070436367">Alle Karten verbergen</translation>
 <translation id="8174047975335711832">Gerätebezogene Informationen</translation>
 <translation id="8174876712881364124">In Google Drive sichern: Sie können Ihre Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. Diese Sicherung enthält App-Daten. Sicherungen werden bei Google hochgeladen und mit dem Passwort des Google-Kontos Ihres Kindes verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
@@ -6983,6 +6997,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8249615410597138718">An meine Geräte senden</translation>
 <translation id="8249672078237421304">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8251441930213048644">Jetzt aktualisieren</translation>
+<translation id="8251509999076836464">Wird mit „<ph name="DEVICE_NAME" />“ gekoppelt</translation>
 <translation id="8251578425305135684">Miniaturansicht wurde entfernt.</translation>
 <translation id="825238165904109940">Immer vollständige URLs anzeigen</translation>
 <translation id="8252569384384439529">Wird hochgeladen…</translation>
@@ -7220,9 +7235,11 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8528074251912154910">Sprachen hinzufügen</translation>
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
 <translation id="8529925957403338845">Fehler bei Instant Tethering-Verbindung</translation>
+<translation id="8531701051932785007">Erweitertes Safe Browsing ist deaktiviert</translation>
 <translation id="8534656636775144800">Hoppla! Beim Beitritt zur Domain ist ein Fehler aufgetreten. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="8535005006684281994">Verlängerungs-URL für Netscape-Zertifikate</translation>
 <translation id="8536956381488731905">Ton bei Tastendruck</translation>
+<translation id="8538718737588735385">Wieder aktivieren</translation>
 <translation id="8539727552378197395">Nein (nur HTTP)</translation>
 <translation id="8539766201049804895">Aktualisieren</translation>
 <translation id="8540136935098276800">Bitte geben Sie eine korrekt formatierte URL ein</translation>

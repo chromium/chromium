@@ -192,6 +192,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
 <translation id="2224075387478458881">Ekraanikuva jäädvustamine pole lubatud, kui kaitstud sisu on nähtaval</translation>
 <translation id="225680501294068881">Seadmete skannimine ...</translation>
+<translation id="2257486738914982088">Midagi läks faili <ph name="FILENAME" /> allalaadimisel valesti</translation>
 <translation id="2268130516524549846">Bluetooth on keelatud</translation>
 <translation id="2268813581635650749">Logi kõik välja</translation>
 <translation id="2269016722240250274">Rakendus kasutab teie mikrofoni</translation>
@@ -588,6 +589,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
 <translation id="4849058404725798627">Klaviatuuri fookusega objekti esiletõstmine</translation>
 <translation id="485592688953820832">Toiming puudub (peatamine)</translation>
+<translation id="4860284199500934869">Kontrollige oma võrguühendust, et fail <ph name="FILENAME" /> alla laadida</translation>
 <translation id="486056901304535126">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse Google'ile töötlemiseks, kui allalaadimine on lõpetatud.</translation>
 <translation id="4868492592575313542">aktiveeritud</translation>
 <translation id="4872237917498892622">Alt + otsinguklahv või tõstuklahv</translation>
@@ -805,6 +807,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6452181791372256707">Lükka tagasi</translation>
 <translation id="6453179446719226835">Keelt muudeti</translation>
 <translation id="6459472438155181876">Ekraani laiendamine seadmesse <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Faili ei saa alla laadida</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi enne tähtaega</translation>
@@ -816,7 +819,10 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6528179044667508675">Mitte segada</translation>
 <translation id="65320610082834431">Emotikonid</translation>
 <translation id="6537924328260219877">Signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Allalaaditava faili <ph name="FILENAME" /> skannimine</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Uus installimine</translation>
 <translation id="6559976592393364813">Küsige administraatorilt</translation>
 <translation id="6565007273808762236">eSIM-i ühendus pole saadaval</translation>
 <translation id="6570831796530454248">{0,plural, =1{Värskendage seadet tunni jooksul}other{Värskendage seadet # tunni jooksul}}</translation>
@@ -848,6 +854,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6727969043791803658">Ühendatud, <ph name="BATTERY_PERCENTAGE" />% akut</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">AVAGE SEADED</translation>
 <translation id="6751052314767925245">Jõustas administraator</translation>
 <translation id="6751826523481687655">Toimivuse jälgimine on sisse lülitatud</translation>
 <translation id="6752912906630585008">Töölaud <ph name="REMOVED_DESK" /> eemaldati ja liideti töölauaga <ph name="RECEIVE_DESK" /></translation>
@@ -983,6 +990,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7662283695561029522">Puudutage seadistamiseks</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lisa uus mobiilsidevõrk</translation>
+<translation id="7720410380936703141">PROOVIGE UUESTI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 märguanne}other{# märguannet}}</translation>
 <translation id="7724603315864178912">Lõika</translation>
 <translation id="7745560842763881396">Kuva riiulil olevad rakendused</translation>
@@ -1169,6 +1177,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>
+<translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
 <translation id="9024331582947483881">täisekraan</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
@@ -1214,6 +1223,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="938963181863597773">Mis on minu kalendris?</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="951991426597076286">Keeldu</translation>
+<translation id="954052413789300507">Faili <ph name="FILENAME" /> jaoks pole piisavalt ruumi. Vabastage ruumi.</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horisontaalpaigutus</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>

@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">Estase restaurando Linux</translation>
 <translation id="1244303850296295656">Erro de extensión</translation>
 <translation id="1246863218384630739">Non se puido instalar <ph name="VM_NAME" />: o URL da imaxe devolveu o código de erro <ph name="HTTP_ERROR" />. Ponte en contacto co teu administrador.</translation>
+<translation id="1247071602516579380">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; tableta chamada "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ao realizar esta acción, borraranse <ph name="TOTAL_USAGE" /> dos datos que almacenasen os sitios e as aplicacións instaladas</translation>
 <translation id="1251578593170406502">Buscando redes de datos móbiles...</translation>
@@ -436,6 +437,7 @@
 <translation id="144283815522798837">Elementos seleccionados: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Definir como activo un tícket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración está xestionada polo propietario do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; teléfono chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="144518587530125858">Non se puido cargar "<ph name="IMAGE_PATH" />" para o tema.</translation>
 <translation id="1449191289887455076">Preme de novo <ph name="CURRENTKEY" /> para confirmar a asignación e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Páxina web (nun só ficheiro)</translation>
@@ -858,6 +860,7 @@
 <translation id="1855079636134697549">Activouse a cámara</translation>
 <translation id="1856715684130786728">Engadir localización...</translation>
 <translation id="1858585891038687145">Confía neste certificado para identificar fabricantes de software</translation>
+<translation id="1859787252990099899">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; dispositivo descoñecido chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1861262398884155592">Este cartafol está baleiro</translation>
 <translation id="1862311223300693744">Tes algún proxy, VPN, firewall ou software NAS especial instalado?</translation>
 <translation id="1863182668524159459">Non se encontrou ningún porto de serie</translation>
@@ -1232,6 +1235,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2242687258748107519">Información do ficheiro</translation>
 <translation id="2246549592927364792">Queres obter descricións de Google para as imaxes?</translation>
 <translation id="2247738527273549923">A túa organización xestiona o teu dispositivo</translation>
+<translation id="2249061317998743208">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; mando de xogo chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2249111429176737533">Abrir como ventá con pestanas</translation>
 <translation id="2249605167705922988">por exemplo, 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Abrir co visualizador do sistema</translation>
@@ -1991,6 +1995,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3007771295016901659">Duplicar pestana</translation>
 <translation id="3008232374986381779">Executa IDE, editores e ferramentas de Linux no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
+<translation id="3008396025115884998">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; dispositivo de audio chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
 <translation id="3009300415590184725">Seguro que queres cancelar o proceso de configuración do servizo de datos móbiles?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -2297,6 +2302,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3348038390189153836">Dispositivo extraíble detectado</translation>
 <translation id="3348131053948466246">Emojis suxeridos. Preme arriba e abaixo para desprazarte, e Intro para inserilo.</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
+<translation id="3354972872297836698">Non se puido levar a cabo a vinculación ao dispositivo <ph name="DEVICE_NAME" />; selecciónao para tentalo de novo</translation>
 <translation id="3355936511340229503">Erro de conexión</translation>
 <translation id="3356580349448036450">Completado</translation>
 <translation id="3359256513598016054">Restricións de políticas de certificados</translation>
@@ -3128,6 +3134,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nova pes&amp;tana</translation>
 <translation id="4201546031411513170">Sempre podes escoller na configuración o contido que queres sincronizar.</translation>
+<translation id="4202417625268941299">Coa función Navegación segura mellorada, gozarás da protección máis eficaz de Chrome</translation>
 <translation id="420283545744377356">Desactivar o protector de pantalla</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
@@ -3635,6 +3642,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
 <translation id="4762718786438001384">O dispositivo ten pouquísimo espazo restante en disco</translation>
+<translation id="4762898026821161650">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; ordenador chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4763408175235639573">Establecéronse as seguintes cookies cando visualizaches esta páxina</translation>
 <translation id="4765582662863429759">Permite que a aplicación Mensaxes Android transmita as mensaxes do teu teléfono ao Chromebook</translation>
 <translation id="4768332406694066911">Tes certificados destas organizacións que te identifican</translation>
@@ -3817,6 +3825,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" quere conectarse a un porto en serie</translation>
 <translation id="4944310289250773232">Este servizo de autenticación está aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o botón de acendido. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
+<translation id="4946459324029651239">Estás usando a protección estándar</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Accións</translation>
 <translation id="4953808748584563296">Avatar laranxa predeterminado</translation>
@@ -4401,6 +4410,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5575528586625653441">Produciuse un problema coa solicitude de rexistro de demostración.</translation>
 <translation id="557722062034137776">Restablecer o dispositivo non afectará ás túas contas de Google nin a ningún dos datos sincronizados con esas contas. Non obstante, eliminaranse todos os ficheiros gardados localmente no teu dispositivo.</translation>
 <translation id="5578059481725149024">Inicio de sesión automático</translation>
+<translation id="5581134892342029705">Finalizou a tradución ao <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verificación do controlador de hardware de Microsoft Windows</translation>
 <translation id="5581972110672966454">O dispositivo non se puido vincular ao dominio. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menú principal</translation>
@@ -5815,6 +5825,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{A comprobación de seguranza executouse hai 1 minuto}other{A comprobación de seguranza executouse hai {NUM_MINS} minutos}}</translation>
 <translation id="7057767408836081338">Produciuse un erro ao obter os datos da aplicación, pero estase tentando executar a aplicación de todas formas…</translation>
 <translation id="7058024590501568315">Rede oculta</translation>
+<translation id="70582545822664495">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; rato chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7059858479264779982">Establecer en inicio automático</translation>
 <translation id="7062222374113411376">Permitir que os sitios pechados recentemente rematen de enviar e recibir datos (recomendado)</translation>
 <translation id="7063129466199351735">Procesando atallos...</translation>
@@ -5978,6 +5989,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7257173066616499747">Redes wifi</translation>
 <translation id="725758059478686223">Servizo de impresión</translation>
 <translation id="7257666756905341374">Ler os datos que copies e pegues</translation>
+<translation id="7258006747130724016">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; videocámara chamada "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7258192266780953209">Transformacións</translation>
 <translation id="7258225044283673131">A aplicación non responde. Para pechala, selecciona Forzar peche.</translation>
 <translation id="7262004276116528033">Este servizo de inicio de sesión está aloxado por <ph name="SAML_DOMAIN" /></translation>
@@ -6772,6 +6784,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
+<translation id="8038399858950372766">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />; teclado chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8042142357103597104">Opacidade do texto</translation>
 <translation id="8044262338717486897">A aplicación <ph name="LINUX_APP_NAME" /> non responde.</translation>
@@ -6795,6 +6808,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8054563304616131773">Insire un enderezo de correo electrónico válido</translation>
 <translation id="8054883179223321715">Dispoñible para determinados sitios de vídeos</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
+<translation id="8057414620575339583">Busca lateral</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8058986560951482265">Entrecortado</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
@@ -6911,6 +6925,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8168071266284693455">Os marcadores, os contrasinais, o historial e outros datos sincronizaranse en todos os teus dispositivos</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Engadir pestana á lista de lectura}other{Engadir pestanas á lista de lectura}}</translation>
+<translation id="8169849063724750395">Volver activar</translation>
 <translation id="8171334254070436367">Ocultar todas as tarxetas</translation>
 <translation id="8174047975335711832">Información do dispositivo</translation>
 <translation id="8174876712881364124">Crear copia de seguranza en Google Drive. Restaura facilmente os datos ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
@@ -6984,6 +6999,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8249615410597138718">Enviar contido aos teus dispositivos</translation>
 <translation id="8249672078237421304">Preguntar se queres traducir páxinas que non estean escritas nun idioma que entendas</translation>
 <translation id="8251441930213048644">Actualizar agora</translation>
+<translation id="8251509999076836464">Vinculándose a <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura eliminada.</translation>
 <translation id="825238165904109940">Mostrar sempre URL completos</translation>
 <translation id="8252569384384439529">Cargando…</translation>
@@ -7221,9 +7237,11 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8528074251912154910">Engadir idiomas</translation>
 <translation id="8528962588711550376">Iniciando sesión.</translation>
 <translation id="8529925957403338845">Produciuse un erro na conexión compartida instantánea</translation>
+<translation id="8531701051932785007">A función Navegación segura mellorada está desactivada</translation>
 <translation id="8534656636775144800">Produciuse un erro ao tentar conectar co dominio. Volve tentalo.</translation>
 <translation id="8535005006684281994">URL de renovación do certificado de Netscape</translation>
 <translation id="8536956381488731905">Reproducir son ao premer as teclas</translation>
+<translation id="8538718737588735385">Volver activar</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8539766201049804895">Actualizar</translation>
 <translation id="8540136935098276800">Pon un URL que teña un formato correcto</translation>

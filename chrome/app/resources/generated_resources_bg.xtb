@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">В момента се извършва възстановяване на Linux</translation>
 <translation id="1244303850296295656">Грешка в разширението</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> не се инсталира: URL адресът на изображението изведе код на грешка <ph name="HTTP_ERROR" />. Моля, обърнете се към администратора си.</translation>
+<translation id="1247071602516579380">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, таблет с името <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Очаква се отваряща фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Съхраняваните от сайтовете и инсталираните приложения данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изчистени</translation>
 <translation id="1251578593170406502">Сканира се за мобилни мрежи за данни...</translation>
@@ -438,6 +439,7 @@
 <translation id="144283815522798837">Избрахте <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаване на активен пропуск за Kerberos</translation>
 <translation id="1444628761356461360">Тази настройка се управлява от собственика на устройството – <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, телефон с името <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Не можа да се зареди „<ph name="IMAGE_PATH" />“ за темата.</translation>
 <translation id="1449191289887455076">Натиснете <ph name="CURRENTKEY" /> отново, за да потвърдите зададеното действие и да <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Уеб страница, един файл</translation>
@@ -866,6 +868,7 @@
 <translation id="1855079636134697549">Камерата е включена</translation>
 <translation id="1856715684130786728">Добавяне на местоположение...</translation>
 <translation id="1858585891038687145">Да се има доверие на този сертификат за идентифициране на производители на софтуер</translation>
+<translation id="1859787252990099899">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, неизвестно устройство с името „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1861262398884155592">Тази папка е празна</translation>
 <translation id="1862311223300693744">Имате ли инсталиран специален софтуер за VPN, прокси сървър, защитна стена или
 мрежово хранилище (NAS)?</translation>
@@ -1241,6 +1244,7 @@
 <translation id="2242687258748107519">Информация за файла</translation>
 <translation id="2246549592927364792">Да се изтеглят ли от Google описания за изображенията?</translation>
 <translation id="2247738527273549923">Устройството ви се управлява от организацията ви</translation>
+<translation id="2249061317998743208">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, контролер за игри с името <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Отваряне като прозорец с раздели</translation>
 <translation id="2249605167705922988">напр. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Отваряне със системния визуализатор</translation>
@@ -2004,6 +2008,7 @@
 <translation id="3007771295016901659">Дублиране на раздела</translation>
 <translation id="3008232374986381779">Изпълнявайте инструменти, редактори и интегрирани среди за програмиране за Linux на устройството си <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
+<translation id="3008396025115884998">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, аудиоустройство с името <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi днес и да изтеглите актуализация. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}other{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi и да изтеглите актуализация преди крайния срок. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}}</translation>
 <translation id="3009300415590184725">Наистина ли искате да анулирате процеса на настройка на мобилната услуга за данни?</translation>
 <translation id="3009779501245596802">Индексирани бази от данни</translation>
@@ -2310,6 +2315,7 @@
 <translation id="3348038390189153836">Установено бе изваждащо се устройство</translation>
 <translation id="3348131053948466246">Предложено е емоджи. За придвижване натиснете клавиша със стрелка нагоре или надолу, за вмъкване на предложението използвайте Enter.</translation>
 <translation id="3349933790966648062">Използвана памет</translation>
+<translation id="3354972872297836698">Сдвояването с устройството <ph name="DEVICE_NAME" /> не бе успешно. Изберете устройство, за да опитате отново.</translation>
 <translation id="3355936511340229503">Грешка във връзката</translation>
 <translation id="3356580349448036450">Завършено</translation>
 <translation id="3359256513598016054">Ограничения на правилата за сертификата</translation>
@@ -3142,6 +3148,7 @@
 <translation id="4200689466366162458">Персонализирани думи</translation>
 <translation id="4200983522494130825">Нов &amp;раздел</translation>
 <translation id="4201546031411513170">Винаги можете да изберете какво да се синхронизира от настройките.</translation>
+<translation id="4202417625268941299">С функцията за подобрена защита от Безопасно сърфиране ще получите най-високото ниво на сигурност на Chrome</translation>
 <translation id="420283545744377356">Изключване на скрийнсейвъра</translation>
 <translation id="4206144641569145248">Извънземно</translation>
 <translation id="4206323443866416204">Сигнал с отзив</translation>
@@ -3650,6 +3657,7 @@
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4761104368405085019">Използване на микрофона ви</translation>
 <translation id="4762718786438001384">Мястото на диска на устройството е критично малко</translation>
+<translation id="4762898026821161650">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, компютър с името <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Следните „бисквитки“ бяха зададени, когато разгледахте тази страница</translation>
 <translation id="4765582662863429759">Позволява на Android Messages да предава SMS съобщенията от телефона ви към вашия Chromebook</translation>
 <translation id="4768332406694066911">Имате идентифициращи ви сертификати от тези организации</translation>
@@ -3832,6 +3840,7 @@
 <translation id="4943691134276646401">„<ph name="CHROME_EXTENSION_NAME" />“ иска да се свърже със сериен порт</translation>
 <translation id="4944310289250773232">Тази услуга за удостоверяване се хоства от <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">За да настрои отпечатък, детето ви трябва да докосне бутона за включване/изключване. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946459324029651239">Получавате стандартното ниво на защита</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
@@ -4416,6 +4425,7 @@
 <translation id="5575528586625653441">Възникна проблем със заявката за регистрация за демонстрационен режим.</translation>
 <translation id="557722062034137776">Нулирането на устройството ви няма да засегне профилите ви в Google или данните, синхронизирани с тях. Всички файлове, запазени локално на устройството ви, обаче ще бъдат изтрити.</translation>
 <translation id="5578059481725149024">Автоматичен вход</translation>
+<translation id="5581134892342029705">Преводът на <ph name="LANGUAGE" /> е завършен</translation>
 <translation id="558170650521898289">Проверка на драйвери за хардуер под Microsoft Windows</translation>
 <translation id="5581972110672966454">Устройството не може да се присъедини към домейна. Моля, опитайте отново или се обърнете към собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Главно меню</translation>
@@ -5831,6 +5841,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Проверката на безопасността бе изпълнена преди 1 минута}other{Проверката на безопасността бе изпълнена преди {NUM_MINS} минути}}</translation>
 <translation id="7057767408836081338">Получаването на данни от приложението не бе успешно. Все пак се опитваме да го стартираме...</translation>
 <translation id="7058024590501568315">Скрита мрежа</translation>
+<translation id="70582545822664495">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, мишка с името <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Задаване на автоматично стартиране</translation>
 <translation id="7062222374113411376">Разрешаване на наскоро затворените сайтове да завършват изпращането и получаването на данни (препоръчително)</translation>
 <translation id="7063129466199351735">Преките пътища се обработват...</translation>
@@ -5994,6 +6005,7 @@
 <translation id="7257173066616499747">Wi-Fi мрежи</translation>
 <translation id="725758059478686223">Услуга за отпечатване</translation>
 <translation id="7257666756905341374">Четене на данните, които копирате и поставяте</translation>
+<translation id="7258006747130724016">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, видеокамера с името <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Трансформации</translation>
 <translation id="7258225044283673131">Приложението не реагира. Изберете „Принудително затваряне“, за да го затворите.</translation>
 <translation id="7262004276116528033">Тази услуга за вход се хоства от <ph name="SAML_DOMAIN" /></translation>
@@ -6790,6 +6802,7 @@
 <translation id="8037117027592400564">Четене на целия текст, произнесен посредством синтезирания говор</translation>
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8038399858950372766">Устройство <ph name="DEVICE_INDEX" /> от <ph name="DEVICE_COUNT" />, клавиатура с името <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8042142357103597104">Плътност на текста</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагира.</translation>
@@ -6813,6 +6826,7 @@
 <translation id="8054563304616131773">Моля, въведете валиден имейл адрес</translation>
 <translation id="8054883179223321715">Налице за конкретни сайтове за видеосъдържание</translation>
 <translation id="8054921503121346576">Клавиатурата с USB е свързана</translation>
+<translation id="8057414620575339583">Страничен панел за търсене</translation>
 <translation id="8058655154417507695">Година на валидност</translation>
 <translation id="8058986560951482265">Накъсано</translation>
 <translation id="8059417245945632445">&amp;Инспектиране на устройствата</translation>
@@ -6929,6 +6943,7 @@
 <translation id="8168071266284693455">Вашите отметки, пароли, история и др. са синхронизирани на всичките ви устройства</translation>
 <translation id="8168435359814927499">Съдържание</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
+<translation id="8169849063724750395">Повторно включване</translation>
 <translation id="8171334254070436367">Скриване на всички карти</translation>
 <translation id="8174047975335711832">Информация за устройството</translation>
 <translation id="8174876712881364124">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервните копия включват данните на приложенията, качени са в Google и са шифровани посредством паролата за профила в Google на детето ви. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
@@ -7002,6 +7017,7 @@
 <translation id="8249615410597138718">Изпращане до устройствата ви</translation>
 <translation id="8249672078237421304">Извеждане на предложение за превод на страниците, които не са на четим от вас език</translation>
 <translation id="8251441930213048644">Опресняване сега</translation>
+<translation id="8251509999076836464">Извършва се сдвояване с устройството <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Миниизображението е премахнато.</translation>
 <translation id="825238165904109940">Пълните URL адреси да се показват винаги</translation>
 <translation id="8252569384384439529">Качва се...</translation>
@@ -7239,9 +7255,11 @@
 <translation id="8528074251912154910">Добавяне на езици</translation>
 <translation id="8528962588711550376">Влиза се.</translation>
 <translation id="8529925957403338845">Връзката чрез незабавен тетъринг не бе успешна</translation>
+<translation id="8531701051932785007">Функцията за подобрена защита от Безопасно сърфиране е изключена</translation>
 <translation id="8534656636775144800">Ами сега! Нещо се обърка при опита за присъединяване към домейна. Моля, опитайте отново.</translation>
 <translation id="8535005006684281994">URL адрес за подновяване на сертификат на Netscape</translation>
 <translation id="8536956381488731905">Звук при натискане на клавишите</translation>
+<translation id="8538718737588735385">Повторно включване</translation>
 <translation id="8539727552378197395">Не (HttpOnly)</translation>
 <translation id="8539766201049804895">Надстройване</translation>
 <translation id="8540136935098276800">Въведете правилно форматиран URL адрес</translation>

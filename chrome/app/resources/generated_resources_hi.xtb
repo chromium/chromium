@@ -253,6 +253,7 @@
 <translation id="1244265436519979884">फ़िलहाल, Linux की बहाल करने की प्रक्रिया जारी है</translation>
 <translation id="1244303850296295656">एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल नहीं की जा सकी: इमेज यूआरएल पर <ph name="HTTP_ERROR" /> गड़बड़ी कोड आया. कृपया अपने एडमिन से संपर्क करें.</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला टैबलेट</translation>
 <translation id="1251366534849411931">शुरुआत में दिखने वाले ज़रूरी कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">इससे, साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="1251578593170406502">मोबाइल डेटा नेटवर्क के लिए स्कैन किया जा रहा है...</translation>
@@ -439,6 +440,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयनित</translation>
 <translation id="1442851588227551435">चालू Kerberos टिकट सेट करें</translation>
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला फ़ोन</translation>
 <translation id="144518587530125858">थीम के लिए '<ph name="IMAGE_PATH" />' को लोड नहीं कर सका.</translation>
 <translation id="1449191289887455076">“<ph name="CURRENTKEY" />” को स्विच के तौर पर असाइन करने की पुष्टि करने के लिए, इसे फिर से दबाएं और <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फ़ाइल</translation>
@@ -871,6 +873,7 @@
 <translation id="1855079636134697549">कैमरा चालू कर दिया गया है</translation>
 <translation id="1856715684130786728">स्थान जोड़ें...</translation>
 <translation id="1858585891038687145">सॉफ़्टवेयर निर्माताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला अज्ञात डिवाइस</translation>
 <translation id="1861262398884155592">यह फ़ोल्डर खाली है</translation>
 <translation id="1862311223300693744">क्या आपने कोई खास वीपीएन, प्रॉक्सी, फ़ायरवॉल, या एनएएस सॉफ़्टवेयर
     इंस्टॉल किया है?</translation>
@@ -1246,6 +1249,7 @@
 <translation id="2242687258748107519">फ़ाइल जानकारी</translation>
 <translation id="2246549592927364792">क्या Google से इमेज की जानकारी चाहते हैं?</translation>
 <translation id="2247738527273549923">आपके डिवाइस को आपका संगठन मैनेज करता है</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला गेम कंट्रोलर</translation>
 <translation id="2249111429176737533">टैब की गई विंडो के तौर पर खोलें</translation>
 <translation id="2249605167705922988">जैसे कि 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">सिस्टम दर्शक के साथ खोलें</translation>
@@ -2008,6 +2012,7 @@
 <translation id="3007771295016901659">डुप्लीकेट टैब</translation>
 <translation id="3008232374986381779">अपने <ph name="DEVICE_TYPE" /> पर Linux टूल, एडिटर, और IDEs चलाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला ऑडियो डिवाइस</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपडेट डाउनलोड करें. इसके लिए, आज ही वाई-फ़ाई से कनेक्ट करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं (इसके लिए शुल्क लिया जा सकता है).}one{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप तय समय से पहले अपडेट डाउनलोड करें. इसके लिए, वाई-फ़ाई से कनेक्ट करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं (इसके लिए शुल्क लिया जा सकता है).}other{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप तय समय से पहले अपडेट डाउनलोड करें. इसके लिए, वाई-फ़ाई से कनेक्ट करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं (इसके लिए शुल्क लिया जा सकता है).}}</translation>
 <translation id="3009300415590184725">क्‍या आप वाकई मोबाइल डेटा सेवा सेटअप प्रक्रिया को रद्द करना चाहते हैं?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
@@ -2314,6 +2319,7 @@
 <translation id="3348038390189153836">निकालने योग्‍य डिवाइस का पता चला</translation>
 <translation id="3348131053948466246">सुझाए गए इमोजी. नेविगेट करने के लिए, ऊपर या नीचे वाला तीर का निशान दबाएं. इमोजी डालने के लिए enter दबाएं.</translation>
 <translation id="3349933790966648062">मेमोरी फ़ुटप्रिंट</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिवाइस से नहीं जोड़ा जा सका. फिर से कोशिश करने के लिए, डिवाइस चुनें</translation>
 <translation id="3355936511340229503">कनेक्शन गड़बड़ी</translation>
 <translation id="3356580349448036450">पूरा हुआ</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति बाध्यताएं</translation>
@@ -3144,6 +3150,7 @@
 <translation id="4200689466366162458">कस्टम शब्द</translation>
 <translation id="4200983522494130825">नया &amp;टैब</translation>
 <translation id="4201546031411513170">आप जब चाहें तब सेटिंग में जाकर चुन सकते हैं कि क्या सिंक किया जाना चाहिए और क्या नहीं.</translation>
+<translation id="4202417625268941299">बेहतर सुरक्षित ब्राउज़िंग के साथ, आपको Chrome की सबसे मज़बूत सुरक्षा मिलेगी</translation>
 <translation id="420283545744377356">स्क्रीन सेवर बंद करें</translation>
 <translation id="4206144641569145248">एलियन</translation>
 <translation id="4206323443866416204">फ़ीडबैक रिपोर्ट</translation>
@@ -3652,6 +3659,7 @@
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला कंप्यूटर</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
 <translation id="4765582662863429759">Android मैसेज को अपने Chromebook से अपने फ़ोन पर लेख भेजने की मंज़ूरी दें</translation>
 <translation id="4768332406694066911">आपके पास इन संगठनों के प्रमाणपत्र हैं जो आपकी पहचान करते हैं</translation>
@@ -3834,6 +3842,7 @@
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" किसी सीरियल पोर्ट से कनेक्ट करना चाहता है</translation>
 <translation id="4944310289250773232">यह प्रमाणीकरण सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई है</translation>
 <translation id="4945439665401275950">फ़िंगरप्रिंट सेट अप करने के लिए, अपने बच्चे को पावर बटन छूने के लिए कहें. आपके बच्चे के फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह हमेशा इस <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
+<translation id="4946459324029651239">आपके खाते के लिए सामान्य सुरक्षा सेट की गई है</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एक फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
@@ -4418,6 +4427,7 @@
 <translation id="5575528586625653441">डेमो रजिस्ट्रेशन अनुरोध में कोई परेशानी हुई.</translation>
 <translation id="557722062034137776">अपने डिवाइस को रीसेट करना आपके Google खातों या इन खातों से समन्वयित किसी भी डेटा को प्रभावित नहीं करेगा. हालांकि, आपके डिवाइस पर स्थानीय रूप से सहेजी गईं सभी फ़ाइलें हट जाएंगी.</translation>
 <translation id="5578059481725149024">अपने आप साइन इन करें</translation>
+<translation id="5581134892342029705"><ph name="LANGUAGE" /> भाषा में अनुवाद पूरा हो गया है</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5581972110672966454">डिवाइस को डोमेन से नहीं जोड़ा जा सकता. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">मुख्य मेन्यू</translation>
@@ -5832,6 +5842,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{सुरक्षा जांच 1 मिनट पहले की गई है}one{सुरक्षा जांच {NUM_MINS} मिनट पहले की गई है}other{सुरक्षा जांच {NUM_MINS} मिनट पहले की गई है}}</translation>
 <translation id="7057767408836081338">ऐप्लिकेशन का डेटा नहीं मिल सका. इसके बावजूद, ऐप्लिकेशन को चलाने की कोशिश की जा रही है...</translation>
 <translation id="7058024590501568315">छिपाया हुआ नेटवर्क</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" />में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला माउस</translation>
 <translation id="7059858479264779982">अपने-आप-लॉन्च पर सेट करें</translation>
 <translation id="7062222374113411376">हाल ही में बंद की गई साइट को डेटा भेजने और पाने की प्रकिया को पूरा करने की अनुमति दें (अनुशंसित)</translation>
 <translation id="7063129466199351735">शॉर्टकट प्रोसेस हो रहे हैं...</translation>
@@ -5995,6 +6006,7 @@
 <translation id="7257173066616499747">वाई-फ़ाई नेटवर्क</translation>
 <translation id="725758059478686223">प्रिंटिंग सेवा</translation>
 <translation id="7257666756905341374">कॉपी बनाया और चिपकाया जाने वाला डेटा पढ़ें</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला वीडियो कैमरा</translation>
 <translation id="7258192266780953209">ट्रांसफ़र्मेशन</translation>
 <translation id="7258225044283673131">ऐप्लिकेशन काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7262004276116528033">यह साइन इन सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्‍ट की गई है</translation>
@@ -6790,6 +6802,7 @@
 <translation id="8037117027592400564">संश्लेषित बोली का उपयोग करके बोला गया सभी लेख पढ़ें</translation>
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" /> नाम वाला कीबोर्ड</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8042142357103597104">टेक्स्ट की ओपैसिटी</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है.</translation>
@@ -6930,6 +6943,7 @@
 <translation id="8168071266284693455">बुकमार्क, पासवर्ड, इतिहास, और दूसरी जानकारी, आपके सभी डिवाइसों पर सिंक है</translation>
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{पढ़ने की चीज़ों की सूची में टैब जोड़ें}one{पढ़ने की चीज़ों की सूची में टैब जोड़ें}other{पढ़ने की चीज़ों की सूची में टैब जोड़ें}}</translation>
+<translation id="8169849063724750395">बेहतर सुरक्षित ब्राउज़िंग की सुविधा वापस चालू करें</translation>
 <translation id="8171334254070436367">सभी कार्ड छिपाएं</translation>
 <translation id="8174047975335711832">डिवाइस जानकारी</translation>
 <translation id="8174876712881364124">'Google डिस्क' में बैक अप लें. किसी भी समय अपना डेटा आसानी से बहाल करें या डिवाइस बदलें. इस बैकअप में ऐप्लिकेशन का डेटा शामिल है. बैकअप आपके बच्चे के Google खाते के पासवर्ड से सुरक्षित करके Google पर अपलोड किए जाते हैं. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
@@ -7003,6 +7017,7 @@
 <translation id="8249615410597138718">अपने डिवाइस पर भेजें</translation>
 <translation id="8249672078237421304">ऐसे पेजों का अनुवाद करना ऑफ़र करें जो उस भाषा में नहीं हैं जिसे आप पढ़ते हैं</translation>
 <translation id="8251441930213048644">अभी रीफ़्रेश करें</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> से जोड़ा जा रहा है</translation>
 <translation id="8251578425305135684">थंबनेल निकाला गया.</translation>
 <translation id="825238165904109940">हमेशा पूरे यूआरएल दिखाएं</translation>
 <translation id="8252569384384439529">अपलोड हो रही है...</translation>
@@ -7240,9 +7255,11 @@
 <translation id="8528074251912154910">भाषाएं जोड़ें</translation>
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
 <translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
+<translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="8534656636775144800">ओह!  डोमेन में शामिल होने की कोशिश करते समय कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="8535005006684281994">Netscape प्रमाणपत्र नवीनीकरण यूआरएल</translation>
 <translation id="8536956381488731905">बटन दबाने पर आवाज़</translation>
+<translation id="8538718737588735385">बेहतर सुरक्षित ब्राउज़िंग की सुविधा वापस चालू करें</translation>
 <translation id="8539727552378197395">नहीं (केवल Http)</translation>
 <translation id="8539766201049804895">बेहतर बनाएं</translation>
 <translation id="8540136935098276800">सही से फ़ॉर्मैट किया गया यूआरएल डालें</translation>

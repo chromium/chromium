@@ -192,6 +192,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2222841058024245321">7. darbvieta</translation>
 <translation id="2224075387478458881">Ja ekrānā ir redzams aizsargāts saturs, ekrāna ierakstīšana ir liegta.</translation>
 <translation id="225680501294068881">Notiek ierīču meklēšana...</translation>
+<translation id="2257486738914982088">Lejupielādējot failu “<ph name="FILENAME" />”, radās kļūda.</translation>
 <translation id="2268130516524549846">Bluetooth atspējots</translation>
 <translation id="2268813581635650749">Izrakstīt visus</translation>
 <translation id="2269016722240250274">Jūsu mikrofonu izmanto lietojumprogramma</translation>
@@ -587,6 +588,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4831034276697007977">Vai tiešām vēlaties izslēgt automātiskos klikšķus?</translation>
 <translation id="4849058404725798627">Izcelt objektu ar tastatūras fokusu</translation>
 <translation id="485592688953820832">Neveikt darbību (pārtraukt)</translation>
+<translation id="4860284199500934869">Pārbaudiet tīkla savienojumu, lai lejupielādētu failu “<ph name="FILENAME" />”.</translation>
 <translation id="486056901304535126">Tiks mēģināts veikt lejupielādi vēlāk. Uzņēmumam Google tiks nosūtīta runa apstrādei, līdz lejupielāde tiks pabeigta.</translation>
 <translation id="4868492592575313542">aktivizēts</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
@@ -804,6 +806,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6452181791372256707">Noraidīt</translation>
 <translation id="6453179446719226835">Valodas maiņa</translation>
 <translation id="6459472438155181876">Paplašina ekrānu uz: <ph name="DISPLAY_NAME" /></translation>
+<translation id="6477681113376365978">Nevar lejupielādēt failu</translation>
 <translation id="6482559668224714696">Pilnekrāna lupa</translation>
 <translation id="6490471652906364588">USB-C ierīce (pieslēgvieta pa labi)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> pieprasa, lai jūs atjauninātu ierīci <ph name="DEVICE_TYPE" /> pirms noteiktā termiņa</translation>
@@ -815,7 +818,10 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6528179044667508675">Netraucēt</translation>
 <translation id="65320610082834431">Emocijzīmes</translation>
 <translation id="6537924328260219877">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
+<translation id="6539852571005954999">Notiek lejupielādes faila “<ph name="FILENAME" />” pārbaude</translation>
 <translation id="6542521951477560771">Notiek apraide uz ierīci <ph name="RECEIVER_NAME" /></translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+Jauna instalācija</translation>
 <translation id="6559976592393364813">Jautājiet administratoram</translation>
 <translation id="6565007273808762236">eSIM savienojums nav pieejams</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ierīce jāatjaunina stundas laikā}zero{Ierīce jāatjaunina # stundu laikā}one{Ierīce jāatjaunina # stundas laikā}other{Ierīce jāatjaunina # stundu laikā}}</translation>
@@ -847,6 +853,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6723839937902243910">Strāvas padeve</translation>
 <translation id="6727969043791803658">Savienojums izveidots, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">PĀRIET UZ IESTATĪJUMIEM</translation>
 <translation id="6751052314767925245">Piemēroja jūsu administrators</translation>
 <translation id="6751826523481687655">Veiktspējas izsekošana ir ieslēgta.</translation>
 <translation id="6752912906630585008">Darbvirsma <ph name="REMOVED_DESK" /> ir noņemta un apvienota ar darbvirsmu <ph name="RECEIVE_DESK" /></translation>
@@ -982,6 +989,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7662283695561029522">Pieskarieties, lai konfigurētu.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pievienot jaunu mobilo tīklu</translation>
+<translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 paziņojums}zero{# paziņojumu}one{# paziņojums}other{# paziņojumi}}</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7745560842763881396">Rādīt lietotņu joslu</translation>
@@ -1168,6 +1176,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
+<translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="9024331582947483881">pilnekrāna režīms</translation>
 <translation id="9047624247355796468">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus</translation>
@@ -1213,6 +1222,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="951991426597076286">Noraidīt</translation>
+<translation id="954052413789300507">Nepietiek vietas krātuvē, lai lejupielādētu “<ph name="FILENAME" />”. Atbrīvojiet vietu krātuvē.</translation>
 <translation id="974545358917229949">Tiek rādīti <ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="98515147261107953">Ainava</translation>
 <translation id="990277280839877440">Logs “<ph name="WINDOW_TITILE" />” ir aizvērts.</translation>

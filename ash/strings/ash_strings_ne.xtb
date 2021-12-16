@@ -192,6 +192,7 @@
 <translation id="2222841058024245321">डेस्क ७</translation>
 <translation id="2224075387478458881">स्क्रिनमा संरक्षित सामग्री देखिएका बेला स्क्रिन रेकर्ड गर्न मिल्दैन</translation>
 <translation id="225680501294068881">उपकरणहरूको लागि स्क्यान गर्दै ...</translation>
+<translation id="2257486738914982088"><ph name="FILENAME" /> डाउनलोड गर्ने क्रममा केही चिज गडबड भयो</translation>
 <translation id="2268130516524549846">ब्लुतुथ असक्षम गरियो</translation>
 <translation id="2268813581635650749">सबै साइन आउट गर्नु…</translation>
 <translation id="2269016722240250274">एउटा एपले तपाईंको डिभाइसको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
@@ -587,6 +588,7 @@
 <translation id="4831034276697007977">तपाईंले स्वचालित क्लिक सुविधा निष्क्रिय पार्न चाहनुभएकै हो?</translation>
 <translation id="4849058404725798627">किबोर्डको फोकसमार्फत वस्तुलाई हाइलाइट</translation>
 <translation id="485592688953820832">कुनै कारबाही नगर्नुहोस् (पज गर्नुहोस्)</translation>
+<translation id="4860284199500934869">तपाईं <ph name="FILENAME" /> डाउनलोड गर्न चाहनुहुन्छ भने आफ्नो डिभाइसको नेटवर्क कनेक्सन जाँच्नुहोस्</translation>
 <translation id="486056901304535126">पछि डाउनलोड गर्ने प्रयास गरिने छ। डाउनलोड गर्ने कार्य पूरा नहुँदासम्म बोलिएको कुरा प्रोसेस गर्नका निम्ति Google मा पठाइने छ।</translation>
 <translation id="4868492592575313542">सक्रिय गरियो</translation>
 <translation id="4872237917498892622">Alt+खोज्नुहोस् वा Shift</translation>
@@ -804,6 +806,7 @@
 <translation id="6452181791372256707">अस्वीकार</translation>
 <translation id="6453179446719226835">भाषा परिवर्तन गरिएको छ</translation>
 <translation id="6459472438155181876">स्क्रिनलाई <ph name="DISPLAY_NAME" /> मा विस्तार गर्दै</translation>
+<translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
@@ -815,7 +818,10 @@
 <translation id="6528179044667508675">बाधा नगर्नुहोस्</translation>
 <translation id="65320610082834431">इमोजीहरू</translation>
 <translation id="6537924328260219877">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, <ph name="BATTERY_STATUS" /> फोनको ब्याट्री</translation>
+<translation id="6539852571005954999"><ph name="FILENAME" /> स्क्यान गरेर डाउनलोड गर्नुहोस्</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
+<translation id="655633303491376835"><ph name="APP_NAME" />
+भर्खरै इन्स्टल गरिएको छ</translation>
 <translation id="6559976592393364813">प्रशासकलाई सोध्नुहोस्</translation>
 <translation id="6565007273808762236">eSIM कनेक्सन उपलब्ध छैन</translation>
 <translation id="6570831796530454248">{0,plural, =1{एक घण्टाभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# घण्टाभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
@@ -847,6 +853,7 @@
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6739144137573853180">सेटिङमा जानुहोस्</translation>
 <translation id="6751052314767925245">तपाईंका प्रशासकले लागू गर्नुभएको</translation>
 <translation id="6751826523481687655">प्रदर्शन ट्रेस गरिँदै छ</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
@@ -982,6 +989,7 @@
 <translation id="7662283695561029522">कन्फिगर गर्न ट्याप गर्नुहोस्</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">नयाँ मोबाइल नेटवर्क हाल्नुहोस्</translation>
+<translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7745560842763881396">सेल्फमा एपहरू देखाउनुहोस्</translation>
@@ -1168,6 +1176,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> प्रयोग गरिँदै</translation>
 <translation id="899350903320462459">सूचनासम्बन्धी कारबाही गर्न यन्त्रलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>
+<translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
@@ -1213,6 +1222,7 @@
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
+<translation id="954052413789300507"><ph name="FILENAME" /> डाउनलोड गर्नका निम्ति पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
 <translation id="98515147261107953">ल्यान्डस्केप</translation>
 <translation id="990277280839877440">विन्डो <ph name="WINDOW_TITILE" /> बन्द गरियो।</translation>
