@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
@@ -91,19 +91,19 @@ SkPath CreateRoundedRectPath(const gfx::Rect& rect, float corner_radius) {
       .detach();
 }
 
-// HoldingSpaceControllerProgressRing ------------------------------------------
+// HoldingSpaceControllerProgressIndicator -------------------------------------
 
-// A class owning a `ui::Layer` which paints a ring to indicate progress of all
+// A class owning a `ui::Layer` which paints indication of progress for all
 // items in the model attached to its associated holding space `controller_`.
 // NOTE: The owned `layer()` is not painted if there are no items in progress.
-class HoldingSpaceControllerProgressRing
-    : public HoldingSpaceProgressRing,
+class HoldingSpaceControllerProgressIndicator
+    : public HoldingSpaceProgressIndicator,
       public HoldingSpaceControllerObserver,
       public HoldingSpaceModelObserver {
  public:
-  explicit HoldingSpaceControllerProgressRing(
+  explicit HoldingSpaceControllerProgressIndicator(
       HoldingSpaceController* controller)
-      : HoldingSpaceProgressRing(/*animation_key=*/controller),
+      : HoldingSpaceProgressIndicator(/*animation_key=*/controller),
         controller_(controller) {
     controller_observation_.Observe(controller_);
     if (controller_->model())
@@ -111,10 +111,10 @@ class HoldingSpaceControllerProgressRing
   }
 
  private:
-  // HoldingSpaceProgressRing:
+  // HoldingSpaceProgressIndicator:
   absl::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
-    // space items. Do not paint the progress ring.
+    // space items. Do not paint the progress indication.
     const HoldingSpaceModel* model = controller_->model();
     if (!model)
       return kProgressComplete;
@@ -190,25 +190,25 @@ class HoldingSpaceControllerProgressRing
       model_observation_{this};
 };
 
-// HoldingSpaceItemProgressRing ------------------------------------------------
+// HoldingSpaceItemProgressIndicator -------------------------------------------
 
-// A class owning a `ui::Layer` which paints a ring to indicate progress of its
+// A class owning a `ui::Layer` which paints indication of progress for its
 // associated holding space `item_`. NOTE: The owned `layer()` is not painted if
 // the associated `item_` is not in progress.
-class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
-                                     public HoldingSpaceModelObserver {
+class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
+                                          public HoldingSpaceModelObserver {
  public:
-  explicit HoldingSpaceItemProgressRing(const HoldingSpaceItem* item)
-      : HoldingSpaceProgressRing(/*animation_key=*/item), item_(item) {
+  explicit HoldingSpaceItemProgressIndicator(const HoldingSpaceItem* item)
+      : HoldingSpaceProgressIndicator(/*animation_key=*/item), item_(item) {
     model_observation_.Observe(HoldingSpaceController::Get()->model());
   }
 
  private:
-  // HoldingSpaceProgressRing:
+  // HoldingSpaceProgressIndicator:
   absl::optional<float> CalculateProgress() const override {
-    // If `item_` is `nullptr` it is being destroyed. Ensure the progress ring
-    // is not painted in this case. Similarly, ensure the progress ring is not
-    // painted when progress is hidden.
+    // If `item_` is `nullptr` it is being destroyed. Ensure the progress
+    // indication is not painted in this case. Similarly, ensure the progress
+    // indication is not painted when progress is hidden.
     return item_ && !item_->progress().IsHidden() ? item_->progress().GetValue()
                                                   : kProgressComplete;
   }
@@ -240,11 +240,13 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 
 }  // namespace
 
-// HoldingSpaceProgressRing ----------------------------------------------------
+// HoldingSpaceProgressIndicator
+// ----------------------------------------------------
 
-constexpr float HoldingSpaceProgressRing::kProgressComplete;
+constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
 
-HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
+HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
+    const void* animation_key)
     : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
       animation_key_(animation_key) {
   layer()->set_delegate(this);
@@ -253,14 +255,14 @@ HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
   HoldingSpaceAnimationRegistry* animation_registry =
       HoldingSpaceAnimationRegistry::GetInstance();
 
-  // Register to be notified of changes to the animation associated with this
-  // progress ring's `animation_key_`. Note that it is safe to use a raw pointer
-  // here since `this` owns the subscription.
-  animation_changed_subscription_ =
+  // Register to be notified of changes to the ring animation associated with
+  // this progress indicator's `animation_key_`. Note that it is safe to use a
+  // raw pointer here since `this` owns the subscription.
+  ring_animation_changed_subscription_ =
       animation_registry->AddProgressRingAnimationChangedCallbackForKey(
           animation_key_,
           base::BindRepeating(
-              &HoldingSpaceProgressRing::OnProgressRingAnimationChanged,
+              &HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged,
               base::Unretained(this)));
 
   // If an `animation` is already registered, perform additional initialization.
@@ -270,45 +272,47 @@ HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
     OnProgressRingAnimationChanged(animation);
 }
 
-HoldingSpaceProgressRing::~HoldingSpaceProgressRing() = default;
+HoldingSpaceProgressIndicator::~HoldingSpaceProgressIndicator() = default;
 
 // static
-std::unique_ptr<HoldingSpaceProgressRing>
-HoldingSpaceProgressRing::CreateForController(
+std::unique_ptr<HoldingSpaceProgressIndicator>
+HoldingSpaceProgressIndicator::CreateForController(
     HoldingSpaceController* controller) {
-  return std::make_unique<HoldingSpaceControllerProgressRing>(controller);
+  return std::make_unique<HoldingSpaceControllerProgressIndicator>(controller);
 }
 
 // static
-std::unique_ptr<HoldingSpaceProgressRing>
-HoldingSpaceProgressRing::CreateForItem(const HoldingSpaceItem* item) {
-  return std::make_unique<HoldingSpaceItemProgressRing>(item);
+std::unique_ptr<HoldingSpaceProgressIndicator>
+HoldingSpaceProgressIndicator::CreateForItem(const HoldingSpaceItem* item) {
+  return std::make_unique<HoldingSpaceItemProgressIndicator>(item);
 }
 
-void HoldingSpaceProgressRing::InvalidateLayer() {
+void HoldingSpaceProgressIndicator::InvalidateLayer() {
   layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
 
-void HoldingSpaceProgressRing::OnDeviceScaleFactorChanged(float old_scale,
-                                                          float new_scale) {
+void HoldingSpaceProgressIndicator::OnDeviceScaleFactorChanged(
+    float old_scale,
+    float new_scale) {
   InvalidateLayer();
 }
 
-void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
+void HoldingSpaceProgressIndicator::OnPaintLayer(
+    const ui::PaintContext& context) {
   // Look up the associated `animation` (if one exists).
-  HoldingSpaceProgressRingAnimation* animation =
+  HoldingSpaceProgressRingAnimation* ring_animation =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->GetProgressRingAnimationForKey(animation_key_);
 
   // Unless `this` is animating, nothing will paint if `progress_` is complete.
-  if (progress_ == kProgressComplete && !animation)
+  if (progress_ == kProgressComplete && !ring_animation)
     return;
 
   float start, end, opacity;
-  if (animation) {
-    start = animation->start_position();
-    end = animation->end_position();
-    opacity = animation->opacity();
+  if (ring_animation) {
+    start = ring_animation->start_position();
+    end = ring_animation->end_position();
+    opacity = ring_animation->opacity();
   } else {
     start = 0.f;
     end = progress_.value();
@@ -362,7 +366,7 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   }
 }
 
-void HoldingSpaceProgressRing::UpdateVisualState() {
+void HoldingSpaceProgressIndicator::UpdateVisualState() {
   // Cache `progress_`.
   progress_ = CalculateProgress();
   if (progress_.has_value()) {
@@ -371,14 +375,16 @@ void HoldingSpaceProgressRing::UpdateVisualState() {
   }
 }
 
-void HoldingSpaceProgressRing::OnProgressRingAnimationChanged(
+void HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged(
     HoldingSpaceProgressRingAnimation* animation) {
-  // Trigger repaint of this progress ring on `animation` updates. Note that it
-  // is safe to use a raw pointer here since `this` owns the subscription.
+  // Trigger repaint of this progress indicator on `animation` updates. Note
+  // that it is safe to use a raw pointer here since `this` owns the
+  // subscription.
   if (animation) {
-    animation_updated_subscription_ = animation->AddAnimationUpdatedCallback(
-        base::BindRepeating(&HoldingSpaceProgressRing::InvalidateLayer,
-                            base::Unretained(this)));
+    ring_animation_updated_subscription_ =
+        animation->AddAnimationUpdatedCallback(
+            base::BindRepeating(&HoldingSpaceProgressIndicator::InvalidateLayer,
+                                base::Unretained(this)));
   }
   InvalidateLayer();
 }

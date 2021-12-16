@@ -167,17 +167,17 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
     AshTestBase::TearDown();
   }
 
-  float GetProgressRingProgress() {
-    DCHECK(GetTray()->progress_ring_);
+  float GetProgressIndicatorProgress() {
+    DCHECK(GetTray()->progress_indicator_);
     absl::optional<float> progress =
-        GetTray()->progress_ring_->CalculateProgress();
+        GetTray()->progress_indicator_->CalculateProgress();
     DCHECK(progress.has_value());
     return progress.value();
   }
 
-  bool IsProgressRingVisible() {
-    DCHECK(GetTray()->progress_ring_);
-    return GetTray()->progress_ring_->IsVisible();
+  bool IsProgressIndicatorVisible() {
+    DCHECK(GetTray()->progress_indicator_);
+    return GetTray()->progress_indicator_->IsVisible();
   }
 
  private:
@@ -198,29 +198,29 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_EQ(0, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressRingVisible());
+  EXPECT_FALSE(IsProgressIndicatorVisible());
 
   // Any number 0 < number < 100 means that download is in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/50);
   EXPECT_EQ(50, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressRingVisible());
-  EXPECT_EQ(0.5f, GetProgressRingProgress());
+  EXPECT_TRUE(IsProgressIndicatorVisible());
+  EXPECT_EQ(0.5f, GetProgressIndicatorProgress());
 
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/70);
   EXPECT_EQ(70, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressRingVisible());
-  EXPECT_EQ(0.7f, GetProgressRingProgress());
+  EXPECT_TRUE(IsProgressIndicatorVisible());
+  EXPECT_EQ(0.7f, GetProgressIndicatorProgress());
 
   // Similar to 0, a value of 100 means that download is not in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/100);
   EXPECT_EQ(100, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressRingVisible());
+  EXPECT_FALSE(IsProgressIndicatorVisible());
 }
 
 }  // namespace ash

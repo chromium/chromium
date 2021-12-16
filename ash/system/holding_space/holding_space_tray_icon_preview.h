@@ -26,7 +26,7 @@ class Layer;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceProgressRing;
+class HoldingSpaceProgressIndicator;
 class Shelf;
 enum class ShelfAlignment;
 
@@ -143,10 +143,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // gets deleted before the preview.
   const HoldingSpaceItem* item_;
 
-  // Owns the `ui::Layer` which paints a ring to indicate progress of the
-  // associated holding space `item_`. NOTE: The `ui::Layer` is *not* painted if
-  // the holding space `item` is not in-progress.
-  std::unique_ptr<HoldingSpaceProgressRing> progress_ring_;
+  // Owns the `ui::Layer` which paints indicate of progress for the associated
+  // holding space `item_`. NOTE: The `ui::Layer` is *not* painted if the
+  // holding space `item` is not in-progress.
+  std::unique_ptr<HoldingSpaceProgressIndicator> progress_indicator_;
 
   // Whether or not this preview is currently using small dimensions. This is
   // done when in tablet mode and an app is in use.

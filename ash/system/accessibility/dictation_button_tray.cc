@@ -13,7 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
@@ -35,10 +35,11 @@ gfx::ImageSkia GetIconImage(bool enabled) {
                  : gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
 }
 
-DictationProgressRing::DictationProgressRing(const DictationButtonTray* tray)
-    : HoldingSpaceProgressRing(/*animation_key=*/tray), tray_(tray) {}
+DictationProgressIndicator::DictationProgressIndicator(
+    const DictationButtonTray* tray)
+    : HoldingSpaceProgressIndicator(/*animation_key=*/tray), tray_(tray) {}
 
-bool DictationProgressRing::IsVisible() {
+bool DictationProgressIndicator::IsVisible() {
   absl::optional<float> progress = CalculateProgress();
   if (!progress.has_value())
     return false;
@@ -49,14 +50,14 @@ bool DictationProgressRing::IsVisible() {
   return true;
 }
 
-absl::optional<float> DictationProgressRing::CalculateProgress() const {
+absl::optional<float> DictationProgressIndicator::CalculateProgress() const {
   int progress = tray_->download_progress();
   bool download_in_progress = progress > 0 && progress < 100;
   // If download is in-progress, return the progress as a decimal. Otherwise,
-  // the progress ring shouldn't be painted.
+  // the progress indicator shouldn't be painted.
   return (download_in_progress)
              ? static_cast<double>(progress) / static_cast<double>(100)
-             : HoldingSpaceProgressRing::kProgressComplete;
+             : HoldingSpaceProgressIndicator::kProgressComplete;
 }
 
 DictationButtonTray::DictationButtonTray(Shelf* shelf)
@@ -132,8 +133,8 @@ void DictationButtonTray::OnThemeChanged() {
 
 void DictationButtonTray::Layout() {
   TrayBackgroundView::Layout();
-  if (progress_ring_)
-    progress_ring_->layer()->SetBounds(GetBackgroundBounds());
+  if (progress_indicator_)
+    progress_indicator_->layer()->SetBounds(GetBackgroundBounds());
 }
 
 const char* DictationButtonTray::GetClassName() const {
@@ -173,14 +174,15 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
           ? IDS_ASH_ACCESSIBILITY_DICTATION_BUTTON_TOOLTIP_SODA_DOWNLOADING
           : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
 
-  // Progress ring.
+  // Progress indicator.
   download_progress_ = download_progress;
-  if (!progress_ring_) {
-    // A progress ring that is only visible when a SODA download is in-progress.
-    progress_ring_ = std::make_unique<DictationProgressRing>(this);
-    layer()->Add(progress_ring_->layer());
+  if (!progress_indicator_) {
+    // A progress indicator that is only visible when a SODA download is
+    // in-progress.
+    progress_indicator_ = std::make_unique<DictationProgressIndicator>(this);
+    layer()->Add(progress_indicator_->layer());
   }
-  progress_ring_->InvalidateLayer();
+  progress_indicator_->InvalidateLayer();
 }
 
 }  // namespace ash

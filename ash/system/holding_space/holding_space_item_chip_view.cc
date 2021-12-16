@@ -18,7 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
@@ -143,43 +143,43 @@ VIEW_BUILDER_PROPERTY(bool, PaintToLayer)
 VIEW_BUILDER_PROPERTY(bool, ViewAccessibilityIsIgnored)
 END_VIEW_BUILDER
 
-// ProgressRingView ------------------------------------------------------------
+// ProgressIndicatorView -------------------------------------------------------
 
-class ProgressRingView : public views::View {
+class ProgressIndicatorView : public views::View {
  public:
-  ProgressRingView() = default;
-  ProgressRingView(const ProgressRingView&) = delete;
-  ProgressRingView& operator=(const ProgressRingView&) = delete;
-  ~ProgressRingView() override = default;
+  ProgressIndicatorView() = default;
+  ProgressIndicatorView(const ProgressIndicatorView&) = delete;
+  ProgressIndicatorView& operator=(const ProgressIndicatorView&) = delete;
+  ~ProgressIndicatorView() override = default;
 
   // Sets the underlying `item` for which to indicate progress.
   // NOTE: This method should be invoked only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* item) {
-    DCHECK(!progress_ring_);
-    progress_ring_ = HoldingSpaceProgressRing::CreateForItem(item);
+    DCHECK(!progress_indicator_);
+    progress_indicator_ = HoldingSpaceProgressIndicator::CreateForItem(item);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->Add(progress_ring_->layer());
+    layer()->Add(progress_indicator_->layer());
   }
 
  private:
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    if (progress_ring_)
-      progress_ring_->layer()->SetBounds(GetLocalBounds());
+    if (progress_indicator_)
+      progress_indicator_->layer()->SetBounds(GetLocalBounds());
   }
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    if (progress_ring_)
-      progress_ring_->InvalidateLayer();
+    if (progress_indicator_)
+      progress_indicator_->InvalidateLayer();
   }
 
-  std::unique_ptr<HoldingSpaceProgressRing> progress_ring_;
+  std::unique_ptr<HoldingSpaceProgressIndicator> progress_indicator_;
 };
 
-BEGIN_VIEW_BUILDER(/*no export*/, ProgressRingView, views::View)
+BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
 VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
 END_VIEW_BUILDER
 
@@ -188,7 +188,7 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/*no export*/, ash::ObservableRoundedImageView)
 DEFINE_VIEW_BUILDER(/*no export*/, ash::PaintCallbackLabel)
-DEFINE_VIEW_BUILDER(/*no export*/, ash::ProgressRingView)
+DEFINE_VIEW_BUILDER(/*no export*/, ash::ProgressIndicatorView)
 
 namespace ash {
 namespace {
@@ -254,7 +254,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       .SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight))
       .SetLayoutManager(std::move(layout_manager))
       .AddChild(
-          views::Builder<ProgressRingView>()
+          views::Builder<ProgressIndicatorView>()
               .SetHoldingSpaceItem(item)
               .SetUseDefaultFillLayout(true)
               .AddChild(views::Builder<ObservableRoundedImageView>()

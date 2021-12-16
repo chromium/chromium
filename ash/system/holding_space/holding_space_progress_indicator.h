@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_
+#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_
 
 #include <memory>
 #include <vector>
@@ -20,36 +20,37 @@ class HoldingSpaceController;
 class HoldingSpaceItem;
 class HoldingSpaceProgressRingAnimation;
 
-// A class owning a `ui::Layer` which paints a ring to indicate progress.
+// A class owning a `ui::Layer` which paints indication of progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
-class HoldingSpaceProgressRing : public ui::LayerOwner,
-                                 public ui::LayerDelegate {
+class HoldingSpaceProgressIndicator : public ui::LayerOwner,
+                                      public ui::LayerDelegate {
  public:
   static constexpr float kProgressComplete = 1.f;
 
-  HoldingSpaceProgressRing(const HoldingSpaceProgressRing&) = delete;
-  HoldingSpaceProgressRing& operator=(const HoldingSpaceProgressRing&) = delete;
-  ~HoldingSpaceProgressRing() override;
+  HoldingSpaceProgressIndicator(const HoldingSpaceProgressIndicator&) = delete;
+  HoldingSpaceProgressIndicator& operator=(
+      const HoldingSpaceProgressIndicator&) = delete;
+  ~HoldingSpaceProgressIndicator() override;
 
-  // Returns an instance which paints a ring to indicate progress of all holding
+  // Returns an instance which paints indication of progress for all holding
   // space items in the model attached to the specified `controller`.
-  static std::unique_ptr<HoldingSpaceProgressRing> CreateForController(
+  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForController(
       HoldingSpaceController* controller);
 
-  // Returns an instance which paints a ring to indicate progress of the
-  // specified holding space `item`.
-  static std::unique_ptr<HoldingSpaceProgressRing> CreateForItem(
+  // Returns an instance which paints indication of progress for the specified
+  // holding space `item`.
+  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForItem(
       const HoldingSpaceItem* item);
 
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
 
  protected:
-  // Each progress ring is associated with an `animation_key_` which is used
-  // to look up animations in the `HoldingSpaceAnimationRegistry`. When an
+  // Each progress indicator is associated with an `animation_key_` which is
+  // used to look up animations in the `HoldingSpaceAnimationRegistry`. When an
   // animation exists, it will be painted in lieu of the determinate progress
-  // ring that would otherwise be painted for the cached `progress_`.
-  explicit HoldingSpaceProgressRing(const void* animation_key);
+  // indication that would otherwise be painted for the cached `progress_`.
+  explicit HoldingSpaceProgressIndicator(const void* animation_key);
 
   // Returns the calculated progress to paint to the owned `layer()`. This is
   // invoked during `UpdateVisualState()` just prior to painting.
@@ -64,7 +65,7 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
   void OnPaintLayer(const ui::PaintContext& context) override;
   void UpdateVisualState() override;
 
-  // Invoked when the `animation` associated with this progress ring's
+  // Invoked when the ring `animation` associated with this progress indicator's
   // `animation_key_` has changed in the `HoldingSpaceAnimationRegistry`.
   // NOTE: The specified `animation` may be `nullptr`.
   void OnProgressRingAnimationChanged(
@@ -72,21 +73,22 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
 
   // The key for which to look up animations in the
   // `HoldingSpaceAnimationRegistry`. When an animation exists, it will be
-  // painted in lieu of the determinate progress ring that would otherwise be
-  // painted for the cached `progress_`.
+  // painted in lieu of the determinate progress indication that would otherwise
+  // be painted for the cached `progress_`.
   const void* const animation_key_;
 
-  // A subscription to receive events when the animation associated with this
-  // progress ring's `animation_key_` has changed in the
+  // A subscription to receive events when the ring animation associated with
+  // this progress indicator's `animation_key_` has changed in the
   // `HoldingSpaceAnimationRegistry`.
   HoldingSpaceAnimationRegistry::ProgressRingAnimationChangedCallbackList::
-      Subscription animation_changed_subscription_;
+      Subscription ring_animation_changed_subscription_;
 
-  // A subscription to receive events on updates to the `animation_` owned by
+  // A subscription to receive events on updates to the ring animation owned by
   // the `HoldingSpaceAnimationRegistry` which is associated with this progress
-  // ring's `animation_key_`. On `animation_` update, the progress ring will
-  // `InvalidateLayer()` to trigger paint of the next animation frame.
-  base::RepeatingClosureList::Subscription animation_updated_subscription_;
+  // indicator's `animation_key_`. On ring animation update, the progress
+  // indicator will `InvalidateLayer()` to trigger paint of the next animation
+  // frame.
+  base::RepeatingClosureList::Subscription ring_animation_updated_subscription_;
 
   // Cached progress returned from `CalculateProgress()` just prior to painting.
   // NOTE: If absent, progress is indeterminate.
@@ -96,4 +98,4 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_

@@ -13,7 +13,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -160,7 +160,7 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     : shelf_(shelf),
       container_(container),
       item_(item),
-      progress_ring_(HoldingSpaceProgressRing::CreateForItem(item_)),
+      progress_indicator_(HoldingSpaceProgressIndicator::CreateForItem(item_)),
       use_small_previews_(ShouldUseSmallPreviews()) {
   // Initialize the `contents_image_`.
   OnHoldingSpaceItemImageChanged();
@@ -417,9 +417,9 @@ void HoldingSpaceTrayIconPreview::OnThemeChanged() {
   // in the appropriate color for the current theme.
   OnHoldingSpaceItemImageChanged();
 
-  // Invalidate the `progress_ring_` layer so that it gets repainted with colors
-  // that are appropriately themed.
-  progress_ring_->InvalidateLayer();
+  // Invalidate the `progress_indicator_` layer so that it gets repainted with
+  // colors that are appropriately themed.
+  progress_indicator_->InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
@@ -507,7 +507,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetTransform(initial_transform);
-  new_layer->Add(progress_ring_->layer());
+  new_layer->Add(progress_indicator_->layer());
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -569,10 +569,11 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   layer()->SetBounds(bounds);
 
   // The `layer()` was enlarged so that the shadow would be painted outside of
-  // desired preview bounds. Progress ring bounds are clamped to preview size.
-  gfx::Rect progress_ring_bounds(layer()->size());
-  progress_ring_bounds.ClampToCenteredSize(GetPreviewSize());
-  progress_ring_->layer()->SetBounds(progress_ring_bounds);
+  // desired preview bounds. Progress indicator bounds are clamped to preview
+  // size.
+  gfx::Rect progress_indicator_bounds(layer()->size());
+  progress_indicator_bounds.ClampToCenteredSize(GetPreviewSize());
+  progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
 }
 
 }  // namespace ash

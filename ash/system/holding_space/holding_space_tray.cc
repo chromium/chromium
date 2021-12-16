@@ -20,7 +20,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
@@ -228,13 +228,13 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   drop_target_icon_ =
       drop_target_overlay_->AddChildView(CreateDropTargetIcon());
 
-  // Progress ring.
-  // NOTE: The `progress_ring_` will only be visible when:
+  // Progress indicator.
+  // NOTE: The `progress_indicator_` will only be visible when:
   //   * there is at least one in-progress item in the attached model, and
   //   * previews are hidden.
-  progress_ring_ = HoldingSpaceProgressRing::CreateForController(
+  progress_indicator_ = HoldingSpaceProgressIndicator::CreateForController(
       HoldingSpaceController::Get());
-  layer()->Add(progress_ring_->layer());
+  layer()->Add(progress_indicator_->layer());
 
   // Enable context menu, which supports an action to toggle item previews.
   SetContextMenuEnabled(true);
@@ -422,10 +422,10 @@ void HoldingSpaceTray::Layout() {
   const gfx::Rect background_bounds(GetBackgroundBounds());
   drop_target_overlay_->SetBoundsRect(GetMirroredRect(background_bounds));
 
-  // The `progress_ring_` should also fill this view's bounds as they are
+  // The `progress_indicator_` should also fill this view's bounds as they are
   // perceived by the user, but these bounds do not need to be mirrored since
   // they are in layer coordinates.
-  progress_ring_->layer()->SetBounds(background_bounds);
+  progress_indicator_->layer()->SetBounds(background_bounds);
 }
 
 void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
@@ -460,8 +460,8 @@ void HoldingSpaceTray::OnThemeChanged() {
   drop_target_icon_->SetImage(
       gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize, color));
 
-  // Progress ring.
-  progress_ring_->InvalidateLayer();
+  // Progress indicator.
+  progress_indicator_->InvalidateLayer();
 }
 
 void HoldingSpaceTray::UpdateVisibility() {
@@ -672,7 +672,7 @@ void HoldingSpaceTray::UpdatePreviewsVisibility() {
 
   default_tray_icon_->SetVisible(!show_previews);
   previews_tray_icon_->SetVisible(show_previews);
-  progress_ring_->layer()->SetVisible(!show_previews);
+  progress_indicator_->layer()->SetVisible(!show_previews);
 
   if (!show_previews) {
     previews_tray_icon_->Clear();
