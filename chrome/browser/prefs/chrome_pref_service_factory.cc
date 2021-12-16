@@ -48,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/prefs/standalone_browser_pref_store.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -311,6 +312,12 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
     DCHECK(async || supervised_user_prefs->IsInitializationComplete());
     factory->set_supervised_user_prefs(supervised_user_prefs);
   }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_refptr<PrefStore> standalone_browser_prefs =
+      base::MakeRefCounted<StandaloneBrowserPrefStore>();
+  factory->set_standalone_browser_prefs(standalone_browser_prefs);
 #endif
 
   factory->set_async(async);

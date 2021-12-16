@@ -435,8 +435,8 @@ void PrefService::ChangePrefValueStore(
   pref_value_store_ = pref_value_store_->CloneAndSpecialize(
       managed_prefs, supervised_user_prefs, extension_prefs,
       nullptr /* command_line_prefs */, nullptr /* user_prefs */,
-      recommended_prefs, nullptr /* default_prefs */, pref_notifier_.get(),
-      std::move(delegate));
+      nullptr /* standalone_browser_prefs */, recommended_prefs,
+      nullptr /* default_prefs */, pref_notifier_.get(), std::move(delegate));
 
   // Notify |pref_notifier_| on all changed values.
   for (const auto& kv : pref_changed_map) {

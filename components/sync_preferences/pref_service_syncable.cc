@@ -114,6 +114,7 @@ PrefServiceSyncable::CreateIncognitoPrefService(
       nullptr,  // managed
       nullptr,  // supervised_user
       incognito_extension_pref_store,
+      nullptr,  // standalone_browser_prefs
       nullptr,  // command_line_prefs
       incognito_pref_store.get(),
       nullptr,  // recommended

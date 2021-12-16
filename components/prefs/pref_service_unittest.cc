@@ -499,9 +499,10 @@ class PrefValueStoreChangeTest : public testing::Test {
     auto pref_notifier = std::make_unique<PrefNotifierImpl>();
     auto pref_value_store = std::make_unique<PrefValueStore>(
         nullptr /* managed_prefs */, nullptr /* supervised_user_prefs */,
-        nullptr /* extension_prefs */, new TestingPrefStore(),
-        user_pref_store_.get(), nullptr /* recommended_prefs */,
-        pref_registry_->defaults().get(), pref_notifier.get());
+        nullptr /* extension_prefs */, nullptr /* standalone_browser_prefs */,
+        new TestingPrefStore(), user_pref_store_.get(),
+        nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
+        pref_notifier.get());
     pref_service_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
         pref_registry_, base::DoNothing(), false);

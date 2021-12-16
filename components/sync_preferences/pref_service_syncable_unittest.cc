@@ -403,6 +403,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
                                              new TestingPrefStore,
                                              new TestingPrefStore,
                                              new TestingPrefStore,
+                                             new TestingPrefStore,
                                              user_prefs_.get(),
                                              new TestingPrefStore,
                                              pref_registry_->defaults().get(),
@@ -933,8 +934,9 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
         std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
         std::make_unique<PrefValueStore>(
             new TestingPrefStore, new TestingPrefStore, new TestingPrefStore,
-            new TestingPrefStore, user_prefs_.get(), new TestingPrefStore,
-            pref_registry_->defaults().get(), pref_notifier_),
+            new TestingPrefStore, new TestingPrefStore, user_prefs_.get(),
+            new TestingPrefStore, pref_registry_->defaults().get(),
+            pref_notifier_),
         user_prefs_, pref_registry_, &client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);
