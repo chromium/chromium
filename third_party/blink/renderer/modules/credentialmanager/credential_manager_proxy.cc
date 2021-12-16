@@ -17,7 +17,8 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
       credential_manager_(window.GetExecutionContext()),
       webotp_service_(window.GetExecutionContext()),
       payment_credential_(window.GetExecutionContext()),
-      fedcm_get_request_(window.GetExecutionContext()) {
+      fedcm_get_request_(window.GetExecutionContext()),
+      fedcm_logout_request_(window.GetExecutionContext()) {
   LocalFrame* frame = window.GetFrame();
   DCHECK(frame);
   frame->GetBrowserInterfaceBroker().GetInterface(
@@ -55,7 +56,8 @@ CredentialManagerProxy::PaymentCredential() {
 
 template <typename Interface>
 void CredentialManagerProxy::BindRemoteForFedCm(
-    HeapMojoRemote<Interface>& remote) {
+    HeapMojoRemote<Interface>& remote,
+    base::OnceClosure disconnect_closure) {
   if (remote.is_bound())
     return;
 
@@ -65,17 +67,36 @@ void CredentialManagerProxy::BindRemoteForFedCm(
   frame->GetBrowserInterfaceBroker().GetInterface(
       remote.BindNewPipeAndPassReceiver(
           frame->GetTaskRunner(TaskType::kUserInteraction)));
-  remote.set_disconnect_handler(WTF::Bind(
-      &CredentialManagerProxy::OnConnectionError, WrapWeakPersistent(this)));
+  remote.set_disconnect_handler(std::move(disconnect_closure));
 }
 
 mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCmGetRequest() {
-  BindRemoteForFedCm(fedcm_get_request_);
+  BindRemoteForFedCm(
+      fedcm_get_request_,
+      WTF::Bind(&CredentialManagerProxy::OnFedCmGetConnectionError,
+                WrapWeakPersistent(this)));
   return fedcm_get_request_.get();
 }
 
-void CredentialManagerProxy::OnConnectionError() {
+mojom::blink::FederatedAuthRequest*
+CredentialManagerProxy::FedCmLogoutRequest() {
+  BindRemoteForFedCm(
+      fedcm_logout_request_,
+      WTF::Bind(&CredentialManagerProxy::OnFedCmLogoutConnectionError,
+                WrapWeakPersistent(this)));
+  return fedcm_logout_request_.get();
+}
+
+void CredentialManagerProxy::OnFedCmGetConnectionError() {
   fedcm_get_request_.reset();
+  // TODO(crbug.com/1275769): Cache the resolver and resolve the promise with an
+  // appropriate error message.
+}
+
+void CredentialManagerProxy::OnFedCmLogoutConnectionError() {
+  fedcm_logout_request_.reset();
+  // TODO(crbug.com/1275769): Cache the resolver and resolve the promise with an
+  // appropriate error message.
 }
 
 // static
@@ -98,6 +119,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(webotp_service_);
   visitor->Trace(payment_credential_);
   visitor->Trace(fedcm_get_request_);
+  visitor->Trace(fedcm_logout_request_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 

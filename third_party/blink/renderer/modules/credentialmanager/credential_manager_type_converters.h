@@ -7,8 +7,10 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -17,6 +19,7 @@ class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class CableRegistrationData;
 class Credential;
+class FederatedCredentialLogoutRequest;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialParameters;
@@ -119,6 +122,13 @@ struct TypeConverter<blink::mojom::blink::AuthenticatorSelectionCriteriaPtr,
                      blink::AuthenticatorSelectionCriteria> {
   static blink::mojom::blink::AuthenticatorSelectionCriteriaPtr Convert(
       const blink::AuthenticatorSelectionCriteria&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::LogoutRequestPtr,
+                     blink::FederatedCredentialLogoutRequest> {
+  static blink::mojom::blink::LogoutRequestPtr Convert(
+      const blink::FederatedCredentialLogoutRequest&);
 };
 
 template <>

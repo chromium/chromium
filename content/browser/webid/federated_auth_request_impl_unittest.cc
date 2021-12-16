@@ -445,7 +445,7 @@ class RevokeRequestCallbackHelper {
 LogoutRequestPtr MakeLogoutRequest(const std::string& endpoint,
                                    const std::string& account_id) {
   auto request = LogoutRequest::New();
-  request->endpoint = GURL(endpoint);
+  request->url = GURL(endpoint);
   request->account_id = account_id;
   return request;
 }

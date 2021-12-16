@@ -176,7 +176,7 @@ void FederatedAuthRequestImpl::Logout(
   }
 
   if (base::ranges::any_of(logout_requests, [](auto& request) {
-        return !request->endpoint.is_valid();
+        return !request->url.is_valid();
       })) {
     bad_message::ReceivedBadMessage(render_frame_host_->GetProcess(),
                                     bad_message::FARI_LOGOUT_BAD_ENDPOINT);
@@ -618,9 +618,9 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
 
 void FederatedAuthRequestImpl::DispatchOneLogout() {
   auto logout_request = std::move(logout_requests_.front());
-  DCHECK(logout_request->endpoint.is_valid());
+  DCHECK(logout_request->url.is_valid());
   std::string account_id = logout_request->account_id;
-  auto endpoint_origin = url::Origin::Create(logout_request->endpoint);
+  auto logout_origin = url::Origin::Create(logout_request->url);
   logout_requests_.pop();
 
   if (!GetActiveSessionPermissionContext()) {
@@ -629,13 +629,13 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   }
 
   if (GetActiveSessionPermissionContext()->HasActiveSession(
-          endpoint_origin, origin_, account_id)) {
+          logout_origin, origin_, account_id)) {
     network_manager_->SendLogout(
-        logout_request->endpoint,
+        logout_request->url,
         base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
     GetActiveSessionPermissionContext()->RevokeActiveSession(
-        endpoint_origin, origin_, account_id);
+        logout_origin, origin_, account_id);
   } else {
     if (logout_requests_.empty()) {
       CompleteLogoutRequest(LogoutStatus::kSuccess);

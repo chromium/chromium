@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -49,6 +51,8 @@ using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialManagerError;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::LargeBlobSupport;
+using blink::mojom::blink::LogoutRequest;
+using blink::mojom::blink::LogoutRequestPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
 using blink::mojom::blink::PublicKeyCredentialDescriptor;
 using blink::mojom::blink::PublicKeyCredentialDescriptorPtr;
@@ -365,6 +369,17 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
         blink::IDLEnumAsString(criteria.userVerification()));
   }
   return mojo_criteria;
+}
+
+// static
+LogoutRequestPtr
+TypeConverter<LogoutRequestPtr, blink::FederatedCredentialLogoutRequest>::
+    Convert(const blink::FederatedCredentialLogoutRequest& request) {
+  auto mojo_request = LogoutRequest::New();
+
+  mojo_request->url = blink::KURL(request.url());
+  mojo_request->account_id = request.accountId();
+  return mojo_request;
 }
 
 // static

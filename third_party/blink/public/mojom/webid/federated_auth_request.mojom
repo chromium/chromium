@@ -43,9 +43,9 @@ enum RequestMode {
 
 // The details of a single logout request from an identity provider.
 struct LogoutRequest {
-  // Endpoint to which the request will be sent. The origin is validated to
+  // URL to which the request will be sent. The origin is validated to
   // have an associated active session.
-  url.mojom.Url endpoint;
+  url.mojom.Url url;
 
   // Identifier for the account being logged out. This is used to verify that
   // the logout request correlates to a previous sign-in event, and will

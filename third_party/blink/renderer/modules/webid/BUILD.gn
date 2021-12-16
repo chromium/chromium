@@ -10,7 +10,5 @@ blink_modules_sources("webid") {
     "navigator_web_id.h",
     "web_id.cc",
     "web_id.h",
-    "web_id_type_converters.cc",
-    "web_id_type_converters.h",
   ]
 }

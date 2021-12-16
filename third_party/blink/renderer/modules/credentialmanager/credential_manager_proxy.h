@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_PROXY_H_
 
+#include "base/callback_forward.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
@@ -54,6 +55,8 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::FederatedAuthRequest* FedCmGetRequest();
 
+  mojom::blink::FederatedAuthRequest* FedCmLogoutRequest();
+
   void Trace(Visitor*) const override;
 
   // Must be called only with argument representing a valid
@@ -62,14 +65,17 @@ class MODULES_EXPORT CredentialManagerProxy
 
  private:
   template <typename Interface>
-  void BindRemoteForFedCm(HeapMojoRemote<Interface>& remote);
-  void OnConnectionError();
+  void BindRemoteForFedCm(HeapMojoRemote<Interface>& remote,
+                          base::OnceClosure disconnect_closure);
+  void OnFedCmGetConnectionError();
+  void OnFedCmLogoutConnectionError();
 
   HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
   HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
   HeapMojoRemote<mojom::blink::WebOTPService> webotp_service_;
   HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> fedcm_get_request_;
+  HeapMojoRemote<mojom::blink::FederatedAuthRequest> fedcm_logout_request_;
 };
 
 }  // namespace blink

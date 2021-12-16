@@ -43,6 +43,13 @@ export class MockFederatedAuthRequest {
     this.returnPending_ = true;
   }
 
+  logoutReturn(status) {
+    let validated = LogoutStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.logoutStatus_ = validated;
+  }
+
   // Causes the subsequent `FederatedCredential.revoke` to reject with this
   // status.
   revokeReturn(status) {
