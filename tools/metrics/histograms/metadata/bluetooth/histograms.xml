@@ -245,6 +245,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.KeyGenerationResult"
+    enum="BooleanSuccess" expires_after="2022-06-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of key pair generation during the Fast Pair
+    pairing encryption process. Emitted following the creation of the data
+    encryptor.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.PairFailure.{FastPairPairingProtocol}"
     enum="FastPairPairFailure" expires_after="2022-09-20">

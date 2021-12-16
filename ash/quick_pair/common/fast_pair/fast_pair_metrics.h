@@ -94,6 +94,9 @@ void RecordAccountKeyFailureReason(const Device& device,
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordAccountKeyResult(const Device& device, bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordKeyPairGenerationResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 
