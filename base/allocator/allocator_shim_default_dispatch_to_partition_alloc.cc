@@ -518,10 +518,10 @@ void ConfigurePartitions(
   PA_CHECK(!configured);
   configured = true;
 
+  // Calling Get() is actually important, even if the return values weren't
+  // used, because it has a side effect of initializing the variables, if they
+  // weren't already.
   auto* current_root = g_root.Get();
-  // Call Get() to ensure g_aligned_root gets initialized. In some cases it is
-  // initialized with g_root, and we want to make sure it is the pre-swap
-  // value (unless explicitly overwritten below).
   auto* current_aligned_root = g_aligned_root.Get();
 
   if (!split_main_partition) {
@@ -530,9 +530,6 @@ void ConfigurePartitions(
     PA_DCHECK(!current_root->with_thread_cache);
     return;
   }
-
-  current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                            PartitionPurgeDiscardUnusedSystemPages);
 
   auto* new_root = new (g_allocator_buffer_for_new_main_partition)
       base::ThreadSafePartitionRoot({
@@ -547,13 +544,6 @@ void ConfigurePartitions(
           base::PartitionOptions::UseConfigurablePool::kNo,
           base::PartitionOptions::LazyCommit::kEnabled,
       });
-  g_root.Replace(new_root);
-  // g_original_root has to be set after g_root, because other code doesn't
-  // handle well both pointing to the same root.
-  // TODO(bartekn): Reorder, once handled well. It isn't ideal for one
-  // partition to be invisible temporarily.
-  // TODO(bartekn): Move current_root->PurgeMemory after the replacement.
-  g_original_root = current_root;
 
   base::ThreadSafePartitionRoot* new_aligned_root;
   if (use_dedicated_aligned_partition) {
@@ -571,12 +561,26 @@ void ConfigurePartitions(
         });
   } else {
     // The new main root can also support AlignedAlloc.
-    new_aligned_root = g_root.Get();
+    new_aligned_root = new_root;
   }
-  PA_CHECK(current_aligned_root == g_original_root);
+
+  // Now switch traffic to the new partitions.
   g_aligned_root.Replace(new_aligned_root);
+  g_root.Replace(new_root);
+
+  // g_original_root has to be set after g_root, because other code doesn't
+  // handle well both pointing to the same root.
+  // TODO(bartekn): Reorder, once handled well. It isn't ideal for one
+  // partition to be invisible temporarily.
+  g_original_root = current_root;
+
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
+  PA_CHECK(current_aligned_root == g_original_root);
+
+  // Purge memory, now that the traffic to the original partition is cut off.
+  current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
+                            PartitionPurgeDiscardUnusedSystemPages);
 }
 
 #if defined(PA_ALLOW_PCSCAN)
