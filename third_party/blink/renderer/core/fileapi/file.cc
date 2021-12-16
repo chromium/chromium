@@ -29,6 +29,7 @@
 
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_property_bag.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -313,8 +314,11 @@ int64_t File::lastModified() const {
 ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
   // lastModifiedDate returns a Date instance,
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(LastModifiedTime(), script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
+          script_state, absl::optional<base::Time>(LastModifiedTime()))
+          .ToLocalChecked());
 }
 
 absl::optional<base::Time> File::LastModifiedTimeForSerialization() const {
