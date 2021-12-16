@@ -10,12 +10,14 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "content/public/browser/service_worker_context.h"
 
 struct WebApplicationInfo;
 class Browser;
 class GURL;
 
 namespace content {
+class StoragePartition;
 class WebContents;
 }  // namespace content
 
@@ -42,6 +44,10 @@ void TestDeclineDialogCallback(
     WebAppInstallationAcceptanceCallback acceptance_callback);
 
 AppId InstallPwaForCurrentUrl(Browser* browser);
+
+void CheckServiceWorkerStatus(const GURL& url,
+                              content::StoragePartition* storage_partition,
+                              content::ServiceWorkerCapability status);
 
 }  // namespace test
 }  // namespace web_app

@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -63,22 +64,13 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
 
   void CheckServiceWorkerStatus(const GURL& url,
                                 content::ServiceWorkerCapability status) {
-    base::RunLoop run_loop;
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::ServiceWorkerContext* service_worker_context =
-        web_contents->GetBrowserContext()
-            ->GetStoragePartition(web_contents->GetSiteInstance())
-            ->GetServiceWorkerContext();
-    service_worker_context->CheckHasServiceWorker(
-        url, blink::StorageKey(url::Origin::Create(url)),
-        base::BindLambdaForTesting(
-            [&run_loop, status](content::ServiceWorkerCapability capability) {
-              CHECK_EQ(status, capability);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    content::StoragePartition* storage_partition =
+        web_contents->GetBrowserContext()->GetStoragePartition(
+            web_contents->GetSiteInstance());
+    test::CheckServiceWorkerStatus(url, storage_partition, status);
   }
 
   absl::optional<InstallResultCode> result_code_;

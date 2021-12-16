@@ -7,6 +7,7 @@
 #include <random>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
@@ -473,6 +476,22 @@ AppId InstallPwaForCurrentUrl(Browser* browser) {
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   return app_id;
+}
+
+void CheckServiceWorkerStatus(const GURL& url,
+                              content::StoragePartition* storage_partition,
+                              content::ServiceWorkerCapability status) {
+  base::RunLoop run_loop;
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+  service_worker_context->CheckHasServiceWorker(
+      url, blink::StorageKey(url::Origin::Create(url)),
+      base::BindLambdaForTesting(
+          [&run_loop, status](content::ServiceWorkerCapability capability) {
+            CHECK_EQ(status, capability);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 }  // namespace test

@@ -22,6 +22,8 @@ class ServiceWorkerRegistrationWaiter
  public:
   ServiceWorkerRegistrationWaiter(content::BrowserContext* browser_context,
                                   const GURL& url);
+  ServiceWorkerRegistrationWaiter(content::StoragePartition* storage_partition,
+                                  const GURL& url);
   ServiceWorkerRegistrationWaiter(const ServiceWorkerRegistrationWaiter&) =
       delete;
   ServiceWorkerRegistrationWaiter& operator=(

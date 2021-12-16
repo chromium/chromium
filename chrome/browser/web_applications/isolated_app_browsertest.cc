@@ -6,8 +6,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -181,4 +185,33 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   EXPECT_TRUE(non_app_cookies[2].empty());
 }
 
+class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
+ protected:
+  content::RenderFrameHost* InstallIsolatedAppAndWaitForServiceWorker(
+      const GURL& app_url) {
+    InstallIsolatedApp(kAppHost);
+
+    auto* app_window = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url);
+    auto* web_contents = app_window->tab_strip_model()->GetActiveWebContents();
+    auto* app_frame = web_contents->GetMainFrame();
+    EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
+
+    ServiceWorkerRegistrationWaiter waiter(app_frame->GetStoragePartition(),
+                                           app_url);
+    waiter.AwaitRegistration();
+
+    return app_frame;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserServiceWorkerTest,
+                       ServiceWorkerPartitioned) {
+  const GURL app_url =
+      https_server()->GetURL(kAppHost, "/banners/isolated/service_worker.html");
+
+  auto* app_frame = InstallIsolatedAppAndWaitForServiceWorker(app_url);
+  test::CheckServiceWorkerStatus(
+      app_url, app_frame->GetStoragePartition(),
+      content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+}
 }  // namespace web_app
