@@ -135,8 +135,10 @@ constexpr int kContinueColumnCount = 4;
 // The vertical spacing between recent apps and continue section view.
 constexpr int kRecentAppsTopMargin = 16;
 
-// The vertical spacing above and below the separator.
-constexpr int kSeparatorVerticalInset = 16;
+// The vertical spacing above and below the separator when using kRegular/kDense
+// AppListConfigType.
+constexpr int kRegularSeparatorVerticalInset = 16;
+constexpr int kDenseSeparatorVerticalInset = 8;
 
 // The width of the separator.
 constexpr int kSeparatorWidth = 240;
@@ -285,8 +287,10 @@ class AppsContainerView::ContinueContainer : public views::View {
         ColorProvider::ContentLayerType::kSeparatorColor));
     separator_->SetPreferredSize(
         gfx::Size(kSeparatorWidth, views::Separator::kThickness));
+    // Initially set the vertical inset to kRegularSeparatorVerticalInset. The
+    // value will be updated in `AppsContainerView::UpdateAppListConfig()`
     separator_->SetProperty(views::kMarginsKey,
-                            gfx::Insets(kSeparatorVerticalInset, 0));
+                            gfx::Insets(kRegularSeparatorVerticalInset, 0));
     separator_->SetPaintToLayer();
     separator_->layer()->SetFillsBoundsOpaquely(false);
     separator_->SetProperty(views::kCrossAxisAlignmentKey,
@@ -313,6 +317,18 @@ class AppsContainerView::ContinueContainer : public views::View {
 
   bool HasRecentApps() const {
     return recent_apps_ && recent_apps_->GetVisible();
+  }
+
+  void UpdateAppListConfig(AppListConfig* config) {
+    if (recent_apps_)
+      recent_apps_->UpdateAppListConfig(config);
+
+    const int separator_vertical_inset =
+        config->type() == AppListConfigType::kRegular
+            ? kRegularSeparatorVerticalInset
+            : kDenseSeparatorVerticalInset;
+    separator_->SetProperty(views::kMarginsKey,
+                            gfx::Insets(separator_vertical_inset, 0));
   }
 
   ContinueSectionView* continue_section() { return continue_section_; }
@@ -494,8 +510,8 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
 
   apps_grid_view()->UpdateAppListConfig(app_list_config_.get());
   app_list_folder_view()->UpdateAppListConfig(app_list_config_.get());
-  if (GetRecentApps())
-    GetRecentApps()->UpdateAppListConfig(app_list_config_.get());
+  if (continue_container_)
+    continue_container_->UpdateAppListConfig(app_list_config_.get());
 }
 
 void AppsContainerView::OnActiveAppListModelsChanged(
