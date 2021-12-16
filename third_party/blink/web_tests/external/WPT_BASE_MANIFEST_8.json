@@ -1685,6 +1685,13 @@
         {}
        ]
       ],
+      "preserve3d-svg-foreign-object-hit-test.svg": [
+       "14c772cb2d24ae89cc2bce0e2ed2dad83d3ae6d9",
+       [
+        null,
+        {}
+       ]
+      ],
       "transform-marquee-resize-div-image-001.html": [
        "8bdbb984f3a1cb8a500a93faa4efa4a633b81826",
        [
@@ -82565,6 +82572,32 @@
        {}
       ]
      ],
+     "color-mix-percents-01.html": [
+      "425ef9a63621ef635fc3e800ee92a59dd32978d0",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-percents-01-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-mix-percents-02.html": [
+      "5b1a4cfd9d92f311b7a6619017f29fb42c62f269",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-percents-01-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "composited-filters-under-opacity.html": [
       "f613748af3ac5bb59c9fa207937ae6207d71062e",
       [
@@ -135907,6 +135940,19 @@
        {}
       ]
      ],
+     "overflow-clip-margin-008.html": [
+      "fabe669a49c69319c9fc689cc9f22af6b6fe41f9",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-margin-invalidation.html": [
       "d9c87a34a53f17451b0d3ae8c2071971d1df3a94",
       [
@@ -136083,6 +136129,71 @@
        [
         [
          "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-gutter-002.html": [
+      "129eb2c08590c98505e36f63da173d1c8a4bf98d",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-gutter-dynamic-001.html": [
+      "3dcb32048cd7a1b94eb7cd30be4a381a5f168eab",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-dynamic-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-gutter-rtl-002.html": [
+      "8d0376defdfc69ecb44fc2134c81573e553db2bb",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-rtl-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-gutter-vertical-lr-002.html": [
+      "9e5dcd299eba99e4ab6f077149a841011805c0a5",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-vertical-lr-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-gutter-vertical-rl-002.html": [
+      "d68d4e5d3cba0353da274f9c75c558c0a8324092",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-vertical-rl-002-ref.html",
          "=="
         ]
        ],
@@ -231585,7 +231696,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "2fa351446c2601580c525f4ef75b01f2ba2a19c8",
+      "407ca8d7702adbf6d7dbc100323eb46267048631",
       []
      ],
      "federatedcredential-get.html": [
@@ -241346,6 +241457,10 @@
      ],
      "color-mix-non-srgb-001.tentative-expected.txt": [
       "77ccec0d3adfc6bb9840f529ad5e574792c96cef",
+      []
+     ],
+     "color-mix-percents-01-ref.html": [
+      "2d9a1380b3889a446356725b75db485e55992cc1",
       []
      ],
      "color-resolving-hwb-expected.txt": [
@@ -258742,6 +258857,10 @@
       "9f562d67fe4249d09c98062a74dcb2b656123056",
       []
      ],
+     "overflow-clip-margin-008-ref.html": [
+      "3af9e4e951d9d35eafc72fd7593be20a7c94dbde",
+      []
+     ],
      "overflow-clip-margin-invalidation-ref.html": [
       "1ec2a5ce0a21c8dd578b3fcfde702307e4e2a9a8",
       []
@@ -258986,8 +259105,24 @@
       "782ffab9da1c1cb55b4488e7fc8f913dd18857f3",
       []
      ],
+     "scrollbar-gutter-002-ref.html": [
+      "ae51682c75920743d4ae69fffe8b566a3758c7a4",
+      []
+     ],
      "scrollbar-gutter-dynamic-001-ref.html": [
       "5f2f7bff26420e949093a822d8995d9fcc3f1f51",
+      []
+     ],
+     "scrollbar-gutter-rtl-002-ref.html": [
+      "e6510a081353db996c4ead14ad6a167b90d48297",
+      []
+     ],
+     "scrollbar-gutter-vertical-lr-002-ref.html": [
+      "cb7c647da43c842e68c9ca8e9ca24cd9708324dd",
+      []
+     ],
+     "scrollbar-gutter-vertical-rl-002-ref.html": [
+      "7dbadf995ed89bc3032c4ca1b53e1cebecd6237e",
       []
      ],
      "text-overflow-ellipsis-editing-input-ref.html": [
@@ -354116,6 +354251,13 @@
       {}
      ]
     ],
+    "fedcm-logout.https.html": [
+     "e4f83b0f90e1a684c254235e6222b299b8647cbc",
+     [
+      null,
+      {}
+     ]
+    ],
     "fedcm-revoke.https.html": [
      "c014724b8173e47e9d9ffb00a08537055c3f8003",
      [
@@ -354124,7 +354266,7 @@
      ]
     ],
     "fedcm.https.html": [
-     "71ff0ab70f49258f5e6d701b8e7034933ae1ae42",
+     "618f0ec3c24e5cca8512748d972357e03590d77e",
      [
       null,
       {}
@@ -559600,15 +559742,6 @@
     "css-namespaces": {
      "syntax-016.xml": [
       "1e280d8cba530c10e01d5fc679950bf67a5f14d9",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "css-overflow": {
-     "scrollbar-gutter-dynamic-001.html": [
-      "d6451ff995f5b522626e8e05eaed33d3e49e5f9b",
       [
        null,
        {}
