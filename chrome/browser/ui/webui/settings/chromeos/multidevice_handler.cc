@@ -57,6 +57,8 @@ const char kIsNearbyShareDisallowedByPolicy[] =
 const char kIsPhoneHubAppsAccessGranted[] = "isPhoneHubAppsAccessGranted";
 const char kIsPhoneHubPermissionsDialogSupported[] =
     "isPhoneHubPermissionsDialogSupported";
+const char kIsCameraRollFilePermissionGranted[] =
+    "isCameraRollFilePermissionGranted";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
 constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
@@ -78,13 +80,15 @@ MultideviceHandler::MultideviceHandler(
     multidevice_setup::AndroidSmsPairingStateTracker*
         android_sms_pairing_state_tracker,
     android_sms::AndroidSmsAppManager* android_sms_app_manager,
-    ash::eche_app::AppsAccessManager* apps_access_manager)
+    ash::eche_app::AppsAccessManager* apps_access_manager,
+    ash::phonehub::CameraRollManager* camera_roll_manager)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
       notification_access_manager_(notification_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       android_sms_app_manager_(android_sms_app_manager),
-      apps_access_manager_(apps_access_manager) {
+      apps_access_manager_(apps_access_manager),
+      camera_roll_manager_(camera_roll_manager) {
   CHECK((multidevice_setup_client_ != nullptr) ==
         multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs_));
   pref_change_registrar_.Init(prefs_);
@@ -162,6 +166,9 @@ void MultideviceHandler::OnJavascriptAllowed() {
   if (apps_access_manager_)
     apps_access_manager_observation_.Observe(apps_access_manager_);
 
+  if (camera_roll_manager_)
+    camera_roll_manager_observation_.Observe(camera_roll_manager_);
+
   pref_change_registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
       base::BindRepeating(
@@ -215,6 +222,12 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     apps_access_manager_observation_.Reset();
   }
 
+  if (camera_roll_manager_) {
+    DCHECK(camera_roll_manager_observation_.IsObservingSource(
+        camera_roll_manager_));
+    camera_roll_manager_observation_.Reset();
+  }
+
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -251,6 +264,10 @@ void MultideviceHandler::OnInstalledAppUrlChanged() {
 }
 
 void MultideviceHandler::OnAppsAccessChanged() {
+  UpdatePageContent();
+}
+
+void MultideviceHandler::OnCameraRollViewUiStateUpdated() {
   UpdatePageContent();
 }
 
@@ -545,6 +562,16 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
 
   page_content_dictionary->SetBoolean(kIsPhoneHubAppsAccessGranted,
                                       is_apps_access_granted);
+
+  bool is_camera_roll_file_permission_granted = false;
+  if (camera_roll_manager_) {
+    is_camera_roll_file_permission_granted =
+        camera_roll_manager_->ui_state() !=
+        ash::phonehub::CameraRollManager::CameraRollUiState::
+            NO_STORAGE_PERMISSION;
+  }
+  page_content_dictionary->SetBoolean(kIsCameraRollFilePermissionGranted,
+                                      is_camera_roll_file_permission_granted);
 
   bool is_nearby_share_disallowed_by_policy =
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(

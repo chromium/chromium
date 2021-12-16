@@ -81,6 +81,11 @@ suite('Multidevice', function() {
               supportedFeatures.includes(settings.MultiDeviceFeature.ECHE) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
+          phoneHubCameraRollState:
+              supportedFeatures.includes(
+                  settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) ?
+              settings.MultiDeviceFeatureState.ENABLED_BY_USER :
+              settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
         });
     Polymer.dom.flush();
   }
@@ -153,6 +158,9 @@ suite('Multidevice', function() {
       assertEquals(
           !!multideviceSubpage.$$('#phoneHubAppsItem'),
           mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+      assertEquals(
+          !!multideviceSubpage.$$('#phoneHubCameraRollItem'),
+          mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
     }
   });
 
@@ -167,6 +175,7 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
 
         setSupportedFeatures([
           settings.MultiDeviceFeature.SMART_LOCK,
@@ -176,6 +185,7 @@ suite('Multidevice', function() {
           settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
           settings.MultiDeviceFeature.WIFI_SYNC,
           settings.MultiDeviceFeature.ECHE,
+          settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
         ]);
         assertTrue(!!multideviceSubpage.$$('#smartLockItem'));
         assertFalse(!!multideviceSubpage.$$('#instantTetheringItem'));
@@ -185,6 +195,7 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
 
         setSupportedFeatures([settings.MultiDeviceFeature.INSTANT_TETHERING]);
         assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
@@ -195,6 +206,7 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
 
         setSupportedFeatures([]);
         assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
@@ -205,6 +217,7 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
       });
 
   test('clicking SmartLock item routes to SmartLock subpage', function() {

@@ -416,7 +416,9 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             : nullptr,
         android_sms_service ? android_sms_service->android_sms_app_manager()
                             : nullptr,
-        eche_app_manager ? eche_app_manager->GetAppsAccessManager() : nullptr));
+        eche_app_manager ? eche_app_manager->GetAppsAccessManager() : nullptr,
+        phone_hub_manager ? phone_hub_manager->GetCameraRollManager()
+                          : nullptr));
   }
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)

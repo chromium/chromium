@@ -109,7 +109,8 @@ cr.define('settings', function() {
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
    *   isNearbyShareDisallowedByPolicy: boolean,
    *   isPhoneHubAppsAccessGranted: boolean,
-   *   isPhoneHubPermissionsDialogSupported: boolean
+   *   isPhoneHubPermissionsDialogSupported: boolean,
+   *   isCameraRollFilePermissionGranted: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;

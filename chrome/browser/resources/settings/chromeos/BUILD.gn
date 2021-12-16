@@ -426,6 +426,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.js",
     "chromeos/metrics_recorder.m.js",
     "chromeos/multidevice_page/multidevice_browser_proxy.m.js",
+    "chromeos/multidevice_page/multidevice_camera_roll_item.m.js",
     "chromeos/multidevice_page/multidevice_constants.m.js",
     "chromeos/multidevice_page/multidevice_feature_behavior.m.js",
     "chromeos/multidevice_page/multidevice_feature_item.m.js",

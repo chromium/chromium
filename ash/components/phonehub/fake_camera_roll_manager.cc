@@ -34,9 +34,16 @@ void FakeCameraRollManager::EnableCameraRollFeatureInSystemSetting() {
   ComputeAndUpdateUiState();
 }
 
+void FakeCameraRollManager::SetIsAndroidStorageGranted(bool granted) {
+  is_android_storage_granted_ = granted;
+  ComputeAndUpdateUiState();
+}
+
 void FakeCameraRollManager::ComputeAndUpdateUiState() {
   if (!is_camera_roll_accessible_) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
+  } else if (!is_android_storage_granted_) {
+    ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
   } else if (is_avaiable_to_be_enabled_) {
     ui_state_ = (has_dismissed_onboarding_dialog_)
                     ? CameraRollUiState::SHOULD_HIDE

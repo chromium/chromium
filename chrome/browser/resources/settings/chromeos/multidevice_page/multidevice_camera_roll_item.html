@@ -1,0 +1,34 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="multidevice_constants.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
+
+<dom-module id="settings-multidevice-camera-roll-item">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-multidevice-feature-item id="phoneHubCameraRollItem"
+        feature="[[MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL]]"
+        page-content-data="[[pageContentData]]" is-sub-feature>
+      <template is="dom-if"
+          if="[[!isCameraRollFilePermissionGranted_(pageContentData)]]" restamp>
+        <!-- Replace the standard feature-summary with a localized link
+          containing the string for when camera roll does not have file access
+          permissions on Android device. -->
+        <localized-link
+            class="secondary"
+            id="featureSecondary"
+            slot="feature-summary"
+            localized-string="[[getFeatureDisabledSummary_()]]">
+        </localized-link>
+        <!-- Replace the standard feature-controller with an always disabled and
+          off cr-toggle when Camera Roll does not have file access permission on
+          Android device. Otherwise the standard feature-controller is used. -->
+        <cr-toggle slot="feature-controller" disabled="true"></cr-toggle>
+      </template>
+    </settings-multidevice-feature-item>
+  </template>
+  <script src="multidevice_camera_roll_item.js"></script>
+</dom-module>

@@ -517,6 +517,12 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddString(
       "multidevicePhoneHubPermissionsLearnMoreURL",
       GetHelpUrlWithBoard(chrome::kPhoneHubPermissionLearnMoreURL));
+  html_source->AddString(
+      "multidevicePhoneHubCameraRollDisabledItemSummary",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_DISABLED_SUMMARY,
+          ui::GetChromeOSDeviceName(),
+          GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
 
   AddEasyUnlockStrings(html_source);
 
@@ -566,7 +572,9 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
           android_sms_service_ ? android_sms_service_->android_sms_app_manager()
                                : nullptr,
           eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager()
-                            : nullptr));
+                            : nullptr,
+          phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager()
+                             : nullptr));
 }
 
 int MultiDeviceSection::GetSectionNameMessageId() const {

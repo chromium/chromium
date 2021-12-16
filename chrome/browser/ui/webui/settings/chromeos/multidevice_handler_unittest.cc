@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_notification_access_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
@@ -46,13 +47,15 @@ class TestMultideviceHandler : public MultideviceHandler {
       multidevice_setup::AndroidSmsPairingStateTracker*
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager,
-      ash::eche_app::AppsAccessManager* apps_access_manager)
+      ash::eche_app::AppsAccessManager* apps_access_manager,
+      ash::phonehub::CameraRollManager* camera_roll_manager)
       : MultideviceHandler(prefs,
                            multidevice_setup_client,
                            notification_access_manager,
                            android_sms_pairing_state_tracker,
                            android_sms_app_manager,
-                           apps_access_manager) {}
+                           apps_access_manager,
+                           camera_roll_manager) {}
   ~TestMultideviceHandler() override = default;
 
   // Make public for testing.
@@ -93,7 +96,8 @@ void VerifyPageContentDict(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map,
     bool expected_is_nearby_share_disallowed_by_policy_,
-    bool expected_is_phone_hub_apps_access_granted_) {
+    bool expected_is_phone_hub_apps_access_granted_,
+    bool expected_is_camera_roll_file_permission_granted_) {
   const base::DictionaryValue* page_content_dict;
   EXPECT_TRUE(value->GetAsDictionary(&page_content_dict));
 
@@ -183,6 +187,10 @@ void VerifyPageContentDict(
               Optional(expected_is_phone_hub_apps_access_granted_));
 
   EXPECT_THAT(
+      page_content_dict->FindBoolKey("isCameraRollFilePermissionGranted"),
+      Optional(expected_is_camera_roll_file_permission_granted_));
+
+  EXPECT_THAT(
       page_content_dict->FindBoolKey("isPhoneHubPermissionsDialogSupported"),
       Optional(true));
 }
@@ -215,6 +223,8 @@ class MultideviceHandlerTest : public testing::Test {
         std::make_unique<ash::eche_app::FakeAppsAccessManager>(
             ash::eche_app::AppsAccessManager::AccessStatus::
                 kAvailableButNotGranted);
+    fake_camera_roll_manager_ =
+        std::make_unique<ash::phonehub::FakeCameraRollManager>();
 
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterNearbySharingPrefs(prefs_->registry());
@@ -230,7 +240,8 @@ class MultideviceHandlerTest : public testing::Test {
         prefs_.get(), fake_multidevice_setup_client_.get(),
         fake_notification_access_manager_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
-        fake_android_sms_app_manager_.get(), fake_apps_access_manager_.get());
+        fake_android_sms_app_manager_.get(), fake_apps_access_manager_.get(),
+        fake_camera_roll_manager_.get());
 
     test_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&test_profile_));
@@ -433,6 +444,24 @@ class MultideviceHandlerTest : public testing::Test {
     VerifyPageContent(call_data.arg2());
   }
 
+  void SimulateCameraRollFilePermissionChanged(bool file_permission_granted) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    fake_camera_roll_manager()->SetIsAndroidStorageGranted(
+        file_permission_granted);
+    expected_is_camera_roll_file_permission_granted_ = file_permission_granted;
+
+    EXPECT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.updateMultidevicePageContentData",
+              call_data.arg1()->GetString());
+    VerifyPageContent(call_data.arg2());
+  }
+
   void CallRetryPendingHostSetup(bool success) {
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("retryPendingHostSetup", &empty_args);
@@ -499,6 +528,10 @@ class MultideviceHandlerTest : public testing::Test {
     return fake_apps_access_manager_.get();
   }
 
+  ash::phonehub::FakeCameraRollManager* fake_camera_roll_manager() {
+    return fake_camera_roll_manager_.get();
+  }
+
   void SimulateNotificationOptInStatusChange(
       phonehub::NotificationAccessSetupOperation::Status status) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
@@ -530,6 +563,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   bool expected_is_nearby_share_disallowed_by_policy_ = false;
   bool expected_is_phone_hub_apps_access_granted_ = false;
+  bool expected_is_camera_roll_file_permission_granted_ = true;
 
  private:
   void VerifyPageContent(const base::Value* value) {
@@ -538,7 +572,8 @@ class MultideviceHandlerTest : public testing::Test {
         fake_multidevice_setup_client_->GetHostStatus().second,
         fake_multidevice_setup_client_->GetFeatureStates(),
         expected_is_nearby_share_disallowed_by_policy_,
-        expected_is_phone_hub_apps_access_granted_);
+        expected_is_phone_hub_apps_access_granted_,
+        expected_is_camera_roll_file_permission_granted_);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -554,6 +589,8 @@ class MultideviceHandlerTest : public testing::Test {
       fake_android_sms_pairing_state_tracker_;
   std::unique_ptr<ash::eche_app::FakeAppsAccessManager>
       fake_apps_access_manager_;
+  std::unique_ptr<ash::phonehub::FakeCameraRollManager>
+      fake_camera_roll_manager_;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device_;
@@ -655,6 +692,8 @@ TEST_F(MultideviceHandlerTest, PageContentData) {
   SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/false,
                                        /*is_managed=*/true);
   SimulateAppsAccessStatusChanged(/*has_access_been_granted=*/true);
+  SimulateCameraRollFilePermissionChanged(/*file_permission_granted=*/false);
+  SimulateCameraRollFilePermissionChanged(/*file_permission_granted=*/true);
 }
 
 TEST_F(MultideviceHandlerTest, RetryPendingHostSetup) {

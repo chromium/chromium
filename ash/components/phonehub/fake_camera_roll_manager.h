@@ -20,6 +20,7 @@ class FakeCameraRollManager : public CameraRollManager {
   void SetIsCameraRollAvailableToBeEnabled(bool can_enable);
   void SetIsCameraRollAccessible(bool accessiable);
   void EnableCameraRollFeatureInSystemSetting() override;
+  void SetIsAndroidStorageGranted(bool granted);
 
   using CameraRollManager::SetCurrentItems;
 
@@ -34,6 +35,7 @@ class FakeCameraRollManager : public CameraRollManager {
   bool is_avaiable_to_be_enabled_ = true;
   bool is_camera_roll_accessible_ = true;
   bool is_refreshing_after_user_opt_in_ = false;
+  bool is_android_storage_granted_ = true;
 };
 
 }  // namespace phonehub

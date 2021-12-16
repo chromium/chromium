@@ -14,6 +14,7 @@
 <link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="multidevice_camera_roll_item.html">
 <link rel="import" href="multidevice_constants.html">
 <link rel="import" href="multidevice_browser_proxy.html">
 <link rel="import" href="multidevice_feature_behavior.html">
@@ -135,11 +136,10 @@
             if="[[isFeatureSupported(
                 MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, pageContentData)]]"
             restamp>
-          <settings-multidevice-feature-item id="phoneHubCameraRollItem"
-              feature="[[MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL]]"
-              page-content-data="[[pageContentData]]" is-sub-feature
+          <settings-multidevice-camera-roll-item id="phoneHubCameraRollItem"
+              page-content-data="[[pageContentData]]"
               deep-link-focus-id$="[[Setting.kPhoneHubCameraRollOnOff]]">
-          </settings-multidevice-feature-item>
+          </settings-multidevice-camera-roll-item>
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(
