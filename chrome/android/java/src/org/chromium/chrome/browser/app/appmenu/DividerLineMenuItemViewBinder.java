@@ -48,6 +48,7 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             assert id == R.id.divider_line_id;
             view.setId(id);
+            view.setEnabled(false);
         }
     }
 
