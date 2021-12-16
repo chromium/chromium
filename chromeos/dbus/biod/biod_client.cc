@@ -413,10 +413,8 @@ class BiodClientImpl : public BiodClient {
       matches[user_id] = std::move(paths);
     }
 
-    if (msg.msg_case() == biod::FingerprintMessage::MsgCase::kScanResult) {
-      for (auto& observer : observers_) {
-        observer.BiodAuthScanDoneReceived(msg.scan_result(), matches);
-      }
+    for (auto& observer : observers_) {
+      observer.BiodAuthScanDoneReceived(msg, matches);
     }
   }
 

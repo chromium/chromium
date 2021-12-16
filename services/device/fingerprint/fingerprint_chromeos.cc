@@ -65,6 +65,29 @@ device::mojom::ScanResult ToMojom(biod::ScanResult type) {
   return device::mojom::ScanResult::INSUFFICIENT;
 }
 
+device::mojom::FingerprintError ToMojom(biod::FingerprintError type) {
+  switch (type) {
+    case biod::ERROR_HW_UNAVAILABLE:
+      return device::mojom::FingerprintError::HW_UNAVAILABLE;
+    case biod::ERROR_UNABLE_TO_PROCESS:
+      return device::mojom::FingerprintError::UNABLE_TO_PROCESS;
+    case biod::ERROR_TIMEOUT:
+      return device::mojom::FingerprintError::TIMEOUT;
+    case biod::ERROR_NO_SPACE:
+      return device::mojom::FingerprintError::NO_SPACE;
+    case biod::ERROR_CANCELED:
+      return device::mojom::FingerprintError::CANCELED;
+    case biod::ERROR_UNABLE_TO_REMOVE:
+      return device::mojom::FingerprintError::UNABLE_TO_REMOVE;
+    case biod::ERROR_LOCKOUT:
+      return device::mojom::FingerprintError::LOCKOUT;
+    case biod::ERROR_NO_TEMPLATES:
+      return device::mojom::FingerprintError::NO_TEMPLATES;
+  }
+  NOTREACHED();
+  return device::mojom::FingerprintError::UNKNOWN;
+}
+
 }  // namespace
 
 FingerprintChromeOS::FingerprintChromeOS() {
@@ -233,7 +256,7 @@ void FingerprintChromeOS::BiodEnrollScanDoneReceived(
 }
 
 void FingerprintChromeOS::BiodAuthScanDoneReceived(
-    biod::ScanResult scan_result,
+    const biod::FingerprintMessage& msg,
     const chromeos::AuthScanMatches& matches) {
   // Convert ObjectPath to string, since mojom doesn't know definition of
   // dbus ObjectPath.
@@ -246,13 +269,33 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
     entries.emplace_back(std::move(item.first), std::move(paths));
   }
 
-  auto mojom_scan_result = ToMojom(scan_result);
-  CHECK(device::mojom::IsKnownEnumValue(mojom_scan_result));
+  device::mojom::FingerprintMessage converted_msg;
 
-  for (auto& observer : observers_) {
-    observer->OnAuthScanDone(
-        mojom_scan_result,
-        base::flat_map<std::string, std::vector<std::string>>(entries));
+  switch (msg.msg_case()) {
+    case biod::FingerprintMessage::MsgCase::kScanResult:
+      converted_msg.set_scan_result(ToMojom(msg.scan_result()));
+      CHECK(device::mojom::IsKnownEnumValue(converted_msg.get_scan_result()));
+      break;
+    case biod::FingerprintMessage::MsgCase::kError:
+      converted_msg.set_fingerprint_error(ToMojom(msg.error()));
+      CHECK(device::mojom::IsKnownEnumValue(
+          converted_msg.get_fingerprint_error()));
+      break;
+    default:
+      LOG(ERROR) << "Unsupported fingerprint message received";
+      NOTREACHED();
+      return;
+  }
+
+  if (converted_msg.which() ==
+      device::mojom::FingerprintMessage::Tag::kScanResult) {
+    for (auto& observer : observers_) {
+      observer->OnAuthScanDone(
+          converted_msg.get_scan_result(),
+          base::flat_map<std::string, std::vector<std::string>>(entries));
+    }
+  } else {
+    LOG(WARNING) << "Ignoring error code in FingerprintMessage";
   }
 }
 

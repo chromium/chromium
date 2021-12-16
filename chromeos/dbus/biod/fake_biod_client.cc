@@ -111,8 +111,11 @@ void FakeBiodClient::SendAuthScanDone(const std::string& fingerprint,
     }
   }
 
+  biod::FingerprintMessage msg;
+  msg.set_scan_result(type_result);
+
   for (auto& observer : observers_)
-    observer.BiodAuthScanDoneReceived(type_result, matches);
+    observer.BiodAuthScanDoneReceived(msg, matches);
 }
 
 void FakeBiodClient::SendSessionFailed() {

@@ -22,11 +22,38 @@ enum ScanResult {
 };
 
 // Note: this needs to stay in sync with
+// src/platform2/system_api/dbus/biod/constants.proto in the ChromeOS repo.
+// Protobuf enum starts with 1 (0 is not used for compatibility with android),
+// but in this enum we add 'catch all' field at 0. It is required by enum
+// histogram guidelines.
+// Please modify tools/metrics/histograms/enums.xml when changing this.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum FingerprintError {
+  UNKNOWN = 0,
+  HW_UNAVAILABLE = 1,
+  UNABLE_TO_PROCESS = 2,
+  TIMEOUT = 3,
+  NO_SPACE = 4,
+  CANCELED = 5,
+  UNABLE_TO_REMOVE = 6,
+  LOCKOUT = 7,
+  NO_TEMPLATES = 8,
+};
+
+// Note: this needs to stay in sync with
 // src/platform2/system_api/dbus/biod/dbus-constants.proto in the ChromeOS
 // repro.
 enum BiometricType {
   UNKNOWN = 0,
   FINGERPRINT = 1,
+};
+
+// Note: this needs to stay in sync with
+// src/platform2/system_api/dbus/biod/messages.proto in the ChromeOS repo.
+union FingerprintMessage {
+  FingerprintError fingerprint_error;
+  ScanResult scan_result;
 };
 
 // This interface is ChromeOS-specific. If it is ever desired to support a more
