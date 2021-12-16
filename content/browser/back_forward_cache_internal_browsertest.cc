@@ -788,11 +788,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {
 //
 // When the eviction occurs, the in flight NavigationRequest to the cached
 // document should be reissued (cancelled and replaced by a normal navigation).
-//
-// Flaky on most platforms (see crbug.com/1136683)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    DISABLED_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse) {
+    ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
