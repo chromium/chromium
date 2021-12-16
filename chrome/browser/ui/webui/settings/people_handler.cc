@@ -149,11 +149,11 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
 }
 
 // Guaranteed to return a valid result (or crash).
-void ParseConfigurationArguments(const base::ListValue* args,
+void ParseConfigurationArguments(base::Value::ConstListView args,
                                  SyncConfigInfo* config,
                                  const base::Value** callback_id) {
-  const std::string& json = args->GetList()[1].GetString();
-  if ((*callback_id = &args->GetList()[0]) && !json.empty())
+  const std::string& json = args[1].GetString();
+  if ((*callback_id = &args[0]) && !json.empty())
     CHECK(GetConfiguration(json, config));
   else
     NOTREACHED();
@@ -226,72 +226,72 @@ PeopleHandler::~PeopleHandler() {
 
 void PeopleHandler::RegisterMessages() {
   InitializeSyncBlocker();
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupDidClosePage",
       base::BindRepeating(&PeopleHandler::OnDidClosePage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupSetDatatypes",
       base::BindRepeating(&PeopleHandler::HandleSetDatatypes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupSetEncryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetEncryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupSetDecryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetDecryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupShowSetupUI",
       base::BindRepeating(&PeopleHandler::HandleShowSyncSetupUI,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupGetSyncStatus",
       base::BindRepeating(&PeopleHandler::HandleGetSyncStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncPrefsDispatch",
       base::BindRepeating(&PeopleHandler::HandleSyncPrefsDispatch,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncTrustedVaultBannerStateDispatch",
       base::BindRepeating(&PeopleHandler::HandleTrustedVaultBannerStateDispatch,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "AttemptUserExit",
       base::BindRepeating(&PeopleHandler::HandleAttemptUserExit,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "TurnOnSync", base::BindRepeating(&PeopleHandler::HandleTurnOnSync,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "TurnOffSync", base::BindRepeating(&PeopleHandler::HandleTurnOffSync,
                                          base::Unretained(this)));
 #else
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
                                               base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupPauseSync", base::BindRepeating(&PeopleHandler::HandlePauseSync,
                                                 base::Unretained(this)));
 #endif
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupGetStoredAccounts",
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SyncStartKeyRetrieval",
       base::BindRepeating(&PeopleHandler::HandleStartKeyRetrieval,
                           base::Unretained(this)));
@@ -374,10 +374,10 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void PeopleHandler::OnDidClosePage(const base::ListValue* args) {
+void PeopleHandler::OnDidClosePage(base::Value::ConstListView args) {
   // Don't mark setup as complete if "didAbort" is true, or if authentication
   // is still needed.
-  if (!args->GetList()[0].GetBool() && !IsProfileAuthNeededOrHasErrors()) {
+  if (!args[0].GetBool() && !IsProfileAuthNeededOrHasErrors()) {
     MarkFirstSetupComplete();
   }
 
@@ -390,7 +390,7 @@ syncer::SyncService* PeopleHandler::GetSyncService() const {
              : nullptr;
 }
 
-void PeopleHandler::HandleSetDatatypes(const base::ListValue* args) {
+void PeopleHandler::HandleSetDatatypes(base::Value::ConstListView args) {
   SyncConfigInfo configuration;
   const base::Value* callback_id = nullptr;
   ParseConfigurationArguments(args, &configuration, &callback_id);
@@ -426,10 +426,10 @@ void PeopleHandler::HandleSetDatatypes(const base::ListValue* args) {
     ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_CHOOSE);
 }
 
-void PeopleHandler::HandleGetStoredAccounts(const base::ListValue* args) {
+void PeopleHandler::HandleGetStoredAccounts(base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
@@ -456,7 +456,7 @@ base::Value PeopleHandler::GetStoredAccountsList() {
 #endif
   // Guest mode does not have a primary account (or an IdentityManager).
   if (profile_->IsGuestSession())
-    return base::ListValue();
+    return base::Value(base::Value::Type::LIST);
   // If DICE is disabled for this profile or unsupported on this platform (e.g.
   // Chrome OS), then show only the primary account, whether or not that account
   // has consented to sync.
@@ -468,11 +468,12 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   return accounts;
 }
 
-void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
+void PeopleHandler::HandleStartSyncingWithEmail(
+    base::Value::ConstListView args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
-  const base::Value& email = args->GetList()[0];
-  const base::Value& is_default_promo_account = args->GetList()[1];
+  const base::Value& email = args[0];
+  const base::Value& is_default_promo_account = args[1];
 
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
@@ -491,8 +492,9 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
 #endif
 }
 
-void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+void PeopleHandler::HandleSetEncryptionPassphrase(
+    base::Value::ConstListView args) {
+  const base::Value& callback_id = args[0];
 
   // Check the SyncService is up and running before retrieving SyncUserSettings,
   // which contains the encryption-related APIs.
@@ -507,7 +509,7 @@ void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
   syncer::SyncUserSettings* sync_user_settings =
       GetSyncService()->GetUserSettings();
 
-  const std::string& passphrase = args->GetList()[1].GetString();
+  const std::string& passphrase = args[1].GetString();
   bool successfully_set = false;
   if (passphrase.empty()) {
     successfully_set = false;
@@ -531,8 +533,9 @@ void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
 
-void PeopleHandler::HandleSetDecryptionPassphrase(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+void PeopleHandler::HandleSetDecryptionPassphrase(
+    base::Value::ConstListView args) {
+  const base::Value& callback_id = args[0];
 
   // Check the SyncService is up and running before retrieving SyncUserSettings,
   // which contains the encryption-related APIs.
@@ -547,7 +550,7 @@ void PeopleHandler::HandleSetDecryptionPassphrase(const base::ListValue* args) {
   syncer::SyncUserSettings* sync_user_settings =
       GetSyncService()->GetUserSettings();
 
-  const std::string& passphrase = args->GetList()[1].GetString();
+  const std::string& passphrase = args[1].GetString();
   bool successfully_set = false;
   if (!passphrase.empty() && sync_user_settings->IsPassphraseRequired()) {
     successfully_set = sync_user_settings->SetDecryptionPassphrase(passphrase);
@@ -559,7 +562,7 @@ void PeopleHandler::HandleSetDecryptionPassphrase(const base::ListValue* args) {
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
 
-void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue* args) {
+void PeopleHandler::HandleShowSyncSetupUI(base::Value::ConstListView args) {
   AllowJavascript();
 
   syncer::SyncService* service = GetSyncService();
@@ -591,17 +594,17 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue* args) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS, we need to sign out the user session to fix an auth error, so
 // the user goes through the real signin flow to generate a new auth token.
-void PeopleHandler::HandleAttemptUserExit(const base::ListValue* args) {
+void PeopleHandler::HandleAttemptUserExit(base::Value::ConstListView args) {
   DVLOG(1) << "Signing out the user to fix a sync error.";
   chrome::AttemptUserExit();
 }
 
-void PeopleHandler::HandleTurnOnSync(const base::ListValue* args) {
+void PeopleHandler::HandleTurnOnSync(base::Value::ConstListView args) {
   // TODO(https://crbug.com/1050677)
   NOTIMPLEMENTED();
 }
 
-void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
+void PeopleHandler::HandleTurnOffSync(base::Value::ConstListView args) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   DCHECK(signin_util::IsUserSignoutAllowedForProfile(profile_));
@@ -613,7 +616,7 @@ void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
+void PeopleHandler::HandleStartSignin(base::Value::ConstListView args) {
   AllowJavascript();
 
   // Should only be called if the user is not already signed in, has a auth
@@ -627,10 +630,10 @@ void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void PeopleHandler::HandleSignout(const base::ListValue* args) {
+void PeopleHandler::HandleSignout(base::Value::ConstListView args) {
   bool delete_profile = false;
-  if (args->GetList()[0].is_bool())
-    delete_profile = args->GetList()[0].GetBool();
+  if (args[0].is_bool())
+    delete_profile = args[0].GetBool();
   base::FilePath profile_path = profile_->GetPath();
 
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
@@ -675,7 +678,7 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
   }
 }
 
-void PeopleHandler::HandlePauseSync(const base::ListValue* args) {
+void PeopleHandler::HandlePauseSync(base::Value::ConstListView args) {
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -686,7 +689,7 @@ void PeopleHandler::HandlePauseSync(const base::ListValue* args) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
+void PeopleHandler::HandleStartKeyRetrieval(base::Value::ConstListView args) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   if (!browser)
@@ -696,22 +699,22 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
       browser, syncer::TrustedVaultUserActionTriggerForUMA::kSettings);
 }
 
-void PeopleHandler::HandleGetSyncStatus(const base::ListValue* args) {
+void PeopleHandler::HandleGetSyncStatus(base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id, *GetSyncStatusDictionary());
 }
 
-void PeopleHandler::HandleSyncPrefsDispatch(const base::ListValue* args) {
+void PeopleHandler::HandleSyncPrefsDispatch(base::Value::ConstListView args) {
   AllowJavascript();
   PushSyncPrefs();
 }
 
 void PeopleHandler::HandleTrustedVaultBannerStateDispatch(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   PushTrustedVaultBannerState();
 }
