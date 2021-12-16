@@ -67,7 +67,7 @@ void CrOSHandwritingRecognitionServiceImpl::CreateHandwritingRecognizer(
         CreateHandwritingRecognizerCallback callback) {
   if (!IsCrOSLibHandwritingRootfsEnabled()) {
     std::move(callback).Run(
-        handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+        handwriting::mojom::CreateHandwritingRecognizerResult::kNotSupported,
         mojo::NullRemote());
     return;
   }

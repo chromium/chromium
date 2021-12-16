@@ -31,7 +31,7 @@ void OnCreateHandwritingRecognizer(
   switch (result) {
     case handwriting::mojom::blink::CreateHandwritingRecognizerResult::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, "Internal error."));
+          DOMExceptionCode::kUnknownError, "Internal error."));
       return;
     }
     case handwriting::mojom::blink::CreateHandwritingRecognizerResult::

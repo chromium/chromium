@@ -33,9 +33,9 @@ TEST_F(HandwritingRecognitionServiceImplTest, CreateHandwritingRecognizer) {
           [&](handwriting::mojom::CreateHandwritingRecognizerResult result,
               mojo::PendingRemote<handwriting::mojom::HandwritingRecognizer>
                   remote) {
-            EXPECT_EQ(
-                result,
-                handwriting::mojom::CreateHandwritingRecognizerResult::kError);
+            EXPECT_EQ(result,
+                      handwriting::mojom::CreateHandwritingRecognizerResult::
+                          kNotSupported);
             EXPECT_TRUE(!remote);
             is_callback_called = true;
             runloop.Quit();
