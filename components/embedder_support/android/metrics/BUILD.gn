@@ -35,6 +35,12 @@ static_library("metrics") {
   ]
 }
 
+java_cpp_enum("java_enum_srcjar") {
+  # External code should depend on ":java" instead.
+  visibility = [ ":*" ]
+  sources = [ "android_metrics_service_client.h" ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/metrics/AndroidMetricsLogUploader.java",
@@ -45,6 +51,7 @@ android_library("java") {
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  srcjar_deps = [ ":java_enum_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

@@ -181,6 +181,19 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
     return metrics_state_manager_.get();
   }
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.metrics
+  enum class InstallerPackageType {
+    // App has been initially preinstalled in the system image.
+    SYSTEM_APP,
+    // App has been installed/updated by Google Play Store. Doesn't apply for
+    // apps whose most recent updates are sideloaded, even if the app was
+    // installed via Google Play Store.
+    GOOGLE_PLAY_STORE,
+    // App has been Sideloaded or installed/updated through a 3rd party app
+    // store.
+    OTHER,
+  };
+
   // Returns the embedding application's package name (unconditionally). The
   // value returned by this method shouldn't be logged/stored anywhere, callers
   // should use `GetAppPackageNameIfLoggable`.
@@ -211,6 +224,9 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // indicate reporting is disabled. Sampling is due to storage/bandwidth
   // considerations.
   bool IsInSample() const;
+
+  // Returns the installer type of the app.
+  virtual InstallerPackageType GetInstallerPackageType();
 
   // Determines if the embedder app is the type of app for which we may log the
   // package name. If this returns false, GetAppPackageNameIfLoggable() must

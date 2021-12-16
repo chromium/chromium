@@ -172,6 +172,10 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
 
+  // Gets the embedding app's package name if it's OK to log. Otherwise, this
+  // returns the empty string.
+  std::string GetAppPackageNameIfLoggable() override;
+
   // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
   // enabled:
   // - It returns `true` if the app is in the list of allowed apps.

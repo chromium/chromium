@@ -14,6 +14,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +22,9 @@ namespace android_webview {
 
 using AppPackageNameLoggingRuleStatus =
     AwMetricsServiceClient::AppPackageNameLoggingRuleStatus;
+
+using InstallerPackageType =
+    metrics::AndroidMetricsServiceClient::InstallerPackageType;
 
 namespace {
 
@@ -243,6 +247,66 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
       AppPackageNameLoggingRuleStatus::kSameVersionAsCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+}
+
+TEST_F(AwMetricsServiceClientTest, TestGetAppPackageNameIfLoggable) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      android_webview::features::kWebViewAppsPackageNamesAllowlist);
+
+  class TestClient : public AwMetricsServiceClient {
+   public:
+    TestClient()
+        : AwMetricsServiceClient(
+              std::make_unique<AwMetricsServiceClientTestDelegate>()) {}
+    ~TestClient() override = default;
+
+    bool ShouldRecordPackageName() override {
+      return should_record_package_name_;
+    }
+
+    void SetShouldRecordPackageName(bool value) {
+      should_record_package_name_ = value;
+    }
+
+    InstallerPackageType GetInstallerPackageType() override {
+      return installer_type_;
+    }
+
+    void SetInstallerPackageType(InstallerPackageType installer_type) {
+      installer_type_ = installer_type;
+    }
+
+   private:
+    bool should_record_package_name_;
+    InstallerPackageType installer_type_;
+  };
+
+  TestClient client;
+
+  // Package names of system apps are always loggable even if they are not in
+  // the allowlist of apps.
+  client.SetInstallerPackageType(InstallerPackageType::SYSTEM_APP);
+  client.SetShouldRecordPackageName(false);
+  EXPECT_FALSE(client.GetAppPackageNameIfLoggable().empty());
+  client.SetShouldRecordPackageName(true);
+  EXPECT_FALSE(client.GetAppPackageNameIfLoggable().empty());
+
+  // Package names of APPs that are installed by the Play Store are loggable if
+  // they are in the allowlist of apps.
+  client.SetInstallerPackageType(InstallerPackageType::GOOGLE_PLAY_STORE);
+  client.SetShouldRecordPackageName(false);
+  EXPECT_TRUE(client.GetAppPackageNameIfLoggable().empty());
+  client.SetShouldRecordPackageName(true);
+  EXPECT_FALSE(client.GetAppPackageNameIfLoggable().empty());
+
+  // Package names of APPs that are not system apps nor installed by the Play
+  // Store are not loggable.
+  client.SetInstallerPackageType(InstallerPackageType::OTHER);
+  client.SetShouldRecordPackageName(false);
+  EXPECT_TRUE(client.GetAppPackageNameIfLoggable().empty());
+  client.SetShouldRecordPackageName(true);
+  EXPECT_TRUE(client.GetAppPackageNameIfLoggable().empty());
 }
 
 }  // namespace android_webview

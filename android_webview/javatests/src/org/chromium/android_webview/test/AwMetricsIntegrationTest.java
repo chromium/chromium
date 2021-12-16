@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
+import org.chromium.components.metrics.InstallerPackageType;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
@@ -385,7 +386,8 @@ public class AwMetricsIntegrationTest {
 
         mRule.runOnUiThread(() -> {
             AwBrowserProcess.setWebViewPackageName(appPackageName);
-            AndroidMetricsServiceClient.setCanRecordPackageNameForAppTypeForTesting(true);
+            AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
+                    InstallerPackageType.GOOGLE_PLAY_STORE);
             // A valid version string and non expired date means the app package name should be
             // recorded.
             AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
