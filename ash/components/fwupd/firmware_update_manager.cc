@@ -346,6 +346,12 @@ void FirmwareUpdateManager::OnInstallResponse(bool success) {
 void FirmwareUpdateManager::BindInterface(
     mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
         pending_receiver) {
+  // Clear any bound receiver, since this service is a singleton and is bound
+  // to the firmware updater UI it's possible that the app can be closed and
+  // reopened multiple times resulting in multiple attempts to bind to this
+  // receiver.
+  receiver_.reset();
+
   receiver_.Bind(std::move(pending_receiver));
 }
 
