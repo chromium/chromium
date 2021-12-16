@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 #include <set>
@@ -822,11 +824,13 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   }
 
   for (HTMLElement* element : elements_to_reveal) {
-    element->removeAttribute(html_names::kHiddenAttr);
+    element->DispatchEvent(
+        *Event::CreateBubble(event_type_names::kBeforematch));
   }
 
-  // TODO(crbug.com/1055002): Fire the beforematch event here on all
-  //   |elements_to_reveal|.
+  for (HTMLElement* element : elements_to_reveal) {
+    element->removeAttribute(html_names::kHiddenAttr);
+  }
 
   return elements_to_reveal.size();
 }

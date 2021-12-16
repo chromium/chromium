@@ -15,6 +15,7 @@
 async_test(t => {
   const match = document.createElement('div');
   match.textContent = 'match';
+  match.setAttribute('hidden', 'until-found');
   document.body.appendChild(match);
 
   match.addEventListener('beforematch', () => {

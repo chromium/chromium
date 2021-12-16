@@ -155,10 +155,6 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
     // Range to fire beforematch on and scroll to. active_match_ may get
     // unassigned during the async steps, so we need to save it here.
     Persistent<Range> range;
-
-    // If the match had the content-visibility: hidden-matchable property in the
-    // ancestor chain at the time of finding the matching text.
-    bool was_match_hidden;
   };
 
   // Same as Find but with extra internal parameters used to track incremental
@@ -224,7 +220,6 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
     return *owner_frame_;
   }
 
-  void FireBeforematchEvent(std::unique_ptr<AsyncScrollContext> context);
   void Scroll(std::unique_ptr<AsyncScrollContext> context);
 
   Member<WebLocalFrameImpl> owner_frame_;

@@ -174,16 +174,6 @@ bool FindInPage::FindInternal(int identifier,
   // Unlikely, but just in case we try to find-in-page on a detached frame.
   DCHECK(frame_->GetFrame()->GetPage());
 
-  auto forced_activatable_locks = frame_->GetFrame()
-                                      ->GetDocument()
-                                      ->GetDisplayLockDocumentState()
-                                      .GetScopedForceActivatableLocks();
-
-  // Up-to-date, clean tree is required for finding text in page, since it
-  // relies on TextIterator to look over the text.
-  frame_->GetFrame()->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
-
   return EnsureTextFinder().Find(identifier, search_text, options,
                                  wrap_within_frame, active_now);
 }

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -70,21 +71,6 @@
 
 namespace blink {
 
-namespace {
-
-// Returns the element which the beforematch event should be fired on given a
-// matching range.
-Element* GetBeforematchElement(const Range& range) {
-  // Find-in-page matches can't span multiple block-level elements (because
-  // the text will be broken by newlines between blocks), so first we find the
-  // block-level element which contains the match.
-  // This means we only need to traverse up from one node in the range, in
-  // this case we are traversing from the start position of the range.
-  return EnclosingBlock(range.StartPosition(), kCannotCrossEditingBoundary);
-}
-
-}  // namespace
-
 TextFinder::FindMatch::FindMatch(Range* range, int ordinal)
     : range_(range), ordinal_(ordinal) {}
 
@@ -95,8 +81,10 @@ void TextFinder::FindMatch::Trace(Visitor* visitor) const {
 static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
   const Node& first_node = *range->FirstNode();
   bool needs_style_and_layout = false;
+  bool needs_layout_shift_allowance = false;
 
-  // TODO(vmpstr): Rework this, since it is only used for bookkeeping.
+  // TODO(crbug.com/1280097): Rework this, since it is only used for
+  // bookkeeping.
   DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
       EphemeralRangeInFlatTree(range));
 
@@ -110,16 +98,31 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
   if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
       HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
     needs_style_and_layout = true;
+    needs_layout_shift_allowance = true;
     UseCounter::Count(first_node.GetDocument(),
                       WebFeature::kAutoExpandedDetailsForFindInPage);
   }
 
   // If the active match is hidden inside a hidden=until-found element, then we
   // should reveal it so find-in-page can scroll to it.
-  needs_style_and_layout |=
-      RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           first_node.GetExecutionContext()) &&
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
+      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node)) {
+    needs_style_and_layout = true;
+    needs_layout_shift_allowance = true;
+    UseCounter::Count(first_node.GetDocument(),
+                      WebFeature::kBeforematchRevealedHiddenMatchable);
+    first_node.GetDocument()
+        .MarkHasFindInPageBeforematchExpandedHiddenMatchable();
+  }
+
+  if (needs_layout_shift_allowance) {
+    first_node.GetDocument()
+        .GetFrame()
+        ->View()
+        ->GetLayoutShiftTracker()
+        .NotifyFindInPageInput();
+  }
 
   // Also reveal expandables up the frame tree.
   for (Frame *frame = first_node.GetDocument().GetFrame(),
@@ -165,8 +168,6 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
 static void ScrollToVisible(Range* match) {
   const EphemeralRangeInFlatTree range(match);
   const Node& first_node = *match->FirstNode();
-
-  AutoExpandSearchableHiddenElementsUpFrameTree(match);
 
   // We don't always have a LayoutObject for the node we're trying to scroll to
   // after the async step: crbug.com/1129341
@@ -217,6 +218,16 @@ bool TextFinder::FindInternal(int identifier,
                               bool* active_now,
                               Range* first_match,
                               bool wrapped_around) {
+  // Searching text without forcing DisplayLocks is likely to hit bad layout
+  // state, so force them here and update style and layout in order to get good
+  // layout state.
+  auto forced_activatable_locks = GetFrame()
+                                      ->GetDocument()
+                                      ->GetDisplayLockDocumentState()
+                                      .GetScopedForceActivatableLocks();
+  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kFindInPage);
+
   if (options.new_session) {
     // This find-in-page is redone due to the frame finishing loading.
     // If we can, just reuse the old active match;
@@ -301,16 +312,10 @@ bool TextFinder::FindInternal(int identifier,
   scroll_context->range = active_match_.Get();
   scroll_context->first_match = first_match ? first_match : active_match_.Get();
   scroll_context->wrapped_around = wrapped_around;
-  Element* beforematch_element = GetBeforematchElement(*active_match_);
-  scroll_context->was_match_hidden =
-      beforematch_element &&
-      DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
-          *beforematch_element);
   if (options.run_synchronously_for_testing) {
-    FireBeforematchEvent(std::move(scroll_context));
+    Scroll(std::move(scroll_context));
   } else {
-    scroll_task_.Reset(WTF::Bind(&TextFinder::FireBeforematchEvent,
-                                 WrapWeakPersistent(this),
+    scroll_task_.Reset(WTF::Bind(&TextFinder::Scroll, WrapWeakPersistent(this),
                                  std::move(scroll_context)));
     GetFrame()->GetDocument()->EnqueueAnimationFrameTask(
         scroll_task_.callback());
@@ -902,98 +907,25 @@ void TextFinder::Trace(Visitor* visitor) const {
   visitor->Trace(find_matches_cache_);
 }
 
-void TextFinder::FireBeforematchEvent(
-    std::unique_ptr<AsyncScrollContext> context) {
-  // During the async step, the match may have been removed from the dom.
-  if (context->range->collapsed()) {
-    // Up-to-date, clean tree is required for finding text in page, since it
-    // relies on TextIterator to look over the text.
-    GetFrame()->GetDocument()->UpdateStyleAndLayout(
-        DocumentUpdateReason::kFindInPage);
+void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
+  AutoExpandSearchableHiddenElementsUpFrameTree(context->range);
 
+  // During the async step or AutoExpandSearchableHiddenElementsUpFrameTree, the
+  // match may have been removed from the dom, gotten DisplayLocked, etc.
+  if (context->range->collapsed() || !context->range->IsConnected() ||
+      DisplayLockUtilities::LockedAncestorPreventingPaint(
+          *context->range->FirstNode())) {
     // If the range we were going to scroll to was removed, then we should
     // continue to search for the next match.
     // We don't need to worry about the case where another Find has already been
     // initiated, because if it was, then the task to run this would have been
     // canceled.
     active_match_ = context->range;
+
     FindInternal(context->identifier, context->search_text, context->options,
                  context->wrap_within_frame, /*active_now=*/nullptr,
                  context->first_match, context->wrapped_around);
     return;
-  }
-
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-          GetFrame()->GetDocument()->GetExecutionContext())) {
-    Element* beforematch_element = GetBeforematchElement(*context->range);
-    // Note that we don't check the `range.EndPosition()` since we just activate
-    // the beginning of the range. In find-in-page cases, the end position is
-    // the same since the matches cannot cross block boundaries. However, in
-    // scroll-to-text, the range might be different, but we still just activate
-    // the beginning of the range. See
-    // https://github.com/WICG/display-locking/issues/125 for more details.
-    if (beforematch_element) {
-      // If the beforematch event handler causes layout shift, then we should
-      // give it layout shift allowance because it is responding to the user
-      // initiated find-in-page.
-      OwnerFrame()
-          .GetFrameView()
-          ->GetLayoutShiftTracker()
-          .NotifyFindInPageInput();
-      beforematch_element->DispatchEvent(
-          *Event::CreateBubble(event_type_names::kBeforematch));
-    }
-    // TODO(jarhar): Consider what to do based on DOM/style modifications made
-    // by the beforematch event here and write tests for it once we decide on a
-    // behavior here: https://github.com/WICG/display-locking/issues/150
-  }
-
-  if (context->options.run_synchronously_for_testing) {
-    // We need to update style and layout to account for script modifying
-    // dom/style before scrolling when we are running synchronously.
-    GetFrame()->GetDocument()->UpdateStyleAndLayout(
-        DocumentUpdateReason::kFindInPage);
-    Scroll(std::move(context));
-  } else {
-    scroll_task_.Reset(WTF::Bind(&TextFinder::Scroll, WrapWeakPersistent(this),
-                                 std::move(context)));
-    GetFrame()->GetDocument()->EnqueueAnimationFrameTask(
-        scroll_task_.callback());
-  }
-}
-
-void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
-  // The beforematch event, as well as any other script that may have run during
-  // the async step, may have removed the matching text from the dom, in which
-  // case we shouldn't scroll to it.
-  // Likewise, if the target scroll element is display locked, then we shouldn't
-  // scroll to it.
-  Element* beforematch_element = GetBeforematchElement(*context->range);
-  if (context->range->collapsed() || !context->range->IsConnected() ||
-      (beforematch_element &&
-       DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
-           *beforematch_element))) {
-    // If the range we were going to scroll to was removed or display locked,
-    // then we should continue to search for the next match.
-    // We don't need to worry about the case where another Find has already been
-    // initiated, because if it was, then the task to run this would have been
-    // canceled.
-    // We also need to re-assign to active_match_ here in order to make sure the
-    // search starts from context->range. active_match_ may have been unassigned
-    // during the async steps.
-    active_match_ = context->range->IsConnected() ? context->range : nullptr;
-    FindInternal(context->identifier, context->search_text, context->options,
-                 context->wrap_within_frame, /*active_now=*/nullptr,
-                 context->first_match, context->wrapped_around);
-    return;
-  }
-
-  if (context->was_match_hidden) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kBeforematchRevealedHiddenMatchable);
-    GetFrame()
-        ->GetDocument()
-        ->MarkHasFindInPageBeforematchExpandedHiddenMatchable();
   }
 
   ScrollToVisible(context->range);
