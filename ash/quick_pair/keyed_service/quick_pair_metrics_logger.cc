@@ -209,10 +209,16 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
     absl::optional<AccountKeyFailure> error) {
-  if (device->protocol != Protocol::kFastPairRetroactive)
-    return;
+  if (device->protocol == Protocol::kFastPairRetroactive)
+    RecordRetroactivePairingResult(/*success=*/!error.has_value());
 
-  RecordRetroactivePairingResult(/*success=*/!error.has_value());
+  if (error) {
+    RecordAccountKeyResult(*device, /*success=*/false);
+    RecordAccountKeyFailureReason(*device, error.value());
+    return;
+  }
+
+  RecordAccountKeyResult(*device, /*success=*/true);
 }
 
 void QuickPairMetricsLogger::OnCompanionAppAction(scoped_refptr<Device> device,

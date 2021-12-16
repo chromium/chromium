@@ -62,6 +62,15 @@ const char kFastPairPairResultMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.SubsequentPairingProtocol";
 const char kFastPairPairResultMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
+const char kFastPairAccountKeyWriteResultMetricInitial[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.InitialPairingProtocol";
+const char kFastPairAccountKeyWriteResultMetricRetroactive[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "RetroactivePairingProtocol";
+const char kFastPairAccountKeyWriteFailureMetricInitial[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.InitialPairingProtocol";
+const char kFastPairAccountKeyWriteFailureMetricRetroactive[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.RetroactivePairingProtocol";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
@@ -1551,20 +1560,90 @@ TEST_F(QuickPairMetricsLoggerTest, DevicePaired) {
 
 TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Initial) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
   SimulateAccountKeyWritten(Protocol::kFastPairInitial);
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Retroactive) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
   SimulateAccountKeyWritten(Protocol::kFastPairRetroactive);
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Retroactive) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
   SimulateAccountKeyFailure(Protocol::kFastPairRetroactive);
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Initial) {
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
+  SimulateAccountKeyFailure(Protocol::kFastPairInitial);
+  histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteResultMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(
+      kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Initial) {

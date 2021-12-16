@@ -39,6 +39,20 @@ const char kFastPairPairResultSubsequentMetric[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.SubsequentPairingProtocol";
 const char kFastPairPairResultRetroactiveMetric[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
+const char kFastPairAccountKeyWriteResultInitialMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.InitialPairingProtocol";
+const char kFastPairAccountKeyWriteResultSubsequentMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "SubsequentPairingProtocol";
+const char kFastPairAccountKeyWriteResultRetroactiveMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "RetroactivePairingProtocol";
+const char kFastPairAccountKeyWriteFailureInitialMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.InitialPairingProtocol";
+const char kFastPairAccountKeyWriteFailureSubsequentMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.SubsequentPairingProtocol";
+const char kFastPairAccountKeyWriteFailureRetroactiveMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.RetroactivePairingProtocol";
 
 }  // namespace
 
@@ -130,6 +144,41 @@ void RecordPairingFailureReason(const Device& device, PairFailure failure) {
     case Protocol::kFastPairSubsequent:
       base::UmaHistogramSparse(kFastPairPairFailureSubsequentMetric,
                                static_cast<int>(failure));
+      break;
+  }
+}
+
+void RecordAccountKeyFailureReason(const Device& device,
+                                   AccountKeyFailure failure) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureInitialMetric,
+                               static_cast<int>(failure));
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureRetroactiveMetric,
+                               static_cast<int>(failure));
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureSubsequentMetric,
+                               static_cast<int>(failure));
+      break;
+  }
+}
+
+void RecordAccountKeyResult(const Device& device, bool success) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultInitialMetric,
+                                success);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultRetroactiveMetric,
+                                success);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultSubsequentMetric,
+                                success);
       break;
   }
 }
