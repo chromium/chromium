@@ -8,6 +8,8 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android)
+
 preprocess_folder = "preprocessed"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 resources_grd_file = "$target_gen_dir/resources.grd"

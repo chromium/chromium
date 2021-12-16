@@ -123,7 +123,6 @@ if (enable_js_type_check) {
       "memory_internals:closure_compile",
       "predictors:closure_compile",
       "reset_password:closure_compile",
-      "support_tool:closure_compile",
     ]
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
@@ -178,6 +177,9 @@ if (enable_js_type_check) {
         "video_tutorials:closure_compile",
         "webapks:closure_compile",
       ]
+    } else {
+      # !is_android
+      deps += [ "support_tool:closure_compile" ]
     }
 
     # Note: The following targets should only be type-checked on Windows builds,
