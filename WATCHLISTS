@@ -1485,8 +1485,9 @@
         'ui/gl/gl_.*egl.*|'\
         'ui/gl/gl_.*ozone.*'
     },
-    'ozone_scenic': {
-      'filepath': 'ui/ozone/platform/scenic',
+    'ozone_fuchsia': {
+      'filepath': 'ui/ozone/platform/flatland/|'\
+                  'ui/ozone/platform/scenic/'
     },
     'page_info' : {
       'filepath': 'chrome/browser/ui/page_info/'\
@@ -2670,10 +2671,11 @@
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
     'ozone': ['ozone-reviews@chromium.org'],
-    'ozone_scenic': ['dworsham@google.com',
-                     'fuchsia-reviews@chromium.org',
-                     'rjkroege@chromium.org',
-                     'spang+watch@chromium.org'],
+    'ozone_fuchsia': ['dworsham@google.com',
+                      'emircan@google.com',
+                      'fuchsia-reviews@chromium.org',
+                      'rjkroege@chromium.org',
+                      'spang+watch@chromium.org'],
     'page_info' : ['permissions-reviews@chromium.org',
                    'olesiamarukhno+watch@google.com'],
     'page_load_metrics' : ['bmcquade+watch@chromium.org',
