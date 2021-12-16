@@ -25,6 +25,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -51,7 +52,9 @@ class ProtobufModelScorer : public Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const override;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;

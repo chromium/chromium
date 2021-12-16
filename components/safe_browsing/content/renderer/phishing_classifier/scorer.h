@@ -77,7 +77,9 @@ class Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const = 0;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // This method applies the TfLite visual model to the given bitmap. It
   // asynchronously returns the list of scores for each category, in the same
   // order as `tflite_thresholds()`.
