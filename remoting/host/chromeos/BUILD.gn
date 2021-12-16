@@ -6,6 +6,8 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("chromeos") {
   sources = [
+    "ash_display_util.cc",
+    "ash_display_util.h",
     "aura_desktop_capturer.cc",
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
@@ -41,6 +43,7 @@ source_set("chromeos") {
     "//remoting/host:clipboard",
     "//ui/aura/cursor",
     "//ui/base/cursor/mojom:cursor_type",
+    "//ui/display/manager",
   ]
 }
 

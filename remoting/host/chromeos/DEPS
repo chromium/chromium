@@ -1,3 +1,7 @@
+include_rules = [
+  "+ui/display",
+]
+
 specific_include_rules = {
   "remoting_service.cc": [
     "+chrome/browser/browser_process.h",
