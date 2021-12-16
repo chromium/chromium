@@ -51,8 +51,8 @@ struct NetworkTrafficAnnotationTag;
 // TransportClientSocketPool establishes network connections through using
 // ConnectJobs, and maintains a list of idle persistent sockets available for
 // reuse. It restricts the number of sockets open at a time, both globally, and
-// for each unique GroupId, which rougly corresponds to origin and privacy mode
-// setting. TransportClientSocketPools is designed to work with HTTP reuse
+// for each unique GroupId, which roughly corresponds to origin and privacy mode
+// setting. TransportClientSocketPool is designed to work with HTTP reuse
 // semantics, handling each request serially, before reusable sockets are
 // returned to the socket pool.
 //
