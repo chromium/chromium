@@ -102,7 +102,7 @@
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
     </style>
     <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
 
@@ -117,7 +117,7 @@
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
 
         <!--  Overriding AppCompat values -->
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
 
         <!-- Depending on if the support library or framework is inflating the

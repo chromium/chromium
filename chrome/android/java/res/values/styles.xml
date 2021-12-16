@@ -125,7 +125,7 @@
         <item name="android:textColorLink">@macro/default_text_color_link</item>
         <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
 

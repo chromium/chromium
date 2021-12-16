@@ -35,7 +35,7 @@
         <!-- Widget colors: checkboxes, switches, buttons, etc. -->
         <item name="colorControlNormal">@macro/default_control_color_normal</item>
         <item name="colorControlActivated">@macro/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayEnabled">true</item>
@@ -98,7 +98,7 @@
         <!-- Widget colors: checkboxes, switches, buttons, etc. -->
         <item name="colorControlNormal">@macro/default_control_color_normal</item>
         <item name="colorControlActivated">@macro/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayEnabled">true</item>
@@ -143,7 +143,7 @@
         <item name="colorAccent">@macro/default_control_color_active</item>
         <item name="colorControlNormal">@macro/default_control_color_normal</item>
         <item name="colorControlActivated">@macro/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="colorControlHighlight">@macro/default_control_color_highlight</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
 
         <!-- Depending on if the support library or framework is inflating the

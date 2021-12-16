@@ -19,8 +19,13 @@
 
     <!-- Control colors for toggles, checkboxes, ratio buttons, list item highlight, and accent.
      Note that these should NOT be used for icon tint. -->
-    <color name="control_highlight_color" tools:ignore="UnusedResources">
+    <color name="default_control_color_highlight_baseline" tools:ignore="UnusedResources">
         @color/default_control_color_highlight_light
+    </color>
+    <!-- A color state list cannot be used as view's background below Android Q, so we define this
+         color for older versions. -->
+    <color name="default_control_color_highlight">
+        @color/default_control_color_highlight_baseline
     </color>
 
     <!-- Favicons -->

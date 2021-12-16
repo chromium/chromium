@@ -20,4 +20,5 @@
 
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
+    <item name="control_highlight_alpha" format="float" type="dimen">0.1</item>
 </resources>
