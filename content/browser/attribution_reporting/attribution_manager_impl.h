@@ -20,7 +20,6 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +36,8 @@ extern CONTENT_EXPORT const base::TimeDelta
     kAttributionManagerQueueReportsInterval;
 
 class StoragePartitionImpl;
+
+struct SendResult;
 
 // Provides access to the manager owned by the default StoragePartition.
 class AttributionManagerProviderImpl : public AttributionManager::Provider {
@@ -153,7 +154,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnGetReportsToSendFromWebUI(base::OnceClosure done,
                                    std::vector<AttributionReport> reports);
 
-  void OnReportSent(SentReport info);
+  void OnReportSent(AttributionReport report, SendResult info);
 
   void OnReportStored(AttributionStorage::CreateReportResult result);
 

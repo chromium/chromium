@@ -28,7 +28,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/sent_report.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,7 +79,10 @@ class MockAttributionManagerObserver : public AttributionManager::Observer {
               (const DeactivatedSource& source),
               (override));
 
-  MOCK_METHOD(void, OnReportSent, (const SentReport& info), (override));
+  MOCK_METHOD(void,
+              OnReportSent,
+              (const AttributionReport& report, const SendResult& info),
+              (override));
 
   MOCK_METHOD(void,
               OnReportDropped,
@@ -91,6 +94,11 @@ class MockAttributionManagerObserver : public AttributionManager::Observer {
 class TestAttributionReporter
     : public AttributionManagerImpl::AttributionReporter {
  public:
+  struct CallbackData {
+    AttributionReport report;
+    SendResult info;
+  };
+
   TestAttributionReporter() = default;
   ~TestAttributionReporter() override = default;
 
@@ -101,13 +109,14 @@ class TestAttributionReporter
 
     for (auto& report : reports) {
       added_reports_.push_back(report);
-      SentReport info(std::move(report), sent_report_status_,
+      SendResult info(send_result_status_,
                       /*http_response_code=*/0);
 
       if (should_run_report_sent_callbacks_) {
-        report_sent_callback_.Run(std::move(info));
+        report_sent_callback_.Run(std::move(report), std::move(info));
       } else {
-        deferred_callbacks_.push_back(std::move(info));
+        deferred_callbacks_.push_back(
+            {.report = std::move(report), .info = std::move(info)});
       }
     }
 
@@ -117,14 +126,15 @@ class TestAttributionReporter
 
   void RunDeferredCallbacks() {
     for (auto& deferred_callback : deferred_callbacks_) {
-      report_sent_callback_.Run(std::move(deferred_callback));
+      report_sent_callback_.Run(std::move(deferred_callback.report),
+                                std::move(deferred_callback.info));
     }
     deferred_callbacks_.clear();
   }
 
   void RemoveAllReportsFromQueue() override {
     for (auto& deferred_callback : deferred_callbacks_) {
-      deferred_callback.status = SentReport::Status::kRemovedFromQueue;
+      deferred_callback.info.status = SendResult::Status::kRemovedFromQueue;
     }
     RunDeferredCallbacks();
   }
@@ -133,8 +143,8 @@ class TestAttributionReporter
     should_run_report_sent_callbacks_ = should_run_report_sent_callbacks;
   }
 
-  void SetSentReportStatus(SentReport::Status status) {
-    sent_report_status_ = status;
+  void SetSendResultStatus(SendResult::Status status) {
+    send_result_status_ = status;
   }
 
   const std::vector<AttributionReport>& added_reports() const {
@@ -152,18 +162,20 @@ class TestAttributionReporter
   }
 
   void SetReportSentCallback(
-      base::RepeatingCallback<void(SentReport)> report_sent_callback) {
+      base::RepeatingCallback<void(AttributionReport, SendResult)>
+          report_sent_callback) {
     report_sent_callback_ = std::move(report_sent_callback);
   }
 
  private:
-  base::RepeatingCallback<void(SentReport)> report_sent_callback_;
+  base::RepeatingCallback<void(AttributionReport, SendResult)>
+      report_sent_callback_;
   bool should_run_report_sent_callbacks_ = false;
-  SentReport::Status sent_report_status_ = SentReport::Status::kSent;
+  SendResult::Status send_result_status_ = SendResult::Status::kSent;
   size_t expected_num_reports_ = 0u;
   std::vector<AttributionReport> added_reports_;
   base::OnceClosure quit_closure_;
-  std::vector<SentReport> deferred_callbacks_;
+  std::vector<CallbackData> deferred_callbacks_;
 };
 
 // Time after impression that a conversion can first be sent. See
@@ -310,7 +322,7 @@ TEST_F(AttributionManagerImplTest,
        QueuedReportFailedWithShouldRetry_QueuedAgain) {
   base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportStatus(SentReport::Status::kTransientFailure);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kTransientFailure);
 
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -330,7 +342,7 @@ TEST_F(AttributionManagerImplTest,
        QueuedReportFailedWithoutShouldRetry_NotQueuedAgain) {
   base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportStatus(SentReport::Status::kFailure);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kFailure);
 
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -361,7 +373,7 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(false);
-  test_reporter_->SetSentReportStatus(SentReport::Status::kTransientFailure);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kTransientFailure);
 
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -426,7 +438,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
   base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportStatus(SentReport::Status::kTransientFailure);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kTransientFailure);
 
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -438,7 +450,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
   // into the queue 2 times.
   EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
-  test_reporter_->SetSentReportStatus(SentReport::Status::kOffline);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kOffline);
   task_environment_.FastForwardBy(base::Minutes(30));
   EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
@@ -495,23 +507,23 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer,
-              OnReportSent(Field(
-                  &SentReport::report,
-                  Property(&AttributionReport::impression,
-                           Property(&StorableSource::source_event_id, 1u)))));
-  EXPECT_CALL(observer,
-              OnReportSent(Field(
-                  &SentReport::report,
-                  Property(&AttributionReport::impression,
-                           Property(&StorableSource::source_event_id, 2u)))));
-  EXPECT_CALL(observer,
-              OnReportSent(Field(
-                  &SentReport::report,
-                  Property(&AttributionReport::impression,
-                           Property(&StorableSource::source_event_id, 3u)))));
+  EXPECT_CALL(
+      observer,
+      OnReportSent(Property(&AttributionReport::impression,
+                            Property(&StorableSource::source_event_id, 1u)),
+                   _));
+  EXPECT_CALL(
+      observer,
+      OnReportSent(Property(&AttributionReport::impression,
+                            Property(&StorableSource::source_event_id, 2u)),
+                   _));
+  EXPECT_CALL(
+      observer,
+      OnReportSent(Property(&AttributionReport::impression,
+                            Property(&StorableSource::source_event_id, 3u)),
+                   _));
 
-  test_reporter_->SetSentReportStatus(SentReport::Status::kSent);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kSent);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetSourceEventId(1)
                                          .SetExpiry(kImpressionExpiry)
@@ -521,7 +533,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
                                   kAttributionManagerQueueReportsInterval);
 
   // This one should be stored, as its status is `kDropped`.
-  test_reporter_->SetSentReportStatus(SentReport::Status::kDropped);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kDropped);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetSourceEventId(2)
                                          .SetExpiry(kImpressionExpiry)
@@ -530,7 +542,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
-  test_reporter_->SetSentReportStatus(SentReport::Status::kSent);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kSent);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetSourceEventId(3)
                                          .SetExpiry(kImpressionExpiry)
@@ -540,7 +552,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
                                   kAttributionManagerQueueReportsInterval);
 
   // This one shouldn't be stored, as it will be retried.
-  test_reporter_->SetSentReportStatus(SentReport::Status::kTransientFailure);
+  test_reporter_->SetSendResultStatus(SendResult::Status::kTransientFailure);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetSourceEventId(4)
                                          .SetExpiry(kImpressionExpiry)

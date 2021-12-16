@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 
-#include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
-struct CONTENT_EXPORT SentReport {
+struct CONTENT_EXPORT SendResult {
   enum class Status {
     kSent,
     // The report failed without receiving response headers.
@@ -30,14 +28,13 @@ struct CONTENT_EXPORT SentReport {
     kRemovedFromQueue,
   };
 
-  SentReport(AttributionReport report, Status status, int http_response_code);
-  SentReport(const SentReport& other);
-  SentReport& operator=(const SentReport& other);
-  SentReport(SentReport&& other);
-  SentReport& operator=(SentReport&& other);
-  ~SentReport();
-
-  AttributionReport report;
+  SendResult(Status status, int http_response_code)
+      : status(status), http_response_code(http_response_code) {}
+  SendResult(const SendResult& other) = default;
+  SendResult& operator=(const SendResult& other) = default;
+  SendResult(SendResult&& other) = default;
+  SendResult& operator=(SendResult&& other) = default;
+  ~SendResult() = default;
 
   Status status;
 
@@ -50,4 +47,4 @@ struct CONTENT_EXPORT SentReport {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_

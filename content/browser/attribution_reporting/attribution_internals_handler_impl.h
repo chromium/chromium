@@ -68,7 +68,8 @@ class AttributionInternalsHandlerImpl
   void OnReportsChanged() override;
   void OnSourceDeactivated(
       const AttributionStorage::DeactivatedSource& deactivated_source) override;
-  void OnReportSent(const SentReport& info) override;
+  void OnReportSent(const AttributionReport& report,
+                    const SendResult& info) override;
   void OnReportDropped(
       const AttributionStorage::CreateReportResult& result) override;
 

@@ -15,7 +15,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/sent_report.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -212,31 +212,33 @@ void AttributionInternalsHandlerImpl::OnSourceDeactivated(
   }
 }
 
-void AttributionInternalsHandlerImpl::OnReportSent(const SentReport& info) {
+void AttributionInternalsHandlerImpl::OnReportSent(
+    const AttributionReport& report,
+    const SendResult& info) {
   mojom::WebUIAttributionReport::Status status;
   switch (info.status) {
-    case SentReport::Status::kSent:
+    case SendResult::Status::kSent:
       status = mojom::WebUIAttributionReport::Status::kSent;
       break;
-    case SentReport::Status::kDropped:
+    case SendResult::Status::kDropped:
       status =
           mojom::WebUIAttributionReport::Status::kProhibitedByBrowserPolicy;
       break;
-    case SentReport::Status::kFailure:
+    case SendResult::Status::kFailure:
       status = mojom::WebUIAttributionReport::Status::kNetworkError;
       break;
-    case SentReport::Status::kTransientFailure:
-    case SentReport::Status::kOffline:
-    case SentReport::Status::kRemovedFromQueue:
+    case SendResult::Status::kTransientFailure:
+    case SendResult::Status::kOffline:
+    case SendResult::Status::kRemovedFromQueue:
       NOTREACHED();
       return;
   }
 
-  auto report =
-      WebUIAttributionReport(info.report, info.http_response_code, status);
+  auto web_report =
+      WebUIAttributionReport(report, info.http_response_code, status);
 
   for (auto& observer : observers_) {
-    observer->OnReportSent(report.Clone());
+    observer->OnReportSent(web_report.Clone());
   }
 }
 

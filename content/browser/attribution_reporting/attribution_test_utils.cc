@@ -145,9 +145,10 @@ void MockAttributionManager::NotifySourceDeactivated(
     observer.OnSourceDeactivated(source);
 }
 
-void MockAttributionManager::NotifyReportSent(const SentReport& info) {
+void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
+                                              const SendResult& info) {
   for (Observer& observer : observers_)
-    observer.OnReportSent(info);
+    observer.OnReportSent(report, info);
 }
 
 void MockAttributionManager::NotifyReportDropped(
@@ -352,9 +353,9 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const SentReport& a, const SentReport& b) {
-  const auto tie = [](const SentReport& info) {
-    return std::make_tuple(info.report, info.status, info.http_response_code);
+bool operator==(const SendResult& a, const SendResult& b) {
+  const auto tie = [](const SendResult& info) {
+    return std::make_tuple(info.status, info.http_response_code);
   };
   return tie(a) == tie(b);
 }
@@ -509,32 +510,32 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
              << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, SentReport::Status status) {
+std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
   switch (status) {
-    case SentReport::Status::kSent:
+    case SendResult::Status::kSent:
       out << "kSent";
       break;
-    case SentReport::Status::kTransientFailure:
+    case SendResult::Status::kTransientFailure:
       out << "kTransientFailure";
       break;
-    case SentReport::Status::kFailure:
+    case SendResult::Status::kFailure:
       out << "kFailure";
       break;
-    case SentReport::Status::kDropped:
+    case SendResult::Status::kDropped:
       out << "kDropped";
       break;
-    case SentReport::Status::kOffline:
+    case SendResult::Status::kOffline:
       out << "kOffline";
       break;
-    case SentReport::Status::kRemovedFromQueue:
+    case SendResult::Status::kRemovedFromQueue:
       out << "kRemovedFromQueue";
       break;
   }
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const SentReport& info) {
-  return out << "{report=" << info.report << ",status=" << info.status
+std::ostream& operator<<(std::ostream& out, const SendResult& info) {
+  return out << "{status=" << info.status
              << ",http_response_code=" << info.http_response_code << "}";
 }
 

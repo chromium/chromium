@@ -4,21 +4,55 @@
 
 #include "content/browser/attribution_reporting/attribution_reporter_impl.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/sent_report.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+// Called when |report| is to be sent over network, for logging metrics.
+void LogMetricsOnReportSend(const AttributionReport& report) {
+  // Reports sent from the WebUI should not log metrics.
+  if (report.report_time() == base::Time::Min())
+    return;
+
+  // Use a large time range to capture users that might not open the browser for
+  // a long time while a conversion report is pending. Revisit this range if it
+  // is non-ideal for real world data.
+  base::Time now = base::Time::Now();
+  base::Time original_report_time =
+      ComputeReportTime(report.impression(), report.conversion_time());
+  base::TimeDelta time_since_original_report_time = now - original_report_time;
+  base::UmaHistogramCustomTimes(
+      "Conversions.ExtraReportDelay2", time_since_original_report_time,
+      base::Seconds(1), base::Days(24), /*buckets=*/100);
+
+  base::TimeDelta time_from_conversion_to_report_send =
+      report.report_time() - report.conversion_time();
+  UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
+                            time_from_conversion_to_report_send.InHours());
+}
+
+}  // namespace
 
 AttributionReporterImpl::AttributionReporterImpl(
     StoragePartitionImpl* storage_partition,
@@ -59,8 +93,8 @@ void AttributionReporterImpl::RemoveAllReportsFromQueue() {
   while (!report_queue_.empty()) {
     AttributionReport report = report_queue_.top();
     report_queue_.pop();
-    callback_.Run(SentReport(std::move(report),
-                             SentReport::Status::kRemovedFromQueue,
+    callback_.Run(std::move(report),
+                  SendResult(SendResult::Status::kRemovedFromQueue,
                              /*http_response_code=*/0));
   }
 }
@@ -103,18 +137,23 @@ void AttributionReporterImpl::SendNextReport() {
     // If there's no network connection, drop the report and tell the manager to
     // retry it later.
     if (offline_) {
-      callback_.Run(SentReport(std::move(report), SentReport::Status::kOffline,
-                               /*http_response_code=*/0));
+      callback_.Run(std::move(report), SendResult(SendResult::Status::kOffline,
+                                                  /*http_response_code=*/0));
     } else {
-      network_sender_->SendReport(std::move(report), callback_);
+      LogMetricsOnReportSend(report);
+
+      GURL report_url = report.ReportURL();
+      std::string report_body = report.ReportBody();
+      network_sender_->SendReport(std::move(report_url), std::move(report_body),
+                                  base::BindOnce(callback_, std::move(report)));
     }
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    callback_.Run(SentReport(std::move(report), SentReport::Status::kDropped,
-                             /*http_response_code=*/0));
+    callback_.Run(std::move(report), SendResult(SendResult::Status::kDropped,
+                                                /*http_response_code=*/0));
   }
   MaybeScheduleNextReport();
 }

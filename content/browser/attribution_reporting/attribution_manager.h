@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/sent_report.h"
 
 namespace base {
 class Time;
@@ -28,6 +27,8 @@ class AttributionPolicy;
 class StorableTrigger;
 class StorableSource;
 class WebContents;
+
+struct SendResult;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
@@ -58,7 +59,8 @@ class AttributionManager {
     virtual void OnSourceDeactivated(
         const AttributionStorage::DeactivatedSource& source) {}
 
-    virtual void OnReportSent(const SentReport& info) {}
+    virtual void OnReportSent(const AttributionReport& report,
+                              const SendResult& info) {}
 
     virtual void OnReportDropped(
         const AttributionStorage::CreateReportResult& result) {}

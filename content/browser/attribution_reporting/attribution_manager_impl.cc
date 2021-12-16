@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/attribution_reporter_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/storage_partition_impl.h"
@@ -84,20 +85,20 @@ void RecordDeleteEvent(AttributionManagerImpl::DeleteEvent event) {
 }
 
 ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
-    SentReport::Status status) {
+    SendResult::Status status) {
   switch (status) {
-    case SentReport::Status::kSent:
+    case SendResult::Status::kSent:
       return ConversionReportSendOutcome::kSent;
-    case SentReport::Status::kTransientFailure:
-    case SentReport::Status::kFailure:
+    case SendResult::Status::kTransientFailure:
+    case SendResult::Status::kFailure:
       return ConversionReportSendOutcome::kFailed;
-    case SentReport::Status::kOffline:
-    case SentReport::Status::kRemovedFromQueue:
+    case SendResult::Status::kOffline:
+    case SendResult::Status::kRemovedFromQueue:
       // Offline reports and reports removed from the queue before being sent
       // should never record an outcome.
       NOTREACHED();
       return ConversionReportSendOutcome::kFailed;
-    case SentReport::Status::kDropped:
+    case SendResult::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
   }
 }
@@ -425,23 +426,23 @@ void AttributionManagerImpl::AddReportsToReporter(
   reporter_->AddReportsToQueue(std::move(reports));
 }
 
-void AttributionManagerImpl::OnReportSent(SentReport info) {
-  DCHECK(info.report.report_id().has_value());
+void AttributionManagerImpl::OnReportSent(AttributionReport report,
+                                          SendResult info) {
+  DCHECK(report.report_id().has_value());
 
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
   // from storage if it wasn't skipped due to the browser being offline.
 
   bool should_retry = false;
-  if (info.status == SentReport::Status::kTransientFailure) {
-    info.report.set_failed_send_attempts(info.report.failed_send_attempts() +
-                                         1);
+  if (info.status == SendResult::Status::kTransientFailure) {
+    report.set_failed_send_attempts(report.failed_send_attempts() + 1);
     const absl::optional<base::TimeDelta> delay =
         attribution_policy_->GetFailedReportDelay(
-            info.report.failed_send_attempts());
+            report.failed_send_attempts());
     if (delay.has_value()) {
       should_retry = true;
-      info.report.set_report_time(info.report.report_time() + *delay);
+      report.set_report_time(report.report_time() + *delay);
     }
   }
 
@@ -452,7 +453,7 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
     // occur.
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(*info.report.report_id(), info.report.report_time())
+        .WithArgs(*report.report_id(), report.report_time())
         .Then(base::BindOnce(
             [](base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport report, bool success) {
@@ -465,17 +466,17 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
 
               manager->NotifyReportsChanged();
             },
-            weak_factory_.GetWeakPtr(), info.report));
-  } else if (info.status == SentReport::Status::kOffline ||
-             info.status == SentReport::Status::kRemovedFromQueue) {
+            weak_factory_.GetWeakPtr(), report));
+  } else if (info.status == SendResult::Status::kOffline ||
+             info.status == SendResult::Status::kRemovedFromQueue) {
     // Remove the ID from the set so that subsequent attempts will not be
     // deduplicated.
-    size_t num_removed = queued_reports_.erase(*info.report.report_id());
+    size_t num_removed = queued_reports_.erase(*report.report_id());
     DCHECK_EQ(num_removed, 1u);
   } else {
     RecordDeleteEvent(DeleteEvent::kStarted);
     attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-        .WithArgs(*info.report.report_id())
+        .WithArgs(*report.report_id())
         .Then(base::BindOnce(
             [](base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport::Id report_id, bool succeeded) {
@@ -491,7 +492,7 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
                 manager->NotifyReportsChanged();
               }
             },
-            weak_factory_.GetWeakPtr(), *info.report.report_id()));
+            weak_factory_.GetWeakPtr(), *report.report_id()));
 
     base::UmaHistogramEnumeration(
         "Conversion.ReportSendOutcome",
@@ -505,21 +506,20 @@ void AttributionManagerImpl::OnReportSent(SentReport info) {
   // ID, remove the ID from the wait-set; if it was the last such ID,
   // run the callback.
   if (!send_reports_for_web_ui_callback_.is_null() &&
-      pending_report_ids_for_internals_ui_.erase(*info.report.report_id()) >
-          0 &&
+      pending_report_ids_for_internals_ui_.erase(*report.report_id()) > 0 &&
       pending_report_ids_for_internals_ui_.empty()) {
     std::move(send_reports_for_web_ui_callback_).Run();
   }
 
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
-  if (info.status != SentReport::Status::kSent &&
-      info.status != SentReport::Status::kFailure &&
-      info.status != SentReport::Status::kDropped) {
+  if (info.status != SendResult::Status::kSent &&
+      info.status != SendResult::Status::kFailure &&
+      info.status != SendResult::Status::kDropped) {
     return;
   }
 
   for (Observer& observer : observers_)
-    observer.OnReportSent(info);
+    observer.OnReportSent(report, info);
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {

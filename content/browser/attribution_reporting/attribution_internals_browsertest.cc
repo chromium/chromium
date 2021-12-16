@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -337,22 +338,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   OverrideWebUIAttributionManager();
 
-  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
-                                           .SetReportTime(now + base::Hours(3))
-                                           .Build(),
-                                       SentReport::Status::kSent,
+  manager_.NotifyReportSent(ReportBuilder(SourceBuilder(now).Build())
+                                .SetReportTime(now + base::Hours(3))
+                                .Build(),
+                            SendResult(SendResult::Status::kSent,
                                        /*http_response_code=*/200));
-  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
-                                           .SetReportTime(now + base::Hours(4))
-                                           .SetPriority(-1)
-                                           .Build(),
-                                       SentReport::Status::kDropped,
+  manager_.NotifyReportSent(ReportBuilder(SourceBuilder(now).Build())
+                                .SetReportTime(now + base::Hours(4))
+                                .SetPriority(-1)
+                                .Build(),
+                            SendResult(SendResult::Status::kDropped,
                                        /*http_response_code=*/0));
-  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
-                                           .SetReportTime(now + base::Hours(5))
-                                           .SetPriority(-2)
-                                           .Build(),
-                                       SentReport::Status::kFailure,
+  manager_.NotifyReportSent(ReportBuilder(SourceBuilder(now).Build())
+                                .SetReportTime(now + base::Hours(5))
+                                .SetPriority(-2)
+                                .Build(),
+                            SendResult(SendResult::Status::kFailure,
                                        /*http_response_code=*/0));
   ON_CALL(manager_, GetPendingReportsForWebUI)
       .WillByDefault(InvokeCallback<std::vector<AttributionReport>>(
@@ -492,8 +493,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({report}));
 
   report.set_report_time(report.report_time() + base::Hours(1));
-  manager_.NotifyReportSent(SentReport(report, SentReport::Status::kSent,
-                                       /*http_response_code=*/200));
+  manager_.NotifyReportSent(report, SendResult(SendResult::Status::kSent,
+                                               /*http_response_code=*/200));
 
   EXPECT_CALL(manager_, ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,

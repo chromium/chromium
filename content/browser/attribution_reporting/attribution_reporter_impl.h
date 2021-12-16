@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <memory>
 #include <queue>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -19,6 +20,8 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class GURL;
+
 namespace base {
 class Clock;
 }  // namespace base
@@ -27,7 +30,7 @@ namespace content {
 
 class StoragePartitionImpl;
 
-struct SentReport;
+struct SendResult;
 
 // This class is responsible for managing the dispatch of conversion reports to
 // an AttributionReporterImpl::NetworkSender. It maintains a queue of reports
@@ -45,15 +48,16 @@ class CONTENT_EXPORT AttributionReporterImpl
     virtual ~NetworkSender() = default;
 
     // Callback used to notify caller that the requested report has been sent.
-    using ReportSentCallback = base::OnceCallback<void(SentReport)>;
+    using ReportSentCallback = base::OnceCallback<void(SendResult)>;
 
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST request with no-credentials.
-    virtual void SendReport(AttributionReport report,
+    virtual void SendReport(GURL report_url,
+                            std::string report_body,
                             ReportSentCallback sent_callback) = 0;
   };
 
-  using Callback = base::RepeatingCallback<void(SentReport)>;
+  using Callback = base::RepeatingCallback<void(AttributionReport, SendResult)>;
 
   AttributionReporterImpl(StoragePartitionImpl* storage_partition,
                           const base::Clock* clock,
