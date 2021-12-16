@@ -291,7 +291,7 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
       child_fragment.ShouldApplyLayoutContainment() ||
       child_fragment.IsInlineBox() ||
       (child_fragment.ShouldClipOverflowAlongBothAxis() &&
-       child_style.OverflowClipMargin() == LayoutUnit()) ||
+       !child_fragment.ShouldApplyOverflowClipMargin()) ||
       child_fragment.IsHiddenForPaint();
 
   if (!ignore_layout_overflow) {
@@ -299,14 +299,13 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
     if (child_fragment.HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes =
           child_fragment.GetOverflowClipAxes();
-      const LayoutUnit overflow_clip_margin = child_style.OverflowClipMargin();
-      if (overflow_clip_margin != LayoutUnit()) {
-        // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-        // both axis.
+      if (child_fragment.ShouldApplyOverflowClipMargin()) {
+        // ShouldApplyOverflowClipMargin should only be true if we're clipping
+        // overflow in both axes.
         DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
         PhysicalRect child_padding_rect({}, child_fragment.Size());
         child_padding_rect.Contract(child_fragment.Borders());
-        child_padding_rect.Inflate(overflow_clip_margin);
+        child_padding_rect.Inflate(child_style.OverflowClipMargin());
         child_overflow.Intersect(child_padding_rect);
       } else {
         if (overflow_clip_axes & kOverflowClipX) {

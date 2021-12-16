@@ -1966,9 +1966,7 @@ PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
 
 void LayoutBox::ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const {
   const OverflowClipAxes overflow_clip = GetOverflowClipAxes();
-  if (overflow_clip == kOverflowClipBothAxis) {
-    clip_rect.Inflate(StyleRef().OverflowClipMargin());
-  } else {
+  if (overflow_clip != kOverflowClipBothAxis) {
     const LayoutRect infinite_rect(LayoutRect::InfiniteIntRect());
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
       clip_rect.offset.left = infinite_rect.X();
@@ -1978,6 +1976,8 @@ void LayoutBox::ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const {
       clip_rect.offset.top = infinite_rect.Y();
       clip_rect.size.height = infinite_rect.Height();
     }
+  } else if (ShouldApplyOverflowClipMargin()) {
+    clip_rect.Inflate(StyleRef().OverflowClipMargin());
   }
 }
 
@@ -7716,19 +7716,17 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
   LayoutRect rect = BorderBoxRect();
 
   if (!ShouldApplyLayoutContainment() &&
-      (!ShouldClipOverflowAlongBothAxis() ||
-       StyleRef().OverflowClipMargin() != LayoutUnit())) {
+      (!ShouldClipOverflowAlongBothAxis() || ShouldApplyOverflowClipMargin())) {
     LayoutRect overflow = LayoutOverflowRect();
     if (HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-      const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
       LayoutRect clip_rect = rect;
-      if (overflow_clip_margin != LayoutUnit()) {
-        // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-        // both axis.
+      if (ShouldApplyOverflowClipMargin()) {
+        // We should apply overflow clip margin only if we clip overflow on both
+        // axes.
         DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
         clip_rect.Contract(BorderBoxOutsets());
-        clip_rect.Inflate(overflow_clip_margin);
+        clip_rect.Inflate(StyleRef().OverflowClipMargin());
         overflow.Intersect(clip_rect);
       } else {
         ApplyOverflowClip(overflow_clip_axes, clip_rect, overflow);
@@ -7782,16 +7780,15 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
     return self_visual_overflow_rect;
 
   const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-  const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
-  if (overflow_clip_margin != LayoutUnit()) {
-    // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-    // both axis.
+  if (ShouldApplyOverflowClipMargin()) {
+    // We should apply overflow clip margin only if we clip overflow on both
+    // axis.
     DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
     const LayoutRect& contents_visual_overflow_rect =
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
       LayoutRect result = BorderBoxRect();
-      result.Inflate(overflow_clip_margin);
+      result.Inflate(StyleRef().OverflowClipMargin());
       result.Intersect(contents_visual_overflow_rect);
       result.Unite(self_visual_overflow_rect);
       return result;

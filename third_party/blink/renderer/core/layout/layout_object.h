@@ -600,6 +600,25 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return fragment_->UniqueId();
   }
 
+  inline bool ShouldApplyOverflowClipMargin() const {
+    NOT_DESTROYED();
+    // If the object is clipped by something other than overflow:clip (i.e. it's
+    // a scroll container), then we should not apply overflow-clip-margin.
+    if (IsScrollContainer())
+      return false;
+
+    const auto& style = StyleRef();
+    // Nothing to apply if there is no margin.
+    if (!style.OverflowClipMargin())
+      return false;
+
+    // In all other cases, we apply overflow-clip-margin when we clip to
+    // overflow clip edge, meaning we have overflow: clip or paint containment.
+    return (style.OverflowX() == EOverflow::kClip &&
+            style.OverflowY() == EOverflow::kClip) ||
+           ShouldApplyPaintContainment();
+  }
+
   inline bool IsEligibleForPaintOrLayoutContainment() const {
     NOT_DESTROYED();
     return (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&

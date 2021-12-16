@@ -101,9 +101,10 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
 
 PhysicalRect GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
   PhysicalRect bounds(box->PhysicalBorderBoxRect());
-  // OverflowClipMargin() should only apply if clipping occurs on both axis.
-  if (use_overflow_clip_edge && box->ShouldClipOverflowAlongBothAxis() &&
-      box->StyleRef().OverflowClipMargin() != LayoutUnit()) {
+  // Only use overflow clip rect if we need to use overflow clip edge and
+  // overflow clip margin may have an effect, meaning we clip to the overflow
+  // clip edge and not something else.
+  if (use_overflow_clip_edge && box->ShouldApplyOverflowClipMargin()) {
     // OverflowClipRect() may be smaller than PhysicalBorderBoxRect().
     bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
   }
@@ -124,8 +125,7 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
   } else if (target->IsBox()) {
     result.first =
         GetBoxBounds(To<LayoutBox>(target),
-                     (flags & IntersectionGeometry::kUseOverflowClipEdge) ==
-                         IntersectionGeometry::kUseOverflowClipEdge);
+                     flags & IntersectionGeometry::kUseOverflowClipEdge);
   } else if (target->IsLayoutInline()) {
     result.first = PhysicalRect::EnclosingRect(
         To<LayoutBoxModelObject>(target)->LocalBoundingBoxRectF());

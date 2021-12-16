@@ -713,8 +713,7 @@ PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
     return self_rect;
 
   const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-  // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-  // both axis.
+  // overflow_clip_margin should only be set if we clip both axes.
   DCHECK(overflow_clip_axes == kOverflowClipBothAxis ||
          !style.OverflowClipMargin());
   if (overflow_clip_axes == kNoOverflowClip) {
@@ -723,12 +722,12 @@ PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
   }
 
   if (overflow_clip_axes == kOverflowClipBothAxis) {
-    if (const LayoutUnit overflow_clip_margin = style.OverflowClipMargin()) {
+    if (ShouldApplyOverflowClipMargin()) {
       const PhysicalRect& contents_rect =
           ink_overflow_.Contents(InkOverflowType(), Size());
       if (!contents_rect.IsEmpty()) {
         PhysicalRect result = LocalRect();
-        result.Inflate(overflow_clip_margin);
+        result.Inflate(style.OverflowClipMargin());
         result.Intersect(contents_rect);
         result.Unite(self_rect);
         return result;

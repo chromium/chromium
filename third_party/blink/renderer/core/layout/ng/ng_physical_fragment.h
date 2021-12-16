@@ -354,6 +354,10 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->ShouldClipOverflowAlongBothAxis();
   }
 
+  bool ShouldApplyOverflowClipMargin() const {
+    return IsCSSBox() && layout_object_->ShouldApplyOverflowClipMargin();
+  }
+
   // Return whether we can traverse this fragment and its children directly, for
   // painting, hit-testing and other layout read operations. If false is
   // returned, we need to traverse the layout object tree instead.
