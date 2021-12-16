@@ -88,10 +88,6 @@ suite('OsPairedBluetoothListItemTest', function() {
             pairedBluetoothListItem.i18n(
                 'bluetoothPairedDeviceItemA11yLabelTypeUnknown', itemIndex + 1,
                 listSize, publicName));
-        assertEquals(
-            getSubpageButtonA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', publicName));
 
         // Set device nickname, type and battery info.
         const nickname = 'nickname';
@@ -116,10 +112,6 @@ suite('OsPairedBluetoothListItemTest', function() {
             pairedBluetoothListItem.i18n(
                 'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo',
                 itemIndex + 1, listSize, nickname, batteryPercentage));
-        assertEquals(
-            getSubpageButtonA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', nickname));
       });
 
   test('Battery percentage out of bounds', async function() {

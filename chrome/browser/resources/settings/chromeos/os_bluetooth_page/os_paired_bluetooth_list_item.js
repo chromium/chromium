@@ -302,18 +302,6 @@ class SettingsPairedBluetoothListItemElement extends
     return this.i18n(stringName, this.itemIndex + 1, this.listSize, deviceName);
   }
 
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getSubpageButtonA11yLabel_(device) {
-    const deviceName = this.getDeviceName_(device);
-    return this.i18n(
-        'bluetoothPairedDeviceItemSubpageButtonA11yLabel', deviceName);
-  }
-
   /** @private */
   onShowTooltip_() {
     this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
