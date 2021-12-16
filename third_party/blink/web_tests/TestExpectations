@@ -2812,6 +2812,12 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-t
 crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/CSS2/normal-flow/width-081.xht [ Failure Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-contain/contain-layout-ignored-cases-no-principal-box-002.html [ Failure Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-writing-modes/margin-collapse-vrl-014.xht [ Failure Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-port.sub.https.html [ Failure Crash ]
+crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-paused-animations.html [ Failure Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-responsiveness-from-endpoint.html [ Failure Crash ]
 crbug.com/626703 external/wpt/css/css-color/display-p3-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/display-p3-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/display-p3-003.html [ Failure ]

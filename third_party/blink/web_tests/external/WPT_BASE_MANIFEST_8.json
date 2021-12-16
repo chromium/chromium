@@ -14353,6 +14353,49 @@
      ]
     }
    },
+   "scroll-animations": {
+    "css": {
+     "at-scroll-timeline-default-descriptors-iframe-print.html": [
+      "0b73d7f03474d617767ec636a2712a56eed6c79c",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-default-descriptors-print.tentative.html": [
+      "418ed3c5495b77d58bcc87c7519264491c29462a",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-specified-scroller-print.html": [
+      "5543088324d60ab425b1f5ad1775f6406c85a768",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-specified-scroller-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
+   },
    "selection": {
     "selection-shadow-dom-crash-print.html": [
      "cf62609173953e30ccce13fd52459c0e48147c63",
@@ -226306,6 +226349,10 @@
        "0dd796f609c0659bd489e10cb02ac4816a88960b",
        []
       ],
+      "page-with-base-url-common.html": [
+       "8d9fedcc2b40d2eaeff55727ffa476a6e7c0e479",
+       []
+      ],
       "service-worker-page.html": [
        "a10ff35dce7768c6e7b6f68647207a8fa35c2a6d",
        []
@@ -307194,7 +307241,7 @@
       []
      ],
      "webxr-test.js": [
-      "d3806c2542ffa1ffe269bae2c7ab479d69562b8d",
+      "8a541cae1b06f6bbda0b462ca618e565c76fba41",
       []
      ],
      "webxr-test.js.headers": [
@@ -307503,6 +307550,18 @@
      ],
      "at-scroll-timeline-inline-orientation-ref.html": [
       "e87901e30a2c43b3d7e77c78805b1a6db87a920d",
+      []
+     ],
+     "at-scroll-timeline-paused-animations-expected.txt": [
+      "7847b21efc76ba26eff173aa959831c433cca465",
+      []
+     ],
+     "at-scroll-timeline-responsiveness-from-endpoint-expected.txt": [
+      "898f1cf7348d6ca5380a5e6674f7747203757944",
+      []
+     ],
+     "at-scroll-timeline-specified-scroller-print-ref.html": [
+      "fa945ce72f0888ba98ddd2db5f3af8d559003845",
       []
      ],
      "scroll-timeline-cssom.tentative-expected.txt": [
@@ -335186,6 +335245,13 @@
        {}
       ]
      ],
+     "navigate-base-url.html": [
+      "b11a71a9312785fc0b151a1c3e294a18f4cfabf4",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigate-cross-document-event-order.html": [
       "1c1758a002eb8ac5e8ba8945dc6163d32a1a70f4",
       [
@@ -335236,7 +335302,7 @@
       ]
      ],
      "navigate-same-document-event-order.html": [
-      "1ec2ffdd25f0120fa751a12274ef43285d59eef6",
+      "4be537fb7ae1c2223fa536b476da614f54d8e3e4",
       [
        null,
        {}
@@ -335271,7 +335337,14 @@
       ]
      ],
      "navigate-transitionWhile-reject-event-order.html": [
-      "ca7301620bcc1ec7f4f8a8ff90e897f15f7e9014",
+      "96e742766cccc8430c03f1446f15a2a3a98cf923",
+      [
+       null,
+       {}
+      ]
+     ],
+     "reload-base-url.html": [
+      "35b29b9d2fb032f97f7bd8ba607f928aec60571e",
       [
        null,
        {}
@@ -451219,7 +451292,7 @@
       },
       "the-selectmenu-element": {
        "selectmenu-events.tentative.html": [
-        "99a1bee721166e20be14182a4d6f47dde1e5a7bc",
+        "827ebc3b7caf5138846f6df84eaa8e4af3e88215",
         [
          null,
          {
@@ -493011,6 +493084,20 @@
      ],
      "at-scroll-timeline-orientation.html": [
       "63a64fa2e63225a6aaab1031030f5c4fda8a7da3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "at-scroll-timeline-paused-animations.html": [
+      "7bf1289ebef1e963a159b89675030d1b71c37065",
+      [
+       null,
+       {}
+      ]
+     ],
+     "at-scroll-timeline-responsiveness-from-endpoint.html": [
+      "3eafe2f973ea6691773e131096717fa64001678a",
       [
        null,
        {}

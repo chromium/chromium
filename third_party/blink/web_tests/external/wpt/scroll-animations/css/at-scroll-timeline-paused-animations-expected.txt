@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Test that the scroll animation is paused assert_equals: expected "100px" but got "50px"
+FAIL Test that the scroll animation is paused by updating animation-play-state assert_equals: expected "100px" but got "50px"
+Harness: the test ran to completion.
+
