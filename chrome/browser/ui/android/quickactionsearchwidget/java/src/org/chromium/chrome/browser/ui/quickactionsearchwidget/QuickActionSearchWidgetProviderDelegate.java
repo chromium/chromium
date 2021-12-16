@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.util.Size;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -66,9 +67,9 @@ public class QuickActionSearchWidgetProviderDelegate {
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         static int getElementSizeInDP(
                 Resources res, @DimenRes int mainDimenRes, @DimenRes int marginDimenRes) {
-            float density = res.getDisplayMetrics().density;
-            assert mainDimenRes != 0;
+            if (mainDimenRes == 0) return 0;
 
+            float density = res.getDisplayMetrics().density;
             float size = res.getDimension(mainDimenRes);
             if (marginDimenRes != 0) {
                 size += 2 * res.getDimension(marginDimenRes);
@@ -177,6 +178,8 @@ public class QuickActionSearchWidgetProviderDelegate {
     private final @NonNull WidgetVariant mSmallWidgetVariant;
     /** Widget variant describing the Extra Small widget. */
     private final @NonNull WidgetVariant mExtraSmallWidgetVariant;
+    /** Widget variant describing the Dino widget. */
+    private final @NonNull WidgetVariant mDinoWidgetVariant;
 
     /**
      * @param context Context that can be used to pre-compute values. Do not cache.
@@ -213,6 +216,10 @@ public class QuickActionSearchWidgetProviderDelegate {
                         R.dimen.quick_action_search_widget_xsmall_height,
                         R.dimen.quick_action_search_widget_xsmall_button_width,
                         R.dimen.quick_action_search_widget_xsmall_button_horizontal_margin);
+        mDinoWidgetVariant =
+                new WidgetVariant(context, R.layout.quick_action_search_widget_dino_layout,
+                        R.dimen.quick_action_search_widget_dino_size,
+                        R.dimen.quick_action_search_widget_dino_size, 0, 0);
     }
 
     /**
@@ -253,15 +260,132 @@ public class QuickActionSearchWidgetProviderDelegate {
     }
 
     /**
+     * Given the width and height of the widget cell area (expressed in distance points) and the
+     * screen density, compute vertical and horizontal paddings that have to be applied to make
+     * the widget retain the square aspect ratio (1:1).
+     * The returned size is expressed in pixels.
+     *
+     * @param cellAreaWidthDp Width of the cell area, expressed in distance points.
+     * @param cellAreaHeightDp Height of the cell area, expressed in distance points.
+     * @param density Screen density.
+     * @return Size object, describing required horizontal and vertical padding, expressed in
+     *         pixels.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    Size computeWidgetAreaPaddingForDinoWidgetPx(
+            int cellAreaWidthDp, int cellAreaHeightDp, float density) {
+        int edgeLengthDp = Math.min(cellAreaWidthDp, cellAreaHeightDp);
+        int width = (int) (((cellAreaWidthDp - edgeLengthDp) / 2.f) * density);
+        int height = (int) (((cellAreaHeightDp - edgeLengthDp) / 2.f) * density);
+        return new Size((int) width, (int) height);
+    }
+
+    /**
+     * Given the width and height of the cell area (expressed in distance points) compute the scale
+     * factor (expressed as a float value) that needs to be applied to relevant dimensions to scale
+     * the widget proportionally.
+     *
+     * @param cellAreaWidthDp Width of the cell area, expressed in distance points.
+     * @param cellAreaHeightDp Height of the cell area, expressed in distance points.
+     * @param density Screen density.
+     * @return Scale factor that should be applied to relevant dimensions to resize the widget
+     *         proportionately.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    float computeScaleFactorForDinoWidget(int cellAreaWidthDp, int cellAreaHeightDp) {
+        // Compute the paddings to better visually arrange the views inside the widget.
+        // First, compute the scale factor. The scale factor is based on the reference dimensions
+        // (ie. dimensions from the UX mocks) vs the on-screen area size (which almost certainly
+        // will be different than the reference).
+        // The scale factor reflects how much larger (or smaller) the cell area size is compared
+        // to the mocks, ie. scale == 1.2 means that edgeSize is 20% larger than the reference size.
+        final int edgeSize = Math.min(cellAreaWidthDp, cellAreaHeightDp);
+        return 1.f * edgeSize / mDinoWidgetVariant.widgetWidthDp;
+    }
+
+    /**
+     * @param resources Current resources.
+     * @return Whether widget layout direction is RTL.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean isLayoutDirectionRTL(@NonNull Resources resources) {
+        return resources.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void resizeDinoWidgetToFillTargetCellArea(
+            @NonNull Resources resources, RemoteViews views, int areaWidthDp, int areaHeightDp) {
+        float density = resources.getDisplayMetrics().density;
+
+        // Screen density is used to compute padding in each direction.
+        // The left/right and top/bottom dimensions are the same, since we want to center the view
+        // in the area where we have some non-zero padding.
+        Size paddings = computeWidgetAreaPaddingForDinoWidgetPx(areaWidthDp, areaHeightDp, density);
+        views.setViewPadding(R.id.dino_quick_action_area, paddings.getWidth(), paddings.getHeight(),
+                paddings.getWidth(), paddings.getHeight());
+
+        // Now use the scale factor to modify all the dimensions that count.
+        // We depend on the intrinsic view computations to infer a lot of these dimensions; the ones
+        // below have to be computed by us.
+        //
+        // The core dimensions that have to be scaled by us are the paddings around the core widget
+        // area (where the image is hosted), to make sure the content is properly adjusted.
+        final float scale = computeScaleFactorForDinoWidget(areaWidthDp, areaHeightDp);
+        final float contentPaddingVertical =
+                resources.getDimension(R.dimen.quick_action_search_widget_dino_padding_vertical)
+                * scale;
+        final float contentPaddingStart =
+                resources.getDimension(R.dimen.quick_action_search_widget_dino_padding_start)
+                * scale;
+
+        // Note: there is no setViewRelativePadding method available for RemoteViews. This means
+        // we have to be smart about what edge means "start".
+        final float contentPaddingLeft = isLayoutDirectionRTL(resources) ? 0 : contentPaddingStart;
+        final float contentPaddingRight = isLayoutDirectionRTL(resources) ? contentPaddingStart : 0;
+
+        views.setViewPadding(R.id.dino_quick_action_button, (int) contentPaddingLeft,
+                (int) contentPaddingVertical, (int) contentPaddingRight,
+                (int) contentPaddingVertical);
+
+        // Scale text proportionately, ignoring the system font scaling. We have to apply this to
+        // avoid cases where the system font setting leads to either:
+        // - text truncation,
+        // - overlapping the dino image with text, or
+        // - making the text so small that it leaves a lot of empty space on the widget.
+        final float textSize =
+                resources.getDimension(R.dimen.quick_action_search_widget_dino_text_size) * scale
+                / resources.getDisplayMetrics().scaledDensity;
+        views.setFloat(R.id.dino_quick_action_text, "setTextSize", textSize);
+    }
+
+    /**
      * Create {@link RemoteViews} for the Dino widget.
      *
      * @param context Current context.
      * @param prefs Structure describing current preferences and feature availability.
+     * @param portraitModeWidthDp Width of the widget area in portrait mode.
+     * @param portraitModeHeightDp Height of the widget area in portrait mode.
+     * @param landscapeModeWidthDp Width of the widget area in landscape mode.
+     * @param landscapeModeHeightDp Height of the widget area in landscape mode.
      * @return RemoteViews to be installed on the Dino widget.
      */
-    public @NonNull RemoteViews createDinoWidgetRemoteViews(
-            @NonNull Context context, @NonNull SearchActivityPreferences prefs) {
-        return createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
+    public @NonNull RemoteViews createDinoWidgetRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, int portraitModeWidthDp,
+            int portraitModeHeightDp, int landscapeModeWidthDp, int landscapeModeHeightDp) {
+        RemoteViews landscapeViews =
+                createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
+        RemoteViews portraitViews =
+                createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
+
+        // Dino widget is specific; we want to scale up a lot of dimensions based on the actual size
+        // of the widget area. This makes layout a lot more responsive but also a lot more
+        // complicated since we have to compute everything manually.
+        Resources res = context.getApplicationContext().getResources();
+        resizeDinoWidgetToFillTargetCellArea(
+                res, landscapeViews, landscapeModeWidthDp, landscapeModeHeightDp);
+        resizeDinoWidgetToFillTargetCellArea(
+                res, portraitViews, portraitModeWidthDp, portraitModeHeightDp);
+        return new RemoteViews(landscapeViews, portraitViews);
     }
 
     /**

@@ -89,7 +89,12 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         RemoteViews getRemoteViews(@NonNull Context context,
                 @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
                 int widgetId) {
-            return getDelegate().createDinoWidgetRemoteViews(context, prefs);
+            Bundle options = manager.getAppWidgetOptions(widgetId);
+            return getDelegate().createDinoWidgetRemoteViews(context, prefs,
+                    getPortraitModeTargetAreaWidth(options),
+                    getPortraitModeTargetAreaHeight(options),
+                    getLandscapeModeTargetAreaWidth(options),
+                    getLandscapeModeTargetAreaHeight(options));
         }
     }
 
