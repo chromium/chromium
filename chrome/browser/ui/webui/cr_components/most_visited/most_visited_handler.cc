@@ -52,7 +52,7 @@ MostVisitedHandler::MostVisitedHandler(
       most_visited_sites_(
           ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       web_contents_(web_contents),
-      logger_(profile, ntp_url),
+      logger_(profile, ntp_url, ntp_navigation_start_time),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {

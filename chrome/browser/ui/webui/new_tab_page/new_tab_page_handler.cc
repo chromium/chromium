@@ -360,7 +360,9 @@ NewTabPageHandler::NewTabPageHandler(
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
-      logger_(profile, GURL(chrome::kChromeUINewTabPageURL)),
+      logger_(profile,
+              GURL(chrome::kChromeUINewTabPageURL),
+              ntp_navigation_start_time),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {

@@ -26,7 +26,9 @@
 class NTPUserDataLogger {
  public:
   // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
-  NTPUserDataLogger(Profile* profile, const GURL& ntp_url);
+  NTPUserDataLogger(Profile* profile,
+                    const GURL& ntp_url,
+                    base::Time ntp_navigation_start_time);
 
   NTPUserDataLogger(const NTPUserDataLogger&) = delete;
   NTPUserDataLogger& operator=(const NTPUserDataLogger&) = delete;
@@ -70,6 +72,8 @@ class NTPUserDataLogger {
                          bool using_most_visited,
                          bool is_visible);
 
+  void EmitNtpTraceEvent(const char* event_name, base::TimeDelta duration);
+
   void RecordDoodleImpression(base::TimeDelta time,
                               bool is_cta,
                               bool from_cache);
@@ -92,9 +96,9 @@ class NTPUserDataLogger {
       logged_impressions_;
 
   // Whether we have already emitted NTP stats for this web contents.
-  bool has_emitted_;
+  bool has_emitted_ = false;
 
-  bool should_record_doodle_load_time_;
+  bool should_record_doodle_load_time_ = true;
 
   // Are stats being logged during Chrome startup?
   bool during_startup_;
@@ -104,6 +108,9 @@ class NTPUserDataLogger {
 
   // The profile in which this New Tab Page was loaded.
   raw_ptr<Profile> profile_;
+
+  // Keeps the starting time of NTP navigation.
+  const base::TimeTicks ntp_navigation_start_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_NTP_USER_DATA_LOGGER_H_
