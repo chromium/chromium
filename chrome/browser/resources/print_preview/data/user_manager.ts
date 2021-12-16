@@ -20,7 +20,7 @@ type UpdateUsersPayload = {
 
 const PrintPreviewUserManagerElementBase = WebUIListenerMixin(PolymerElement);
 
-export class PrintPreviewUserManagerElement extends
+class PrintPreviewUserManagerElement extends
     PrintPreviewUserManagerElementBase {
   static get is() {
     return 'print-preview-user-manager';

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceImpl, DestinationStore, LocalDestinationInfo, NativeLayerImpl, PrintPreviewUserManagerElement} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, DestinationStore, NativeLayerImpl} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
@@ -16,21 +17,27 @@ import {createDestinationStore, getCloudDestination, getDestinations, setupTestL
 
 
 suite('UserManagerTest', function() {
-  let userManager: PrintPreviewUserManagerElement;
+  /** @type {?PrintPreviewUserManagerElement} */
+  let userManager = null;
 
-  let destinationStore: DestinationStore;
+  /** @type {?DestinationStore} */
+  let destinationStore = null;
 
-  let nativeLayer: NativeLayerStub;
+  /** @type {?NativeLayer} */
+  let nativeLayer = null;
 
-  let cloudPrintInterface: CloudPrintInterfaceStub;
+  /** @type {?CloudPrintInterface} */
+  let cloudPrintInterface = null;
 
-  const account1: string = 'foo@chromium.org';
-  const account2: string = 'bar@chromium.org';
+  const account1 = 'foo@chromium.org';
+  const account2 = 'bar@chromium.org';
 
+  /** @override */
   suiteSetup(function() {
     setupTestListenerElement();
   });
 
+  /** @override */
   setup(function() {
     document.body.innerHTML = '';
 
@@ -50,12 +57,14 @@ suite('UserManagerTest', function() {
     // Initialize destination store.
     destinationStore = createDestinationStore();
     destinationStore.setCloudPrintInterface(cloudPrintInterface);
-    const localDestinations: LocalDestinationInfo[] = [];
-    getDestinations(localDestinations);
+    const localDestinations = [];
+    const destinations = getDestinations(localDestinations);
     nativeLayer.setLocalDestinations(localDestinations);
 
     // Set up user manager
+    userManager.appKioskMode = false;
     userManager.destinationStore = destinationStore;
+    userManager.shouldReloadCookies = false;
     userManager.cloudPrintDisabled = false;
     document.body.appendChild(userManager);
 

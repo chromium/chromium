@@ -3,21 +3,21 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
-
-import {PrintPreviewModelElement, PrintPreviewSettingsSelectElement} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
-
 import {getMediaSizeCapabilityWithCustomNames, selectOption} from './print_preview_test_utils.js';
 
 suite('SettingsSelectTest', function() {
-  let settingsSelect: PrintPreviewSettingsSelectElement;
+  /** @type {?PrintPreviewSettingsSelectElement} */
+  let settingsSelect = null;
 
-  let model: PrintPreviewModelElement;
+  /** @type {?PrintPreviewModelElement} */
+  let model = null;
 
+  /** @override */
   setup(function() {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
@@ -35,20 +35,20 @@ suite('SettingsSelectTest', function() {
     // Set a capability with custom paper sizes.
     settingsSelect.settingName = 'mediaSize';
     settingsSelect.capability = getMediaSizeCapabilityWithCustomNames();
-    const customLocalizedMediaName =
-        settingsSelect.capability!.option[0]!.custom_display_name_localized![0]!
-            .value;
+    const customLocalizedMediaName = settingsSelect.capability.option[0]
+                                         .custom_display_name_localized[0]
+                                         .value;
     const customMediaName =
-        settingsSelect.capability!.option[1]!.custom_display_name;
+        settingsSelect.capability.option[1].custom_display_name;
     flush();
 
-    const select = settingsSelect.shadowRoot!.querySelector('select')!;
+    const select = settingsSelect.shadowRoot.querySelector('select');
     // Verify that the selected option and names are as expected.
     assertEquals(0, select.selectedIndex);
     assertEquals(2, select.options.length);
     assertEquals(
-        customLocalizedMediaName, select.options[0]!.textContent!.trim());
-    assertEquals(customMediaName, select.options[1]!.textContent!.trim());
+        customLocalizedMediaName, select.options[0].textContent.trim());
+    assertEquals(customMediaName, select.options[1].textContent.trim());
   });
 
   test('set setting', async () => {
@@ -72,23 +72,23 @@ suite('SettingsSelectTest', function() {
       ],
     };
     flush();
-    const option0 = JSON.stringify(settingsSelect.capability!.option[0]!);
-    const option1 = JSON.stringify(settingsSelect.capability!.option[1]!);
-    const select = settingsSelect.shadowRoot!.querySelector('select')!;
+    const option0 = JSON.stringify(settingsSelect.capability.option[0]);
+    const option1 = JSON.stringify(settingsSelect.capability.option[1]);
+    const select = settingsSelect.shadowRoot.querySelector('select');
 
     // Normally done for initialization by the model and parent section.
     settingsSelect.set(
-        'settings.fruit.value', settingsSelect.capability!.option[1]!);
+        'settings.fruit.value', settingsSelect.capability.option[1]);
     settingsSelect.selectValue(option1);
 
     // Verify that the selected option and names are as expected.
     assertEquals(2, select.options.length);
     assertEquals(1, select.selectedIndex);
     assertFalse(settingsSelect.getSetting('fruit').setFromUi);
-    assertEquals('lime', select.options[0]!.textContent!.trim());
-    assertEquals('orange', select.options[1]!.textContent!.trim());
-    assertEquals(option0, select.options[0]!.value);
-    assertEquals(option1, select.options[1]!.value);
+    assertEquals('lime', select.options[0].textContent.trim());
+    assertEquals('orange', select.options[1].textContent.trim());
+    assertEquals(option0, select.options[0].value);
+    assertEquals(option1, select.options[1].value);
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(settingsSelect, option0);
