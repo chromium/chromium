@@ -45,6 +45,15 @@ chromium-metrics-reviews@google.com.
   <variant name="LocalProfile"/>
 </variants>
 
+<variants name="Scheme">
+  <variant name=""/>
+  <variant name=".Android" summary="The password is for an Android app."/>
+  <variant name=".Ftp" summary="The scheme of the origin is FTP."/>
+  <variant name=".Http" summary="The scheme of the origin is HTTP."/>
+  <variant name=".Https" summary="The scheme of the origin is HTTPS."/>
+  <variant name=".Other" summary="The scheme of the origin is something else."/>
+</variants>
+
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2022-04-17">
   <owner>fhorschig@chromium.org</owner>
@@ -527,22 +536,6 @@ chromium-metrics-reviews@google.com.
     Chrome, and further by whether the user used sync with custom passphrase or
     not. Recorded by iterating over stored passwords once per browser run, soon
     after startup.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme"
-    units="accounts" expires_after="2022-05-31">
-  <owner>battre@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of accounts stored in the password manager's account-scoped store
-    (across all sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as
-    given in the histogram suffix. For each scheme, the count is recorded once
-    per browser start-up. (In case of multiple profiles, the counts are for the
-    profile that first has a WebContents created.)
   </summary>
 </histogram>
 
@@ -2762,19 +2755,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="PasswordManager.TotalAccountsHiRes.WithScheme"
-    units="accounts" expires_after="2022-04-17">
-  <owner>battre@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of accounts stored in the password manager's profile-scoped store
-    (across all sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as
-    given in the histogram suffix. For each scheme, the count is recorded once
-    per browser start-up. (In case of multiple profiles, the counts are for the
-    profile that first has a WebContents created.)
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.TouchToFill.CredentialIndex" units="index"
     expires_after="2022-04-17">
   <owner>ioanap@chromium.org</owner>
@@ -2976,6 +2956,26 @@ chromium-metrics-reviews@google.com.
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Logs the loading time for the gstatic file request.</summary>
+</histogram>
+
+<histogram name="PasswordManager.{Store}TotalAccountsHiRes.WithScheme{Scheme}"
+    units="accounts" expires_after="2022-05-31">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's {Store} (across all
+    sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as given in the
+    histogram suffix. For each scheme, the count is recorded once per browser
+    start-up. (In case of multiple profiles, the counts are for the profile that
+    first has a WebContents created.)
+  </summary>
+  <token key="Store">
+    <variant name="" summary="for profile-scoped store"/>
+    <variant name="AccountStore." summary="for account-scoped store"/>
+  </token>
+  <token key="Scheme" variants="Scheme"/>
 </histogram>
 
 <histogram name="PasswordManager.{Store}{Metric}" units="units"

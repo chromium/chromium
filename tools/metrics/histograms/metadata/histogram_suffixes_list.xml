@@ -12208,17 +12208,6 @@ chromium-metrics-reviews@google.com.
       name="PasswordManager.AccountsReusingPassword.FromHttpsRealm"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordScheme" separator=".">
-  <suffix name="Android" label="The password is for an Android app."/>
-  <suffix name="Ftp" label="The scheme of the origin is FTP."/>
-  <suffix name="Http" label="The scheme of the origin is HTTP."/>
-  <suffix name="Https" label="The scheme of the origin is HTTPS."/>
-  <suffix name="Other" label="The scheme of the origin is something else."/>
-  <affected-histogram
-      name="PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme"/>
-  <affected-histogram name="PasswordManager.TotalAccountsHiRes.WithScheme"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PasswordSecurityOrigin" separator=".">
   <suffix name="InsecureOrigin"
       label="The recording took place on an insecure origin."/>
