@@ -1,0 +1,52 @@
+{
+  // Add capability providers.
+  children: [
+    {
+      name: "intl_property_manager",
+      url: "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cm",
+    },
+  ],
+  offer: [
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent",
+      to: [ "#intl_property_manager" ],
+    }
+  ],
+  use: [
+    {
+      storage: "cache",
+      path: "/cache",
+    },
+    {
+      storage: "config-data",
+      rights: [ "r*" ],
+      path: "/config/data",
+    },
+    {
+      storage: "custom_artifacts",
+      rights: [ "rw*" ],
+      path: "/custom_artifacts",
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    {
+      protocol: [ "fuchsia.intl.PropertyProvider" ],
+      from: "#intl_property_manager",
+    },
+    {
+      protocol: [
+        "fuchsia.boot.ReadOnlyLog",
+        "fuchsia.logger.LogSink",
+        "fuchsia.process.Launcher",
+        "fuchsia.sys.Loader",
+      ],
+    },
+  ],
+}

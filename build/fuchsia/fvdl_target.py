@@ -200,7 +200,7 @@ class FvdlTarget(emu_target.EmuTarget):
   def _GetEndpoint(self):
     if self._with_network:
       return self._GetNetworkAddress()
-    return ('localhost', self._host_ssh_port)
+    return (self.LOCAL_ADDRESS, self._host_ssh_port)
 
   def _GetNetworkAddress(self):
     if self._host:
@@ -222,6 +222,7 @@ class FvdlTarget(emu_target.EmuTarget):
   def Shutdown(self):
     if not self._emu_process:
       logging.error('%s did not start' % (self.EMULATOR_NAME))
+      super(FvdlTarget, self).Shutdown()
       return
     femu_command = [
         self._FVDL_PATH, '--sdk', 'kill', '--launched-proto',
@@ -237,6 +238,7 @@ class FvdlTarget(emu_target.EmuTarget):
     self.LogSystemStatistics('system_statistics_end_log')
     self._vdl_output_file.close()
     self._device_proto_file.close()
+    super(FvdlTarget, self).Shutdown()
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()

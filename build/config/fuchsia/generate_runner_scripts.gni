@@ -233,6 +233,10 @@ template("fuchsia_test_runner") {
       executable_args += [ "--enable-test-server" ]
     }
 
+    if (defined(invoker.use_cfv2) && invoker.use_cfv2) {
+      executable_args += [ "--component-version=2" ]
+    }
+
     if (default_fuchsia_device_node_name != "") {
       executable_args += [
         "--node-name",

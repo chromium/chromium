@@ -148,3 +148,12 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
     raise Exception('Timeout when executing \"%s\".' % ' '.join(command))
 
   return process.returncode, out, err
+
+
+def IsRunningUnattended():
+  """Returns true if running non-interactively.
+
+  When running unattended, confirmation prompts and the like are suppressed.
+  """
+  # Chromium tests only for the presence of the variable, so match that here.
+  return 'CHROME_HEADLESS' in os.environ
