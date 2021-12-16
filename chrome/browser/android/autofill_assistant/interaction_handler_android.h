@@ -42,6 +42,7 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       ViewHandlerAndroid* view_handler,
       RadioButtonController* radio_button_controller,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
+      base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate);
 
   InteractionHandlerAndroid(const InteractionHandlerAndroid&) = delete;
@@ -106,6 +107,7 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
   raw_ptr<ViewHandlerAndroid> view_handler_ = nullptr;
   raw_ptr<RadioButtonController> radio_button_controller_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jcontext_ = nullptr;
+  base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jdelegate_ = nullptr;
   bool is_listening_ = false;
 

@@ -19,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
@@ -52,11 +53,11 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     @Nullable
     AssistantOverlayCoordinator mOverlayCoordinator;
 
-    BottomSheetOnboardingCoordinator(String experimentIds, Map<String, String> parameters,
-            Context context, BottomSheetController controller,
+    BottomSheetOnboardingCoordinator(AssistantInfoPageUtil infoPageUtil, String experimentIds,
+            Map<String, String> parameters, Context context, BottomSheetController controller,
             BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim,
             AccessibilityUtil accessibilityUtil) {
-        super(experimentIds, parameters, context);
+        super(infoPageUtil, experimentIds, parameters, context);
         mController = controller;
         mBrowserControls = browserControls;
         mRootView = rootView;

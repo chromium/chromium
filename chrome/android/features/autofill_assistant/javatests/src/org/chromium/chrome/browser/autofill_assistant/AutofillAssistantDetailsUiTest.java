@@ -116,8 +116,12 @@ public class AutofillAssistantDetailsUiTest {
             Bitmap testImage = BitmapFactory.decodeResource(
                     mTestRule.getActivity().getResources(), R.drawable.btn_close);
 
+            AssistantStaticDependencies staticDependencies =
+                    new AssistantDependenciesFactoryChrome().createStaticDependencies();
+
             return new AssistantDetailsCoordinator(InstrumentationRegistry.getTargetContext(),
-                    model, new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
+                    staticDependencies.getInfoPageUtil(), model,
+                    new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
         });
 
         runOnUiThreadBlocking(()

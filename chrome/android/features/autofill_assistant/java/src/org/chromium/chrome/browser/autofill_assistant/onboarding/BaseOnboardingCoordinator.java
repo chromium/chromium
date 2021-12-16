@@ -20,9 +20,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -51,6 +51,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private static final String SHOPPING_ASSISTED_CHECKOUT_INTENT = "SHOPPING_ASSISTED_CHECKOUT";
     private static final String BUY_MOVIE_TICKETS_EXPERIMENT_ID = "4363482";
 
+    private final AssistantInfoPageUtil mInfoPageUtil;
     private final String mExperimentIds;
     private final Map<String, String> mParameters;
     private final Map<String, String> mStringMap = new HashMap<>();
@@ -62,8 +63,9 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     @Nullable
     ScrollView mView;
 
-    public BaseOnboardingCoordinator(
-            String experimentIds, Map<String, String> parameters, Context context) {
+    public BaseOnboardingCoordinator(AssistantInfoPageUtil infoPageUtil, String experimentIds,
+            Map<String, String> parameters, Context context) {
+        mInfoPageUtil = infoPageUtil;
         mExperimentIds = experimentIds;
         mParameters = parameters;
         mContext = context;
@@ -209,7 +211,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
 
         NoUnderlineClickableSpan termsSpan = new NoUnderlineClickableSpan(mContext.getResources(),
                 (widget)
-                        -> CustomTabActivity.showInfoPage(mContext.getApplicationContext(),
+                        -> mInfoPageUtil.showInfoPage(mContext.getApplicationContext(),
                                 TextUtils.isEmpty(termsAndConditionsUrl)
                                                 || !UrlUtilitiesJni.get().isGoogleSubDomainUrl(
                                                         termsAndConditionsUrl)

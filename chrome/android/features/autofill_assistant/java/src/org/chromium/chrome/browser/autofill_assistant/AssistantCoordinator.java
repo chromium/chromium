@@ -47,7 +47,7 @@ public class AssistantCoordinator {
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
-            AccessibilityUtil accessibilityUtil) {
+            AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil) {
         mActivity = activity;
         mCurrentTabSupplier = currentTabSupplier;
 
@@ -63,7 +63,7 @@ public class AssistantCoordinator {
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
-                browserControlsManager, accessibilityUtil);
+                browserControlsManager, accessibilityUtil, infoPageUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

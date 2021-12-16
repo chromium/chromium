@@ -104,12 +104,13 @@ public class BottomSheetOnboardingCoordinatorTest {
         mScrimCoordinator = mCustomTabActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting()
                                     .getScrimCoordinator();
+
+        AssistantStaticDependencies staticDependencies =
+                new AssistantDependenciesFactoryChrome().createStaticDependencies();
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
                 mBottomSheetController, mActivity.getBrowserControlsManager(),
                 mActivity.getCompositorViewHolderForTesting(),
-                new AssistantDependenciesFactoryChrome()
-                        .createStaticDependencies()
-                        .getAccessibilityUtil());
+                staticDependencies.getAccessibilityUtil(), staticDependencies.getInfoPageUtil());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {

@@ -90,6 +90,7 @@ InteractionHandlerAndroid::InteractionHandlerAndroid(
     ViewHandlerAndroid* view_handler,
     RadioButtonController* radio_button_controller,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
+    base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate)
     : event_handler_(event_handler),
       user_model_(user_model),
@@ -97,6 +98,7 @@ InteractionHandlerAndroid::InteractionHandlerAndroid(
       view_handler_(view_handler),
       radio_button_controller_(radio_button_controller),
       jcontext_(jcontext),
+      jinfo_page_util_(jinfo_page_util),
       jdelegate_(jdelegate) {}
 
 InteractionHandlerAndroid::~InteractionHandlerAndroid() {
@@ -195,7 +197,7 @@ InteractionHandlerAndroid::CreateInteractionCallbackFromProto(
     case CallbackProto::kShowInfoPopup: {
       return absl::optional<InteractionCallback>(base::BindRepeating(
           &android_interactions::ShowInfoPopup,
-          proto.show_info_popup().info_popup(), jcontext_,
+          proto.show_info_popup().info_popup(), jcontext_, jinfo_page_util_,
           GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
                                basic_interactions_->GetClientSettings())));
     }
@@ -384,8 +386,8 @@ InteractionHandlerAndroid::CreateNestedUi(
     return nullptr;
   }
   auto nested_ui = GenericUiNestedControllerAndroid::CreateFromProto(
-      proto, jcontext_, jdelegate_, event_handler_, user_model_,
-      basic_interactions_, radio_button_controller_);
+      proto, jcontext_, jinfo_page_util_, jdelegate_, event_handler_,
+      user_model_, basic_interactions_, radio_button_controller_);
   const auto* nested_ui_ptr = nested_ui.get();
   if (nested_ui) {
     nested_ui_controllers_.emplace(identifier, std::move(nested_ui));

@@ -79,6 +79,7 @@ ValueProto ToNativeValue(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& proto,
+    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     const std::string& close_display_str);
 
 // Shows an instance of |AssistantInfoPopup| on the screen.

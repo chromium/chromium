@@ -1380,7 +1380,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
         AssistantInfoPopup infoPopup = new AssistantInfoPopup("Guest checkout", "Text explanation.",
-                new AssistantDialogButton("Close", null), null, null);
+                new AssistantDialogButton(null, "Close", null), null, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);

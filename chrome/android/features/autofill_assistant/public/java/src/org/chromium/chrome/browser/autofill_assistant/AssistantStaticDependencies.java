@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
@@ -13,6 +15,7 @@ import org.chromium.ui.util.AccessibilityUtil;
  * Generic static dependencies interface. The concrete implementation will depend on the browser
  * framework, i.e., WebLayer vs. Chrome.
  */
+@JNINamespace("autofill_assistant")
 public interface AssistantStaticDependencies {
     AccessibilityUtil getAccessibilityUtil();
 
@@ -22,4 +25,7 @@ public interface AssistantStaticDependencies {
      */
     @Nullable
     AssistantTabObscuringUtil getTabObscuringUtilOrNull(WindowAndroid windowAndroid);
+
+    @CalledByNative
+    AssistantInfoPageUtil getInfoPageUtil();
 }

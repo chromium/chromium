@@ -41,7 +41,8 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 AssistantDependenciesFactory dependenciesFactory) {
             super(new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
                           rootView,
-                          dependenciesFactory.createStaticDependencies().getAccessibilityUtil()),
+                          dependenciesFactory.createStaticDependencies().getAccessibilityUtil(),
+                          dependenciesFactory.createStaticDependencies().getInfoPageUtil()),
                     activityTabProvider, dependenciesFactory);
         }
 

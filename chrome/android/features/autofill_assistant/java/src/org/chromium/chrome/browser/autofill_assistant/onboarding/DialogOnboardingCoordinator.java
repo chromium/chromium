@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 
 import java.util.Map;
@@ -29,9 +30,9 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
     @Nullable
     AlertDialog mDialog;
 
-    DialogOnboardingCoordinator(
-            String experimentIds, Map<String, String> parameters, Context context) {
-        super(experimentIds, parameters, context);
+    DialogOnboardingCoordinator(AssistantInfoPageUtil infoPageUtil, String experimentIds,
+            Map<String, String> parameters, Context context) {
+        super(infoPageUtil, experimentIds, parameters, context);
     }
 
     @Override

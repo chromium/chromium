@@ -10,26 +10,28 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 
 /**
  * Represents a button.
  */
 @JNINamespace("autofill_assistant")
 public class AssistantDialogButton {
-    private String mLabel;
+    private final AssistantInfoPageUtil mInfoPageUtil;
+    private final String mLabel;
     @Nullable
-    private String mUrl;
+    private final String mUrl;
 
     @CalledByNative
-    public AssistantDialogButton(String label, @Nullable String url) {
+    public AssistantDialogButton(
+            AssistantInfoPageUtil infoPageUtil, String label, @Nullable String url) {
+        mInfoPageUtil = infoPageUtil;
         mLabel = label;
         mUrl = url;
     }
 
     public void onClick(Context context) {
         if (mUrl != null) {
-            CustomTabActivity.showInfoPage(context, mUrl);
+            mInfoPageUtil.showInfoPage(context, mUrl);
         }
     }
 

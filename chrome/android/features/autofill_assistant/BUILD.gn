@@ -81,6 +81,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesFactoryChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDialogButton.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPageUtilChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPopup.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantKeyboardCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModel.java",
@@ -231,7 +232,9 @@ generate_jni("jni_headers") {
 
 generate_jni("jni_headers_public") {
   sources = [
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependencies.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeatures.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependencies.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/Starter.java",
   ]
 }

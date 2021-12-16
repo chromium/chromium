@@ -104,6 +104,9 @@ public class AutofillAssistantUiTest {
     }
 
     private AssistantCoordinator createAndShowAssistantCoordinator() {
+        AssistantStaticDependencies staticDependencies =
+                new AssistantDependenciesFactoryChrome().createStaticDependencies();
+
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
                     initializeBottomSheet(),
@@ -115,9 +118,8 @@ public class AutofillAssistantUiTest {
                     getActivity().getActivityTabProvider(),
                     getActivity().getBrowserControlsManager(),
                     getActivity().getWindowAndroid().getApplicationBottomInsetProvider(),
-                    new AssistantDependenciesFactoryChrome()
-                            .createStaticDependencies()
-                            .getAccessibilityUtil());
+                    staticDependencies.getAccessibilityUtil(),
+                    staticDependencies.getInfoPageUtil());
             coordinator.show();
             return coordinator;
         });

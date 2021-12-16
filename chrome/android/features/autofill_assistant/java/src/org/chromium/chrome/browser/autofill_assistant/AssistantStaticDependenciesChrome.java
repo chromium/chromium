@@ -33,4 +33,9 @@ public interface AssistantStaticDependenciesChrome extends AssistantStaticDepend
 
         return new AssistantTabObscuringUtilChrome(tabObscuringHandler);
     }
+
+    @Override
+    default AssistantInfoPageUtil getInfoPageUtil() {
+        return new AssistantInfoPageUtilChrome();
+    }
 }

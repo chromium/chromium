@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.app.Activity;
 import android.view.View;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -20,6 +22,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
  * WebContents should not be returned in this interface as objects should stay valid when
  * WebContents change.
  */
+@JNINamespace("autofill_assistant")
 public interface AssistantDependencies extends AssistantStaticDependencies {
     Activity getActivity();
 
@@ -36,4 +39,10 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
     View getRootView();
 
     AssistantSnackbarFactory getSnackbarFactory();
+
+    // Only called by native to guarantee future type safety.
+    @CalledByNative
+    default AssistantStaticDependencies getStaticDependencies() {
+        return this;
+    }
 }

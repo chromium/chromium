@@ -26,6 +26,7 @@ class GenericUiRootControllerAndroid {
   static std::unique_ptr<GenericUiRootControllerAndroid> CreateFromProto(
       const GenericUserInterfaceProto& proto,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
+      base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate,
       EventHandler* event_handler,
       UserModel* user_model,

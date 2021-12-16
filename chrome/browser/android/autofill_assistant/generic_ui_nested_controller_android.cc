@@ -466,6 +466,7 @@ std::unique_ptr<GenericUiNestedControllerAndroid>
 GenericUiNestedControllerAndroid::CreateFromProto(
     const GenericUserInterfaceProto& proto,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
+    base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate,
     EventHandler* event_handler,
     UserModel* user_model,
@@ -475,7 +476,7 @@ GenericUiNestedControllerAndroid::CreateFromProto(
   auto view_handler = std::make_unique<ViewHandlerAndroid>();
   auto interaction_handler = std::make_unique<InteractionHandlerAndroid>(
       event_handler, user_model, basic_interactions, view_handler.get(),
-      radio_button_controller, jcontext, jdelegate);
+      radio_button_controller, jcontext, jinfo_page_util, jdelegate);
   std::vector<std::pair<std::string, std::string>> created_radio_buttons;
   auto register_radio_button_callback =
       base::BindRepeating(&RegisterRadioButton, &created_radio_buttons,

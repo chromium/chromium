@@ -37,10 +37,12 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider,
             AssistantDependenciesFactory dependenciesFactory) {
+        AssistantStaticDependencies staticDependencies =
+                dependenciesFactory.createStaticDependencies();
         return new AutofillAssistantActionHandlerImpl(
                 new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
-                        rootView,
-                        dependenciesFactory.createStaticDependencies().getAccessibilityUtil()),
+                        rootView, staticDependencies.getAccessibilityUtil(),
+                        staticDependencies.getInfoPageUtil()),
                 activityTabProvider, dependenciesFactory);
     }
 }

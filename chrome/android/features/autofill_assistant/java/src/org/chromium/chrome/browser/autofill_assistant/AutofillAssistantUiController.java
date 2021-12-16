@@ -149,7 +149,7 @@ public class AutofillAssistantUiController {
                 activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
                 activity.getActivityTabProvider(), activity.getBrowserControlsManager(),
                 activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                dependencies.getAccessibilityUtil());
+                dependencies.getAccessibilityUtil(), dependencies.getInfoPageUtil());
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 activity.getActivityTabProvider(), /* shouldTrigger = */ true) {
             @Override

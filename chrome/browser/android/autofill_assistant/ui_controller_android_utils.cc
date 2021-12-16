@@ -335,7 +335,8 @@ ValueProto ToNativeValue(JNIEnv* env,
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
     JNIEnv* env,
-    const InfoPopupProto_DialogButton& button_proto) {
+    const InfoPopupProto_DialogButton& button_proto,
+    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util) {
   base::android::ScopedJavaLocalRef<jstring> jurl = nullptr;
 
   switch (button_proto.click_action_case()) {
@@ -350,13 +351,14 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
       break;
   }
   return Java_AssistantDialogButton_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, button_proto.label()),
-      jurl);
+      env, jinfo_page_util,
+      base::android::ConvertUTF8ToJavaString(env, button_proto.label()), jurl);
 }
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& info_popup_proto,
+    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     const std::string& close_display_str) {
   base::android::ScopedJavaLocalRef<jobject> jpositive_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jnegative_button = nullptr;
@@ -366,21 +368,22 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
       info_popup_proto.has_negative_button() ||
       info_popup_proto.has_neutral_button()) {
     if (info_popup_proto.has_positive_button()) {
-      jpositive_button =
-          CreateJavaDialogButton(env, info_popup_proto.positive_button());
+      jpositive_button = CreateJavaDialogButton(
+          env, info_popup_proto.positive_button(), jinfo_page_util);
     }
     if (info_popup_proto.has_negative_button()) {
-      jnegative_button =
-          CreateJavaDialogButton(env, info_popup_proto.negative_button());
+      jnegative_button = CreateJavaDialogButton(
+          env, info_popup_proto.negative_button(), jinfo_page_util);
     }
     if (info_popup_proto.has_neutral_button()) {
-      jneutral_button =
-          CreateJavaDialogButton(env, info_popup_proto.neutral_button());
+      jneutral_button = CreateJavaDialogButton(
+          env, info_popup_proto.neutral_button(), jinfo_page_util);
     }
   } else {
     // If no button is set in the proto, we add a Close button
     jpositive_button = Java_AssistantDialogButton_Constructor(
-        env, base::android::ConvertUTF8ToJavaString(env, close_display_str),
+        env, jinfo_page_util,
+        base::android::ConvertUTF8ToJavaString(env, close_display_str),
         nullptr);
   }
 
