@@ -540,7 +540,9 @@ Directive::Directive(base::StringPiece directive_string,
       directive_name(std::move(directive_name)),
       directive_values(std::move(directive_values)) {
   // |directive_name| should be lower cased.
-  DCHECK(std::none_of(directive_name.begin(), directive_name.end(),
+  // Note: Using |this->directive_name|, because |directive_name| refers to the
+  // already-moved-from input parameter.
+  DCHECK(std::none_of(this->directive_name.begin(), this->directive_name.end(),
                       base::IsAsciiUpper<char>));
 }
 
