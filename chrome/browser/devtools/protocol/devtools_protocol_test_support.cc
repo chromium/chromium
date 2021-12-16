@@ -146,6 +146,10 @@ void DevToolsProtocolTestBase::AgentHostClosed(
 bool DevToolsProtocolTestBase::AllowUnsafeOperations() {
   return allow_unsafe_operations_;
 }
+absl::optional<url::Origin>
+DevToolsProtocolTestBase::GetNavigationInitiatorOrigin() {
+  return navigation_initiator_origin_;
+}
 
 bool DevToolsProtocolTestBase::MaySendInputEventsToBrowser() {
   return may_send_input_event_to_browser_;

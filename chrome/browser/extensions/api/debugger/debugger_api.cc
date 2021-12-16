@@ -58,6 +58,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "url/origin.h"
 
 using content::DevToolsAgentHost;
 using content::RenderProcessHost;
@@ -208,6 +209,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   bool MayAttachToBrowser() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
+  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
 
  private:
   using PendingRequests =
@@ -438,6 +440,14 @@ bool ExtensionDevToolsClientHost::MayReadLocalFiles() {
 
 bool ExtensionDevToolsClientHost::MayWriteLocalFiles() {
   return false;
+}
+
+absl::optional<url::Origin>
+ExtensionDevToolsClientHost::GetNavigationInitiatorOrigin() {
+  // Ensure that navigations started by debugger API are treated as
+  // renderer-initiated by this extension, so that URL spoof defenses are in
+  // effect.
+  return extension_->origin();
 }
 
 // DebuggerFunction -----------------------------------------------------------

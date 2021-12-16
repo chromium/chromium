@@ -63,7 +63,8 @@ class PageHandler : public DevToolsDomainHandler,
  public:
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
-              bool allow_unsafe_operations);
+              bool allow_unsafe_operations,
+              absl::optional<url::Origin> navigation_initiator_origin);
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
@@ -209,6 +210,7 @@ class PageHandler : public DevToolsDomainHandler,
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   const bool allow_unsafe_operations_;
+  const absl::optional<url::Origin> navigation_initiator_origin_;
 
   bool enabled_;
   bool bypass_csp_ = false;

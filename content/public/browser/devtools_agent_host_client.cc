@@ -39,4 +39,9 @@ bool DevToolsAgentHostClient::AllowUnsafeOperations() {
   return false;
 }
 
+absl::optional<url::Origin>
+DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
+  return absl::nullopt;
+}
+
 }  // namespace content

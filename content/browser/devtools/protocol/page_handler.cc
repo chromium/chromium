@@ -194,11 +194,14 @@ bool CanExecuteGlobalCommands(
 
 }  // namespace
 
-PageHandler::PageHandler(EmulationHandler* emulation_handler,
-                         BrowserHandler* browser_handler,
-                         bool allow_unsafe_operations)
+PageHandler::PageHandler(
+    EmulationHandler* emulation_handler,
+    BrowserHandler* browser_handler,
+    bool allow_unsafe_operations,
+    absl::optional<url::Origin> navigation_initiator_origin)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
+      navigation_initiator_origin_(navigation_initiator_origin),
       enabled_(false),
       screencast_enabled_(false),
       screencast_quality_(kDefaultScreenshotQuality),
@@ -520,6 +523,15 @@ void PageHandler::Navigate(const std::string& url,
   params.referrer = Referrer(GURL(referrer.fromMaybe("")), policy);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
+  if (navigation_initiator_origin_.has_value()) {
+    // When this agent has an initiator origin defined, ensure that its
+    // navigations are considered renderer-initiated by that origin, such that
+    // URL spoof defenses are in effect. (crbug.com/1192417)
+    params.is_renderer_initiated = true;
+    params.initiator_origin = *navigation_initiator_origin_;
+    params.source_site_instance = SiteInstance::CreateForURL(
+        host_->GetBrowserContext(), navigation_initiator_origin_->GetURL());
+  }
   // Handler may be destroyed while navigating if the session
   // gets disconnected as a result of access checks.
   base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();

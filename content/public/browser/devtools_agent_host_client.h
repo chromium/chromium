@@ -7,6 +7,8 @@
 
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class GURL;
 namespace content {
@@ -51,6 +53,13 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // JS compilation cache entries. This should only be true for clients
   // that are already privileged, such as local automation clients.
   virtual bool AllowUnsafeOperations();
+
+  // A value to use as NavigationController::LoadURLParams::initiator_origin.
+  // If set, navigations would also be treated as renderer-initiated.
+  // This is useful e.g. for Chrome Extensions so that their calls to
+  // Page.navigate would be treated as renderer-initiated naviation subject to
+  // URL spoofing protection.
+  virtual absl::optional<url::Origin> GetNavigationInitiatorOrigin();
 
   // Determines protocol message format.
   virtual bool UsesBinaryProtocol();

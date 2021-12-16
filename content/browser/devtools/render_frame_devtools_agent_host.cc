@@ -294,6 +294,14 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   if (!ShouldAllowSession(session))
     return false;
 
+  if (frame_tree_node_ && !frame_tree_node_->parent() &&
+      frame_tree_node_->is_on_initial_empty_document()) {
+    // Since the DevTools protocol can be used to modify the initial empty
+    // document of a tab, notify the browser that the pending URL shouldn't be
+    // displayed anymore to eliminate a URL spoof risk.
+    frame_host_->DidAccessInitialMainDocument();
+  }
+
   auto emulation_handler = std::make_unique<protocol::EmulationHandler>();
   protocol::EmulationHandler* emulation_handler_ptr = emulation_handler.get();
 
@@ -348,7 +356,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       GetId(), auto_attacher_.get(), session->GetRootSession()));
   session->AddHandler(std::make_unique<protocol::PageHandler>(
       emulation_handler_ptr, browser_handler_ptr,
-      session->GetClient()->AllowUnsafeOperations()));
+      session->GetClient()->AllowUnsafeOperations(),
+      session->GetClient()->GetNavigationInitiatorOrigin()));
   session->AddHandler(std::make_unique<protocol::SecurityHandler>());
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
     session->AddHandler(

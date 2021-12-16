@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/origin.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 using testing::AllOf;
@@ -205,6 +206,68 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandSync("Input.dispatchKeyEvent", std::move(params));
 
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest,
+    NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
+  GURL url("invalid.scheme:for-sure");
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+
+  content::WebContents* web_contents =
+      browser()->OpenURL(content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_TYPED, false));
+  tab_added_waiter.Wait();
+  content::NavigationController& navigation_controller =
+      web_contents->GetController();
+  content::NavigationEntry* pending_entry =
+      navigation_controller.GetPendingEntry();
+  ASSERT_NE(nullptr, pending_entry);
+  EXPECT_EQ(url, pending_entry->GetURL());
+
+  EXPECT_EQ(pending_entry, navigation_controller.GetVisibleEntry());
+  agent_host_ = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  agent_host_->AttachClient(this);
+  SendCommandSync("Page.enable");
+
+  // Ensure that a failed pending entry is cleared when the DevTools protocol
+  // attaches, so that any modified page content is not attributed to the failed
+  // URL. (crbug/1192417)
+  EXPECT_EQ(nullptr, navigation_controller.GetPendingEntry());
+  EXPECT_EQ(GURL(""), navigation_controller.GetVisibleEntry()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoPendingUrlShownForPageNavigateFromChromeExtension) {
+  GURL url("https://example.com");
+  // DevTools protocol use cases that have an initiator origin (e.g., for
+  // extensions) should use renderer-initiated navigations and be subject to URL
+  // spoof defenses.
+  navigation_initiator_origin_ =
+      url::Origin::Create(GURL("chrome-extension://abc123/"));
+
+  // Attach DevTools and start a navigation but don't wait for it to finish.
+  Attach();
+  SendCommandSync("Page.enable");
+  base::DictionaryValue params;
+  params.SetStringKey("url", url.spec());
+  SendCommand("Page.navigate", std::move(params), false);
+  content::NavigationController& navigation_controller =
+      web_contents()->GetController();
+  content::NavigationEntry* pending_entry =
+      navigation_controller.GetPendingEntry();
+  ASSERT_NE(nullptr, pending_entry);
+  EXPECT_EQ(url, pending_entry->GetURL());
+
+  // Attaching the DevTools protocol to the initial empty document of a new tab
+  // should prevent the pending URL from being visible, since the protocol
+  // allows modifying the initial empty document in a way that could be useful
+  // for URL spoofs.
+  EXPECT_NE(pending_entry, navigation_controller.GetVisibleEntry());
+  EXPECT_NE(nullptr, navigation_controller.GetPendingEntry());
+  EXPECT_EQ(GURL("about:blank"),
+            navigation_controller.GetVisibleEntry()->GetURL());
 }
 
 class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
