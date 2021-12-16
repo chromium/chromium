@@ -384,10 +384,6 @@ SUPPORT-WRONG-DIR: css/CSS2/section-index.xht
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-18.css
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19-alt.xml
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19.css
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/check-for-references.sh
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests-filter
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests.sh
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/masking/blank.html
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 
 
@@ -413,7 +409,6 @@ INDENT TABS: css/css-writing-modes/*
 INDENT TABS: css/filter-effects/*
 INDENT TABS: css/mediaqueries/*
 INDENT TABS: css/selectors/*
-INDENT TABS: css/vendor-imports/*
 INDENT TABS: css/WOFF2/*
 
 
@@ -424,12 +419,6 @@ CONSOLE: css/css-writing-modes/orthogonal-parent-shrink-to-fit-001*.html
 CONSOLE: css/css-writing-modes/tools/generators/gulpfile.js
 
 TRAILING WHITESPACE: css/css-fonts/support/fonts/gsubtest-lookup3.ufo/features.fea
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-7.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-7-ref.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-8.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-8-ref.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-9.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-9-ref.html
 
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-parent-with-3D-transform-and-transition.html
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-sibling-with-3D-transform-and-transition.html
