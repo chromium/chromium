@@ -200,8 +200,19 @@ void StoreUpdateData::CopyPredictionModelIntoUpdateData(
   proto::StoreEntry entry_proto;
   entry_proto.set_entry_type(static_cast<proto::StoreEntryType>(
       OptimizationGuideStore::StoreEntryType::kPredictionModel));
+
+  base::TimeDelta expiry_duration;
+  if (prediction_model.model_info().has_valid_duration()) {
+    expiry_duration =
+        base::Seconds(prediction_model.model_info().valid_duration().seconds());
+  } else {
+    expiry_duration = features::StoredFetchedHintsFreshnessDuration();
+  }
+  expiry_time_ = base::Time::Now() + expiry_duration;
   entry_proto.set_expiry_time_secs(
-      expiry_time_->ToDeltaSinceWindowsEpoch().InSeconds());
+      expiry_time_.value().ToDeltaSinceWindowsEpoch().InSeconds());
+  entry_proto.set_keep_beyond_valid_duration(
+      prediction_model.model_info().keep_beyond_valid_duration());
   entry_proto.mutable_prediction_model()->CopyFrom(prediction_model);
   entries_to_save_->emplace_back(std::move(prediction_model_entry_key),
                                  std::move(entry_proto));

@@ -176,19 +176,23 @@ class OptimizationGuideStoreTest : public testing::Test {
       StoreUpdateData* update_data,
       optimization_guide::proto::OptimizationTarget optimization_target,
       absl::optional<base::FilePath> model_file_path = absl::nullopt,
-      base::flat_set<base::FilePath> additional_file_paths = {}) {
+      absl::optional<proto::ModelInfo> info = absl::nullopt,
+      absl::optional<base::Time> expiry_time = absl::nullopt) {
     std::unique_ptr<optimization_guide::proto::PredictionModel>
         prediction_model = CreatePredictionModel();
+    if (info)
+      prediction_model->mutable_model_info()->MergeFrom(*info);
     prediction_model->mutable_model_info()->set_optimization_target(
         optimization_target);
+    if (expiry_time) {
+      auto diff = expiry_time.value() - base::Time::Now();
+      prediction_model->mutable_model_info()
+          ->mutable_valid_duration()
+          ->set_seconds(diff.InSeconds());
+    }
     if (model_file_path) {
       prediction_model->mutable_model()->set_download_url(
           FilePathToString(*model_file_path));
-    }
-    for (const base::FilePath& additional_file : additional_file_paths) {
-      prediction_model->mutable_model_info()
-          ->add_additional_files()
-          ->set_file_path(FilePathToString(additional_file));
     }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
   }
@@ -1945,7 +1949,7 @@ TEST_F(OptimizationGuideStoreTest, FindPredictionModelEntryKey) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1971,7 +1975,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1994,7 +1998,7 @@ TEST_F(OptimizationGuideStoreTest, FindAndRemovePredictionModelEntryKey) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -2034,7 +2038,7 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModel) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -2076,6 +2080,46 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelOnUnavailableStore) {
   EXPECT_FALSE(last_loaded_prediction_model());
 }
 
+TEST_F(OptimizationGuideStoreTest, LoadPredictionModelOnExpiredModel) {
+  base::HistogramTester histogram_tester;
+  size_t initial_hint_count = 10;
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, initial_hint_count);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  // Add an update with models that are "inactive".
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time -
+          optimization_guide::features::StoredModelsValidDuration());
+  ASSERT_TRUE(update_data);
+  SeedPredictionModelUpdateData(
+      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_file_path=*/absl::nullopt,
+      /*info=*/{},
+      update_time - optimization_guide::features::StoredModelsValidDuration());
+  UpdatePredictionModels(std::move(update_data));
+  // Since models haven't been purged yet it will initially show up as valid.
+  OptimizationGuideStore::EntryKey entry_key;
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // After load completes, the key will still exist until after purge.
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+
+  // Verify that the OnPredictionModelLoaded callback runs when the store is
+  // unavailable and that the prediction model was correctly not available.
+  EXPECT_FALSE(last_loaded_prediction_model());
+}
+
 TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   base::HistogramTester histogram_tester;
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
@@ -2087,7 +2131,7 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -2117,7 +2161,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -2164,7 +2208,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
@@ -2173,9 +2217,12 @@ TEST_F(OptimizationGuideStoreTest,
 
   base::FilePath additional_file_path = temp_dir().AppendASCII("doesntexist");
 
-  SeedPredictionModelUpdateData(
-      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      temp_dir().AppendASCII("doesntexist"), {additional_file_path});
+  proto::ModelInfo info;
+  info.add_additional_files()->set_file_path(
+      FilePathToString(additional_file_path));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                temp_dir().AppendASCII("doesntexist"), info);
   UpdatePredictionModels(std::move(update_data));
 
   OptimizationGuideStore::EntryKey entry_key;
@@ -2221,7 +2268,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
@@ -2232,10 +2279,12 @@ TEST_F(OptimizationGuideStoreTest,
       temp_dir().AppendASCII("additional_file.txt");
   ASSERT_EQ(static_cast<int32_t>(3),
             base::WriteFile(additional_file_path, "ah!", 3));
-
+  proto::ModelInfo info;
+  info.add_additional_files()->set_file_path(
+      FilePathToString(additional_file_path));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-                                model_file_path, {additional_file_path});
+                                model_file_path, info);
   UpdatePredictionModels(std::move(update_data));
 
   OptimizationGuideStore::EntryKey entry_key;
@@ -2277,7 +2326,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2324,7 +2373,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2341,7 +2390,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
@@ -2380,7 +2429,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model_v1.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2397,7 +2446,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.Append(GetBaseFileNameForModels());
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
@@ -2429,7 +2478,7 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2669,17 +2718,22 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time -
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
-  SeedPredictionModelUpdateData(update_data.get(),
-                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(
+      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      old_file_path,
+      /*info=*/{},
+      update_time - optimization_guide::features::StoredModelsValidDuration());
   UpdatePredictionModels(std::move(update_data));
 
   // Add an update with models that are "active".
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   SeedPredictionModelUpdateData(update_data2.get(),
                                 proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
@@ -2695,9 +2749,12 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   ASSERT_TRUE(success);
 
   PurgeInactiveModels();
-
+  RunUntilIdle();
+  // The expired model should be removed.
   EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  EXPECT_FALSE(base::PathExists(old_file_path));
+
   // Should not purge models that are still active.
   EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
@@ -2707,5 +2764,122 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
 }
+
+struct ValidityTestCase {
+  std::string test_name;
+  bool keep_beyond_valid_duration;
+  bool initially_expired;
+  bool expect_kept;
+};
+
+class OptimizationGuideStoreValidityTest
+    : public OptimizationGuideStoreTest,
+      public ::testing::WithParamInterface<ValidityTestCase> {};
+
+TEST_P(OptimizationGuideStoreValidityTest, PurgeInactiveModels) {
+  const ValidityTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
+
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  // Add an update with one model according to ValidityTestCase settings.
+  base::Time update_time = base::Time().Now();
+  if (test_case.initially_expired) {
+    update_time -= optimization_guide::features::StoredModelsValidDuration();
+  } else {
+    update_time += optimization_guide::features::StoredModelsValidDuration();
+  }
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(update_time);
+  ASSERT_TRUE(update_data);
+  proto::ModelInfo info;
+  info.set_keep_beyond_valid_duration(test_case.keep_beyond_valid_duration);
+  base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                old_file_path, info, update_time);
+  UpdatePredictionModels(std::move(update_data));
+
+  // Add an update with models that are "active" and should be unaffected.
+  std::unique_ptr<StoreUpdateData> update_data2 =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          base::Time().Now() +
+          optimization_guide::features::StoredModelsValidDuration());
+  ASSERT_TRUE(update_data2);
+  SeedPredictionModelUpdateData(update_data2.get(),
+                                proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
+  UpdatePredictionModels(std::move(update_data2));
+
+  // Make sure both models are in the store.
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  ASSERT_TRUE(success);
+  EXPECT_TRUE(base::PathExists(old_file_path));
+
+  success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key);
+  ASSERT_TRUE(success);
+
+  PurgeInactiveModels();
+  RunUntilIdle();
+  // Verify that the model file, entry key and histogram match expectations for
+  // PageLoad.
+  EXPECT_EQ(test_case.expect_kept,
+            guide_store()->FindPredictionModelEntryKey(
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  EXPECT_EQ(test_case.expect_kept, base::PathExists(old_file_path));
+
+  if (test_case.expect_kept) {
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", 0);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", 1);
+  }
+  // Verify that the other model is not deleted.
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
+}
+INSTANTIATE_TEST_SUITE_P(
+    OptimizationGuideStoreValidityTests,
+    OptimizationGuideStoreValidityTest,
+    testing::ValuesIn<ValidityTestCase>({
+        {
+            "KeepDespiteInvalidModel",
+            /*keep_beyond_valid_duration=*/true,
+            /*initially_expired=*/true,
+            /*expect_kept=*/true,
+        },
+        {
+            "KeepAndInitiallyValid",
+            /*keep_beyond_valid_duration=*/true,
+            /*initially_expired=*/false,
+            /*expect_kept=*/true,
+        },
+        {
+            "DeleteAndInitiallyValid",
+            /*keep_beyond_valid_duration=*/false,
+            /*initially_expired=*/false,
+            /*expect_kept=*/true,
+        },
+        // Only in this case should the model be removed.
+        {
+            "DeleteAndInvalidModel",
+            /*keep_beyond_valid_duration=*/false,
+            /*initially_expired=*/true,
+            /*expect_kept=*/false,
+        },
+    }),
+    [](const testing::TestParamInfo<
+        OptimizationGuideStoreValidityTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace optimization_guide

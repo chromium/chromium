@@ -122,9 +122,11 @@ TEST(StoreUpdateDataTest, BuildPredictionModelUpdateData) {
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info->add_supported_model_engine_versions(
       proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
+  model_info->set_keep_beyond_valid_duration(false);
 
-  base::Time expected_expiry_time =
-      base::Time::Now() + features::StoredModelsInactiveDuration();
+  model_info->mutable_valid_duration()->set_seconds(3);
+
+  base::Time expected_expiry_time = base::Time::Now() + base::Seconds(3);
   std::unique_ptr<StoreUpdateData> prediction_model_update =
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
           expected_expiry_time);
@@ -143,6 +145,8 @@ TEST(StoreUpdateDataTest, BuildPredictionModelUpdateData) {
       found_prediction_model_entry = true;
       EXPECT_EQ(expected_expiry_time.ToDeltaSinceWindowsEpoch().InSeconds(),
                 store_entry.expiry_time_secs());
+      EXPECT_EQ(store_entry.keep_beyond_valid_duration(),
+                model_info->keep_beyond_valid_duration());
       break;
     }
   }

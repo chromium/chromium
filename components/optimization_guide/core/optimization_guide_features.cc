@@ -258,14 +258,15 @@ base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
       "max_store_duration_for_host_model_features_in_days", 7));
 }
 
-base::TimeDelta StoredModelsInactiveDuration() {
+base::TimeDelta StoredModelsValidDuration() {
   // TODO(crbug.com/1234054) This field should not be changed without VERY
-  // careful consideration. Any model that is on device and expires will be
-  // removed and triggered to refetch so any feature relying on the model could
-  // have a period of time without a valid model.
+  // careful consideration. This is the default duration for models that do not
+  // specify retention, so changing this can cause models to be removed and
+  // refetch would only apply to newer models. Any feature relying on the model
+  // would have a period of time without a valid model, and would need to push a
+  // new version.
   return base::Days(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction, "inactive_duration_for_models_in_days",
-      30));
+      kOptimizationTargetPrediction, "valid_duration_for_models_in_days", 30));
 }
 
 base::TimeDelta URLKeyedHintValidCacheDuration() {

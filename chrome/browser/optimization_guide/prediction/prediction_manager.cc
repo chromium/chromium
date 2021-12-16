@@ -539,7 +539,7 @@ void PredictionManager::UpdatePredictionModels(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
-          clock_->Now() + features::StoredModelsInactiveDuration());
+          clock_->Now() + features::StoredModelsValidDuration());
   bool has_models_to_update = false;
   std::string debug_msg;
   for (const auto& model : prediction_models) {
@@ -621,7 +621,7 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
   // Store the received model in the store.
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
-          clock_->Now() + features::StoredModelsInactiveDuration());
+          clock_->Now() + features::StoredModelsValidDuration());
   prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
   model_and_features_store_->UpdatePredictionModels(
       std::move(prediction_model_update_data),

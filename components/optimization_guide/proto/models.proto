@@ -200,7 +200,7 @@ message AdditionalModelFile {
 
 // Metadata for a prediction model for a specific optimization target.
 //
-// Next ID: 8
+// Next ID: 10
 message ModelInfo {
   reserved 3;
 
@@ -223,6 +223,11 @@ message ModelInfo {
   // This does not need to be sent to the server in the request for an update to
   // this model. The server will ignore this if sent.
   repeated AdditionalModelFile additional_files = 7;
+  // How long the model will remain valid in client storage. If
+  // |keep_beyond_valid_duration| is true, will be ignored.
+  optional Duration valid_duration = 8;
+  // Whether to delete the model once valid_duration has passed.
+  optional bool keep_beyond_valid_duration = 9;
   // Mechanism used for model owners to attach metadata to the request or
   // response.
   //
