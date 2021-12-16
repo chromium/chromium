@@ -8,6 +8,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +30,9 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
   MOCK_METHOD(void,
               GetSelectedSegment,
               (const std::string&, SegmentSelectionCallback));
+  MOCK_METHOD(SegmentSelectionResult,
+              GetCachedSegmentResult,
+              (const std::string&));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
 };

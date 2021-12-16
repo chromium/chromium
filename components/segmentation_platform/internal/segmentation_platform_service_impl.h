@@ -112,6 +112,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentationPlatformService overrides.
   void GetSelectedSegment(const std::string& segmentation_key,
                           SegmentSelectionCallback callback) override;
+  SegmentSelectionResult GetCachedSegmentResult(
+      const std::string& segmentation_key) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
 

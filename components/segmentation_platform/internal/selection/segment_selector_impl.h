@@ -41,6 +41,7 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // SegmentSelector overrides.
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
+  SegmentSelectionResult GetCachedSegmentResult() override;
 
   // ModelExecutionScheduler::Observer overrides.
 

@@ -47,6 +47,8 @@ TEST_F(DummySegmentationPlatformServiceTest, GetSelectedSegment) {
           &DummySegmentationPlatformServiceTest::OnGetSelectedSegment,
           base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
+  ASSERT_EQ(expected,
+            segmentation_platform_service_->GetCachedSegmentResult("some_key"));
 }
 
 }  // namespace segmentation_platform

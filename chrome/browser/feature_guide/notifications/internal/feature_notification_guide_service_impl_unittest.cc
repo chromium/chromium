@@ -74,6 +74,14 @@ class TestSegmentationPlatformService
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     std::move(callback).Run(result);
   }
+  segmentation_platform::SegmentSelectionResult GetCachedSegmentResult(
+      const std::string& segmentation_key) override {
+    segmentation_platform::SegmentSelectionResult result;
+    result.is_ready = true;
+    result.segment = optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+    return result;
+  }
   void EnableMetrics(bool signal_collection_allowed) override {}
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;

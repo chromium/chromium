@@ -157,6 +157,13 @@ void SegmentationPlatformServiceImpl::GetSelectedSegment(
   selector->GetSelectedSegment(std::move(callback));
 }
 
+SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
+    const std::string& segmentation_key) {
+  CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
+  auto& selector = segment_selectors_.at(segmentation_key);
+  return selector->GetCachedSegmentResult();
+}
+
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
   signal_filter_processor_->EnableMetrics(signal_collection_allowed);

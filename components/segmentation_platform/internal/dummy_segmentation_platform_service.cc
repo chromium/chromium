@@ -22,6 +22,11 @@ void DummySegmentationPlatformService::GetSelectedSegment(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 
+SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
+    const std::string& segmentation_key) {
+  return SegmentSelectionResult();
+}
+
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}
 }  // namespace segmentation_platform

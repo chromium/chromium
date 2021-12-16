@@ -54,6 +54,10 @@ void SegmentSelectorImpl::GetSelectedSegment(
       base::BindOnce(std::move(callback), selected_segment_last_session_));
 }
 
+SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
+  return selected_segment_last_session_;
+}
+
 void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
   // If the |segment_id| is not in config, then skip any updates early.

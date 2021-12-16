@@ -175,6 +175,20 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     loop.Run();
   }
 
+  void AssertCachedSegment(
+      const std::string& segmentation_key,
+      bool is_ready,
+      OptimizationTarget expected =
+          OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+    SegmentSelectionResult result;
+    result.is_ready = is_ready;
+    if (is_ready)
+      result.segment = expected;
+    ASSERT_EQ(result,
+              segmentation_platform_service_impl_->GetCachedSegmentResult(
+                  segmentation_key));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -253,6 +267,11 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   AssertSelectedSegment(kTestSegmentationKey2, false);
   AssertSelectedSegment(kTestSegmentationKey3, false);
+  AssertCachedSegment(
+      kTestSegmentationKey1, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertCachedSegment(kTestSegmentationKey2, false);
+  AssertCachedSegment(kTestSegmentationKey3, false);
 
   mem_impl->OnSegmentationModelUpdated(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata);
@@ -278,6 +297,11 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   AssertSelectedSegment(kTestSegmentationKey2, false);
   AssertSelectedSegment(kTestSegmentationKey3, false);
+  AssertCachedSegment(
+      kTestSegmentationKey1, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertCachedSegment(kTestSegmentationKey2, false);
+  AssertCachedSegment(kTestSegmentationKey3, false);
 }
 
 TEST_F(SegmentationPlatformServiceImplTest,
@@ -352,6 +376,13 @@ TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
       kTestSegmentationKey2, true,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
   AssertSelectedSegment(kTestSegmentationKey3, false);
+  AssertCachedSegment(
+      kTestSegmentationKey1, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertCachedSegment(
+      kTestSegmentationKey2, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+  AssertCachedSegment(kTestSegmentationKey3, false);
 }
 
 }  // namespace segmentation_platform

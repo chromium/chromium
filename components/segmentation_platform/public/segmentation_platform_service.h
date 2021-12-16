@@ -50,9 +50,15 @@ class SegmentationPlatformService : public KeyedService,
   using SegmentSelectionCallback =
       base::OnceCallback<void(const SegmentSelectionResult&)>;
 
-  // Called to get the selected segment. If none, returns empty result.
+  // Called to get the selected segment asynchronously. If none, returns empty
+  // result.
   virtual void GetSelectedSegment(const std::string& segmentation_key,
                                   SegmentSelectionCallback callback) = 0;
+
+  // Called to get the selected segment synchronously. If none, returns empty
+  // result.
+  virtual SegmentSelectionResult GetCachedSegmentResult(
+      const std::string& segmentation_key) = 0;
 
   // Called to enable or disable metrics collection. Must be explicitly called
   // on startup.

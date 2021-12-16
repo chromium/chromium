@@ -301,6 +301,7 @@ TEST_F(SegmentSelectorTest,
   result.segment = segment_id0;
   result.is_ready = true;
   GetSelectedSegment(result);
+  ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
 
   // Add results for a new segment.
   base::Time result_timestamp = base::Time::Now();
@@ -312,6 +313,7 @@ TEST_F(SegmentSelectorTest,
 
   // GetSelectedSegment should still return value from previous session.
   GetSelectedSegment(result);
+  ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
 }
 
 }  // namespace segmentation_platform
