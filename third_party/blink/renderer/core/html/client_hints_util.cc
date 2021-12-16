@@ -6,9 +6,9 @@
 
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -31,7 +31,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
         local_dom_window, ClientHintIssueReason::kMetaTagModifiedHTML);
   }
 
-  // If no hints were set, this is an http-equiv tag, this tag was added by
+  // If no hints were set, this is a http-equiv tag, this tag was added by
   // javascript, the `local_dom_window` is missing, or the feature is disabled,
   // there's nothing more to do.
   if (!client_hints_preferences.UpdateFromMetaTagAcceptCH(
@@ -67,13 +67,10 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     std::set<url::Origin> origin_set(allow_list.AllowedOrigins().begin(),
                                      allow_list.AllowedOrigins().end());
     origin_set.insert(pair.second.begin(), pair.second.end());
-    std::vector<url::Origin> filtered_origins;
-    std::copy_if(origin_set.begin(), origin_set.end(),
-                 std::back_inserter(filtered_origins),
-                 [](const auto& origin) { return !origin.opaque(); });
     auto declaration = ParsedPermissionsPolicyDeclaration(
-        policy_name, filtered_origins, allow_list.MatchesAll(),
-        allow_list.MatchesOpaqueSrc());
+        policy_name,
+        std::vector<url::Origin>(origin_set.begin(), origin_set.end()),
+        allow_list.MatchesAll(), allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
   }
   auto new_policy = PermissionsPolicy::CopyStateFrom(current_policy);
@@ -82,6 +79,70 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   // Update third-party delegation permissions for each client hint.
   local_dom_window->GetSecurityContext().SetPermissionsPolicy(
       std::move(new_policy));
+}
+
+void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
+    ParsedPermissionsPolicy& container_policy,
+    LocalDOMWindow* local_dom_window) {
+  if (!RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
+    return;
+  }
+
+  // To avoid the following section from being consistently O(n^2) we need to
+  // break the container_policy vector into a map. We keep only the first policy
+  // seen for each feature per PermissionsPolicy::InheritedValueForFeature.
+  std::map<mojom::blink::PermissionsPolicyFeature,
+           ParsedPermissionsPolicyDeclaration>
+      feature_to_container_policy;
+  for (const auto& candidate_policy : container_policy) {
+    if (feature_to_container_policy.find(candidate_policy.feature) ==
+        feature_to_container_policy.end()) {
+      feature_to_container_policy[candidate_policy.feature] = candidate_policy;
+    }
+  }
+
+  // Promote client hint features to container policy so any modified by HTML
+  // via an accept-ch meta tag can propagate to the iframe.
+  for (const auto& feature_and_hint : GetPolicyFeatureToClientHintMap()) {
+    // This is the policy which may have been overridden by the meta tag via
+    // UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints we want
+    // the iframe loader to use instead of the one it got earlier.
+    const auto& maybe_window_allow_list =
+        local_dom_window->GetSecurityContext()
+            .GetPermissionsPolicy()
+            ->GetAllowlistForFeatureIfExists(feature_and_hint.first);
+    if (!maybe_window_allow_list.has_value()) {
+      continue;
+    }
+
+    // If the container policy already has a parsed policy for the client hint
+    // then use the first instance found and remove the others since that's
+    // what `PermissionsPolicy::InheritedValueForFeature` pays attention to.
+    ParsedPermissionsPolicyDeclaration merged_policy(feature_and_hint.first);
+    auto it = feature_to_container_policy.find(feature_and_hint.first);
+    if (it != feature_to_container_policy.end()) {
+      merged_policy = it->second;
+      RemoveFeatureIfPresent(feature_and_hint.first, container_policy);
+    }
+
+    // Now we apply the changes from the parent policy to ensure any changes
+    // since it was set are respected;
+    merged_policy.matches_all_origins |=
+        maybe_window_allow_list.value().MatchesAll();
+    merged_policy.matches_opaque_src |=
+        maybe_window_allow_list.value().MatchesOpaqueSrc();
+    std::set<url::Origin> origin_set;
+    if (!merged_policy.matches_all_origins) {
+      origin_set.insert(merged_policy.allowed_origins.begin(),
+                        merged_policy.allowed_origins.end());
+      origin_set.insert(
+          maybe_window_allow_list.value().AllowedOrigins().begin(),
+          maybe_window_allow_list.value().AllowedOrigins().end());
+    }
+    merged_policy.allowed_origins =
+        std::vector<url::Origin>(origin_set.begin(), origin_set.end());
+    container_policy.push_back(merged_policy);
+  }
 }
 
 }  // namespace blink

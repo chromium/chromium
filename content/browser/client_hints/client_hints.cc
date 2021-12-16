@@ -606,6 +606,48 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
       .javascript_enabled;
 }
 
+// This modifies `data.permissions_policy` to reflect any changes to client hint
+// permissions which may have occurred via the named accept-ch meta tag.
+// The permissions policy the browser side has for the frame was set in stone
+// before HTML parsing began, so any updates must be sent via
+// `container_policy`.
+// TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
+void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
+    ClientHintsExtendedData& data,
+    const blink::ParsedPermissionsPolicy& container_policy) {
+  if (container_policy.empty() ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kClientHintThirdPartyDelegation)) {
+    return;
+  }
+
+  // For client hints specifically, we need to allow the container policy
+  // to overwrite the parent policy so that permissions policies set in HTML
+  // via an accept-ch meta tag can be respected.
+  blink::ParsedPermissionsPolicy client_hints_container_policy;
+  for (const auto& container_policy_item : container_policy) {
+    const auto& it = blink::GetPolicyFeatureToClientHintMap().find(
+        container_policy_item.feature);
+    if (it != blink::GetPolicyFeatureToClientHintMap().end()) {
+      client_hints_container_policy.push_back(container_policy_item);
+
+      // We need to ensure `blink::EnabledClientHints` is updated where the
+      // main frame now has permission for the given client hints.
+      std::set<url::Origin> origin_set(
+          container_policy_item.allowed_origins.begin(),
+          container_policy_item.allowed_origins.end());
+      if (origin_set.find(url::Origin::Create(data.main_frame_url)) !=
+          origin_set.end()) {
+        for (const auto& hint : it->second) {
+          data.hints.SetIsEnabled(hint, /*should_send*/ true);
+        }
+      }
+    }
+  }
+  data.permissions_policy->OverwriteHeaderPolicyForClientHints(
+      client_hints_container_policy);
+}
+
 // Captures when UpdateNavigationRequestClientUaHeadersImpl() is being called.
 enum class ClientUaHeaderCallType {
   // The call is happening during creation of the NavigationRequest.
@@ -622,7 +664,8 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     bool override_ua,
     FrameTreeNode* frame_tree_node,
     ClientUaHeaderCallType call_type,
-    net::HttpRequestHeaders* headers) {
+    net::HttpRequestHeaders* headers,
+    const blink::ParsedPermissionsPolicy& container_policy) {
   absl::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
   if (override_ua) {
@@ -649,6 +692,8 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       ua_metadata = delegate->GetUserAgentMetadata();
 
     ClientHintsExtendedData data(url, frame_tree_node, delegate);
+    UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
+        data, container_policy);
 
     // The `Sec-CH-UA` client hint is attached to all outgoing requests. This is
     // (intentionally) different than other client hints.
@@ -756,7 +801,7 @@ void UpdateNavigationRequestClientUaHeaders(
 
   UpdateNavigationRequestClientUaHeadersImpl(
       url, delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers);
+      ClientUaHeaderCallType::kAfterCreated, headers, {});
 }
 
 namespace {
@@ -770,14 +815,8 @@ void AddRequestClientHintsHeaders(
     FrameTreeNode* frame_tree_node,
     const blink::ParsedPermissionsPolicy& container_policy) {
   ClientHintsExtendedData data(url, frame_tree_node, delegate);
-
-  // If there is a container policy, use the same logic as when a new frame is
-  // committed to combine with the parent policy.
-  if (!container_policy.empty()) {
-    data.permissions_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
-        data.permissions_policy.get(), container_policy,
-        url::Origin::Create(url));
-  }
+  UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
+      data, container_policy);
 
   // Add Headers
   if (ShouldAddClientHint(data, WebClientHintsType::kDeviceMemory_DEPRECATED)) {
@@ -819,7 +858,7 @@ void AddRequestClientHintsHeaders(
   if (UserAgentClientHintEnabled()) {
     UpdateNavigationRequestClientUaHeadersImpl(
         url, delegate, is_ua_override_on, frame_tree_node,
-        ClientUaHeaderCallType::kDuringCreation, headers);
+        ClientUaHeaderCallType::kDuringCreation, headers, container_policy);
   }
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {

@@ -4,9 +4,11 @@
 <body>
     <img src="non-existing-image.jpg"></img>
     <img src="https://foo.com/non-existing-image.jpg"></img>
+    <iframe src="https://foo.com/non-existing-iframe.html"></iframe>
     <script type="text/javascript">
         document.body.innerHTML += '<img src="non-existing-image2.jpg"></img>';
         document.body.innerHTML += '<img src="https://bar.com/non-existing-image.jpg"></img>';
+        document.body.innerHTML += '<iframe src="https://bar.com/non-existing-iframe.html"></iframe>';
     </script>
 </body>
 </html>

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -366,6 +367,10 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
     }
   }
+
+  // Factor in changes in client hint permissions.
+  UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
+      container_policy, GetDocument().domWindow());
 
   // Update the JavaScript policy object associated with this iframe, if it
   // exists.
