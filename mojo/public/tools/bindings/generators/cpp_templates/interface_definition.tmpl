@@ -135,6 +135,10 @@ bool {{proxy_name}}::{{method.name}}(
                                  method_name=event_name,
                                  parameter_group="input_parameters",
                                  trace_event_type='_BEGIN')}}
+#else
+{#- Output a minimal trace event if MOJO_TRACE_ENABLED is false. #}
+{%-     set event_name = "%s::%s" % (class_name, method.name) %}
+  {{interface_macros.trace_event(method_name=event_name)}}
 #endif
   const bool kExpectsResponse = true;
   const bool kIsSync = true;
