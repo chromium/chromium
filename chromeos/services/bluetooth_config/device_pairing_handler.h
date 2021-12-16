@@ -11,6 +11,7 @@
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -86,9 +87,10 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   void OnRequestPasskey(const std::string& passkey);
   void OnConfirmPairing(bool confirmed);
 
-  // Invokes |pair_device_callback_| with |result| and resets
-  // this class' state to be ready for another pairing request.
-  void FinishCurrentPairingRequest(mojom::PairingResult result);
+  // Invokes |pair_device_callback_| and resets this class' state to be ready
+  // for another pairing request.
+  void FinishCurrentPairingRequest(
+      absl::optional<device::ConnectionFailureReason> failure_reason);
 
   void OnDelegateDisconnect();
 
@@ -96,6 +98,8 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
 
   // Flushes queued Mojo messages in unit tests.
   void FlushForTesting();
+
+  base::Time pairing_start_timestamp_;
 
   // The identifier of the device currently being paired with. This is null if
   // there is no in-progress pairing attempt.

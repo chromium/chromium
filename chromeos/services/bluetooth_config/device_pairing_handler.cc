@@ -6,7 +6,10 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/default_clock.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -27,6 +30,47 @@ std::string PasskeyToString(uint32_t passkey) {
   return base::StrCat(
       {std::string(kNumPasskeyDigits - passkey_string.length(), '0'),
        passkey_string});
+}
+
+device::BluetoothTransport GetBluetoothTransport(
+    device::BluetoothTransport type) {
+  switch (type) {
+    case device::BLUETOOTH_TRANSPORT_CLASSIC:
+      return device::BLUETOOTH_TRANSPORT_CLASSIC;
+    case device::BLUETOOTH_TRANSPORT_LE:
+      return device::BLUETOOTH_TRANSPORT_LE;
+    case device::BLUETOOTH_TRANSPORT_DUAL:
+      return device::BLUETOOTH_TRANSPORT_DUAL;
+    default:
+      return device::BLUETOOTH_TRANSPORT_INVALID;
+  }
+}
+
+mojom::PairingResult GetPairingResult(
+    absl::optional<device::ConnectionFailureReason> failure_reason) {
+  if (!failure_reason) {
+    return mojom::PairingResult::kSuccess;
+  }
+
+  switch (failure_reason.value()) {
+    case device::ConnectionFailureReason::kAuthTimeout:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kAuthFailed:
+      return mojom::PairingResult::kAuthFailed;
+
+    case device::ConnectionFailureReason::kUnknownError:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kSystemError:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kFailed:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kUnknownConnectionError:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kUnsupportedDevice:
+      FALLTHROUGH;
+    case device::ConnectionFailureReason::kNotConnectable:
+      return mojom::PairingResult::kNonAuthFailure;
+  }
 }
 
 }  // namespace
@@ -50,7 +94,7 @@ void DevicePairingHandler::CancelPairing() {
         << "Could not cancel pairing for device to due device no longer being "
            "found, identifier: "
         << current_pairing_device_id_;
-    FinishCurrentPairingRequest(mojom::PairingResult::kAuthFailed);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
     return;
   }
   device->CancelPairing();
@@ -72,6 +116,7 @@ void DevicePairingHandler::PairDevice(
   // There should only be one PairDevice request at a time.
   CHECK(current_pairing_device_id_.empty());
 
+  pairing_start_timestamp_ = base::Time();
   pair_device_callback_ = std::move(callback);
 
   delegate_.reset();
@@ -84,7 +129,7 @@ void DevicePairingHandler::PairDevice(
     BLUETOOTH_LOG(ERROR) << "Pairing failed due to Bluetooth not being "
                             "enabled, device identifier: "
                          << device_id;
-    FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
     return;
   }
 
@@ -95,7 +140,7 @@ void DevicePairingHandler::PairDevice(
     BLUETOOTH_LOG(ERROR) << "Pairing failed due to device not being "
                             "found, identifier: "
                          << device_id;
-    FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
     return;
   }
 
@@ -168,7 +213,7 @@ void DevicePairingHandler::OnAdapterStateChanged() {
 void DevicePairingHandler::OnDeviceConnect(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (!error_code.has_value()) {
-    FinishCurrentPairingRequest(mojom::PairingResult::kSuccess);
+    FinishCurrentPairingRequest(absl::nullopt);
     NotifyFinished();
     return;
   }
@@ -182,21 +227,26 @@ void DevicePairingHandler::OnDeviceConnect(
     case ErrorCode::ERROR_AUTH_FAILED:
       FALLTHROUGH;
     case ErrorCode::ERROR_AUTH_REJECTED:
-      FALLTHROUGH;
+      FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
+      return;
     case ErrorCode::ERROR_AUTH_TIMEOUT:
-      FinishCurrentPairingRequest(mojom::PairingResult::kAuthFailed);
+      FinishCurrentPairingRequest(
+          device::ConnectionFailureReason::kAuthTimeout);
       return;
 
     case ErrorCode::ERROR_FAILED:
       FALLTHROUGH;
     case ErrorCode::ERROR_INPROGRESS:
-      FALLTHROUGH;
-    case ErrorCode::ERROR_UNKNOWN:
-      FALLTHROUGH;
-    case ErrorCode::ERROR_UNSUPPORTED_DEVICE:
-      FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+      FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
       return;
-
+    case ErrorCode::ERROR_UNKNOWN:
+      FinishCurrentPairingRequest(
+          device::ConnectionFailureReason::kUnknownError);
+      return;
+    case ErrorCode::ERROR_UNSUPPORTED_DEVICE:
+      FinishCurrentPairingRequest(
+          device::ConnectionFailureReason::kUnsupportedDevice);
+      return;
     default:
       BLUETOOTH_LOG(ERROR) << "Error code is invalid.";
       break;
@@ -210,7 +260,7 @@ void DevicePairingHandler::OnRequestPinCode(const std::string& pin_code) {
         << "OnRequestPinCode failed due to device no longer being "
            "found, identifier: "
         << current_pairing_device_id_;
-    FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
     return;
   }
 
@@ -224,7 +274,7 @@ void DevicePairingHandler::OnRequestPasskey(const std::string& passkey) {
         << "OnRequestPasskey failed due to device no longer being "
            "found, identifier: "
         << current_pairing_device_id_;
-    FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
     return;
   }
 
@@ -245,7 +295,7 @@ void DevicePairingHandler::OnConfirmPairing(bool confirmed) {
         << "OnConfirmPairing failed due to device no longer being "
            "found, identifier: "
         << current_pairing_device_id_;
-    FinishCurrentPairingRequest(mojom::PairingResult::kNonAuthFailure);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
     return;
   }
 
@@ -256,9 +306,19 @@ void DevicePairingHandler::OnConfirmPairing(bool confirmed) {
 }
 
 void DevicePairingHandler::FinishCurrentPairingRequest(
-    mojom::PairingResult result) {
+    absl::optional<device::ConnectionFailureReason> failure_reason) {
+  device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
   current_pairing_device_id_.clear();
-  std::move(pair_device_callback_).Run(result);
+
+  device::BluetoothTransport transport =
+      device ? device->GetType()
+             : device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
+
+  device::RecordPairingResult(
+      failure_reason, GetBluetoothTransport(transport),
+      base::DefaultClock::GetInstance()->Now() - pairing_start_timestamp_);
+
+  std::move(pair_device_callback_).Run(GetPairingResult(failure_reason));
 }
 
 void DevicePairingHandler::OnDelegateDisconnect() {

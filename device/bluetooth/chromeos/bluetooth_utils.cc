@@ -39,18 +39,6 @@ const char kSecurityKeyServiceUUID[] = "FFFD";
 
 constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
 
-// This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other).
-enum class BluetoothTransportType {
-  kUnknown = 0,
-  kClassic = 1,
-  kLE = 2,
-  kDual = 3,
-  kInvalid = 4,
-  kMaxValue = kInvalid
-};
-
 // Get limited number of devices from |devices| and
 // prioritize paired/connecting devices over other devices.
 BluetoothAdapter::DeviceList GetLimitedNumDevices(

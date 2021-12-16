@@ -98,6 +98,18 @@ enum class SetNicknameResult {
   kMaxValue = kSuccess,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class BluetoothTransportType {
+  kUnknown = 0,
+  kClassic = 1,
+  kLE = 2,
+  kDual = 3,
+  kInvalid = 4,
+  kMaxValue = kInvalid
+};
+
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
