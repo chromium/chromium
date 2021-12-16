@@ -48,10 +48,9 @@ std::vector<std::string> GetNamedList(const char* name,
     return list;
 
   list.reserve(value_list->GetList().size());
-  for (size_t i = 0; i < value_list->GetList().size(); ++i) {
-    const base::Value* entry;
+  for (const base::Value& entry : value_list->GetList()) {
     std::string url_entry;
-    if (!value_list->Get(i, &entry) || !GetURLFromValue(entry, &url_entry)) {
+    if (!GetURLFromValue(&entry, &url_entry)) {
       NOTREACHED();
       break;
     }

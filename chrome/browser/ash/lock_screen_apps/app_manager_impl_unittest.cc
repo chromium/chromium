@@ -97,14 +97,12 @@ class LockScreenEventObserver
       return;
     }
     ASSERT_TRUE(event.event_args);
-    const base::Value* arg_value = nullptr;
-    ASSERT_TRUE(event.event_args->Get(0, &arg_value));
-    ASSERT_TRUE(arg_value);
+    const base::Value& arg_value = event.event_args->GetList()[0];
     if (event.restrict_to_browser_context)
       EXPECT_EQ(context_, event.restrict_to_browser_context);
 
     std::unique_ptr<extensions::api::app_runtime::LaunchData> launch_data =
-        extensions::api::app_runtime::LaunchData::FromValue(*arg_value);
+        extensions::api::app_runtime::LaunchData::FromValue(arg_value);
     ASSERT_TRUE(launch_data);
     ASSERT_TRUE(launch_data->action_data);
     EXPECT_EQ(extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
