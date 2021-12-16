@@ -9,6 +9,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//media/gpu/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libaom/options.gni")
 import("//third_party/libgav1/options.gni")
 
 declare_args() {

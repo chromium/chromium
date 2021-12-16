@@ -76,6 +76,15 @@ source_set("video") {
 
   configs += [ "//media:subcomponent_config" ]
 
+  if (enable_libaom) {
+    sources += [
+      "av1_video_encoder.cc",
+      "av1_video_encoder.h",
+    ]
+
+    public_deps += [ "//third_party/libaom" ]
+  }
+
   if (media_use_libvpx) {
     sources += [
       "vpx_video_encoder.cc",

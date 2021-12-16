@@ -37,6 +37,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
     "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",
     "ENABLE_LIBRARY_CDMS=$enable_library_cdms",
+    "ENABLE_LIBAOM=$enable_libaom",
     "ENABLE_LIBVPX=$media_use_libvpx",
     "ENABLE_LOGGING_OVERRIDE=$enable_logging_override",
     "ENABLE_MEDIA_DRM_STORAGE=$enable_media_drm_storage",

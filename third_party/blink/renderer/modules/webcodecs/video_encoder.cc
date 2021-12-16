@@ -69,6 +69,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
+#if BUILDFLAG(ENABLE_LIBAOM)
+#include "media/video/av1_video_encoder.h"
+#endif
+
 #if BUILDFLAG(ENABLE_OPENH264)
 #include "media/video/openh264_video_encoder.h"
 #endif
@@ -287,9 +291,41 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   return result;
 }
 
+const base::Feature kWebCodecsAv1Encoding{"WebCodecsAv1Encoding",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
   switch (config->codec) {
+    case media::VideoCodec::kAV1:
+      if (!base::FeatureList::IsEnabled(kWebCodecsAv1Encoding)) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "AV1 encoding is not supported yet.");
+        }
+        return false;
+      }
+
+      if (config->options.scalability_mode.has_value()) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "SVC encoding is not supported for AV1 yet.");
+        }
+        return false;
+      }
+      if (config->profile !=
+          media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError, "Unsupported av1 profile.");
+        }
+        return false;
+      }
+      // TODO(crbug.com/1208280): Check for supported AV1 levels
+      break;
+
     case media::VideoCodec::kVP8:
       break;
 
@@ -455,6 +491,14 @@ VideoEncoder::CreateAcceleratedVideoEncoder(
                                                              callback_runner_));
 }
 
+std::unique_ptr<media::VideoEncoder> CreateAv1VideoEncoder() {
+#if BUILDFLAG(ENABLE_LIBAOM)
+  return std::make_unique<media::Av1VideoEncoder>();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+}
+
 std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
 #if BUILDFLAG(ENABLE_LIBVPX)
   return std::make_unique<media::VpxVideoEncoder>();
@@ -480,6 +524,10 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
     return nullptr;
   std::unique_ptr<media::VideoEncoder> result;
   switch (codec) {
+    case media::VideoCodec::kAV1:
+      result = CreateAv1VideoEncoder();
+      self->UpdateEncoderLog("Av1VideoEncoder", false);
+      break;
     case media::VideoCodec::kVP8:
     case media::VideoCodec::kVP9:
       result = CreateVpxVideoEncoder();
