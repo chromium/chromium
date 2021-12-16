@@ -804,9 +804,12 @@ LogMessage::~LogMessage() {
 #endif
 #elif defined(OS_FUCHSIA)
     // LogMessage() will silently drop the message if the logger is not valid.
-    GetScopedFxLogger().LogMessage(
-        file_, line_, base::StringPiece(str_newline).substr(message_start_),
-        LogSeverityToFuchsiaLogSeverity(severity_));
+    // Skip the final character of |str_newline|, since LogMessage() will add
+    // a newline.
+    const auto message = base::StringPiece(str_newline).substr(message_start_);
+    GetScopedFxLogger().LogMessage(file_, line_,
+                                   message.substr(0, message.size() - 1),
+                                   LogSeverityToFuchsiaLogSeverity(severity_));
 #endif  // OS_FUCHSIA
   }
 
