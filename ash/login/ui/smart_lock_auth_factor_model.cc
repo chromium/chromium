@@ -150,8 +150,7 @@ int SmartLockAuthFactorModel::GetLabelId() const {
 }
 
 bool SmartLockAuthFactorModel::ShouldAnnounceLabel() const {
-  // TODO(crbug.com/1233614): Return 'true' depending on SmartLockState.
-  return false;
+  return true;
 }
 
 int SmartLockAuthFactorModel::GetAccessibleNameId() const {

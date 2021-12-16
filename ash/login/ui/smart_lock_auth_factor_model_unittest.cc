@@ -227,6 +227,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAndAccessibleName) {
     }
     EXPECT_EQ(testcase.label_id, model_->GetLabelId());
     EXPECT_EQ(testcase.accessible_name_id, model_->GetAccessibleNameId());
+    EXPECT_TRUE(model_->ShouldAnnounceLabel());
   }
 }
 
