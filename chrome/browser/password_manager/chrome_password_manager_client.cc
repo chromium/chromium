@@ -92,6 +92,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -1280,14 +1281,7 @@ void ChromePasswordManagerClient::DidStartNavigation(
   log_manager_->SetSuspended(web_contents()->GetWebUI() != nullptr);
 }
 
-void ChromePasswordManagerClient::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
+void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   // Send any collected metrics by destroying the metrics recorder.
   metrics_recorder_.reset();
 
@@ -1301,8 +1295,8 @@ void ChromePasswordManagerClient::DidFinishNavigation(
 
   password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
 
-  AddToWidgetInputEventObservers(
-      navigation_handle->GetRenderFrameHost()->GetRenderWidgetHost(), this);
+  AddToWidgetInputEventObservers(page.GetMainDocument().GetRenderWidgetHost(),
+                                 this);
 
 #if defined(OS_ANDROID)
   // This unblocklisted info is only used after form submission to determine

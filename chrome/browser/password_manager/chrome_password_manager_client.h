@@ -316,8 +316,7 @@ class ChromePasswordManagerClient
   // content::WebContentsObserver overrides.
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 // TODO(crbug.com/1006430): Paste event is not captured on Android.
 #if !defined(OS_ANDROID)
