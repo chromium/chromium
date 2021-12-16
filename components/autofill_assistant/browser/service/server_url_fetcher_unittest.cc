@@ -54,5 +54,11 @@ TEST(ServerUrlFetcherTest, GetTriggerScriptsEndpoint) {
               Eq(GURL("https://www.example.com/v1/triggers")));
 }
 
+TEST(ServerUrlFetcherTest, GetCapabilitiesByHashEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetCapabilitiesByHashEndpoint(),
+              Eq(GURL("https://www.example.com/v1/capabilitiesByHashPrefix2")));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

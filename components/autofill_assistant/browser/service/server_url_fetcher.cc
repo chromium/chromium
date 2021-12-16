@@ -16,6 +16,7 @@ const char kDefaultAutofillAssistantServerUrl[] =
 const char kScriptEndpoint[] = "/v1/supportsSite2";
 const char kActionEndpoint[] = "/v1/actions2";
 const char kTriggersEndpoint[] = "/v1/triggers";
+const char kCapabilitiesByHashEndpoint[] = "/v1/capabilitiesByHashPrefix2";
 }  // namespace
 
 namespace autofill_assistant {
@@ -54,6 +55,12 @@ GURL ServerUrlFetcher::GetNextActionsEndpoint() const {
 GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() const {
   GURL::Replacements trigger_replacements;
   trigger_replacements.SetPathStr(kTriggersEndpoint);
+  return server_url_.ReplaceComponents(trigger_replacements);
+}
+
+GURL ServerUrlFetcher::GetCapabilitiesByHashEndpoint() const {
+  GURL::Replacements trigger_replacements;
+  trigger_replacements.SetPathStr(kCapabilitiesByHashEndpoint);
   return server_url_.ReplaceComponents(trigger_replacements);
 }
 
