@@ -1668,6 +1668,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE = 1605,
   OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE = 1606,
   ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE = 1607,
+  TERMINALPRIVATE_GETOSINFO = 1608,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

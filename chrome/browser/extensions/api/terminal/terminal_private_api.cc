@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -633,6 +634,16 @@ TerminalPrivateOpenOptionsPageFunction::Run() {
   crostini::LaunchTerminalSettings(
       Profile::FromBrowserContext(browser_context()));
   return RespondNow(NoArguments());
+}
+
+TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
+
+ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
+  base::DictionaryValue info;
+  info.SetBoolKey("tmux_integration",
+                  base::FeatureList::IsEnabled(
+                      chromeos::features::kTerminalTmuxIntegration));
+  return RespondNow(OneArgument(std::move(info)));
 }
 
 TerminalPrivateGetSettingsFunction::~TerminalPrivateGetSettingsFunction() =
