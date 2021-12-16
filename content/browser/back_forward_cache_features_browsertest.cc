@@ -2243,17 +2243,14 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdateWorker(
 
 }  // namespace
 
-class BackForwardCacheBrowserTestWithVibration
-    : public BackForwardCacheBrowserTest,
-      public device::mojom::VibrationManager {
+class TestVibrationManager : public device::mojom::VibrationManager {
  public:
-  BackForwardCacheBrowserTestWithVibration() {
+  TestVibrationManager() {
     OverrideVibrationManagerBinderForTesting(base::BindRepeating(
-        &BackForwardCacheBrowserTestWithVibration::BindVibrationManager,
-        base::Unretained(this)));
+        &TestVibrationManager::BindVibrationManager, base::Unretained(this)));
   }
 
-  ~BackForwardCacheBrowserTestWithVibration() override {
+  ~TestVibrationManager() override {
     OverrideVibrationManagerBinderForTesting(base::NullCallback());
   }
 
@@ -2262,18 +2259,18 @@ class BackForwardCacheBrowserTestWithVibration
     receiver_.Bind(std::move(receiver));
   }
 
-  bool TriggerVibrate(RenderFrameHostImpl* rfh,
-                      int duration,
-                      base::OnceClosure vibrate_done) {
-    vibrate_done_ = std::move(vibrate_done);
+  bool TriggerVibrate(RenderFrameHostImpl* rfh, int duration) {
     return EvalJs(rfh, JsReplace("navigator.vibrate($1)", duration))
         .ExtractBool();
   }
 
-  bool TriggerShortVibrationSequence(RenderFrameHostImpl* rfh,
-                                     base::OnceClosure vibrate_done) {
-    vibrate_done_ = std::move(vibrate_done);
+  bool TriggerShortVibrationSequence(RenderFrameHostImpl* rfh) {
     return EvalJs(rfh, "navigator.vibrate([10] * 1000)").ExtractBool();
+  }
+
+  bool WaitForCancel() {
+    run_loop_.Run();
+    return IsCancelled();
   }
 
   bool IsCancelled() { return cancelled_; }
@@ -2283,63 +2280,65 @@ class BackForwardCacheBrowserTestWithVibration
   void Vibrate(int64_t milliseconds, VibrateCallback callback) override {
     cancelled_ = false;
     std::move(callback).Run();
-    std::move(vibrate_done_).Run();
   }
 
   void Cancel(CancelCallback callback) override {
     cancelled_ = true;
     std::move(callback).Run();
+    run_loop_.Quit();
   }
 
   bool cancelled_ = false;
-  base::OnceClosure vibrate_done_;
+  base::RunLoop run_loop_;
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
 };
 
-// TODO(crbug.com/1269046): Enable this test.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
-                       DISABLED_VibrationStopsAfterEnteringCache) {
+// Tests that vibration stops after the page enters bfcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       VibrationStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  TestVibrationManager vibration_manager;
 
   // 1) Navigate to a page with a long vibration.
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  base::RunLoop run_loop;
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  ASSERT_TRUE(TriggerVibrate(rfh_a, 10000, run_loop.QuitClosure()));
-  EXPECT_FALSE(IsCancelled());
+  ASSERT_TRUE(vibration_manager.TriggerVibrate(rfh_a, 10000));
+  EXPECT_FALSE(vibration_manager.IsCancelled());
 
   // 2) Navigate away and expect the vibration to be canceled.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_NE(current_frame_host(), rfh_a);
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(IsCancelled());
+  EXPECT_TRUE(vibration_manager.WaitForCancel());
+  EXPECT_TRUE(vibration_manager.IsCancelled());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
-// TODO(crbug.com/1142778): flaky.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
-                       DISABLED_ShortVibrationSequenceStopsAfterEnteringCache) {
+// Tests that the short vibration sequence on the page stops after it enters
+// bfcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ShortVibrationSequenceStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  TestVibrationManager vibration_manager;
 
   // 1) Navigate to a page with a long vibration.
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  base::RunLoop run_loop;
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  ASSERT_TRUE(TriggerShortVibrationSequence(rfh_a, run_loop.QuitClosure()));
-  EXPECT_FALSE(IsCancelled());
+  ASSERT_TRUE(vibration_manager.TriggerShortVibrationSequence(rfh_a));
+  EXPECT_FALSE(vibration_manager.IsCancelled());
 
   // 2) Navigate away and expect the vibration to be canceled.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_NE(current_frame_host(), rfh_a);
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(IsCancelled());
+  EXPECT_TRUE(vibration_manager.IsCancelled());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
