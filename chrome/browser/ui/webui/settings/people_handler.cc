@@ -705,7 +705,7 @@ void PeopleHandler::HandleGetSyncStatus(base::Value::ConstListView args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, *GetSyncStatusDictionary());
+  ResolveJavascriptCallback(callback_id, GetSyncStatusDictionary());
 }
 
 void PeopleHandler::HandleSyncPrefsDispatch(base::Value::ConstListView args) {
@@ -846,17 +846,16 @@ void PeopleHandler::BeforeUnloadDialogCancelled() {
       base::UserMetricsAction("Signin_Signin_CancelAbortAdvancedSyncSettings"));
 }
 
-std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
-    const {
-  std::unique_ptr<base::DictionaryValue> sync_status(new base::DictionaryValue);
+base::Value PeopleHandler::GetSyncStatusDictionary() const {
+  base::Value sync_status(base::Value::Type::DICTIONARY);
   if (profile_->IsGuestSession()) {
     // Cannot display signin status when running in guest mode on chromeos
     // because there is no IdentityManager.
     return sync_status;
   }
 
-  sync_status->SetBoolean("supervisedUser", profile_->IsChild());
-  sync_status->SetBoolean("childUser", profile_->IsChild());
+  sync_status.SetBoolKey("supervisedUser", profile_->IsChild());
+  sync_status.SetBoolKey("childUser", profile_->IsChild());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
@@ -870,7 +869,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
     // If there is no one logged in or if the profile name is empty then the
     // domain name is empty. This happens in browser tests.
     if (!username.empty())
-      sync_status->SetString("domain", gaia::ExtractDomainName(username));
+      sync_status.SetStringKey("domain", gaia::ExtractDomainName(username));
   }
 
   // This is intentionally not using GetSyncService(), in order to access more
@@ -880,8 +879,8 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
   bool disallowed_by_policy =
       service && service->HasDisableReason(
                      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  sync_status->SetBoolean("syncSystemEnabled", (service != nullptr));
-  sync_status->SetBoolean(
+  sync_status.SetBoolKey("syncSystemEnabled", (service != nullptr));
+  sync_status.SetBoolKey(
       "firstSetupInProgress",
       service && !disallowed_by_policy && service->IsSetupInProgress() &&
           !service->GetUserSettings()->IsFirstSetupComplete() &&
@@ -890,34 +889,34 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
   const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
   // TODO(crbug.com/1027467): Consider unifying some of the fields below to
   // avoid redundancy.
-  sync_status->SetString("statusText",
-                         GetStringUTF16(status_labels.status_label_string_id));
-  sync_status->SetString("statusActionText",
-                         GetStringUTF16(status_labels.button_string_id));
-  sync_status->SetBoolean(
+  sync_status.SetStringKey(
+      "statusText", GetStringUTF16(status_labels.status_label_string_id));
+  sync_status.SetStringKey("statusActionText",
+                           GetStringUTF16(status_labels.button_string_id));
+  sync_status.SetBoolKey(
       "hasError",
       status_labels.message_type == SyncStatusMessageType::kSyncError ||
           status_labels.message_type ==
               SyncStatusMessageType::kPasswordsOnlySyncError);
-  sync_status->SetBoolean("hasPasswordsOnlyError",
-                          status_labels.message_type ==
-                              SyncStatusMessageType::kPasswordsOnlySyncError);
-  sync_status->SetString("statusAction",
-                         GetSyncErrorAction(status_labels.action_type));
+  sync_status.SetBoolKey("hasPasswordsOnlyError",
+                         status_labels.message_type ==
+                             SyncStatusMessageType::kPasswordsOnlySyncError);
+  sync_status.SetStringKey("statusAction",
+                           GetSyncErrorAction(status_labels.action_type));
 
-  sync_status->SetBoolean("managed", disallowed_by_policy);
+  sync_status.SetBoolKey("managed", disallowed_by_policy);
   // TODO(crbug.com/1171279): audit js usages of |disabled| and |signedIn|
   // fields, update it to use the right field, comments around and conditions
   // here. Perhaps removal of one of these to fields is possible.
-  sync_status->SetBoolean("disabled", !service || disallowed_by_policy);
+  sync_status.SetBoolKey("disabled", !service || disallowed_by_policy);
   // NOTE: This means signed-in for *sync*. It can be false when the user is
   // signed-in to the content area or to the browser.
-  sync_status->SetBoolean("signedIn", identity_manager->HasPrimaryAccount(
-                                          signin::ConsentLevel::kSync));
-  sync_status->SetString("signedInUsername",
-                         signin_ui_util::GetAuthenticatedUsername(profile_));
-  sync_status->SetBoolean("hasUnrecoverableError",
-                          service && service->HasUnrecoverableError());
+  sync_status.SetBoolKey("signedIn", identity_manager->HasPrimaryAccount(
+                                         signin::ConsentLevel::kSync));
+  sync_status.SetStringKey("signedInUsername",
+                           signin_ui_util::GetAuthenticatedUsername(profile_));
+  sync_status.SetBoolKey("hasUnrecoverableError",
+                         service && service->HasUnrecoverableError());
   return sync_status;
 }
 
@@ -945,7 +944,7 @@ void PeopleHandler::PushSyncPrefs() {
   //                   epoch); undefined if the time is unknown or no explicit
   //                   passphrase is set.
   //
-  base::DictionaryValue args;
+  base::Value args(base::Value::Type::DICTIONARY);
 
   syncer::SyncUserSettings* sync_user_settings = service->GetUserSettings();
   // Tell the UI layer which data types are registered/enabled by the user.
@@ -955,34 +954,34 @@ void PeopleHandler::PushSyncPrefs() {
       sync_user_settings->GetSelectedTypes();
   for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
     const std::string type_name = syncer::GetUserSelectableTypeName(type);
-    args.SetBoolean(type_name + "Registered", registered_types.Has(type));
-    args.SetBoolean(type_name + "Synced", selected_types.Has(type));
+    args.SetBoolKey(type_name + "Registered", registered_types.Has(type));
+    args.SetBoolKey(type_name + "Synced", selected_types.Has(type));
   }
-  args.SetBoolean("syncAllDataTypes",
+  args.SetBoolKey("syncAllDataTypes",
                   sync_user_settings->IsSyncEverythingEnabled());
-  args.SetBoolean(
+  args.SetBoolKey(
       "paymentsIntegrationEnabled",
       autofill::prefs::IsPaymentsIntegrationEnabled(profile_->GetPrefs()));
-  args.SetBoolean("encryptAllData",
+  args.SetBoolKey("encryptAllData",
                   sync_user_settings->IsEncryptEverythingEnabled());
-  args.SetBoolean("customPassphraseAllowed",
+  args.SetBoolKey("customPassphraseAllowed",
                   sync_user_settings->IsCustomPassphraseAllowed());
 
   // We call IsPassphraseRequired() here, instead of calling
   // IsPassphraseRequiredForPreferredDataTypes(), because we want to show the
   // passphrase UI even if no encrypted data types are enabled.
-  args.SetBoolean("passphraseRequired",
+  args.SetBoolKey("passphraseRequired",
                   sync_user_settings->IsPassphraseRequired());
 
   // Same as above, we call IsTrustedVaultKeyRequired() here instead of.
   // IsTrustedVaultKeyRequiredForPreferredDataTypes().
-  args.SetBoolean("trustedVaultKeysRequired",
+  args.SetBoolKey("trustedVaultKeysRequired",
                   sync_user_settings->IsTrustedVaultKeyRequired());
 
   base::Time passphrase_time = sync_user_settings->GetExplicitPassphraseTime();
   if (!passphrase_time.is_null()) {
-    args.SetString("explicitPassphraseTime",
-                   base::TimeFormatShortDate(passphrase_time));
+    args.SetStringKey("explicitPassphraseTime",
+                      base::TimeFormatShortDate(passphrase_time));
   }
 
   FireWebUIListener("sync-prefs-changed", args);
@@ -1007,7 +1006,7 @@ LoginUIService* PeopleHandler::GetLoginUIService() const {
 }
 
 void PeopleHandler::UpdateSyncStatus() {
-  FireWebUIListener("sync-status-changed", *GetSyncStatusDictionary());
+  FireWebUIListener("sync-status-changed", GetSyncStatusDictionary());
 }
 
 void PeopleHandler::MarkFirstSetupComplete() {

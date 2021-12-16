@@ -143,7 +143,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // Returns a newly created dictionary with a number of properties that
   // correspond to the status of sync.
-  std::unique_ptr<base::DictionaryValue> GetSyncStatusDictionary() const;
+  base::Value GetSyncStatusDictionary() const;
 
   // Helper routine that gets the SyncService associated with the parent
   // profile.
