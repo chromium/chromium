@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 SegmentationInternalsPageHandlerImpl::SegmentationInternalsPageHandlerImpl(
     mojo::PendingReceiver<segmentation_internals::mojom::PageHandler> receiver,
@@ -26,30 +27,6 @@ SegmentationInternalsPageHandlerImpl::~SegmentationInternalsPageHandlerImpl() {
     service_proxy_->RemoveObserver(this);
 }
 
-void SegmentationInternalsPageHandlerImpl::GetSegment(
-    const std::string& key,
-    GetSegmentCallback callback) {
-  if (!service_proxy_) {
-    OnGetSelectedSegmentDone(std::move(callback),
-                             segmentation_platform::SegmentSelectionResult());
-    return;
-  }
-  service_proxy_->GetSelectedSegment(
-      key, base::BindOnce(
-               &SegmentationInternalsPageHandlerImpl::OnGetSelectedSegmentDone,
-               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void SegmentationInternalsPageHandlerImpl::OnGetSelectedSegmentDone(
-    GetSegmentCallback callback,
-    const segmentation_platform::SegmentSelectionResult& result) {
-  auto segment_data = segmentation_internals::mojom::SegmentData::New();
-  segment_data->is_ready = result.is_ready;
-  segment_data->optimization_target =
-      result.segment ? result.segment.value() : -1;
-  std::move(callback).Run(std::move(segment_data));
-}
-
 void SegmentationInternalsPageHandlerImpl::GetServiceStatus() {
   if (service_proxy_) {
     service_proxy_->GetServiceStatus();
@@ -63,6 +40,13 @@ void SegmentationInternalsPageHandlerImpl::OnServiceStatusChanged(
 }
 
 void SegmentationInternalsPageHandlerImpl::OnSegmentInfoAvailable(
-    const std::vector<std::string>& segment_info) {
-  page_->OnSegmentInfoAvailable(segment_info);
+    const std::vector<std::pair<std::string, std::string>>& segment_info) {
+  std::vector<segmentation_internals::mojom::SegmentInfoPtr> available_segments;
+  for (const auto& info : segment_info) {
+    auto segment_data = segmentation_internals::mojom::SegmentInfo::New();
+    segment_data->optimization_target = info.first;
+    segment_data->segment_data = info.second;
+    available_segments.push_back(std::move(segment_data));
+  }
+  page_->OnSegmentInfoAvailable(std::move(available_segments));
 }

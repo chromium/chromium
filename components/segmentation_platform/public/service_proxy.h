@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/observer_list_types.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace segmentation_platform {
 
@@ -21,7 +21,7 @@ class ServiceProxy {
     // Called whenever the servoice status changes.
     virtual void OnServiceStatusChanged(bool is_initialized, int status_flag) {}
     virtual void OnSegmentInfoAvailable(
-        const std::vector<std::string>& segment_info) {}
+        const std::vector<std::pair<std::string, std::string>>& segment_info) {}
   };
 
   virtual ~ServiceProxy() = default;
@@ -34,11 +34,6 @@ class ServiceProxy {
 
   // Returns the current status of the segmentation service.
   virtual void GetServiceStatus() = 0;
-
-  // Called to get the selected segment. If none, returns empty result.
-  virtual void GetSelectedSegment(
-      const std::string& segmentation_key,
-      SegmentationPlatformService::SegmentSelectionCallback callback) = 0;
 
  protected:
   ServiceProxy() = default;

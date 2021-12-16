@@ -103,8 +103,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::move(signal_storage_config_db), clock);
   segmentation_result_prefs_ =
       std::make_unique<SegmentationResultPrefs>(pref_service);
-  proxy_ =
-      std::make_unique<ServiceProxyImpl>(this, segment_info_database_.get());
+  proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get());
 
   // Construct signal processors.
   user_action_signal_handler_ =

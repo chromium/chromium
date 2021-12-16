@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
 namespace segmentation_platform {
@@ -22,6 +23,12 @@ std::string ServiceProxyImpl::SegmentInfoToString(
                  segment_info.segment_id()) +
              "\n";
   }
+  if (segment_info.has_model_metadata()) {
+    result.append("model_metadata: { " +
+                  metadata_utils::SegmetationModelMetadataToString(
+                      segment_info.model_metadata()) +
+                  " }\n");
+  }
   if (segment_info.has_prediction_result()) {
     const auto prediction_result = segment_info.prediction_result();
     std::string prediction_result_str = base::StringPrintf(
@@ -34,11 +41,9 @@ std::string ServiceProxyImpl::SegmentInfoToString(
   return result;
 }
 
-ServiceProxyImpl::ServiceProxyImpl(SegmentationPlatformService* service,
-                                   SegmentInfoDatabase* segment_db)
+ServiceProxyImpl::ServiceProxyImpl(SegmentInfoDatabase* segment_db)
     : is_service_initialized_(false),
       service_status_flag_(0),
-      service_(service),
       segment_db_(segment_db) {}
 
 ServiceProxyImpl::~ServiceProxyImpl() = default;
@@ -71,19 +76,15 @@ void ServiceProxyImpl::GetServiceStatus() {
   OnServiceStatusChanged(is_service_initialized_, service_status_flag_);
 }
 
-void ServiceProxyImpl::GetSelectedSegment(
-    const std::string& segmentation_key,
-    SegmentationPlatformService::SegmentSelectionCallback callback) {
-  service_->GetSelectedSegment(segmentation_key, std::move(callback));
-}
-
 //  Called after retrieving all the segmentation info from the DB.
 void ServiceProxyImpl::OnGetAllSegmentationInfo(
     std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
-  std::vector<std::string> result;
-  for (const auto& segment_info : segment_infos) {
-    result.emplace_back(SegmentInfoToString(segment_info.second));
+        segment_info) {
+  std::vector<std::pair<std::string, std::string>> result;
+  for (const auto& info : segment_info) {
+    result.emplace_back(std::make_pair(
+        optimization_guide::GetStringNameForOptimizationTarget(info.first),
+        SegmentInfoToString(info.second)));
   }
 
   for (Observer& obs : observers_)

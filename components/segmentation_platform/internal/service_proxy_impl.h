@@ -21,8 +21,7 @@ namespace segmentation_platform {
 // component and/or debug UI.
 class ServiceProxyImpl : public ServiceProxy {
  public:
-  ServiceProxyImpl(SegmentationPlatformService* service,
-                   SegmentInfoDatabase* segment_db);
+  explicit ServiceProxyImpl(SegmentInfoDatabase* segment_db);
   ~ServiceProxyImpl() override;
 
   // Helper method to convert |segment_info| to string.
@@ -38,9 +37,6 @@ class ServiceProxyImpl : public ServiceProxy {
 
   // Returns the current status of the segmentation service.
   void GetServiceStatus() override;
-  void GetSelectedSegment(
-      const std::string& segmentation_key,
-      SegmentationPlatformService::SegmentSelectionCallback callback) override;
 
   // Called when segmentation service status changed.
   void OnServiceStatusChanged(bool is_initialized, int status_flag);
@@ -49,11 +45,10 @@ class ServiceProxyImpl : public ServiceProxy {
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
       std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          segment_infos);
+          segment_info);
 
   bool is_service_initialized_;
   int service_status_flag_;
-  SegmentationPlatformService* service_;
   SegmentInfoDatabase* segment_db_;
   base::ObserverList<ServiceProxy::Observer> observers_;
 

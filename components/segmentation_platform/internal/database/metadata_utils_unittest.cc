@@ -506,4 +506,28 @@ TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
                                                       metadata));
 }
 
+TEST_F(MetadataUtilsTest, SegmetationModelMetadataToString) {
+  proto::SegmentationModelMetadata metadata;
+  ASSERT_TRUE(
+      metadata_utils::SegmetationModelMetadataToString(metadata).empty());
+
+  proto::Feature feature;
+  feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
+  feature.set_name("test name");
+  feature.set_aggregation(proto::Aggregation::COUNT);
+  feature.set_bucket_count(456);
+  *metadata.add_features() = feature;
+
+  std::string expected =
+      "feature:{type:UNKNOWN_SIGNAL_TYPE, name:test name, bucket_count:456, "
+      "aggregation:COUNT}";
+  ASSERT_EQ(metadata_utils::SegmetationModelMetadataToString(metadata),
+            expected);
+
+  metadata.set_bucket_duration(10);
+  metadata.set_min_signal_collection_length(7);
+  ASSERT_EQ(metadata_utils::SegmetationModelMetadataToString(metadata),
+            expected + ", bucket_duration:10, min_signal_collection_length:7");
+}
+
 }  // namespace segmentation_platform

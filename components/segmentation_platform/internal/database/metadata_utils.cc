@@ -4,8 +4,12 @@
 
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
+#include <inttypes.h>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
@@ -40,6 +44,36 @@ uint64_t GetExpectedTensorLength(const proto::Feature& feature) {
       return 0;
   }
 }
+
+std::string FeatureToString(const proto::Feature& feature) {
+  std::string result;
+  if (feature.has_type()) {
+    result = "type:" + proto::SignalType_Name(feature.type()) + ", ";
+  }
+  if (feature.has_name()) {
+    result.append("name:" + feature.name() + ", ");
+  }
+  if (feature.has_name_hash()) {
+    result.append(
+        base::StringPrintf("name_hash:0x%" PRIx64 ", ", feature.name_hash()));
+  }
+  if (feature.has_bucket_count()) {
+    result.append(base::StringPrintf("bucket_count:%" PRIu64 ", ",
+                                     feature.bucket_count()));
+  }
+  if (feature.has_tensor_length()) {
+    result.append(base::StringPrintf("tensor_length:%" PRIu64 ", ",
+                                     feature.tensor_length()));
+  }
+  if (feature.has_aggregation()) {
+    result.append("aggregation:" +
+                  proto::Aggregation_Name(feature.aggregation()));
+  }
+  if (base::EndsWith(result, ", "))
+    result.resize(result.size() - 2);
+  return result;
+}
+
 }  // namespace
 
 ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
@@ -220,6 +254,39 @@ int ConvertToDiscreteScore(const std::string& mapping_key,
   }
 
   return discrete_result;
+}
+
+std::string SegmetationModelMetadataToString(
+    const proto::SegmentationModelMetadata& model_metadata) {
+  std::string result;
+  for (const auto& feature : model_metadata.features()) {
+    result.append("feature:{" + FeatureToString(feature) + "}, ");
+  }
+  if (model_metadata.has_time_unit()) {
+    result.append(
+        "time_unit:" + proto::TimeUnit_Name(model_metadata.time_unit()) + ", ");
+  }
+  if (model_metadata.has_bucket_duration()) {
+    result.append(base::StringPrintf("bucket_duration:%" PRIu64 ", ",
+                                     model_metadata.bucket_duration()));
+  }
+  if (model_metadata.has_signal_storage_length()) {
+    result.append(base::StringPrintf("signal_storage_length:%" PRId64 ", ",
+                                     model_metadata.signal_storage_length()));
+  }
+  if (model_metadata.has_min_signal_collection_length()) {
+    result.append(
+        base::StringPrintf("min_signal_collection_length:%" PRId64 ", ",
+                           model_metadata.min_signal_collection_length()));
+  }
+  if (model_metadata.has_result_time_to_live()) {
+    result.append(base::StringPrintf("result_time_to_live:%" PRId64,
+                                     model_metadata.result_time_to_live()));
+  }
+
+  if (base::EndsWith(result, ", "))
+    result.resize(result.size() - 2);
+  return result;
 }
 
 }  // namespace metadata_utils

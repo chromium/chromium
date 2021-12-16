@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -39,8 +40,7 @@ class ServiceProxyImplTest : public testing::Test,
     db_ = db.get();
     segment_db_ = std::make_unique<SegmentInfoDatabase>(std::move(db));
 
-    service_proxy_impl_ =
-        std::make_unique<ServiceProxyImpl>(nullptr, segment_db_.get());
+    service_proxy_impl_ = std::make_unique<ServiceProxyImpl>(segment_db_.get());
     service_proxy_impl_->AddObserver(this);
   }
 
@@ -56,7 +56,8 @@ class ServiceProxyImplTest : public testing::Test,
   }
 
   void OnSegmentInfoAvailable(
-      const std::vector<std::string>& segment_info) override {
+      const std::vector<std::pair<std::string, std::string>>& segment_info)
+      override {
     segment_info_ = segment_info;
   }
 
@@ -68,7 +69,7 @@ class ServiceProxyImplTest : public testing::Test,
   raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> db_{nullptr};
   std::unique_ptr<SegmentInfoDatabase> segment_db_;
   std::unique_ptr<ServiceProxyImpl> service_proxy_impl_;
-  std::vector<std::string> segment_info_;
+  std::vector<std::pair<std::string, std::string>> segment_info_;
 };
 
 TEST_F(ServiceProxyImplTest, GetServiceStatus) {
@@ -98,7 +99,11 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDB) {
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   db_->LoadCallback(true);
   ASSERT_EQ(segment_info_.size(), 1u);
-  ASSERT_EQ(segment_info_.at(0), ServiceProxyImpl::SegmentInfoToString(info));
+  ASSERT_EQ(segment_info_.at(0).first,
+            optimization_guide::GetStringNameForOptimizationTarget(
+                OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+  ASSERT_EQ(segment_info_.at(0).second,
+            ServiceProxyImpl::SegmentInfoToString(info));
 }
 
 }  // namespace segmentation_platform

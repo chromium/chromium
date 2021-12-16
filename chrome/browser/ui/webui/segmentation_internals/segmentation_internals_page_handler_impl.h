@@ -34,19 +34,14 @@ class SegmentationInternalsPageHandlerImpl
       const SegmentationInternalsPageHandlerImpl&) = delete;
 
   // segmentation_internals::mojom::PageHandler:
-  void GetSegment(const std::string& key, GetSegmentCallback callback) override;
   void GetServiceStatus() override;
 
  private:
-  // Called when segment result is retrieved.
-  void OnGetSelectedSegmentDone(
-      GetSegmentCallback callback,
-      const segmentation_platform::SegmentSelectionResult& result);
-
   // segmentation_platform::ServiceProxy::Observer overrides.
   void OnServiceStatusChanged(bool is_initialized, int status_flag) override;
   void OnSegmentInfoAvailable(
-      const std::vector<std::string>& segment_info) override;
+      const std::vector<std::pair<std::string, std::string>>& segment_info)
+      override;
 
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
   mojo::Remote<segmentation_internals::mojom::Page> page_;

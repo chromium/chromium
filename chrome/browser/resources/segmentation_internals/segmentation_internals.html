@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="en" dir="ltr">
   <head>
+    <style>
+      .segment {
+        border: 1px outset black;
+        margin: 2px 2px 2px 2px;
+      }
+    </style>
     <meta charset="utf-8">
     <title>Segmentation Internals</title>
     <meta name="viewport" content="width=device-width">
@@ -12,19 +18,9 @@
     <div>
       Initialized: <span id="initialized">false</span>, Service status: <span id="service-status">0</span>
     </div>
-    <h4>Get segment</h4>
-    <div>
-      <Label for="segment-key">Segment key:</Label>
-      <input type="text" id="segment-key">
-      <button id="get-segment">Get segment result</button>
+    <h4>Segment information</h4>
+    <div id="segment-container">
     </div>
-    <h4>Segment result</h4>
-    <div>
-      Is ready: <span id="is-ready"></span>
-    </div>
-    <div>
-      Optimization target: <span id="optimization-target"></span>
-      </div>
     <script type="module" src="segmentation_internals.js"></script>
   </body>
 </html>

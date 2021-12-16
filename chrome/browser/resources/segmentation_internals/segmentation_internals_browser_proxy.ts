@@ -17,10 +17,6 @@ export class SegmentationInternalsBrowserProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  getSegment(key: string) {
-    return this.handler.getSegment(key);
-  }
-
   getServiceStatus() {
     return this.handler.getServiceStatus();
   }
