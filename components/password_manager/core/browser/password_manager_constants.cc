@@ -16,6 +16,9 @@ const base::FilePath::CharType kLoginDataForAccountFileName[] =
 const char kPasswordManagerAccountDashboardURL[] =
     "https://passwords.google.com";
 
+const char kPasswordManagerHelpCenteriOSURL[] =
+    "https://support.google.com/chrome/answer/95606?ios=1";
+
 const char kPasswordManagerHelpCenterSmartLock[] =
     "https://support.google.com/accounts?p=smart_lock_chrome";
 

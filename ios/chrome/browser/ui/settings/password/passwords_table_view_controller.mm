@@ -29,8 +29,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -630,38 +628,29 @@ void RemoveFormsToBeDeleted(
 #pragma mark - Items
 
 - (TableViewLinkHeaderFooterItem*)manageAccountLinkItem {
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(_browserState);
-  syncer::ModelType kSyncPasswordsModelType =
-      syncSetupService->GetModelType(SyncSetupService::kSyncPasswords);
-  BOOL isSyncingPasswords =
-      syncSetupService->IsDataTypePreferred(kSyncPasswordsModelType) &&
-      syncSetupService->IsSyncRequested();
-
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           password_manager::features::
               kIOSEnablePasswordManagerBrandingUpdate)) {
     footerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+
     footerItem.urls = @[ [[CrURL alloc]
         initWithGURL:
             google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerAccountDashboardURL),
-                GetApplicationContext()->GetApplicationLocale())] ];
-  } else if (isSyncingPasswords) {
-    footerItem.text =
-        l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SETTINGS_SYNC_HEADER);
-    footerItem.urls = @[ [[CrURL alloc]
-        initWithGURL:
-            google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerAccountDashboardURL),
+                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
                 GetApplicationContext()->GetApplicationLocale())] ];
   } else {
-    footerItem.text = l10n_util::GetNSString(
-        IDS_IOS_PASSWORD_MANAGER_SETTINGS_NOT_SYNC_HEADER);
+    footerItem.text =
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
+
+    footerItem.urls = @[ [[CrURL alloc]
+        initWithGURL:
+            google_util::AppendGoogleLocaleParam(
+                GURL(password_manager::kPasswordManagerAccountDashboardURL),
+                GetApplicationContext()->GetApplicationLocale())] ];
   }
 
   return footerItem;
