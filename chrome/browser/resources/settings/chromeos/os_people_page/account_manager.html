@@ -329,7 +329,7 @@
     <!-- Secondary Accounts list -->
     <div id="outer" class="layout vertical nowrap" role="list">
       <template is="dom-repeat" id="account-list"
-          items="[[getAccounts_(accounts_)]]">
+          items="[[getSecondaryAccounts_(accounts_)]]">
         <div class="settings-box account-list-item" role="listitem">
 
           <div class="profile-icon"
@@ -367,31 +367,15 @@
             </cr-button>
           </template>
 
-          <!-- If this is the Device Account, display the management status -->
-          <template is="dom-if" if="[[item.isDeviceAccount]]">
-            <cr-tooltip-icon id="primaryAccountTooltip" aria-hidden="true"
-                icon-class="[[getPrimaryAccountTooltipIcon_(isChildUser_)]]"
-                class="tooltip-primary-account"
-                tooltip-text="[[getPrimaryAccountTooltip_(isChildUser_)]]"
-                icon-aria-label="[[getPrimaryAccountTooltip_(isChildUser_)]]">
-            </cr-tooltip-icon>
-            <span class="management-status"
-                aria-labelledby$="fullName-[[index]] email-[[index]]"
-                aria-describedby="primaryAccountTooltip">
-              [[getManagementLabel_(item)]]
-            </span>
-          </template>
-          <!-- Else, display a hamburger menu for removing the account -->
-          <template is="dom-if" if="[[!item.isDeviceAccount]]">
-            <cr-icon-button class="icon-more-vert"
-                title="[[getMoreActionsTitle_(item)]]"
-                aria-label="[[getMoreActionsTitle_(item)]]"
-                aria-describedby$="fullName-[[index]]
-                                   edu-account-label-[[index]]"
-                on-click="onAccountActionsMenuButtonTap_"
-                deep-link-focus-id$="[[Setting.kRemoveAccount]]">
-            </cr-icon-button>
-          </template>
+          <!-- Display a hamburger menu for removing the account -->
+          <cr-icon-button class="icon-more-vert"
+              title="[[getMoreActionsTitle_(item)]]"
+              aria-label="[[getMoreActionsTitle_(item)]]"
+              aria-describedby$="fullName-[[index]]
+                                  edu-account-label-[[index]]"
+              on-click="onAccountActionsMenuButtonTap_"
+              deep-link-focus-id$="[[Setting.kRemoveAccount]]">
+          </cr-icon-button>
         </div>
       </template>
 

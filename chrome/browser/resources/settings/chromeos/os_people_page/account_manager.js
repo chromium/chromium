@@ -169,24 +169,6 @@ Polymer({
   },
 
   /**
-   * @return {string} cr icon name.
-   * @private
-   */
-  getPrimaryAccountTooltipIcon_() {
-    return this.isChildUser_ ? 'cr20:kite' : 'cr:info-outline';
-  },
-
-  /**
-   * @return {string} tooltip text
-   * @private
-   */
-  getPrimaryAccountTooltip_() {
-    return this.isChildUser_ ?
-        this.i18n('accountManagerPrimaryAccountChildManagedTooltip') :
-        this.i18n('accountManagerPrimaryAccountTooltip');
-  },
-
-  /**
    * @param {string} iconUrl
    * @return {string} A CSS image-set for multiple scale factors.
    * @private
@@ -227,21 +209,6 @@ Polymer({
    */
   shouldShowManagedBadge_() {
     return this.isDeviceAccountManaged_ && !this.isChildUser_;
-  },
-
-  /**
-   * @param {!settings.Account} account
-   * @return {string} An appropriate management status label. e.g.
-   *    "Primary account" for unmanaged accounts, "Managed by <Domain>"
-   *    for Enterprise managed accounts etc.
-   * @private
-   */
-  getManagementLabel_(account) {
-    if (account.organization) {
-      return this.i18n('accountManagerManagedLabel', account.organization);
-    }
-
-    return this.i18n('accountManagerUnmanagedLabel');
   },
 
   /**
@@ -326,8 +293,7 @@ Polymer({
    * @return {!Array<settings.Account>} list of accounts.
    * @private
    */
-  getAccounts_() {
-    // TODO(crbug.com/1152711): rename the method to `getSecondaryAccounts_`.
+  getSecondaryAccounts_() {
     return this.accounts_.filter(account => !account.isDeviceAccount);
   },
 

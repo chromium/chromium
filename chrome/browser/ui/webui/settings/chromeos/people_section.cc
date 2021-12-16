@@ -207,8 +207,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_FIRST_MESSAGE},
       {"accountManagerChildSecondMessage",
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_SECOND_MESSAGE},
-      {"accountManagerPrimaryAccountTooltip",
-       IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_TOOLTIP},
       {"accountManagerEducationAccountLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_EDUCATION_ACCOUNT},
       {"removeAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL},
@@ -230,10 +228,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_REAUTHENTICATION_TOOLTIP},
       {"accountManagerMoreActionsTooltip",
        IDS_SETTINGS_ACCOUNT_MANAGER_MORE_ACTIONS_TOOLTIP},
-      {"accountManagerManagedLabel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_MANAGED_ACCOUNT},
-      {"accountManagerUnmanagedLabel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT},
       {"accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION},
       {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2},
       {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2},
@@ -543,27 +537,6 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
 
   bool is_child = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
   html_source->AddBoolean("isChild", is_child);
-
-  std::u16string tooltip;
-  if (is_child) {
-    std::string custodian = supervised_user_service->GetCustodianName();
-    std::string second_custodian =
-        supervised_user_service->GetSecondCustodianName();
-
-    std::u16string child_managed_tooltip;
-    if (second_custodian.empty()) {
-      child_managed_tooltip = l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_ONE_PARENT_TOOLTIP,
-          base::UTF8ToUTF16(custodian));
-    } else {
-      child_managed_tooltip = l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_TWO_PARENTS_TOOLTIP,
-          base::UTF8ToUTF16(custodian), base::UTF8ToUTF16(second_custodian));
-    }
-    tooltip = child_managed_tooltip;
-  }
-  html_source->AddString("accountManagerPrimaryAccountChildManagedTooltip",
-                         tooltip);
 }
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,

@@ -1577,15 +1577,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
     <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings describing how to sign out.">
-    To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_ONE_PARENT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings showing that this user is managed by parent's account.">
-    Account managed by <ph name="PARENT_EMAIL">$1<ex>user@example.com</ex></ph>. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_TWO_PARENTS_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings showing that this user is managed by two parents' accounts.">
-    Account managed by <ph name="FIRST_PARENT_EMAIL">$1<ex>first@example.com</ex></ph> and <ph name="SECOND_PARENT_EMAIL">$2<ex>second@example.com</ex></ph>. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL" desc="Label of the Remove account button in Account Manager.">
     Remove this account
   </message>
@@ -1625,9 +1616,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MORE_ACTIONS_TOOLTIP" desc="Tooltip text (shows on hover or for screenreaders) for a button that shows a menu with more actions when clicked or tapped.">
     More actions, <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_MANAGED_ACCOUNT" desc="Management status label for managed accounts. This will be e.g. 'Managed by google.com' for Enterprise accounts and 'Managed by Family Link' for child accounts.">
-    Managed by <ph name="DOMAIN">$1<ex>google.com</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS" desc="Management status label for managed accounts.">
     This account is managed by <ph name="BEGIN_LINK">&lt;a target="_blank"&gt;</ph><ph name="DOMAIN">$1<ex>google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
@@ -1639,9 +1627,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_SCHOOL_ACCOUNT" desc="Indicates this account is the school account, when the primary account is a child account.">
     School Account
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT" desc="Management status label for unmanaged accounts.">
-    Primary account
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of that dialog.">
     Remove this account?
