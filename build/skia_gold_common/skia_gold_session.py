@@ -5,6 +5,7 @@
 
 import logging
 import os
+import platform
 import shutil
 import sys
 import tempfile
@@ -17,7 +18,11 @@ GOLDCTL_BINARY = os.path.join(CHROMIUM_SRC, 'tools', 'skia_goldctl')
 if sys.platform == 'win32':
   GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'win', 'goldctl') + '.exe'
 elif sys.platform == 'darwin':
-  GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'mac', 'goldctl')
+  machine = platform.machine().lower()
+  if any(machine.startswith(m) for m in ('arm64', 'aarch64')):
+    GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'mac_arm64', 'goldctl')
+  else:
+    GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'mac_amd64', 'goldctl')
 else:
   GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'linux', 'goldctl')
 

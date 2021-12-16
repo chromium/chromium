@@ -40,7 +40,11 @@ const char* kSkiaGoldInstance = "chrome";
 #if defined(OS_WIN)
 const wchar_t* kSkiaGoldCtl = L"tools/skia_goldctl/win/goldctl.exe";
 #elif defined(OS_APPLE)
-const char* kSkiaGoldCtl = "tools/skia_goldctl/mac/goldctl";
+#if defined(ARCH_CPU_ARM64)
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_arm64/goldctl";
+#else
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_amd64/goldctl";
+#endif  // defined(ARCH_CPU_ARM64)
 #else
 const char* kSkiaGoldCtl = "tools/skia_goldctl/linux/goldctl";
 #endif

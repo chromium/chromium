@@ -670,7 +670,10 @@ if (!is_ios) {
     if (is_win) {
       data += [ "//tools/skia_goldctl/win/goldctl.exe" ]
     } else if (is_mac) {
-      data += [ "//tools/skia_goldctl/mac/goldctl" ]
+      data += [
+        "//tools/skia_goldctl/mac_amd64/goldctl",
+        "//tools/skia_goldctl/mac_arm64/goldctl",
+      ]
     } else {
       data += [ "//tools/skia_goldctl/linux/goldctl" ]
     }
