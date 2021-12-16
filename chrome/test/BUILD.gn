@@ -350,10 +350,15 @@ static_library("test_support") {
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
       "//components/web_modal",
-      "//extensions/browser:test_support",
-      "//extensions/common:test_support",
       "//ui/snapshot",
     ]
+
+    if (enable_extensions) {
+      public_deps += [
+        "//extensions/browser:test_support",
+        "//extensions/common:test_support",
+      ]
+    }
 
     deps += [ "//components/constrained_window" ]
 
@@ -1070,7 +1075,6 @@ if (!is_android && !is_fuchsia) {
       "//chrome/browser/continuous_search:browser_tests",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
-      "//chrome/browser/extensions:test_support",
       "//chrome/browser/image_decoder:browser_tests",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router:test_support",
@@ -1297,9 +1301,6 @@ if (!is_android && !is_fuchsia) {
       "//device/bluetooth:mocks",
       "//device/fido:cablev2_test_util",
       "//device/fido:test_support",
-      "//extensions/browser/updater",
-      "//extensions/buildflags",
-      "//extensions/renderer",
       "//google_apis:test_support",
       "//media:media_buildflags",
       "//media:test_support",
@@ -1359,6 +1360,15 @@ if (!is_android && !is_fuchsia) {
       "//ui/webui:test_support",
       "//v8",
     ]
+
+    if (enable_extensions) {
+      deps += [
+        "//chrome/browser/extensions:test_support",
+        "//extensions/browser/updater",
+        "//extensions/buildflags",
+        "//extensions/renderer",
+      ]
+    }
 
     # Runtime dependencies
     data_deps = [
@@ -1540,7 +1550,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/enterprise/connectors/connectors_service_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
-      "../browser/extensions/protocol_handler_apitest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
       "../browser/federated_learning/floc_eligibility_browsertest.cc",
@@ -2153,10 +2162,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/speech/speech_recognition_browsertest.cc",
     ]
 
-    if (enable_extensions) {
-      sources += [ "../browser/extensions/preinstalled_apps_browsertest.cc" ]
-    }
-
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
     }
@@ -2703,10 +2708,12 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/navigation_observer_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
         "../browser/extensions/page_action_browsertest.cc",
+        "../browser/extensions/preinstalled_apps_browsertest.cc",
         "../browser/extensions/printer_provider_apitest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",
         "../browser/extensions/process_util_browsertest.cc",
+        "../browser/extensions/protocol_handler_apitest.cc",
         "../browser/extensions/renderer_initialization_browsertest.cc",
         "../browser/extensions/sandboxed_pages_apitest.cc",
         "../browser/extensions/script_executor_browsertest.cc",
@@ -2796,23 +2803,53 @@ if (!is_android && !is_fuchsia) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
+          "../browser/chromeos/extensions/accessibility_features_apitest.cc",
+          "../browser/chromeos/extensions/action_handlers/action_handlers_apitest.cc",
+          "../browser/chromeos/extensions/autotest_private/autotest_private_apitest.cc",
+          "../browser/chromeos/extensions/default_keyboard_extension_browser_test.cc",
+          "../browser/chromeos/extensions/default_keyboard_extension_browser_test.h",
+          "../browser/chromeos/extensions/echo_private_apitest.cc",
+          "../browser/chromeos/extensions/file_manager/file_manager_private_apitest.cc",
+          "../browser/chromeos/extensions/file_system_provider/file_system_provider_apitest.cc",
+          "../browser/chromeos/extensions/incoming_native_messaging_apitest.cc",
+          "../browser/chromeos/extensions/info_private_apitest.cc",
+          "../browser/chromeos/extensions/input_method_apitest_chromeos.cc",
+          "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
+          "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
+          "../browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_apitest.cc",
+          "../browser/chromeos/extensions/speech/speech_recognition_private_apitest.cc",
+          "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.cc",
+          "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.h",
+          "../browser/chromeos/extensions/speech/speech_recognition_private_manager_browsertest.cc",
+          "../browser/chromeos/extensions/speech/speech_recognition_private_recognizer_browsertest.cc",
+          "../browser/chromeos/extensions/users_private/users_private_apitest.cc",
+          "../browser/chromeos/extensions/wallpaper_apitest.cc",
+          "../browser/chromeos/extensions/wallpaper_manager_browsertest.cc",
+          "../browser/chromeos/extensions/wallpaper_private_apitest.cc",
+          "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
+          "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
           "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_apitest.cc",
           "../browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_ash_apitest.cc",
           "../browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc",
+          "../browser/extensions/api/file_manager/file_browser_handler_api_ash_test.cc",
           "../browser/extensions/api/file_system/file_system_apitest_chromeos.cc",
           "../browser/extensions/api/force_installed_affiliated_extension_apitest.cc",
           "../browser/extensions/api/force_installed_affiliated_extension_apitest.h",
           "../browser/extensions/api/input_ime/input_ime_apitest_chromeos.cc",
+          "../browser/extensions/api/networking_private/networking_private_apitest.cc",
+          "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
           "../browser/extensions/api/platform_keys/platform_keys_apitest_nss.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.h",
+          "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
           "../browser/extensions/api/system_display/system_display_chromeos_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",
           "../browser/extensions/api/video_capture/video_capture_apitest_chromeos.cc",
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
+          "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
         ]
 
         deps += [
@@ -3395,30 +3432,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/web_applications/system_web_app_integration_test.h",
         "../browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_browsertest.cc",
         "../browser/chrome_main_browsertest.cc",
-        "../browser/chromeos/extensions/accessibility_features_apitest.cc",
-        "../browser/chromeos/extensions/action_handlers/action_handlers_apitest.cc",
-        "../browser/chromeos/extensions/autotest_private/autotest_private_apitest.cc",
-        "../browser/chromeos/extensions/default_keyboard_extension_browser_test.cc",
-        "../browser/chromeos/extensions/default_keyboard_extension_browser_test.h",
-        "../browser/chromeos/extensions/echo_private_apitest.cc",
-        "../browser/chromeos/extensions/file_manager/file_manager_private_apitest.cc",
-        "../browser/chromeos/extensions/file_system_provider/file_system_provider_apitest.cc",
-        "../browser/chromeos/extensions/incoming_native_messaging_apitest.cc",
-        "../browser/chromeos/extensions/info_private_apitest.cc",
-        "../browser/chromeos/extensions/input_method_apitest_chromeos.cc",
-        "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
-        "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
-        "../browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_apitest.cc",
-        "../browser/chromeos/extensions/speech/speech_recognition_private_apitest.cc",
-        "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.cc",
-        "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.h",
-        "../browser/chromeos/extensions/speech/speech_recognition_private_manager_browsertest.cc",
-        "../browser/chromeos/extensions/speech/speech_recognition_private_recognizer_browsertest.cc",
-        "../browser/chromeos/extensions/users_private/users_private_apitest.cc",
-        "../browser/chromeos/extensions/wallpaper_apitest.cc",
-        "../browser/chromeos/extensions/wallpaper_manager_browsertest.cc",
-        "../browser/chromeos/extensions/wallpaper_private_apitest.cc",
-        "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
@@ -3433,12 +3446,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
         "../browser/device_api/device_attribute_api_browsertest.cc",
         "../browser/drive/drive_notification_manager_factory_browsertest.cc",
-        "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
-        "../browser/extensions/api/file_manager/file_browser_handler_api_ash_test.cc",
-        "../browser/extensions/api/networking_private/networking_private_apitest.cc",
-        "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
-        "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
-        "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
         "../browser/metrics/family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",

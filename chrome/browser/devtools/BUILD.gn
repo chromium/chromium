@@ -141,7 +141,6 @@ static_library("devtools") {
       "//components/viz/host",
       "//components/web_modal",
       "//components/zoom",
-      "//extensions/browser",
       "//net/server:http_server",
       "//skia",
       "//third_party/icu",
@@ -229,6 +228,7 @@ static_library("devtools") {
       ]
     }
   }
+
   if (is_mac) {
     sources += [ "devtools_dock_tile_mac.mm" ]
   } else {
@@ -272,7 +272,10 @@ static_library("devtools") {
   }
 
   if (enable_extensions) {
-    deps += [ "//chrome/common/extensions/api" ]
+    deps += [
+      "//chrome/common/extensions/api",
+      "//extensions/browser",
+    ]
   }
 }
 
