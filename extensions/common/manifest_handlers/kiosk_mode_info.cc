@@ -181,12 +181,14 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
 
   // Optional kiosk.required_platform_version key.
   std::string required_platform_version;
-  if (manifest->FindPath(keys::kKioskRequiredPlatformVersion) &&
-      (!manifest->GetString(keys::kKioskRequiredPlatformVersion,
-                            &required_platform_version) ||
-       !KioskModeInfo::IsValidPlatformVersion(required_platform_version))) {
-    *error = manifest_errors::kInvalidKioskRequiredPlatformVersion;
-    return false;
+  if (const base::Value* temp =
+          manifest->FindPath(keys::kKioskRequiredPlatformVersion)) {
+    if (!temp->is_string() ||
+        !KioskModeInfo::IsValidPlatformVersion(temp->GetString())) {
+      *error = manifest_errors::kInvalidKioskRequiredPlatformVersion;
+      return false;
+    }
+    required_platform_version = temp->GetString();
   }
 
   // Optional kiosk.always_update key.

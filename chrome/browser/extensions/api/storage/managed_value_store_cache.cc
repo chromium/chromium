@@ -188,9 +188,8 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
 
   for (ExtensionSet::const_iterator it = extensions->begin();
        it != extensions->end(); ++it) {
-    std::string schema_file;
-    if (!(*it)->manifest()->GetString(
-            manifest_keys::kStorageManagedSchema, &schema_file)) {
+    if (!(*it)->manifest()->FindStringPath(
+            manifest_keys::kStorageManagedSchema)) {
       // TODO(joaodasilva): Remove this. http://crbug.com/325349
       (*components)[(*it)->id()] = policy::Schema();
       continue;

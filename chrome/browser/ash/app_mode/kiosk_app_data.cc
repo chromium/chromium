@@ -225,15 +225,15 @@ class KioskAppData::WebstoreDataParser
     }
 
     std::string required_platform_version;
-    if (manifest.FindPath(
-            extensions::manifest_keys::kKioskRequiredPlatformVersion) &&
-        (!manifest.GetString(
-             extensions::manifest_keys::kKioskRequiredPlatformVersion,
-             &required_platform_version) ||
-         !extensions::KioskModeInfo::IsValidPlatformVersion(
-             required_platform_version))) {
-      ReportFailure();
-      return;
+    if (const base::Value* temp = manifest.FindPath(
+            extensions::manifest_keys::kKioskRequiredPlatformVersion)) {
+      if (!temp->is_string() ||
+          !extensions::KioskModeInfo::IsValidPlatformVersion(
+              temp->GetString())) {
+        ReportFailure();
+        return;
+      }
+      required_platform_version = temp->GetString();
     }
 
     if (client_)

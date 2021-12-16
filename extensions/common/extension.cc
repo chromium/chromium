@@ -502,7 +502,6 @@ std::string Extension::VersionString() const {
 }
 
 std::string Extension::DifferentialFingerprint() const {
-  std::string fingerprint;
   // We currently support two sources of differential fingerprints:
   // server-provided and synthesized. Fingerprints are of the format V.FP, where
   // V indicates the fingerprint type (1 for SHA256 hash, 2 for app version) and
@@ -510,9 +509,10 @@ std::string Extension::DifferentialFingerprint() const {
   // (a hash of the extension CRX), so use that when available, otherwise
   // synthesize a 2.VERSION fingerprint for use. For more information, see
   // https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md#packages--fingerprints
-  return manifest_->GetString(keys::kDifferentialFingerprint, &fingerprint)
-             ? fingerprint
-             : "2." + VersionString();
+  if (const std::string* fingerprint =
+          manifest_->FindStringPath(keys::kDifferentialFingerprint))
+    return *fingerprint;
+  return "2." + VersionString();
 }
 
 std::string Extension::GetVersionForDisplay() const {
@@ -611,8 +611,10 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   if (!LoadRequiredFeatures(error))
     return false;
 
-  // We don't need to validate because InitExtensionID already did that.
-  manifest_->GetString(keys::kPublicKey, &public_key_);
+  if (const std::string* temp = manifest()->FindStringPath(keys::kPublicKey)) {
+    // We don't need to validate because ComputeExtensionId() already did that.
+    public_key_ = *temp;
+  }
 
   extension_origin_ = Extension::CreateOriginFromExtensionId(id());
   extension_url_ = Extension::GetBaseURLFromExtensionId(id());
@@ -650,36 +652,38 @@ bool Extension::LoadRequiredFeatures(std::u16string* error) {
 }
 
 bool Extension::LoadName(std::u16string* error) {
-  std::u16string localized_name;
-  if (!manifest_->GetString(keys::kName, &localized_name)) {
+  const std::string* non_localized_name_ptr =
+      manifest_->FindStringPath(keys::kName);
+  if (non_localized_name_ptr == nullptr) {
     *error = errors::kInvalidName16;
     return false;
   }
 
-  non_localized_name_ = base::UTF16ToUTF8(localized_name);
+  non_localized_name_ = *non_localized_name_ptr;
   std::u16string sanitized_name =
-      base::CollapseWhitespace(localized_name, true);
+      base::CollapseWhitespace(base::UTF8ToUTF16(non_localized_name_), true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   display_name_ = base::UTF16ToUTF8(sanitized_name);
   return true;
 }
 
 bool Extension::LoadVersion(std::u16string* error) {
-  std::string version_str;
-  if (!manifest_->GetString(keys::kVersion, &version_str)) {
+  const std::string* version_str = manifest_->FindStringPath(keys::kVersion);
+  if (version_str == nullptr) {
     *error = errors::kInvalidVersion;
     return false;
   }
-  version_ = base::Version(version_str);
+  version_ = base::Version(*version_str);
   if (!version_.IsValid() || version_.components().size() > 4) {
     *error = errors::kInvalidVersion;
     return false;
   }
-  if (manifest_->FindKey(keys::kVersionName)) {
-    if (!manifest_->GetString(keys::kVersionName, &version_name_)) {
+  if (const base::Value* temp = manifest_->FindKey(keys::kVersionName)) {
+    if (!temp->is_string()) {
       *error = errors::kInvalidVersionName;
       return false;
     }
+    version_name_ = temp->GetString();
   }
   return true;
 }
@@ -789,10 +793,12 @@ bool Extension::LoadSharedFeatures(std::u16string* error) {
 }
 
 bool Extension::LoadDescription(std::u16string* error) {
-  if (manifest_->FindKey(keys::kDescription) &&
-      !manifest_->GetString(keys::kDescription, &description_)) {
-    *error = errors::kInvalidDescription;
-    return false;
+  if (const base::Value* temp = manifest_->FindKey(keys::kDescription)) {
+    if (!temp->is_string()) {
+      *error = errors::kInvalidDescription;
+      return false;
+    }
+    description_ = temp->GetString();
   }
   return true;
 }
@@ -832,14 +838,14 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
 }
 
 bool Extension::LoadShortName(std::u16string* error) {
-  if (manifest_->FindKey(keys::kShortName)) {
-    std::u16string localized_short_name;
-    if (!manifest_->GetString(keys::kShortName, &localized_short_name) ||
-        localized_short_name.empty()) {
+  if (const base::Value* temp = manifest_->FindKey(keys::kShortName)) {
+    const std::string* localized_short_name_utf8 = temp->GetIfString();
+    if (!localized_short_name_utf8 || localized_short_name_utf8->empty()) {
       *error = errors::kInvalidShortName;
       return false;
     }
-
+    std::u16string localized_short_name =
+        base::UTF8ToUTF16(*localized_short_name_utf8);
     base::i18n::AdjustStringForLocaleDirection(&localized_short_name);
     short_name_ = base::UTF16ToUTF8(localized_short_name);
   } else {

@@ -58,12 +58,13 @@ DevToolsPageHandler::~DevToolsPageHandler() = default;
 
 bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
-  std::string devtools_str;
-  if (!extension->manifest()->GetString(keys::kDevToolsPage, &devtools_str)) {
+  const std::string* devtools_str =
+      extension->manifest()->FindStringPath(keys::kDevToolsPage);
+  if (!devtools_str) {
     *error = errors::kInvalidDevToolsPage;
     return false;
   }
-  GURL url = extension->GetResourceURL(devtools_str);
+  GURL url = extension->GetResourceURL(*devtools_str);
   const bool is_extension_url =
       url.SchemeIs(kExtensionScheme) && url.host_piece() == extension->id();
   // TODO(caseq): using http(s) is unsupported and will be disabled in m83.

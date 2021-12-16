@@ -109,14 +109,16 @@ TEST_F(ManifestUnitTest, Extension) {
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
 
   // The known key 'background.page' should be accessible.
-  std::string value;
-  EXPECT_TRUE(manifest->GetString(keys::kBackgroundPage, &value));
-  EXPECT_EQ("bg.html", value);
+  const std::string* background_page =
+      manifest->FindStringPath(keys::kBackgroundPage);
+  ASSERT_TRUE(background_page);
+  EXPECT_EQ("bg.html", *background_page);
 
-  // The unknown key 'unknown_key' should be accesible.
-  value.clear();
-  EXPECT_TRUE(manifest->GetString("unknown_key", &value));
-  EXPECT_EQ("foo", value);
+  // The unknown key 'unknown_key' should be accessible.
+  const std::string* unknown_key_value =
+      manifest->FindStringPath("unknown_key");
+  ASSERT_TRUE(unknown_key_value);
+  EXPECT_EQ("foo", *unknown_key_value);
 
   // Test EqualsForTesting.
   auto manifest2 = std::make_unique<Manifest>(

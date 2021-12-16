@@ -101,8 +101,10 @@ void LoadAndLocalizeResources(const Extension& extension,
   }));
 
   std::string extension_default_locale;
-  extension.manifest()->GetString(manifest_keys::kDefaultLocale,
-                                  &extension_default_locale);
+  if (const std::string* temp =
+          extension.manifest()->FindStringPath(manifest_keys::kDefaultLocale)) {
+    extension_default_locale = *temp;
+  }
   auto gzip_permission =
       extension_l10n_util::GetGzippedMessagesPermissionForExtension(&extension);
 

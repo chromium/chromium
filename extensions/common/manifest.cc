@@ -337,14 +337,8 @@ absl::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
   return available_values_->FindIntPath(path);
 }
 
-bool Manifest::GetString(
-    const std::string& path, std::string* out_value) const {
-  return available_values_->GetString(path, out_value);
-}
-
-bool Manifest::GetString(const std::string& path,
-                         std::u16string* out_value) const {
-  return available_values_->GetString(path, out_value);
+const std::string* Manifest::FindStringPath(base::StringPiece path) const {
+  return available_values_->FindStringPath(path);
 }
 
 bool Manifest::GetDictionary(

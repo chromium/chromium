@@ -42,9 +42,9 @@ bool CastRedirectHandler::Parse(extensions::Extension* extension,
     }
   }
 
-  std::string url;
-  if (extension->manifest()->GetString(kCastUrl, &url)) {
-    info->cast_url = url;
+  if (const std::string* url =
+          extension->manifest()->FindStringPath(kCastUrl)) {
+    info->cast_url = *url;
   }
 
   if (!info->redirects.empty() || !info->cast_url.empty()) {

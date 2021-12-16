@@ -39,12 +39,16 @@ DefaultLocaleHandler::~DefaultLocaleHandler() {
 
 bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LocaleInfo> info(new LocaleInfo);
-  if (!extension->manifest()->GetString(keys::kDefaultLocale,
-                                        &info->default_locale) ||
-      !l10n_util::IsValidLocaleSyntax(info->default_locale)) {
+
+  const std::string* default_locale =
+      extension->manifest()->FindStringPath(keys::kDefaultLocale);
+  if (default_locale == nullptr ||
+      !l10n_util::IsValidLocaleSyntax(*default_locale)) {
     *error = manifest_errors::kInvalidDefaultLocale16;
     return false;
   }
+  info->default_locale = *default_locale;
+
   extension->SetManifestData(keys::kDefaultLocale, std::move(info));
   return true;
 }

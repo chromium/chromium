@@ -174,10 +174,7 @@ class Manifest final {
   const base::Value* FindPath(base::StringPiece path) const;
   absl::optional<bool> FindBoolPath(base::StringPiece path) const;
   absl::optional<int> FindIntPath(base::StringPiece path) const;
-  // TODO(crbug/1187061): Update these methods to use non-deprecated
-  // base::Value methods.
-  bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetString(const std::string& path, std::u16string* out_value) const;
+  const std::string* FindStringPath(base::StringPiece path) const;
   // Deprecated: Use the GetDictionary() overload that accepts a base::Value
   // output parameter instead.
   bool GetDictionary(const std::string& path,

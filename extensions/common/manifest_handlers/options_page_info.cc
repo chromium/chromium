@@ -178,11 +178,13 @@ bool OptionsPageManifestHandler::Parse(Extension* extension,
   const Manifest* manifest = extension->manifest();
 
   std::string options_page_string;
-  if (manifest->FindPath(keys::kOptionsPage) &&
-      !manifest->GetString(keys::kOptionsPage, &options_page_string)) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
-                                                 keys::kOptionsPage);
-    return false;
+  if (const base::Value* temp = manifest->FindPath(keys::kOptionsPage)) {
+    if (!temp->is_string()) {
+      *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
+                                                   keys::kOptionsPage);
+      return false;
+    }
+    options_page_string = temp->GetString();
   }
 
   const base::Value* options_ui_value = manifest->FindPath(keys::kOptionsUI);

@@ -51,10 +51,9 @@ void PopulateExtensionInfo(
     extension_info->set_state(Info::STATE_TERMINATED);
 
   extension_info->set_type(extension.GetType());
-  std::string update_url;
-  if (extension.manifest()->GetString(extensions::manifest_keys::kUpdateURL,
-                                      &update_url)) {
-    extension_info->set_update_url(update_url);
+  if (const std::string* update_url = extension.manifest()->FindStringPath(
+          extensions::manifest_keys::kUpdateURL)) {
+    extension_info->set_update_url(*update_url);
   }
 
   extension_info->set_installed_by_default(

@@ -129,10 +129,10 @@ bool ExtensionManagement::BlocklistedByDefault() const {
 
 ExtensionManagement::InstallationMode ExtensionManagement::GetInstallationMode(
     const Extension* extension) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return GetInstallationMode(extension->id(), update_url);
-  return GetInstallationMode(extension->id(), std::string());
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return GetInstallationMode(extension->id(),
+                             update_url ? *update_url : std::string());
 }
 
 ExtensionManagement::InstallationMode ExtensionManagement::GetInstallationMode(
@@ -282,10 +282,10 @@ bool ExtensionManagement::IsAllowedManifestType(
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(
     const Extension* extension) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return GetBlockedAPIPermissions(extension->id(), update_url);
-  return GetBlockedAPIPermissions(extension->id(), std::string());
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return GetBlockedAPIPermissions(extension->id(),
+                                  update_url ? *update_url : std::string());
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(
@@ -364,10 +364,10 @@ std::unique_ptr<const PermissionSet> ExtensionManagement::GetBlockedPermissions(
 
 bool ExtensionManagement::IsPermissionSetAllowed(const Extension* extension,
                                                  const PermissionSet& perms) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return IsPermissionSetAllowed(extension->id(), update_url, perms);
-  return IsPermissionSetAllowed(extension->id(), std::string(), perms);
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return IsPermissionSetAllowed(
+      extension->id(), update_url ? *update_url : std::string(), perms);
 }
 
 bool ExtensionManagement::IsPermissionSetAllowed(
@@ -436,8 +436,7 @@ void ExtensionManagement::Refresh() {
           pref_names::kAllowedTypes, true, base::Value::Type::LIST));
   const base::DictionaryValue* dict_pref =
       static_cast<const base::DictionaryValue*>(
-          LoadPreference(pref_names::kExtensionManagement,
-                         true,
+          LoadPreference(pref_names::kExtensionManagement, true,
                          base::Value::Type::DICTIONARY));
   const base::Value* extension_request_pref = LoadPreference(
       prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
@@ -559,7 +558,8 @@ void ExtensionManagement::Refresh() {
                 subdict, internal::IndividualSettings::SCOPE_UPDATE_URL)) {
           settings_by_update_url_.erase(update_url);
           LOG(WARNING) << "Malformed Extension Management settings for "
-                          "extensions with update url: " << update_url << ".";
+                          "extensions with update url: "
+                       << update_url << ".";
         }
       } else {
         std::vector<std::string> extension_ids = base::SplitString(
@@ -830,8 +830,7 @@ ExtensionManagementFactory::ExtensionManagementFactory()
   DependsOn(InstallStageTrackerFactory::GetInstance());
 }
 
-ExtensionManagementFactory::~ExtensionManagementFactory() {
-}
+ExtensionManagementFactory::~ExtensionManagementFactory() {}
 
 KeyedService* ExtensionManagementFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

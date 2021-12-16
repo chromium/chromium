@@ -35,7 +35,10 @@ policy::Schema StorageSchemaManifestHandler::GetSchema(
     const Extension* extension,
     std::string* error) {
   std::string path;
-  extension->manifest()->GetString(kStorageManagedSchema, &path);
+  if (const std::string* temp =
+          extension->manifest()->FindStringPath(kStorageManagedSchema)) {
+    path = *temp;
+  }
   base::FilePath file = base::FilePath::FromUTF8Unsafe(path);
   if (file.IsAbsolute() || file.ReferencesParent()) {
     *error = base::StringPrintf("%s must be a relative path without ..",
@@ -59,8 +62,7 @@ policy::Schema StorageSchemaManifestHandler::GetSchema(
 
 bool StorageSchemaManifestHandler::Parse(Extension* extension,
                                          std::u16string* error) {
-  std::string path;
-  if (!extension->manifest()->GetString(kStorageManagedSchema, &path)) {
+  if (extension->manifest()->FindStringPath(kStorageManagedSchema) == nullptr) {
     *error = base::ASCIIToUTF16(
         base::StringPrintf("%s must be a string", kStorageManagedSchema));
     return false;
