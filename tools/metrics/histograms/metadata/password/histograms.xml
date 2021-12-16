@@ -487,19 +487,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="PasswordManager.AccountStore.BlacklistedSitesHiRes" units="sites"
-    expires_after="2022-05-01">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The total number of sites that the user has blacklisted in the password
-    manager's account-scoped store. Recorded by iterating over stored passwords
-    once per run of Chrome.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AccountStore.EmptyUsernames.CountInDatabase"
     units="units" expires_after="M95">
   <obsolete>
@@ -908,16 +895,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever a password filling surface or the account chooser dialog
     checks whether it can use biometrics to re-authenticate the user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="PasswordManager.BlacklistedSitesHiRes"
-    units="sites" expires_after="2022-05-01">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The total number of sites that the user has blacklisted. Recorded by
-    iterating over stored passwords once per run of Chrome.
   </summary>
 </histogram>
 
@@ -2966,6 +2943,25 @@ chromium-metrics-reviews@google.com.
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Logs the loading time for the gstatic file request.</summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.{Store}BlacklistedSitesHiRes{CustomPassphraseStatus}"
+    units="sites" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total number of sites that the user has blacklisted in the password
+    manager's {Store}. Recorded by iterating over stored passwords once per run
+    of Chrome.
+  </summary>
+  <token key="Store">
+    <variant name="" summary="for profile-scoped store"/>
+    <variant name="AccountStore." summary="for account-scoped store"/>
+  </token>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes.WithScheme{Scheme}"
