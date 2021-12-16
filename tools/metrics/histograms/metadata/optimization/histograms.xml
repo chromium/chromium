@@ -393,6 +393,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches"
+    units="counts" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The number of active batch update hints fetches initiated by the hints
+    manager. Recorded when a fetch is initiated to the remote Optimization Guide
+    Service for a batch update context (i.e. on SRP, other UI surfaces, etc.).
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches"
     units="counts" expires_after="M106">
