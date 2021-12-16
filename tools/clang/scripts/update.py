@@ -219,6 +219,8 @@ def UpdatePackage(package_name, host_os):
     package_file = 'clang'
   elif package_name == 'clang-tidy':
     package_file = 'clang-tidy'
+  elif package_name == 'clang-libs':
+    package_file = 'clang-libs'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
   elif package_name == 'translation_unit':

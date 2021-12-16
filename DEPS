@@ -138,6 +138,12 @@ vars = {
   # Fetch clang-tidy into the same bin/ directory as our clang binary.
   'checkout_clang_tidy': False,
 
+  # Fetch clang libraries and headers in order to build clang tooling. This is
+  # required to build C++-Rust interop codegen tools. This may break things that
+  # use it when clang rolls, and is meant for prototyping. You should talk to
+  # tools/clang/OWNERS before depending on it.
+  'checkout_clang_libs': False,
+
   # By default checkout the OpenXR loader library only on Windows. The OpenXR
   # backend for VR in Chromium is currently only supported for Windows, but
   # support for other platforms may be added in the future.
@@ -3938,6 +3944,16 @@ hooks = [
     'condition': 'checkout_clang_tidy',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=clang-tidy'],
+  },
+  {
+    # Grab the libraries and header files of the clang compiler that will be
+    # used to build Chromium. These can be used to build clang tooling for
+    # static analysis or codegen.
+    'name': 'clang_libs',
+    'pattern': '.',
+    'condition': 'checkout_clang_libs',
+    'action': ['python3', 'src/tools/clang/scripts/update.py',
+               '--package=clang-libs'],
   },
   {
     # Should run after the clang hook. Used on mac, as well as for orderfile

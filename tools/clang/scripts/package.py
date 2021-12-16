@@ -546,6 +546,33 @@ def main():
   PackageInArchive(clang_tidy_dir, clang_tidy_dir + '.tgz')
   MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
 
+  # Zip up clang-libs for users who opt into it. We want the clang
+  # headers as well as the static libraries.
+  clang_libs_dir = 'clang-libs-' + stamp
+  shutil.rmtree(clang_libs_dir, ignore_errors=True)
+  os.makedirs(os.path.join(clang_libs_dir, 'include'))
+  # TODO(danakj): It's possible we need to also include headers from
+  # LLVM_DIR/clang/lib/AST/ and other subdirs of lib, but we won't include them
+  # unless we see it's needed, and we can document why.
+  shutil.copytree(os.path.join(LLVM_DIR, 'clang', 'include', 'clang'),
+                  os.path.join(clang_libs_dir, 'include', 'clang'))
+  os.makedirs(os.path.join(clang_libs_dir, 'lib'))
+  if sys.platform == 'win32':
+    clang_libs_want = [
+        '*.lib',
+    ]
+  else:
+    clang_libs_want = [
+        '*.a',
+    ]
+  for lib_path in os.listdir(os.path.join(LLVM_RELEASE_DIR, 'lib')):
+    for lib_want in clang_libs_want:
+      if fnmatch.fnmatch(lib_path, lib_want):
+        shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'lib', lib_path),
+                    os.path.join(clang_libs_dir, 'lib'))
+  PackageInArchive(clang_libs_dir, clang_libs_dir + '.tgz')
+  MaybeUpload(args.upload, clang_libs_dir + '.tgz', gcs_platform)
+
   if sys.platform == 'darwin':
     # dsymutil isn't part of the main zip, and it gets periodically
     # deployed to CIPD (manually, not as part of clang rolls) for use in the

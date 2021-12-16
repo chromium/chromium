@@ -44,6 +44,10 @@ Add `enable_rust = true` in your `gn` arguments. At the moment, this works
 only for Linux platforms (but [see below](#Building-on-non-Linux-platforms)
 for how to enable on other platforms).
 
+Also add `"checkout_clang_libs": True` to your `.gclient` file in order to
+include the necessary libraries for building required C++-Rust interop
+tooling.
+
 # GN support
 
 Assume you want to add some Rust code to an existing C++ `source_set`.
