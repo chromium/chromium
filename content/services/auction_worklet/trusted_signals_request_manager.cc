@@ -29,11 +29,13 @@ namespace auction_worklet {
 TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     Type type,
     network::mojom::URLLoaderFactory* url_loader_factory,
+    bool automatically_send_requests,
     const url::Origin& top_level_origin,
     const GURL& trusted_signals_url,
     AuctionV8Helper* v8_helper)
     : type_(type),
       url_loader_factory_(url_loader_factory),
+      automatically_send_requests_(automatically_send_requests),
       top_level_origin_(top_level_origin),
       trusted_signals_url_(trusted_signals_url),
       v8_helper_(v8_helper) {}
@@ -53,7 +55,7 @@ TrustedSignalsRequestManager::RequestBiddingSignals(
   std::unique_ptr<RequestImpl> request = std::make_unique<RequestImpl>(
       this, std::set<std::string>(keys.begin(), keys.end()),
       std::move(load_signals_callback));
-  queued_requests_.insert(request.get());
+  QueueRequest(request.get());
   return request;
 }
 
@@ -69,13 +71,19 @@ TrustedSignalsRequestManager::RequestScoringSignals(
       std::set<std::string>(ad_component_render_urls.begin(),
                             ad_component_render_urls.end()),
       std::move(load_signals_callback));
-  queued_requests_.insert(request.get());
+  QueueRequest(request.get());
   return request;
 }
 
 void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
-  if (queued_requests_.empty())
+  if (queued_requests_.empty()) {
+    // The timer should never be running when there are no pending requests.
+    DCHECK(!timer_.IsRunning());
     return;
+  }
+
+  // No need to continue running the timer, if it's running.
+  timer_.Stop();
 
   BatchedTrustedSignalsRequest* batched_request =
       batched_requests_
@@ -181,6 +189,9 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
   if (!request->batched_request_) {
     size_t removed = queued_requests_.erase(request);
     DCHECK_EQ(removed, 1u);
+    // If there are no more requests, stop the timer.
+    if (queued_requests_.empty())
+      timer_.Stop();
     return;
   }
 
@@ -197,6 +208,22 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
   if (request->batched_request_->requests.empty())
     batched_requests_.erase(
         batched_requests_.find(request->batched_request_.get()));
+}
+
+void TrustedSignalsRequestManager::QueueRequest(RequestImpl* request) {
+  // If the timer is not running, then either `automatically_send_requests_` is
+  // false, or no requests should be in `queued_requests_`.
+  DCHECK_EQ(timer_.IsRunning(),
+            automatically_send_requests_ && !queued_requests_.empty());
+
+  queued_requests_.insert(request);
+  if (automatically_send_requests_ && !timer_.IsRunning()) {
+    timer_.Start(
+        FROM_HERE, kAutoSendDelay,
+        base::BindOnce(
+            &TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest,
+            base::Unretained(this)));
+  }
 }
 
 }  // namespace auction_worklet

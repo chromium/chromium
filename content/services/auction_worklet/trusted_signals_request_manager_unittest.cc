@@ -28,6 +28,10 @@
 namespace auction_worklet {
 namespace {
 
+// Very short time used by some tests that want to wait until just before a
+// timer triggers.
+constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
+
 // Common JSON used for most bidding signals tests.
 const char kBaseBiddingJson[] = R"(
   {
@@ -77,17 +81,20 @@ void NeverInvokedLoadSignalsCallback(
 class TrustedSignalsRequestManagerTest : public testing::Test {
  public:
   TrustedSignalsRequestManagerTest()
-      : v8_helper_(
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        v8_helper_(
             AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner())),
         bidding_request_manager_(
             TrustedSignalsRequestManager::Type::kBiddingSignals,
             &url_loader_factory_,
+            /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
             v8_helper_.get()),
         scoring_request_manager_(
             TrustedSignalsRequestManager::Type::kScoringSignals,
             &url_loader_factory_,
+            /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
             v8_helper_.get()) {}
@@ -830,6 +837,197 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
 
   // The callback of `request1` should not be invoked, since it was cancelled.
   base::RunLoop().RunUntilIdle();
+}
+
+// Test that when `automatically_send_requests` is false, requests are not
+// automatically started.
+TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsDisabled) {
+  const std::vector<std::string> kKeys{"key1"};
+
+  auto request = bidding_request_manager_.RequestBiddingSignals(
+      kKeys, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
+  const std::vector<std::string> kKeys1{"key1"};
+  const std::vector<std::string> kKeys2{"key2"};
+  const std::vector<std::string> kKeys3{"key3"};
+
+  // Create a new bidding request manager with `automatically_send_requests`
+  // enabled.
+  TrustedSignalsRequestManager bidding_request_manager(
+      TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*automatically_send_requests=*/true,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      v8_helper_.get());
+
+  // Create one Request.
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  absl::optional<std::string> error_msg1;
+  auto request1 = bidding_request_manager.RequestBiddingSignals(
+      kKeys1, base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                             run_loop1.QuitClosure()));
+
+  // Wait until just before the timer triggers. No network requests should be
+  // made.
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay -
+                                  kTinyTime);
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+
+  // Create another Request.
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  absl::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager.RequestBiddingSignals(
+      kKeys2, base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                             run_loop2.QuitClosure()));
+
+  // Wait until the exact time the timer should trigger. A single network
+  // request should be made, covering both Requests.
+  task_environment_.FastForwardBy(kTinyTime);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/?hostname=publisher&keys=key1,key2"),
+                  kBaseBiddingJson);
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals1.get(), kKeys1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
+
+  // Create one more request, and wait for the timer to trigger again, to make
+  // sure it restarts correctly.
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  absl::optional<std::string> error_msg3;
+  auto request3 = bidding_request_manager.RequestBiddingSignals(
+      kKeys3, base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                             run_loop3.QuitClosure()));
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
+  EXPECT_EQ(1, url_loader_factory_.NumPending());
+
+  // Complete the request.
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/?hostname=publisher&keys=key3"),
+                  kBaseBiddingJson);
+  run_loop3.Run();
+  EXPECT_FALSE(error_msg3);
+  ASSERT_TRUE(signals3);
+  EXPECT_EQ(R"({"key3":"3"})", ExtractBiddingSignals(signals3.get(), kKeys3));
+}
+
+TEST_F(TrustedSignalsRequestManagerTest,
+       AutomaticallySendRequestsCancelAllRequestsRestartsTimer) {
+  const std::vector<std::string> kKeys1{"key1"};
+  const std::vector<std::string> kKeys2{"key2"};
+
+  // Create a new bidding request manager with `automatically_send_requests`
+  // enabled.
+  TrustedSignalsRequestManager bidding_request_manager(
+      TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*automatically_send_requests=*/true,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      v8_helper_.get());
+
+  // Create one Request.
+  auto request1 = bidding_request_manager.RequestBiddingSignals(
+      kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+
+  // Wait until just before the timer triggers. No network requests should be
+  // made.
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay -
+                                  kTinyTime);
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+
+  // Cancel the request. The timer should be stopped.
+  request1.reset();
+
+  // Create another Request.
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  absl::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager.RequestBiddingSignals(
+      kKeys2, base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                             run_loop2.QuitClosure()));
+
+  // Wait until just before the timer triggers if it were correctly restarted.
+  // No network requests should be made.
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay -
+                                  kTinyTime);
+  ASSERT_EQ(0, url_loader_factory_.NumPending());
+
+  // Wait until the exact time the timer should trigger. A single network
+  // request should be made for just the second Request.
+  task_environment_.FastForwardBy(kTinyTime);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/?hostname=publisher&keys=key2"),
+                  kBaseBiddingJson);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
+}
+
+TEST_F(TrustedSignalsRequestManagerTest,
+       AutomaticallySendRequestsCancelSomeRequestsDoesNotRestartTimer) {
+  const std::vector<std::string> kKeys1{"key1"};
+  const std::vector<std::string> kKeys2{"key2"};
+
+  // Create a new bidding request manager with `automatically_send_requests`
+  // enabled.
+  TrustedSignalsRequestManager bidding_request_manager(
+      TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*automatically_send_requests=*/true,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      v8_helper_.get());
+
+  // Create one Request.
+  auto request1 = bidding_request_manager.RequestBiddingSignals(
+      kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+
+  // Wait until just before the timer triggers. No network requests should be
+  // made.
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay -
+                                  kTinyTime);
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+
+  // Create another Request.
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  absl::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager.RequestBiddingSignals(
+      kKeys2, base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                             run_loop2.QuitClosure()));
+
+  // Cancel the first request. The timer should not be stopped, since there's
+  // still a request pending.
+  request1.reset();
+
+  // Wait until the exact time the timer should trigger. A single network
+  // request should be made for just the second Request.
+  task_environment_.FastForwardBy(kTinyTime);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/?hostname=publisher&keys=key2"),
+                  kBaseBiddingJson);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
 }
 
 }  // namespace

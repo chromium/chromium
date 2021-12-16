@@ -16,6 +16,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +35,10 @@ class TrustedSignals;
 // TODO(https://crbug.com/1276639): Cache responses as well.
 class TrustedSignalsRequestManager {
  public:
+  // Delay between construction of a Request and automatically starting a
+  // network request when `automatically_send_requests` is true.
+  static constexpr base::TimeDelta kAutoSendDelay = base::Milliseconds(10);
+
   // Use same callback and result classes as TrustedSignals.
   using LoadSignalsCallback = TrustedSignals::LoadSignalsCallback;
   using Result = TrustedSignals::Result;
@@ -66,9 +72,20 @@ class TrustedSignalsRequestManager {
   //
   // `url_loader_factory` must remain valid for the lifetime of the
   // TrustedSignalsRequestManager. Keeps an owning reference to `v8_helper`.
+  //
+  // If `automatically_send_requests` is true, network requests will be
+  // automatically sent as if StartBatchedTrustedSignalsRequest() were invoked
+  // after there's been an outstanding Request for kAutoSendDelay. Manually
+  // calling StartBatchedTrustedSignalsRequest() will still start a
+  // TrustedSignals request for any pending requests and reset the send
+  // interval.
+  //
+  // TODO(https://crbug.com/1279643): Investigate improving the
+  // `automatically_send_requests` logic.
   TrustedSignalsRequestManager(
       Type type,
       network::mojom::URLLoaderFactory* url_loader_factory,
+      bool automatically_send_requests,
       const url::Origin& top_level_origin,
       const GURL& trusted_signals_url,
       AuctionV8Helper* v8_helper);
@@ -165,6 +182,9 @@ class TrustedSignalsRequestManager {
     std::set<RequestImpl*> requests;
   };
 
+  // Adds `request` to `queued_requests_`, and starts `timer_` if needed.
+  void QueueRequest(RequestImpl* request);
+
   void OnSignalsLoaded(BatchedTrustedSignalsRequest* batched_request,
                        scoped_refptr<Result> result,
                        absl::optional<std::string> error_msg);
@@ -176,6 +196,7 @@ class TrustedSignalsRequestManager {
 
   const Type type_;
   const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  const bool automatically_send_requests_;
   const url::Origin top_level_origin_;
   const GURL trusted_signals_url_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
@@ -187,6 +208,8 @@ class TrustedSignalsRequestManager {
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>
       batched_requests_;
+
+  base::OneShotTimer timer_;
 
   base::WeakPtrFactory<TrustedSignalsRequestManager> weak_ptr_factory{this};
 };
