@@ -705,6 +705,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.Share.FileType" enum="ViewFileType"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed in M99. File sharing is now done by Sharesheet, not Files.app.
+    Replaced with ChromeOS.Sharesheet.Invocation.Mimetype.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

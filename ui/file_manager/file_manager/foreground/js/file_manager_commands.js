@@ -1757,7 +1757,6 @@ CommandHandler.COMMANDS_['open-with'] = new class extends FilesCommand {
 CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
   execute(event, fileManager) {
     const entries = fileManager.selectionHandler.selection.entries;
-    FileTasks.recordSharingFileTypesUMA_(entries);
     const launchSource = CommandUtil.getSharesheetLaunchSource(event);
     chrome.fileManagerPrivate.invokeSharesheet(entries, launchSource, () => {
       if (chrome.runtime.lastError) {

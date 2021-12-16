@@ -229,18 +229,6 @@ export class FileTasks {
   }
 
   /**
-   * Records UMA statistics for file types being shared in Share action.
-   * @param {!Array<!FileEntry>} entries File entries to be shared.
-   */
-  static recordSharingFileTypesUMA_(entries) {
-    for (const entry of entries) {
-      metrics.recordEnum(
-          'Share.FileType', FileTasks.getViewFileType(entry),
-          FileTasks.UMA_INDEX_KNOWN_EXTENSIONS);
-    }
-  }
-
-  /**
    * Records trial of opening file grouped by extensions.
    *
    * @param {!VolumeManager} volumeManager

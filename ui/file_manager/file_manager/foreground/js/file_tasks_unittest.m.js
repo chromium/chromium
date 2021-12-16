@@ -617,22 +617,6 @@ export function testGetViewFileType() {
 }
 
 /**
- * Checks that we are correctly recording UMA about Share action.
- */
-export function testRecordSharingFileTypes() {
-  // Setup: create a fake metrics object that can be examined for content.
-  const mockFileSystem = new MockFileSystem('volumeId');
-
-  // Actual tests.
-  FileTasks.recordSharingFileTypesUMA_([
-    MockFileEntry.create(mockFileSystem, '/test.log'),
-    MockFileEntry.create(mockFileSystem, '/test.doc'),
-    MockFileEntry.create(mockFileSystem, '/test.__no_such_extension__'),
-  ]);
-  assertArrayEquals(enumMap.get('Share.FileType'), ['.log', '.doc', 'other']);
-}
-
-/**
  * Checks that the progress center is properly updated when mounting archives
  * successfully.
  * @suppress {visibility}
