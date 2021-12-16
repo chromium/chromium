@@ -213,6 +213,10 @@ class ASH_EXPORT CaptureModeSession
   void HideAllUis();
   void ShowAllUis();
 
+  // Called by `ShowAllUis` for each widget. Returns true if the given `widget`
+  // could be shown, otherwise, returns false.
+  bool CanShowWidget(views::Widget* widget) const;
+
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
   // `current_root_` is different`.

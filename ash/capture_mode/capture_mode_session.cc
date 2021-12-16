@@ -1120,6 +1120,10 @@ void CaptureModeSession::HideAllUis() {
     // without animation) when ShowAllUis() is called.
     widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                            true);
+    // The layer's opacity could be less than 1.f if the widget was hidden
+    // before we disabled the animations above. We need to reset the opacity
+    // back to 1.f as we will hide the widget without animation.
+    widget->GetLayer()->SetOpacity(1.f);
     widget->Hide();
   }
 
@@ -1138,12 +1142,22 @@ void CaptureModeSession::ShowAllUis() {
     // before we re-enable the animations. This is to avoid having those widgets
     // show up in the captured images or videos in case this is used right
     // before ending the session to perform the capture.
-    widget->Show();
+    if (CanShowWidget(widget))
+      widget->Show();
     widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                            false);
   }
 
   layer()->SchedulePaint(layer()->bounds());
+}
+
+bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
+  // If widget is the capture label widget, we will show it only if it doesn't
+  // intersect with the settings widget.
+  return !(capture_label_widget_ && capture_mode_settings_widget_ &&
+           capture_label_widget_.get() == widget &&
+           capture_mode_settings_widget_->GetWindowBoundsInScreen().Intersects(
+               capture_label_widget_->GetWindowBoundsInScreen()));
 }
 
 void CaptureModeSession::RefreshBarWidgetBounds() {
