@@ -76,6 +76,13 @@ namespace lens {
 constexpr int kDefaultSidePanelHeaderHeight = 40;
 constexpr int kGoogleLensLogoWidth = 87;
 constexpr int kGoogleLensLogoHeight = 16;
+const char kStaticGhostCardDataURL[] =
+    "data:text/html;charset=utf-8,"
+    "<!DOCTYPE html>"
+    "<style>"
+    "html, body {"
+    "background-image: url('https://www.gstatic.com/lens/web/ui/side_panel_loading.gif');"
+    "}</style>";
 
 LensSidePanelView::LensSidePanelView(content::BrowserContext* browser_context,
                                      base::RepeatingClosure close_callback,
@@ -87,7 +94,12 @@ LensSidePanelView::LensSidePanelView(content::BrowserContext* browser_context,
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   CreateAndInstallHeader(close_callback, launch_callback);
   separator_ = AddChildView(std::make_unique<views::Separator>());
+  loading_indicator_web_view_ = AddChildView(CreateWebView(this, browser_context));
+  loading_indicator_web_view_->GetWebContents()->GetController().LoadURL(
+        GURL(kStaticGhostCardDataURL), content::Referrer(), ui::PAGE_TRANSITION_FROM_API,
+        std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
+  web_view_->SetVisible(false);
 }
 
 content::WebContents* LensSidePanelView::GetWebContents() {
@@ -160,6 +172,11 @@ void LensSidePanelView::CreateAndInstallHeader(
 
   // Install header.
   AddChildView(std::move(header));
+}
+
+void LensSidePanelView::SetContentVisible(bool visible) {
+  web_view_->SetVisible(visible);
+  loading_indicator_web_view_->SetVisible(!visible);
 }
 
 LensSidePanelView::~LensSidePanelView() = default;

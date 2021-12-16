@@ -72,6 +72,7 @@ void LensSidePanelController::OpenWithURL(
         base::UserMetricsAction("LensSidePanel.HideChromeSidePanel"));
     browser_view_->toolbar()->side_panel_button()->HideSidePanel();
   }
+
   side_panel_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   if (side_panel_->GetVisible()) {
@@ -148,6 +149,14 @@ void LensSidePanelController::DidOpenRequestedURL(
 void LensSidePanelController::CloseButtonClicked() {
   base::RecordAction(base::UserMetricsAction("LensSidePanel.CloseButtonClick"));
   Close();
+}
+
+void LensSidePanelController::LoadProgressChanged(double progress) {
+  if(progress == 1.0) {
+    side_panel_view_->SetContentVisible(true);
+  } else {
+    side_panel_view_->SetContentVisible(false);
+  }
 }
 
 }  // namespace lens

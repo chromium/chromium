@@ -31,6 +31,8 @@ class LensSidePanelController : public content::WebContentsObserver,
   LensSidePanelController& operator=(const LensSidePanelController&) = delete;
   ~LensSidePanelController() override;
 
+  void LoadProgressChanged(double progress) override;
+
   // Opens the Lens side panel with the given Lens results URL.
   void OpenWithURL(const content::OpenURLParams& params);
 
