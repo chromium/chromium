@@ -373,8 +373,8 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       }
     }
 
-    this.newDisplayName_ = '';
-    this.newUsername_ = '';
+    this.newDisplayName_ = this.editingCredential_.userDisplayName;
+    this.newUsername_ = this.editingCredential_.userName;
 
     this.dialogPage_ = CredentialManagementDialogPage.EDIT;
   }
@@ -382,10 +382,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   private updateUserInformation_() {
     assert(this.dialogPage_ === CredentialManagementDialogPage.EDIT);
 
-    if (this.editingCredential_.userName === this.newUsername_ &&
-        this.editingCredential_.userDisplayName === this.newDisplayName_) {
-      return;
-    }
     if (this.isEmpty_(this.newUsername_)) {
       this.newUsername_ = this.editingCredential_.userName;
     }
