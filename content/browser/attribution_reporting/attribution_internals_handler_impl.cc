@@ -37,15 +37,6 @@ using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 using Attributability =
     ::content::mojom::WebUIAttributionSource::Attributability;
 
-mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
-  switch (input) {
-    case StorableSource::SourceType::kNavigation:
-      return mojom::SourceType::kNavigation;
-    case StorableSource::SourceType::kEvent:
-      return mojom::SourceType::kEvent;
-  }
-}
-
 mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
     const StorableSource& source,
     absl::optional<DeactivatedSource::Reason> deactivation_reason) {
@@ -67,8 +58,8 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
       source.source_event_id(), source.impression_origin(),
       source.ConversionDestination().Serialize(), source.reporting_origin(),
       source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
-      SourceTypeToMojoType(source.source_type()), source.priority(),
-      source.dedup_keys(), attributability);
+      source.source_type(), source.priority(), source.dedup_keys(),
+      attributability);
 }
 
 void ForwardSourcesToWebUI(
