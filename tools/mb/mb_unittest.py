@@ -293,6 +293,8 @@ TRYSERVER_CONFIG = """\
 
 
 class UnitTest(unittest.TestCase):
+  maxDiff = None
+
   def fake_mbw(self, files=None, win32=False):
     mbw = FakeMBW(win32=win32)
     mbw.files.setdefault(mbw.default_config, TEST_CONFIG)
@@ -750,8 +752,13 @@ class UnitTest(unittest.TestCase):
         '/fake_src/out/Default/base_unittests.runtime_deps':
         ("base_unittests\n"),
     }
-    self.check(['run', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], files=files, ret=0)
+    mbw = self.check(['run', '-c', 'debug_goma', '//out/Default',
+                     'base_unittests'], files=files, ret=0)
+    # pylint: disable=line-too-long
+    self.assertEqual(
+        mbw.files['/fake_src/out/Default/base_unittests.isolate'],
+          '{"variables": {"command": ["vpython3", "../../testing/test_env.py", "./base_unittests", "--test-launcher-bot-mode", "--asan=0", "--lsan=0", "--msan=0", "--tsan=0", "--cfi-diag=0"], "files": ["../../.vpython3", "../../testing/test_env.py"]}}\n')
+    # pylint: enable=line-too-long
 
   def test_run_swarmed(self):
     files = {

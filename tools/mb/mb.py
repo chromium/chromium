@@ -20,7 +20,6 @@ import json
 import os
 import pipes
 import platform
-import pprint
 import re
 import shutil
 import sys
@@ -1574,12 +1573,12 @@ class MetaBuildWrapper(object):
       return 1
 
     self.WriteFile(isolate_path,
-      pprint.pformat({
+      json.dumps({
         'variables': {
           'command': command,
           'files': files,
         }
-      }) + '\n')
+      }, sort_keys=True) + '\n')
 
     self.WriteJSON(
       {
