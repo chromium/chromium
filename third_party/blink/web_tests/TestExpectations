@@ -104,9 +104,6 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 # These tests either fail outright, or become flaky, when these two flags/parameters are enabled:
 #   --enable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning:allocation_size_bytes/2097152/loader_chunk_size/1048576
 
-# app-history tests - fail:
-crbug.com/1254926 external/wpt/app-history/navigate/navigate-same-document-event-order.html [ Failure ]
-
 # Extra line info appears in the output in some cases.
 crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
