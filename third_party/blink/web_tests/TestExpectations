@@ -3859,7 +3859,7 @@ crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/exte
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/characteristic/writeValue/write-succeeds.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/canonicalizeFilter/empty-services-member.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/canonicalizeFilter/max-length-name-unicode.https.window.html [ Crash ]
-crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/service/getCharacteristics/characteristics-found-with-uuid.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/service/getCharacteristics/characteristics-found-with-uuid.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/service/getCharacteristics/gen-reconnect-during-with-uuid.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-disconnect-called-during-error-with-uuid.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-garbage-collection-ran-during-success.https.html [ Timeout ]
