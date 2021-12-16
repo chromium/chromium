@@ -1028,7 +1028,7 @@ function runLoginScreenTests(systemToken) {
   // The test extension need to be allowlisted for some extension features to be
   // allowed to run on login screen. Currently, there is no way to allowlist the
   // extension for a subset of features. Currently, we allowlist the extension
-  // for all features using the command line switch --whitelisted-extension-id.
+  // for all features using the command line switch --allowlisted-extension-id.
   // One of these features is key_permissions_in_login_screen, which will allow
   // the extension to sign with the generated corporate keys more than once.
   chrome.test.runTests(getLoginScreenTests(systemToken));
