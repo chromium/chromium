@@ -61,7 +61,7 @@ suite('Personalization app controller', () => {
 
       let expectedCount, expectedAlbums, expectedPhotos;
       if (isGooglePhotosIntegrationEnabled) {
-        expectedCount = 0n;
+        expectedCount = 0;
         expectedAlbums = [];
         expectedPhotos = [];
       } else {

@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from '../common/assert.m.js';
 import * as constants from '../common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrBigint} from '../common/utils.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from '../common/utils.js';
 
 /**
  * @fileoverview Helper functions for communicating between trusted and
@@ -76,7 +76,7 @@ export function validateReceivedData(
       return data.collections ?? [];
     }
     case constants.EventType.SEND_GOOGLE_PHOTOS_COUNT: {
-      assert(isNullOrBigint(data.count), 'Expected photos count');
+      assert(isNullOrNumber(data.count), 'Expected photos count');
       return data.count;
     }
     case constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS: {

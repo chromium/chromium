@@ -108,7 +108,7 @@ async function fetchGooglePhotosCount(
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadGooglePhotosCountAction());
   const {count} = await provider.fetchGooglePhotosCount();
-  store.dispatch(action.setGooglePhotosCountAction(count >= 0n ? count : null));
+  store.dispatch(action.setGooglePhotosCountAction(count >= 0 ? count : null));
 }
 
 /** Fetches the list of Google Photos photos and saves it to the store. */
@@ -309,8 +309,8 @@ export async function initializeGooglePhotosData(
   // If the count of Google Photos photos is zero or null, it's not necesssary
   // to query the server for the list of albums/photos.
   const count = store.data.googlePhotos.count;
-  if (count === 0n || count === null) {
-    const /** ?Array<undefined> */ result = count === 0n ? [] : null;
+  if (count === 0 || count === null) {
+    const /** ?Array<undefined> */ result = count === 0 ? [] : null;
     store.beginBatchUpdate();
     store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
     store.dispatch(action.beginLoadGooglePhotosPhotosAction());

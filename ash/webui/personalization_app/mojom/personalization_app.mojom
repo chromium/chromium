@@ -129,7 +129,7 @@ interface WallpaperProvider {
 
     // Fetch the number of photos the user has stored in Google Photos. |count|
     // will be -1 on failure.
-    FetchGooglePhotosCount() => (int64 count);
+    FetchGooglePhotosCount() => (int32 count);
 
     // Fetch a list of FilePath objects from the local file system. |images|
     // will be null on failure.

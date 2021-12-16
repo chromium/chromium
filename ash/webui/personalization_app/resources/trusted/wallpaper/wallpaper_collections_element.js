@@ -11,7 +11,7 @@
 import './styles.js';
 
 import {kMaximumLocalImagePreviews} from '/common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrBigint, promisifyOnload} from '/common/utils.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '/common/utils.js';
 import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '/trusted/iframe_api.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -370,7 +370,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
    */
   async onGooglePhotosCountChanged_(
       googlePhotosCount, googlePhotosCountLoading) {
-    if (googlePhotosCountLoading || !isNullOrBigint(googlePhotosCount)) {
+    if (googlePhotosCountLoading || !isNullOrNumber(googlePhotosCount)) {
       return;
     }
     const iframe = await this.iframePromise_;

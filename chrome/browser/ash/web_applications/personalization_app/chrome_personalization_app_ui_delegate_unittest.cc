@@ -347,7 +347,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ChromePersonalizationAppUiDelegateGooglePhotosTest, FetchCount) {
   base::RunLoop loop;
   wallpaper_provider_remote()->get()->FetchGooglePhotosCount(
-      base::BindLambdaForTesting([&, this](int64_t count) {
+      base::BindLambdaForTesting([&, this](int count) {
         EXPECT_EQ(count, GooglePhotosEnabled() ? 0 : -1);
         loop.QuitClosure().Run();
       }));

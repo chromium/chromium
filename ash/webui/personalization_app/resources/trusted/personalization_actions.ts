@@ -258,13 +258,13 @@ export function setGooglePhotosAlbumsAction(albums: WallpaperCollection[]|
 
 export type SetGooglePhotosCountAction = Action&{
   name: ActionName.SET_GOOGLE_PHOTOS_COUNT;
-  count: bigint|null;
+  count: number|null;
 };
 
 /**
  * Sets the count of Google Photos photos. May be called with null on error.
  */
-export function setGooglePhotosCountAction(count: bigint|
+export function setGooglePhotosCountAction(count: number|
                                            null): SetGooglePhotosCountAction {
   return {count, name: ActionName.SET_GOOGLE_PHOTOS_COUNT};
 }

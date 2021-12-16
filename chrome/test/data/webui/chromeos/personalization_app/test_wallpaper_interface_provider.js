@@ -162,7 +162,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   fetchGooglePhotosCount() {
     this.methodCalled('fetchGooglePhotosCount');
     const count =
-        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 0n : -1n;
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 0 : -1;
     return Promise.resolve({count: count});
   }
 

@@ -9,7 +9,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrBigint, isSelectionEvent} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
 /**
@@ -65,7 +65,7 @@ let Tile;
 
 /**
  * Get the text to display for number of images.
- * @param {?bigint|?number|undefined} x
+ * @param {?number|undefined} x
  * @return {string}
  */
 function getCountText(x) {
@@ -80,7 +80,7 @@ function getCountText(x) {
     case 1n:
       return loadTimeData.getString('oneImage');
     default:
-      if (!['bigint', 'number'].includes(typeof x) || x < 0) {
+      if ('number' !== typeof x || x < 0) {
         console.error('Received an impossible value');
         return '';
       }
@@ -91,7 +91,7 @@ function getCountText(x) {
 /**
  * Returns the tile to display for the Google Photos collection.
  * @param {?Array<undefined>} googlePhotos
- * @param {?bigint} googlePhotosCount
+ * @param {?number} googlePhotosCount
  * @return {!ImageTile}
  */
 function getGooglePhotosTile(googlePhotos, googlePhotosCount) {
@@ -193,7 +193,7 @@ export class CollectionsGrid extends PolymerElement {
 
       /**
        * The count of Google Photos photos.
-       * @type {?bigint}
+       * @type {?number}
        * @private
        */
       googlePhotosCount_: {
@@ -330,10 +330,10 @@ export class CollectionsGrid extends PolymerElement {
   /**
    * Invoked on changes to the list and count of Google Photos photos.
    * @param {?Array<undefined>} googlePhotos
-   * @param {?bigint} googlePhotosCount
+   * @param {?number} googlePhotosCount
    */
   onGooglePhotosLoaded_(googlePhotos, googlePhotosCount) {
-    if (isNullOrArray(googlePhotos) && isNullOrBigint(googlePhotosCount)) {
+    if (isNullOrArray(googlePhotos) && isNullOrNumber(googlePhotosCount)) {
       const tile = getGooglePhotosTile(googlePhotos, googlePhotosCount);
       this.set('tiles_.1', tile);
     }
