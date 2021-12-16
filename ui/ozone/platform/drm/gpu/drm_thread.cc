@@ -12,8 +12,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -316,6 +318,7 @@ void DrmThread::CheckOverlayCapabilitiesSync(
     const OverlaySurfaceCandidateList& overlays,
     std::vector<OverlayStatus>* result) {
   TRACE_EVENT0("drm,hwoverlays", "DrmThread::CheckOverlayCapabilitiesSync");
+  base::ElapsedTimer timer;
 
   DrmWindow* window = screen_manager_->GetWindow(widget);
   if (!window) {
@@ -324,6 +327,14 @@ void DrmThread::CheckOverlayCapabilitiesSync(
     return;
   }
   *result = window->TestPageFlip(overlays);
+
+  base::TimeDelta time = timer.Elapsed();
+  static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
+  static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
+  static constexpr int kTimeBuckets = 50;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Compositing.Display.DrmThread.CheckOverlayCapabilitiesSyncUs", time,
+      kMinTime, kMaxTime, kTimeBuckets);
 }
 
 void DrmThread::GetDeviceCursor(

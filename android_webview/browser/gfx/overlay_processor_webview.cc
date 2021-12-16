@@ -667,7 +667,7 @@ OverlayProcessorWebView::TakeSurfaceTransactionOnRT() {
   return manager_->TakeHWUITransaction();
 }
 
-void OverlayProcessorWebView::CheckOverlaySupport(
+void OverlayProcessorWebView::CheckOverlaySupportImpl(
     const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
         primary_plane,
     viz::OverlayCandidateList* candidates) {

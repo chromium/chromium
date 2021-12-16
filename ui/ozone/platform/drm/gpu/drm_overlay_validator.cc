@@ -10,6 +10,7 @@
 
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_fence.h"
@@ -109,6 +110,7 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
     reusable_buffers.push_back(plane.buffer);
 
   size_t total_allocated_memory_size = 0;
+  int test_page_flip_count = 0;
 
   for (size_t i = 0; i < params.size(); ++i) {
     if (!params[i].overlay_handled) {
@@ -125,7 +127,23 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
                           /*gpu_fence=*/nullptr);
     test_list.push_back(std::move(plane));
 
-    if (buffer && controller->TestPageFlip(test_list)) {
+    bool result = false;
+    if (buffer) {
+      test_page_flip_count++;
+      base::ElapsedTimer timer;
+
+      result = controller->TestPageFlip(test_list);
+
+      auto time = timer.Elapsed();
+      static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
+      static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
+      static constexpr int kTimeBuckets = 50;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.Display.DrmOverlayManager.TestPageFlipUs", time,
+          kMinTime, kMaxTime, kTimeBuckets);
+    }
+
+    if (result) {
       returns[i] = OVERLAY_STATUS_ABLE;
     } else {
       // If test failed here, platform cannot support this configuration
@@ -142,6 +160,9 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
   UMA_HISTOGRAM_MEMORY_KB(
       "Compositing.Display.DrmOverlayManager.TotalTestBufferMemorySize",
       total_allocated_memory_size / 1024);
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.DrmOverlayManager.TestPageFlipCount",
+      test_page_flip_count);
 
   return returns;
 }

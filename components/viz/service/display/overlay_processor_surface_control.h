@@ -25,7 +25,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
   void SetViewportSize(const gfx::Size& size) override;
   void AdjustOutputSurfaceOverlay(
       absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(

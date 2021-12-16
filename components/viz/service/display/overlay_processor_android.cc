@@ -132,7 +132,7 @@ void OverlayProcessorAndroid::OverlayPresentationComplete() {
   pending_overlay_locks_.pop_front();
 }
 
-void OverlayProcessorAndroid::CheckOverlaySupport(
+void OverlayProcessorAndroid::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates) {
   // For pre-SurfaceControl Android we should not have output surface as overlay
@@ -172,6 +172,7 @@ void OverlayProcessorAndroid::CheckOverlaySupport(
     promotion_hint_info_map_[candidate.resource_id] = candidate.display_rect;
   }
 }
+
 gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& overlay) const {
   return ToEnclosedRect(overlay.display_rect);

@@ -179,9 +179,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // to be traditionally composited. Candidates with |overlay_handled| set to
   // true must also have their |display_rect| converted to integer
   // coordinates if necessary.
-  virtual void CheckOverlaySupport(
+  void CheckOverlaySupport(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
-      OverlayCandidateList* candidate_list) = 0;
+      OverlayCandidateList* candidate_list);
 
  protected:
   virtual gfx::Rect GetOverlayDamageRectForOutputSurface(
@@ -210,6 +210,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   OverlayCandidateTemporalTracker::Config tracker_config_;
 
  private:
+  // The platform specific implementation to check overlay support that will be
+  // called by `CheckOverlaySupport()`.
+  virtual void CheckOverlaySupportImpl(
+      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      OverlayCandidateList* candidate_list) = 0;
+
   // Update |damage_rect| by removing damage caused by |candidates|.
   void UpdateDamageRect(OverlayCandidateList* candidates,
                         SurfaceDamageRectList* surface_damage_rect_list,
@@ -298,6 +304,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // be whether that scaling worked or not.
   void UpdateDownscalingCapabilities(float scale_factor, bool success);
 
+  // Logs the number of times CheckOverlaySupport was called this frame, and
+  // resets the counter to 0.
+  void LogCheckOverlaySupportMetrics();
+
   struct ProposedCandidateKey {
     OverlayCandidate::TrackingId tracking_id;
     OverlayStrategy strategy_id = OverlayStrategy::kUnknown;
@@ -329,6 +339,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   base::TimeTicks last_time_interval_switch_overlay_tick_;
   ProposedCandidateKey prev_overlay_tracking_id_;
   uint64_t frame_sequence_number_ = 0;
+  int check_overlay_support_call_count_ = 0;
 
   // These values are used for tracking how much we can downscale with overlays
   // and is used for when we require an overlay so we can determine how much we

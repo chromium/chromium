@@ -59,7 +59,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
       viz::DisplayResourceProvider* resource_provider) override;
   void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
           primary_plane,
       viz::OverlayCandidateList* candidates) override;

@@ -13,6 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -171,6 +173,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
           candidates, content_bounds);
     }
   }
+  LogCheckOverlaySupportMetrics();
 
   DCHECK(candidates->empty() || success);
 
@@ -187,6 +190,24 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
+}
+
+void OverlayProcessorUsingStrategy::CheckOverlaySupport(
+    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    OverlayCandidateList* candidate_list) {
+  base::ElapsedTimer timer;
+
+  CheckOverlaySupportImpl(primary_plane, candidate_list);
+  check_overlay_support_call_count_++;
+
+  base::TimeDelta time = timer.Elapsed();
+
+  static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
+  static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
+  static constexpr int kTimeBuckets = 50;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportUs",
+      time, kMinTime, kMaxTime, kTimeBuckets);
 }
 
 // This local function simply recomputes the root damage from
@@ -767,6 +788,14 @@ void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
   // minimum.
   if (max_failed_scale_ > min_working_scale_)
     min_working_scale_ = 1.0f;
+}
+
+void OverlayProcessorUsingStrategy::LogCheckOverlaySupportMetrics() {
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.OverlayProcessorUsingStrategy."
+      "CheckOverlaySupportCallCount",
+      check_overlay_support_call_count_);
+  check_overlay_support_call_count_ = 0;
 }
 
 }  // namespace viz

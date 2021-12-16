@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
@@ -140,7 +142,7 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
-void OverlayProcessorOzone::CheckOverlaySupport(
+void OverlayProcessorOzone::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* surfaces) {
   auto full_size = surfaces->size();

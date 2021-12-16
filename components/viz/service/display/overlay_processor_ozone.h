@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   void SetViewportSize(const gfx::Size& size) override {}
 
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* surfaces) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(

@@ -103,8 +103,8 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
 
   bool IsOverlaySupported() const override { return true; }
   bool NeedsSurfaceDamageRectList() const override { return false; }
-  void CheckOverlaySupport(const PrimaryPlane* primary_plane,
-                           OverlayCandidateList* surfaces) override {}
+  void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
+                               OverlayCandidateList* surfaces) override {}
   size_t GetStrategyCount() const { return strategies_.size(); }
 };
 
@@ -114,8 +114,8 @@ class FullscreenOverlayProcessor : public TestOverlayProcessor {
     strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
   }
   bool NeedsSurfaceDamageRectList() const override { return true; }
-  void CheckOverlaySupport(const PrimaryPlane* primary_plane,
-                           OverlayCandidateList* surfaces) override {
+  void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
+                               OverlayCandidateList* surfaces) override {
     surfaces->back().overlay_handled = true;
   }
 };
@@ -140,8 +140,8 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
   DefaultOverlayProcessor() : expected_rects_(1, gfx::RectF(kOverlayRect)) {}
 
   bool NeedsSurfaceDamageRectList() const override { return true; }
-  void CheckOverlaySupport(const PrimaryPlane* primary_plane,
-                           OverlayCandidateList* surfaces) override {
+  void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
+                               OverlayCandidateList* surfaces) override {
     // We have one overlay surface to test. The output surface as primary plane
     // is optional, depending on whether this ran
     // through the full renderer and picked up the output surface, or not.

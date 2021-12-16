@@ -2659,7 +2659,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
   // to be traditionally composited. Candidates with |overlay_handled| set to
   // true must also have their |display_rect| converted to integer
   // coordinates if necessary.
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* surfaces) override {}
 
@@ -2856,7 +2856,7 @@ class SingleOverlayOnTopProcessor : public OverlayProcessorUsingStrategy {
   bool NeedsSurfaceDamageRectList() const override { return true; }
   bool IsOverlaySupported() const override { return true; }
 
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* surfaces) override {
     if (!multiple_candidates_)
@@ -3915,7 +3915,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
   // to be traditionally composited. Candidates with |overlay_handled| set to
   // true must also have their |display_rect| converted to integer
   // coordinates if necessary.
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* surfaces) override {}
 
