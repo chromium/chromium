@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
+#include "third_party/blink/renderer/modules/sanitizer_api/builtins/sanitizer_builtins.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -42,6 +43,39 @@
 namespace blink {
 
 namespace {
+
+const HashSet<String> BuildBaselineAllowElements() {
+  HashSet<String> elements;
+  for (const char* const* elem = kBaselineElements; *elem; ++elem) {
+    elements.insert(*elem);
+  }
+  return elements;
+}
+
+const HashMap<String, Vector<String>> BuildBaselineAllowAttributes() {
+  const Vector<String> kVectorStar = Vector<String>({"*"});
+  HashMap<String, Vector<String>> attributes;
+  for (const char* const* attr = kBaselineAttributes; *attr; ++attr) {
+    attributes.insert(*attr, kVectorStar);
+  }
+  return attributes;
+}
+
+const HashSet<String>& GetBaselineAllowElements() {
+  static const HashSet<String> kBaselineAllowElements(
+      BuildBaselineAllowElements());
+  return kBaselineAllowElements;
+}
+
+const HashMap<String, Vector<String>>& GetBaselineAllowAttributes() {
+  static const HashMap<String, Vector<String>> kBaselineAllowAttributes(
+      BuildBaselineAllowAttributes());
+  return kBaselineAllowAttributes;
+}
+
+bool IsWildcard(const Vector<String>& vector) {
+  return vector.size() == 1 && vector.at(0) == "*";
+}
 
 bool ConfigIsEmpty(const SanitizerConfig* config) {
   return !config ||
@@ -130,8 +164,6 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
                                 const String& local_name,
                                 const String& markup,
                                 ExceptionState& exception_state) {
-  if (baseline_drop_elements_.Contains(local_name.LowerASCII()))
-    return nullptr;
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   Document* inert_document = DocumentInit::Create()
                                  .WithURL(window->Url())
@@ -144,6 +176,19 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
     exception_state.ClearException();
     return nullptr;
   }
+
+  // 2. If the element kind [...] is regular and if the baseline
+  //    element allow list does not contain element name, then return null.
+  // See: https://wicg.github.io/sanitizer-api/#sanitizefor
+  bool is_regular =
+      element->IsHTMLElement() &&
+      !To<HTMLElement>(element)->IsHTMLUnknownElement() &&
+      !CustomElement::IsValidName(AtomicString(local_name), false);
+  if (is_regular &&
+      !GetBaselineAllowElements().Contains(local_name.LowerASCII())) {
+    return nullptr;
+  }
+
   element->setInnerHTML(markup, exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
@@ -228,13 +273,15 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
         // 1. Let |name| be |element|'s tag name.
         String name = node->nodeName().LowerASCII();
 
-        // 2. Detect whether current element is a custom element or not.
+        // 2. Detect element kind. (regular element, custom element, or else.)
         bool is_custom_element =
             CustomElement::IsValidName(AtomicString(name.LowerASCII()), false);
+        bool is_regular = node->IsHTMLElement() && !is_custom_element &&
+                          !To<HTMLElement>(node)->IsHTMLUnknownElement();
 
         // 3. If |kind| is `regular` and if |name| is not contained in the
-        // default element allow list, then 'drop'
-        if (baseline_drop_elements_.Contains(name)) {
+        // baseline element allow list, then 'drop'
+        if (is_regular && !GetBaselineAllowElements().Contains(name)) {
           node = DropElement(node, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
@@ -336,8 +383,8 @@ bool Sanitizer::AttrListMatches(const HashMap<String, Vector<String>>& map,
                                 const String& attr,
                                 const String& element) {
   const auto node_iter = map.find(attr);
-  return (node_iter != map.end()) && (node_iter->value == kVectorStar ||
-                                      node_iter->value.Contains(element));
+  return (node_iter != map.end()) &&
+         (IsWildcard(node_iter->value) || node_iter->value.Contains(element));
 }
 
 // Remove any attributes to be dropped from the current element, and proceed to
@@ -358,9 +405,10 @@ Node* Sanitizer::KeepElement(Node* node,
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      bool drop = AttrListMatches(baseline_drop_attributes_, name, node_name) ||
-                  AttrListMatches(config_.drop_attributes_, name, node_name) ||
-                  !AttrListMatches(config_.allow_attributes_, name, node_name);
+      bool drop =
+          !AttrListMatches(GetBaselineAllowAttributes(), name, node_name) ||
+          AttrListMatches(config_.drop_attributes_, name, node_name) ||
+          !AttrListMatches(config_.allow_attributes_, name, node_name);
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.
