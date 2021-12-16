@@ -590,6 +590,14 @@ void AppListClientImpl::MaybeRecordViewShown() {
   if (!IsSessionActive())
     return;
 
+  // Return early if `state_for_new_user_` is null.
+  // TODO(https://crbug.com/1278947): Theoretically, `state_for_new_user_`
+  // should be meaningful when the current user is new. However, it is not hold
+  // under some edge cases. When the root issue gets fixed, replace it with a
+  // check statement.
+  if (!state_for_new_user_)
+    return;
+
   if (state_for_new_user_->showing_recorded) {
     // Showing launcher was recorded before so return early.
     return;
