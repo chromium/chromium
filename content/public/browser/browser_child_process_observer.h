@@ -37,6 +37,13 @@ class CONTENT_EXPORT BrowserChildProcessObserver {
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) {}
 
+  // Called when a child process never launches successfully. In this case,
+  // info.status will be TERMINATION_STATUS_LAUNCH_FAILED and info.exit_code
+  // will contain a platform specific launch failure error code.
+  virtual void BrowserChildProcessLaunchFailed(
+      const ChildProcessData& data,
+      const ChildProcessTerminationInfo& info) {}
+
   // Note for Android. There is no way to reliably distinguish between Crash
   // and Kill. Arbitrarily choose all abnormal terminations on Android to call
   // BrowserChildProcessKilled, which means BrowserChildProcessCrashed will

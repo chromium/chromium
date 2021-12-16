@@ -14,6 +14,10 @@
 #include "base/android/child_process_binding_types.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace content {
 
 struct CONTENT_EXPORT ChildProcessTerminationInfo {
@@ -57,6 +61,11 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // -1 means could not be obtained due to threading restrictions.
   // -2 means not applicable because process is not ranked.
   int best_effort_reverse_rank = -1;
+#endif
+
+#if defined(OS_WIN)
+  // The LastError if there was a failure to launch the process.
+  DWORD last_error;
 #endif
 };
 

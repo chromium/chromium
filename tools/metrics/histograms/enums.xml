@@ -48286,6 +48286,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="60" label="SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT"/>
   <int value="61" label="SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN"/>
   <int value="62" label="SBOX_ERROR_UNSANDBOXED_PROCESS"/>
+  <int value="63" label="SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS"/>
   <int value="1002" label="LAUNCH_RESULT_SUCCESS"/>
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>

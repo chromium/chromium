@@ -146,6 +146,9 @@ enum ResultCode : int {
   SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN = 61,
   // Cannot create a sandbox policy for an unsandboxed process.
   SBOX_ERROR_UNSANDBOXED_PROCESS = 62,
+  // Could not create the unsandboxed process. Extended error from
+  // base::LaunchProcess will be in GetLastError().
+  SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS = 63,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
