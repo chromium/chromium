@@ -286,7 +286,7 @@ NTPUserDataLogger::NTPUserDataLogger(Profile* profile,
       ntp_url_(ntp_url),
       profile_(profile),
       // TODO(https://crbug.com/1280310): Migrate NTP navigation startup time
-      // from base::Time to base::TimeTicks top avoid time glitches.
+      // from base::Time to base::TimeTicks to avoid time glitches.
       ntp_navigation_start_time_(
           base::TimeTicks::UnixEpoch() +
           (ntp_navigation_start_time - base::Time::UnixEpoch())) {}
