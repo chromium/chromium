@@ -7218,6 +7218,7 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api",
+        "//chrome/browser/chromeos/extensions/telemetry/api:fake_hardware_info_delegate",
         "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/dbus/image_burner",

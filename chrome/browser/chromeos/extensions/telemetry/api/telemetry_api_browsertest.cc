@@ -18,7 +18,7 @@ namespace chromeos {
 using TelemetryExtensionTelemetryApiBrowserTest =
     BaseTelemetryExtensionBrowserTest;
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
   // Configure fake cros_healthd response.
   {
@@ -90,7 +90,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
   DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::make_unique<TestDebugDaemonClient>());
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -121,14 +121,6 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
     ]);
   )");
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionTelemetryApiBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
@@ -144,8 +136,7 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
       delete;
 
  protected:
-  std::string GetManifestFile(const std::string& public_key,
-                              const std::string& matches_origin) override {
+  std::string GetManifestFile(const std::string& matches_origin) override {
     return base::StringPrintf(R"(
           {
             "key": "%s",
@@ -164,11 +155,12 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
             },
             "options_page": "options.html"
           }
-        )", public_key.c_str(), matches_origin.c_str());
+        )",
+                              public_key().c_str(), matches_origin.c_str());
   }
 };
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
   // Configure fake cros_healthd response.
@@ -210,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
   CreateExtensionAndRunServiceWorker(R"(
@@ -226,13 +218,5 @@ IN_PROC_BROWSER_TEST_P(
     ]);
   )");
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 }  // namespace chromeos

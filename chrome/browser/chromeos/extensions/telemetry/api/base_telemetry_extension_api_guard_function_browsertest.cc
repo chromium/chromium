@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -10,10 +11,15 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/test_management_policy.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -183,85 +189,98 @@ std::string GetServiceWorkerForError(const std::string& error) {
 
 using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
-                       ActiveUserNotOwner) {
-  // Make sure that current user is not a device owner.
-  auto* const user_manager = GetFakeUserManager();
-  const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager->SetOwnerId(regular_user);
-
-  CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
-      "This extension is not run by the device owner"));
-}
-
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
-                       NotAllowedDeviceManufacturer) {
-  hardware_info_delegate_factory_ =
-      std::make_unique<FakeHardwareInfoDelegate::Factory>("Google\n");
-  HardwareInfoDelegate::Factory::SetForTesting(
-      hardware_info_delegate_factory_.get());
-
-  CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
-      "This extension is not allowed to access the API on this device"));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionApiGuardBrowserTest,
-    testing::Combine(
-        testing::Values(false),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
-
-using TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest =
-    BaseTelemetryExtensionBrowserTest;
-
-IN_PROC_BROWSER_TEST_P(
-    TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest,
-    AffiliatedUserNotPolicyInstalledExtension) {
-  // Make sure that ApiGuardDelegate::IsExtensionForceInstalled() returns false.
-  api_guard_delegate_factory_ = std::make_unique<FakeApiGuardDelegate::Factory>(
-      /*is_extension_force_installed=*/false);
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
+                       CanAccessApiReturnsError) {
+  constexpr char kErrorMessage[] = "Test error message";
+  // Make sure ApiGuardDelegate::CanAccessApi() returns specified error message.
+  api_guard_delegate_factory_ =
+      std::make_unique<FakeApiGuardDelegate::Factory>(kErrorMessage);
   ApiGuardDelegate::Factory::SetForTesting(api_guard_delegate_factory_.get());
 
-  CreateExtensionAndRunServiceWorker(
-      GetServiceWorkerForError("This extension is not installed by the admin"));
+  CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(kErrorMessage));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest,
-    testing::Combine(
-        testing::Values(true),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
-
-class TelemetryExtensionApiGuardWithoutPwaBrowserTest
+// Class that use real ApiGuardDelegate instance to verify its behavior.
+class TelemetryExtensionApiGuardRealDelegateBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
-  TelemetryExtensionApiGuardWithoutPwaBrowserTest() {
-    should_open_pwa_ui_ = false;
+  TelemetryExtensionApiGuardRealDelegateBrowserTest()
+      : fake_hardware_info_delegate_factory_("HP") {
+    // Make sure device manufacturer is allowlisted.
+    HardwareInfoDelegate::Factory::SetForTesting(
+        &fake_hardware_info_delegate_factory_);
   }
-  ~TelemetryExtensionApiGuardWithoutPwaBrowserTest() override = default;
+  ~TelemetryExtensionApiGuardRealDelegateBrowserTest() override = default;
 
-  TelemetryExtensionApiGuardWithoutPwaBrowserTest(
-      const TelemetryExtensionApiGuardWithoutPwaBrowserTest&) = delete;
-  TelemetryExtensionApiGuardWithoutPwaBrowserTest& operator=(
-      const TelemetryExtensionApiGuardWithoutPwaBrowserTest&) = delete;
+  TelemetryExtensionApiGuardRealDelegateBrowserTest(
+      const TelemetryExtensionApiGuardRealDelegateBrowserTest&) = delete;
+  TelemetryExtensionApiGuardRealDelegateBrowserTest& operator=(
+      const TelemetryExtensionApiGuardRealDelegateBrowserTest&) = delete;
+
+  // BaseTelemetryExtensionBrowserTest:
+  void SetUpOnMainThread() override {
+    // Skip BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() as it sets up
+    // a FakeApiGuardDelegate instance.
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+
+    // Must be initialized before dealing with UserManager.
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::FakeChromeUserManager>());
+
+    // This is needed when navigating to a network URL (e.g.
+    // ui_test_utils::NavigateToURL). Rules can only be added before
+    // BrowserTestBase::InitializeNetworkProcess() is called because host
+    // changes will be disabled afterwards.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+  void TearDownOnMainThread() override {
+    // Explicitly removing the user is required; otherwise ProfileHelper keeps
+    // a dangling pointer to the User.
+    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
+    // destructor of ash::FakeChromeUserManager.
+    GetFakeUserManager()->RemoveUserFromList(
+        GetFakeUserManager()->GetActiveUser()->GetAccountId());
+    user_manager_enabler_.reset();
+
+    BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+
+  FakeHardwareInfoDelegate::Factory fake_hardware_info_delegate_factory_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardWithoutPwaBrowserTest,
-                       PwaUiNotOpen) {
-  CreateExtensionAndRunServiceWorker(
-      GetServiceWorkerForError("Companion PWA UI is not open"));
-}
+// Smoke test to verify that real ApiGuardDelegate works in prod.
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
+                       CanAccessRunBatteryCapacityRoutine) {
+  // Add a new user and make it owner.
+  auto* const user_manager = GetFakeUserManager();
+  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+  user_manager->SwitchActiveUser(account_id);
+  user_manager->SetOwnerId(account_id);
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionApiGuardWithoutPwaBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
+  // Make sure PWA UI is open.
+  auto* pwa_page_rfh =
+      ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url()));
+  ASSERT_TRUE(pwa_page_rfh);
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBatteryCapacityRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBatteryCapacityRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 
 }  // namespace chromeos

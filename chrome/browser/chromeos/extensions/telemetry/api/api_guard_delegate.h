@@ -8,8 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
+
 namespace content {
 class BrowserContext;
+}
+
+namespace extensions {
+class Extension;
 }
 
 namespace chromeos {
@@ -33,12 +39,19 @@ class ApiGuardDelegate {
     static Factory* test_factory_;
   };
 
+  // |error_message| represents the result of CanAccessApi(). If |error_message|
+  // is empty, the user can access the API; otherwise, the relevant error
+  // message is returned.
+  using CanAccessApiCallback =
+      base::OnceCallback<void(std::string error_message)>;
+
   ApiGuardDelegate(const ApiGuardDelegate&) = delete;
   ApiGuardDelegate& operator=(const ApiGuardDelegate&) = delete;
   virtual ~ApiGuardDelegate();
 
-  virtual bool IsExtensionForceInstalled(content::BrowserContext* context,
-                                         const std::string& extension_id);
+  virtual void CanAccessApi(content::BrowserContext* context,
+                            const extensions::Extension* extension,
+                            CanAccessApiCallback callback) = 0;
 
  protected:
   ApiGuardDelegate();

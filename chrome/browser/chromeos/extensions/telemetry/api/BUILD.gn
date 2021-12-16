@@ -68,14 +68,13 @@ source_set("browser_tests") {
     "diagnostics_api_browsertest.cc",
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
-    "fake_hardware_info_delegate.cc",
-    "fake_hardware_info_delegate.h",
     "telemetry_api_browsertest.cc",
     "telemetry_extension_capabilities_browser_test.cc",
   ]
 
   deps = [
     ":api",
+    ":fake_hardware_info_delegate",
     "//base",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/common/chromeos/extensions",
@@ -104,5 +103,21 @@ source_set("unit_tests") {
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
+  ]
+}
+
+# This is needed as a dependency for api_guard_delegate_unittest.cc in
+# /chrome/test/BUILD.gn.
+# TODO(b/207754758): Move into the appropriate target.
+source_set("fake_hardware_info_delegate") {
+  testonly = true
+  sources = [
+    "fake_hardware_info_delegate.cc",
+    "fake_hardware_info_delegate.h",
+  ]
+
+  deps = [
+    ":api",
+    "//base",
   ]
 }

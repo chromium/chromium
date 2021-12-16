@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
@@ -30,11 +31,12 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() final;
 
-  bool IsPwaUiOpen();
-
-  void OnGetManufacturer(std::string manufacturer);
-
   virtual void RunIfAllowed() = 0;
+
+ private:
+  void OnCanAccessApi(std::string error);
+
+  std::unique_ptr<ApiGuardDelegate> api_guard_delegate_;
 };
 
 }  // namespace chromeos

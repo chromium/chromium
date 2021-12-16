@@ -14,13 +14,17 @@ namespace content {
 class BrowserContext;
 }
 
+namespace extensions {
+class Extension;
+}
+
 namespace chromeos {
 
 class FakeApiGuardDelegate : public ApiGuardDelegate {
  public:
   class Factory : public ApiGuardDelegate::Factory {
    public:
-    explicit Factory(bool is_extension_force_installed);
+    explicit Factory(std::string error_message);
     ~Factory() override;
 
    protected:
@@ -28,7 +32,7 @@ class FakeApiGuardDelegate : public ApiGuardDelegate {
     std::unique_ptr<ApiGuardDelegate> CreateInstance() override;
 
    private:
-    bool is_extension_force_installed_;
+    std::string error_message_;
   };
 
   FakeApiGuardDelegate(const FakeApiGuardDelegate&) = delete;
@@ -36,14 +40,16 @@ class FakeApiGuardDelegate : public ApiGuardDelegate {
   ~FakeApiGuardDelegate() override;
 
   // ApiGuardDelegate:
-  bool IsExtensionForceInstalled(content::BrowserContext* context,
-                                 const std::string& extension_id) override;
+  void CanAccessApi(content::BrowserContext* context,
+                    const extensions::Extension* extension,
+                    CanAccessApiCallback callback) override;
 
  protected:
-  explicit FakeApiGuardDelegate(bool is_extension_force_installed);
+  explicit FakeApiGuardDelegate(std::string error_message);
 
  private:
-  bool is_extension_force_installed_;
+  // Error message returned when calling CanAccessApi().
+  std::string error_message_;
 };
 
 }  // namespace chromeos

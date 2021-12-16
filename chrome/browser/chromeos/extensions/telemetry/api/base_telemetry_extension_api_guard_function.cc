@@ -7,22 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_function.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/management_policy.h"
-#include "extensions/common/manifest_handlers/externally_connectable.h"
-#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -33,78 +20,22 @@ BaseTelemetryExtensionApiGuardFunction::
 
 ExtensionFunction::ResponseAction
 BaseTelemetryExtensionApiGuardFunction::Run() {
-  // As agreed with the privacy team, a user can access telemetry APIs in one of
-  // the following cases:
-  // 1. The user is managed and the extension was force-installed via policy.
-  // 2. The user is the device owner.
-  if (user_manager::UserManager::Get()->GetActiveUser()->IsAffiliated()) {
-    if (!ApiGuardDelegate::Factory::Create()->IsExtensionForceInstalled(
-            browser_context(), extension_id())) {
-      return RespondNow(Error(
-          base::StringPrintf("Unauthorized access to chrome.%s. "
-                             "This extension is not installed by the admin",
-                             name())));
-    }
-  } else if (!user_manager::UserManager::Get()->IsCurrentUserOwner()) {
-    return RespondNow(Error(
-        base::StringPrintf("Unauthorized access to chrome.%s. "
-                           "This extension is not run by the device owner",
-                           name())));
-  }
-
-  if (!IsPwaUiOpen()) {
-    return RespondNow(
-        Error(base::StringPrintf("Unauthorized access to chrome.%s. "
-                                 "Companion PWA UI is not open",
-                                 name())));
-  }
-
-  // TODO(b/200676085): figure out a better way to async check different
-  // conditions.
-  HardwareInfoDelegate::Factory::Create()->GetManufacturer(base::BindOnce(
-      &BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer, this));
+  // ExtensionFunction::Run() can be expected to run at most once for the
+  // lifetime of the ExtensionFunction. Therefore, it is safe to instantiate
+  // |api_guard_delegate_| here (vs in the ctor).
+  api_guard_delegate_ = ApiGuardDelegate::Factory::Create();
+  api_guard_delegate_->CanAccessApi(
+      browser_context(), extension(),
+      base::BindOnce(&BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi,
+                     this));
 
   return RespondLater();
 }
 
-bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-
-  const auto* externally_connectable_info =
-      extensions::ExternallyConnectableInfo::Get(extension());
-
-  for (auto* target_browser : *BrowserList::GetInstance()) {
-    // Ignore incognito.
-    if (target_browser->profile() != profile) {
-      continue;
-    }
-
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* target_contents =
-          target_tab_strip->GetWebContentsAt(i);
-      if (externally_connectable_info->matches.MatchesURL(
-              target_contents->GetLastCommittedURL())) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-void BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer(
-    std::string manufacturer) {
-  base::TrimWhitespaceASCII(manufacturer, base::TrimPositions::TRIM_ALL,
-                            &manufacturer);
-
-  const auto& extension_info = GetChromeOSExtensionInfoForId(extension_id());
-
-  if (manufacturer != extension_info.manufacturer) {
-    Respond(Error(base::StringPrintf(
-        "Unauthorized access to chrome.%s. "
-        "This extension is not allowed to access the API on this device",
-        name())));
+void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(std::string error) {
+  if (!error.empty()) {
+    Respond(Error(base::StringPrintf("Unauthorized access to chrome.%s. %s",
+                                     name(), error.c_str())));
     return;
   }
 

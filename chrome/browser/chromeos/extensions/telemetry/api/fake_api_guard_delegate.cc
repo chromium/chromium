@@ -6,35 +6,44 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace content {
 class BrowserContext;
 }
 
+namespace extensions {
+class Extension;
+}
+
 namespace chromeos {
 
-FakeApiGuardDelegate::Factory::Factory(bool is_extension_force_installed)
-    : is_extension_force_installed_(is_extension_force_installed) {}
+FakeApiGuardDelegate::Factory::Factory(std::string error_message)
+    : error_message_(error_message) {}
 
 FakeApiGuardDelegate::Factory::~Factory() = default;
 
 std::unique_ptr<ApiGuardDelegate>
 FakeApiGuardDelegate::Factory::CreateInstance() {
   return base::WrapUnique<ApiGuardDelegate>(
-      new FakeApiGuardDelegate(is_extension_force_installed_));
+      new FakeApiGuardDelegate(error_message_));
 }
 
-FakeApiGuardDelegate::FakeApiGuardDelegate(bool is_extension_force_installed)
-    : is_extension_force_installed_(is_extension_force_installed) {}
+FakeApiGuardDelegate::FakeApiGuardDelegate(std::string error_message)
+    : error_message_(error_message) {}
 
 FakeApiGuardDelegate::~FakeApiGuardDelegate() = default;
 
-bool FakeApiGuardDelegate::IsExtensionForceInstalled(
-    content::BrowserContext* context,
-    const std::string& extension_id) {
-  return is_extension_force_installed_;
+void FakeApiGuardDelegate::CanAccessApi(content::BrowserContext* context,
+                                        const extensions::Extension* extension,
+                                        CanAccessApiCallback callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), error_message_));
 }
 
 }  // namespace chromeos
