@@ -2218,8 +2218,11 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  ash::BrowserDataMigrator::MaybeRestartToMigrate(user->GetAccountId(),
-                                                  user->username_hash());
+  if (ash::BrowserDataMigrator::MaybeRestartToMigrate(user->GetAccountId(),
+                                                      user->username_hash())) {
+    LOG(WARNING) << "Restarting chrome to run profile migration.";
+    return;
+  }
 
   if (login_host) {
     login_host->SetStatusAreaVisible(true);

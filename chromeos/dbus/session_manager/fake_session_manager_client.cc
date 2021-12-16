@@ -406,6 +406,11 @@ void FakeSessionManagerClient::NotifyLockScreenDismissed() {
   screen_is_locked_ = false;
 }
 
+bool FakeSessionManagerClient::RequestBrowserDataMigration(
+    const cryptohome::AccountIdentifier& cryptohome_id) {
+  return true;
+}
+
 void FakeSessionManagerClient::RetrieveActiveSessions(
     ActiveSessionsCallback callback) {
   PostReply(FROM_HERE, std::move(callback), user_sessions_);

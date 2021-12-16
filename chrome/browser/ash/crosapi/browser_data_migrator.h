@@ -205,9 +205,11 @@ class BrowserDataMigrator {
   };
 
   // Checks if migration is required for the user identified by `user_id_hash`
-  // and if it is required, calls a DBus method to session_manager and
-  // terminates ash-chrome.
-  static void MaybeRestartToMigrate(const AccountId& account_id,
+  // and if it is required, calls a D-Bus method to session_manager and
+  // terminates ash-chrome. It returns true if the D-Bus call to the
+  // session_manager is made and successful. The return value of true means that
+  // `chrome::AttemptRestart()` has been called.
+  static bool MaybeRestartToMigrate(const AccountId& account_id,
                                     const std::string& user_id_hash);
 
   // The method needs to be called on UI thread. It posts `MigrateInternal()` on
@@ -274,8 +276,8 @@ class BrowserDataMigrator {
       scoped_refptr<CancelFlag> cancel_flag);
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
-  // the migration.
-  static void RestartToMigrate(const AccountId& account_id,
+  // the migration. It returns true if D-Bus call was successful.
+  static bool RestartToMigrate(const AccountId& account_id,
                                const std::string& user_id_hash);
 
   // Called on UI thread once migration is finished.

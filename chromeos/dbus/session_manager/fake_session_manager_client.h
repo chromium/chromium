@@ -103,9 +103,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void RequestLockScreen() override;
   void NotifyLockScreenShown() override;
   void NotifyLockScreenDismissed() override;
-  void RequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      VoidDBusMethodCallback callback) override {}
+  bool RequestBrowserDataMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) override;
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override;
   void RetrieveDevicePolicy(RetrievePolicyCallback callback) override;
   RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
